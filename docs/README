@@ -1,0 +1,4 @@
+This directory/folder is empty when you get the package. Change to the
+parent directory (containing 'Doxyfile' and 'setup.cfg') and run the
+release maintenance script with 'python maintenance/release.py' to fill
+this directory with documentation data.

@@ -1,0 +1,630 @@
+(lp0
+VAguiar da Beira
+p1
+aVAlandroal
+p2
+aVAlbergaria-a-Velha
+p3
+aVAlbufeira
+p4
+aVAlcoutim
+p5
+aVAlfândega da Fé
+p6
+aVAljezur
+p7
+aVAljustrel
+p8
+aVAlmeida
+p9
+aVAlmodôvar
+p10
+aVAlter do Chão
+p11
+aVAlvaiázere
+p12
+aVAlvito
+p13
+aVAmadora
+p14
+aVAmares
+p15
+aVAngra do Heroísmo
+p16
+aVAnsião
+p17
+aVArganil
+p18
+aVArouca
+p19
+aVArraiolos
+p20
+aVArronches
+p21
+aVArruda dos Vinhos
+p22
+aVAvis
+p23
+aVAzambuja
+p24
+aVBombarral
+p25
+aVCabeceiras de Basto
+p26
+aVCadaval
+p27
+aVCaldas da Rainha
+p28
+aVCalheta
+p29
+aVCarrazeda de Ansiães
+p30
+aVCascais
+p31
+aVCastanheira de Pera
+p32
+aVCastelo Branco
+p33
+aVCastelo de Paiva
+p34
+aVCastelo de Vide
+p35
+aVCastro Marim
+p36
+aVCastro Verde
+p37
+aVCelorico da Beira
+p38
+aVCelorico de Basto
+p39
+aVCondeixa-a-Nova
+p40
+aVCâmara de Lobos
+p41
+aVElvas
+p42
+aVEspinho
+p43
+aVEsposende
+p44
+aVEstarreja
+p45
+aVEstremoz
+p46
+aVFafe
+p47
+aVFerreira do Alentejo
+p48
+aVFigueira da Foz
+p49
+aVFigueira de Castelo Rodrigo
+p50
+aVFigueiró dos Vinhos
+p51
+aVFornos de Algodres
+p52
+aVFreixo de Espada à Cinta
+p53
+aVFunchal
+p54
+aVGóis
+p55
+aVHorta
+p56
+aVIdanha-a-Nova
+p57
+aVLagos
+p58
+aVLajes das Flores
+p59
+aVLajes do Pico
+p60
+aVLeiria
+p61
+aVLoulé
+p62
+aVLoures
+p63
+aVLourinhã
+p64
+aVLousã
+p65
+aVMacedo de Cavaleiros
+p66
+aVMachico
+p67
+aVManteigas
+p68
+aVMarinha Grande
+p69
+aVMarvão
+p70
+aVMealhada
+p71
+aVMira
+p72
+aVMiranda do Corvo
+p73
+aVMirandela
+p74
+aVMogadouro
+p75
+aVMonchique
+p76
+aVMonforte
+p77
+aVMontemor-o-Novo
+p78
+aVMontemor-o-Velho
+p79
+aVMora
+p80
+aVMoura
+p81
+aVMourão
+p82
+aVMurtosa
+p83
+aVMértola
+p84
+aVMêda
+p85
+aVOdemira
+p86
+aVOdivelas
+p87
+aVOleiros
+p88
+aVOlhão
+p89
+aVOliveira de Azeméis
+p90
+aVOliveira do Bairro
+p91
+aVOliveira do Hospital
+p92
+aVOurique
+p93
+aVOvar
+p94
+aVPampilhosa da Serra
+p95
+aVPedrógão Grande
+p96
+aVPenacova
+p97
+aVPenamacor
+p98
+aVPenela
+p99
+aVPeniche
+p100
+aVPinhel
+p101
+aVPonta do Sol
+p102
+aVPonte de Sor
+p103
+aVPorto Moniz
+p104
+aVPorto de Mós
+p105
+aVPovoação
+p106
+aVPraia da Vitória
+p107
+aVProença-a-Nova
+p108
+aVPóvoa de Lanhoso
+p109
+aVRedondo
+p110
+aVReguengos de Monsaraz
+p111
+aVRibeira Brava
+p112
+aVRibeira Grande
+p113
+aVSabugal
+p114
+aVSanta Cruz da Graciosa
+p115
+aVSanta Cruz das Flores
+p116
+aVSanta Maria da Feira
+p117
+aVSeia
+p118
+aVSerpa
+p119
+aVSertã
+p120
+aVSever do Vouga
+p121
+aVSintra
+p122
+aVSobral de Monte Agraço
+p123
+aVSousel
+p124
+aVSão Brás de Alportel
+p125
+aVSão João da Madeira
+p126
+aVSão Roque do Pico
+p127
+aVTavira
+p128
+aVTorre de Moncorvo
+p129
+aVTorres Vedras
+p130
+aVTrancoso
+p131
+aVTábua
+p132
+aVVagos
+p133
+aVVale de Cambra
+p134
+aVVelas
+p135
+aVVendas Novas
+p136
+aVViana do Alentejo
+p137
+aVVidigueira
+p138
+aVVieira do Minho
+p139
+aVVila Franca de Xira
+p140
+aVVila Franca do Campo
+p141
+aVVila Nova de Famalicão
+p142
+aVVila Nova de Foz Côa
+p143
+aVVila Nova de Poiares
+p144
+aVVila Real de Santo António
+p145
+aVVila Velha de Ródão
+p146
+aVVila Verde
+p147
+aVVila Viçosa
+p148
+aVVila de Rei
+p149
+aVVila do Bispo
+p150
+aVVila do Porto
+p151
+aVVimioso
+p152
+aVVinhais
+p153
+aVVizela
+p154
+aVÁgueda
+p155
+aVÍlhavo
+p156
+aVÓbidos
+p157
+aVDiscussão:Aguiar da Beira
+p158
+aVDiscussão:Alandroal
+p159
+aVDiscussão:Albergaria-a-Velha
+p160
+aVDiscussão:Albufeira
+p161
+aVDiscussão:Alcoutim
+p162
+aVDiscussão:Alfândega da Fé
+p163
+aVDiscussão:Aljezur
+p164
+aVDiscussão:Aljustrel
+p165
+aVDiscussão:Almeida
+p166
+aVDiscussão:Almodôvar
+p167
+aVDiscussão:Alter do Chão
+p168
+aVDiscussão:Alvaiázere
+p169
+aVDiscussão:Alvito
+p170
+aVDiscussão:Amadora
+p171
+aVDiscussão:Amares
+p172
+aVDiscussão:Angra do Heroísmo
+p173
+aVDiscussão:Ansião
+p174
+aVDiscussão:Arganil
+p175
+aVDiscussão:Arouca
+p176
+aVDiscussão:Arraiolos
+p177
+aVDiscussão:Arronches
+p178
+aVDiscussão:Arruda dos Vinhos
+p179
+aVDiscussão:Avis
+p180
+aVDiscussão:Azambuja
+p181
+aVDiscussão:Bombarral
+p182
+aVDiscussão:Cabeceiras de Basto
+p183
+aVDiscussão:Cadaval
+p184
+aVDiscussão:Caldas da Rainha
+p185
+aVDiscussão:Calheta
+p186
+aVDiscussão:Carrazeda de Ansiães
+p187
+aVDiscussão:Cascais
+p188
+aVDiscussão:Castanheira de Pera
+p189
+aVDiscussão:Castelo Branco
+p190
+aVDiscussão:Castelo de Paiva
+p191
+aVDiscussão:Castelo de Vide
+p192
+aVDiscussão:Castro Marim
+p193
+aVDiscussão:Castro Verde
+p194
+aVDiscussão:Celorico da Beira
+p195
+aVDiscussão:Celorico de Basto
+p196
+aVDiscussão:Condeixa-a-Nova
+p197
+aVDiscussão:Câmara de Lobos
+p198
+aVDiscussão:Elvas
+p199
+aVDiscussão:Espinho
+p200
+aVDiscussão:Esposende
+p201
+aVDiscussão:Estarreja
+p202
+aVDiscussão:Estremoz
+p203
+aVDiscussão:Fafe
+p204
+aVDiscussão:Ferreira do Alentejo
+p205
+aVDiscussão:Figueira da Foz
+p206
+aVDiscussão:Figueira de Castelo Rodrigo
+p207
+aVDiscussão:Figueiró dos Vinhos
+p208
+aVDiscussão:Fornos de Algodres
+p209
+aVDiscussão:Freixo de Espada à Cinta
+p210
+aVDiscussão:Funchal
+p211
+aVDiscussão:Góis
+p212
+aVDiscussão:Horta
+p213
+aVDiscussão:Idanha-a-Nova
+p214
+aVDiscussão:Lagos
+p215
+aVDiscussão:Lajes das Flores
+p216
+aVDiscussão:Lajes do Pico
+p217
+aVDiscussão:Leiria
+p218
+aVDiscussão:Loulé
+p219
+aVDiscussão:Loures
+p220
+aVDiscussão:Lourinhã
+p221
+aVDiscussão:Lousã
+p222
+aVDiscussão:Macedo de Cavaleiros
+p223
+aVDiscussão:Machico
+p224
+aVDiscussão:Manteigas
+p225
+aVDiscussão:Marinha Grande
+p226
+aVDiscussão:Marvão
+p227
+aVDiscussão:Mealhada
+p228
+aVDiscussão:Mira
+p229
+aVDiscussão:Miranda do Corvo
+p230
+aVDiscussão:Mirandela
+p231
+aVDiscussão:Mogadouro
+p232
+aVDiscussão:Monchique
+p233
+aVDiscussão:Monforte
+p234
+aVDiscussão:Montemor-o-Novo
+p235
+aVDiscussão:Montemor-o-Velho
+p236
+aVDiscussão:Mora
+p237
+aVDiscussão:Moura
+p238
+aVDiscussão:Mourão
+p239
+aVDiscussão:Murtosa
+p240
+aVDiscussão:Mértola
+p241
+aVDiscussão:Mêda
+p242
+aVDiscussão:Odemira
+p243
+aVDiscussão:Odivelas
+p244
+aVDiscussão:Oleiros
+p245
+aVDiscussão:Olhão
+p246
+aVDiscussão:Oliveira de Azeméis
+p247
+aVDiscussão:Oliveira do Bairro
+p248
+aVDiscussão:Oliveira do Hospital
+p249
+aVDiscussão:Ourique
+p250
+aVDiscussão:Ovar
+p251
+aVDiscussão:Pampilhosa da Serra
+p252
+aVDiscussão:Pedrógão Grande
+p253
+aVDiscussão:Penacova
+p254
+aVDiscussão:Penamacor
+p255
+aVDiscussão:Penela
+p256
+aVDiscussão:Peniche
+p257
+aVDiscussão:Pinhel
+p258
+aVDiscussão:Ponta do Sol
+p259
+aVDiscussão:Ponte de Sor
+p260
+aVDiscussão:Porto Moniz
+p261
+aVDiscussão:Porto de Mós
+p262
+aVDiscussão:Povoação
+p263
+aVDiscussão:Praia da Vitória
+p264
+aVDiscussão:Proença-a-Nova
+p265
+aVDiscussão:Póvoa de Lanhoso
+p266
+aVDiscussão:Redondo
+p267
+aVDiscussão:Reguengos de Monsaraz
+p268
+aVDiscussão:Ribeira Brava
+p269
+aVDiscussão:Ribeira Grande
+p270
+aVDiscussão:Sabugal
+p271
+aVDiscussão:Santa Cruz da Graciosa
+p272
+aVDiscussão:Santa Cruz das Flores
+p273
+aVDiscussão:Santa Maria da Feira
+p274
+aVDiscussão:Seia
+p275
+aVDiscussão:Serpa
+p276
+aVDiscussão:Sertã
+p277
+aVDiscussão:Sever do Vouga
+p278
+aVDiscussão:Sintra
+p279
+aVDiscussão:Sobral de Monte Agraço
+p280
+aVDiscussão:Sousel
+p281
+aVDiscussão:São Brás de Alportel
+p282
+aVDiscussão:São João da Madeira
+p283
+aVDiscussão:São Roque do Pico
+p284
+aVDiscussão:Tavira
+p285
+aVDiscussão:Torre de Moncorvo
+p286
+aVDiscussão:Torres Vedras
+p287
+aVDiscussão:Trancoso
+p288
+aVDiscussão:Tábua
+p289
+aVDiscussão:Vagos
+p290
+aVDiscussão:Vale de Cambra
+p291
+aVDiscussão:Velas
+p292
+aVDiscussão:Vendas Novas
+p293
+aVDiscussão:Viana do Alentejo
+p294
+aVDiscussão:Vidigueira
+p295
+aVDiscussão:Vieira do Minho
+p296
+aVDiscussão:Vila Franca de Xira
+p297
+aVDiscussão:Vila Franca do Campo
+p298
+aVDiscussão:Vila Nova de Famalicão
+p299
+aVDiscussão:Vila Nova de Foz Côa
+p300
+aVDiscussão:Vila Nova de Poiares
+p301
+aVDiscussão:Vila Real de Santo António
+p302
+aVDiscussão:Vila Velha de Ródão
+p303
+aVDiscussão:Vila Verde
+p304
+aVDiscussão:Vila Viçosa
+p305
+aVDiscussão:Vila de Rei
+p306
+aVDiscussão:Vila do Bispo
+p307
+aVDiscussão:Vila do Porto
+p308
+aVDiscussão:Vimioso
+p309
+aVDiscussão:Vinhais
+p310
+aVDiscussão:Vizela
+p311
+aVDiscussão:Águeda
+p312
+aVDiscussão:Ílhavo
+p313
+aVDiscussão:Óbidos
+p314
+a.

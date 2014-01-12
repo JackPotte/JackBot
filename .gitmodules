@@ -1,0 +1,12 @@
+#[submodule "i18n"]
+#    path = scripts/i18n
+#    url = https://gerrit.wikimedia.org/r/p/pywikibot/i18n.git
+[submodule "i18n"]
+	path = i18n
+	url = https://gerrit.wikimedia.org/r/p/pywikibot/i18n.git
+	branch = .
+
+[submodule "externals/spelling"]
+	path = externals/spelling
+	url = https://gerrit.wikimedia.org/r/p/pywikibot/spelling.git
+	branch = .

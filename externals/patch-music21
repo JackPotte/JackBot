@@ -1,0 +1,15 @@
+diff -Naur '--exclude=*.pyc' TEST__music21/__init__.py _music21/__init__.py
+--- TEST__music21/__init__.py	1970-01-01 01:00:00.000000000 +0100
++++ _music21/__init__.py	2013-05-06 17:50:47.519400978 +0200
+@@ -0,0 +1,11 @@
++import sys, os
++
++scriptdir = os.path.dirname(sys.argv[0])
++if not os.path.isabs(scriptdir):
++    scriptdir = os.path.abspath(os.path.join(os.curdir, scriptdir))
++    
++libdir = os.path.join(scriptdir, 'externals/_music21')
++sys.path.append(os.path.join(libdir))
++
++from music21 import *
++

@@ -1,0 +1,7 @@
+External dependencies for the trunk branch.
+
+Usually - under normal circumstances - these packages should be installed 
+separately elsewhere in the OS by the standard package managing system. This
+might not be possible for more exotic ones. Therfore several methods are used
+in following order; (svn:externals), OS package management system, download and
+extract from URL, clone of mercurial repository.
