@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/env python
 # coding: utf-8
 '''
-Ce script formate les pages du Wiktionnaire, tous les jours après minuit depuis le Toolserver :
+Ce script formate les pages du Wiktionnaire, tous les jours après minuit depuis le labs Wikimedia :
 1) Retire certains doublons de modèles et d'espaces.
 2) Ajoute les clés de tris, prononciations vides, et certains liens vers les conjugaisons.
 3) Met à jour les liens vers les traductions (modèles trad, trad+, trad-, trad-début et trad-fin), et les classe par ordre alphabétique.
@@ -162,7 +162,7 @@ Section[60] = u'pronom relatif'
 Modele[61] = u'-pronom-'
 Section[61] = u'pronom'
 Modele[62] = u'-quantif-'
-Section[62] = u'quantifieur'
+Section[62] = u'quantificateur'
 Modele[63] = u'-radical-'
 Section[63] = u'radical'
 Modele[64] = u'-rafsi-'
@@ -181,10 +181,10 @@ Modele[70] = u'-symbole-'
 Section[70] = u'symbole'
 Modele[71] = u'-var-typo-'
 Section[71] = u'variante typographique'
-Modele[72] = u'-verb-'
-Section[72] = u'verbe'
-Modele[73] = u'-verb-pr-'
-Section[73] = u'verbe pronominal'
+Modele[72] = u'-verb-pr-'
+Section[72] = u'verbe pronominal'
+Modele[73] = u'-verb-'
+Section[73] = u'verbe'
 Modele[74] = u'-verbe-'
 Section[74] = u'verbe'
 Modele[75] = u'-faux-prov-'
@@ -281,7 +281,7 @@ Section[117] = u'translittérations'
 Modele[118] = u'-tropo-'
 Section[118] = u'troponymes'
 Modele[119] = u'-var-ortho-'
-Section[119] = u'variantes ortho'
+Section[119] = u'variantes orthographiques'
 Modele[120] = u'-var-'
 Section[120] = u'variantes'
 Modele[121] = u'-vidéo-'
@@ -295,7 +295,7 @@ limit15 = 124
 Modele[124] = u'-notes-'
 Section[124] = u'notes'
 Modele[125] = u'trad-trier'
-Section[125] = u'trad-trier'
+Section[125] = u'traductions à trier'
 Modele[126] = u'-note-'
 Section[126] = u'note'
 
@@ -1203,7 +1203,7 @@ def modification(PageHS):
 	if page.namespace() == 0 or PageHS.find(u'Utilisateur:JackBot/') != -1:
 		while PageTemp.find(u'{{ ') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'{{ ')+2] + PageTemp[PageTemp.find(u'{{ ')+3:len(PageTemp)]
-		if PageTemp.find(u'{{formater') != -1 or PageTemp.find(u'{{SI') != -1 or PageTemp.find(u'{{supp|') != -1 or PageTemp.find(u'{{supp}}') != -1 or PageTemp.find(u'{{supprimer|') != -1 or PageTemp.find(u'{{supprimer') != -1 or PageTemp.find(u'{{PàS') != -1 or PageTemp.find(u'{{S|faute') != -1:
+		if PageTemp.find(u'{{formater') != -1 or PageTemp.find(u'{{SI|') != -1 or PageTemp.find(u'{{SI}}') != -1 or PageTemp.find(u'{{supp|') != -1 or PageTemp.find(u'{{supp}}') != -1 or PageTemp.find(u'{{supprimer|') != -1 or PageTemp.find(u'{{supprimer') != -1 or PageTemp.find(u'{{PàS') != -1 or PageTemp.find(u'{{S|faute') != -1:
 			print "Page en travaux : non traitée"
 			return
 		
@@ -1211,6 +1211,9 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{-car-}}', u'{{caractère}}')
 		PageTemp = PageTemp.replace(u'{{-note-|s=s}}', u'{{-notes-}}')
 		PageTemp = PageTemp.replace(u'{{-etym-}}', u'{{-étym-}}')
+		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier}}}}', u'{{trad-trier}}\n{{trad-début}}')
+		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier|fr}}}}', u'{{trad-trier}}\n{{trad-début}}')
+		
 		if debogage == True: print u'Conversion vers {{S}}'
 		EgalSection = u'==='
 		for p in range(1,limit2):
@@ -1225,10 +1228,23 @@ def modification(PageHS):
 				PageTemp = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'|\2|flexion}} ' + EgalSection, PageTemp)
 				if summary.find(u'{{S}}') == -1: summary = summary + u', [[WT:Prise de décision/Rendre toutes les sections modifiables|déploiement de {{S}}]]'
 		if debogageLent == True: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
-		if PageTemp.find(u'|===') != -1 or PageTemp.find(u'{===') != -1: return
+		if PageTemp.find(u'|===') != -1 or PageTemp.find(u'{===') != -1:
+			print u' *==='
+			return
+		
+		PageTemp = PageTemp.replace(u'{{S|adj|', u'{{S|adjectif|')
+		PageTemp = PageTemp.replace(u'{{S|adjectifs|', u'{{S|adjectif|')
+		PageTemp = PageTemp.replace(u'{{S|locution-phrase|', u'{{S|locution phrase|')
+		PageTemp = PageTemp.replace(u'{{S|nom-fam|', u'{{S|nom de famille|')
+		PageTemp = PageTemp.replace(u'{{S|nom-pr|', u'{{S|nom propre|')
+		PageTemp = PageTemp.replace(u'{{S|verb|', u'{{S|verbe|')
+		
 		PageTemp = PageTemp.replace(u'{{S|anagramme}}', u'{{S|anagrammes}}')
-		PageTemp = PageTemp.replace(u'{{S|adj}}', u'{{S|adjectifs}}')
-		PageTemp = PageTemp.replace(u'{{S|nom-fam}}', u'{{S|nom de famille}}')
+		PageTemp = PageTemp.replace(u'{{S|Apparentés}}', u'{{S|apparentés}}')
+		PageTemp = PageTemp.replace(u'{{S|Étymologie}}', u'{{S|étymologie}}')
+		PageTemp = PageTemp.replace(u'{{S|trad-trier}}', u'{{S|traductions à trier}}')
+		PageTemp = PageTemp.replace(u'{{S|voir}}', u'{{S|voir aussi}}')
+		PageTemp = PageTemp.replace(u'{{S|variantes ortho}}', u'{{S|variantes orthographiques}}')
 		
 		if page.namespace() != 12:
 			if debogage == True: print u'Ajout des {{voir}}'
@@ -1880,7 +1896,7 @@ def modification(PageHS):
 		PageEnd = u''
 		
 		# Classement des traductions (et ajout des modèles T après le premier de la liste)
-		'''if debogage == True: print u'Classement des traductions'
+		if debogage == True: print u'Classement des traductions'
 		while PageTemp.find(u'{{T|') != -1:
 			PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'{{T|')]
 			PageTemp = PageTemp[PageTemp.find(u'{{T|'):len(PageTemp)]
@@ -1920,7 +1936,7 @@ def modification(PageHS):
 					TradSuivantes = u''
 					PageEnd = PageEnd[0:PageEnd.rfind(u'\n')]
 					PageTemp = PageTemp[PageTemp.find(u'\n'):len(PageTemp)]
-					while PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{-trad-') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{trad-début') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{trad-fin') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{trad-trier') and langue2 > langue and PageEnd.rfind(u'{{T') != PageEnd.rfind(u'{{T|conv') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{(') and (PageEnd.rfind(u'{{') > PageEnd.rfind(u'|nocat') or PageEnd.rfind(u'|nocat') == -1):
+					while PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{-trad-') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{trad-début') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{trad-fin') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{S|traductions à trier') and langue2 > langue and PageEnd.rfind(u'{{T') != PageEnd.rfind(u'{{T|conv') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{(') and (PageEnd.rfind(u'{{') > PageEnd.rfind(u'|nocat') or PageEnd.rfind(u'|nocat') == -1):
 						langue2 = PageEnd[PageEnd.rfind(u'{{T|')+len(u'{{T|'):len(PageEnd)]
 						langue2 = langue2[0:langue2.find(u'}}')]
 						if langue2.find(u'|') != -1: langue2 = langue2[0:langue2.find(u'|')]
@@ -1979,7 +1995,6 @@ def modification(PageHS):
 			#print(PageTemp.encode(config.console_encoding, 'replace'))
 		PageTemp = PageEnd + PageTemp
 		PageEnd = u''
-		'''	
 
 		# Classement des sections modifiables
 		"""PageEnd = u''
@@ -4128,11 +4143,11 @@ def modification(PageHS):
 						else:
 							# Paragraphe sans code langue
 							EstCodeLangue = "false"
-							if TitreSection == 'traductions' or TitreSection == 'trad-trier':
+							if TitreSection == 'traductions':
 								trad = u'true'
 								# Ajout de {{trad-début}} si {{T| en français
 								if PageTemp.find(u'{{') == PageTemp.find(u'{{T|') and codelangue == 'fr':
-									PageTemp = u'\n{{trad-début}}' + PageTemp
+									PageTemp = PageTemp[:PageTemp.find(u'\n')] + u'\n{{trad-début}}' + PageTemp[PageTemp.find(u'\n'):]
 									PageTemp2 = PageTemp[PageTemp.find(u'{{trad-début}}\n')+len(u'{{trad-début}}\n'):]
 									if PageTemp2.find(u'\n') == -1:
 										PageTemp = PageTemp + u'\n'
@@ -4140,28 +4155,13 @@ def modification(PageHS):
 									while PageTemp2.find(u'{{T|') < PageTemp2.find(u'\n') and PageTemp2.find(u'{{T|') != -1:
 										PageTemp2 = PageTemp2[PageTemp2.find(u'\n')+1:]
 									PageTemp = PageTemp[:len(PageTemp)-len(PageTemp2)] + u'{{trad-fin}}\n' + PageTemp[len(PageTemp)-len(PageTemp2):]
+							elif TitreSection == u'traductions à trier':
+								trad = u'true'
 							else:
 								trad = u'false'
 						
 						if debogage == True: print " EstCodeLangue = " + EstCodeLangue
-						'''# Tous ces modèles peuvent facultativement contenir |clé= et |num=, les prénoms et -flex-prénom- |genre=
-						if position == PageTemp.find(u'}'): PageTemp = PageTemp[0:position] + u'|' + codelangue + PageTemp[position:len(PageTemp)]
-						PageTemp2 = PageTemp[position+1:len(PageTemp)]
-						position2 = 0
-						#raw_input(PageTemp2.encode(config.console_encoding, 'replace'))
-						while PageTemp2.find(u'|') != -1 and PageTemp2.find(u'|') < PageTemp2.find(u'}}'):
-							if (PageTemp2.find(u'=') == -1 or PageTemp2.find(u'=') > PageTemp2.find(u'|')) and PageTemp2[0:PageTemp2.find(u'|')] != codelangue:
-								# Correction du code langue erroné
-								summary = summary + u', ' + Modele[p] + u'|' + PageTemp2[0:PageTemp2.find(u'|')] + u' -> ' + Modele[p] + u'|' + codelangue
-								PageTemp = PageTemp[0:position+1+position2] + codelangue + PageTemp[position+1+position2+len(PageTemp2[0:PageTemp2.find(u'|')]):]
-								PageTemp2 = PageTemp[position+1:len(PageTemp)]
-							position2 = position2 + PageTemp2.find(u'|')+1
-							PageTemp2 = PageTemp2[PageTemp2.find(u'|')+1:len(PageTemp2)]
-						if (PageTemp2.find(u'=') == -1 or PageTemp2.find(u'=') > PageTemp2.find(u'}}')) and PageTemp2[0:PageTemp2.find(u'}}')] != codelangue:
-							summary = summary + u', ' + Modele[p] + u'|' + PageTemp2[0:PageTemp2.find(u'}}')] + u' -> ' + Modele[p] + u'|' + codelangue
-							PageTemp = PageTemp[0:position+1+position2] + codelangue + PageTemp[position+1+position2+len(PageTemp2[0:PageTemp2.find(u'}}')]):]
-						'''		
-						# Clé de tri propre à une langue
+						# Tous ces modèles peuvent facultativement contenir |clé= et |num=, et |genre= pour les prénoms
 						if PageTemp.find(u'|clé=') == -1 or PageTemp.find(u'|clé=') > PageTemp.find(u'}}'):
 							TitreTemp = PageHS
 							if codelangue == u'es':
@@ -4208,8 +4208,8 @@ def modification(PageHS):
 							while PageTemp.find(u'е€') < PageTemp.find(u'}}') and PageTemp.find(u'е€') != -1:
 								PageTemp = PageTemp[:PageTemp.find(u'е€')+1] + PageTemp[PageTemp.find(u'е€')+2:]
 						break
-						PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
-						PageTemp = PageTemp[PageTemp.find(u'}}')+2:]
+						#PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
+						#PageTemp = PageTemp[PageTemp.find(u'}}')+2:]
 						#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 					
 					elif p < limit25:	# Paragraphe sans code langue contenant un texte
@@ -4230,13 +4230,17 @@ def modification(PageHS):
 						PageEnd = PageEnd + PageTemp[0:position] + "}}"
 					elif p < limit4:
 						if debogage == True: print "limit4"
-						if debogage == True: print u'Paragraphe potentiellement avec code langue'
-						if EstCodeLangue == "true":
-							if debogage == True: print u'avec'
-							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+						if debogage == True: print u'Paragraphe potentiellement avec code langue, voire |spéc='
+						if PageTemp[:PageTemp.find(u'}}')].find(u'spéc') == -1:
+							if EstCodeLangue == "true":
+								if debogage == True: print u'avec'
+								PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
+							else:
+								if debogage == True: print u'sans'
+								PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
 						else:
-							if debogage == True: print u'sans'
-							PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"		
+							PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
+							
 					elif p < limit5:
 						if debogage == True: print "limit5"
 						if debogage == True: print u'Catégorisée quel que soit EstCodeLangue (ex : ébauches)'
@@ -4519,9 +4523,11 @@ def sauvegarde(PageCourante, Contenu, summary):
 			return
 			
 # Lancement
-#TraitementCategorie = crawlerCat(u'Catégorie:russe',False,u'Агранёнка')
-#TraitementCategorie = crawlerCat(u'Catégorie:chinois',False,u'惵')
-#TraitementCategorie = crawlerCat(u'Catégorie:japonais',False,u'下駄')
+#TraitementCategorie = crawlerCat(u'Catégorie:russe',False,u'Булавиных')
+#TraitementCategorie = crawlerCat(u'Catégorie:bulgare',False,u'Планимир')
+#TraitementCategorie = crawlerCat(u'Catégorie:grec',False,u'ψιλό')
+#TraitementCategorie = crawlerCat(u'Catégorie:grec ancien',False,u'περισπωμένως')
+#TraitementLiens = crawlerLink(u'Modèle:-réf-',u'')
 #TraitementLiens = crawlerLink(u'Modèle:-trad-',u'')
 
 # Quotidiennement :
