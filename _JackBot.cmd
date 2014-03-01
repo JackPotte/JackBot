@@ -36,7 +36,7 @@ python redirect.py broken -lang:fr -family:wikiversity -always
 python clean_sandbox.py -lang:fr -family:wikiversity
 python clean_sandbox.py -lang:fr -family:wikibooks
 python clean_sandbox.py -lang:fr -family:wiktionary
-python clean_sandbox.py -lang:fr -family:wikinews
+python fr.n.bas.py -lang:fr -family:wikinews
 
 python fr.w.archive.py
 python fr.wikt.archive.py

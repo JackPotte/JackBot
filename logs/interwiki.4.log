@@ -1,33 +1,458 @@
-2013-12-10 21:22:29       interwiki.py, 2313 in           oneQuery: INFO     NOTE: Nothing left to do
-2013-12-10 21:24:36       wikipedia.py, 5469 in             getall: INFO     Getting 1 page from wiktionary:fr...
-2013-12-10 21:24:37       wikipedia.py, 5227 in         headerDone: WARNING  Family file wiktionary contains version number 1.22wmf12, but it should be 1.23wmf6
-2013-12-10 21:24:40       interwiki.py, 2173 in               dump: INFO     Dump fr (wiktionary) appended.
-2013-12-10 21:26:05       wikipedia.py, 5469 in             getall: INFO     Getting 1 page from wiktionary:fr...
-2013-12-10 21:26:07       wikipedia.py, 5227 in         headerDone: WARNING  Family file wiktionary contains version number 1.22wmf12, but it should be 1.23wmf6
-2013-12-10 21:26:07       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-autonomouspython interwiki.py]] does not exist. Skipping.
-2013-12-10 21:26:07       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:-autonomouspython interwiki.py]]======
-2013-12-10 21:26:07       interwiki.py, 1843 in       replaceLinks: INFO     Not editing [[fr:-autonomouspython interwiki.py]]: page does not exist
-2013-12-10 21:26:07       interwiki.py, 2092 in    reportBacklinks: WARNING  Page [[fr:-autonomouspython interwiki.py]] does no longer exist?!
-2013-12-10 21:27:11       wikipedia.py, 5469 in             getall: INFO     Getting 1 page from wiktionary:fr...
-2013-12-10 21:27:13       wikipedia.py, 5227 in         headerDone: WARNING  Family file wiktionary contains version number 1.22wmf12, but it should be 1.23wmf6
-2013-12-10 21:27:13       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-autonomouspython interwiki.py]] does not exist. Skipping.
-2013-12-10 21:27:13       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:-autonomouspython interwiki.py]]======
-2013-12-10 21:27:13       interwiki.py, 1843 in       replaceLinks: INFO     Not editing [[fr:-autonomouspython interwiki.py]]: page does not exist
-2013-12-10 21:27:13       interwiki.py, 2092 in    reportBacklinks: WARNING  Page [[fr:-autonomouspython interwiki.py]] does no longer exist?!
-2013-12-10 21:31:59       interwiki.py, 2185 in       generateMore: INFO     NOTE: Number of pages queued is 0, trying to add 60 more.
-2013-12-10 21:32:06       wikipedia.py, 5469 in             getall: INFO     Getting 60 pages from wiktionary:fr...
-2013-12-10 21:32:07       wikipedia.py, 5227 in         headerDone: WARNING  Family file wiktionary contains version number 1.22wmf12, but it should be 1.23wmf6
-2013-12-10 21:32:08        throttle.py,  252 in           __call__: INFO     Sleeping for 16.0 seconds, 2013-12-10 21:32:08
-2013-12-10 21:32:25       interwiki.py, 2173 in               dump: INFO     Dump fr (wiktionary) appended.
-2013-12-10 23:09:40       wikipedia.py, 5469 in             getall: INFO     Getting 1 page from wiktionary:fr...
-2013-12-10 23:09:42       wikipedia.py, 5227 in         headerDone: WARNING  Family file wiktionary contains version number 1.22wmf12, but it should be 1.23wmf6
-2013-12-10 23:09:42       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:Panchen Lama]] does not exist. Skipping.
-2013-12-10 23:09:42       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:Panchen Lama]]======
-2013-12-10 23:09:42       interwiki.py, 1843 in       replaceLinks: INFO     Not editing [[fr:Panchen Lama]]: page does not exist
-2013-12-10 23:09:42       interwiki.py, 2092 in    reportBacklinks: WARNING  Page [[fr:Panchen Lama]] does no longer exist?!
-2013-12-10 23:09:50       wikipedia.py, 5469 in             getall: INFO     Getting 1 page from wiktionary:fr...
-2013-12-10 23:09:52       wikipedia.py, 5227 in         headerDone: WARNING  Family file wiktionary contains version number 1.22wmf12, but it should be 1.23wmf6
-2013-12-10 23:09:52       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:panchen Lama]] does not exist. Skipping.
-2013-12-10 23:09:52       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:panchen Lama]]======
-2013-12-10 23:09:52       interwiki.py, 1843 in       replaceLinks: INFO     Not editing [[fr:panchen Lama]]: page does not exist
-2013-12-10 23:09:52       interwiki.py, 2092 in    reportBacklinks: WARNING  Page [[fr:panchen Lama]] does no longer exist?!
+2014-02-24 23:13:53       interwiki.py, 2185 in       generateMore: INFO     NOTE: Number of pages queued is 0, trying to add 60 more.
+2014-02-24 23:14:09       wikipedia.py, 5469 in             getall: INFO     Getting 60 pages from wikipedia:fr...
+2014-02-24 23:14:10       wikipedia.py, 5227 in         headerDone: WARNING  Family file wikipedia contains version number 1.22wmf12, but it should be 1.23wmf14
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:﻿-ates]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-brough]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-caster]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-cester]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-chester]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-combe]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-cytes]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-edst]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-ergic]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-field]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-footed]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-grams]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-ham]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-ieth]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-isations]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-onymy]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-people]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-port]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:-quay]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1321 in        batchLoaded: INFO     NOTE: [[fr:&c]] is redirect to [[fr:Et cetera]]
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(11E)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(11Z)-eicosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(11Z)-icosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(13Z)-docosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(13Z)-eicosanoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(15Z)-tetracosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(4Z,7Z,10Z,13Z,16Z,19Z)-docosahexaenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(5Z,8Z,11Z)-eicosatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(5Z,8Z,11Z,14Z)-eicosatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(5Z,8Z,11Z,14Z)-icosatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(5Z,8Z,11Z,14Z,17Z)-icosapentaenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(5Z,9Z,12Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(6Z)-hexadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(6Z)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(6Z,9Z,12Z,15Z)-octadecatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(8E,10E,12E)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(8E,10E,12Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(8Z,10E,12Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(9E)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(9E,11E,13E)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(9E,12E)-octadecadienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(9Z)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(9Z)-tetradecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(9Z,11E)-octadecadienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(9Z,11E,13E)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(9Z,11E,13E,15Z)-octadecatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(9Z,12Z)-octadecadienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(9Z,12Z,15Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:(R)-amphetamine]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1321 in        batchLoaded: INFO     NOTE: [[fr:’Are’are]] is redirect to [[fr:'are'are]]
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:’fessed up]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:’fesses up]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:’fessing up]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:’puter]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:’roid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:1-docosanoic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:1-octanecarboxylic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:1-propanecarboxylic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:1-undecanecarboxylic acid]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:10,000 metres]] does not exist. Skipping.
+2014-02-24 23:14:10       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:10,000 metres]]======
+2014-02-24 23:14:11       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:1-undecanecarboxylic acid]]======
+2014-02-24 23:14:12       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:1-propanecarboxylic acid]]======
+2014-02-24 23:14:13       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:1-octanecarboxylic acid]]======
+2014-02-24 23:14:13       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:1-docosanoic acid]]======
+2014-02-24 23:14:14       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:’roid]]======
+2014-02-24 23:14:14       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:’puter]]======
+2014-02-24 23:14:15       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:’fessing up]]======
+2014-02-24 23:14:15       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:’fesses up]]======
+2014-02-24 23:14:16       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:’fessed up]]======
+2014-02-24 23:14:16       interwiki.py, 2173 in               dump: INFO     Dump fr (wikipedia) appended.
+2014-02-24 23:14:40       interwiki.py, 2185 in       generateMore: INFO     NOTE: Number of pages queued is 0, trying to add 60 more.
+2014-02-24 23:14:45       wikipedia.py, 5469 in             getall: INFO     Getting 60 pages from wiktionary:fr...
+2014-02-24 23:14:46       wikipedia.py, 5227 in         headerDone: WARNING  Family file wiktionary contains version number 1.22wmf12, but it should be 1.23wmf14
+2014-02-24 23:14:47       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:﻿-ates]] does not exist. Skipping.
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-brough]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-caster]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-cester]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-chester]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-combe]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-cytes]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-edst]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-ergic]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-field]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-footed]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-grams]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-ham]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-ieth]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-isations]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-onymy]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-people]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-port]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-quay]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:&c]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(11E)-octadecenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(11Z)-eicosenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(11Z)-icosenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(13Z)-docosenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(13Z)-eicosanoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(15Z)-tetracosenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(4Z,7Z,10Z,13Z,16Z,19Z)-docosahexaenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(5Z,8Z,11Z)-eicosatrienoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(5Z,8Z,11Z,14Z)-eicosatetraenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(5Z,8Z,11Z,14Z)-icosatetraenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(5Z,8Z,11Z,14Z,17Z)-icosapentaenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(5Z,9Z,12Z)-octadecatrienoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(6Z)-hexadecenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(6Z)-octadecenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(6Z,9Z,12Z,15Z)-octadecatetraenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(8E,10E,12E)-octadecatrienoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(8E,10E,12Z)-octadecatrienoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(8Z,10E,12Z)-octadecatrienoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9E)-octadecenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9E,11E,13E)-octadecatrienoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9E,12E)-octadecadienoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9Z)-octadecenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9Z)-tetradecenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9Z,11E)-octadecadienoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9Z,11E,13E)-octadecatrienoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9Z,11E,13E,15Z)-octadecatetraenoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9Z,12Z)-octadecadienoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9Z,12Z,15Z)-octadecatrienoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(R)-amphetamine]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:’Are’are]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:’fessed up]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:’fesses up]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:’fessing up]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:’puter]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:1-docosanoic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:1-octanecarboxylic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:1-propanecarboxylic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:1-undecanecarboxylic acid]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:10,000 metres]] does not have any interwiki links
+2014-02-24 23:14:47       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:﻿-ates]]======
+2014-02-24 23:14:47       interwiki.py, 1843 in       replaceLinks: INFO     Not editing [[fr:﻿-ates]]: page does not exist
+2014-02-24 23:14:47       interwiki.py, 2092 in    reportBacklinks: WARNING  Page [[fr:﻿-ates]] does no longer exist?!
+2014-02-24 23:14:47       interwiki.py, 2183 in       generateMore: INFO     NOTE: The first unfinished subject is [[fr:-brough]]
+2014-02-24 23:14:47       interwiki.py, 2185 in       generateMore: INFO     NOTE: Number of pages queued is 59, trying to add 60 more.
+2014-02-24 23:14:52       wikipedia.py, 5469 in             getall: INFO     Getting 60 pages from wiktionary:fr...
+2014-02-24 23:14:53       wikipedia.py, 5227 in         headerDone: WARNING  Family file wiktionary contains version number 1.22wmf12, but it should be 1.23wmf14
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:100 metre hurdles]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:11-eicosenoic acid]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:110 metre hurdles]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:2-hydroxypropanoic acid]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:21st]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:2Lt]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:4-aminobutanoic acid]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:5-hydroperoxyeicosatetraenoic acid]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:5p minus syndrome]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:60 metre hurdles]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:7-(2-octyl-1-cyclopropenyl)heptanoic acid]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:7,8-didehydro-4,5-α-epoxy-3-ethoxy-17-methylmorphinan-6-α-ol]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:800 lb gorilla]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:800 lb gorillas]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:a good bargain is a pick-purse]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:a handful]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:a major]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:a perfect end to a perfect day]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:A2C]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:AA]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:Abaknon]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abase oneself]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abasheth]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abatest]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:Abberline]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abbreviatest]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abbreviateth]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abdicatest]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abdicateth]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:Aberline]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:aberratest]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:aberrateth]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abjurest]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abjureth]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:ableth]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abnegatest]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abnegateth]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abolishest]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abolisheth]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abradest]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abradeth]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abridgest]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abridgeth]] does not have any interwiki links
+2014-02-24 23:14:53       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:abrogatest]] does not have any interwiki links
+2014-02-24 23:14:53       wikipedia.py, 5469 in             getall: INFO     Getting 60 pages from wiktionary:ar...
+2014-02-24 23:14:54       wikipedia.py, 5227 in         headerDone: WARNING  Family file wiktionary contains version number 1.22wmf12, but it should be 1.23wmf14
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-brough]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-caster]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-cester]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-chester]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-combe]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-cytes]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-edst]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-ergic]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-field]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-footed]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-grams]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-ham]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-ieth]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-isations]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-onymy]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-people]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-port]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:-quay]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:&c]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(11E)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(11Z)-eicosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(11Z)-icosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(13Z)-docosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(13Z)-eicosanoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(15Z)-tetracosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(4Z,7Z,10Z,13Z,16Z,19Z)-docosahexaenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(5Z,8Z,11Z)-eicosatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(5Z,8Z,11Z,14Z)-eicosatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(5Z,8Z,11Z,14Z)-icosatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(5Z,8Z,11Z,14Z,17Z)-icosapentaenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(5Z,9Z,12Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(6Z)-hexadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(6Z)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(6Z,9Z,12Z,15Z)-octadecatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(8E,10E,12E)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(8E,10E,12Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(8Z,10E,12Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(9E)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(9E,11E,13E)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(9E,12E)-octadecadienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(9Z)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(9Z)-tetradecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(9Z,11E)-octadecadienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(9Z,11E,13E)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(9Z,11E,13E,15Z)-octadecatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(9Z,12Z)-octadecadienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(9Z,12Z,15Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:(R)-amphetamine]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:’Are’are]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:’fessed up]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:’fesses up]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:’fessing up]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:’puter]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:’roid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:1-docosanoic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:1-octanecarboxylic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:1-propanecarboxylic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:1-undecanecarboxylic acid]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:10,000 metres]] does not exist. Skipping.
+2014-02-24 23:14:54       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:100 metre hurdles]] does not exist. Skipping.
+2014-02-24 23:14:54       wikipedia.py, 5469 in             getall: INFO     Getting 60 pages from wiktionary:io...
+2014-02-24 23:14:55       wikipedia.py, 5227 in         headerDone: WARNING  Family file wiktionary contains version number 1.22wmf12, but it should be 1.23wmf14
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-brough]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-caster]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-cester]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-chester]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-combe]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-cytes]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-edst]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-ergic]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-field]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-footed]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-grams]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-ham]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-ieth]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-isations]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-onymy]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-people]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-port]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:-quay]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:&c]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(11E)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(11Z)-eicosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(11Z)-icosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(13Z)-docosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(13Z)-eicosanoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(15Z)-tetracosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(4Z,7Z,10Z,13Z,16Z,19Z)-docosahexaenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(5Z,8Z,11Z)-eicosatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(5Z,8Z,11Z,14Z)-eicosatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(5Z,8Z,11Z,14Z)-icosatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(5Z,8Z,11Z,14Z,17Z)-icosapentaenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(5Z,9Z,12Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(6Z)-hexadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(6Z)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(6Z,9Z,12Z,15Z)-octadecatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(8E,10E,12E)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(8E,10E,12Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(8Z,10E,12Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(9E)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(9E,11E,13E)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(9E,12E)-octadecadienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(9Z)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(9Z)-tetradecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(9Z,11E)-octadecadienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(9Z,11E,13E)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(9Z,11E,13E,15Z)-octadecatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(9Z,12Z)-octadecadienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(9Z,12Z,15Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:(R)-amphetamine]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:’Are’are]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:’fessed up]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:’fesses up]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:’fessing up]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:’puter]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:’roid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:1-docosanoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:1-octanecarboxylic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:1-propanecarboxylic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:1-undecanecarboxylic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:10,000 metres]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[io:100 metre hurdles]] does not exist. Skipping.
+2014-02-24 23:14:55       wikipedia.py, 5469 in             getall: INFO     Getting 60 pages from wiktionary:ro...
+2014-02-24 23:14:55       wikipedia.py, 5227 in         headerDone: WARNING  Family file wiktionary contains version number 1.22wmf12, but it should be 1.23wmf14
+2014-02-24 23:14:55       wikipedia.py, 5258 in         headerDone: WARNING  Outdated family file wiktionary: namespace['ro'][828] is set to default ('Module'), but should be 'Modul'
+2014-02-24 23:14:55       wikipedia.py, 5258 in         headerDone: WARNING  Outdated family file wiktionary: namespace['ro'][829] is set to default ('Module talk'), but should be 'Discuție Modul'
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-brough]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-caster]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-cester]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-chester]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-combe]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-cytes]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-edst]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-ergic]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-field]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-footed]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-grams]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-ham]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-ieth]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-isations]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-onymy]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-people]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-port]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:-quay]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:&c]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(11E)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(11Z)-eicosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(11Z)-icosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(13Z)-docosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(13Z)-eicosanoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(15Z)-tetracosenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(4Z,7Z,10Z,13Z,16Z,19Z)-docosahexaenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(5Z,8Z,11Z)-eicosatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(5Z,8Z,11Z,14Z)-eicosatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(5Z,8Z,11Z,14Z)-icosatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(5Z,8Z,11Z,14Z,17Z)-icosapentaenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(5Z,9Z,12Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(6Z)-hexadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(6Z)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(6Z,9Z,12Z,15Z)-octadecatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(8E,10E,12E)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(8E,10E,12Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(8Z,10E,12Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(9E)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(9E,11E,13E)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(9E,12E)-octadecadienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(9Z)-octadecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(9Z)-tetradecenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(9Z,11E)-octadecadienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(9Z,11E,13E)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(9Z,11E,13E,15Z)-octadecatetraenoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(9Z,12Z)-octadecadienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(9Z,12Z,15Z)-octadecatrienoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:(R)-amphetamine]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:’Are’are]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:’fessed up]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:’fesses up]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:’fessing up]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:’puter]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:’roid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:1-docosanoic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:1-octanecarboxylic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:1-propanecarboxylic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:1-undecanecarboxylic acid]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:10,000 metres]] does not exist. Skipping.
+2014-02-24 23:14:55       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ro:100 metre hurdles]] does not exist. Skipping.
+2014-02-24 23:14:55       wikipedia.py, 5469 in             getall: INFO     Getting 60 pages from wiktionary:az...
+2014-02-24 23:14:56       wikipedia.py, 5227 in         headerDone: WARNING  Family file wiktionary contains version number 1.22wmf12, but it should be 1.23wmf14
+2014-02-24 23:14:56       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[az:-brough]] does not exist. Skipping.
+2014-02-24 23:14:56       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[az:-caster]] does not exist. Skipping.
+2014-02-24 23:14:56       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[az:-cester]] does not exist. Skipping.
+2014-02-24 23:14:56       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[az:-chester]] does not exist. Skipping.
+2014-02-24 23:14:56       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[az:-combe]] does not exist. Skipping.
+2014-02-24 23:14:56       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[az:-cytes]] does not exist. Skipping.
+2014-02-24 23:14:56       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[az:-edst]] does not exist. Skipping.
+2014-02-24 23:14:56       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[az:-ergic]] does not exist. Skipping.
+2014-02-24 23:14:56       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[az:-field]] does not exist. Skipping.
+2014-02-24 23:14:56       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[az:-footed]] does not exist. Skipping.
+2014-02-24 23:14:56       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[az:-grams]] does not exist. Skipping.
+2014-02-24 23:14:56       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[az:-ham]] does not exist. Skipping.
+2014-02-24 23:14:56       interwiki.py, 2173 in               dump: INFO     Dump fr (wiktionary) appended.
+2014-02-24 23:16:27       interwiki.py, 2185 in       generateMore: INFO     NOTE: Number of pages queued is 0, trying to add 60 more.
+2014-02-24 23:16:31       wikipedia.py, 5469 in             getall: INFO     Getting 60 pages from wiktionary:fr...
+2014-02-24 23:16:33       wikipedia.py, 5227 in         headerDone: WARNING  Family file wiktionary contains version number 1.22wmf12, but it should be 1.23wmf14
+2014-02-24 23:16:33       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[fr:﻿-ates]] does not exist. Skipping.
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-brough]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-caster]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-cester]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-chester]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-combe]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-cytes]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-edst]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-ergic]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-field]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-footed]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-grams]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-ham]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-ieth]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-isations]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-onymy]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-people]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-port]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:-quay]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:&c]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(11E)-octadecenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(11Z)-eicosenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(11Z)-icosenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(13Z)-docosenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(13Z)-eicosanoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(15Z)-tetracosenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(4Z,7Z,10Z,13Z,16Z,19Z)-docosahexaenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(5Z,8Z,11Z)-eicosatrienoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(5Z,8Z,11Z,14Z)-eicosatetraenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(5Z,8Z,11Z,14Z)-icosatetraenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(5Z,8Z,11Z,14Z,17Z)-icosapentaenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(5Z,9Z,12Z)-octadecatrienoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(6Z)-hexadecenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(6Z)-octadecenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(6Z,9Z,12Z,15Z)-octadecatetraenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(8E,10E,12E)-octadecatrienoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(8E,10E,12Z)-octadecatrienoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(8Z,10E,12Z)-octadecatrienoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9E)-octadecenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9E,11E,13E)-octadecatrienoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9E,12E)-octadecadienoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9Z)-octadecenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9Z)-tetradecenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9Z,11E)-octadecadienoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9Z,11E,13E)-octadecatrienoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9Z,11E,13E,15Z)-octadecatetraenoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9Z,12Z)-octadecadienoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(9Z,12Z,15Z)-octadecatrienoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:(R)-amphetamine]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:’Are’are]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:’fessed up]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:’fesses up]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:’fessing up]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:’puter]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:1-docosanoic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:1-octanecarboxylic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:1-propanecarboxylic acid]] does not have any interwiki links
+2014-02-24 23:16:33       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:1-undecanecarboxylic acid]] does not have any interwiki links
+2014-02-24 23:16:34       interwiki.py, 1199 in reportInterwikilessPage: INFO     NOTE: [[fr:10,000 metres]] does not have any interwiki links
+2014-02-24 23:16:34       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[fr:﻿-ates]]======
+2014-02-24 23:16:34       interwiki.py, 1843 in       replaceLinks: INFO     Not editing [[fr:﻿-ates]]: page does not exist
+2014-02-24 23:16:34       interwiki.py, 2092 in    reportBacklinks: WARNING  Page [[fr:﻿-ates]] does no longer exist?!
+2014-02-24 23:16:34       interwiki.py, 2183 in       generateMore: INFO     NOTE: The first unfinished subject is [[fr:-brough]]
+2014-02-24 23:16:34       interwiki.py, 2185 in       generateMore: INFO     NOTE: Number of pages queued is 59, trying to add 60 more.
+2014-02-24 23:16:36       interwiki.py, 2173 in               dump: INFO     Dump fr (wiktionary) appended.

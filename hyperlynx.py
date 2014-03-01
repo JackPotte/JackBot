@@ -80,6 +80,10 @@ ModeleEN[16] = u'lire en ligne'
 ModeleFR[16] = u'lire en ligne'
 ModeleEN[17] = u'dts'
 ModeleFR[17] = u'dts'
+# Désactivé à la demande d'un contributeur sur WP
+#ModeleEN[18] = u'cite book'
+#ModeleFR[18] = u'ouvrage'
+
 # Demande de [[Discussion modèle:ouvrage]]
 #ModeleEN[] = u'cite book'
 #ModeleFR[] = u'ouvrage'
