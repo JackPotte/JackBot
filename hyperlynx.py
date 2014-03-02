@@ -989,7 +989,11 @@ def hyperlynx(PageTemp):
 			while PageTemp.find(u'{{' + TabModeles[m][1] + u'|') != -1:
 				PageEnd =  PageEnd + PageTemp[0:PageTemp.find(u'{{' + TabModeles[m][1] + u'|')+len(u'{{' + TabModeles[m][1] + u'|')]
 				PageTemp =  PageTemp[PageTemp.find(u'{{' + TabModeles[m][1] + u'|')+len(u'{{' + TabModeles[m][1] + u'|'):len(PageTemp)]
-				htmlSource = TestURL(TabModeles[m][2] + PageTemp[0:PageTemp.find(u'}}')].replace(u' ',u'_'))
+				if PageTemp[0:PageTemp.find(u'}}')].find(u'|') != -1:
+					Param1Encode = PageTemp[0:PageTemp.find(u'|')].replace(u' ',u'_')
+				else:
+					Param1Encode = PageTemp[0:PageTemp.find(u'}}')].replace(u' ',u'_')
+				htmlSource = TestURL(TabModeles[m][2] + Param1Encode)
 				LienBrise = TestPage(htmlSource,url)
 				if LienBrise == True: PageEnd = PageEnd[0:PageEnd.rfind(u'{{' + TabModeles[m][1] + u'|')] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + TabModeles[m][2]
 			PageTemp = PageEnd + PageTemp
