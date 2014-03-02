@@ -33,8 +33,8 @@ debogageLent = False
 TailleAnagramme = 5 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
 # Modèles du site à traiter
-limit2 = 128 # Paragraphes sans modèle catégorisant, {{voir| et {{voir/ sont gérés individuellement
-limit6 = 960 # Somme des modèles traités
+limit2 = 129 # Paragraphes sans modèle catégorisant, {{voir| et {{voir/ sont gérés individuellement
+limit6 = 965 # Somme des modèles traités
 Modele = range(1, limit6+1)
 Section = range(1, limit2+1)
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
@@ -124,8 +124,8 @@ Modele[41] = u'-num-'
 Section[41] = u'numéral'
 Modele[42] = u'-numér-'
 Section[42] = u'numéral'
-Modele[43] = u'-onoma-'
-Section[43] = u'onomatopée'
+Modele[43] = u'-numéral-'
+Section[43] = u'numéral'
 Modele[44] = u'-part-num-'
 Section[44] = u'particule numérale'
 Modele[45] = u'-part-'
@@ -200,11 +200,11 @@ Modele[79] = u'-locution-'
 Section[79] = u'locution'
 Modele[80] = u'-var-typo-'
 Section[80] = u'variante typographique'
+Modele[81] = u'-onoma-'
+Section[81] = u'onomatopée'
 
-limit1 = 81 # Paragraphes avec modèle catégorisant
+limit1 = 82 # Paragraphes avec modèle catégorisant
 # http://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Mod%C3%A8les_de_contexte
-Modele[81] = u'-anagr-'
-Section[81] = u'anagrammes'
 Modele[82] = u'-étym-'
 Section[82] = u'étymologie'
 Modele[83] = u'-pron-'
@@ -219,10 +219,10 @@ Modele[87] = u'-voir-'
 Section[87] = u'voir aussi'
 Modele[88] = u'-anagrammes-'
 Section[88] = u'anagrammes'
+Modele[89] = u'-anagr-'
+Section[89] = u'anagrammes'
 
-limit14 =89
-Modele[89] = u'-ant-'
-Section[89] = u'antonymes'
+limit14 =90
 Modele[90] = u'-apr-'
 Section[90] = u'apparentés'
 Modele[91] = u'-conjug-'
@@ -293,17 +293,18 @@ Modele[123] = u'-abrév-'
 Section[123] = u'abréviations'
 Modele[124] = u'-abréviation-'
 Section[124] = u'abréviations'
+Modele[125] = u'-ant-'
+Section[125] = u'antonymes'
 
-limit15 = 125
-Modele[125] = u'trad-trier'
-Section[125] = u'traductions à trier'
+limit15 = 126
 Modele[126] = u'-note-'
 Section[126] = u'note'
 Modele[127] = u'-notes-'
 Section[127] = u'notes'
+Modele[128] = u'trad-trier'
+Section[128] = u'traductions à trier'
 
 limit2 = limit2  # Déclarée plus haut
-Modele[128] = u'titre alt'
 Modele[129] = u'titre mis en forme'
 Modele[130] = u'trad'
 Modele[131] = u'trad+'
@@ -346,10 +347,10 @@ Modele[164] = u'beaucoup plus courant'
 Modele[165] = u'beaucoup moins courant'
 Modele[166] = u'pl-cour'
 Modele[167] = u'm-cour'
+Modele[168] = u'titre alt'
 
-limit3 = 168 # Paragraphes sans modèle catégorisant pouvant contenir des modèles
+limit3 = 169 # Paragraphes sans modèle catégorisant pouvant contenir des modèles
 # http://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Mod%C3%A8les_de_domaine_d%E2%80%99utilisation
-Modele[169] = u'hindouisme'
 Modele[170] = u'marbrerie'
 Modele[171] = u'miroiterie'
 Modele[172] = u'fontainerie'
@@ -996,17 +997,22 @@ Modele[811] = u'couche session'
 Modele[812] = u'couche présentation'
 Modele[813] = u'couche application'
 Modele[814] = u'bouddhisme'
+Modele[815] = u'hindouisme'
+Modele[816] = u'pathologie'
+Modele[817] = u'boissons'
+Modele[818] = u'confiseries'
+Modele[819] = u'stéréotomie'
 
-limit4 = 815	# code langue quoi qu'il arrive
-Modele[815] = u'ébauche-déf'
-Modele[816] = u'ébauche-exe'
-Modele[817] = u'ébauche-pron'
-Modele[818] = u'ébauche-syn'
-Modele[819] = u'note-gentilé'
+limit4 = 820	# code langue quoi qu'il arrive
 Modele[820] = u'ébauche-étym-nom-scientifique'
 Modele[821] = u'ébauche-étym'
 Modele[822] = u'ébauche-trans'
-Modele[823] = u'ébauche'
+Modele[823] = u'ébauche-déf'
+Modele[824] = u'ébauche-exe'
+Modele[825] = u'ébauche-pron'
+Modele[826] = u'ébauche-syn'
+Modele[827] = u'note-gentilé'
+Modele[828] = u'ébauche'
 '''
 # non traités
 Modele[] = u'spécialement' 
@@ -1024,12 +1030,7 @@ Modele[] = u'perf'
 Modele[] = u'imperf'
 '''
 # Modèles régionaux, pb du nocat pour les prononciations
-limit5 = 824
-Modele[824] = u'Aquitaine'
-Modele[825] = u'Japon'
-Modele[826] = u'Argentine'
-Modele[827] = u'Australie'
-Modele[828] = u'Autriche'
+limit5 = 829
 Modele[829] = u'Auvergne'
 Modele[830] = u'Baléares'
 Modele[831] = u'Belgique'
@@ -1161,9 +1162,14 @@ Modele[953] = u'Amérique du Sud'
 Modele[954] = u'Amérique latine'
 Modele[955] = u'Anjou'
 Modele[956] = u'Antilles'
+Modele[957] = u'Aquitaine'
+Modele[958] = u'Japon'
+Modele[959] = u'Argentine'
+Modele[960] = u'Australie'
+Modele[961] = u'Autriche'
 # Modèles de pronociation à synchroniser
-Modele[957] = u'en-conj-rég'
-Modele[958] = u'fr-verbe-flexion'
+Modele[962] = u'en-conj-rég'
+Modele[963] = u'fr-verbe-flexion'
 #Modele[] = u'fr-rég'
 #Modele[] = u'fr-inv'
 
@@ -1178,7 +1184,7 @@ def modification(PageHS):
 		if not page.exists():
 			if debogage == True: print u'Création d\'une redirection apostrophe'
 			sauvegarde(page, u'#REDIRECT[[' + PageHS + ']]', u'Redirection pour apostrophe')
-	# à faire : le temps du déploiement de {{S
+	# à faire : locutions à trier le temps du déploiement de {{S
 	if PageHS.find(u'’') != -1 or PageHS.find(u'-') != -1:
 		return
 
@@ -1286,6 +1292,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|trad-trier}}', u'{{S|traductions à trier}}')
 		PageTemp = PageTemp.replace(u'{{S|var}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|variantes ortho}}', u'{{S|variantes orthographiques}}')
+		PageTemp = PageTemp.replace(u'{{S|var-ortho}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|voc}}', u'{{S|vocabulaire}}')
 		PageTemp = PageTemp.replace(u'{{S|voir}}', u'{{S|voir aussi}}')
 		
@@ -4167,9 +4174,9 @@ def modification(PageHS):
 						TitreSection = PageTemp[position+1:]
 						#raw_input(TitreSection.encode(config.console_encoding, 'replace'))
 						if TitreSection.find(u'|') < TitreSection.find(u'}') and TitreSection.find(u'|') != -1:
-							TitreSection = TitreSection[:TitreSection.find(u'|')]
+							TitreSection = trim(TitreSection[:TitreSection.find(u'|')])
 						else:
-							TitreSection = TitreSection[:TitreSection.find(u'}')]
+							TitreSection = trim(TitreSection[:TitreSection.find(u'}')])
 
 						if debogage == True: print TitreSection.encode(config.console_encoding, 'replace')
 						if Section.index(TitreSection) < limit1:
@@ -4571,9 +4578,6 @@ def sauvegarde(PageCourante, Contenu, summary):
 			return
 			
 # Lancement
-#TraitementFichier = crawlerFile(u'articles_WTin.txt')
-#TraitementLiens = crawlerLink(u'Modèle:-nom-',u'')
-
 # Quotidiennement :
 TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Codes langue manquants',True,u'')
 TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Flexions à vérifier',True,u'')
@@ -4591,6 +4595,7 @@ TraitementLiens = crawlerLink(u'Modèle:sing',u'')
 TraitementLiens = crawlerLink(u'Modèle:plur',u'')
 TraitementLiens = crawlerLink(u'Modèle:pluri',u'')
 TraitementLiens = crawlerLink(u'Modèle:=langue=',u'')
+TraitementLiens = crawlerLink(u'Modèle:-déf-',u'')
 '''
 TraitementLiensCategorie = crawlerCatLink(u'Catégorie:Modèles désuets',u'')
 TraitementLiens = crawlerLink(u'Modèle:SAMPA',u'') : remplacer les tableaux de prononciations ?
