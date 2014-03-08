@@ -1,6 +1,7 @@
 cookieprefix=None
 frwiktionaryUserName=JackBot
-frwiktionaryforceHTTPS=true
-forceHTTPS=true
-frwiktionarySession=a7784a8716c525caa474c86c2522133b
+GeoIP=FR:Saint-denis:48.9333:2.3667:v4
 frwiktionaryUserID=12968
+frwiktionaryforceHTTPS=true
+frwiktionarySession=a7784a8716c525caa474c86c2522133b
+forceHTTPS=true
