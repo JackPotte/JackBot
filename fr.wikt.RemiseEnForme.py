@@ -18,7 +18,7 @@ Testé ici : http://fr.wiktionary.org/w/index.php?title=Utilisateur%3AJackBot%2F
 '''
 
 # Importation des modules
-import catlib, pagegenerators, os, codecs, urllib, re, collections, socket
+import catlib, pagegenerators, os, codecs, urllib, re, collections, socket, langues
 import hyperlynx, CleDeTri, HTMLUnicode		# Faits maison
 from wikipedia import *
 
@@ -1193,10 +1193,6 @@ def modification(PageHS):
 		if not page.exists():
 			if debogage == True: print u'Création d\'une redirection apostrophe'
 			sauvegarde(page, u'#REDIRECT[[' + PageHS + ']]', u'Redirection pour apostrophe')
-	# à faire : locutions à trier le temps du déploiement de {{S
-	if (PageHS.find(u'’') != -1 and PageHS.find(u'’') != 0 and PageHS.find(u'’') != len(PageHS)) or (PageHS.find(u'-') != -1 and PageHS.find(u'-') != 0 and PageHS.find(u'-') != len(PageHS)):
-		return
-
 	page = Page(site,PageHS)
 	if page.exists():
 		if page.namespace() !=0 and page.namespace() != 100 and page.namespace() != 12 and page.namespace() != 14 and PageHS.find(u'Utilisateur:JackBot/') == -1:
@@ -1266,14 +1262,17 @@ def modification(PageHS):
 		for p in range(1,limit2):
 			if p == limit14: EgalSection = u'===='
 			if p == limit15: EgalSection = u'====='
-			regex = ur'[= ]*{{[\-loc]*(' + Modele[p]+u'|S\|'+Section[p] + ur')([^}]*)}}[= ]*'
+			
+			regex = ur'[= ]*{{[\-loc]*(' + Modele[p] + u'|S\|'+ Section[p] + ur')([^}]*)}}[= ]*'
 			if re.search(regex, PageTemp):
 				PageTemp = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'\2}} ' + EgalSection, PageTemp)
 				if summary.find(u'{{S}}') == -1: summary = summary + u', [[WT:Prise de décision/Rendre toutes les sections modifiables|déploiement de {{S}}]]'
-			regex = ur'[= ]*{{\-flex[\-loc]*(' + Modele[p]+u'|S\|'+Section[p] + ur')\|([^}]*)}}[= ]*'
+			
+			regex = ur'[= ]*{{\-flex[\-loc]*(' + Modele[p] + u'|S\|' + Section[p] + ur')\|([^}]*)}}[= ]*'
 			if re.search(regex, PageTemp):
 				PageTemp = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'|\2|flexion}} ' + EgalSection, PageTemp)
 				if summary.find(u'{{S}}') == -1: summary = summary + u', [[WT:Prise de décision/Rendre toutes les sections modifiables|déploiement de {{S}}]]'
+		
 		if debogageLent == True: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 		if PageTemp.find(u'|===') != -1 or PageTemp.find(u'{===') != -1:
 			print u' *==='
@@ -1295,6 +1294,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|etym}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|Étymologie}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|exp}}', u'{{S|expressions}}')
+		PageTemp = PageTemp.replace(u'{{S|gent}}', u'{{S|gentilés}}')
 		PageTemp = PageTemp.replace(u'{{S|homo}}', u'{{S|homophones}}')
 		PageTemp = PageTemp.replace(u'{{S|homonymes}}', u'{{S|homophones}}')
 		PageTemp = PageTemp.replace(u'{{S|hyper}}', u'{{S|hyperonymes}}')
@@ -1304,6 +1304,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|syn}}', u'{{S|synonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|trad-trier}}', u'{{S|traductions à trier}}')
 		PageTemp = PageTemp.replace(u'{{S|trad}}', u'{{S|traductions}}')
+		PageTemp = PageTemp.replace(u'{{S|Traductions}}', u'{{S|traductions}}')
 		PageTemp = PageTemp.replace(u'{{S|var}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|variantes ortho}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|var-ortho}}', u'{{S|variantes orthographiques}}')
@@ -1793,36 +1794,6 @@ def modification(PageHS):
 			PageTemp = PageTemp[0:PageTemp.find(u'|pinv=. ')+len(u'|pinv=.')] + PageTemp[PageTemp.find(u'|pinv=. ')+len(u'|pinv=. '):len(PageTemp)]
 		#while PageTemp.find(u'|pinv=&nbsp;') != -1:
 		#	PageTemp = PageTemp[0:PageTemp.find(u'|pinv=&nbsp;')+len(u'|pinv=')] + PageTemp[PageTemp.find(u'|pinv=&nbsp;')+len(u'|pinv=&nbsp;'):len(PageTemp)]
-		
-		if PageTemp.find(u'{{#if:1|de l’|du}}') != -1:
-			PageEnd = PageTemp[0:PageTemp.find(u'{{#if:1|de l’|du}}')]
-			PageTemp = PageTemp[PageTemp.find(u'{{#if:1|de l’|du}}')+len(u'{{#if:1|de l’|du}}'):len(PageTemp)]
-			langue = u''
-			if PageTemp.find(u'[[{{') != -1 and PageTemp.find(u'[[{{') < PageTemp.find(u'\n'):
-				Langue1 = Page(site,u'Modèle:' + PageTemp[PageTemp.find(u'[[{{')+4:PageTemp.find(u'}}]]')])
-				PageTemp2 = u''
-				try: 
-					PageTemp2 = Langue1.get()
-				except wikipedia.NoPage:
-					print "NoPage l 1681 : " + langue1
-				except wikipedia.IsRedirectPage:
-					PageTemp2 = Langue1.getRedirectTarget().title() + u'<noinclude>'
-				except wikipedia.ServerError:
-					print "ServerError l 1685 : " + langue1
-				except wikipedia.BadTitle:
-					print "BadTitle l 1687 : " + langue1
-				if PageTemp2.find(u'<noinclude>') != -1:
-					langue = CleDeTri.CleDeTri(PageTemp2[0:PageTemp2.find(u'<noinclude>')])
-			if langue != u'':
-				if langue[0:1] == u'a' or langue[0:1] == u'e' or langue[0:1] == u'i' or langue[0:1] == u'o' or langue[0:1] == u'u' or langue[0:1] == u'y' or langue[0:1] == u'é' or langue[0:1] == u'è':
-					PageEnd = PageEnd + u'de l’' + langue
-				else:
-					PageEnd = PageEnd + u'du ' + langue
-				PageTemp = PageTemp[PageTemp.find(u'}}]]')+4:len(PageTemp)]
-			else:
-				PageEnd = PageEnd + u'du '
-			PageTemp = PageEnd + PageTemp
-			PageEnd = u''
 			
 		# Modèles trop courts
 		if debogage == True: print u'Modèles courts'
@@ -2001,6 +1972,7 @@ def modification(PageHS):
 					if debogage == True: print u'Ajout d\'un modèle T'
 					PageTemp = PageTemp[:PageTemp.find(u'\n')+PageTemp2.find(u'{{')+2] + u'T|' + PageTemp[PageTemp.find(u'\n')+PageTemp2.find(u'{{')+2:]
 			
+			
 			# Rangement de la ligne de la traduction par ordre alphabétique de la langue dans PageEnd
 			langue1 = PageTemp[PageTemp.find(u'{{T|')+4:PageTemp.find(u'}')]
 			if langue1.find(u'|') != -1: langue1 = langue1[0:langue1.find(u'|')]
@@ -2008,73 +1980,33 @@ def modification(PageHS):
 			if langue1 != u'' and (PageEnd.find(u'<!--') == -1 or PageEnd.find(u'-->') != -1): # bug https://fr.wiktionary.org/w/index.php?title=Utilisateur:JackBot/test&diff=15092317&oldid=15090227
 				#if PageEnd.find(u'<!--') != -1: raw_input(PageEnd[0:PageEnd.rfind(u'\n')].encode(config.console_encoding, 'replace'))
 				if debogageLent == True: print u'Langue 1 : ' + langue1
-				Langue1 = Page(site,u'Modèle:' + langue1)
-				try: PageTemp2 = Langue1.get()
-				except wikipedia.NoPage:
-					print "NoPage l 1521 : " + langue1
-					break
-				except wikipedia.IsRedirectPage:
-					PageTemp2 = Langue1.getRedirectTarget().title() + u'<noinclude>'
-				except wikipedia.ServerError:
-					print "ServerError l 1527 : " + langue1
-					break
-				except wikipedia.BadTitle:
-					print "BadTitle l 1530 : " + langue1
-					break
-				if PageTemp2.find(u'<noinclude>') != -1:
-					langue = CleDeTri.CleDeTri(PageTemp2[0:PageTemp2.find(u'<noinclude>')])
-					langue2 = u'zzz'
-					if PageEnd.rfind(u'\n') == -1 or PageTemp.find(u'\n') == -1: break
-					TradCourante = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + PageTemp[0:PageTemp.find(u'\n')]
-					TradSuivantes = u''
-					PageEnd = PageEnd[0:PageEnd.rfind(u'\n')]
-					PageTemp = PageTemp[PageTemp.find(u'\n'):len(PageTemp)]
-					while PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{-trad-') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{trad-début') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{trad-fin') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{S|traductions à trier') and langue2 > langue and PageEnd.rfind(u'{{T') != PageEnd.rfind(u'{{T|conv') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{(') and (PageEnd.rfind(u'{{') > PageEnd.rfind(u'|nocat') or PageEnd.rfind(u'|nocat') == -1):
-						langue2 = PageEnd[PageEnd.rfind(u'{{T|')+len(u'{{T|'):len(PageEnd)]
-						langue2 = langue2[0:langue2.find(u'}}')]
-						if langue2.find(u'|') != -1: langue2 = langue2[0:langue2.find(u'|')]
-						if debogageLent == True: print u'Langue 2 : ' + langue2
-						Langue2 = Page(site,u'Modèle:' + langue2)
-						try:
-							PageTemp3 = Langue2.get()
-						except wikipedia.NoPage: 
-							print "NoPage l 1870 : " + langue2
-							return
-						except wikipedia.ServerError: 
-							print "ServerError l 1873 : " + langue2
-							return
-						except wikipedia.IsRedirectPage:
-							print u'Redirection l 1876 : ' + langue2
-							try:
-								PageTemp3 = Langue2.getRedirectTarget().get()
-							except wikipedia.NoPage: 
-								print "NoPage l 1880 : " + langue2
-								return
-							except wikipedia.ServerError: 
-								print "ServerError l 1883 : " + langue2
-								return
-							except wikipedia.IsRedirectPage:
-								print u'Redirection l 1886 : ' + langue2
-								return
-						#if debogageLent == True: PageTemp3[:7] + u' > ' + langue + u' ?'
-						if PageTemp3.find(u'<noinclude>') != -1:
-							langue2 = CleDeTri.CleDeTri(PageTemp3[:PageTemp3.find(u'<noinclude>')])
-							if langue2 > langue:
-								if debogage == True: langue2 + u' > ' + langue
-								if PageEnd.rfind(u'\n') > PageEnd.rfind(u'trad-début'):
-									TradSuivantes = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + TradSuivantes
-									PageEnd = PageEnd[0:PageEnd.rfind(u'\n')]
-									summary = summary + ', traduction ' + langue2 + u' > ' + langue
-								elif PageEnd.rfind(u'\n') != -1:
-									# Cas de la première de la liste
-									TradCourante = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + TradCourante
-									PageEnd = PageEnd[0:PageEnd.rfind(u'\n')]
-							#print PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)].encode(config.console_encoding, 'replace')
-						else:
-							break
-					PageEnd = PageEnd + TradCourante + TradSuivantes
-				elif debogage == True:
-					print u'Ligne sans langue : ' + PageTemp2.encode(config.console_encoding, 'replace')
+				langue = langues.langues[langue1].decode("utf8")
+				langue2 = u'zzz'
+				if PageEnd.rfind(u'\n') == -1 or PageTemp.find(u'\n') == -1: break
+				TradCourante = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + PageTemp[0:PageTemp.find(u'\n')]
+				TradSuivantes = u''
+				PageEnd = PageEnd[0:PageEnd.rfind(u'\n')]
+				PageTemp = PageTemp[PageTemp.find(u'\n'):len(PageTemp)]
+				while PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{S|traductions') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{trad-début') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{trad-fin') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{S|traductions à trier') and langue2 > langue and PageEnd.rfind(u'{{T') != PageEnd.rfind(u'{{T|conv') and PageEnd.rfind(u'{{') != PageEnd.rfind(u'{{(') and (PageEnd.rfind(u'{{') > PageEnd.rfind(u'|nocat') or PageEnd.rfind(u'|nocat') == -1):
+					langue2 = PageEnd[PageEnd.rfind(u'{{T|')+len(u'{{T|'):len(PageEnd)]
+					langue2 = langue2[0:langue2.find(u'}}')]
+					if langue2.find(u'|') != -1: langue2 = langue2[0:langue2.find(u'|')]
+					if debogageLent == True: print u'Langue 2 : ' + langue2
+					langue2 = langues.langues[langue2].decode("utf8")
+					if langue2 != u'' and langue2 > langue:
+						if debogage == True: langue2 + u' > ' + langue
+						if PageEnd.rfind(u'\n') > PageEnd.rfind(u'trad-début'):
+							TradSuivantes = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + TradSuivantes
+							PageEnd = PageEnd[0:PageEnd.rfind(u'\n')]
+							summary = summary + ', traduction ' + langue2 + u' > ' + langue
+						elif PageEnd.rfind(u'\n') != -1:
+							# Cas de la première de la liste
+							TradCourante = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + TradCourante
+							PageEnd = PageEnd[0:PageEnd.rfind(u'\n')]
+						#print PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)].encode(config.console_encoding, 'replace')
+					else:
+						break
+				PageEnd = PageEnd + TradCourante + TradSuivantes
 			elif PageTemp.find(u'\n') != -1:
 				PageEnd = PageEnd + PageTemp[:PageTemp.find(u'\n')]
 				PageTemp = PageTemp[PageTemp.find(u'\n'):]
@@ -2085,7 +2017,7 @@ def modification(PageHS):
 			PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'\n')+1]
 			PageTemp = PageTemp[PageTemp.find(u'\n')+1:len(PageTemp)]
 			#print(PageEnd.encode(config.console_encoding, 'replace'))
-			#print(PageTemp.encode(config.console_encoding, 'replace'))
+			#print(PageTemp.encode(config.console_encoding, 'replace'))'''
 		PageTemp = PageEnd + PageTemp
 		PageEnd = u''
 

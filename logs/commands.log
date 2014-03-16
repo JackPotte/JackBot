@@ -2343,3 +2343,371 @@
 2014-03-08 21:56:27 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
 2014-03-08 21:57:33 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
 2014-03-08 22:04:58 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-08 22:25:25 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-08 22:42:52 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-08 22:51:47 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-08 22:56:31 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-08 22:57:00 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-08 22:58:21 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-08 22:59:04 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-08 23:14:58 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-08 23:15:22 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-08 23:15:47 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-08 23:42:52 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:fr"
+2014-03-08 23:42:55 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikipedia" "-lang:fr"
+2014-03-08 23:43:01 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:fr"
+2014-03-08 23:43:04 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:fr"
+2014-03-08 23:43:07 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikinews" "-lang:fr"
+2014-03-08 23:43:15 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikisource" "-lang:fr"
+2014-03-08 23:43:18 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:fr"
+2014-03-08 23:43:21 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:en"
+2014-03-08 23:43:25 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:en"
+2014-03-08 23:43:27 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:en"
+2014-03-08 23:43:30 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:en"
+2014-03-08 23:43:32 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ar"
+2014-03-08 23:43:35 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:de"
+2014-03-08 23:43:38 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:el"
+2014-03-08 23:43:41 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:es"
+2014-03-08 23:43:44 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:gl"
+2014-03-08 23:43:58 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:he"
+2014-03-08 23:44:01 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:hi"
+2014-03-08 23:44:05 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:id"
+2014-03-08 23:44:09 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ja"
+2014-03-08 23:44:12 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:la"
+2014-03-08 23:44:15 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:pt"
+2014-03-08 23:44:19 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ru"
+2014-03-08 23:44:22 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:tr"
+2014-03-08 23:44:25 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:vi"
+2014-03-08 23:44:28 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:zh"
+2014-03-08 23:44:31 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wiktionary" "-always"
+2014-03-08 23:44:34 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wikiversity" "-always"
+2014-03-08 23:44:37 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikiversity"
+2014-03-08 23:44:40 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikibooks"
+2014-03-08 23:44:42 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wiktionary"
+2014-03-08 23:44:45 r-1 (unknown) Python 2.7.2 fr.n.bas.py "-lang:fr" "-family:wikinews"
+2014-03-08 23:44:48 r-1 (unknown) Python 2.7.2 fr.w.archive.py
+2014-03-08 23:44:55 r-1 (unknown) Python 2.7.2 fr.wikt.archive.py
+2014-03-08 23:44:57 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-09 11:21:58 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:fr"
+2014-03-09 11:22:01 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikipedia" "-lang:fr"
+2014-03-09 11:22:08 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:fr"
+2014-03-09 11:22:11 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:fr"
+2014-03-09 11:22:17 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikinews" "-lang:fr"
+2014-03-09 11:22:26 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikisource" "-lang:fr"
+2014-03-09 11:22:30 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:fr"
+2014-03-09 11:22:33 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:en"
+2014-03-09 11:22:37 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:en"
+2014-03-09 11:22:39 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:en"
+2014-03-09 11:22:41 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:en"
+2014-03-09 11:22:44 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ar"
+2014-03-09 11:22:47 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:de"
+2014-03-09 11:22:50 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:el"
+2014-03-09 11:22:54 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:es"
+2014-03-09 11:22:57 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:gl"
+2014-03-09 11:23:10 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:he"
+2014-03-09 11:23:13 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:hi"
+2014-03-09 11:23:18 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:id"
+2014-03-09 11:23:21 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ja"
+2014-03-09 11:23:24 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:la"
+2014-03-09 11:23:27 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:pt"
+2014-03-09 11:23:30 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ru"
+2014-03-09 11:23:33 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:tr"
+2014-03-09 11:23:37 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:vi"
+2014-03-09 11:23:40 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:zh"
+2014-03-09 11:23:43 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wiktionary" "-always"
+2014-03-09 11:23:46 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wikiversity" "-always"
+2014-03-09 11:23:49 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikiversity"
+2014-03-09 11:23:52 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikibooks"
+2014-03-09 11:23:54 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wiktionary"
+2014-03-09 11:23:56 r-1 (unknown) Python 2.7.2 fr.n.bas.py "-lang:fr" "-family:wikinews"
+2014-03-09 11:23:59 r-1 (unknown) Python 2.7.2 fr.w.archive.py
+2014-03-09 11:24:06 r-1 (unknown) Python 2.7.2 fr.wikt.archive.py
+2014-03-09 11:24:08 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-10 19:35:03 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:fr"
+2014-03-10 19:35:07 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikipedia" "-lang:fr"
+2014-03-10 19:35:17 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:fr"
+2014-03-10 19:35:23 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:fr"
+2014-03-10 19:35:30 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikinews" "-lang:fr"
+2014-03-10 19:35:46 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikisource" "-lang:fr"
+2014-03-10 19:35:51 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:fr"
+2014-03-10 19:35:56 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:en"
+2014-03-10 19:36:00 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:en"
+2014-03-10 19:36:02 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:en"
+2014-03-10 19:36:05 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:en"
+2014-03-10 19:36:07 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ar"
+2014-03-10 19:36:10 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:de"
+2014-03-10 19:36:13 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:el"
+2014-03-10 19:36:17 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:es"
+2014-03-10 19:36:21 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:gl"
+2014-03-10 19:36:34 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:he"
+2014-03-10 19:36:37 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:hi"
+2014-03-10 19:36:42 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:id"
+2014-03-10 19:36:45 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ja"
+2014-03-10 19:36:48 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:la"
+2014-03-10 19:36:52 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:pt"
+2014-03-10 19:36:55 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ru"
+2014-03-10 19:36:58 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:tr"
+2014-03-10 19:37:01 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:vi"
+2014-03-10 19:37:05 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:zh"
+2014-03-10 19:37:09 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wiktionary" "-always"
+2014-03-10 19:37:12 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wikiversity" "-always"
+2014-03-10 19:37:15 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikiversity"
+2014-03-10 19:37:18 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikibooks"
+2014-03-10 19:37:20 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wiktionary"
+2014-03-10 19:37:23 r-1 (unknown) Python 2.7.2 fr.n.bas.py "-lang:fr" "-family:wikinews"
+2014-03-10 19:37:26 r-1 (unknown) Python 2.7.2 fr.w.archive.py
+2014-03-10 19:37:35 r-1 (unknown) Python 2.7.2 fr.wikt.archive.py
+2014-03-10 19:37:39 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-15 13:37:52 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:fr"
+2014-03-15 13:37:56 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikipedia" "-lang:fr"
+2014-03-15 13:38:01 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:fr"
+2014-03-15 13:38:05 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:fr"
+2014-03-15 13:38:08 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikinews" "-lang:fr"
+2014-03-15 13:38:19 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikisource" "-lang:fr"
+2014-03-15 13:38:24 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:fr"
+2014-03-15 13:38:28 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:en"
+2014-03-15 13:38:41 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:en"
+2014-03-15 13:38:53 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:en"
+2014-03-15 13:39:53 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:en"
+2014-03-15 13:39:56 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ar"
+2014-03-15 13:39:59 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:de"
+2014-03-15 13:40:02 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:el"
+2014-03-15 13:40:05 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:es"
+2014-03-15 13:40:08 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:gl"
+2014-03-15 13:40:21 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:he"
+2014-03-15 13:40:25 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:hi"
+2014-03-15 13:40:29 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:id"
+2014-03-15 13:40:32 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ja"
+2014-03-15 13:40:35 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:la"
+2014-03-15 13:40:38 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:pt"
+2014-03-15 13:40:41 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ru"
+2014-03-15 13:40:44 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:tr"
+2014-03-15 13:40:47 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:vi"
+2014-03-15 13:40:50 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:zh"
+2014-03-15 13:40:53 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wiktionary" "-always"
+2014-03-15 13:40:56 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wikiversity" "-always"
+2014-03-15 13:40:59 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikiversity"
+2014-03-15 13:41:02 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikibooks"
+2014-03-15 13:41:04 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wiktionary"
+2014-03-15 13:41:06 r-1 (unknown) Python 2.7.2 fr.n.bas.py "-lang:fr" "-family:wikinews"
+2014-03-15 13:41:09 r-1 (unknown) Python 2.7.2 fr.w.archive.py
+2014-03-15 13:41:16 r-1 (unknown) Python 2.7.2 fr.wikt.archive.py
+2014-03-15 13:41:19 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-15 13:46:16 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:fr"
+2014-03-15 13:46:18 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikipedia" "-lang:fr"
+2014-03-15 13:46:24 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:fr"
+2014-03-15 13:46:27 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:fr"
+2014-03-15 13:46:30 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikinews" "-lang:fr"
+2014-03-15 13:46:37 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikisource" "-lang:fr"
+2014-03-15 13:46:40 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:fr"
+2014-03-15 13:46:43 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:en"
+2014-03-15 13:46:53 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:en"
+2014-03-15 13:46:55 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:en"
+2014-03-15 13:46:58 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:en"
+2014-03-15 13:47:00 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ar"
+2014-03-15 13:47:03 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:de"
+2014-03-15 13:47:06 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:el"
+2014-03-15 13:47:09 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:es"
+2014-03-15 13:47:12 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:gl"
+2014-03-15 13:47:25 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:he"
+2014-03-15 13:47:28 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:hi"
+2014-03-15 13:47:32 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:id"
+2014-03-15 13:47:35 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ja"
+2014-03-15 13:47:38 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:la"
+2014-03-15 13:47:41 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:pt"
+2014-03-15 13:47:44 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ru"
+2014-03-15 13:47:47 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:tr"
+2014-03-15 13:47:50 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:vi"
+2014-03-15 13:47:53 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:zh"
+2014-03-15 13:47:56 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wiktionary" "-always"
+2014-03-15 13:47:59 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wikiversity" "-always"
+2014-03-15 13:48:02 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikiversity"
+2014-03-15 13:48:05 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikibooks"
+2014-03-15 13:48:07 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wiktionary"
+2014-03-15 13:48:10 r-1 (unknown) Python 2.7.2 fr.n.bas.py "-lang:fr" "-family:wikinews"
+2014-03-15 13:48:13 r-1 (unknown) Python 2.7.2 fr.w.archive.py
+2014-03-15 13:48:19 r-1 (unknown) Python 2.7.2 fr.wikt.archive.py
+2014-03-15 13:48:22 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-15 14:44:13 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:fr"
+2014-03-15 14:44:16 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikipedia" "-lang:fr"
+2014-03-15 14:44:22 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:fr"
+2014-03-15 14:44:25 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:fr"
+2014-03-15 14:44:28 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikinews" "-lang:fr"
+2014-03-15 14:44:35 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikisource" "-lang:fr"
+2014-03-15 14:44:38 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:fr"
+2014-03-15 14:44:41 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:en"
+2014-03-15 14:44:51 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:en"
+2014-03-15 14:44:53 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:en"
+2014-03-15 14:44:56 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:en"
+2014-03-15 14:44:58 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ar"
+2014-03-15 14:45:01 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:de"
+2014-03-15 14:45:04 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:el"
+2014-03-15 14:45:07 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:es"
+2014-03-15 14:45:10 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:gl"
+2014-03-15 14:45:22 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:he"
+2014-03-15 14:45:26 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:hi"
+2014-03-15 14:45:29 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:id"
+2014-03-15 14:45:32 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ja"
+2014-03-15 14:45:35 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:la"
+2014-03-15 14:45:38 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:pt"
+2014-03-15 14:45:41 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ru"
+2014-03-15 14:45:44 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:tr"
+2014-03-15 14:45:47 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:vi"
+2014-03-15 14:45:50 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:zh"
+2014-03-15 14:45:54 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wiktionary" "-always"
+2014-03-15 14:45:56 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wikiversity" "-always"
+2014-03-15 14:45:59 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikiversity"
+2014-03-15 14:46:02 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikibooks"
+2014-03-15 14:46:04 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wiktionary"
+2014-03-15 14:46:06 r-1 (unknown) Python 2.7.2 fr.n.bas.py "-lang:fr" "-family:wikinews"
+2014-03-15 14:46:09 r-1 (unknown) Python 2.7.2 fr.w.archive.py
+2014-03-15 14:46:16 r-1 (unknown) Python 2.7.2 fr.wikt.archive.py
+2014-03-15 14:46:18 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-15 16:36:37 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:fr"
+2014-03-15 16:36:40 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikipedia" "-lang:fr"
+2014-03-15 16:36:46 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:fr"
+2014-03-15 16:36:49 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:fr"
+2014-03-15 16:36:52 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikinews" "-lang:fr"
+2014-03-15 16:36:59 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikisource" "-lang:fr"
+2014-03-15 16:37:02 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:fr"
+2014-03-15 16:37:05 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:en"
+2014-03-15 16:37:15 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:en"
+2014-03-15 16:37:18 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:en"
+2014-03-15 16:37:20 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:en"
+2014-03-15 16:37:23 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ar"
+2014-03-15 16:37:26 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:de"
+2014-03-15 16:37:29 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:el"
+2014-03-15 16:37:32 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:es"
+2014-03-15 16:37:35 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:gl"
+2014-03-15 16:37:48 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:he"
+2014-03-15 16:37:51 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:hi"
+2014-03-15 16:37:55 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:id"
+2014-03-15 16:37:58 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ja"
+2014-03-15 16:38:01 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:la"
+2014-03-15 16:38:04 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:pt"
+2014-03-15 16:38:07 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ru"
+2014-03-15 16:38:10 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:tr"
+2014-03-15 16:38:13 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:vi"
+2014-03-15 16:38:16 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:zh"
+2014-03-15 16:38:19 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wiktionary" "-always"
+2014-03-15 16:38:22 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wikiversity" "-always"
+2014-03-15 16:38:25 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikiversity"
+2014-03-15 16:38:27 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikibooks"
+2014-03-15 16:38:30 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wiktionary"
+2014-03-15 16:38:32 r-1 (unknown) Python 2.7.2 fr.n.bas.py "-lang:fr" "-family:wikinews"
+2014-03-15 16:38:35 r-1 (unknown) Python 2.7.2 fr.w.archive.py
+2014-03-15 16:38:41 r-1 (unknown) Python 2.7.2 fr.wikt.archive.py
+2014-03-15 16:38:55 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-15 23:26:18 r-1 (unknown) Python 2.7.2 test_xmlreader.py
+2014-03-15 23:31:50 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-15 23:32:11 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-15 23:33:31 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:04:02 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:04:34 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:05:17 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:07:52 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:09:20 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:09:52 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:10:22 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:12:30 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:12:46 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:13:13 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:21:00 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:41:04 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:41:36 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:41:49 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:42:32 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:49:07 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:50:41 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:51:19 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:51:37 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:52:39 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:52:49 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:53:34 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:54:02 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:54:28 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:55:03 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:55:46 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:56:17 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:57:10 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:57:57 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:58:16 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 00:59:02 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:fr"
+2014-03-16 00:59:04 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikipedia" "-lang:fr"
+2014-03-16 00:59:10 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:fr"
+2014-03-16 00:59:13 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:fr"
+2014-03-16 00:59:17 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikinews" "-lang:fr"
+2014-03-16 00:59:24 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikisource" "-lang:fr"
+2014-03-16 00:59:27 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:fr"
+2014-03-16 00:59:30 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:en"
+2014-03-16 00:59:40 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:en"
+2014-03-16 00:59:42 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:en"
+2014-03-16 00:59:45 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:en"
+2014-03-16 00:59:47 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ar"
+2014-03-16 00:59:50 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:de"
+2014-03-16 00:59:53 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:el"
+2014-03-16 00:59:56 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:es"
+2014-03-16 00:59:59 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:gl"
+2014-03-16 00:59:59 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 01:00:13 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:he"
+2014-03-16 01:00:16 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:hi"
+2014-03-16 01:00:21 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:id"
+2014-03-16 01:00:24 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ja"
+2014-03-16 01:00:26 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:la"
+2014-03-16 01:00:29 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:pt"
+2014-03-16 01:00:32 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ru"
+2014-03-16 01:00:36 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:tr"
+2014-03-16 01:00:38 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:vi"
+2014-03-16 01:00:42 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:zh"
+2014-03-16 01:00:45 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wiktionary" "-always"
+2014-03-16 01:00:48 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wikiversity" "-always"
+2014-03-16 01:00:51 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikiversity"
+2014-03-16 01:00:54 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikibooks"
+2014-03-16 01:00:57 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wiktionary"
+2014-03-16 01:00:59 r-1 (unknown) Python 2.7.2 fr.n.bas.py "-lang:fr" "-family:wikinews"
+2014-03-16 01:01:02 r-1 (unknown) Python 2.7.2 fr.w.archive.py
+2014-03-16 01:01:09 r-1 (unknown) Python 2.7.2 fr.wikt.archive.py
+2014-03-16 01:01:11 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-16 01:02:14 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:fr"
+2014-03-16 01:02:17 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikipedia" "-lang:fr"
+2014-03-16 01:02:22 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:fr"
+2014-03-16 01:02:25 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:fr"
+2014-03-16 01:02:28 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikinews" "-lang:fr"
+2014-03-16 01:02:36 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikisource" "-lang:fr"
+2014-03-16 01:02:39 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:fr"
+2014-03-16 01:02:42 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:en"
+2014-03-16 01:02:53 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikibooks" "-lang:en"
+2014-03-16 01:02:55 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiversity" "-lang:en"
+2014-03-16 01:02:58 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wikiquote" "-lang:en"
+2014-03-16 01:03:00 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ar"
+2014-03-16 01:03:03 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:de"
+2014-03-16 01:03:06 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:el"
+2014-03-16 01:03:10 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:es"
+2014-03-16 01:03:13 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:gl"
+2014-03-16 01:03:26 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:he"
+2014-03-16 01:03:29 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:hi"
+2014-03-16 01:03:33 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:id"
+2014-03-16 01:03:36 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ja"
+2014-03-16 01:03:39 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:la"
+2014-03-16 01:03:42 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:pt"
+2014-03-16 01:03:45 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:ru"
+2014-03-16 01:03:48 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:tr"
+2014-03-16 01:03:51 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:vi"
+2014-03-16 01:03:54 r-1 (unknown) Python 2.7.2 redirect.py "double" "-always" "-family:wiktionary" "-lang:zh"
+2014-03-16 01:03:57 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wiktionary" "-always"
+2014-03-16 01:04:00 r-1 (unknown) Python 2.7.2 redirect.py "broken" "-lang:fr" "-family:wikiversity" "-always"
+2014-03-16 01:04:03 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikiversity"
+2014-03-16 01:04:05 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wikibooks"
+2014-03-16 01:04:07 r-1 (unknown) Python 2.7.2 clean_sandbox.py "-lang:fr" "-family:wiktionary"
+2014-03-16 01:04:10 r-1 (unknown) Python 2.7.2 fr.n.bas.py "-lang:fr" "-family:wikinews"
+2014-03-16 01:04:13 r-1 (unknown) Python 2.7.2 fr.w.archive.py
+2014-03-16 01:04:19 r-1 (unknown) Python 2.7.2 fr.wikt.archive.py
+2014-03-16 01:04:22 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-03-16 01:05:50 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 01:06:48 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 01:10:05 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 01:10:15 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 01:11:08 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 01:12:02 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 01:13:12 r-1 (unknown) Python 2.7.2 fr.wikt.palindromes.py
+2014-03-16 01:16:39 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
