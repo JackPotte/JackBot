@@ -48,17 +48,18 @@ def modification(PageHS):
 			PageEnd = PageEnd + PageTemp[:PageTemp.find('{{langue|')+len('{{langue|')]
 			PageTemp = PageTemp[PageTemp.find('{{langue|')+len('{{langue|'):]
 			codelangue = PageTemp[:PageTemp.find('}}')]
-			NomLangue = langues.langues[codelangue].decode("utf8")
-			if NomLangue != u'':
-				#if debogage == True: print NomLangue.encode(config.console_encoding, 'replace')
-				if PageTemp.find(u'[[Catégorie:Palindromes en ' + NomLangue) == -1:
-					# Modification de la page
-					if PageTemp.find('{{langue|') != -1:
-						PageTemp2 = PageTemp[:PageTemp.find('{{langue|')]
-						PageTemp = PageTemp[:PageTemp2.rfind(u'\n')] + u'\n[[Catégorie:Palindromes en '+NomLangue+']]\n\n' + PageTemp[PageTemp2.rfind(u'\n'):]
-					else:
-						PageTemp = PageTemp + u'\n\n[[Catégorie:Palindromes en '+NomLangue+']]'
-		
+			if len(codelangue) < 4:
+				NomLangue = langues.langues[codelangue].decode("utf8")
+				if NomLangue != u'':
+					#if debogage == True: print NomLangue.encode(config.console_encoding, 'replace')
+					if PageTemp.find(u'[[Catégorie:Palindromes en ' + NomLangue) == -1:
+						# Modification de la page
+						if PageTemp.find('{{langue|') != -1:
+							PageTemp2 = PageTemp[:PageTemp.find('{{langue|')]
+							PageTemp = PageTemp[:PageTemp2.rfind(u'\n')] + u'\n[[Catégorie:Palindromes en '+NomLangue+']]\n\n' + PageTemp[PageTemp2.rfind(u'\n'):]
+						else:
+							PageTemp = PageTemp + u'\n\n[[Catégorie:Palindromes en '+NomLangue+']]'
+			
 		PageEnd = PageEnd + PageTemp		
 		#if debogage == True: print (u'--------------------------------------------------------------------------------------------')
 		if PageEnd != PageBegin:

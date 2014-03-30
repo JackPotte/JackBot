@@ -1470,3 +1470,5 @@ def log(source):
 	txtfile = codecs.open(u'_hyperlinx.log', 'a', 'utf-8')
 	txtfile.write(u'\n' + source + u'\n')
 	txtfile.close()
+
+# à faire : passer les longs PDF comme dans [[w:Apollo 11]]

@@ -34,7 +34,7 @@ TailleAnagramme = 5 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
 # Modèles du site à traiter
 limit2 = 131 # Paragraphes sans modèle catégorisant, {{voir| et {{voir/ sont gérés individuellement
-limit6 = 967 # Somme des modèles traités
+limit6 = 978 # Somme des modèles traités
 Modele = range(1, limit6+1)
 Section = range(1, limit2+1)
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
@@ -1009,17 +1009,29 @@ Modele[818] = u'confiseries'
 Modele[819] = u'stéréotomie'
 Modele[820] = u'marbrerie'
 Modele[821] = u'improprement'
+Modele[822] = u'usage critiqué'
+Modele[823] = u'éléments'
+Modele[824] = u'points cardinaux'
+Modele[825] = u'unités'
+Modele[826] = u'monnaies'
+Modele[827] = u'religions'
+Modele[828] = u'voitures'
+Modele[829] = u'avions'
+Modele[830] = u'figures'
+Modele[831] = u'bateaux'
+Modele[832] = u'substances'
+#[[Spécial:newpages]] : pas "outils" faute de lexique, ustensiles
 
-limit4 = 822	# code langue quoi qu'il arrive
-Modele[822] = u'ébauche-étym-nom-scientifique'
-Modele[823] = u'ébauche-étym'
-Modele[824] = u'ébauche-exe'
-Modele[825] = u'ébauche-pron'
-Modele[826] = u'ébauche-syn'
-Modele[827] = u'note-gentilé'
-Modele[828] = u'ébauche-trans'
-Modele[829] = u'ébauche-déf'
-Modele[830] = u'ébauche'
+limit4 = 833	# code langue quoi qu'il arrive
+Modele[834] = u'ébauche-étym-nom-scientifique'
+Modele[835] = u'ébauche-étym'
+Modele[836] = u'ébauche-exe'
+Modele[837] = u'ébauche-pron'
+Modele[838] = u'ébauche-syn'
+Modele[839] = u'note-gentilé'
+Modele[840] = u'ébauche-trans'
+Modele[841] = u'ébauche-déf'
+Modele[842] = u'ébauche'
 '''
 # non traités
 Modele[] = u'spécialement' 
@@ -1037,19 +1049,7 @@ Modele[] = u'perf'
 Modele[] = u'imperf'
 '''
 # Modèles régionaux, pb du nocat pour les prononciations
-limit5 = 831
-Modele[831] = u'Belgique'
-Modele[832] = u'Luxembourg'
-Modele[833] = u'Bénin'
-Modele[834] = u'Berry'
-Modele[835] = u'Bolivie'
-Modele[836] = u'Bordelais'
-Modele[837] = u'Bourgogne'
-Modele[838] = u'Brésil'
-Modele[839] = u'Bretagne'
-Modele[840] = u'Burkina Faso'
-Modele[841] = u'Cameroun'
-Modele[842] = u'Canada'
+limit5 = 843
 Modele[843] = u'Catalogne'
 Modele[844] = u'Champagne'
 Modele[845] = u'Chili'
@@ -1175,8 +1175,20 @@ Modele[961] = u'Autriche'
 Modele[962] = u'Auvergne'
 Modele[963] = u'Baléares'
 Modele[964] = u'Orient'
+Modele[965] = u'Belgique'
+Modele[966] = u'Luxembourg'
+Modele[967] = u'Bénin'
+Modele[968] = u'Berry'
+Modele[969] = u'Bolivie'
+Modele[970] = u'Bordelais'
+Modele[971] = u'Bourgogne'
+Modele[972] = u'Brésil'
+Modele[973] = u'Bretagne'
+Modele[974] = u'Burkina Faso'
+Modele[975] = u'Cameroun'
+Modele[976] = u'Canada'
 # Modèles de pronociation à synchroniser
-Modele[965] = u'fr-verbe-flexion'
+Modele[977] = u'fr-verbe-flexion'
 #Modele[] = u'fr-rég'
 #Modele[] = u'fr-inv'
 #Modele[] = u'fr-accord-rég'
@@ -1284,6 +1296,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|locution-phrase|', u'{{S|locution phrase|')
 		PageTemp = PageTemp.replace(u'{{S|nom-fam|', u'{{S|nom de famille|')
 		PageTemp = PageTemp.replace(u'{{S|nom-pr|', u'{{S|nom propre|')
+		PageTemp = PageTemp.replace(u'{{S|symb|', u'{{S|symbole|')
 		PageTemp = PageTemp.replace(u'{{S|verb|', u'{{S|verbe|')
 		
 		PageTemp = PageTemp.replace(u'{{S|anagramme}}', u'{{S|anagrammes}}')
@@ -1291,6 +1304,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|apr}}', u'{{S|apparentés}}')
 		PageTemp = PageTemp.replace(u'{{S|Apparentés}}', u'{{S|apparentés}}')
 		PageTemp = PageTemp.replace(u'{{S|dimin}}', u'{{S|diminutifs}}')
+		PageTemp = PageTemp.replace(u'{{S|drv}}', u'{{S|dérivés}}')
 		PageTemp = PageTemp.replace(u'{{S|etym}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|Étymologie}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|exp}}', u'{{S|expressions}}')
@@ -1304,6 +1318,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|syn}}', u'{{S|synonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|trad-trier}}', u'{{S|traductions à trier}}')
 		PageTemp = PageTemp.replace(u'{{S|trad}}', u'{{S|traductions}}')
+		PageTemp = PageTemp.replace(u'{{S|traduction}}', u'{{S|traductions}}')
 		PageTemp = PageTemp.replace(u'{{S|Traductions}}', u'{{S|traductions}}')
 		PageTemp = PageTemp.replace(u'{{S|var}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|variantes ortho}}', u'{{S|variantes orthographiques}}')
@@ -1980,7 +1995,10 @@ def modification(PageHS):
 			if langue1 != u'' and (PageEnd.find(u'<!--') == -1 or PageEnd.find(u'-->') != -1): # bug https://fr.wiktionary.org/w/index.php?title=Utilisateur:JackBot/test&diff=15092317&oldid=15090227
 				#if PageEnd.find(u'<!--') != -1: raw_input(PageEnd[0:PageEnd.rfind(u'\n')].encode(config.console_encoding, 'replace'))
 				if debogageLent == True: print u'Langue 1 : ' + langue1
-				langue = langues.langues[langue1].decode("utf8")
+				if len(langue1) > 3 and langue1.find(u'-') == -1:
+					langue = langue1
+				else:
+					langue = CleDeTri.CleDeTri(langues.langues[langue1].decode("utf8"))
 				langue2 = u'zzz'
 				if PageEnd.rfind(u'\n') == -1 or PageTemp.find(u'\n') == -1: break
 				TradCourante = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + PageTemp[0:PageTemp.find(u'\n')]
@@ -1992,7 +2010,10 @@ def modification(PageHS):
 					langue2 = langue2[0:langue2.find(u'}}')]
 					if langue2.find(u'|') != -1: langue2 = langue2[0:langue2.find(u'|')]
 					if debogageLent == True: print u'Langue 2 : ' + langue2
-					langue2 = langues.langues[langue2].decode("utf8")
+					if len(langue2) > 3 and langue2.find(u'-') == -1:
+						langue = langue2
+					else:
+						langue2 = CleDeTri.CleDeTri(langues.langues[langue2].decode("utf8"))
 					if langue2 != u'' and langue2 > langue:
 						if debogage == True: langue2 + u' > ' + langue
 						if PageEnd.rfind(u'\n') > PageEnd.rfind(u'trad-début'):
@@ -2284,9 +2305,9 @@ def modification(PageHS):
 						positionAnagr = PageTemp.find(u'{{langue|' + codelangue + u'}}')+len(u'{{langue|' + codelangue + u'}}')
 						PageTemp2 = PageTemp[positionAnagr:len(PageTemp)]
 						if PageTemp2.find(u'\n=== {{S|voir') != -1 and ((PageTemp2.find(u'{{langue|') != -1 and PageTemp2.find(u'{{S|voir') < PageTemp2.find(u'{{langue|')) or PageTemp2.find(u'{{langue|') == -1):
-							PageTemp = PageTemp[0:positionAnagr+PageTemp2.find(u'\n=== {{S|voir')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'\n=== {{S|voir'):len(PageTemp)]
+							PageTemp = PageTemp[0:positionAnagr+PageTemp2.find(u'\n=== {{S|voir')] + u'\n=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'\n=== {{S|voir'):len(PageTemp)]
 						elif PageTemp2.find(u'\n=== {{S|références}}') != -1 and ((PageTemp2.find(u'{{langue|') != -1 and PageTemp2.find(u'\n=== {{S|références}}') < PageTemp2.find(u'{{langue|')) or PageTemp2.find(u'{{langue|') == -1):
-							PageTemp = PageTemp[0:positionAnagr+PageTemp2.find(u'\n=== {{S|références}}')] +  u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'\n=== {{S|références}}'):len(PageTemp)]
+							PageTemp = PageTemp[0:positionAnagr+PageTemp2.find(u'\n=== {{S|références}}')] +  u'\n=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'\n=== {{S|références}}'):len(PageTemp)]
 						elif PageTemp2.find(u'== {{langue|') != -1 and ((PageTemp2.find(u'[[Catégorie:') != -1 and PageTemp2.find(u'== {{langue|') < PageTemp2.find(u'[[Catégorie:')) or PageTemp2.find(u'[[Catégorie:') == -1):
 							PageTemp = PageTemp[0:positionAnagr+PageTemp2.find(u'== {{langue|')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'== {{langue|'):len(PageTemp)]
 						elif PageTemp2.find(u'=={{langue|') != -1 and ((PageTemp2.find(u'[[Catégorie:') != -1 and PageTemp2.find(u'=={{langue|') < PageTemp2.find(u'[[Catégorie:')) or PageTemp2.find(u'[[Catégorie:') == -1):
@@ -2310,6 +2331,7 @@ def modification(PageHS):
 			PageTemp = PageTemp.replace(u'<!-- pas d’{{S|anagrammes}} -->\n', u'')
 			PageTemp = PageTemp.replace(u'<!-- pas d’anagrammes -->\n', u'')
 			PageTemp = PageTemp.replace(u'<!-- pas d’=== {{S|anagrammes}} ===\n-->', u'')
+			PageTemp = PageTemp.replace(u'<!--pas d’=== {{S|anagrammes}} ===\n-->', u'')
 			NouvelleLangue = False
 		
 			# Nettoyage des doublons (tester avec ophtalmologie dans adelphe)
@@ -3585,18 +3607,26 @@ def modification(PageHS):
 						break
 					elif Modele[p] == u'chimie' or Modele[p] == u'chim':
 						if (EstCodeLangue == "false"
-	) or (PageTemp.find(u'Catégorie:Éléments chimique'
-	) != -1 and (PageTemp.find(u'Catégorie:Éléments chimique') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
-	) and (PageTemp.find(u':Catégorie:Éléments chimique') + 1 != PageTemp.rfind(u'Catégorie:Éléments chimique'))
+	) or (PageTemp.find(u'Catégorie:Éléments chimiques'
+	) != -1 and (PageTemp.find(u'Catégorie:Éléments chimiques') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Éléments chimiques') + 1 != PageTemp.rfind(u'Catégorie:Éléments chimiques'))
 
 	) or (PageTemp.find(u'Catégorie:Symboles des éléments chimiques'
 	) != -1 and (PageTemp.find(u'Catégorie:Symboles des éléments chimiques') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Symboles des éléments chimiques') + 1 != PageTemp.rfind(u'Catégorie:Symboles des éléments chimiques'))
-	
+
+	) or (PageTemp.find(u'Catégorie:Symboles désuets des éléments chimiques'
+	) != -1 and (PageTemp.find(u'Catégorie:Symboles désuets des éléments chimiques') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Symboles désuets des éléments chimiques') + 1 != PageTemp.rfind(u'Catégorie:Symboles désuets des éléments chimiques'))
+		
+	) or (PageTemp.find(u'Catégorie:Polymères'
+	) != -1 and (PageTemp.find(u'Catégorie:Polymères') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Polymères') + 1 != PageTemp.rfind(u'Catégorie:Polymères'))
+
 	) or (PageTemp.find(u'Catégorie:Métaux'
 	) != -1 and (PageTemp.find(u'Catégorie:Métaux') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Métaux') + 1 != PageTemp.rfind(u'Catégorie:Métaux'))
-
+	
 	) or (PageTemp.find(u'Catégorie:Alliages'
 	) != -1 and (PageTemp.find(u'Catégorie:Alliages') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Alliages') + 1 != PageTemp.rfind(u'Catégorie:Alliages'))):
@@ -4582,3 +4612,4 @@ python interwiki.py -lang:fr -family:wiktionary -wiktionary -new:100000
 '''
 # à faire : remplacer == titre section == par S|titreSection
 # 			chercher {{trad-début|= (trad-trier)
+# refondre le tableau des modèles en xml avec les catégories nocat en colonne3
