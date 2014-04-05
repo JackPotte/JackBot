@@ -1020,7 +1020,7 @@ Modele[829] = u'avions'
 Modele[830] = u'figures'
 Modele[831] = u'bateaux'
 Modele[832] = u'substances'
-#[[Spécial:newpages]] : pas "outils" faute de lexique, ustensiles
+#[[Spécial:newpages]] : pas "outils" faute de lexique, ustensiles, édifices, danses, chiens
 
 limit4 = 833	# code langue quoi qu'il arrive
 Modele[834] = u'ébauche-étym-nom-scientifique'
@@ -1303,6 +1303,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|anagr}}', u'{{S|anagrammes}}')
 		PageTemp = PageTemp.replace(u'{{S|apr}}', u'{{S|apparentés}}')
 		PageTemp = PageTemp.replace(u'{{S|Apparentés}}', u'{{S|apparentés}}')
+		PageTemp = PageTemp.replace(u'{{S|compos}}', u'{{S|composés}}')
 		PageTemp = PageTemp.replace(u'{{S|dimin}}', u'{{S|diminutifs}}')
 		PageTemp = PageTemp.replace(u'{{S|drv}}', u'{{S|dérivés}}')
 		PageTemp = PageTemp.replace(u'{{S|etym}}', u'{{S|étymologie}}')
@@ -1314,6 +1315,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|hyper}}', u'{{S|hyperonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|pron}}', u'{{S|prononciation}}')
 		PageTemp = PageTemp.replace(u'{{S|prononciations}}', u'{{S|prononciation}}')
+		PageTemp = PageTemp.replace(u'{{S|q-syn}}', u'{{S|quasi-synonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|réf}}', u'{{S|références}}')
 		PageTemp = PageTemp.replace(u'{{S|syn}}', u'{{S|synonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|trad-trier}}', u'{{S|traductions à trier}}')
@@ -1576,7 +1578,10 @@ def modification(PageHS):
 			PageTemp = PageTemp[:PageTemp.find(u'{{es-rég}}\'\'\'')+len(u'{{es-rég}}')] + u'\n' + PageTemp[PageTemp.find(u'{{es-rég}}\'\'\'')+len(u'{{es-rég}}'):]
 		while PageTemp.find(u'{{pt-rég}}\'\'\'') != -1:
 			PageTemp = PageTemp[:PageTemp.find(u'{{pt-rég}}\'\'\'')+len(u'{{pt-rég}}')] + u'\n' + PageTemp[PageTemp.find(u'{{pt-rég}}\'\'\'')+len(u'{{pt-rég}}'):]
-			
+		PageTemp = PageTemp.replace(u']] {{imperf}}', u']] {{imperf|nocat=1}}')
+		PageTemp = PageTemp.replace(u']] {{perf}}', u']] {{perf|nocat=1}}')
+		PageTemp = PageTemp.replace(u'{{perf}} / \'\'\'', u'{{perf|nocat=1}} / \'\'\'')
+		
 		PageTemp = re.sub(ur'([^d\-]+\-\|[a-z]+\}\}\n)\# *', ur"\1'''" + PageHS + ur"''' {{pron}}\n# ", PageTemp)
 		if PageTemp.find(u'{{Latn') == -1 and PageTemp.find(u'{{Grek') == -1 and PageTemp.find(u'{{Cyrl') == -1 and PageTemp.find(u'{{Armn') == -1 and PageTemp.find(u'{{Geor') == -1 and PageTemp.find(u'{{Hebr') == -1 and PageTemp.find(u'{{Arab') == -1 and PageTemp.find(u'{{Syrc') == -1 and PageTemp.find(u'{{Thaa') == -1 and PageTemp.find(u'{{Deva') == -1 and PageTemp.find(u'{{Hang') == -1 and PageTemp.find(u'{{Hira') == -1 and PageTemp.find(u'{{Kana') == -1 and PageTemp.find(u'{{Hrkt') == -1 and PageTemp.find(u'{{Hani') == -1 and PageTemp.find(u'{{Jpan') == -1 and PageTemp.find(u'{{Hans') == -1 and PageTemp.find(u'{{Hant') == -1 and PageTemp.find(u'{{zh-mot') == -1 and PageTemp.find(u'{{kohan') == -1 and PageTemp.find(u'{{ko-nom') == -1 and PageTemp.find(u'{{la-verb') == -1 and PageTemp.find(u'{{grc-verb') == -1 and PageTemp.find(u'{{polytonique') == -1 and PageTemp.find(u'FAchar') == -1:
 			if debogage == True: print u'Ajout du mot vedette'
@@ -1645,6 +1650,10 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'religion|nocat=1|rel=musulmane', u'islam|nocat=1')
 		PageTemp = PageTemp.replace(u'religion|nocat=1|rel=boudhiste', u'boudhisme|nocat=1')
 		PageTemp = PageTemp.replace(u'religion|nocat=1|rel=juive', u'judaïsme|nocat=1')
+		PageTemp = PageTemp.replace(u'{{term|Antiquité grecque}}', u'{{antiquité|spéc=grecque}}')
+		PageTemp = PageTemp.replace(u'{{term|Antiquité romaine}}', u'{{antiquité|spéc=romaine}}')
+		PageTemp = PageTemp.replace(u'{{antiquité|fr}} {{terme|grecque}}', u'{{antiquité|spéc=grecque}}')
+		PageTemp = PageTemp.replace(u'{{antiquité|fr}} {{terme|romaine}}', u'{{antiquité|spéc=romaine}}')
 		while PageTemp.find(u'[[Annexe:Couleurs en français]]') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'[[Annexe:Couleurs en français]]')] + u'{{Thésaurus|fr|couleur}}' + PageTemp[PageTemp.find(u'[[Annexe:Couleurs en français]]')+len(u'[[Annexe:Couleurs en français]]'):len(PageTemp)]
 		while PageTemp.find(u'{{Annexe|Couleurs en français}}') != -1:
@@ -2689,11 +2698,19 @@ def modification(PageHS):
 								PageTemp2 = PageTemp[position+1:len(PageTemp)]
 								if (PageTemp2.find(u'|') != -1) and (PageTemp2.find(u'|') < PageTemp2.find(u'}}')): # il y a un code langue
 									if EstCodeLangue == "false":
-										PageEnd = PageEnd + PageTemp[0:position+PageTemp2.find(u'|')] + u'|nocat=1}}'
+										if debogage == True: print u' retrait du code langue'
+										if PageTemp2.find(u'|') > PageTemp2.find(u'}}'):
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'}}')+1] + u'|nocat=1}}'
+										else:
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'|')] + u'|nocat=1}}'
 										PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 										break
 									else:
-										PageEnd = PageEnd + PageTemp[0:position+PageTemp2.find(u'|')+2] + codelangue + u'}}'
+										if debogage == True: print u' avec code langue'
+										if PageTemp2.find(u'|') > PageTemp2.find(u'}}'):
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'}}')+1] + u'|' + codelangue + u'}}'
+										else:
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'|')+2] + codelangue + u'}}'
 										PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 										break
 								else: # Pas de code langue
@@ -2754,15 +2771,23 @@ def modification(PageHS):
 								PageTemp2 = PageTemp[position+1:len(PageTemp)]
 								if (PageTemp2.find(u'|') != -1) and (PageTemp2.find(u'|') < PageTemp2.find(u'}}')): # il y a un code langue
 									if EstCodeLangue == "false":
-										PageEnd = PageEnd + PageTemp[0:position+PageTemp2.find(u'|')+1] + u'|nocat=1}}'
+										if debogage == True: print u' retrait du code langue'
+										if PageTemp2.find(u'|') > PageTemp2.find(u'}}'):
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'}}')+1] + u'|nocat=1}}'
+										else:
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'|')+1] + u'|nocat=1}}'
 										PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 										break
 									else:
-										PageEnd = PageEnd + PageTemp[0:position+PageTemp2.find(u'|')+2] + codelangue + u'}}'
+										if debogage == True: print u' avec code langue'
+										if PageTemp2.find(u'|') > PageTemp2.find(u'}}'):
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'}}')+1] + u'|' + codelangue + u'}}'
+										else:
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'|')+2] + codelangue + u'}}'
 										PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 										break
 								else: # Pas de code langue
-									PageEnd = PageEnd + PageTemp[0:position+1+PageTemp2.find(u'}}')] + u'|' + codelangue + u'}}'
+									PageEnd = PageEnd + PageTemp[:position+1+PageTemp2.find(u'}}')] + u'|' + codelangue + u'}}'
 									PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 									break
 						if (EstCodeLangue == "false"
@@ -2794,11 +2819,19 @@ def modification(PageHS):
 								PageTemp2 = PageTemp[position+1:len(PageTemp)]
 								if (PageTemp2.find(u'|') != -1) or (PageTemp2.find(u'|') < PageTemp2.find(u'}}')): # il y a un code langue
 									if EstCodeLangue == "false":
-										PageEnd = PageEnd + PageTemp[0:position+PageTemp2.find(u'|')+1] + u'|nocat=1}}'
+										if debogage == True: print u' retrait du code langue'
+										if PageTemp2.find(u'|') > PageTemp2.find(u'}}'):
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'}}')+1] + u'|nocat=1}}'
+										else:
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'|')+1] + u'|nocat=1}}'
 										PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 										break
 									else:
-										PageEnd = PageEnd + PageTemp[0:position+PageTemp2.find(u'|')+2] + codelangue + u'}}'
+										if debogage == True: print u' avec code langue'
+										if PageTemp2.find(u'|') > PageTemp2.find(u'}}'):
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'}}')+1] + u'|' + codelangue + u'}}'
+										else:
+											PageEnd = PageEnd + PageTemp[0:position+PageTemp2.find(u'|')+2] + codelangue + u'}}'
 										PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 										break
 								else: # Pas de code langue
@@ -2815,7 +2848,58 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 							PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
-						
+
+					elif Modele[p] == u'antiquité':
+						if (PageTemp.find(u'spéc=') != -1 and PageTemp.find(u'spéc=') < PageTemp.find("}}")):
+							if PageTemp.find(u'spéc=') > position+1:
+								if debogage == True: print u'spéc= est après le code langue'
+								if (EstCodeLangue == "false"
+	) or (PageTemp.find(u'Catégorie:Provinces romaines‎'
+	) != -1 and (PageTemp.find(u':Catégorie:Provinces romaines‎') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Provinces romaines‎') + 1 != PageTemp.rfind(u'Catégorie:Provinces romaines‎'))):
+									PageEnd = PageEnd + Modele[p] + u'|nocat=1|' + PageTemp[PageTemp.find(u'spéc='):PageTemp.find(u'}}')+2]
+									PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
+									break
+								else:
+									PageEnd = PageEnd + Modele[p] + u'|' + codelangue + PageTemp[PageTemp.find(u'spéc=')-1:PageTemp.find(u'}}')+2]
+									PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
+									break
+							else:
+								if debogage == True: print u'spéc= est avant un éventuel code langue'
+								PageTemp2 = PageTemp[position+1:len(PageTemp)]
+								if (PageTemp2.find(u'|') != -1) or (PageTemp2.find(u'|') < PageTemp2.find(u'}}')):
+									if EstCodeLangue == "false":
+										if debogage == True: print u' retrait du code langue'
+										if PageTemp2.find(u'|') > PageTemp2.find(u'}}'):
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'}}')+1] + u'|nocat=1}}'
+										else:
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'|')+1] + u'|nocat=1}}'
+										PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
+										break
+									else:
+										if debogage == True: print u' avec code langue'
+										if PageTemp2.find(u'|') > PageTemp2.find(u'}}'):
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'}}')+1] + u'|' + codelangue + u'}}'
+										else:
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'|')+2] + codelangue + u'}}'
+										PageTemp = PageTemp[PageTemp.find(u'}}')+2:len(PageTemp)]
+										break
+								else:
+									if debogage == True: print u' pas de code langue'
+									PageEnd = PageEnd + PageTemp[0:position+1+PageTemp2.find(u'}}')] + u'|' + codelangue + u'}}'
+									PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
+									break
+						if (EstCodeLangue == "false"
+	) or (PageTemp.find(u'Catégorie:Provinces romaines‎'
+	) != -1 and (PageTemp.find(u':Catégorie:Provinces romaines‎') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Provinces romaines‎') + 1 != PageTemp.rfind(u'Catégorie:Provinces romaines‎'))):
+							PageEnd = PageEnd + PageTemp[0:position] + u'|nocat=1}}'
+							PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
+						else:
+							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+							PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
+						break
+									
 					elif Modele[p] == u'plante':
 						if (PageTemp.find(u'spéc=') != -1 and PageTemp.find(u'spéc=') < PageTemp.find("}}")):
 							if PageTemp.find(u'spéc=') > position+1: # spéc= est après le code langue
@@ -2834,11 +2918,19 @@ def modification(PageHS):
 								PageTemp2 = PageTemp[position+1:len(PageTemp)]
 								if (PageTemp2.find(u'|') != -1) or (PageTemp2.find(u'|') < PageTemp2.find(u'}}')): # il y a un code langue
 									if EstCodeLangue == "false":
-										PageEnd = PageEnd + PageTemp[0:position+PageTemp2.find(u'|')+1] + u'|nocat=1}}'
+										if debogage == True: print u' retrait du code langue'
+										if PageTemp2.find(u'|') > PageTemp2.find(u'}}'):
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'}}')+1] + u'|nocat=1}}'
+										else:
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'|')+1] + u'|nocat=1}}'
 										PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 										break
 									else:
-										PageEnd = PageEnd + PageTemp[0:position+PageTemp2.find(u'|')+2] + codelangue + u'}}'
+										if debogage == True: print u' avec code langue'
+										if PageTemp2.find(u'|') > PageTemp2.find(u'}}'):
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'}}')+1] + u'|' + codelangue + u'}}'
+										else:
+											PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'|')+2] + codelangue + u'}}'
 										PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 										break
 								else: # Pas de code langue

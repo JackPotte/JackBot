@@ -1,4 +1,5 @@
 cookieprefix=None
+GeoIP=FR:Saint-denis:48.9333:2.3667:v4
 frwikiversityUserName=JackBot
 frwikiversitySession=d37a2084c89f849d9e703375bfa92c50
 frwikiversityUserID=8020
