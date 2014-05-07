@@ -33,8 +33,8 @@ debogageLent = False
 TailleAnagramme = 5 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
 # Modèles du site à traiter
-limit2 = 131 # Paragraphes sans modèle catégorisant, {{voir| et {{voir/ sont gérés individuellement
-limit6 = 978 # Somme des modèles traités
+limit2 = 134 # Paragraphes sans modèle catégorisant, {{voir| et {{voir/ sont gérés individuellement
+limit6 = 995 # Somme des modèles traités
 Modele = range(1, limit6+1)
 Section = range(1, limit2+1)
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
@@ -202,13 +202,13 @@ Modele[80] = u'-var-typo-'
 Section[80] = u'variante typographique'
 Modele[81] = u'-onoma-'
 Section[81] = u'onomatopée'
+Modele[82] = u'-onomatopée-'
+Section[82] = u'onomatopée'
+Modele[83] = u'-interjection-'
+Section[83] = u'interjection'
 
-limit1 = 82 # Paragraphes avec modèle catégorisant
+limit1 = 84 # Paragraphes avec modèle catégorisant
 # http://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Mod%C3%A8les_de_contexte
-Modele[82] = u'-étym-'
-Section[82] = u'étymologie'
-Modele[83] = u'-pron-'
-Section[83] = u'prononciation'
 Modele[84] = u'-réf-'
 Section[84] = u'références'
 Modele[85] = u'-sino-dico-'
@@ -221,10 +221,10 @@ Modele[88] = u'-anagrammes-'
 Section[88] = u'anagrammes'
 Modele[89] = u'-anagr-'
 Section[89] = u'anagrammes'
+Modele[90] = u'-étym-'
+Section[90] = u'étymologie'
 
-limit14 =90
-Modele[90] = u'-apr-'
-Section[90] = u'apparentés'
+limit14 = 91
 Modele[91] = u'-conjug-'
 Section[91] = u'conjugaison'
 Modele[92] = u'-cit-'
@@ -299,21 +299,22 @@ Modele[126] = u'-abrév-'
 Section[126] = u'abréviations'
 Modele[127] = u'-dial-'
 Section[127] = u'dial'
-#Modele[128] = u''
-#Section[128] = u''
+Modele[128] = u'-apr-'
+Section[128] = u'apparentés'
 
-limit15 = 128
-Modele[128] = u'-notes-'
-Section[128] = u'notes'
+limit15 = 129
 Modele[129] = u'trad-trier'
 Section[129] = u'traductions à trier'
-Modele[130] = u'-note-'
-Section[130] = u'note'
+Modele[130] = u'-coupure-'
+Section[130] = u'coupure'
+Modele[131] = u'-notes-'
+Section[131] = u'notes'
+Modele[132] = u'-note-'
+Section[132] = u'note'
+Modele[133] = u'-pron-'
+Section[133] = u'prononciation'
 
 limit2 = limit2  # Déclarée plus haut
-Modele[131] = u'trad+'
-Modele[132] = u'trad--'
-Modele[133] = u'trad-'
 Modele[134] = u'préciser'
 Modele[135] = u'?'
 Modele[136] = u'doute'
@@ -325,41 +326,40 @@ Modele[141] = u'suppression'
 Modele[142] = u'supp'
 Modele[143] = u'SI'
 Modele[144] = u'supprimer ?'
-Modele[145] = u'PàS'
-Modele[146] = u'voir'	
-Modele[147] = u'('
-Modele[148] = u')'
-Modele[149] = u'trad-début'
-Modele[150] = u'trad-fin'
-Modele[151] = u'titre incorrect'
-Modele[152] = u'trad'
+Modele[145] = u'PàS'	
+Modele[146] = u'('
+Modele[147] = u')'
+Modele[148] = u'trad-début'
+Modele[149] = u'trad-fin'
+Modele[150] = u'titre incorrect'
+Modele[151] = u'trad--'
+Modele[152] = u'trad-'
+Modele[153] = u'trad+'
+Modele[154] = u'trad'
+Modele[155] = u'voir'
 
-limit25 = 153
-Modele[153] = u'b-pl-cour'
-Modele[154] = u'b-m-cour'
-Modele[155] = u'n'
-Modele[156] = u'c'
+limit25 = 156
 Modele[156] = u'mf'
 Modele[157] = u'mf?'
 Modele[158] = u'fm ?'
-Modele[159] = u'plus courant'
-Modele[160] = u'moins courant'
-Modele[161] = u'comparatif'
-Modele[162] = u'superlatif'
-Modele[163] = u'plus rare'
-Modele[164] = u'beaucoup plus courant'
-Modele[165] = u'beaucoup moins courant'
+Modele[159] = u'comparatif'
+Modele[160] = u'superlatif'
+Modele[161] = u'beaucoup plus courant'
+Modele[162] = u'plus courant'
+Modele[163] = u'beaucoup moins courant'
+Modele[164] = u'moins courant'
+Modele[165] = u'b-pl-cour'
 Modele[166] = u'pl-cour'
-Modele[167] = u'm-cour'
-Modele[168] = u'titre alt'
-Modele[169] = u'pl-rare'
+Modele[167] = u'b-m-cour'
+Modele[168] = u'm-cour'
+Modele[169] = u'titre alt'
+Modele[170] = u'n'
+Modele[171] = u'c'
+Modele[172] = u'pl-rare'
+Modele[173] = u'plus rare'
 
-limit3 = 170 # Paragraphes sans modèle catégorisant pouvant contenir des modèles
+limit3 = 174 # Paragraphes sans modèle catégorisant pouvant contenir des modèles
 # http://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Mod%C3%A8les_de_domaine_d%E2%80%99utilisation
-Modele[170] = u'usines'
-Modele[171] = u'miroiterie'
-Modele[172] = u'fontainerie'
-Modele[173] = u'phonétique'
 Modele[174] = u'apiculture'
 Modele[175] = u'saccusatif'
 Modele[176] = u'sdatif'
@@ -1020,18 +1020,36 @@ Modele[829] = u'avions'
 Modele[830] = u'figures'
 Modele[831] = u'bateaux'
 Modele[832] = u'substances'
-#[[Spécial:newpages]] : pas "outils" faute de lexique, ustensiles, édifices, danses, chiens
+Modele[833] = u'usines'
+Modele[834] = u'miroiterie'
+Modele[835] = u'ustensiles'
+Modele[836] = u'édifices'
+Modele[837] = u'danses'
+Modele[838] = u'chiens'
+Modele[839] = u'poet'
+Modele[840] = u'peu usité'
+Modele[841] = u'journalisme'
+Modele[842] = u'lézards'
+Modele[843] = u'vitrerie'
+Modele[844] = u'vents'
+Modele[845] = u'usinage'
+Modele[846] = u'maroquinerie'
+Modele[847] = u'dialectes'
+Modele[848] = u'fontainerie'
+Modele[849] = u'nucléaire'
+Modele[850] = u'phonétique'
+#[[Spécial:newpages]] : pas "outils" faute de lexique, 
 
-limit4 = 833	# code langue quoi qu'il arrive
-Modele[834] = u'ébauche-étym-nom-scientifique'
-Modele[835] = u'ébauche-étym'
-Modele[836] = u'ébauche-exe'
-Modele[837] = u'ébauche-pron'
-Modele[838] = u'ébauche-syn'
-Modele[839] = u'note-gentilé'
-Modele[840] = u'ébauche-trans'
-Modele[841] = u'ébauche-déf'
-Modele[842] = u'ébauche'
+limit4 = 851	# code langue quoi qu'il arrive
+Modele[851] = u'ébauche-exe'
+Modele[852] = u'ébauche-pron'
+Modele[853] = u'ébauche-syn'
+Modele[854] = u'note-gentilé'
+Modele[855] = u'ébauche-trans'
+Modele[856] = u'ébauche-étym-nom-scientifique'
+Modele[857] = u'ébauche-étym'
+Modele[858] = u'ébauche-déf'
+Modele[859] = u'ébauche'
 '''
 # non traités
 Modele[] = u'spécialement' 
@@ -1049,24 +1067,7 @@ Modele[] = u'perf'
 Modele[] = u'imperf'
 '''
 # Modèles régionaux, pb du nocat pour les prononciations
-limit5 = 843
-Modele[843] = u'Catalogne'
-Modele[844] = u'Champagne'
-Modele[845] = u'Chili'
-Modele[846] = u'Chine'
-Modele[847] = u'Colombie'
-Modele[848] = u'Commonwealth'
-Modele[849] = u'Congo'
-Modele[850] = u'Congo-Brazzaville'
-Modele[851] = u'Congo-Kinshasa'
-Modele[852] = u'Corse'
-Modele[853] = u'Corée du Nord'
-Modele[854] = u'Corée du Sud'
-Modele[855] = u'Costa Rica'
-Modele[856] = u'Côte d’Ivoire'
-Modele[857] = u'Cuba'
-Modele[858] = u'Écosse'
-Modele[859] = u'Espagne'
+limit5 = 860
 Modele[860] = u'États-Unis'
 
 Modele[861] = u'Moldavie'
@@ -1187,8 +1188,25 @@ Modele[973] = u'Bretagne'
 Modele[974] = u'Burkina Faso'
 Modele[975] = u'Cameroun'
 Modele[976] = u'Canada'
+Modele[977] = u'Catalogne'
+Modele[978] = u'Champagne'
+Modele[979] = u'Chili'
+Modele[980] = u'Chine'
+Modele[981] = u'Colombie'
+Modele[982] = u'Commonwealth'
+Modele[983] = u'Congo'
+Modele[984] = u'Congo-Brazzaville'
+Modele[985] = u'Congo-Kinshasa'
+Modele[986] = u'Corse'
+Modele[987] = u'Corée du Nord'
+Modele[988] = u'Corée du Sud'
+Modele[989] = u'Costa Rica'
+Modele[990] = u'Côte d’Ivoire'
+Modele[991] = u'Cuba'
+Modele[992] = u'Écosse'
+Modele[993] = u'Espagne'
 # Modèles de pronociation à synchroniser
-Modele[977] = u'fr-verbe-flexion'
+Modele[994] = u'fr-verbe-flexion'
 #Modele[] = u'fr-rég'
 #Modele[] = u'fr-inv'
 #Modele[] = u'fr-accord-rég'
@@ -1234,6 +1252,11 @@ def modification(PageHS):
 		return
 	PageTemp = PageBegin
 	CleTri = CleDeTri.CleDeTri(PageHS)
+	
+	regex = ur'{{=([a-z\-]+)=}}'
+	if re.search(regex, PageTemp):
+		PageTemp = re.sub(regex, ur'{{langue|\1}}', PageTemp)
+		if summary.find(u'{{langue}}') == -1: summary = summary + u', déploiement de {{langue}}'
 	
 	# Interwikis
 	if PageTemp.find(u'{{langue|en}}') != -1 and PageTemp.find(u'[[en:') == -1:
@@ -1287,7 +1310,7 @@ def modification(PageHS):
 		
 		if debogageLent == True: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 		if PageTemp.find(u'|===') != -1 or PageTemp.find(u'{===') != -1:
-			print u' *==='
+			if debogage == True: print u' *==='
 			return
 		
 		PageTemp = PageTemp.replace(u'{{S|adj|', u'{{S|adjectif|')
@@ -1310,10 +1333,14 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|Étymologie}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|exp}}', u'{{S|expressions}}')
 		PageTemp = PageTemp.replace(u'{{S|gent}}', u'{{S|gentilés}}')
+		PageTemp = PageTemp.replace(u'{{S|holo}}', u'{{S|holonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|homo}}', u'{{S|homophones}}')
 		PageTemp = PageTemp.replace(u'{{S|homonymes}}', u'{{S|homophones}}')
 		PageTemp = PageTemp.replace(u'{{S|hyper}}', u'{{S|hyperonymes}}')
+		PageTemp = PageTemp.replace(u'{{S|méro}}', u'{{S|méronymes}}')
+		PageTemp = PageTemp.replace(u'{{S|phrase}}', u'{{S|locution phrase}}')
 		PageTemp = PageTemp.replace(u'{{S|pron}}', u'{{S|prononciation}}')
+		PageTemp = PageTemp.replace(u'{{S|Prononciation}}', u'{{S|prononciation}}')
 		PageTemp = PageTemp.replace(u'{{S|prononciations}}', u'{{S|prononciation}}')
 		PageTemp = PageTemp.replace(u'{{S|q-syn}}', u'{{S|quasi-synonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|réf}}', u'{{S|références}}')
@@ -1654,6 +1681,19 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{term|Antiquité romaine}}', u'{{antiquité|spéc=romaine}}')
 		PageTemp = PageTemp.replace(u'{{antiquité|fr}} {{terme|grecque}}', u'{{antiquité|spéc=grecque}}')
 		PageTemp = PageTemp.replace(u'{{antiquité|fr}} {{terme|romaine}}', u'{{antiquité|spéc=romaine}}')
+		PageTemp = PageTemp.replace(u'{{grc}}', u'grec ancien')
+		PageTemp = PageTemp.replace(u'{{la}}', u'latin')
+		PageTemp = PageTemp.replace(u'{{fro}}', u'ancien français')
+		PageTemp = PageTemp.replace(u'{{frm}}', u'moyen français')
+		PageTemp = PageTemp.replace(u'{{fr}}', u'français')
+		PageTemp = PageTemp.replace(u'{{ang}}', u'anglo-saxon')
+		PageTemp = PageTemp.replace(u'{{enm}}', u'moyen anglais')
+		PageTemp = PageTemp.replace(u'{{en}}', u'anglais')
+		PageTemp = PageTemp.replace(u'{{ru}}', u'russe')
+		PageTemp = PageTemp.replace(u'{{nl}}', u'néerlandais')
+		PageTemp = PageTemp.replace(u'{{pt}}', u'portugais')
+		PageTemp = PageTemp.replace(u'{{it}}', u'italien')
+		
 		while PageTemp.find(u'[[Annexe:Couleurs en français]]') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'[[Annexe:Couleurs en français]]')] + u'{{Thésaurus|fr|couleur}}' + PageTemp[PageTemp.find(u'[[Annexe:Couleurs en français]]')+len(u'[[Annexe:Couleurs en français]]'):len(PageTemp)]
 		while PageTemp.find(u'{{Annexe|Couleurs en français}}') != -1:
@@ -2380,7 +2420,7 @@ def modification(PageHS):
 						
 					# Si on est dans un modèle spécial, le traiter, sinon par catégorie de génériques
 					if not codelangue and (p < limit1 or p >= limit3) and Modele[p] != u'ébauche':
-						if debogage == True: print p
+						if debogage == True: print PageTemp.encode(config.console_encoding, 'replace')
 						#if debogage == True: raw_input(PageEnd.encode(config.console_encoding, 'replace'))
 						PageEnd = u'{{formater|Code langue manquant dans ' + Modele[p] + u' après le caractère ' + str(len(PageEnd)) + u'}}\n' + PageBegin
 						summary = u'Page à formater manuellement'
@@ -3702,6 +3742,10 @@ def modification(PageHS):
 	) or (PageTemp.find(u'Catégorie:Éléments chimiques'
 	) != -1 and (PageTemp.find(u'Catégorie:Éléments chimiques') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Éléments chimiques') + 1 != PageTemp.rfind(u'Catégorie:Éléments chimiques'))
+
+	) or (PageTemp.find(u'Catégorie:Substances chimiques'
+	) != -1 and (PageTemp.find(u'Catégorie:Substances chimiques') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Substances chimiques') + 1 != PageTemp.rfind(u'Catégorie:Substances chimiques'))
 
 	) or (PageTemp.find(u'Catégorie:Symboles des éléments chimiques'
 	) != -1 and (PageTemp.find(u'Catégorie:Symboles des éléments chimiques') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
