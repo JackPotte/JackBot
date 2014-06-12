@@ -20,7 +20,7 @@ options -file, -ref, -links, ...
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id: 0793b6783ae190f06fd91ba0890261bb940c4704 $'
+__version__='$Id: 0a35d09e89bd0cccfface8e011cf9b59f04ba384 $'
 #
 import re, sys
 import wikipedia as pywikibot

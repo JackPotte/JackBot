@@ -34,7 +34,7 @@ TailleAnagramme = 5 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
 # Modèles du site à traiter
 limit2 = 134 # Paragraphes sans modèle catégorisant, {{voir| et {{voir/ sont gérés individuellement
-limit6 = 995 # Somme des modèles traités
+limit6 = 1003 # Somme des modèles traités
 Modele = range(1, limit6+1)
 Section = range(1, limit2+1)
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
@@ -223,10 +223,10 @@ Modele[89] = u'-anagr-'
 Section[89] = u'anagrammes'
 Modele[90] = u'-étym-'
 Section[90] = u'étymologie'
+Modele[91] = u'-pron-'
+Section[91] = u'prononciation'
 
-limit14 = 91
-Modele[91] = u'-conjug-'
-Section[91] = u'conjugaison'
+limit14 = 92
 Modele[92] = u'-cit-'
 Section[92] = u'citations'
 Modele[93] = u'-compos-'
@@ -301,18 +301,18 @@ Modele[127] = u'-dial-'
 Section[127] = u'dial'
 Modele[128] = u'-apr-'
 Section[128] = u'apparentés'
+Modele[129] = u'-conjug-'
+Section[129] = u'conjugaison'
 
-limit15 = 129
-Modele[129] = u'trad-trier'
-Section[129] = u'traductions à trier'
+limit15 = 130
 Modele[130] = u'-coupure-'
 Section[130] = u'coupure'
 Modele[131] = u'-notes-'
 Section[131] = u'notes'
 Modele[132] = u'-note-'
 Section[132] = u'note'
-Modele[133] = u'-pron-'
-Section[133] = u'prononciation'
+Modele[133] = u'trad-trier'
+Section[133] = u'traductions à trier'
 
 limit2 = limit2  # Déclarée plus haut
 Modele[134] = u'préciser'
@@ -562,7 +562,7 @@ Modele[372] = u'optique'
 Modele[373] = u'optométrie'
 Modele[374] = u'ornithologie'
 Modele[375] = u'paléographie'
-Modele[376] = u'paléontologie'
+Modele[376] = u'paléontologie' # Dinosaures
 Modele[377] = u'papillons'
 Modele[378] = u'pâtisserie'
 Modele[379] = u'pays'
@@ -853,7 +853,7 @@ Modele[662] = u'germanisme'
 Modele[663] = u'squelette'
 Modele[664] = u'muscle'
 Modele[665] = u'gymnastique'
-Modele[666] = u'boxe'
+Modele[666] = u'déverbal sans suffixe'
 Modele[667] = u'déverbal'
 Modele[668] = u'injurieux'
 Modele[669] = u'réflexif'
@@ -1038,18 +1038,27 @@ Modele[847] = u'dialectes'
 Modele[848] = u'fontainerie'
 Modele[849] = u'nucléaire'
 Modele[850] = u'phonétique'
+Modele[851] = u'par dérision'
+Modele[852] = u'dérision'
+Modele[853] = u'déris'
+Modele[854] = u'nucl'
+Modele[855] = u'un os'
+Modele[856] = u'boxe'
+Modele[857] = u'confiserie'
+Modele[858] = u'abréviation de'
+#instruments vins
 #[[Spécial:newpages]] : pas "outils" faute de lexique, 
 
-limit4 = 851	# code langue quoi qu'il arrive
-Modele[851] = u'ébauche-exe'
-Modele[852] = u'ébauche-pron'
-Modele[853] = u'ébauche-syn'
-Modele[854] = u'note-gentilé'
-Modele[855] = u'ébauche-trans'
-Modele[856] = u'ébauche-étym-nom-scientifique'
-Modele[857] = u'ébauche-étym'
-Modele[858] = u'ébauche-déf'
-Modele[859] = u'ébauche'
+limit4 = 859	# code langue quoi qu'il arrive
+Modele[859] = u'ébauche-exe'
+Modele[860] = u'ébauche-pron'
+Modele[861] = u'ébauche-syn'
+Modele[862] = u'note-gentilé'
+Modele[863] = u'ébauche-trans'
+Modele[864] = u'ébauche-étym-nom-scientifique'
+Modele[865] = u'ébauche-étym'
+Modele[866] = u'ébauche-déf'
+Modele[867] = u'ébauche'
 '''
 # non traités
 Modele[] = u'spécialement' 
@@ -1067,16 +1076,7 @@ Modele[] = u'perf'
 Modele[] = u'imperf'
 '''
 # Modèles régionaux, pb du nocat pour les prononciations
-limit5 = 860
-Modele[860] = u'États-Unis'
-
-Modele[861] = u'Moldavie'
-Modele[862] = u'Nantes'
-Modele[863] = u'Navarre'
-Modele[864] = u'Niger'
-Modele[865] = u'Nigéria'
-Modele[866] = u'Normandie'
-Modele[867] = u'Nouvelle-Calédonie'
+limit5 = 868
 Modele[868] = u'Nouvelle-Zélande'
 Modele[869] = u'Occitanie'
 Modele[870] = u'Océanie'
@@ -1155,8 +1155,9 @@ Modele[940] = u'Mayotte'
 Modele[941] = u'Mexique'
 Modele[942] = u'Midi'
 Modele[943] = u'Midi toulousain'
-Modele[944] = u'Guadeloupe'
-Modele[945] = u'Acadie'
+Modele[944] = u'Moldavie'
+Modele[945] = u'Nantes'
+
 Modele[946] = u'Afrique'
 Modele[947] = u'Afrique du Sud'
 Modele[948] = u'Algérie'
@@ -1205,8 +1206,19 @@ Modele[990] = u'Côte d’Ivoire'
 Modele[991] = u'Cuba'
 Modele[992] = u'Écosse'
 Modele[993] = u'Espagne'
+Modele[994] = u'États-Unis'
+Modele[995] = u'Guadeloupe'
+
+Modele[996] = u'Acadie'
+
+Modele[997] = u'Navarre'
+Modele[998] = u'Niger'
+Modele[999] = u'Nigéria'
+Modele[1000] = u'Normandie'
+Modele[1001] = u'Nouvelle-Calédonie'
+
 # Modèles de pronociation à synchroniser
-Modele[994] = u'fr-verbe-flexion'
+Modele[1002] = u'fr-verbe-flexion'
 #Modele[] = u'fr-rég'
 #Modele[] = u'fr-inv'
 #Modele[] = u'fr-accord-rég'
@@ -1324,6 +1336,7 @@ def modification(PageHS):
 		
 		PageTemp = PageTemp.replace(u'{{S|anagramme}}', u'{{S|anagrammes}}')
 		PageTemp = PageTemp.replace(u'{{S|anagr}}', u'{{S|anagrammes}}')
+		PageTemp = PageTemp.replace(u'{{S|anto}}', u'{{S|antonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|apr}}', u'{{S|apparentés}}')
 		PageTemp = PageTemp.replace(u'{{S|Apparentés}}', u'{{S|apparentés}}')
 		PageTemp = PageTemp.replace(u'{{S|compos}}', u'{{S|composés}}')
@@ -1337,6 +1350,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|homo}}', u'{{S|homophones}}')
 		PageTemp = PageTemp.replace(u'{{S|homonymes}}', u'{{S|homophones}}')
 		PageTemp = PageTemp.replace(u'{{S|hyper}}', u'{{S|hyperonymes}}')
+		PageTemp = PageTemp.replace(u'{{S|hypo}}', u'{{S|hyponymes}}')
 		PageTemp = PageTemp.replace(u'{{S|méro}}', u'{{S|méronymes}}')
 		PageTemp = PageTemp.replace(u'{{S|phrase}}', u'{{S|locution phrase}}')
 		PageTemp = PageTemp.replace(u'{{S|pron}}', u'{{S|prononciation}}')
@@ -2438,7 +2452,7 @@ def modification(PageHS):
 								PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 								break							
 						break
-					elif Modele[p] == u'pron' or Modele[p] == u'phon' or Modele[p] == u'dénominal de' or Modele[p] == u'déverbal de' or Modele[p] == u'déverbal' or Modele[p] == u'superlatif de' or Modele[p] == u'comparatif de':
+					elif Modele[p] == u'pron' or Modele[p] == u'phon' or Modele[p] == u'dénominal de' or Modele[p] == u'déverbal de' or Modele[p] == u'déverbal' or Modele[p] == u'superlatif de' or Modele[p] == u'comparatif de' or Modele[p] == u'déverbal sans suffixe' or Modele[p] == u'abréviation de':
 						if codelangue != u'conv':
 							# Trie des lettres de l'API
 							if Modele[p] == u'pron':
@@ -3737,7 +3751,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
-					elif Modele[p] == u'chimie' or Modele[p] == u'chim':
+					elif Modele[p] == u'chimie' or Modele[p] == u'chim' or Modele[p] == u'biochimie' or Modele[p] == u'bioch':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Éléments chimiques'
 	) != -1 and (PageTemp.find(u'Catégorie:Éléments chimiques') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
@@ -4722,6 +4736,7 @@ TraitementLiens = crawlerLink(u'Modèle:plur',u'')
 TraitementLiens = crawlerLink(u'Modèle:pluri',u'')
 TraitementLiens = crawlerLink(u'Modèle:=langue=',u'')
 TraitementLiens = crawlerLink(u'Modèle:-déf-',u'')
+TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
 '''
 TraitementLiensCategorie = crawlerCatLink(u'Catégorie:Modèles désuets',u'')
 TraitementLiens = crawlerLink(u'Modèle:SAMPA',u'') : remplacer les tableaux de prononciations ?
@@ -4730,7 +4745,7 @@ TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Conjugaisons manquant
 TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects:pron conv',True,u'')
 
 # Modèles
-TraitementPage = modification(u'Utilisateur:JackBot/test')
+
 TraitementLiens = crawlerLink(u'Modèle:terme',u'')
 TraitementFichier = crawlerFile(u'articles_WTin.txt')
 TraitementLiensCategorie = crawlerCatLink(u'Modèles de code langue',u'')
@@ -4748,4 +4763,5 @@ python interwiki.py -lang:fr -family:wiktionary -wiktionary -new:100000
 '''
 # à faire : remplacer == titre section == par S|titreSection
 # 			chercher {{trad-début|= (trad-trier)
+#           ajouter les {{pron|remplie|xx}} sur la ligne de définition des pluriels
 # refondre le tableau des modèles en xml avec les catégories nocat en colonne3

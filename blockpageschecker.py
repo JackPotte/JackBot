@@ -61,7 +61,7 @@ python blockpageschecker.py -show -protectedpages:4
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id: 4329983dc15a40aee1540da83e65e49ef7612281 $'
+__version__ = '$Id: 351945a98cc4244fcacc691f44d81a6ad2d70540 $'
 #
 
 import re
