@@ -18,27 +18,32 @@ def modification(PageHS):
 	summary = u'[[Catégorie:Palindromes]]'
 	#if debogage == True: print u'------------------------------------'
 	#print(PageHS.encode(config.console_encoding, 'replace'))
-	if len(PageHS) > 1 and PageHS == PageHS[::-1]:
+	
+	# On retire les diacritiques et ignore la casse
+	# le flag re.UNICODE est utilisé pour que \w matche toute lettre de tout alphabet
+	titre_denude = unicodedata.normalize('NFKD', PageHS).lower()
+	titre_denude = re.sub(ur'[^\w]', u'', titre_denude, flags=re.UNICODE)
+	if len(titre_denude) > 1 and titre_denude == titre_denude[::-1]:
 		try:
 			page = Page(site,PageHS)
 		except UnicodeDecodeError: 
-			print "UnicodeDecodeError l 26"
+			print "UnicodeDecodeError l 30"
 			return
 			
 		if page.exists() and page.namespace() == 0:
 			try:
 				PageBegin = page.get()
 			except wikipedia.NoPage:
-				print "NoPage l 28"
+				print "NoPage l 36"
 				return
 			except wikipedia.LockedPage: 
-				print "Locked l 31"
+				print "Locked l 40"
 				return
 			except wikipedia.IsRedirectPage: 
-				print "IsRedirect l 34"
+				print "IsRedirect l 43"
 				return
 		else:
-			print "NoPage l 37"
+			print "NoPage l 46"
 			return
 		PageTemp = PageBegin
 		PageEnd = u''
@@ -52,13 +57,16 @@ def modification(PageHS):
 				NomLangue = langues.langues[codelangue].decode("utf8")
 				if NomLangue != u'':
 					#if debogage == True: print NomLangue.encode(config.console_encoding, 'replace')
-					if PageTemp.find(u'[[Catégorie:Palindromes en ' + NomLangue) == -1:
+					if PageTemp.find(u'[[Catégorie:Palindromes en ' + NomLangue + ']]') == -1:
 						# Modification de la page
 						if PageTemp.find('{{langue|') != -1:
 							PageTemp2 = PageTemp[:PageTemp.find('{{langue|')]
 							PageTemp = PageTemp[:PageTemp2.rfind(u'\n')] + u'\n[[Catégorie:Palindromes en '+NomLangue+']]\n\n' + PageTemp[PageTemp2.rfind(u'\n'):]
 						else:
 							PageTemp = PageTemp + u'\n\n[[Catégorie:Palindromes en '+NomLangue+']]'
+						# On retire les lignes vides entre les catégories
+						PageTemp = re.sub(ur'(\[\[Catégorie:[^\]]*?\]\])\n{2,}\[\[Catégorie', ur'\1\n[[Catégorie', PageTemp)
+						PageTemp = PageTemp.replace('\n\n\n==', '\n\n==')
 			
 		PageEnd = PageEnd + PageTemp		
 		#if debogage == True: print (u'--------------------------------------------------------------------------------------------')
