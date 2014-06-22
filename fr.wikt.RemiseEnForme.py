@@ -4768,4 +4768,7 @@ python interwiki.py -lang:fr -family:wiktionary -wiktionary -new:100000
 # 			chercher {{trad-début|= (trad-trier)
 #           ajouter les {{pron|remplie|xx}} sur la ligne de définition des pluriels
 # refondre le tableau des modèles en xml avec les catégories nocat en colonne3
+<<<<<<< HEAD
 # lister du dump les :en {{t-|fr|inexistants}} et vice-versa
+=======
+>>>>>>> 6a608120e1afe062f2c670724c1326c8cc6cbf7c
