@@ -193,7 +193,7 @@ Section[75] = u'faux proverbe'
 Modele[76] = u'-prov-'
 Section[76] = u'proverbe'
 Modele[77] = u'-loc-phr-'
-Section[77] = u'locution phrase'
+Section[77] = u'locution-phrase'
 Modele[78] = u'-loc-'
 Section[78] = u'locution'
 Modele[79] = u'-locution-'
@@ -1328,7 +1328,8 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|adj|', u'{{S|adjectif|')
 		PageTemp = PageTemp.replace(u'{{S|adjectifs|', u'{{S|adjectif|')
 		PageTemp = PageTemp.replace(u'{{S|adv|', u'{{S|adverbe}}')
-		PageTemp = PageTemp.replace(u'{{S|locution-phrase|', u'{{S|locution phrase|')
+		PageTemp = PageTemp.replace(u'{{S|locution phrase|', u'{{S|locution-phrase|')
+		PageTemp = PageTemp.replace(u'{{S|phrase|', u'{{S|locution-phrase|')
 		PageTemp = PageTemp.replace(u'{{S|nom-fam|', u'{{S|nom de famille|')
 		PageTemp = PageTemp.replace(u'{{S|nom-pr|', u'{{S|nom propre|')
 		PageTemp = PageTemp.replace(u'{{S|symb|', u'{{S|symbole|')
@@ -1352,7 +1353,6 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|hyper}}', u'{{S|hyperonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|hypo}}', u'{{S|hyponymes}}')
 		PageTemp = PageTemp.replace(u'{{S|méro}}', u'{{S|méronymes}}')
-		PageTemp = PageTemp.replace(u'{{S|phrase}}', u'{{S|locution phrase}}')
 		PageTemp = PageTemp.replace(u'{{S|pron}}', u'{{S|prononciation}}')
 		PageTemp = PageTemp.replace(u'{{S|Prononciation}}', u'{{S|prononciation}}')
 		PageTemp = PageTemp.replace(u'{{S|prononciations}}', u'{{S|prononciation}}')
