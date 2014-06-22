@@ -1471,6 +1471,4 @@ def log(source):
 	txtfile.write(u'\n' + source + u'\n')
 	txtfile.close()
 
-# à faire :
-#	pages liées en suspend
-#	passer les longs PDF comme dans [[w:Apollo 11]]
+# à faire : passer les longs PDF comme dans [[w:Apollo 11]]
