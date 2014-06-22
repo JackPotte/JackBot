@@ -34,7 +34,7 @@ TailleAnagramme = 5 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
 # Modèles du site à traiter
 limit2 = 134 # Paragraphes sans modèle catégorisant, {{voir| et {{voir/ sont gérés individuellement
-limit6 = 1003 # Somme des modèles traités
+limit6 = 1006 # Somme des modèles traités
 Modele = range(1, limit6+1)
 Section = range(1, limit2+1)
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
@@ -1046,19 +1046,21 @@ Modele[855] = u'un os'
 Modele[856] = u'boxe'
 Modele[857] = u'confiserie'
 Modele[858] = u'abréviation de'
-#instruments vins
+Modele[859] = u'instruments'
+Modele[860] = u'vins'
+Modele[861] = u'fleurs'
 #[[Spécial:newpages]] : pas "outils" faute de lexique, 
 
-limit4 = 859	# code langue quoi qu'il arrive
-Modele[859] = u'ébauche-exe'
-Modele[860] = u'ébauche-pron'
-Modele[861] = u'ébauche-syn'
+limit4 = 862	# code langue quoi qu'il arrive
 Modele[862] = u'note-gentilé'
 Modele[863] = u'ébauche-trans'
 Modele[864] = u'ébauche-étym-nom-scientifique'
 Modele[865] = u'ébauche-étym'
 Modele[866] = u'ébauche-déf'
-Modele[867] = u'ébauche'
+Modele[867] = u'ébauche-exe'
+Modele[868] = u'ébauche-pron'
+Modele[869] = u'ébauche-syn'
+Modele[870] = u'ébauche'
 '''
 # non traités
 Modele[] = u'spécialement' 
@@ -1076,10 +1078,7 @@ Modele[] = u'perf'
 Modele[] = u'imperf'
 '''
 # Modèles régionaux, pb du nocat pour les prononciations
-limit5 = 868
-Modele[868] = u'Nouvelle-Zélande'
-Modele[869] = u'Occitanie'
-Modele[870] = u'Océanie'
+limit5 = 871
 Modele[871] = u'Paraguay'
 Modele[872] = u'Paris'
 Modele[873] = u'Pays-Bas'
@@ -1216,9 +1215,12 @@ Modele[998] = u'Niger'
 Modele[999] = u'Nigéria'
 Modele[1000] = u'Normandie'
 Modele[1001] = u'Nouvelle-Calédonie'
+Modele[1002] = u'Nouvelle-Zélande'
+Modele[1003] = u'Occitanie'
+Modele[1004] = u'Océanie'
 
 # Modèles de pronociation à synchroniser
-Modele[1002] = u'fr-verbe-flexion'
+Modele[1005] = u'fr-verbe-flexion'
 #Modele[] = u'fr-rég'
 #Modele[] = u'fr-inv'
 #Modele[] = u'fr-accord-rég'
@@ -1366,6 +1368,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|var}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|variantes ortho}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|var-ortho}}', u'{{S|variantes orthographiques}}')
+		PageTemp = PageTemp.replace(u'{{S|var-ortho|fr}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|voc}}', u'{{S|vocabulaire}}')
 		PageTemp = PageTemp.replace(u'{{S|voir}}', u'{{S|voir aussi}}')
 		
@@ -4765,3 +4768,4 @@ python interwiki.py -lang:fr -family:wiktionary -wiktionary -new:100000
 # 			chercher {{trad-début|= (trad-trier)
 #           ajouter les {{pron|remplie|xx}} sur la ligne de définition des pluriels
 # refondre le tableau des modèles en xml avec les catégories nocat en colonne3
+# lister du dump les :en {{t-|fr|inexistants}} et vice-versa
