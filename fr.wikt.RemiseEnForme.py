@@ -1315,12 +1315,12 @@ def modification(PageHS):
 			regex = ur'[= ]*{{[\-loc]*(' + Modele[p] + u'|S\|'+ Section[p] + ur')([^}]*)}}[= ]*'
 			if re.search(regex, PageTemp):
 				PageTemp = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'\2}} ' + EgalSection, PageTemp)
-				if summary.find(u'{{S}}') == -1: summary = summary + u', [[WT:Prise de décision/Rendre toutes les sections modifiables|déploiement de {{S}}]]'
+				if summary.find(u'{{S}}') == -1 and re.search('{{-\w', PageBegin): summary = summary + u', [[WT:Prise de décision/Rendre toutes les sections modifiables|déploiement de {{S}}]]'
 			
 			regex = ur'[= ]*{{\-flex[\-loc]*(' + Modele[p] + u'|S\|' + Section[p] + ur')\|([^}]*)}}[= ]*'
 			if re.search(regex, PageTemp):
 				PageTemp = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'|\2|flexion}} ' + EgalSection, PageTemp)
-				if summary.find(u'{{S}}') == -1: summary = summary + u', [[WT:Prise de décision/Rendre toutes les sections modifiables|déploiement de {{S}}]]'
+				if summary.find(u'{{S}}') == -1 and re.search('{{-\w', PageBegin): summary = summary + u', [[WT:Prise de décision/Rendre toutes les sections modifiables|déploiement de {{S}}]]'
 		
 		if debogageLent == True: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 		if PageTemp.find(u'|===') != -1 or PageTemp.find(u'{===') != -1:
