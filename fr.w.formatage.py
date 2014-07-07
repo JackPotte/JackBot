@@ -53,7 +53,10 @@ def modification(PageHS):
 	if PageTemp != PageBegin:
 		summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/11#Identifier les liens brisés (le retour ;-))|Vérification des liens externes]]'
 		summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/12#Remplacer_les_.7B.7BCite_web.7D.7D_par_.7B.7BLien_web.7D.7D|traduction de leurs modèles]]'
-
+	regex = ur'({{[l|L]ien *\|[^}]*)traducteur( *=)'
+	if re.search(regex, PageTemp):
+		PageTemp = re.sub(regex, ur'\1trad\2', PageTemp)
+	
 	# Nombres
 	PageTemp = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', PageTemp)
 
@@ -298,6 +301,8 @@ def sauvegarde(PageCourante, Contenu, summary):
 			return
 
 # Lancement quotidient :
+TraitementFile = crawlerFile(input)
+'''
 TraitementLiens = crawlerLink(u'Modèle:Cite web',u'')
 TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
 TraitementLiens = crawlerLink(u'Modèle:Cite news',u'')
@@ -311,7 +316,7 @@ TraitementLiens = crawlerLink(u'Modèle:Lien mort',u'')
 TraitementLiens = crawlerLink(u'Modèle:Docu',u'')
 TraitementLiens = crawlerLink(u'Modèle:Cita web',u'')
 TraitementLiens = crawlerLink(u'Modèle:Cita noticia',u'')
-'''
+
 #TraitementLiens = crawlerLink(u'Modèle:Cite book',u'')	# En stand by suite à réticences d'un tiers
 #TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
 

@@ -33,8 +33,8 @@ debogageLent = False
 TailleAnagramme = 5 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
 # Modèles du site à traiter
-limit2 = 134 # Paragraphes sans modèle catégorisant, {{voir| et {{voir/ sont gérés individuellement
-limit6 = 1006 # Somme des modèles traités
+limit2 = 135 # Paragraphes sans modèle catégorisant, {{voir| et {{voir/ sont gérés individuellement
+limit6 = 1007 # Somme des modèles traités
 Modele = range(1, limit6+1)
 Section = range(1, limit2+1)
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
@@ -211,24 +211,24 @@ limit1 = 84 # Paragraphes avec modèle catégorisant
 # http://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Mod%C3%A8les_de_contexte
 Modele[84] = u'-réf-'
 Section[84] = u'références'
-Modele[85] = u'-sino-dico-'
-Section[85] = u'dico sinogrammes'
-Modele[86] = u'-écrit-'
-Section[86] = u'écriture'
-Modele[87] = u'-voir-'
-Section[87] = u'voir aussi'
-Modele[88] = u'-anagrammes-'
-Section[88] = u'anagrammes'
-Modele[89] = u'-anagr-'
+Modele[85] = u'-références-'
+Section[85] = u'références'
+Modele[86] = u'-sino-dico-'
+Section[86] = u'dico sinogrammes'
+Modele[87] = u'-écrit-'
+Section[87] = u'écriture'
+Modele[88] = u'-voir-'
+Section[88] = u'voir aussi'
+Modele[89] = u'-anagrammes-'
 Section[89] = u'anagrammes'
-Modele[90] = u'-étym-'
-Section[90] = u'étymologie'
-Modele[91] = u'-pron-'
-Section[91] = u'prononciation'
+Modele[90] = u'-anagr-'
+Section[90] = u'anagrammes'
+Modele[91] = u'-étym-'
+Section[91] = u'étymologie'
+Modele[92] = u'-pron-'
+Section[92] = u'prononciation'
 
-limit14 = 92
-Modele[92] = u'-cit-'
-Section[92] = u'citations'
+limit14 = 93
 Modele[93] = u'-compos-'
 Section[93] = u'composés'
 Modele[94] = u'-décl-'
@@ -303,19 +303,20 @@ Modele[128] = u'-apr-'
 Section[128] = u'apparentés'
 Modele[129] = u'-conjug-'
 Section[129] = u'conjugaison'
+Modele[130] = u'-cit-'
+Section[130] = u'citations'
 
-limit15 = 130
-Modele[130] = u'-coupure-'
-Section[130] = u'coupure'
+limit15 = 131
 Modele[131] = u'-notes-'
 Section[131] = u'notes'
 Modele[132] = u'-note-'
 Section[132] = u'note'
 Modele[133] = u'trad-trier'
 Section[133] = u'traductions à trier'
+Modele[134] = u'-coupure-'
+Section[134] = u'coupure'
 
-limit2 = limit2  # Déclarée plus haut
-Modele[134] = u'préciser'
+# Attention : limit2 est déclarée plus haut
 Modele[135] = u'?'
 Modele[136] = u'doute'
 Modele[137] = u'm'
@@ -337,9 +338,9 @@ Modele[152] = u'trad-'
 Modele[153] = u'trad+'
 Modele[154] = u'trad'
 Modele[155] = u'voir'
+Modele[156] = u'préciser'
 
-limit25 = 156
-Modele[156] = u'mf'
+limit25 = 157
 Modele[157] = u'mf?'
 Modele[158] = u'fm ?'
 Modele[159] = u'comparatif'
@@ -357,10 +358,10 @@ Modele[170] = u'n'
 Modele[171] = u'c'
 Modele[172] = u'pl-rare'
 Modele[173] = u'plus rare'
+Modele[174] = u'mf'
 
-limit3 = 174 # Paragraphes sans modèle catégorisant pouvant contenir des modèles
+limit3 = 175 # Paragraphes sans modèle catégorisant pouvant contenir des modèles
 # http://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Mod%C3%A8les_de_domaine_d%E2%80%99utilisation
-Modele[174] = u'apiculture'
 Modele[175] = u'saccusatif'
 Modele[176] = u'sdatif'
 Modele[177] = u'sinstrumental'
@@ -1049,10 +1050,10 @@ Modele[858] = u'abréviation de'
 Modele[859] = u'instruments'
 Modele[860] = u'vins'
 Modele[861] = u'fleurs'
+Modele[862] = u'apiculture'
 #[[Spécial:newpages]] : pas "outils" faute de lexique, 
 
-limit4 = 862	# code langue quoi qu'il arrive
-Modele[862] = u'note-gentilé'
+limit4 = 863	# code langue quoi qu'il arrive
 Modele[863] = u'ébauche-trans'
 Modele[864] = u'ébauche-étym-nom-scientifique'
 Modele[865] = u'ébauche-étym'
@@ -1060,7 +1061,8 @@ Modele[866] = u'ébauche-déf'
 Modele[867] = u'ébauche-exe'
 Modele[868] = u'ébauche-pron'
 Modele[869] = u'ébauche-syn'
-Modele[870] = u'ébauche'
+Modele[870] = u'note-gentilé'
+Modele[871] = u'ébauche'
 '''
 # non traités
 Modele[] = u'spécialement' 
@@ -1078,8 +1080,7 @@ Modele[] = u'perf'
 Modele[] = u'imperf'
 '''
 # Modèles régionaux, pb du nocat pour les prononciations
-limit5 = 871
-Modele[871] = u'Paraguay'
+limit5 = 872
 Modele[872] = u'Paris'
 Modele[873] = u'Pays-Bas'
 Modele[874] = u'Pays basque'
@@ -1218,9 +1219,10 @@ Modele[1001] = u'Nouvelle-Calédonie'
 Modele[1002] = u'Nouvelle-Zélande'
 Modele[1003] = u'Occitanie'
 Modele[1004] = u'Océanie'
+Modele[1005] = u'Paraguay'
 
 # Modèles de pronociation à synchroniser
-Modele[1005] = u'fr-verbe-flexion'
+Modele[1006] = u'fr-verbe-flexion'
 #Modele[] = u'fr-rég'
 #Modele[] = u'fr-inv'
 #Modele[] = u'fr-accord-rég'
@@ -1332,6 +1334,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|adv|', u'{{S|adverbe}}')
 		PageTemp = PageTemp.replace(u'{{S|locution phrase|', u'{{S|locution-phrase|')
 		PageTemp = PageTemp.replace(u'{{S|phrase|', u'{{S|locution-phrase|')
+		PageTemp = PageTemp.replace(u'{{S|nom commun', u'{{S|nom|')
 		PageTemp = PageTemp.replace(u'{{S|nom-fam|', u'{{S|nom de famille|')
 		PageTemp = PageTemp.replace(u'{{S|nom-pr|', u'{{S|nom propre|')
 		PageTemp = PageTemp.replace(u'{{S|symb|', u'{{S|symbole|')
@@ -1345,6 +1348,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|compos}}', u'{{S|composés}}')
 		PageTemp = PageTemp.replace(u'{{S|dimin}}', u'{{S|diminutifs}}')
 		PageTemp = PageTemp.replace(u'{{S|drv}}', u'{{S|dérivés}}')
+		PageTemp = PageTemp.replace(u'{{S|drv-int}}', u'{{S|dérivés autres langues}}')
 		PageTemp = PageTemp.replace(u'{{S|etym}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|Étymologie}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|exp}}', u'{{S|expressions}}')
@@ -1809,7 +1813,8 @@ def modification(PageHS):
 				else:
 					if debogage == True: print u'pb {{colonnes}} 2'
 					break
-			elif PageTemp2.rfind(u'{{') != -1 and (PageTemp2.rfind(u'{{') == PageTemp2.rfind(u'{{trad-fin') or PageTemp2.rfind(u'{{') == PageTemp2.rfind(u'{{S|trad')):	# modèle unique dans trad
+			elif PageTemp2.rfind(u'{{') != -1 and (PageTemp2.rfind(u'{{') == PageTemp2.rfind(u'{{trad-fin') or PageTemp2.rfind(u'{{') == PageTemp2.rfind(u'{{S|trad')):
+				# modèle à utiliser dans {{S|trad
 				PageTemp2 = PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
 				if PageTemp2.find(u'\n}}\n') != -1:
 					if PageTemp2[0:len(u'titre=')] == u'titre=':
@@ -1821,7 +1826,7 @@ def modification(PageHS):
 				else:
 					if debogage == True: print u'pb {{colonnes}} 3'
 					break
-			else:	# modèle unique ailleurs
+			else:	# modèle ailleurs que {{S|trad
 				PageTemp2 = PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
 				if PageTemp2.find(u'\n}}\n') != -1:
 					if PageTemp2[0:len(u'titre=')] == u'titre=':
@@ -2457,7 +2462,7 @@ def modification(PageHS):
 						break
 					elif Modele[p] == u'pron' or Modele[p] == u'phon' or Modele[p] == u'dénominal de' or Modele[p] == u'déverbal de' or Modele[p] == u'déverbal' or Modele[p] == u'superlatif de' or Modele[p] == u'comparatif de' or Modele[p] == u'déverbal sans suffixe' or Modele[p] == u'abréviation de':
 						if codelangue != u'conv':
-							# Trie des lettres de l'API
+							# Tri des lettres de l'API
 							if Modele[p] == u'pron':
 								PageTemp2 = PageTemp[position+1:PageTemp.find("}}")]
 								while PageTemp2.find(u'\'') != -1 and PageTemp2.find(u'\'') < PageTemp2.find(u'}}') and (PageTemp2.find(u'\'') < PageTemp2.find(u'|') or PageTemp2.find(u'|') == -1): PageTemp = PageTemp[0:PageTemp.find(u'\'')] + u'ˈ' + PageTemp[PageTemp.find(u'\'')+1:len(PageTemp)]
@@ -4332,7 +4337,7 @@ def modification(PageHS):
 							EstCodeLangue = "false"
 							if TitreSection == 'traductions':
 								trad = u'true'
-								# Ajout de {{trad-début}} si {{T| en français
+								# Ajout de {{trad-début}} si {{T| en français (pas {{L| car certains les trient par famille de langue)
 								if PageTemp.find(u'{{') == PageTemp.find(u'{{T|') and codelangue == 'fr':
 									PageTemp = PageTemp[:PageTemp.find(u'\n')] + u'\n{{trad-début}}' + PageTemp[PageTemp.find(u'\n'):]
 									PageTemp2 = PageTemp[PageTemp.find(u'{{trad-début}}\n')+len(u'{{trad-début}}\n'):]
@@ -4357,6 +4362,7 @@ def modification(PageHS):
 							if codelangue == u'es':
 								if TitreTemp.find(u'ñ') !=-1: TitreTemp = TitreTemp.replace(u'ñ',u'n€')
 								if TitreTemp.find(u'ñ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ñ'.upper(),u'n€')
+								
 							elif codelangue == u'os':
 								if TitreTemp.find(u'ё') !=-1: TitreTemp = TitreTemp.replace(u'ё',u'е€')
 								if TitreTemp.find(u'ё'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ё'.upper(),u'е€')
@@ -4372,11 +4378,13 @@ def modification(PageHS):
 								if TitreTemp.find(u'хъ') !=-1: TitreTemp = TitreTemp.replace(u'хъ',u'х€')
 								if TitreTemp.find(u'цъ') !=-1: TitreTemp = TitreTemp.replace(u'цъ',u'ц€')
 								if TitreTemp.find(u'чъ') !=-1: TitreTemp = TitreTemp.replace(u'чъ',u'ч€')
+								
 							elif codelangue == u'ru':
 								#if TitreTemp.find(u'ё') !=-1: TitreTemp = TitreTemp.replace(u'ё',u'е€')
 								#if TitreTemp.find(u'ё'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ё'.upper(),u'е€')
 								if TitreTemp.find(u'ӕ') !=-1: TitreTemp = TitreTemp.replace(u'ӕ',u'а€')
 								if TitreTemp.find(u'ӕ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ӕ'.upper(),u'а€')
+								
 							if codelangue == u'sl':
 								if TitreTemp.find(u'č') !=-1: TitreTemp = TitreTemp.replace(u'č',u'c€')
 								if TitreTemp.find(u'č'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'č'.upper(),u'c€')
@@ -4384,13 +4392,105 @@ def modification(PageHS):
 								if TitreTemp.find(u'š'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'š'.upper(),u's€')
 								if TitreTemp.find(u'ž') !=-1: TitreTemp = TitreTemp.replace(u'ž',u'z€')
 								if TitreTemp.find(u'ž'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ž'.upper(),u'z€')
+								
 							elif codelangue == u'sv':
 								if TitreTemp.find(u'å') !=-1: TitreTemp = TitreTemp.replace(u'å',u'z€')	
 								if TitreTemp.find(u'å'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'å'.upper(),u'z€')
 								if TitreTemp.find(u'ä') !=-1: TitreTemp = TitreTemp.replace(u'ä',u'z€€')	
 								if TitreTemp.find(u'ä'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ä'.upper(),u'z€€')	
 								if TitreTemp.find(u'ö') !=-1: TitreTemp = TitreTemp.replace(u'ö',u'z€€€')	
-								if TitreTemp.find(u'ö'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ö'.upper(),u'z€€€')	
+								if TitreTemp.find(u'ö'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ö'.upper(),u'z€€€')
+								
+							elif codelangue == u'vi':
+								if TitreTemp.find(u'ả') !=-1: TitreTemp = TitreTemp.replace(u'ả',u'a€')	
+								if TitreTemp.find(u'ả'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ả'.upper(),u'a')
+								if TitreTemp.find(u'ă') !=-1: TitreTemp = TitreTemp.replace(u'ă',u'a€')	
+								if TitreTemp.find(u'ă'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ă'.upper(),u'a€')
+								if TitreTemp.find(u'ắ') !=-1: TitreTemp = TitreTemp.replace(u'ắ',u'a€')	
+								if TitreTemp.find(u'ắ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ắ'.upper(),u'a€')
+								if TitreTemp.find(u'ặ') !=-1: TitreTemp = TitreTemp.replace(u'ặ',u'a€')	
+								if TitreTemp.find(u'ặ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ặ'.upper(),u'a€')
+								if TitreTemp.find(u'ẳ') !=-1: TitreTemp = TitreTemp.replace(u'ẳ',u'a€')	
+								if TitreTemp.find(u'ẳ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ẳ'.upper(),u'a€')
+								if TitreTemp.find(u'ằ') !=-1: TitreTemp = TitreTemp.replace(u'ằ',u'a€')	
+								if TitreTemp.find(u'ằ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ằ'.upper(),u'a€')
+								if TitreTemp.find(u'â') !=-1: TitreTemp = TitreTemp.replace(u'â',u'a€€')	
+								if TitreTemp.find(u'â'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'â'.upper(),u'a€€')
+								if TitreTemp.find(u'ầ') !=-1: TitreTemp = TitreTemp.replace(u'ầ',u'a€€')	
+								if TitreTemp.find(u'ầ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ầ'.upper(),u'a€€')
+								if TitreTemp.find(u'ậ') !=-1: TitreTemp = TitreTemp.replace(u'ậ',u'a€€')	
+								if TitreTemp.find(u'ậ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ậ'.upper(),u'a€€')
+								if TitreTemp.find(u'ấ') !=-1: TitreTemp = TitreTemp.replace(u'ấ',u'a€€')	
+								if TitreTemp.find(u'ấ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ấ'.upper(),u'a€€')
+								if TitreTemp.find(u'ẩ') !=-1: TitreTemp = TitreTemp.replace(u'ẩ',u'a€€')	
+								if TitreTemp.find(u'ẩ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ẩ'.upper(),u'a€€')
+								if TitreTemp.find(u'đ') !=-1: TitreTemp = TitreTemp.replace(u'đ',u'd€')	
+								if TitreTemp.find(u'đ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'đ'.upper(),u'd€')
+								if TitreTemp.find(u'ẹ') !=-1: TitreTemp = TitreTemp.replace(u'ẹ',u'e')	
+								if TitreTemp.find(u'ẹ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ẹ'.upper(),u'e')
+								if TitreTemp.find(u'ê') !=-1: TitreTemp = TitreTemp.replace(u'ê',u'e€')	
+								if TitreTemp.find(u'ê'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ê'.upper(),u'e€')
+								if TitreTemp.find(u'ệ') !=-1: TitreTemp = TitreTemp.replace(u'ệ',u'e€')	
+								if TitreTemp.find(u'ệ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ệ'.upper(),u'e€')
+								if TitreTemp.find(u'ễ') !=-1: TitreTemp = TitreTemp.replace(u'ễ',u'e€')	
+								if TitreTemp.find(u'ễ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ễ'.upper(),u'e€')
+								if TitreTemp.find(u'ề') !=-1: TitreTemp = TitreTemp.replace(u'ề',u'e€')	
+								if TitreTemp.find(u'ề'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ề'.upper(),u'e€')
+								if TitreTemp.find(u'ể') !=-1: TitreTemp = TitreTemp.replace(u'ể',u'e€')	
+								if TitreTemp.find(u'ể'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ể'.upper(),u'e€')
+								if TitreTemp.find(u'ị') !=-1: TitreTemp = TitreTemp.replace(u'ị',u'i')	
+								if TitreTemp.find(u'ị'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ị'.upper(),u'i')
+								if TitreTemp.find(u'ì') !=-1: TitreTemp = TitreTemp.replace(u'ì',u'i')	
+								if TitreTemp.find(u'ì'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ì'.upper(),u'i')
+								if TitreTemp.find(u'í') !=-1: TitreTemp = TitreTemp.replace(u'í',u'i')	
+								if TitreTemp.find(u'í'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'í'.upper(),u'i')
+								if TitreTemp.find(u'ỉ') !=-1: TitreTemp = TitreTemp.replace(u'ỉ',u'i')	
+								if TitreTemp.find(u'ỉ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ỉ'.upper(),u'i')
+								if TitreTemp.find(u'î') !=-1: TitreTemp = TitreTemp.replace(u'î',u'i')	
+								if TitreTemp.find(u'î'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'î'.upper(),u'i')
+								if TitreTemp.find(u'ĩ') !=-1: TitreTemp = TitreTemp.replace(u'ĩ',u'i')	
+								if TitreTemp.find(u'ĩ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ĩ'.upper(),u'i')
+								if TitreTemp.find(u'ọ') !=-1: TitreTemp = TitreTemp.replace(u'ọ',u'o')	
+								if TitreTemp.find(u'ọ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ọ'.upper(),u'o')
+								if TitreTemp.find(u'ỏ') !=-1: TitreTemp = TitreTemp.replace(u'ỏ',u'o')	
+								if TitreTemp.find(u'ỏ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ỏ'.upper(),u'o')
+								if TitreTemp.find(u'ô') !=-1: TitreTemp = TitreTemp.replace(u'ô',u'o€')	
+								if TitreTemp.find(u'ô'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ô'.upper(),u'o€')
+								if TitreTemp.find(u'ơ') !=-1: TitreTemp = TitreTemp.replace(u'ơ',u'o€€')	
+								if TitreTemp.find(u'ơ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ơ'.upper(),u'o€€')
+								if TitreTemp.find(u'ộ') !=-1: TitreTemp = TitreTemp.replace(u'ộ',u'o€')	
+								if TitreTemp.find(u'ộ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ộ'.upper(),u'o€')
+								if TitreTemp.find(u'ố') !=-1: TitreTemp = TitreTemp.replace(u'ố',u'o€')	
+								if TitreTemp.find(u'ố'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ố'.upper(),u'o€')
+								if TitreTemp.find(u'ồ') !=-1: TitreTemp = TitreTemp.replace(u'ồ',u'o€')	
+								if TitreTemp.find(u'ồ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ồ'.upper(),u'o€')
+								if TitreTemp.find(u'ổ') !=-1: TitreTemp = TitreTemp.replace(u'ổ',u'o€')	
+								if TitreTemp.find(u'ổ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ổ'.upper(),u'o€')
+								if TitreTemp.find(u'ỗ') !=-1: TitreTemp = TitreTemp.replace(u'ỗ',u'o€')	
+								if TitreTemp.find(u'ỗ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ỗ'.upper(),u'o€')
+								if TitreTemp.find(u'ỡ') !=-1: TitreTemp = TitreTemp.replace(u'ỡ',u'o€€')	
+								if TitreTemp.find(u'ỡ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ỡ'.upper(),u'o€€')
+								if TitreTemp.find(u'ở') !=-1: TitreTemp = TitreTemp.replace(u'ở',u'o€€')	
+								if TitreTemp.find(u'ở'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ở'.upper(),u'o€€')
+								if TitreTemp.find(u'ớ') !=-1: TitreTemp = TitreTemp.replace(u'ớ',u'o€€')	
+								if TitreTemp.find(u'ớ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ớ'.upper(),u'o€€')
+								if TitreTemp.find(u'ờ') !=-1: TitreTemp = TitreTemp.replace(u'ờ',u'o€€')	
+								if TitreTemp.find(u'ờ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ờ'.upper(),u'o€€')
+								if TitreTemp.find(u'ụ') !=-1: TitreTemp = TitreTemp.replace(u'ụ',u'u')	
+								if TitreTemp.find(u'ụ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ụ'.upper(),u'u')
+								if TitreTemp.find(u'ủ') !=-1: TitreTemp = TitreTemp.replace(u'ủ',u'u')	
+								if TitreTemp.find(u'ủ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ủ'.upper(),u'u')
+								if TitreTemp.find(u'ư') !=-1: TitreTemp = TitreTemp.replace(u'ư',u'u€')	
+								if TitreTemp.find(u'ư'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ư'.upper(),u'u€')
+								if TitreTemp.find(u'ử') !=-1: TitreTemp = TitreTemp.replace(u'ử',u'u€')	
+								if TitreTemp.find(u'ử'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ử'.upper(),u'u€')
+								if TitreTemp.find(u'ự') !=-1: TitreTemp = TitreTemp.replace(u'ự',u'u€')	
+								if TitreTemp.find(u'ự'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ự'.upper(),u'u€')
+								if TitreTemp.find(u'ừ') !=-1: TitreTemp = TitreTemp.replace(u'ừ',u'u€')	
+								if TitreTemp.find(u'ừ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ừ'.upper(),u'u€')
+								if TitreTemp.find(u'ữ') !=-1: TitreTemp = TitreTemp.replace(u'ữ',u'u€')	
+								if TitreTemp.find(u'ữ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ữ'.upper(),u'u€')
+								
 							if TitreTemp != PageHS:
 								TitreTemp = CleDeTri.CleDeTri(TitreTemp)
 								PageTemp = PageTemp[0:PageTemp.find(u'}}')] + u'|clé=' + TitreTemp + PageTemp[PageTemp.find(u'}}'):len(PageTemp)]
@@ -4748,7 +4848,6 @@ TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Conjugaisons manquant
 TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects:pron conv',True,u'')
 
 # Modèles
-
 TraitementLiens = crawlerLink(u'Modèle:terme',u'')
 TraitementFichier = crawlerFile(u'articles_WTin.txt')
 TraitementLiensCategorie = crawlerCatLink(u'Modèles de code langue',u'')
@@ -4769,3 +4868,5 @@ python interwiki.py -lang:fr -family:wiktionary -wiktionary -new:100000
 #           ajouter les {{pron|remplie|xx}} sur la ligne de définition des pluriels
 # refondre le tableau des modèles en xml avec les catégories nocat en colonne3
 # lister du dump les :en {{t-|fr|inexistants}} et vice-versa
+#trier les {{L| comme {{T|
+#revérifier les &# dans le dump
