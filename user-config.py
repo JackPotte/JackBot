@@ -16,8 +16,9 @@ transliteration_target = None
 # The dictionary usernames should contain a username for each site where you
 # have a bot account.
 # taskschd.msc
-usernames['meta']['en'] = u'JackBot'
-usernames['species']['en'] = u'JackBot'
+usernames['meta']['meta'] = u'JackBot'
+usernames['species']['species'] = u'JackBot'
+usernames['commons']['commons'] = u'JackPotte'
 
 usernames['wikipedia']['aa'] = u'JackBot'
 usernames['wikipedia']['ab'] = u'JackBot'

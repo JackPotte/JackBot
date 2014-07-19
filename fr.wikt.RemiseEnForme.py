@@ -1051,6 +1051,7 @@ Modele[859] = u'instruments'
 Modele[860] = u'vins'
 Modele[861] = u'fleurs'
 Modele[862] = u'apiculture'
+#illégalité
 #[[Spécial:newpages]] : pas "outils" faute de lexique, 
 
 limit4 = 863	# code langue quoi qu'il arrive
@@ -2352,7 +2353,7 @@ def modification(PageHS):
 			# Ajout des anagrammes pour cette nouvelle langue détectée
 			if NouvelleLangue == True and socket.gethostname() != "willow" and socket.gethostname() != "yarrow" and socket.gethostname() != "nightshade" and PageTemp.find(u'-erreur-') == -1 and PageHS != u'six':
 				if debogage == True: print u' Anagrammes pour ' + codelangue
-				if PageTemp.find(u'{{S|anagr') == -1 and PageHS.find(u' ') == -1 and len(PageHS) < TailleAnagramme: 
+				if PageTemp.find(u'{{S|anagr') == -1 and PageHS.find(u' ') == -1 and len(PageHS) <= TailleAnagramme: 
 					anagrammes = anagram(PageHS)
 					ListeAnagrammes = u''
 					for anagramme in anagrammes:
@@ -2389,7 +2390,7 @@ def modification(PageHS):
 							PageTemp = PageTemp[0:positionAnagr+PageTemp2.find(u'[[Catégorie:')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'[[Catégorie:'):len(PageTemp)]
 						else:
 							if debogage == True: print " Ajout avant les interwikis"
-							regex = ur'\n\[\['
+							regex = ur'\n\[\[\w?\w?\w?:'
 							if re.compile(regex).search(PageTemp):
 								try:
 									PageTemp = PageTemp[:re.search(regex,PageTemp).start()] + u'\n=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[re.search(regex,PageTemp).start():]
@@ -2397,12 +2398,13 @@ def modification(PageHS):
 									print u'pb regex interwiki'
 							else:
 								PageTemp = PageTemp + u'\n\n=== {{S|anagrammes}} ===\n' + ListeAnagrammes
-			# Lister ces mots dans une bas et les échanger en XML ?
+			
 			PageTemp = PageTemp.replace(u'<!-- pas d’{{-anagr-}} -->\n', u'')
 			PageTemp = PageTemp.replace(u'<!-- pas d’{{S|anagrammes}} -->\n', u'')
 			PageTemp = PageTemp.replace(u'<!-- pas d’anagrammes -->\n', u'')
 			PageTemp = PageTemp.replace(u'<!-- pas d’=== {{S|anagrammes}} ===\n-->', u'')
 			PageTemp = PageTemp.replace(u'<!--pas d’=== {{S|anagrammes}} ===\n-->', u'')
+			PageTemp = PageTemp.replace(u'<!-- pas d’=== {{S|anagrammes}} ===-->', u'')
 			NouvelleLangue = False
 		
 			# Nettoyage des doublons (tester avec ophtalmologie dans adelphe)
@@ -4560,6 +4562,12 @@ def modification(PageHS):
 				p=p+1
 		PageEnd = PageEnd + PageTemp
 		
+		# Maintenance par déduction
+		PageEnd = PageEnd.replace(u'{{genre|fr}}\n# Masculin ', u'{{m}}\n# Masculin ')
+		PageEnd = PageEnd.replace(u'{{genre|fr}}\n# Féminin ', u'{{f}}\n# Féminin ')
+		PageEnd = PageEnd.replace(u"{{genre|fr}}\n# ''Masculin ", u"{{m}}\n# ''Masculin ")
+		PageEnd = PageEnd.replace(u"{{genre|fr}}\n# ''Féminin ", u"{{f}}\n# ''Féminin ")
+		
 		# Liens vers les conjugaisons régulières
 		'''if debogage == True: print u'Ajout de {{conj}}'
 		if PageEnd.find(u'[[Image:') == -1:	# Bug (ex : broyer du noir, définir)	{{lang/span\|[a-z\-]*\|([^}]*)}}
@@ -4841,6 +4849,9 @@ TraitementLiens = crawlerLink(u'Modèle:=langue=',u'')
 TraitementLiens = crawlerLink(u'Modèle:-déf-',u'')
 TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
 '''
+#TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'')
+#TraitementFichier = crawlerFile(u'articles_WTin.txt')
+
 TraitementLiensCategorie = crawlerCatLink(u'Catégorie:Modèles désuets',u'')
 TraitementLiens = crawlerLink(u'Modèle:SAMPA',u'') : remplacer les tableaux de prononciations ?
 TraitementLiens = crawlerLink(u'Modèle:trad-',u'')
@@ -4848,6 +4859,7 @@ TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Conjugaisons manquant
 TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects:pron conv',True,u'')
 
 # Modèles
+TraitementPage = modification(u'Modèle:terme',u'')
 TraitementLiens = crawlerLink(u'Modèle:terme',u'')
 TraitementFichier = crawlerFile(u'articles_WTin.txt')
 TraitementLiensCategorie = crawlerCatLink(u'Modèles de code langue',u'')
@@ -4870,3 +4882,4 @@ python interwiki.py -lang:fr -family:wiktionary -wiktionary -new:100000
 # lister du dump les :en {{t-|fr|inexistants}} et vice-versa
 #trier les {{L| comme {{T|
 #revérifier les &# dans le dump
+# Traiter les modèles à deux paramètres : {{toponymes}}, {{localités}} et {{quartiers}}
