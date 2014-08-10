@@ -18,7 +18,7 @@ language = "fr"
 family = "wikipedia"
 mynick = "JackBot"
 site = getSite(language,family)
-debogage = False
+debogage = True
 debogageLent = False
 input = u'articles_WPin.txt'
 output = u'articles_WPout.txt'
@@ -202,7 +202,7 @@ def crawlerCatLink(pagename,apres):
 				
 # Traitement d'une recherche
 def crawlerSearch(pagename):
-	gen = pagegenerators.SearchPageGenerator(pagename, namespaces = ns)
+	gen = pagegenerators.SearchPageGenerator(pagename, site = site, namespaces = ns)
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		modification(Page.title())
 
@@ -271,7 +271,7 @@ def sauvegarde(PageCourante, Contenu, summary):
 			taille = 3000
 			print(Contenu[:taille].encode(config.console_encoding, 'replace'))
 			print u'\n[...]\n'
-			print(Contenu[len(Contenu)-taille:].encode(config.console_encoding, 'replace'))
+			print(Contenu[max(len(Contenu)-taille,0):].encode(config.console_encoding, 'replace'))
 		result = raw_input("Sauvegarder ? (o/n) ")
 	if result != "n" and result != "no" and result != "non":
 		if PageCourante.title().find(u'Utilisateur:JackBot/') == -1: ArretDUrgence()
@@ -301,7 +301,7 @@ def sauvegarde(PageCourante, Contenu, summary):
 			return
 
 # Lancement quotidient :
-TraitementFile = crawlerFile(input)
+TraitementPage = modification(u'Utilisateur:JackBot/test')
 '''
 TraitementLiens = crawlerLink(u'Modèle:Cite web',u'')
 TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')

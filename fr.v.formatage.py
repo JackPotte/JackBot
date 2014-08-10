@@ -636,7 +636,7 @@ def crawlerLink(pagename):
 
 # Traitement d'une recherche
 def crawlerSearch(pagename):
-	gen = pagegenerators.SearchPageGenerator(pagename, namespaces = "0")
+	gen = pagegenerators.SearchPageGenerator(pagename, site = site, namespaces = "0")
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		modification(Page.title())
 

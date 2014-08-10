@@ -34,7 +34,7 @@ TailleAnagramme = 5 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
 # Modèles du site à traiter
 limit2 = 135 # Paragraphes sans modèle catégorisant, {{voir| et {{voir/ sont gérés individuellement
-limit6 = 1007 # Somme des modèles traités
+limit6 = 1015 # Somme des modèles traités
 Modele = range(1, limit6+1)
 Section = range(1, limit2+1)
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
@@ -1051,19 +1051,26 @@ Modele[859] = u'instruments'
 Modele[860] = u'vins'
 Modele[861] = u'fleurs'
 Modele[862] = u'apiculture'
-#illégalité
-#[[Spécial:newpages]] : pas "outils" faute de lexique, 
+Modele[863] = u'illégalité'
+Modele[864] = u'biologie cellulaire'
+Modele[865] = u'chimie organique'
+Modele[866] = u'histologie'
+Modele[867] = u'gâteaux'
+Modele[868] = u'loisirs'
+Modele[869] = u'golfe'
+Modele[870] = u'golfes'
+#[[Spécial:newpages]] : pas "outils" faute de lexique (technique ?), 
 
-limit4 = 863	# code langue quoi qu'il arrive
-Modele[863] = u'ébauche-trans'
-Modele[864] = u'ébauche-étym-nom-scientifique'
-Modele[865] = u'ébauche-étym'
-Modele[866] = u'ébauche-déf'
-Modele[867] = u'ébauche-exe'
-Modele[868] = u'ébauche-pron'
-Modele[869] = u'ébauche-syn'
-Modele[870] = u'note-gentilé'
-Modele[871] = u'ébauche'
+limit4 = 871	# code langue quoi qu'il arrive
+Modele[871] = u'ébauche-trans'
+Modele[872] = u'ébauche-étym-nom-scientifique'
+Modele[873] = u'ébauche-étym'
+Modele[874] = u'ébauche-déf'
+Modele[875] = u'ébauche-exe'
+Modele[876] = u'ébauche-pron'
+Modele[877] = u'ébauche-syn'
+Modele[878] = u'note-gentilé'
+Modele[879] = u'ébauche'
 '''
 # non traités
 Modele[] = u'spécialement' 
@@ -1081,15 +1088,7 @@ Modele[] = u'perf'
 Modele[] = u'imperf'
 '''
 # Modèles régionaux, pb du nocat pour les prononciations
-limit5 = 872
-Modele[872] = u'Paris'
-Modele[873] = u'Pays-Bas'
-Modele[874] = u'Pays basque'
-Modele[875] = u'Picardie'
-Modele[876] = u'Poitou'
-Modele[877] = u'Polynésie française'
-Modele[878] = u'Portugal'
-Modele[879] = u'Provence'
+limit5 = 880
 Modele[880] = u'Pérou'
 Modele[881] = u'Québec'
 Modele[882] = u'Quercy'
@@ -1221,9 +1220,17 @@ Modele[1002] = u'Nouvelle-Zélande'
 Modele[1003] = u'Occitanie'
 Modele[1004] = u'Océanie'
 Modele[1005] = u'Paraguay'
+Modele[1006] = u'Paris'
+Modele[1007] = u'Pays-Bas'
+Modele[1008] = u'Pays basque'
+Modele[1009] = u'Picardie'
+Modele[1010] = u'Poitou'
+Modele[1011] = u'Polynésie française'
+Modele[1012] = u'Portugal'
+Modele[1013] = u'Provence'
 
 # Modèles de pronociation à synchroniser
-Modele[1006] = u'fr-verbe-flexion'
+Modele[1014] = u'fr-verbe-flexion'
 #Modele[] = u'fr-rég'
 #Modele[] = u'fr-inv'
 #Modele[] = u'fr-accord-rég'
@@ -4647,7 +4654,7 @@ def modification(PageHS):
 	PageEnd = PageEnd.replace(u'{{nom|nocat=1}}', u"''(Nom)''")
 	
 	if debogage == True: print u'Test des URL'
-	PageEnd = hyperlynx.hyperlynx(PageEnd)
+	#PageEnd = hyperlynx.hyperlynx(PageEnd)
 	if debogage == True: print (u'--------------------------------------------------------------------------------------------')
 	if PageEnd != PageBegin:
 		# Modifications mineures, ne justifiant pas une édition à elles seules
@@ -4742,7 +4749,7 @@ def crawlerCatLink(pagename,apres):
 				
 # Traitement d'une recherche
 def crawlerSearch(pagename):
-	gen = pagegenerators.SearchPageGenerator(pagename, namespaces = "0")
+	gen = pagegenerators.SearchPageGenerator(pagename, site = site, namespaces = "0")
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		modification(Page.title())
 
@@ -4849,9 +4856,6 @@ TraitementLiens = crawlerLink(u'Modèle:=langue=',u'')
 TraitementLiens = crawlerLink(u'Modèle:-déf-',u'')
 TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
 '''
-#TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'')
-#TraitementFichier = crawlerFile(u'articles_WTin.txt')
-
 TraitementLiensCategorie = crawlerCatLink(u'Catégorie:Modèles désuets',u'')
 TraitementLiens = crawlerLink(u'Modèle:SAMPA',u'') : remplacer les tableaux de prononciations ?
 TraitementLiens = crawlerLink(u'Modèle:trad-',u'')
@@ -4864,7 +4868,7 @@ TraitementLiens = crawlerLink(u'Modèle:terme',u'')
 TraitementFichier = crawlerFile(u'articles_WTin.txt')
 TraitementLiensCategorie = crawlerCatLink(u'Modèles de code langue',u'')
 TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects',True,u'')
-TraitementRecherche = crawlerSearch(u'clé de tri')
+TraitementRecherche = crawlerSearch(u'"en terme de"')
 TraitementUtilisateur = crawlerUser(u'Utilisateur:JackBot', 800)
 TraitementRedirections = crawlerRedirects()
 TraitementTout = crawlerAll(u'')

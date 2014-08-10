@@ -23,7 +23,7 @@ mynick = "JackBot"
 site = getSite(language,family)
 
 # Préférences
-debogage = False
+debogage = True
 debogageLent = False
 semiauto = False
 retablirNonBrise = False
@@ -368,7 +368,8 @@ FinDURL2[4] = u'!'
 FinDURL2[5] = u'?'
 FinDURL2[6] = u')' # mais pas ( ou ) simple
 
-ligneB = 6
+ligneB = 7
+if debogage == False: ligneB = ligneB + 1
 colonneB = 2
 Balise = [[0] * (colonneB+1) for _ in range(ligneB+1)]
 Balise[1][1] = u'<pre>'
@@ -383,10 +384,11 @@ Balise[5][1] = u'<source'
 Balise[5][2] = u'</source' + u'>'
 Balise[6][1] = u'\n '
 Balise[6][2] = u'\n'
+Balise[7][1] = u'{|'
+Balise[7][2] = u'|}'
 if debogage == False:
-	ligneB = ligneB + 1
-	Balise[ligneB-1][1] = u'<!--'
-	Balise[ligneB-1][2] = u'-->'
+	Balise[ligneB][1] = u'<!--'
+	Balise[ligneB][2] = u'-->'
 
 limiteE = 20
 Erreur = range(1, limiteE +1)
@@ -687,7 +689,7 @@ def hyperlynx(PageTemp):
 		PageDebut = PageTemp[0:PageTemp.find(u'//')]
 		# Balises interdisant la modification de l'URL
 		saut = False
-		for b in range(1,ligneB):
+		for b in range(1,ligneB+1):
 			if PageDebut.rfind(Balise[b][1]) != -1 and PageDebut.rfind(Balise[b][1]) > PageDebut.rfind(Balise[b][2]):
 				saut = True
 				if debogage == True: print u'URL dans ' + Balise[b][1]
@@ -732,9 +734,21 @@ def hyperlynx(PageTemp):
 				# url=	
 				CharFinURL = u' '
 				for l in range(1,limiteURL):
-					if FinPageURL.find(CharFinURL) == -1 or (FinPageURL.find(FinDURL[l]) != -1 and FinPageURL.find(FinDURL[l]) < FinPageURL.find(CharFinURL)):
+					if debogageLent == True:
+						print u'FinDURL[l] : '
+						print FinDURL[l]
+						print u'CharFinURL : '
+						print CharFinURL
+						print u'FinPageURL.find(CharFinURL) == -1 : ' 
+						print FinPageURL.find(CharFinURL) == -1
+						print u'FinPageURL.find(FinDURL[l]) < FinPageURL.find(CharFinURL) : ' 
+						print FinPageURL.find(FinDURL[l]) < FinPageURL.find(CharFinURL)
+						print u"FinPageURL.find(u'}}') < FinPageURL.find(u'{{') or FinPageURL.find(u'}}') == -1 : " 
+						print FinPageURL.find(u'}}') < FinPageURL.find(u'{{')
+					if FinPageURL.find(CharFinURL) == -1 or (FinPageURL.find(FinDURL[l]) != -1 and FinPageURL.find(FinDURL[l]) < FinPageURL.find(CharFinURL)): # and (FinDURL[l] != u'|' or (FinPageURL.find(u'}}') < FinPageURL.find(u'{{') or FinPageURL.find(u'}}') == -1)): 	# pbs de | inclus dans les URL testées
 						CharFinURL = FinDURL[l]
-				if debogage == True: print u'*Caractère de fin URL : ' + CharFinURL
+				#raw_input(FinPageURL.encode(config.console_encoding, 'replace'))
+				if debogage == True: print u'__Caractère de fin d\'URL : ' + CharFinURL
 				
 				if DebutURL == 1:
 					url = u'http:' + PageTemp[PageTemp.find(u'//'):PageTemp.find(u'//')+FinPageURL.find(CharFinURL)]
@@ -786,27 +800,35 @@ def hyperlynx(PageTemp):
 				if debogage == True:
 					# Compte-rendu des URL détectées
 					try:
-						print u'*URL : ' + url.encode(config.console_encoding, 'replace')
-						print u'*Titre : ' + titre.encode(config.console_encoding, 'replace')
-						print u'*HS : ' + str(LienBrise)
+						print u'__URL : ' + url.encode(config.console_encoding, 'replace')
+						print u'__Titre : ' + titre.encode(config.console_encoding, 'replace')
+						print u'__HS : ' + str(LienBrise)
 						print type(htmlSource)
 					except UnicodeDecodeError:
-						print u'*HS : ' + str(LienBrise)
+						print u'__HS : ' + str(LienBrise)
 						print "UnicodeDecodeError l 466"
 				if debogageLent == True: raw_input (htmlSource[0:1000])
 				
-				# Modification du wiki en conséquence	
-				DebutPage = PageTemp[0:PageTemp.find(u'//')+2]
-				DebutURL = max(DebutPage.find(u'http://'),DebutPage.find(u'https://'),DebutPage.find(u'[//'))
+				# Modification du wiki : recherche des bornes du lien et de son modèle
+				#DebutModele = PageTemp.find(u'//')+2
+				DebutModele = 0
+				DebutPage = PageTemp[:PageTemp.find(u'//')+2]
+				
+				# Saut des modèles placés avant le modèle de lien (ex : {{lien web|langue=en|url={{Allmusic|class=album|id=r500159|pure_url=yes}}|titre=Breach - The Wallflowers|périodique=[[Allmusic]]}} {{lien web|url=http://fr.wikibooks.org/phpmyadmin|titre=JackBot}})
+				while DebutPage.find(u'}}') != -1 and DebutPage.find(u'}}') < DebutPage.find(u'//'):
+					DebutModele += DebutPage.find(u'}}')+2
+					DebutPage = DebutPage[DebutPage.find(u'}}')+2:]
+				#DebutURL = max(DebutPage.find(u'http://'),DebutPage.find(u'https://'),DebutPage.find(u'[//')) # ne contient pas les modèles similaires sans URL
+				DebutURL = max(PageTemp.find(u'http://'),PageTemp.find(u'https://'),PageTemp.find(u'[//'))
 				
 				# Saut des modèles inclus dans un modèle de lien
 				while DebutPage.rfind(u'{{') != -1 and DebutPage.rfind(u'{{') < DebutPage.rfind(u'}}'):
 					DebutPage = DebutPage[:DebutPage.rfind(u'{{')]
-						
+				
 				# Détection si l'hyperlien est dans un modèle
 				if DebutPage.rfind(u'{{') != -1 and DebutPage.rfind(u'{{') > DebutPage.rfind(u'}}'):
-					DebutModele = DebutPage.rfind(u'{{')
-					DebutPage = DebutPage[DebutPage.rfind(u'{{'):len(DebutPage)]
+					DebutModele += DebutPage.rfind(u'{{')
+					DebutPage = DebutPage[DebutPage.rfind(u'{{'):] # *{{lien web|url=http://
 					AncienModele = u''
 					# Lien dans un modèle connu (consensus en cours pour les autres, atention aux infobox)
 					'''for m in range(1,limiteM):
@@ -814,31 +836,41 @@ def hyperlynx(PageTemp):
 					''' 
 					if re.search(u'{{ *[L|l]ien web *[\||\n]', DebutPage):
 						AncienModele = u'lien web'
-						if debogage == True: print u'Détection de ' + AncienModele
+						if debogage == True: print u'__Détection de ' + AncienModele
 					elif re.search('{{ *[L|l]ire en ligne *[\||\n]', DebutPage):
 						AncienModele = u'lire en ligne'
-						if debogage == True: print u'Détection de ' + AncienModele
+						if debogage == True: print u'__Détection de ' + AncienModele
 					elif retablirNonBrise == True and re.search(u'{{ *[L|l]ien brisé *[\||\n]', DebutPage):
 						AncienModele = u'lien brisé'
-						if debogage == True: print u'Détection de ' + AncienModele
-						
-					#if DebutPage[0:2] == u'{{': AncienModele = trim(DebutPage[2:DebutPage.find(u'|')])
-					
+						if debogage == True: print u'__Détection de ' + AncienModele
+
 					FinModele = PageTemp.find(u'//')+2
-					FinPageModele = PageTemp[FinModele:len(PageTemp)]
+					FinPageModele = PageTemp[FinModele:]
 					# Calcul des modèles inclus dans le modèle de lien
 					while FinPageModele.find(u'}}') != -1 and FinPageModele.find(u'}}') > FinPageModele.find(u'{{') and FinPageModele.find(u'{{') != -1:
 						FinModele = FinModele + FinPageModele.find(u'}}')+2
 						FinPageModele = FinPageModele[FinPageModele.find(u'}}')+2:len(FinPageModele)]
+					
 					FinModele = FinModele + FinPageModele.find(u'}}')+2
+					if debogageLent == True: 
+						print DebutModele
+						print FinModele
+						print u'---PageTemp1-------------------------------------------------'
+						raw_input(PageTemp.encode(config.console_encoding, 'replace')) # ...*{{lien web|url=http://fr.wikibooks.org/phpmyadmin|titre=JackBot}}'''
 					ModeleCourant = PageTemp[DebutModele:FinModele]
-					if debogage == True: print "*Modele : " + ModeleCourant.encode(config.console_encoding, 'replace')
+					#if debogage == True: print u'__Modele : ' + ModeleCourant.encode(config.console_encoding, 'replace')
 					
 					if AncienModele != u'':
 						if debogage == True: print u'Ancien modèle à traiter : ' + AncienModele
 						if LienBrise == True:
 							try:
-								PageTemp = PageTemp[0:DebutModele] + u'{{lien brisé' + PageTemp[re.search(u'{{ *[' + AncienModele[0:1] + u'|' + AncienModele[0:1].upper() + u']' + AncienModele[1:] + u' *[\||\n]', PageTemp).end()-1:]
+								if debogageLent == True: 
+									raw_input(PageTemp[:DebutModele].encode(config.console_encoding, 'replace')) #...
+								#PageTemp = PageTemp[:DebutModele] + u'{{lien brisé' + PageTemp[re.search(u'{{ *[' + AncienModele[0:1] + u'|' + AncienModele[0:1].upper() + u']' + AncienModele[1:] + u' *[\||\n]', PageTemp).end()-1:]
+								PageTemp = PageTemp[:PageTemp.find(ModeleCourant)] + u'{{lien brisé' + ModeleCourant[re.search(u'{{ *[' + AncienModele[0:1] + u'|' + AncienModele[0:1].upper() + u']' + AncienModele[1:] + u' *[\||\n]', ModeleCourant).end()-1:] + PageTemp[PageTemp.find(ModeleCourant)+len(ModeleCourant):]
+								if debogageLent == True: 
+									print u'---PageTemp2-------------------------------------------------' 
+									raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 							except AttributeError:
 								raise "Regex introuvable ligne 811"
 								
@@ -872,7 +904,7 @@ def hyperlynx(PageTemp):
 								PageTemp3 = PageTemp3[PageTemp3.find(u'}}')+2:]
 							titre = titre + PageTemp3[:re.search(u'[^\|}\n]*', PageTemp3).end()]
 							if debogage == True:
-								print u'*Titre2 : '
+								print u'__Titre2 : '
 								print titre.encode(config.console_encoding, 'replace')
 							
 						if LienBrise == True and AncienModele != u'lien brisé' and AncienModele != u'Lien brisé':
@@ -911,6 +943,8 @@ def hyperlynx(PageTemp):
 					if debogage == True: print u'URL hors modèle'
 					if LienBrise == True:
 						summary = summary + u', ajout de {{lien brisé}}'
+						# Redéfinition sinon trop grand et allonge PageTemp jusqu'à Memory error
+						DebutURL = max(DebutPage.find(u'http://'),DebutPage.find(u'https://'),DebutPage.find(u'[//'))
 						if DebutURL == 1:
 							if debogage == True: print u'Ajout de lien brisé entre crochets sans protocole'
 							if titre != u'':
@@ -940,26 +974,26 @@ def hyperlynx(PageTemp):
 									PageTemp2 = PageTemp2[PageTemp2.find(u']'):]
 								if titre != u'':
 									if debogage == True: "Ajout avec titre"
-									PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + PageTemp[len(PageTemp)-len(PageTemp2)+1:len(PageTemp)]
+									PageTemp = PageTemp[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + PageTemp[len(PageTemp)-len(PageTemp2)+1:len(PageTemp)]
 								else:
 									if debogage == True: "Ajout sans titre"
-									PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(u']')+1:len(PageTemp)]
-							else:	
+									PageTemp = PageTemp[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(u']')+1:len(PageTemp)]
+							else:
 								if titre != u'': 
 									# Présence d'un titre
 									if debogage == True: print u'URL nue avec titre'
-									PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL)+1:PageTemp.find(u'//')+FinPageURL.find(u']')]  + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(u']')+1:len(PageTemp)]
+									PageTemp = PageTemp[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL)+1:PageTemp.find(u'//')+FinPageURL.find(u']')]  + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(u']')+1:len(PageTemp)]
 								else:
 									if debogage == True: print u'URL nue sans titre'
-									PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}} ' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL):len(PageTemp)]
-						
+									PageTemp = PageTemp[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}} ' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL):len(PageTemp)]
 					else:
 						if debogage == True: print u'Aucun changement sur l\'URL http'
 			else:
 				if debogage == True: print u'Aucun changement sur l\'URL non http'	
 		else:
 			if debogageLent == True: print u'URL entre balises sautée'
-			
+		print 'fin du test'
+		
 		# Lien suivant, en sautant les URL incluses dans l'actuelle, et celles avec d'autres protocoles que http(s)
 		if FinModele == 0 and LienBrise == False:
 			FinPageURL = PageTemp[PageTemp.find(u'//')+2:len(PageTemp)]
@@ -973,17 +1007,15 @@ def hyperlynx(PageTemp):
 		else:
 			# Saut du reste du modèle courant (contenant parfois d'autres URL à laisser)
 			if debogage == True: print u'Saut après }}'
-			PageEnd = PageEnd + PageTemp[0:FinModele]
+			PageEnd = PageEnd + PageTemp[:FinModele]
 			PageTemp = PageTemp[FinModele:]
-		#raw_input(PageEnd.encode(config.console_encoding, 'replace'))
-		
 	PageTemp = PageEnd + PageTemp
 	PageEnd	= u''	
 	if debogage == True: print ("Fin des tests URL")
 	
 	# Recherche de chaque hyperlien de modèles ------------------------------------------------------------------------------------------------------------------------------------
 	if PageTemp.find(u'{{langue') != -1: # du Wiktionnaire
-		if debogage == True: print ("Modèles Wiktionnaire")
+		if debogage == True: print (u'Modèles Wiktionnaire')
 		for m in range(1,ligne):
 			PagEnd = u''
 			while PageTemp.find(u'{{' + TabModeles[m][1] + u'|') != -1:
@@ -1472,4 +1504,4 @@ def log(source):
 	txtfile.close()
 
 # à faire : passer les longs PDF comme dans [[w:Apollo 11]]
-# traiter les pages liées à {{lien web}} restantes
+# traiter les pages liées à {{lien web}} restantes, dont ceux inclus dans les tableaux

@@ -2982,7 +2982,7 @@ usernames['wikivoyage']['zu'] = u'JackBot'
 
 sysopnames['wiktionary']['fr'] = u'JackBot'
 sysopnames['wikibooks']['fr'] = u'JackBot'
-sysopnames['wikiversity']['fr'] = u'JackPotte'
+sysopnames['wikiversity']['fr'] = u'JackBot'
 
 ############## LOGFILE SETTINGS ##############
 

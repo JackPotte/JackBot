@@ -155,7 +155,7 @@ TraitementLiens = crawlerLink(u'Modèle:Autres projets',u'')
 TraitementCategory = crawlerCat(u'Catégorie:Modèles de base de code langue')
 TraitementRecherche = crawlerSearch(u'/Aide')
 python protect.py -lang:fr -family:wikibooks -file:"articles_list.txt" -edit:sysop -move:sysop -summary:"Protection des modèles > 10 000"
-python delete.py -lang:fr -family:wwikibooks -file:"articles_list.txt" -summary:
+python delete.py -lang:fr -family:wikibooks -file:"articles_WLin.txt" -undelete -summary:"Licence trouvée"
 python movepages.py -lang:fr -family:wikibooks -pairs:"articles_listed.txt" -noredirect
 python interwiki.py -lang:fr -family:wikibooks -page:"Utilisateur:JackBot"
 python imagecopy.py -lang:fr -family:wikibooks -cat:
@@ -164,4 +164,5 @@ python redirect.py broken -lang:fr -family:wikibooks -always
 
 python imagecopy.py -lang:fr -family:wikibooks -transcludes:GFDL -always
 python delete.py -lang:fr -family:wikibooks -cat:"Image présente sur Commons" -summary:"Transféré sur Commons"
+python replace.py -lang:commons -family:commons -cat:"Étude sur l'enseignement et l'apprentissage" "{{No license since|month=August|day=2|year=2014}}" "{{PD-self}}"
 '''
