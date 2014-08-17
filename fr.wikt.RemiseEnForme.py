@@ -1059,7 +1059,8 @@ Modele[867] = u'gâteaux'
 Modele[868] = u'loisirs'
 Modele[869] = u'golfe'
 Modele[870] = u'golfes'
-#[[Spécial:newpages]] : pas "outils" faute de lexique (technique ?), 
+#musiques
+#[[Spécial:newpages]] : pas "outils" faute de lexique (technique ?) 
 
 limit4 = 871	# code langue quoi qu'il arrive
 Modele[871] = u'ébauche-trans'
@@ -1352,12 +1353,15 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|anagr}}', u'{{S|anagrammes}}')
 		PageTemp = PageTemp.replace(u'{{S|anto}}', u'{{S|antonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|apr}}', u'{{S|apparentés}}')
+		PageTemp = PageTemp.replace(u'{{S|abrév}}', u'{{S|abréviations}}')
 		PageTemp = PageTemp.replace(u'{{S|Apparentés}}', u'{{S|apparentés}}')
 		PageTemp = PageTemp.replace(u'{{S|compos}}', u'{{S|composés}}')
 		PageTemp = PageTemp.replace(u'{{S|dimin}}', u'{{S|diminutifs}}')
+		PageTemp = PageTemp.replace(u'{{S|Dérivés}}', u'{{S|dérivés}}')
 		PageTemp = PageTemp.replace(u'{{S|drv}}', u'{{S|dérivés}}')
 		PageTemp = PageTemp.replace(u'{{S|drv-int}}', u'{{S|dérivés autres langues}}')
 		PageTemp = PageTemp.replace(u'{{S|etym}}', u'{{S|étymologie}}')
+		PageTemp = PageTemp.replace(u'{{S|étym}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|Étymologie}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|exp}}', u'{{S|expressions}}')
 		PageTemp = PageTemp.replace(u'{{S|gent}}', u'{{S|gentilés}}')
@@ -1379,9 +1383,11 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|Traductions}}', u'{{S|traductions}}')
 		PageTemp = PageTemp.replace(u'{{S|var}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|variantes ortho}}', u'{{S|variantes orthographiques}}')
+		PageTemp = PageTemp.replace(u'{{S|variante orthographique', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|var-ortho}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|var-ortho|fr}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|voc}}', u'{{S|vocabulaire}}')
+		PageTemp = PageTemp.replace(u'{{S|Vocabulaire}}', u'{{S|vocabulaire}}')
 		PageTemp = PageTemp.replace(u'{{S|voir}}', u'{{S|voir aussi}}')
 		
 		if page.namespace() != 12:
@@ -4654,7 +4660,7 @@ def modification(PageHS):
 	PageEnd = PageEnd.replace(u'{{nom|nocat=1}}', u"''(Nom)''")
 	
 	if debogage == True: print u'Test des URL'
-	#PageEnd = hyperlynx.hyperlynx(PageEnd)
+	PageEnd = hyperlynx.hyperlynx(PageEnd)
 	if debogage == True: print (u'--------------------------------------------------------------------------------------------')
 	if PageEnd != PageBegin:
 		# Modifications mineures, ne justifiant pas une édition à elles seules
@@ -4865,7 +4871,6 @@ TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects:pron
 # Modèles
 TraitementPage = modification(u'Modèle:terme',u'')
 TraitementLiens = crawlerLink(u'Modèle:terme',u'')
-TraitementFichier = crawlerFile(u'articles_WTin.txt')
 TraitementLiensCategorie = crawlerCatLink(u'Modèles de code langue',u'')
 TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects',True,u'')
 TraitementRecherche = crawlerSearch(u'"en terme de"')
