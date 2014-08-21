@@ -18,7 +18,7 @@ language = "fr"
 family = "wikipedia"
 mynick = "JackBot"
 site = getSite(language,family)
-debogage = True
+debogage = False
 debogageLent = False
 input = u'articles_WPin.txt'
 output = u'articles_WPout.txt'
@@ -301,8 +301,6 @@ def sauvegarde(PageCourante, Contenu, summary):
 			return
 
 # Lancement quotidient :
-TraitementPage = modification(u'Utilisateur:JackBot/test')
-'''
 TraitementLiens = crawlerLink(u'Modèle:Cite web',u'')
 TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
 TraitementLiens = crawlerLink(u'Modèle:Cite news',u'')
@@ -319,7 +317,7 @@ TraitementLiens = crawlerLink(u'Modèle:Cita noticia',u'')
 
 #TraitementLiens = crawlerLink(u'Modèle:Cite book',u'')	# En stand by suite à réticences d'un tiers
 #TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
-
+'''
 #Modeles :
 TraitementPage = modification(u'Utilisateur:JackBot/test')
 TraitementPage = modification(u'Utilisateur:JackBot/test/À faire')
