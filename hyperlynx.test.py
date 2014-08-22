@@ -23,7 +23,7 @@ mynick = "JackBot"
 site = getSite(language,family)
 
 # Préférences
-debogage = False
+debogage = True
 debogageLent = False
 semiauto = False
 retablirNonBrise = False
@@ -368,7 +368,8 @@ FinDURL2[4] = u'!'
 FinDURL2[5] = u'?'
 FinDURL2[6] = u')' # mais pas ( ou ) simple
 
-ligneB = 6
+ligneB = 7
+if debogage == False: ligneB = ligneB + 1
 colonneB = 2
 Balise = [[0] * (colonneB+1) for _ in range(ligneB+1)]
 Balise[1][1] = u'<pre>'
@@ -383,10 +384,11 @@ Balise[5][1] = u'<source'
 Balise[5][2] = u'</source' + u'>'
 Balise[6][1] = u'\n '
 Balise[6][2] = u'\n'
+Balise[7][1] = u'{|'
+Balise[7][2] = u'|}'
 if debogage == False:
-	ligneB = ligneB + 1
-	Balise[ligneB-1][1] = u'<!--'
-	Balise[ligneB-1][2] = u'-->'
+	Balise[ligneB][1] = u'<!--'
+	Balise[ligneB][2] = u'-->'
 
 limiteE = 20
 Erreur = range(1, limiteE +1)
@@ -538,7 +540,7 @@ TradL[17][2] = u'ar'
 
 # Modification du wiki
 def hyperlynx(PageTemp):
-	if debogage:
+	if debogage == True:
 		print u'------------------------------------'
 		#print time.strftime('%d-%m-%Y %H:%m:%S')
 	summary = u'Vérification des URL'
@@ -584,7 +586,7 @@ def hyperlynx(PageTemp):
 						codelangue = u''
 			if codelangue != u'':
 				# Ajout du code langue dans le modèle
-				if debogage: print(u'Modèle préalable : ' + codelangue.encode(config.console_encoding, 'replace'))
+				if debogage == True: print(u'Modèle préalable : ' + codelangue.encode(config.console_encoding, 'replace'))
 				if not re.search(u'[^}]*langu[ag]*e *=[^}]*}}', PageTemp):
 					PageTemp = u'|langue=' + codelangue + PageTemp
 				elif re.search(u'[^}]*langu[ag]*e *=[^}]*}}', PageTemp).end() > PageTemp.find(u'}}')+2:
@@ -614,7 +616,7 @@ def hyperlynx(PageTemp):
 			FinModele = FinModele + FinPageURL.find(u'}}')+2
 			
 			ModeleCourant = PageTemp[:FinModele]
-			if debogageLent: raw_input(ModeleCourant.encode(config.console_encoding, 'replace'))
+			if debogageLent == True: raw_input(ModeleCourant.encode(config.console_encoding, 'replace'))
 			for p in range(1,limiteP):
 				# Faux-amis
 				if ParamEN[p] == u'work':
@@ -647,11 +649,11 @@ def hyperlynx(PageTemp):
 	ParamDate[7] = u'date triable'
 	ParamDate[8] = u'Date triable'
 	for m in range(1, ligneM+1):
-		if debogageLent:
+		if debogageLent == True:
 			print u'Mois ' + str(m)
 			print TradM[m][1]
 		for p in range(1, limiteParamDate):
-			if debogageLent: print u'Recherche de ' + ParamDate[p] + u' *=[ ,0-9]*' + TradM[m][1]
+			if debogageLent == True: print u'Recherche de ' + ParamDate[p] + u' *=[ ,0-9]*' + TradM[m][1]
 			if p > 4:
 				PageTemp = re.sub(ur'({{ *' + ParamDate[p] + ur'[^}]+)' + TradM[m][1] + ur'([^}]+}})', ur'\1' +  TradM[m][2] + ur'\2', PageTemp)
 				PageTemp = re.sub(ur'({{ *' + ParamDate[p] + ur'[^}]+)(\|[ 0-9][ 0-9][ 0-9][ 0-9])\|' + TradM[m][2] + ur'(\|[ 0-9][ 0-9])}}', ur'\1\3|' +  TradM[m][2] + ur'\2}}', PageTemp)
@@ -660,23 +662,23 @@ def hyperlynx(PageTemp):
 				PageTemp = re.sub(ur'(\| *' + ParamDate[p] + ur' *=[ ,0-9]*)' + TradM[m][1][:1].lower() + TradM[m][1][1:] + ur'([ ,0-9]*\.? *[<|\||\n\t|}])', ur'\1' +  TradM[m][2] + ur'\2', PageTemp)
 				
 				# Ordre des dates : jj mois aaaa'
-				if debogageLent: print u'Recherche de ' + ParamDate[p] + u' *= *' + TradM[m][2] + u' *([0-9]+), '
+				if debogageLent == True: print u'Recherche de ' + ParamDate[p] + u' *= *' + TradM[m][2] + u' *([0-9]+), '
 				PageTemp = re.sub(ur'(\| *' + ParamDate[p] + u' *= *)' + TradM[m][2] + ur' *([0-9]+), *([0-9]+)\.? *([<|\||\n\t|}])', ur'\1' + ur'\2' + ur' ' + TradM[m][2] + ur' ' + ur'\3' + ur'\4', PageTemp)	# trim(u'\3') ne fonctionne pas
 				
-	if debogage: print u'Traduction des langues'
+	if debogage == True: print u'Traduction des langues'
 	for l in range(1, ligneL+1):
-		if debogageLent:
+		if debogageLent == True:
 			print u'Langue ' + str(l)
 			print TradL[l][1]
 		PageTemp = re.sub(ur'(\| *langue *= *)' + TradL[l][1] + ur'( *[<|\||\n\t|}])', ur'\1' +  TradL[l][2] + ur'\2', PageTemp)
 	
-	if debogageLent:
+	if debogageLent == True:
 		print u'Fin des traductions :'
 		raw_input(PageTemp.encode(config.console_encoding, 'replace'))	
 
 	# Recherche de chaque hyperlien en clair ------------------------------------------------------------------------------------------------------------------------------------
 	while PageTemp.find(u'//') != -1:
-		if debogage: print u'-----------------------------------------------------------------'
+		if debogage == True: print u'-----------------------------------------------------------------'
 		url = u''
 		DebutURL = u''
 		CharFinURL = u''
@@ -687,14 +689,14 @@ def hyperlynx(PageTemp):
 		PageDebut = PageTemp[0:PageTemp.find(u'//')]
 		# Balises interdisant la modification de l'URL
 		saut = False
-		for b in range(1,ligneB):
+		for b in range(1,ligneB+1):
 			if PageDebut.rfind(Balise[b][1]) != -1 and PageDebut.rfind(Balise[b][1]) > PageDebut.rfind(Balise[b][2]):
 				saut = True
-				if debogage: print u'URL dans ' + Balise[b][1]
+				if debogage == True: print u'URL dans ' + Balise[b][1]
 				break
 			if PageEnd.rfind(Balise[b][1]) != -1 and PageEnd.rfind(Balise[b][1]) > PageEnd.rfind(Balise[b][2]):
 				saut = True
-				if debogage: print u'URL dans ' + Balise[b][1]
+				if debogage == True: print u'URL dans ' + Balise[b][1]
 				break
 		if saut == False:
 			# titre=
@@ -704,27 +706,27 @@ def hyperlynx(PageTemp):
 					titre = PageTemp3[0:PageTemp3.find(u'|')]
 				else:
 					titre = PageTemp3[0:len(PageTemp3)]
-				if debogage: print u'Titre avant URL'
+				if debogage == True: print u'Titre avant URL'
 			elif PageDebut.rfind(u'titre =') != -1 and PageDebut.rfind(u'titre =') > PageDebut.rfind(u'{{') and PageDebut.rfind(u'titre =') > PageDebut.rfind(u'}}'):
 				PageTemp3 = PageDebut[PageDebut.rfind(u'titre =')+len(u'titre ='):len(PageDebut)]
 				if PageTemp3.find(u'|') != -1 and (PageTemp3.find(u'|') < PageTemp3.find(u'}}') or PageTemp3.rfind(u'}}') == -1):
 					titre = PageTemp3[0:PageTemp3.find(u'|')]
 				else:
 					titre = PageTemp3[0:len(PageTemp3)]
-				if debogage: print u'Titre avant URL'
+				if debogage == True: print u'Titre avant URL'
 		
 			# url=
 			if PageDebut[len(PageDebut)-1:len(PageDebut)] == u'[':
-				if debogage: print u'URL entre crochets sans protocole'
+				if debogage == True: print u'URL entre crochets sans protocole'
 				DebutURL = 1
 			elif PageDebut[len(PageDebut)-5:len(PageDebut)] == u'http:':
-				if debogage: print u'URL http'
+				if debogage == True: print u'URL http'
 				DebutURL = 5
 			elif PageDebut[len(PageDebut)-6:len(PageDebut)] == u'https:':
-				if debogage: print u'URL https'
+				if debogage == True: print u'URL https'
 				DebutURL = 6
 			else:
-				if debogage: print u'URL sans http ni crochet'
+				if debogage == True: print u'URL sans http ni crochet'
 				DebutURL = 0
 			if DebutURL != 0:
 				# Après l'URL
@@ -732,9 +734,21 @@ def hyperlynx(PageTemp):
 				# url=	
 				CharFinURL = u' '
 				for l in range(1,limiteURL):
-					if FinPageURL.find(CharFinURL) == -1 or (FinPageURL.find(FinDURL[l]) != -1 and FinPageURL.find(FinDURL[l]) < FinPageURL.find(CharFinURL)):
+					if debogageLent == True:
+						print u'FinDURL[l] : '
+						print FinDURL[l]
+						print u'CharFinURL : '
+						print CharFinURL
+						print u'FinPageURL.find(CharFinURL) == -1 : ' 
+						print FinPageURL.find(CharFinURL) == -1
+						print u'FinPageURL.find(FinDURL[l]) < FinPageURL.find(CharFinURL) : ' 
+						print FinPageURL.find(FinDURL[l]) < FinPageURL.find(CharFinURL)
+						print u"FinPageURL.find(u'}}') < FinPageURL.find(u'{{') or FinPageURL.find(u'}}') == -1 : " 
+						print FinPageURL.find(u'}}') < FinPageURL.find(u'{{')
+					if FinPageURL.find(CharFinURL) == -1 or (FinPageURL.find(FinDURL[l]) != -1 and FinPageURL.find(FinDURL[l]) < FinPageURL.find(CharFinURL)): # and (FinDURL[l] != u'|' or (FinPageURL.find(u'}}') < FinPageURL.find(u'{{') or FinPageURL.find(u'}}') == -1)): 	# pbs de | inclus dans les URL testées
 						CharFinURL = FinDURL[l]
-				if debogage: print u'*Caractère de fin URL : ' + CharFinURL
+				#raw_input(FinPageURL.encode(config.console_encoding, 'replace'))
+				if debogage == True: print u'__Caractère de fin d\'URL : ' + CharFinURL
 				
 				if DebutURL == 1:
 					url = u'http:' + PageTemp[PageTemp.find(u'//'):PageTemp.find(u'//')+FinPageURL.find(CharFinURL)]
@@ -751,19 +765,19 @@ def hyperlynx(PageTemp):
 					for u in range(1,limiteURL2):
 						while url[len(url)-1:] == FinDURL2[u]:
 							url = url[:len(url)-1]
-							if debogage: print u'Réduction de l\'URL de ' + FinDURL2[u]
+							if debogage == True: print u'Réduction de l\'URL de ' + FinDURL2[u]
 					
 					Media = False
 					for f in range(1,limiteF):
 						if url[len(url)-len(Format[f])-1:].lower() == u'.' + Format[f].lower():
-							if debogage:
+							if debogage == True:
 								print url.encode(config.console_encoding, 'replace')
 								print u'Média détecté (memory error potentielle)'
 							Media = True
 					if Media == False:
-						if debogage: print(u'Recherche de la page distante')
+						if debogage == True: print(u'Recherche de la page distante')
 						htmlSource = TestURL(url)
-						if debogage: print(u'Recherche dans son contenu')
+						if debogage == True: print(u'Recherche dans son contenu')
 						LienBrise = TestPage(htmlSource,url)
 				
 				# Site réputé HS, mais invisible car ses sous-pages ont toutes été déplacées, et renvoient vers l'accueil
@@ -783,30 +797,38 @@ def hyperlynx(PageTemp):
 					else:
 						LienBrise = False
 						
-				if debogage:
+				if debogage == True:
 					# Compte-rendu des URL détectées
 					try:
-						print u'*URL : ' + url.encode(config.console_encoding, 'replace')
-						print u'*Titre : ' + titre.encode(config.console_encoding, 'replace')
-						print u'*HS : ' + str(LienBrise)
+						print u'__URL : ' + url.encode(config.console_encoding, 'replace')
+						print u'__Titre : ' + titre.encode(config.console_encoding, 'replace')
+						print u'__HS : ' + str(LienBrise)
 						print type(htmlSource)
 					except UnicodeDecodeError:
-						print u'*HS : ' + str(LienBrise)
+						print u'__HS : ' + str(LienBrise)
 						print "UnicodeDecodeError l 466"
-				if debogageLent: raw_input (htmlSource[0:1000])
+				if debogageLent == True: raw_input (htmlSource[0:1000])
 				
-				# Modification du wiki en conséquence	
-				DebutPage = PageTemp[0:PageTemp.find(u'//')+2]
-				DebutURL = max(DebutPage.find(u'http://'),DebutPage.find(u'https://'),DebutPage.find(u'[//'))
+				# Modification du wiki : recherche des bornes du lien et de son modèle
+				#DebutModele = PageTemp.find(u'//')+2
+				DebutModele = 0
+				DebutPage = PageTemp[:PageTemp.find(u'//')+2]
+				
+				# Saut des modèles placés avant le modèle de lien (ex : {{lien web|langue=en|url={{Allmusic|class=album|id=r500159|pure_url=yes}}|titre=Breach - The Wallflowers|périodique=[[Allmusic]]}} {{lien web|url=http://fr.wikibooks.org/phpmyadmin|titre=JackBot}})
+				while DebutPage.find(u'}}') != -1 and DebutPage.find(u'}}') < DebutPage.find(u'//'):
+					DebutModele += DebutPage.find(u'}}')+2
+					DebutPage = DebutPage[DebutPage.find(u'}}')+2:]
+				#DebutURL = max(DebutPage.find(u'http://'),DebutPage.find(u'https://'),DebutPage.find(u'[//')) # ne contient pas les modèles similaires sans URL
+				DebutURL = max(PageTemp.find(u'http://'),PageTemp.find(u'https://'),PageTemp.find(u'[//'))
 				
 				# Saut des modèles inclus dans un modèle de lien
 				while DebutPage.rfind(u'{{') != -1 and DebutPage.rfind(u'{{') < DebutPage.rfind(u'}}'):
 					DebutPage = DebutPage[:DebutPage.rfind(u'{{')]
-						
+				
 				# Détection si l'hyperlien est dans un modèle
 				if DebutPage.rfind(u'{{') != -1 and DebutPage.rfind(u'{{') > DebutPage.rfind(u'}}'):
-					DebutModele = DebutPage.rfind(u'{{')
-					DebutPage = DebutPage[DebutPage.rfind(u'{{'):len(DebutPage)]
+					DebutModele += DebutPage.rfind(u'{{')
+					DebutPage = DebutPage[DebutPage.rfind(u'{{'):] # *{{lien web|url=http://
 					AncienModele = u''
 					# Lien dans un modèle connu (consensus en cours pour les autres, atention aux infobox)
 					'''for m in range(1,limiteM):
@@ -814,41 +836,51 @@ def hyperlynx(PageTemp):
 					''' 
 					if re.search(u'{{ *[L|l]ien web *[\||\n]', DebutPage):
 						AncienModele = u'lien web'
-						if debogage: print u'Détection de ' + AncienModele
+						if debogage == True: print u'__Détection de ' + AncienModele
 					elif re.search('{{ *[L|l]ire en ligne *[\||\n]', DebutPage):
 						AncienModele = u'lire en ligne'
-						if debogage: print u'Détection de ' + AncienModele
+						if debogage == True: print u'__Détection de ' + AncienModele
 					elif retablirNonBrise == True and re.search(u'{{ *[L|l]ien brisé *[\||\n]', DebutPage):
 						AncienModele = u'lien brisé'
-						if debogage: print u'Détection de ' + AncienModele
-						
-					#if DebutPage[0:2] == u'{{': AncienModele = trim(DebutPage[2:DebutPage.find(u'|')])
-					
+						if debogage == True: print u'__Détection de ' + AncienModele
+
 					FinModele = PageTemp.find(u'//')+2
-					FinPageModele = PageTemp[FinModele:len(PageTemp)]
+					FinPageModele = PageTemp[FinModele:]
 					# Calcul des modèles inclus dans le modèle de lien
 					while FinPageModele.find(u'}}') != -1 and FinPageModele.find(u'}}') > FinPageModele.find(u'{{') and FinPageModele.find(u'{{') != -1:
 						FinModele = FinModele + FinPageModele.find(u'}}')+2
 						FinPageModele = FinPageModele[FinPageModele.find(u'}}')+2:len(FinPageModele)]
+					
 					FinModele = FinModele + FinPageModele.find(u'}}')+2
+					if debogageLent == True: 
+						print DebutModele
+						print FinModele
+						print u'---PageTemp1-------------------------------------------------'
+						raw_input(PageTemp.encode(config.console_encoding, 'replace')) # ...*{{lien web|url=http://fr.wikibooks.org/phpmyadmin|titre=JackBot}}'''
 					ModeleCourant = PageTemp[DebutModele:FinModele]
-					if debogage: print "*Modele : " + ModeleCourant.encode(config.console_encoding, 'replace')
+					#if debogage == True: print u'__Modele : ' + ModeleCourant.encode(config.console_encoding, 'replace')
 					
 					if AncienModele != u'':
-						if debogage: print u'Ancien modèle à traiter : ' + AncienModele
+						if debogage == True: print u'Ancien modèle à traiter : ' + AncienModele
 						if LienBrise == True:
 							try:
-								PageTemp = PageTemp[0:DebutModele] + u'{{lien brisé' + PageTemp[re.search(u'{{ *[' + AncienModele[0:1] + u'|' + AncienModele[0:1].upper() + u']' + AncienModele[1:] + u' *[\||\n]', PageTemp).end()-1:]
+								if debogageLent == True: 
+									raw_input(PageTemp[:DebutModele].encode(config.console_encoding, 'replace')) #...
+								#PageTemp = PageTemp[:DebutModele] + u'{{lien brisé' + PageTemp[re.search(u'{{ *[' + AncienModele[0:1] + u'|' + AncienModele[0:1].upper() + u']' + AncienModele[1:] + u' *[\||\n]', PageTemp).end()-1:]
+								PageTemp = PageTemp[:PageTemp.find(ModeleCourant)] + u'{{lien brisé' + ModeleCourant[re.search(u'{{ *[' + AncienModele[0:1] + u'|' + AncienModele[0:1].upper() + u']' + AncienModele[1:] + u' *[\||\n]', ModeleCourant).end()-1:] + PageTemp[PageTemp.find(ModeleCourant)+len(ModeleCourant):]
+								if debogageLent == True: 
+									print u'---PageTemp2-------------------------------------------------' 
+									raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 							except AttributeError:
 								raise "Regex introuvable ligne 811"
 								
 						elif AncienModele == u'lien brisé':
-							if debogage: print u'Rétablissement d\'un ancien lien brisé'
+							if debogage == True: print u'Rétablissement d\'un ancien lien brisé'
 							PageTemp = PageTemp[:PageTemp.find(AncienModele)] + u'lien web' + PageTemp[PageTemp.find(AncienModele)+len(AncienModele):]
 						'''
 						# titre=
 						if re.search(u'\| *titre *=', FinPageURL):
-							if debogage: print u'Titre après URL'
+							if debogage == True: print u'Titre après URL'
 							if titre == u'' and re.search(u'\| *titre *=', FinPageURL).end() != -1 and re.search(u'\| *titre *=', FinPageURL).end() < FinPageURL.find(u'\n') and re.search(u'\| *titre *=', FinPageURL).end() < FinPageURL.find(u'}}'):
 								PageTemp3 = FinPageURL[re.search(u'\| *titre *=', FinPageURL).end():]
 								# Modèles inclus dans les titres
@@ -861,7 +893,7 @@ def hyperlynx(PageTemp):
 									titre = titre + PageTemp3[0:PageTemp3.find(u'}}')]
 						elif FinPageURL.find(u']') != -1 and (PageTemp.find(u'//') == PageTemp.find(u'[//')+1 or PageTemp.find(u'//') == PageTemp.find(u'[http://')+6 or PageTemp.find(u'//') == PageTemp.find(u'[https://')+7):
 							titre = FinPageURL[FinPageURL.find(CharFinURL)+len(CharFinURL):FinPageURL.find(u']')]
-						if debogageLent: raw_input(FinPageURL.encode(config.console_encoding, 'replace'))	
+						if debogageLent == True: raw_input(FinPageURL.encode(config.console_encoding, 'replace'))	
 						
 						# En cas de modèles inclus le titre a pu ne pas être détecté précédemment
 						if titre == u'' and re.search(u'\| *titre *=', ModeleCourant):
@@ -871,13 +903,13 @@ def hyperlynx(PageTemp):
 								titre = titre + PageTemp3[:PageTemp3.find(u'}}')+2]
 								PageTemp3 = PageTemp3[PageTemp3.find(u'}}')+2:]
 							titre = titre + PageTemp3[:re.search(u'[^\|}\n]*', PageTemp3).end()]
-							if debogage:
-								print u'*Titre2 : '
+							if debogage == True:
+								print u'__Titre2 : '
 								print titre.encode(config.console_encoding, 'replace')
 							
 						if LienBrise == True and AncienModele != u'lien brisé' and AncienModele != u'Lien brisé':
 							summary = summary + u', remplacement de ' + AncienModele + u' par {{lien brisé}}'
-							if debogage: print u', remplacement de ' + AncienModele + u' par {{lien brisé}}'
+							if debogage == True: print u', remplacement de ' + AncienModele + u' par {{lien brisé}}'
 							if titre == u'':
 								PageTemp = PageTemp[0:DebutModele] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + PageTemp[FinModele:len(PageTemp)]
 							else:
@@ -890,11 +922,11 @@ def hyperlynx(PageTemp):
 						'''elif LienBrise == True:
 						summary = summary + u', ajout de {{lien brisé}}'
 						if DebutURL == 1:
-							if debogage: print u'Ajout de lien brisé entre crochets 1'
+							if debogage == True: print u'Ajout de lien brisé entre crochets 1'
 							# Lien entre crochets
 							PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(u']')+1:len(PageTemp)]
 						else:
-							if debogage: print u'Ajout de lien brisé 1'
+							if debogage == True: print u'Ajout de lien brisé 1'
 							if PageTemp[DebutURL-1:DebutURL] == u'[' and PageTemp[DebutURL-2:DebutURL] != u'[[': DebutURL = DebutURL -1
 							if CharFinURL == u' ' and FinPageURL.find(u']') != -1 and (FinPageURL.find(u'[') == -1 or FinPageURL.find(u']') < FinPageURL.find(u'[')): 
 								# Présence d'un titre
@@ -905,28 +937,30 @@ def hyperlynx(PageTemp):
 								PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL):len(PageTemp)]
 						'''
 					else:
-						if debogage: print url.encode(config.console_encoding, 'replace') + " dans modèle non géré"
+						if debogage == True: print url.encode(config.console_encoding, 'replace') + " dans modèle non géré"
 					
 				else:
-					if debogage: print u'URL hors modèle'
+					if debogage == True: print u'URL hors modèle'
 					if LienBrise == True:
 						summary = summary + u', ajout de {{lien brisé}}'
+						# Redéfinition sinon trop grand et allonge PageTemp jusqu'à Memory error
+						DebutURL = max(DebutPage.find(u'http://'),DebutPage.find(u'https://'),DebutPage.find(u'[//'))
 						if DebutURL == 1:
-							if debogage: print u'Ajout de lien brisé entre crochets sans protocole'
+							if debogage == True: print u'Ajout de lien brisé entre crochets sans protocole'
 							if titre != u'':
 								PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(u']')+1:len(PageTemp)]
 							else:
 								PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(u']')+1:len(PageTemp)]
 						else:
-							if debogage: print u'Ajout de lien brisé 2'
+							if debogage == True: print u'Ajout de lien brisé 2'
 							if PageTemp[DebutURL-1:DebutURL] == u'[' and PageTemp[DebutURL-2:DebutURL] != u'[[':
-								if debogage: print u'entre crochet'
+								if debogage == True: print u'entre crochet'
 								DebutURL = DebutURL -1
 								if titre == u'' :
-									if debogage: "Titre vide"
+									if debogage == True: "Titre vide"
 									# Prise en compte des crochets inclus dans un titre
 									PageTemp2 = PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL):]
-									#if debogage: raw_input(PageTemp2.encode(config.console_encoding, 'replace'))
+									#if debogage == True: raw_input(PageTemp2.encode(config.console_encoding, 'replace'))
 									if PageTemp2.find(u']]') != -1 and PageTemp2.find(u']]') < PageTemp2.find(u']'):
 										while PageTemp2.find(u']]') != -1 and PageTemp2.find(u'[[') != -1 and PageTemp2.find(u'[[') < PageTemp2.find(u']]'):
 											titre = titre + PageTemp2[:PageTemp2.find(u']]')+1]
@@ -939,27 +973,27 @@ def hyperlynx(PageTemp):
 									titre = trim(titre + PageTemp2[:PageTemp2.find(u']')])
 									PageTemp2 = PageTemp2[PageTemp2.find(u']'):]
 								if titre != u'':
-									if debogage: "Ajout avec titre"
-									PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + PageTemp[len(PageTemp)-len(PageTemp2)+1:len(PageTemp)]
+									if debogage == True: "Ajout avec titre"
+									PageTemp = PageTemp[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + PageTemp[len(PageTemp)-len(PageTemp2)+1:len(PageTemp)]
 								else:
-									if debogage: "Ajout sans titre"
-									PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(u']')+1:len(PageTemp)]
-							else:	
+									if debogage == True: "Ajout sans titre"
+									PageTemp = PageTemp[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(u']')+1:len(PageTemp)]
+							else:
 								if titre != u'': 
 									# Présence d'un titre
-									if debogage: print u'URL nue avec titre'
-									PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL)+1:PageTemp.find(u'//')+FinPageURL.find(u']')]  + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(u']')+1:len(PageTemp)]
+									if debogage == True: print u'URL nue avec titre'
+									PageTemp = PageTemp[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL)+1:PageTemp.find(u'//')+FinPageURL.find(u']')]  + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(u']')+1:len(PageTemp)]
 								else:
-									if debogage: print u'URL nue sans titre'
-									PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}} ' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL):len(PageTemp)]
-						
+									if debogage == True: print u'URL nue sans titre'
+									PageTemp = PageTemp[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}} ' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL):len(PageTemp)]
 					else:
-						if debogage: print u'Aucun changement sur l\'URL http'
+						if debogage == True: print u'Aucun changement sur l\'URL http'
 			else:
-				if debogage: print u'Aucun changement sur l\'URL non http'	
+				if debogage == True: print u'Aucun changement sur l\'URL non http'	
 		else:
-			if debogageLent: print u'URL entre balises sautée'
-			
+			if debogageLent == True: print u'URL entre balises sautée'
+		print 'fin du test'
+		
 		# Lien suivant, en sautant les URL incluses dans l'actuelle, et celles avec d'autres protocoles que http(s)
 		if FinModele == 0 and LienBrise == False:
 			FinPageURL = PageTemp[PageTemp.find(u'//')+2:len(PageTemp)]
@@ -967,23 +1001,21 @@ def hyperlynx(PageTemp):
 			for l in range(1,limiteURL):
 				if FinPageURL.find(FinDURL[l]) != -1 and FinPageURL.find(FinDURL[l]) < FinPageURL.find(CharFinURL):
 					CharFinURL = FinDURL[l]
-			if debogage: print u'Saut après ' + CharFinURL
+			if debogage == True: print u'Saut après ' + CharFinURL
 			PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'//')+2+FinPageURL.find(CharFinURL)]
 			PageTemp = PageTemp[PageTemp.find(u'//')+2+FinPageURL.find(CharFinURL):len(PageTemp)]
 		else:
 			# Saut du reste du modèle courant (contenant parfois d'autres URL à laisser)
-			if debogage: print u'Saut après }}'
-			PageEnd = PageEnd + PageTemp[0:FinModele]
+			if debogage == True: print u'Saut après }}'
+			PageEnd = PageEnd + PageTemp[:FinModele]
 			PageTemp = PageTemp[FinModele:]
-		#raw_input(PageEnd.encode(config.console_encoding, 'replace'))
-		
 	PageTemp = PageEnd + PageTemp
 	PageEnd	= u''	
-	if debogage: print ("Fin des tests URL")
+	if debogage == True: print ("Fin des tests URL")
 	
 	# Recherche de chaque hyperlien de modèles ------------------------------------------------------------------------------------------------------------------------------------
 	if PageTemp.find(u'{{langue') != -1: # du Wiktionnaire
-		if debogage: print ("Modèles Wiktionnaire")
+		if debogage == True: print (u'Modèles Wiktionnaire')
 		for m in range(1,ligne):
 			PagEnd = u''
 			while PageTemp.find(u'{{' + TabModeles[m][1] + u'|') != -1:
@@ -1000,7 +1032,7 @@ def hyperlynx(PageTemp):
 			PageEnd = u''
 		PageTemp = PageEnd + PageTemp
 		PageEnd = u''
-	if debogage: print ("Fin des tests modèle")
+	if debogage == True: print ("Fin des tests modèle")
 	
 	# Paramètre inutile ?
 	'''while PageTemp.find(u'|deadurl=no|') != -1:
@@ -1017,7 +1049,7 @@ def hyperlynx(PageTemp):
 def TestURL(url):
 	# Renvoie la page web d'une URL dès qu'il arrive à la lire.
 	#debogage = False
-	if debogage: print u'--------'
+	if debogage == True: print u'--------'
 	# Whitelistage
 	if url.find(u'history.navy.mil') != -1: return "ok"	# IP Free bloquée en lecture
 	htmlSource = ""
@@ -1026,68 +1058,68 @@ def TestURL(url):
 		req = urllib2.Request(url)
 		res = urllib2.urlopen(req)
 		htmlSource = res.read()
-		if debogage: print str(len(htmlSource))
+		if debogage == True: print str(len(htmlSource))
 		if htmlSource != "": return htmlSource
 	except UnicodeEncodeError:
-		if debogage: print Method + u' : UnicodeEncodeError'
+		if debogage == True: print Method + u' : UnicodeEncodeError'
 	except UnicodeDecodeError:
-		if debogage: print Method + u' : UnicodeDecodeError'
+		if debogage == True: print Method + u' : UnicodeDecodeError'
 	except UnicodeError:
-		if debogage: print Method + u' : UnicodeError'
+		if debogage == True: print Method + u' : UnicodeError'
 	except httplib.BadStatusLine:
-		if debogage: print Method + u' : BadStatusLine'
+		if debogage == True: print Method + u' : BadStatusLine'
 	except httplib.InvalidURL:
-		if debogage: print Method + u' : InvalidURL'
+		if debogage == True: print Method + u' : InvalidURL'
 	except urllib2.URLError:
-		if debogage: print Method + u' : URLError'
+		if debogage == True: print Method + u' : URLError'
 	except urllib2.HTTPError, e:
-		if debogage: print Method + u' : HTTPError %s.' % e.code
+		if debogage == True: print Method + u' : HTTPError %s.' % e.code
 		Method = u'opener'
 		try:
 			opener = urllib2.build_opener()
 			response = opener.open(url)
 			htmlSource = response.read()
-			if debogage: print str(len(htmlSource))
+			if debogage == True: print str(len(htmlSource))
 			if htmlSource != "": return htmlSource
 		except UnicodeEncodeError:
-			if debogage: print Method + u' : UnicodeEncodeError'
+			if debogage == True: print Method + u' : UnicodeEncodeError'
 		except UnicodeDecodeError:
-			if debogage: print Method + u' : UnicodeDecodeError'
+			if debogage == True: print Method + u' : UnicodeDecodeError'
 		except UnicodeError:
-			if debogage: print Method + u' : UnicodeError'
+			if debogage == True: print Method + u' : UnicodeError'
 		except httplib.BadStatusLine:
-			if debogage: print Method + u' : BadStatusLine'
+			if debogage == True: print Method + u' : BadStatusLine'
 		except httplib.InvalidURL:
-			if debogage: print Method + u' : InvalidURL'
+			if debogage == True: print Method + u' : InvalidURL'
 		except urllib2.HTTPError, e:
-			if debogage: print Method + u' : HTTPError %s.' % e.code
+			if debogage == True: print Method + u' : HTTPError %s.' % e.code
 		except IOError as e:
-			if debogage: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+			if debogage == True: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
 		except urllib2.URLError:
-			if debogage: print Method + u' : URLError'
+			if debogage == True: print Method + u' : URLError'
 		# pb avec http://losangeles.broadwayworld.com/article/El_Capitan_Theatre_Presents_Disneys_Mars_Needs_Moms_311421_20110304 qui renvoie 301 car son suffixe est facultatif
 	except IOError as e:
-		if debogage: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+		if debogage == True: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
 	except MemoryError:
-		if debogage: print Method + u' : MemoryError'
+		if debogage == True: print Method + u' : MemoryError'
 		
 	Method = u"urllib2.urlopen(url.encode('utf8'))"
 	try:
 		htmlSource = urllib2.urlopen(url.encode('utf8')).read()
-		if debogage: print str(len(htmlSource))
+		if debogage == True: print str(len(htmlSource))
 		if htmlSource != "": return htmlSource
 	except UnicodeEncodeError:
-		if debogage: print Method + u' : UnicodeEncodeError'
+		if debogage == True: print Method + u' : UnicodeEncodeError'
 	except UnicodeDecodeError:
-		if debogage: print Method + u' : UnicodeDecodeError'
+		if debogage == True: print Method + u' : UnicodeDecodeError'
 	except UnicodeError:
-			if debogage: print Method + u' : UnicodeError'
+			if debogage == True: print Method + u' : UnicodeError'
 	except httplib.BadStatusLine:
-		if debogage: print Method + u' : BadStatusLine'
+		if debogage == True: print Method + u' : BadStatusLine'
 	except httplib.InvalidURL:
-		if debogage: print Method + u' : InvalidURL'
+		if debogage == True: print Method + u' : InvalidURL'
 	except urllib2.HTTPError, e:
-		if debogage: print Method + u' : HTTPError %s.' % e.code
+		if debogage == True: print Method + u' : HTTPError %s.' % e.code
 		Method = u'HTTPCookieProcessor'
 		try:
 			cj = cookielib.CookieJar()
@@ -1095,28 +1127,28 @@ def TestURL(url):
 			urllib2.install_opener(opener)
 			response = opener.open(url)
 			htmlSource = response.read()
-			if debogage: print str(len(htmlSource))
+			if debogage == True: print str(len(htmlSource))
 			if htmlSource != "": return htmlSource
 		except UnicodeEncodeError:
-			if debogage: print Method + u' : UnicodeEncodeError'
+			if debogage == True: print Method + u' : UnicodeEncodeError'
 		except UnicodeDecodeError:
-			if debogage: print Method + u' : UnicodeDecodeError'
+			if debogage == True: print Method + u' : UnicodeDecodeError'
 		except UnicodeError:
-			if debogage: print Method + u' : UnicodeError'
+			if debogage == True: print Method + u' : UnicodeError'
 		except httplib.BadStatusLine:
-			if debogage: print Method + u' : BadStatusLine'
+			if debogage == True: print Method + u' : BadStatusLine'
 		except httplib.InvalidURL:
-			if debogage: print Method + u' : InvalidURL'
+			if debogage == True: print Method + u' : InvalidURL'
 		except urllib2.HTTPError, e:
-			if debogage: print Method + u' : HTTPError %s.' % e.code
+			if debogage == True: print Method + u' : HTTPError %s.' % e.code
 		except IOError as e:
-			if debogage: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+			if debogage == True: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
 		except urllib2.URLError:
-			if debogage: print Method + u' : URLError'
+			if debogage == True: print Method + u' : URLError'
 	except IOError as e:
-		if debogage: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+		if debogage == True: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
 	except urllib2.URLError:
-		if debogage: print Method + u' : URLError'	
+		if debogage == True: print Method + u' : URLError'	
 		
 	Method = u'Request text/html'	
 	try:
@@ -1124,48 +1156,48 @@ def TestURL(url):
 		req.add_header('Accept','text/html')
 		res = urllib2.urlopen(req)
 		htmlSource = res.read()
-		if debogage: print Method + u' : text/html ' + str(len(htmlSource))
+		if debogage == True: print Method + u' : text/html ' + str(len(htmlSource))
 		if htmlSource != "": return htmlSource
 	except UnicodeEncodeError:
-		if debogage: print Method + u' : UnicodeEncodeError'
+		if debogage == True: print Method + u' : UnicodeEncodeError'
 	except UnicodeDecodeError:
-		if debogage: print Method + u' : UnicodeDecodeError'
+		if debogage == True: print Method + u' : UnicodeDecodeError'
 	except UnicodeError:
-		if debogage: print Method + u' : UnicodeError'
+		if debogage == True: print Method + u' : UnicodeError'
 	except httplib.BadStatusLine:
-		if debogage: print Method + u' : BadStatusLine'
+		if debogage == True: print Method + u' : BadStatusLine'
 	except httplib.InvalidURL:
-		if debogage: print Method + u' : InvalidURL'
+		if debogage == True: print Method + u' : InvalidURL'
 	except urllib2.HTTPError, e:
-		if debogage: print Method + u' : HTTPError %s.' % e.code
+		if debogage == True: print Method + u' : HTTPError %s.' % e.code
 		Method = u'geturl()'
 		try:
 			resp = urllib2.urlopen(url)
 			req = urllib2.Request(resp.geturl())
 			res = urllib2.urlopen(req)
 			htmlSource = res.read()
-			if debogage: print str(len(htmlSource))
+			if debogage == True: print str(len(htmlSource))
 			if htmlSource != "": return htmlSource
 		except UnicodeEncodeError:
-			if debogage: print Method + u' : UnicodeEncodeError'
+			if debogage == True: print Method + u' : UnicodeEncodeError'
 		except UnicodeDecodeError:
-			if debogage: print Method + u' : UnicodeDecodeError'
+			if debogage == True: print Method + u' : UnicodeDecodeError'
 		except UnicodeError:
-			if debogage: print Method + u' : UnicodeError'
+			if debogage == True: print Method + u' : UnicodeError'
 		except httplib.BadStatusLine:
-			if debogage: print Method + u' : BadStatusLine'
+			if debogage == True: print Method + u' : BadStatusLine'
 		except httplib.InvalidURL:
-			if debogage: print Method + u' : InvalidURL'
+			if debogage == True: print Method + u' : InvalidURL'
 		except urllib2.HTTPError, e:
-			if debogage: print Method + u' : HTTPError %s.' % e.code
+			if debogage == True: print Method + u' : HTTPError %s.' % e.code
 		except IOError as e:
-			if debogage: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+			if debogage == True: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
 		except urllib2.URLError:
-			if debogage: print Method + u' : URLError'
+			if debogage == True: print Method + u' : URLError'
 	except IOError as e:
-		if debogage: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+		if debogage == True: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
 	except urllib2.URLError:
-		if debogage: print Method + u' : URLError'
+		if debogage == True: print Method + u' : URLError'
 
 	Method = u'Request Mozilla/5.0'
 	agent = 'Mozilla/5.0 (compatible; MSIE 5.5; Windows NT)'
@@ -1175,20 +1207,20 @@ def TestURL(url):
 		req.add_header('Accept','text/html')
 		res = urllib2.urlopen(req)
 		htmlSource = res.read()
-		if debogage: print Method + u' : ' + agent + u' : ' + str(len(htmlSource))
+		if debogage == True: print Method + u' : ' + agent + u' : ' + str(len(htmlSource))
 		if htmlSource != "": return htmlSource
 	except UnicodeEncodeError:
-		if debogage: print Method + u' : UnicodeEncodeError'
+		if debogage == True: print Method + u' : UnicodeEncodeError'
 	except UnicodeDecodeError:
-		if debogage: print Method + u' : UnicodeDecodeError'
+		if debogage == True: print Method + u' : UnicodeDecodeError'
 	except UnicodeError:
-		if debogage: print Method + u' : UnicodeError'
+		if debogage == True: print Method + u' : UnicodeError'
 	except httplib.BadStatusLine:
-		if debogage: print Method + u' : BadStatusLine'
+		if debogage == True: print Method + u' : BadStatusLine'
 	except httplib.InvalidURL:
-		if debogage: print Method + u' : InvalidURL'
+		if debogage == True: print Method + u' : InvalidURL'
 	except urllib2.HTTPError, e:
-		if debogage: print Method + u' : HTTPError %s.' % e.code
+		if debogage == True: print Method + u' : HTTPError %s.' % e.code
 		if e.code == "404": return "404 error"
 		if socket.gethostname() == u'PavilionDV6':
 			Method = u'follow_all_redirects'	# fonctionne avec http://losangeles.broadwayworld.com/article/El_Capitan_Theatre_Presents_Disneys_Mars_Needs_Moms_311421_20110304
@@ -1197,61 +1229,61 @@ def TestURL(url):
 				req = urllib2.Request(r.url)
 				res = urllib2.urlopen(req)
 				htmlSource = res.read()
-				if debogage: print str(len(htmlSource))
+				if debogage == True: print str(len(htmlSource))
 				if htmlSource != "": return htmlSource
 			except UnicodeEncodeError:
-				if debogage: print Method + u' : UnicodeEncodeError'
+				if debogage == True: print Method + u' : UnicodeEncodeError'
 			except UnicodeDecodeError:
-				if debogage: print Method + u' : UnicodeDecodeError'
+				if debogage == True: print Method + u' : UnicodeDecodeError'
 			except UnicodeError:
-				if debogage: print Method + u' : UnicodeError'
+				if debogage == True: print Method + u' : UnicodeError'
 				Method = u"Méthode url.encode('utf8')"
 				try:
 					sock = urllib.urlopen(url.encode('utf8'))
 					htmlSource = sock.read()
 					sock.close()
-					if debogage: print str(len(htmlSource))
+					if debogage == True: print str(len(htmlSource))
 					if htmlSource != "": return htmlSource
 				except UnicodeError:
-					if debogage: print Method + u' : UnicodeError'
+					if debogage == True: print Method + u' : UnicodeError'
 				except UnicodeEncodeError:
-					if debogage: print Method + u' : UnicodeEncodeError'
+					if debogage == True: print Method + u' : UnicodeEncodeError'
 				except UnicodeDecodeError:
-					if debogage: print Method + u' : UnicodeDecodeError'
+					if debogage == True: print Method + u' : UnicodeDecodeError'
 				except httplib.BadStatusLine:
-					if debogage: print Method + u' : BadStatusLine'
+					if debogage == True: print Method + u' : BadStatusLine'
 				except httplib.InvalidURL:
-					if debogage: print Method + u' : InvalidURL'
+					if debogage == True: print Method + u' : InvalidURL'
 				except urllib2.HTTPError, e:
-					if debogage: print Method + u' : HTTPError %s.' % e.code
+					if debogage == True: print Method + u' : HTTPError %s.' % e.code
 				except IOError as e:
-					if debogage: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+					if debogage == True: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
 				except urllib2.URLError:
-					if debogage: print Method + u' : URLError'
+					if debogage == True: print Method + u' : URLError'
 			except httplib.BadStatusLine:
-				if debogage: print Method + u' : BadStatusLine'
+				if debogage == True: print Method + u' : BadStatusLine'
 			except httplib.InvalidURL:
-				if debogage: print Method + u' : InvalidURL'
+				if debogage == True: print Method + u' : InvalidURL'
 			except urllib2.HTTPError, e:
-				if debogage: print Method + u' : HTTPError %s.' % e.code
+				if debogage == True: print Method + u' : HTTPError %s.' % e.code
 			except urllib2.URLError:
-				if debogage: print Method + u' : URLError'	
+				if debogage == True: print Method + u' : URLError'	
 			except requests.exceptions.TooManyRedirects:
-				if debogage: print Method + u' : TooManyRedirects'
+				if debogage == True: print Method + u' : TooManyRedirects'
 				return u'ok'
 			except requests.exceptions.SSLError:
-				if debogage: print Method + u' : SSLError'
+				if debogage == True: print Method + u' : SSLError'
 				return u'ok'
 			except IOError as e:
-				if debogage: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+				if debogage == True: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
 			except requests.exceptions.ConnectionError:
-				if debogage: print Method + u' ConnectionError'
+				if debogage == True: print Method + u' ConnectionError'
 			except requests.exceptions.InvalidSchema:
-				if debogage: print Method + u' InvalidSchema'
+				if debogage == True: print Method + u' InvalidSchema'
 	except IOError as e:
-		if debogage: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+		if debogage == True: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
 	except urllib2.URLError:
-		if debogage: print Method + u' : URLError'
+		if debogage == True: print Method + u' : URLError'
 
 	Method = u'Request &_r=4&'
 	agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
@@ -1271,20 +1303,20 @@ def TestURL(url):
 		req.add_header('Accept','text/html')
 		res = urllib2.urlopen(req)
 		htmlSource = res.read()
-		if debogage: print str(len(htmlSource))
+		if debogage == True: print str(len(htmlSource))
 		if htmlSource != "": return htmlSource
 	except UnicodeEncodeError:
-		if debogage: print Method + u' : UnicodeEncodeError'
+		if debogage == True: print Method + u' : UnicodeEncodeError'
 	except UnicodeDecodeError:
-		if debogage: print Method + u' : UnicodeDecodeError'
+		if debogage == True: print Method + u' : UnicodeDecodeError'
 	except UnicodeError:
-		if debogage: print Method + u' : UnicodeError'
+		if debogage == True: print Method + u' : UnicodeError'
 	except httplib.BadStatusLine:
-		if debogage: print Method + u' : BadStatusLine'
+		if debogage == True: print Method + u' : BadStatusLine'
 	except httplib.InvalidURL:
-		if debogage: print Method + u' : InvalidURL'
+		if debogage == True: print Method + u' : InvalidURL'
 	except urllib2.HTTPError, e:
-		if debogage: print Method + u' : HTTPError %s.' % e.code
+		if debogage == True: print Method + u' : HTTPError %s.' % e.code
 		Method = u'HTTPRedirectHandler'
 		try:
 			opener = urllib2.build_opener(urllib2.HTTPRedirectHandler)
@@ -1292,100 +1324,100 @@ def TestURL(url):
 			req = urllib2.Request(request.url)
 			res = urllib2.urlopen(req)
 			htmlSource = res.read()
-			if debogage: print str(len(htmlSource))
+			if debogage == True: print str(len(htmlSource))
 			if htmlSource != "": return htmlSource
 		except UnicodeEncodeError:
-			if debogage: print Method + u' : UnicodeEncodeError'
+			if debogage == True: print Method + u' : UnicodeEncodeError'
 		except UnicodeDecodeError:
-			if debogage: print Method + u' : UnicodeDecodeError'
+			if debogage == True: print Method + u' : UnicodeDecodeError'
 		except UnicodeError:
-			if debogage: print Method + u' : UnicodeError'
+			if debogage == True: print Method + u' : UnicodeError'
 		except httplib.BadStatusLine:
-			if debogage: print Method + u' : BadStatusLine'
+			if debogage == True: print Method + u' : BadStatusLine'
 		except httplib.InvalidURL:
-			if debogage: print Method + u' : InvalidURL'
+			if debogage == True: print Method + u' : InvalidURL'
 		except urllib2.HTTPError, e:
-			if debogage: print Method + u' : HTTPError %s.' % e.code
+			if debogage == True: print Method + u' : HTTPError %s.' % e.code
 		except IOError as e:
-			if debogage: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+			if debogage == True: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
 		except urllib2.URLError:
-			if debogage: print Method + u' : URLError'			
+			if debogage == True: print Method + u' : URLError'			
 	except IOError as e:
-		if debogage: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+		if debogage == True: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
 	except urllib2.URLError:
-		if debogage: print Method + u' : URLError'
+		if debogage == True: print Method + u' : URLError'
 
 	Method = u'urlopen'	# fonctionne avec http://voxofilm.free.fr/vox_0/500_jours_ensemble.htm, et http://www.kurosawa-drawings.com/page/27
 	try:
 		res = urllib2.urlopen(url)
 		htmlSource = res.read()
-		if debogage: print str(len(htmlSource))
+		if debogage == True: print str(len(htmlSource))
 		if htmlSource != "": return htmlSource
 	except UnicodeEncodeError:
-		if debogage: print Method + u' : UnicodeEncodeError'
+		if debogage == True: print Method + u' : UnicodeEncodeError'
 	except UnicodeDecodeError:
-		if debogage: print Method + u' : UnicodeDecodeError'
+		if debogage == True: print Method + u' : UnicodeDecodeError'
 	except UnicodeError:
-		if debogage: print Method + u' : UnicodeError'
+		if debogage == True: print Method + u' : UnicodeError'
 	except httplib.BadStatusLine:
-		if debogage: print Method + u' : BadStatusLine'
+		if debogage == True: print Method + u' : BadStatusLine'
 	except httplib.InvalidURL:
-		if debogage: print Method + u' : InvalidURL'
+		if debogage == True: print Method + u' : InvalidURL'
 	except urllib2.HTTPError, e:
-		if debogage: print Method + u' : HTTPError %s.' % e.code
+		if debogage == True: print Method + u' : HTTPError %s.' % e.code
 		if e.code == 401: return "ok"	# http://www.nature.com/nature/journal/v442/n7104/full/nature04945.html
 	except IOError as e:
-		if debogage: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+		if debogage == True: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
 	except urllib2.URLError:
-		if debogage: print Method + u' : URLError'		
+		if debogage == True: print Method + u' : URLError'		
 
 	Method = u'urllib.urlopen'
 	try:
 		sock = urllib.urlopen(url)
 		htmlSource = sock.read()
 		sock.close()
-		if debogage: print str(len(htmlSource))
+		if debogage == True: print str(len(htmlSource))
 		if htmlSource != "": return htmlSource
 	except httplib.BadStatusLine:
-		if debogage: print Method + u' : BadStatusLine'
+		if debogage == True: print Method + u' : BadStatusLine'
 	except httplib.InvalidURL:
-		if debogage: print Method + u' : InvalidURL'
+		if debogage == True: print Method + u' : InvalidURL'
 	except IOError as e:
-		if debogage: print Method + u' : I/O error'
+		if debogage == True: print Method + u' : I/O error'
 	except urllib2.URLError, e:
-		if debogage: print Method + u' : URLError %s.' % e.code
+		if debogage == True: print Method + u' : URLError %s.' % e.code
 	except urllib2.HTTPError, e:
-		if debogage: print Method + u' : HTTPError %s.' % e.code
+		if debogage == True: print Method + u' : HTTPError %s.' % e.code
 	except UnicodeEncodeError:
-		if debogage: print Method + u' : UnicodeEncodeError'
+		if debogage == True: print Method + u' : UnicodeEncodeError'
 	except UnicodeDecodeError:
-		if debogage: print Method + u' : UnicodeDecodeError'
+		if debogage == True: print Method + u' : UnicodeDecodeError'
 	except UnicodeError:
-		if debogage: print Method + u' : UnicodeError'
+		if debogage == True: print Method + u' : UnicodeError'
 		Method = u"Méthode url.encode('utf8')"
 		try:
 			sock = urllib.urlopen(url.encode('utf8'))
 			htmlSource = sock.read()
 			sock.close()
-			if debogage: print str(len(htmlSource))
+			if debogage == True: print str(len(htmlSource))
 			if htmlSource != "": return htmlSource
 		except UnicodeError:
-			if debogage: print Method + u' : UnicodeError'
+			if debogage == True: print Method + u' : UnicodeError'
 		except UnicodeEncodeError:
-			if debogage: print Method + u' : UnicodeEncodeError'
+			if debogage == True: print Method + u' : UnicodeEncodeError'
 		except UnicodeDecodeError:
-			if debogage: print Method + u' : UnicodeDecodeError'
+			if debogage == True: print Method + u' : UnicodeDecodeError'
 		except httplib.BadStatusLine:
-			if debogage: print Method + u' : BadStatusLine'
+			if debogage == True: print Method + u' : BadStatusLine'
 		except httplib.InvalidURL:
-			if debogage: print Method + u' : InvalidURL'
+			if debogage == True: print Method + u' : InvalidURL'
 		except urllib2.HTTPError, e:
-			if debogage: print Method + u' : HTTPError %s.' % e.code
+			if debogage == True: print Method + u' : HTTPError %s.' % e.code
 		except IOError as e:
-			if debogage: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+			if debogage == True: print Method + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
 		except urllib2.URLError:
-			if debogage: print Method + u' : URLError'
-	if debogage: print Method + u' Fin du test d\'existance du site'
+			if debogage == True: print Method + u' : URLError'
+	if debogage == True: print Method + u' Fin du test d\'existance du site'
 	return u''
 
 def TestPage(htmlSource,url):
@@ -1393,69 +1425,69 @@ def TestPage(htmlSource,url):
 	try:
 		#if debogageLent == True and htmlSource != u'' and htmlSource is not None: raw_input (htmlSource[0:1000])
 		if htmlSource is None:
-			if debogage: print url.encode(config.console_encoding, 'replace') + " none type"
+			if debogage == True: print url.encode(config.console_encoding, 'replace') + " none type"
 			LienBrise = True
 		elif htmlSource == "" and (url.find(u'à') != -1 or url.find(u'é') != -1 or url.find(u'è') != -1 or url.find(u'ê') != -1 or url.find(u'ù') != -1): # bug http://fr.wikipedia.org/w/index.php?title=Acad%C3%A9mie_fran%C3%A7aise&diff=prev&oldid=92572792
 			LienBrise = False
 		elif htmlSource == "": #and url[len(url)-4:len(url)] != u'.pdf':
-			if debogage: print url.encode(config.console_encoding, 'replace') + " page vide"
+			if debogage == True: print url.encode(config.console_encoding, 'replace') + " page vide"
 			LienBrise = True
 		else:
-			if debogage: print u' Page non vide'
+			if debogage == True: print u' Page non vide'
 			for e in range(1,limiteE):
 				if htmlSource.find(Erreur[e]) != -1 and not re.search("\n[^\n]*if[^\n]*" + Erreur[e], htmlSource):
 					# Exceptions
 					if Erreur[e] == "404 Not Found" and url.find("audiofilemagazine.com") == -1:	# Exception avec popup formulaire en erreur
 						LienBrise = True
-						if debogage: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+						if debogage == True: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
 						break
 					elif Erreur[e] == "The page you requested cannot be found" and url.find("restaurantnewsresource.com") == -1:	# bug avec http://www.restaurantnewsresource.com/article35143 (Landry_s_Restaurants_Opens_T_REX_Cafe_at_Downtown_Disney.html)
 						LienBrise = True
-						if debogage: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+						if debogage == True: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
 						break
 					elif Erreur[e] == "Soit vous avez mal &#233;crit le titre" and (url.find("wiki") == True or url.find("wiktionary") == True):
 						LienBrise = True
-						if debogage: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+						if debogage == True: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
 						break
 					elif Erreur[e] == "Terme introuvable" != -1 and htmlSource.find("Site de l'ATILF") != -1:
 						LienBrise = True
-						if debogage: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+						if debogage == True: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
 						break
 					elif Erreur[e] == "Cette forme est introuvable !" != -1 and htmlSource.find("Site de l'ATILF") != -1:
 						LienBrise = True
-						if debogage: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+						if debogage == True: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
 						break
 					elif Erreur[e] == "Sorry, no matching records for query" != -1 and htmlSource.find("ATILF - CNRS") != -1:
 						LienBrise = True
-						if debogage: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+						if debogage == True: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
 						break
 					else:
 						LienBrise = True
-						if debogage: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+						if debogage == True: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
 						break
 	except UnicodeError:
-		if debogage: print u'UnicodeError lors de la lecture'
+		if debogage == True: print u'UnicodeError lors de la lecture'
 		LienBrise = False
 	except UnicodeEncodeError:
-		if debogage: print u'UnicodeEncodeError lors de la lecture'
+		if debogage == True: print u'UnicodeEncodeError lors de la lecture'
 		LienBrise = False
 	except UnicodeDecodeError:
-		if debogage: print u'UnicodeDecodeError lors de la lecture'
+		if debogage == True: print u'UnicodeDecodeError lors de la lecture'
 		LienBrise = False
 	except httplib.BadStatusLine:
-		if debogage: print u'BadStatusLine lors de la lecture'
+		if debogage == True: print u'BadStatusLine lors de la lecture'
 		LienBrise = False
 	except httplib.InvalidURL:
-		if debogage: print u'InvalidURL lors de la lecture'
+		if debogage == True: print u'InvalidURL lors de la lecture'
 		LienBrise = False
 	except urllib2.HTTPError, e:
-		if debogage: print u'HTTPError %s.' % e.code +  u' lors de la lecture'
+		if debogage == True: print u'HTTPError %s.' % e.code +  u' lors de la lecture'
 		LienBrise = False
 	except IOError as e:
-		if debogage: print u'I/O error({0}): {1}'.format(e.errno, e.strerror) +  u' lors de la lecture'
+		if debogage == True: print u'I/O error({0}): {1}'.format(e.errno, e.strerror) +  u' lors de la lecture'
 		LienBrise = False
 	except urllib2.URLError:
-		if debogage: print u'URLError lors de la lecture'
+		if debogage == True: print u'URLError lors de la lecture'
 		LienBrise = False
 
 	if url.find(u'www.bbc.co.uk') != -1 or url.find(u'www.cia.gov') != -1 or url.find(u'itunes.apple.com') != -1 or url.find(u'twitter.com') != -1: # or url.find(u'nytimes.com') != -1: pb à 3h32 # http://www.bbc.co.uk/cult/buffy/indetail/earshot/reviews.shtml, https://www.cia.gov/library/publications/the-world-factbook/fields/2060.html
@@ -1472,5 +1504,4 @@ def log(source):
 	txtfile.close()
 
 # à faire : passer les longs PDF comme dans [[w:Apollo 11]]
-# traiter les pages liées à {{lien web}} restantes
-
+# traiter les pages liées à {{lien web}} restantes, dont ceux inclus dans les tableaux

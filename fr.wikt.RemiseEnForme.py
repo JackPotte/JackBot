@@ -1373,6 +1373,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|q-syn}}', u'{{S|quasi-synonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|réf}}', u'{{S|références}}')
 		PageTemp = PageTemp.replace(u'{{S|syn}}', u'{{S|synonymes}}')
+		PageTemp = PageTemp.replace(u'{{S|Synonymes}}', u'{{S|synonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|trad-trier}}', u'{{S|traductions à trier}}')
 		PageTemp = PageTemp.replace(u'{{S|trad}}', u'{{S|traductions}}')
 		PageTemp = PageTemp.replace(u'{{S|traduction}}', u'{{S|traductions}}')
@@ -4575,6 +4576,9 @@ def modification(PageHS):
 		PageEnd = PageEnd.replace(u"{{genre|fr}}\n# ''Masculin ", u"{{m}}\n# ''Masculin ")
 		PageEnd = PageEnd.replace(u"{{genre|fr}}\n# ''Féminin ", u"{{f}}\n# ''Féminin ")
 		
+		#temp
+		PageEnd = PageEnd.replace(u"{{vérifier création automatique}}\n", u"")
+		
 		# Liens vers les conjugaisons régulières
 		'''if debogage: print u'Ajout de {{conj}}'
 		if PageEnd.find(u'[[Image:') == -1:	# Bug (ex : broyer du noir, définir)	{{lang/span\|[a-z\-]*\|([^}]*)}}
@@ -4756,9 +4760,25 @@ def crawlerSearch(pagename):
 # Traitement des modifications récentes
 def crawlerRC():
 	gen = pagegenerators.RecentchangesPageGenerator()
+	ecart_minimal_requis = 30 # min
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
-		modification(Page.title())
+		#print str(ecart_last_edit(Page)) + ' =? ' + str(ecart_minimal_requis)
+		if ecart_last_edit(Page) > ecart_minimal_requis:
+			modification(Page.title())
 
+def ecart_last_edit(page):
+	# Timestamp au format MediaWiki de la dernière version
+	time_last_edit = page.getVersionHistory()[0][1]
+	match_time = re.match(r'(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})', time_last_edit)
+	# Mise au format "datetime" du timestamp de la dernière version
+	datetime_last_edit = datetime.datetime(int(match_time.group(1)), int(match_time.group(2)), int(match_time.group(3)),
+		int(match_time.group(4)), int(match_time.group(5)), int(match_time.group(6)))
+	datetime_now = datetime.datetime.utcnow()
+	diff_last_edit_time = datetime_now - datetime_last_edit
+ 
+	# Ecart en minutes entre l'horodotage actuelle et l'horodotage de la dernière version
+	return diff_last_edit_time.seconds/60 + diff_last_edit_time.days*24*60
+	
 # Traitement des modifications d'un compte
 def crawlerUser(username,jusqua):
 	compteur = 0
@@ -4855,6 +4875,8 @@ TraitementLiens = crawlerLink(u'Modèle:pluri',u'')
 TraitementLiens = crawlerLink(u'Modèle:=langue=',u'')
 TraitementLiens = crawlerLink(u'Modèle:-déf-',u'')
 TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
+while 1:
+	TraitementRC = crawlerRC()
 '''
 TraitementLiensCategorie = crawlerCatLink(u'Catégorie:Modèles désuets',u'')
 TraitementLiens = crawlerLink(u'Modèle:SAMPA',u'') : remplacer les tableaux de prononciations ?
@@ -4863,7 +4885,7 @@ TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Conjugaisons manquant
 TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects:pron conv',True,u'')
 
 # Modèles
-TraitementPage = modification(u'Modèle:terme',u'')
+TraitementPage = modification(u'Modèle:terme')
 TraitementLiens = crawlerLink(u'Modèle:terme',u'')
 TraitementFichier = crawlerFile(u'articles_WTin.txt')
 TraitementLiensCategorie = crawlerCatLink(u'Modèles de code langue',u'')
@@ -4872,8 +4894,6 @@ TraitementRecherche = crawlerSearch(u'"en terme de"')
 TraitementUtilisateur = crawlerUser(u'Utilisateur:JackBot', 800)
 TraitementRedirections = crawlerRedirects()
 TraitementTout = crawlerAll(u'')
-while 1:
-	TraitementRC = crawlerRC()
 	
 python delete.py -lang:fr -family:wiktionary -file:articles_WTin.txt
 python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -noredirect -pairs
@@ -4887,3 +4907,4 @@ python interwiki.py -lang:fr -family:wiktionary -wiktionary -new:100000
 #trier les {{L| comme {{T|
 #revérifier les &# dans le dump
 # Traiter les modèles à deux paramètres : {{toponymes}}, {{localités}} et {{quartiers}}
+# remplacer {{tem|génie électronique / génétique...
