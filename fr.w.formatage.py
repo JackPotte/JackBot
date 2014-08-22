@@ -314,10 +314,15 @@ TraitementLiens = crawlerLink(u'Modèle:Lien mort',u'')
 TraitementLiens = crawlerLink(u'Modèle:Docu',u'')
 TraitementLiens = crawlerLink(u'Modèle:Cita web',u'')
 TraitementLiens = crawlerLink(u'Modèle:Cita noticia',u'')
+'''
+#TraitementPage = modification(u'Félix Baciocchi (1762-1841)')
+#TraitementPage = modification(u'Alexandre de Lameth') # pk ignoré ? Infobox trouvé à tort
+#Fresnes-Tilloloy trop long
+#TraitementFile = crawlerFile(input)
 
 #TraitementLiens = crawlerLink(u'Modèle:Cite book',u'')	# En stand by suite à réticences d'un tiers
 #TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
-'''
+
 #Modeles :
 TraitementPage = modification(u'Utilisateur:JackBot/test')
 TraitementPage = modification(u'Utilisateur:JackBot/test/À faire')

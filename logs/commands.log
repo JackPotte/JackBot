@@ -4017,3 +4017,62 @@
 2014-08-21 21:08:37 r-1 (unknown) Python 2.7.2 fr.w.formatage.py
 2014-08-21 21:09:36 r-1 (unknown) Python 2.7.2 fr.w.formatage.py
 2014-08-21 21:09:50 r-1 (unknown) Python 2.7.2 fr.w.formatage.py
+2014-08-21 21:49:08 r-1 (unknown) Python 2.7.2 fr.w.formatage.py
+2014-08-21 21:50:17 r-1 (unknown) Python 2.7.2 fr.w.formatage.py
+2014-08-21 22:23:16 r-1 (unknown) Python 2.7.2 fr.w.formatage.py
+2014-08-21 22:23:29 r-1 (unknown) Python 2.7.2 fr.w.formatage.py
+2014-08-22 19:52:41 r-1 (unknown) Python 2.7.2 fr.w.formatage.py
+2014-08-22 19:53:15 r-1 (unknown) Python 2.7.2 fr.w.formatage.py
+2014-08-22 20:21:16 r-1 (unknown) Python 2.7.2 fr.w.formatage.py
+2014-08-22 20:51:38 r-1 (unknown) Python 2.7.2 replace.py "{{vérifier création automatique}}\n" "" "-article:Abruzzen"
+2014-08-22 20:52:08 r-1 (unknown) Python 2.7.2 replace.py "{{vérifier création automatique}}\n" "" "-page:Abruzzen"
+2014-08-22 20:52:17 r-1 (unknown) Python 2.7.2 replace.py "{{vérifier création automatique}}\r\n" "" "-page:Abruzzen"
+2014-08-22 20:54:39 r-1 (unknown) Python 2.7.2 replace.py "{{vérifier création automatique}}\t\n" "" "-page:Abruzzen"
+2014-08-22 20:54:45 r-1 (unknown) Python 2.7.2 replace.py "{{vérifier création automatique}}\t\r" "" "-page:Abruzzen"
+2014-08-22 20:55:12 r-1 (unknown) Python 2.7.2 replace.py "{{vérifier création automatique}}\v" "" "-page:Abruzzen"
+2014-08-22 20:55:19 r-1 (unknown) Python 2.7.2 replace.py "{{vérifier création automatique}}\r" "" "-page:Abruzzen"
+2014-08-22 20:55:26 r-1 (unknown) Python 2.7.2 replace.py "u{{vérifier création automatique}}\r" "" "-page:Abruzzen"
+2014-08-22 20:55:32 r-1 (unknown) Python 2.7.2 replace.py "u{{vérifier création automatique}}\n" "" "-page:Abruzzen"
+2014-08-22 20:55:48 r-1 (unknown) Python 2.7.2 replace.py "{{vérifier création automatique}}\b" "" "-page:Abruzzen"
+2014-08-22 20:55:54 r-1 (unknown) Python 2.7.2 replace.py "{{vérifier création automatique}}\v" "" "-page:Abruzzen"
+2014-08-22 20:58:31 r-1 (unknown) Python 2.7.2 replace.py "{{vérifier création automatique}}<br/>" "" "-page:Abruzzen"
+2014-08-22 20:58:55 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "{{vérifier création automatique}}<br/>" "" "-page:Abruzzen"
+2014-08-22 20:59:03 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "{{vérifier création automatique}}\n" "" "-page:Abruzzen"
+2014-08-22 20:59:10 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "{{vérifier création automatique}}\r" "" "-page:Abruzzen"
+2014-08-22 20:59:21 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "{{vérifier création automatique}}\b" "" "-page:Abruzzen"
+2014-08-22 21:00:20 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:Abruzzen" "{{vérifier création automatique}}\v" ""
+2014-08-22 21:00:32 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:Abruzzen" "{{vérifier création automatique}}\n" ""
+2014-08-22 21:01:54 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:Abruzzen" "{{vérifier création automatique}}\n" "" "-regex"
+2014-08-22 21:03:48 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:Abruzzen" "{{vérifier création automatique}}[^=]" "" "-regex"
+2014-08-22 21:13:44 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:Abschreckung" "{{vérifier création automatique}} " "" "-regex"
+2014-08-22 21:16:06 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:Abschreckung" "{{vérifier création automatique}}&#32;" "" "-regex"
+2014-08-22 21:17:40 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:Abschreckung" "{{vérifier création automatique}}&#13;" "" "-regex"
+2014-08-22 21:17:50 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:Abschreckung" "{{vérifier création automatique}}&#10;" "" "-regex"
+2014-08-22 21:18:40 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:Abschreckung" "\n{{vérifier création automatique}}" ""
+2014-08-22 21:18:46 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:Abschreckung" "\r{{vérifier création automatique}}" ""
+2014-08-22 21:19:07 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:Abschreckung" "{{vérifier création automatique}}?" "" "-regex"
+2014-08-22 21:20:56 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:Ablation" "{{vérifier création automatique}}[^=]+" "" "-regex"
+2014-08-22 21:21:12 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:Ablation" "{{vérifier création automatique}}[^{]+" "" "-regex"
+2014-08-22 21:31:10 r-1 (unknown) Python 2.7.2 fr.wikt.lister_caracteres.py
+2014-08-22 21:31:23 r-1 (unknown) Python 2.7.2 fr.wikt.lister_caracteres.py
+2014-08-22 21:32:39 r-1 (unknown) Python 2.7.2 fr.wikt.lister_caracteres.py
+2014-08-22 21:33:13 r-1 (unknown) Python 2.7.2 fr.wikt.lister_caracteres.py
+2014-08-22 21:33:31 r-1 (unknown) Python 2.7.2 fr.wikt.lister_caracteres.py
+2014-08-22 21:35:16 r-1 (unknown) Python 2.7.2 fr.w.formatage.py
+2014-08-22 21:35:23 r-1 (unknown) Python 2.7.2 fr.wikt.lister_caracteres.py
+2014-08-22 21:35:57 r-1 (unknown) Python 2.7.2 fr.wikt.lister_caracteres.py
+2014-08-22 21:36:22 r-1 (unknown) Python 2.7.2 fr.wikt.lister_caracteres.py
+2014-08-22 21:37:18 r-1 (unknown) Python 2.7.2 fr.wikt.lister_caracteres.py
+2014-08-22 21:37:36 r-1 (unknown) Python 2.7.2 fr.wikt.lister_caracteres.py
+2014-08-22 21:43:11 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:installation nucléaire de base" "{{vérifier création automatique}}\x" ""
+2014-08-22 21:45:18 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:installation nucléaire de base" "{{vérifier création automatique}}CR+LF" ""
+2014-08-22 21:46:38 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-page:installation nucléaire de base" "{{vérifier création automatique}}^M" ""
+2014-08-22 21:53:38 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-08-22 21:56:22 r-1 (unknown) Python 2.7.2 fr.w.formatage.py
+2014-08-22 22:31:53 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-08-22 22:34:25 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-08-22 22:39:42 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-08-22 22:49:03 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-08-22 23:04:52 r-1 (unknown) Python 2.7.2 fr.w.formatage.py
+2014-08-22 23:30:18 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2014-08-22 23:53:31 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
