@@ -1473,3 +1473,4 @@ def log(source):
 
 # à faire : passer les longs PDF comme dans [[w:Apollo 11]]
 # traiter les pages liées à {{lien web}} restantes
+
