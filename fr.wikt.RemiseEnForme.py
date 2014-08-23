@@ -1260,10 +1260,10 @@ def modification(PageHS):
 			try:
 				PageBegin = page.get()
 			except wikipedia.NoPage:
-				print "NoPage l 1194"
+				print "NoPage l 1263"
 				return
 			except wikipedia.LockedPage: 
-				print "Locked l 1197"
+				print "Locked l 1266"
 				return
 			except wikipedia.IsRedirectPage: 
 				PageBegin = page.get(get_redirect=True)
@@ -1273,10 +1273,10 @@ def modification(PageHS):
 					PageBegin = PageBegin[0:PageBegin.find(TxtTmp)] + summary + PageBegin[PageBegin.find(TxtTmp)+len(TxtTmp):len(PageBegin)]
 					sauvegarde(page, PageBegin, summary)
 				else:
-					print "IsRedirect l 1207"
+					print "IsRedirect l 1276"
 				return
 	else:
-		print "NoPage l 1210"
+		print "NoPage l 1279"
 		return
 	PageTemp = PageBegin
 	CleTri = CleDeTri.CleDeTri(PageHS)
@@ -1293,10 +1293,10 @@ def modification(PageHS):
 			try:
 				PageEN = pageEN.get()
 			except wikipedia.NoPage:
-				print "NoPage l 1222"
+				print "NoPage l 1296"
 				return
 			except wikipedia.IsRedirectPage: 
-				print "IsRedirect l 1225"
+				print "IsRedirect l 1299"
 				return
 			if PageEN.find(u'==English==') != -1:
 				PageTemp = PageTemp + u'\n[[en:' + PageHS + u']]'
@@ -4856,29 +4856,32 @@ def sauvegarde(PageCourante, Contenu, summary):
 		except AttributeError:
 			print "AttributeError en sauvegarde"
 			return
-			
+
 # Lancement
-# Quotidiennement :
-TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Codes langue manquants',True,u'')
-TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Flexions à vérifier',True,u'')
-TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet',False,u'')
-TraitementLiens = crawlerLink(u'Modèle:trad',u'')
-TraitementLiens = crawlerLink(u'Modèle:1ergroupe',u'')
-TraitementLiens = crawlerLink(u'Modèle:2egroupe',u'')
-TraitementLiens = crawlerLink(u'Modèle:3egroupe',u'')
-TraitementLiens = crawlerLink(u'Modèle:-',u'')
-TraitementLiens = crawlerLink(u'Modèle:-ortho-alt-',u'')
-TraitementLiens = crawlerLink(u'Modèle:mascul',u'')
-TraitementLiens = crawlerLink(u'Modèle:fémin',u'')
-TraitementLiens = crawlerLink(u'Modèle:femin',u'')
-TraitementLiens = crawlerLink(u'Modèle:sing',u'')
-TraitementLiens = crawlerLink(u'Modèle:plur',u'')
-TraitementLiens = crawlerLink(u'Modèle:pluri',u'')
-TraitementLiens = crawlerLink(u'Modèle:=langue=',u'')
-TraitementLiens = crawlerLink(u'Modèle:-déf-',u'')
-TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
-while 1:
-	TraitementRC = crawlerRC()
+if len(sys.argv) > 1:
+	TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
+else:
+	# Quotidiennement :
+	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Codes langue manquants',True,u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Flexions à vérifier',True,u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet',False,u'')
+	TraitementLiens = crawlerLink(u'Modèle:trad',u'')
+	TraitementLiens = crawlerLink(u'Modèle:1ergroupe',u'')
+	TraitementLiens = crawlerLink(u'Modèle:2egroupe',u'')
+	TraitementLiens = crawlerLink(u'Modèle:3egroupe',u'')
+	TraitementLiens = crawlerLink(u'Modèle:-',u'')
+	TraitementLiens = crawlerLink(u'Modèle:-ortho-alt-',u'')
+	TraitementLiens = crawlerLink(u'Modèle:mascul',u'')
+	TraitementLiens = crawlerLink(u'Modèle:fémin',u'')
+	TraitementLiens = crawlerLink(u'Modèle:femin',u'')
+	TraitementLiens = crawlerLink(u'Modèle:sing',u'')
+	TraitementLiens = crawlerLink(u'Modèle:plur',u'')
+	TraitementLiens = crawlerLink(u'Modèle:pluri',u'')
+	TraitementLiens = crawlerLink(u'Modèle:=langue=',u'')
+	TraitementLiens = crawlerLink(u'Modèle:-déf-',u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
+	while 1:
+		TraitementRC = crawlerRC()
 '''
 TraitementLiensCategorie = crawlerCatLink(u'Catégorie:Modèles désuets',u'')
 TraitementLiens = crawlerLink(u'Modèle:SAMPA',u'') : remplacer les tableaux de prononciations ?
@@ -4901,13 +4904,3 @@ python delete.py -lang:fr -family:wiktionary -file:articles_WTin.txt
 python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -noredirect -pairs
 python interwiki.py -lang:fr -family:wiktionary -wiktionary -new:100000
 '''
-# à faire : remplacer == titre section == par S|titreSection
-# 			chercher {{trad-début|= (trad-trier)
-#           ajouter les {{pron|remplie|xx}} sur la ligne de définition des pluriels
-# refondre le tableau des modèles en xml avec les catégories nocat en colonne3
-# lister du dump les :en {{t-|fr|inexistants}} et vice-versa
-#trier les {{L| comme {{T|
-#revérifier les &# dans le dump
-# Traiter les modèles à deux paramètres : {{toponymes}}, {{localités}} et {{quartiers}}
-# remplacer {{tem|génie électronique / génétique...
-

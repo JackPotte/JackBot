@@ -300,29 +300,36 @@ def sauvegarde(PageCourante, Contenu, summary):
 			print "AttributeError en sauvegarde"
 			return
 
-# Lancement quotidient :
-TraitementLiens = crawlerLink(u'Modèle:Cite web',u'')
-TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
-TraitementLiens = crawlerLink(u'Modèle:Cite news',u'')
-TraitementLiens = crawlerLink(u'Modèle:Cite press release',u'')
-TraitementLiens = crawlerLink(u'Modèle:Cite episode',u'')
-TraitementLiens = crawlerLink(u'Modèle:Cite video',u'')
-TraitementLiens = crawlerLink(u'Modèle:Cite conference',u'')
-TraitementLiens = crawlerLink(u'Modèle:Cite arXiv',u'')
-TraitementLiens = crawlerLink(u'Modèle:Lien news',u'')
-TraitementLiens = crawlerLink(u'Modèle:Lien mort',u'')
-TraitementLiens = crawlerLink(u'Modèle:Docu',u'')
-TraitementLiens = crawlerLink(u'Modèle:Cita web',u'')
-TraitementLiens = crawlerLink(u'Modèle:Cita noticia',u'')
+# Lancement
+if len(sys.argv) > 1:
+	TraitementPage = modification(u'Félix Baciocchi (1762-1841)')
+	TraitementPage = modification(u'Alexandre de Lameth') # pk ignoré ? Infobox trouvé à tort
+	TraitementPage = modification(u'Fresnes-Tilloloy') #  trop long
+	TraitementPage = modification(u'Association professionnelle de squash')
+	TraitementPage = modification(u'Association internationale des joueuses de squash')
+	TraitementPage = modification(u'Classement individuel Squash')
+	TraitementPage = modification(u'Cataracte (maladie)')
+	#TraitementFile = crawlerFile(input)
+	#TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
+else:
+	# Quotidiennement :
+	TraitementLiens = crawlerLink(u'Modèle:Cite web',u'')
+	TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
+	TraitementLiens = crawlerLink(u'Modèle:Cite news',u'')
+	TraitementLiens = crawlerLink(u'Modèle:Cite press release',u'')
+	TraitementLiens = crawlerLink(u'Modèle:Cite episode',u'')
+	TraitementLiens = crawlerLink(u'Modèle:Cite video',u'')
+	TraitementLiens = crawlerLink(u'Modèle:Cite conference',u'')
+	TraitementLiens = crawlerLink(u'Modèle:Cite arXiv',u'')
+	TraitementLiens = crawlerLink(u'Modèle:Lien news',u'')
+	TraitementLiens = crawlerLink(u'Modèle:Lien mort',u'')
+	TraitementLiens = crawlerLink(u'Modèle:Docu',u'')
+	TraitementLiens = crawlerLink(u'Modèle:Cita web',u'')
+	TraitementLiens = crawlerLink(u'Modèle:Cita noticia',u'')
+	
+	#TraitementLiens = crawlerLink(u'Modèle:Cite book',u'')	# En stand by suite à réticences d'un tiers
+	#TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
 '''
-#TraitementPage = modification(u'Félix Baciocchi (1762-1841)')
-#TraitementPage = modification(u'Alexandre de Lameth') # pk ignoré ? Infobox trouvé à tort
-#Fresnes-Tilloloy trop long
-#TraitementFile = crawlerFile(input)
-
-#TraitementLiens = crawlerLink(u'Modèle:Cite book',u'')	# En stand by suite à réticences d'un tiers
-#TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
-
 #Modeles :
 TraitementPage = modification(u'Utilisateur:JackBot/test')
 TraitementPage = modification(u'Utilisateur:JackBot/test/À faire')
