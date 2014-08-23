@@ -34,7 +34,7 @@ TailleAnagramme = 5 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
 # Modèles du site à traiter
 limit2 = 135 # Paragraphes sans modèle catégorisant, {{voir| et {{voir/ sont gérés individuellement
-limit6 = 1015 # Somme des modèles traités
+limit6 = 1019 # Somme des modèles traités
 Modele = range(1, limit6+1)
 Section = range(1, limit2+1)
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
@@ -1059,18 +1059,22 @@ Modele[867] = u'gâteaux'
 Modele[868] = u'loisirs'
 Modele[869] = u'golfe'
 Modele[870] = u'golfes'
-#[[Spécial:newpages]] : pas "outils" faute de lexique (technique ?), 
+Modele[871] = u'véhicules'
+Modele[872] = u'musiques'
+Modele[873] = u'fig.'
+Modele[874] = u'télévision'
+#[[Spécial:newpages]] : pas "outils" faute de lexique (technique ?) 
 
-limit4 = 871	# code langue quoi qu'il arrive
-Modele[871] = u'ébauche-trans'
-Modele[872] = u'ébauche-étym-nom-scientifique'
-Modele[873] = u'ébauche-étym'
-Modele[874] = u'ébauche-déf'
+limit4 = 875	# code langue quoi qu'il arrive
 Modele[875] = u'ébauche-exe'
 Modele[876] = u'ébauche-pron'
 Modele[877] = u'ébauche-syn'
 Modele[878] = u'note-gentilé'
-Modele[879] = u'ébauche'
+Modele[879] = u'ébauche-trans'
+Modele[880] = u'ébauche-étym-nom-scientifique'
+Modele[881] = u'ébauche-étym'
+Modele[882] = u'ébauche-déf'
+Modele[883] = u'ébauche'
 '''
 # non traités
 Modele[] = u'spécialement' 
@@ -1088,11 +1092,7 @@ Modele[] = u'perf'
 Modele[] = u'imperf'
 '''
 # Modèles régionaux, pb du nocat pour les prononciations
-limit5 = 880
-Modele[880] = u'Pérou'
-Modele[881] = u'Québec'
-Modele[882] = u'Quercy'
-Modele[883] = u'Réunion'
+limit5 = 884
 Modele[884] = u'Roumanie'
 Modele[885] = u'Royaume-Uni'
 Modele[886] = u'Salvador'
@@ -1228,9 +1228,13 @@ Modele[1010] = u'Poitou'
 Modele[1011] = u'Polynésie française'
 Modele[1012] = u'Portugal'
 Modele[1013] = u'Provence'
+Modele[1014] = u'Pérou'
+Modele[1015] = u'Québec'
+Modele[1016] = u'Quercy'
+Modele[1017] = u'Réunion'
 
 # Modèles de pronociation à synchroniser
-Modele[1014] = u'fr-verbe-flexion'
+Modele[1018] = u'fr-verbe-flexion'
 #Modele[] = u'fr-rég'
 #Modele[] = u'fr-inv'
 #Modele[] = u'fr-accord-rég'
@@ -1309,6 +1313,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'==== {{\n{{trad-début}{{trad-fin}}\n}S|traductions}} ====', u'==== {{S|traductions}} ====')
 		PageTemp = PageTemp.replace(u'==== {{\n\n{{trad-début}{{trad-fin}}\n}S|traductions}} ====', u'==== {{S|traductions}} ====')
 		PageTemp = PageTemp.replace(u'==== {{\n\n{{trad-début}{{)}}\n}S|traductions}} ====', u'==== {{S|traductions}} ====')
+		PageTemp = PageTemp.replace(u'<!--* {{T|}} : {{trad||}}-->', u'')
 		PageTemp = PageTemp.replace(u'{{-car-}}', u'{{caractère}}')
 		PageTemp = PageTemp.replace(u'{{-note-|s=s}}', u'{{-notes-}}')
 		PageTemp = PageTemp.replace(u'{{-etym-}}', u'{{-étym-}}')
@@ -4576,9 +4581,6 @@ def modification(PageHS):
 		PageEnd = PageEnd.replace(u"{{genre|fr}}\n# ''Masculin ", u"{{m}}\n# ''Masculin ")
 		PageEnd = PageEnd.replace(u"{{genre|fr}}\n# ''Féminin ", u"{{f}}\n# ''Féminin ")
 		
-		#temp
-		PageEnd = PageEnd.replace(u"{{vérifier création automatique}}\n", u"")
-		
 		# Liens vers les conjugaisons régulières
 		'''if debogage: print u'Ajout de {{conj}}'
 		if PageEnd.find(u'[[Image:') == -1:	# Bug (ex : broyer du noir, définir)	{{lang/span\|[a-z\-]*\|([^}]*)}}
@@ -4759,7 +4761,7 @@ def crawlerSearch(pagename):
 
 # Traitement des modifications récentes
 def crawlerRC():
-	gen = pagegenerators.RecentchangesPageGenerator()
+	gen = pagegenerators.RecentchangesPageGenerator(site = site)
 	ecart_minimal_requis = 30 # min
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		#print str(ecart_last_edit(Page)) + ' =? ' + str(ecart_minimal_requis)
@@ -4908,3 +4910,4 @@ python interwiki.py -lang:fr -family:wiktionary -wiktionary -new:100000
 #revérifier les &# dans le dump
 # Traiter les modèles à deux paramètres : {{toponymes}}, {{localités}} et {{quartiers}}
 # remplacer {{tem|génie électronique / génétique...
+
