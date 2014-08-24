@@ -22,7 +22,7 @@ debogage = False
 debogageLent = False
 input = u'articles_WPin.txt'
 output = u'articles_WPout.txt'
-ns = 0
+ns = 0 #10 pour les Modèle:Cite pmid/
 
 # Modification du wiki
 def modification(PageHS):
@@ -302,15 +302,10 @@ def sauvegarde(PageCourante, Contenu, summary):
 
 # Lancement
 if len(sys.argv) > 1:
-	TraitementPage = modification(u'Félix Baciocchi (1762-1841)')
-	TraitementPage = modification(u'Alexandre de Lameth') # pk ignoré ? Infobox trouvé à tort
-	TraitementPage = modification(u'Fresnes-Tilloloy') #  trop long
-	TraitementPage = modification(u'Association professionnelle de squash')
-	TraitementPage = modification(u'Association internationale des joueuses de squash')
-	TraitementPage = modification(u'Classement individuel Squash')
-	TraitementPage = modification(u'Cataracte (maladie)')
-	#TraitementFile = crawlerFile(input)
-	#TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
+	if sys.argv[1] == u'txt':
+		TraitementFile = crawlerFile(input)
+	else:
+		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
 	# Quotidiennement :
 	TraitementLiens = crawlerLink(u'Modèle:Cite web',u'')
@@ -334,7 +329,7 @@ else:
 TraitementPage = modification(u'Utilisateur:JackBot/test')
 TraitementPage = modification(u'Utilisateur:JackBot/test/À faire')
 TraitementCategory = crawlerCat(u'Page du modèle Article comportant une erreur',False,u'')
-TraitementLiens = crawlerLink(u'Modèle:ko-hanja')
+TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
 TraitementFile = crawlerFile(input)
 TraitementRecherche = crawlerSearch(u'chinois')
 TraitementUtilisateur = crawlerUser(u'Utilisateur:JackBot')

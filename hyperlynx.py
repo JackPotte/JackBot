@@ -801,9 +801,17 @@ def hyperlynx(PageTemp):
 				
 				# Saut des modèles inclus dans un modèle de lien
 				while DebutPage.rfind(u'{{') != -1 and DebutPage.rfind(u'{{') < DebutPage.rfind(u'}}'):
-					DebutPage = DebutPage[:DebutPage.rfind(u'{{')]
-						
-				# Détection si l'hyperlien est dans un modèle
+					# pb des multiples crochets fermants sautés : {{ ({{ }} }})
+					PageTemp2 = DebutPage[DebutPage.rfind(u'{{'):]
+					if PageTemp2.rfind(u'}}') == PageTemp2.rfind(u'{{'):
+						DebutPage = DebutPage[:DebutPage.rfind(u'{{')]
+					else:
+						DebutPage = u''
+						break
+					#raw_input(DebutPage[-100:].encode(config.console_encoding, 'replace'))
+					
+				
+				# Détection si l'hyperlien est dans un modèle (si aucun modèle n'est fermé avant eux)
 				if DebutPage.rfind(u'{{') != -1 and DebutPage.rfind(u'{{') > DebutPage.rfind(u'}}'):
 					DebutModele = DebutPage.rfind(u'{{')
 					DebutPage = DebutPage[DebutPage.rfind(u'{{'):len(DebutPage)]
@@ -832,7 +840,7 @@ def hyperlynx(PageTemp):
 						FinPageModele = FinPageModele[FinPageModele.find(u'}}')+2:len(FinPageModele)]
 					FinModele = FinModele + FinPageModele.find(u'}}')+2
 					ModeleCourant = PageTemp[DebutModele:FinModele]
-					if debogage: print "*Modele : " + ModeleCourant.encode(config.console_encoding, 'replace')
+					if debogage: print "*Modele : " + ModeleCourant[:100].encode(config.console_encoding, 'replace')
 					
 					if AncienModele != u'':
 						if debogage: print u'Ancien modèle à traiter : ' + AncienModele
@@ -959,7 +967,7 @@ def hyperlynx(PageTemp):
 				if debogage: print u'Aucun changement sur l\'URL non http'	
 		else:
 			if debogageLent: print u'URL entre balises sautée'
-			
+		
 		# Lien suivant, en sautant les URL incluses dans l'actuelle, et celles avec d'autres protocoles que http(s)
 		if FinModele == 0 and LienBrise == False:
 			FinPageURL = PageTemp[PageTemp.find(u'//')+2:len(PageTemp)]
@@ -1471,6 +1479,6 @@ def log(source):
 	txtfile.write(u'\n' + source + u'\n')
 	txtfile.close()
 
-# à faire : passer les longs PDF comme dans [[w:Apollo 11]]
-# traiter les pages liées à {{lien web}} restantes
+# à faire : sauter les longs PDF comme dans [[w:Apollo 11]]
+
 

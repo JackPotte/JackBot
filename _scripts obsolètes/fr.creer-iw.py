@@ -1,6 +1,6 @@
 ﻿#!/usr/bin/env python
 # coding: utf-8
-# Ce script crée des pages sur tous les wikis
+# Ce script crée des pages sur tous les wikis de la fondation (ex : PU)
 
 # Importation des modules
 import catlib, pagegenerators, os, codecs, urllib

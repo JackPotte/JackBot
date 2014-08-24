@@ -1063,6 +1063,7 @@ Modele[871] = u'véhicules'
 Modele[872] = u'musiques'
 Modele[873] = u'fig.'
 Modele[874] = u'télévision'
+#desserts
 #[[Spécial:newpages]] : pas "outils" faute de lexique (technique ?) 
 
 limit4 = 875	# code langue quoi qu'il arrive
@@ -1538,7 +1539,6 @@ def modification(PageHS):
 				PageTemp2 = PageTemp[PageTemp.find(u'{{voir|'):len(PageTemp)]
 				PageTemp = PageTemp[0:PageTemp.find(u'{{voir|') + PageTemp2.find(u'}}')+2] + PageTemp[PageTemp.find(u'{{voir|') + PageTemp2.find(u'}}')+2:len(PageTemp)]
 				
-			# Nettoyage
 			if debogage: print u' Nettoyage des {{voir}}...'
 			if PageTemp.find(u'{{voir}}\n') != -1: PageTemp = PageTemp[0:PageTemp.find(u'{{voir}}\n')] + PageTemp[PageTemp.find(u'{{voir}}\n')+len(u'{{voir}}\n'):len(PageTemp)]
 			if PageTemp.find(u'{{voir}}') != -1: PageTemp = PageTemp[0:PageTemp.find(u'{{voir}}')] + PageTemp[PageTemp.find(u'{{voir}}')+len(u'{{voir}}'):len(PageTemp)]
@@ -1549,6 +1549,17 @@ def modification(PageHS):
 			if re.search(regex, PageTemp):
 				PageTemp = re.sub(regex, ur'[[\1]]', PageTemp)
 
+			if PageTemp.find(u'{{vérifier création automatique}}') != -1:
+				if debogage: print u' {{vérifier création automatique}} trouvé'
+				PageTemp2 = PageTemp
+				Langues = u'|'
+				while PageTemp2.find(u'{{langue|') > 0:
+					PageTemp2 = PageTemp2[PageTemp2.find(u'{{langue|')+len(u'{{langue|'):]
+					Langues += u'|' + PageTemp2[:PageTemp2.find(u'}}')]
+				if Langues != u'|':
+					PageTemp = PageTemp.replace(u'{{vérifier création automatique}}', u'{{vérifier création automatique' + Langues + u'}}')
+				#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
+				
 			# Clés de tri
 			if debogage: print u'Clés de tri'
 			PageTemp = PageTemp.replace(u'{{DEFAULTSORT:', u'{{clé de tri|')
@@ -4859,7 +4870,11 @@ def sauvegarde(PageCourante, Contenu, summary):
 
 # Lancement
 if len(sys.argv) > 1:
-	TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
+	if sys.argv[1] == u'txt':
+		TraitementCategorie = crawlerCat(u'Catégorie:Pages à vérifier car créées automatiquement',False,u'')
+		#TraitementFichier = crawlerFile(u'articles_WTin.txt')
+	else:
+		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
 	# Quotidiennement :
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Codes langue manquants',True,u'')
@@ -4902,5 +4917,5 @@ TraitementTout = crawlerAll(u'')
 	
 python delete.py -lang:fr -family:wiktionary -file:articles_WTin.txt
 python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -noredirect -pairs
-python interwiki.py -lang:fr -family:wiktionary -wiktionary -new:100000
+python interwiki.py -lang:fr -family:wiktionary -wiktionary -new:60
 '''
