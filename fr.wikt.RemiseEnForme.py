@@ -4771,6 +4771,30 @@ def crawlerSearch(pagename):
 		modification(Page.title())
 
 # Traitement des modifications récentes
+def crawlerRC_last_day(site=site, nobots=True, namespace='0'):
+    """Génère les modifications récentes de la dernière journée
+
+	Conserve un écart minimal avec la dernière modification
+    """
+
+	# Ecart minimal requis par rapport à la dernière modification (en minutes)
+	ecart_last_edit = 30
+	
+	date_now = datetime.datetime.utcnow()
+	# Date de la plus récente modification à récupérer
+	date_start = date_now - datetime.timedelta(minutes=ecart_last_edit)
+	# Date d'un jour plus tôt
+	date_end = date_start - datetime.timedelta(1)
+	
+	start_timestamp = date_start.strftime('%Y%m%d%H%M%S')
+	end_timestamp = date_end.strftime('%Y%m%d%H%M%S')
+
+	for item in site.recentchanges(number=5000, rcstart=start_timestamp, rcend=end_timestamp, rcshow=None,
+					rcdir='older', rctype='edit|new', namespace=namespace,
+					includeredirects=True, repeat=False, user=None,
+					returndict=False, nobots=nobots):
+		yield item[0]
+		
 def crawlerRC():
 	gen = pagegenerators.RecentchangesPageGenerator(site = site)
 	ecart_minimal_requis = 30 # min
@@ -4896,7 +4920,7 @@ else:
 	TraitementLiens = crawlerLink(u'Modèle:-déf-',u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
 	while 1:
-		TraitementRC = crawlerRC()
+		TraitementRC = crawlerRC_last_day()
 '''
 TraitementLiensCategorie = crawlerCatLink(u'Catégorie:Modèles désuets',u'')
 TraitementLiens = crawlerLink(u'Modèle:SAMPA',u'') : remplacer les tableaux de prononciations ?
