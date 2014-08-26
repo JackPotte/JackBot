@@ -3237,7 +3237,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
-					elif Modele[p] == u'zoologie' or Modele[p] == u'zool' or Modele[p] == u'entomologie' or Modele[p] == u'entomol' or Modele[p] == u'entom' or Modele[p] == u'ornithologie':
+					elif Modele[p] == u'zoologie' or Modele[p] == u'zool' or Modele[p] == u'animaux' or Modele[p] == u'entomologie' or Modele[p] == u'entomol' or Modele[p] == u'entom' or Modele[p] == u'ornithologie' or Modele[p] == u'poissons' or Modele[p] == u'insectes':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Amphibiens'
 	) != -1 and (PageTemp.find(u':Catégorie:Amphibiens') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
@@ -3299,6 +3299,10 @@ def modification(PageHS):
 	) != -1 and (PageTemp.find(u':Catégorie:Fourmis') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Fourmis') + 1 != PageTemp.rfind(u'Catégorie:Fourmis'))
 
+	) or (PageTemp.find(u'Catégorie:Coléoptères'
+	) != -1 and (PageTemp.find(u':Catégorie:Coléoptères') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Coléoptères') + 1 != PageTemp.rfind(u'Catégorie:Coléoptères'))
+	
 	) or (PageTemp.find(u'Catégorie:Mammifères'
 	) != -1 and (PageTemp.find(u':Catégorie:Mammifères') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Mammifères') + 1 != PageTemp.rfind(u'Catégorie:Mammifères'))
@@ -3375,6 +3379,10 @@ def modification(PageHS):
 	) != -1 and (PageTemp.find(u':Catégorie:Lamas') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Lamas') + 1 != PageTemp.rfind(u'Catégorie:Lamas'))
 
+	) or (PageTemp.find(u'Catégorie:Lapins'
+	) != -1 and (PageTemp.find(u':Catégorie:Lapins') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Lapins') + 1 != PageTemp.rfind(u'Catégorie:Lapins'))
+	
 	) or (PageTemp.find(u'Catégorie:Porcins'
 	) != -1 and (PageTemp.find(u':Catégorie:Porcins') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Porcins') + 1 != PageTemp.rfind(u'Catégorie:Porcins'))
@@ -3547,6 +3555,10 @@ def modification(PageHS):
 	) != -1 and (PageTemp.find(u':Catégorie:Écureuils') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Écureuils') + 1 != PageTemp.rfind(u'Catégorie:Écureuils'))
 
+	) or (PageTemp.find(u'Catégorie:Ursidés'
+	) != -1 and (PageTemp.find(u':Catégorie:Ursidés') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Ursidés') + 1 != PageTemp.rfind(u'Catégorie:Ursidés'))
+	
 	) or (PageTemp.find(u'Catégorie:Léporidés'
 	) != -1 and (PageTemp.find(u':Catégorie:Léporidés') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Léporidés') + 1 != PageTemp.rfind(u'Catégorie:Léporidés'))):
@@ -4586,12 +4598,38 @@ def modification(PageHS):
 				p=p+1
 		PageEnd = PageEnd + PageTemp
 		
-		# Maintenance par déduction
+		# Maintenance des genres
 		PageEnd = PageEnd.replace(u'{{genre|fr}}\n# Masculin ', u'{{m}}\n# Masculin ')
 		PageEnd = PageEnd.replace(u'{{genre|fr}}\n# Féminin ', u'{{f}}\n# Féminin ')
 		PageEnd = PageEnd.replace(u"{{genre|fr}}\n# ''Masculin ", u"{{m}}\n# ''Masculin ")
 		PageEnd = PageEnd.replace(u"{{genre|fr}}\n# ''Féminin ", u"{{f}}\n# ''Féminin ")
-		
+		if PageHS.find(u' ') != -1:
+			PageLemme = u''
+			page2 = Page(site,PageHS[:PageHS.find(u' ')])
+			if page2.exists():
+				if page.namespace() !=0:
+					print u'Page non traitée l 4598'
+					return
+				else:
+					try:
+						PageLemme = page2.get()
+					except wikipedia.NoPage:
+						print "NoPage l 4605"
+					except wikipedia.LockedPage: 
+						print "Locked l 4607"
+					except wikipedia.IsRedirectPage: 
+						print "IsRedirect l 4609"
+			else:
+				print "NoPage l 4611"
+			if PageLemme != u'':
+				genre = u''
+				if PageLemme.find(u'|fr}} {{m}}') != -1:
+					genre = u'{{m}}'
+				elif PageLemme.find(u'|fr}} {{f}}') != -1:
+					genre = u'{{f}}'
+				if genre != u'':
+					PageEnd = PageEnd.replace(u'{{genre|fr}}', genre)
+			
 		# Liens vers les conjugaisons régulières
 		'''if debogage: print u'Ajout de {{conj}}'
 		if PageEnd.find(u'[[Image:') == -1:	# Bug (ex : broyer du noir, définir)	{{lang/span\|[a-z\-]*\|([^}]*)}}
@@ -4772,13 +4810,8 @@ def crawlerSearch(pagename):
 
 # Traitement des modifications récentes
 def crawlerRC_last_day(site=site, nobots=True, namespace='0'):
-    """Génère les modifications récentes de la dernière journée
-
-	Conserve un écart minimal avec la dernière modification
-    """
-
-	# Ecart minimal requis par rapport à la dernière modification (en minutes)
-	ecart_last_edit = 30
+    # Génère les modifications récentes de la dernière journée
+	ecart_last_edit = 30 # minutes
 	
 	date_now = datetime.datetime.utcnow()
 	# Date de la plus récente modification à récupérer
@@ -4895,8 +4928,10 @@ def sauvegarde(PageCourante, Contenu, summary):
 # Lancement
 if len(sys.argv) > 1:
 	if sys.argv[1] == u'txt':
+		TraitementFichier = crawlerFile(u'articles_WTin.txt')
+	elif sys.argv[1] == u'cat':
+		#TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'')
 		TraitementCategorie = crawlerCat(u'Catégorie:Pages à vérifier car créées automatiquement',False,u'')
-		#TraitementFichier = crawlerFile(u'articles_WTin.txt')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
