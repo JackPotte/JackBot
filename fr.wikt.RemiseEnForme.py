@@ -34,7 +34,7 @@ TailleAnagramme = 5 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
 # Modèles du site à traiter
 limit2 = 135 # Paragraphes sans modèle catégorisant, {{voir| et {{voir/ sont gérés individuellement
-limit6 = 1019 # Somme des modèles traités
+limit6 = 1021 # Somme des modèles traités
 Modele = range(1, limit6+1)
 Section = range(1, limit2+1)
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
@@ -563,7 +563,7 @@ Modele[372] = u'optique'
 Modele[373] = u'optométrie'
 Modele[374] = u'ornithologie'
 Modele[375] = u'paléographie'
-Modele[376] = u'paléontologie' # Dinosaures
+Modele[376] = u'paléontologie'
 Modele[377] = u'papillons'
 Modele[378] = u'pâtisserie'
 Modele[379] = u'pays'
@@ -1063,19 +1063,20 @@ Modele[871] = u'véhicules'
 Modele[872] = u'musiques'
 Modele[873] = u'fig.'
 Modele[874] = u'télévision'
-#desserts
+Modele[875] = u'desserts'
+Modele[876] = u'dinosaures'
 #[[Spécial:newpages]] : pas "outils" faute de lexique (technique ?) 
 
-limit4 = 875	# code langue quoi qu'il arrive
-Modele[875] = u'ébauche-exe'
-Modele[876] = u'ébauche-pron'
+limit4 = 877	# code langue quoi qu'il arrive
 Modele[877] = u'ébauche-syn'
 Modele[878] = u'note-gentilé'
 Modele[879] = u'ébauche-trans'
 Modele[880] = u'ébauche-étym-nom-scientifique'
 Modele[881] = u'ébauche-étym'
 Modele[882] = u'ébauche-déf'
-Modele[883] = u'ébauche'
+Modele[883] = u'ébauche-exe'
+Modele[884] = u'ébauche-pron'
+Modele[885] = u'ébauche'
 '''
 # non traités
 Modele[] = u'spécialement' 
@@ -1093,9 +1094,7 @@ Modele[] = u'perf'
 Modele[] = u'imperf'
 '''
 # Modèles régionaux, pb du nocat pour les prononciations
-limit5 = 884
-Modele[884] = u'Roumanie'
-Modele[885] = u'Royaume-Uni'
+limit5 = 886
 Modele[886] = u'Salvador'
 Modele[887] = u'Suède'
 Modele[888] = u'Suisse'
@@ -1233,9 +1232,11 @@ Modele[1014] = u'Pérou'
 Modele[1015] = u'Québec'
 Modele[1016] = u'Quercy'
 Modele[1017] = u'Réunion'
+Modele[1018] = u'Roumanie'
+Modele[1019] = u'Royaume-Uni'
 
 # Modèles de pronociation à synchroniser
-Modele[1018] = u'fr-verbe-flexion'
+Modele[1020] = u'fr-verbe-flexion'
 #Modele[] = u'fr-rég'
 #Modele[] = u'fr-inv'
 #Modele[] = u'fr-accord-rég'
@@ -1327,6 +1328,11 @@ def modification(PageHS):
 			if debogage: print u' *==='
 			return
 		
+		# Titres en minuscules
+		#PageTemp = re.sub(ur'{{S\|([^}]+)}}', ur'{{S|' + ur'\1'.lower() + ur'}}', PageTemp)
+		for f in re.findall("{{S\|([^}]+)}}", PageTemp):
+			PageTemp = PageTemp.replace(f, f.lower())
+		# Alias peu intuitifs
 		PageTemp = PageTemp.replace(u'{{S|adj|', u'{{S|adjectif|')
 		PageTemp = PageTemp.replace(u'{{S|adjectifs|', u'{{S|adjectif|')
 		PageTemp = PageTemp.replace(u'{{S|adv|', u'{{S|adverbe}}')
@@ -1342,13 +1348,12 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|anagr}}', u'{{S|anagrammes}}')
 		PageTemp = PageTemp.replace(u'{{S|anto}}', u'{{S|antonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|apr}}', u'{{S|apparentés}}')
-		PageTemp = PageTemp.replace(u'{{S|Apparentés}}', u'{{S|apparentés}}')
 		PageTemp = PageTemp.replace(u'{{S|compos}}', u'{{S|composés}}')
 		PageTemp = PageTemp.replace(u'{{S|dimin}}', u'{{S|diminutifs}}')
+		PageTemp = PageTemp.replace(u'{{S|drv|en}}', u'{{S|dérivés}}')
 		PageTemp = PageTemp.replace(u'{{S|drv}}', u'{{S|dérivés}}')
 		PageTemp = PageTemp.replace(u'{{S|drv-int}}', u'{{S|dérivés autres langues}}')
 		PageTemp = PageTemp.replace(u'{{S|etym}}', u'{{S|étymologie}}')
-		PageTemp = PageTemp.replace(u'{{S|Étymologie}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|exp}}', u'{{S|expressions}}')
 		PageTemp = PageTemp.replace(u'{{S|gent}}', u'{{S|gentilés}}')
 		PageTemp = PageTemp.replace(u'{{S|holo}}', u'{{S|holonymes}}')
@@ -1358,22 +1363,20 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|hypo}}', u'{{S|hyponymes}}')
 		PageTemp = PageTemp.replace(u'{{S|méro}}', u'{{S|méronymes}}')
 		PageTemp = PageTemp.replace(u'{{S|pron}}', u'{{S|prononciation}}')
-		PageTemp = PageTemp.replace(u'{{S|Prononciation}}', u'{{S|prononciation}}')
 		PageTemp = PageTemp.replace(u'{{S|prononciations}}', u'{{S|prononciation}}')
 		PageTemp = PageTemp.replace(u'{{S|q-syn}}', u'{{S|quasi-synonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|réf}}', u'{{S|références}}')
 		PageTemp = PageTemp.replace(u'{{S|syn}}', u'{{S|synonymes}}')
-		PageTemp = PageTemp.replace(u'{{S|Synonymes}}', u'{{S|synonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|trad-trier}}', u'{{S|traductions à trier}}')
 		PageTemp = PageTemp.replace(u'{{S|trad}}', u'{{S|traductions}}')
 		PageTemp = PageTemp.replace(u'{{S|traduction}}', u'{{S|traductions}}')
-		PageTemp = PageTemp.replace(u'{{S|Traductions}}', u'{{S|traductions}}')
 		PageTemp = PageTemp.replace(u'{{S|var}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|variantes ortho}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|var-ortho}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|var-ortho|fr}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|voc}}', u'{{S|vocabulaire}}')
 		PageTemp = PageTemp.replace(u'{{S|voir}}', u'{{S|voir aussi}}')
+		PageTemp = PageTemp.replace(u'{{S|voir|en}}', u'{{S|voir aussi}}')
 		
 		if page.namespace() != 12:
 			if debogage: print u'Ajout des {{voir}}'
@@ -4688,7 +4691,7 @@ def modification(PageHS):
 			txtfile.close()'''
 	else:
 		PageEnd = PageTemp
-	
+
 	# Interwikis
 	if PageEnd.find(u'{{langue|en}}') != -1 and PageEnd.find(u'[[en:') == -1:
 		pageEN = Page(siteEN,PageHS)
@@ -4704,7 +4707,7 @@ def modification(PageHS):
 			if PageEN.find(u'==English==') != -1:
 				PageEnd = PageEnd + u'\n[[en:' + PageHS + u']]'
 				summary = summary + u', ajout d\'interwiki'
-	
+				
 	# Syntaxe humaine imprévue de {{terme}}
 	PageEnd = PageEnd.replace(u'{{nom|nocat=1}}', u"''(Nom)''")
 	
@@ -4930,7 +4933,6 @@ if len(sys.argv) > 1:
 	if sys.argv[1] == u'txt':
 		TraitementFichier = crawlerFile(u'articles_WTin.txt')
 	elif sys.argv[1] == u'cat':
-		#TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'')
 		TraitementCategorie = crawlerCat(u'Catégorie:Pages à vérifier car créées automatiquement',False,u'')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
