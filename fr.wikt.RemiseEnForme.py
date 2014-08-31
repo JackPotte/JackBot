@@ -1287,22 +1287,6 @@ def modification(PageHS):
 		PageTemp = re.sub(regex, ur'{{langue|\1}}', PageTemp)
 		if summary.find(u'{{langue}}') == -1: summary = summary + u', déploiement de {{langue}}'
 	
-	# Interwikis
-	if PageTemp.find(u'{{langue|en}}') != -1 and PageTemp.find(u'[[en:') == -1:
-		pageEN = Page(siteEN,PageHS)
-		if pageEN.exists():
-			try:
-				PageEN = pageEN.get()
-			except wikipedia.NoPage:
-				print "NoPage l 1296"
-				return
-			except wikipedia.IsRedirectPage: 
-				print "IsRedirect l 1299"
-				return
-			if PageEN.find(u'==English==') != -1:
-				PageTemp = PageTemp + u'\n[[en:' + PageHS + u']]'
-				summary = summary + u', ajout d\'interwiki'
-	
 	if page.namespace() == 0 or PageHS.find(u'Utilisateur:JackBot/') != -1:
 		while PageTemp.find(u'{{ ') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'{{ ')+2] + PageTemp[PageTemp.find(u'{{ ')+3:len(PageTemp)]
@@ -4704,6 +4688,22 @@ def modification(PageHS):
 			txtfile.close()'''
 	else:
 		PageEnd = PageTemp
+	
+	# Interwikis
+	if PageEnd.find(u'{{langue|en}}') != -1 and PageEnd.find(u'[[en:') == -1:
+		pageEN = Page(siteEN,PageHS)
+		if pageEN.exists():
+			try:
+				PageEN = pageEN.get()
+			except wikipedia.NoPage:
+				print "NoPage l 1296"
+				return
+			except wikipedia.IsRedirectPage: 
+				print "IsRedirect l 1299"
+				return
+			if PageEN.find(u'==English==') != -1:
+				PageEnd = PageEnd + u'\n[[en:' + PageHS + u']]'
+				summary = summary + u', ajout d\'interwiki'
 	
 	# Syntaxe humaine imprévue de {{terme}}
 	PageEnd = PageEnd.replace(u'{{nom|nocat=1}}', u"''(Nom)''")
