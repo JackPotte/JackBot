@@ -28,7 +28,7 @@ family = "wiktionary"
 mynick = "JackBot"
 site = getSite(language,family)
 siteEN = getSite('en',family)
-debogage = True
+debogage = False
 debogageLent = False
 TailleAnagramme = 5 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
