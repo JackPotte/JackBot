@@ -28,7 +28,7 @@ family = "wiktionary"
 mynick = "JackBot"
 site = getSite(language,family)
 siteEN = getSite('en',family)
-debogage = False
+debogage = True
 debogageLent = False
 TailleAnagramme = 5 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
@@ -353,15 +353,15 @@ Modele[165] = u'b-pl-cour'
 Modele[166] = u'pl-cour'
 Modele[167] = u'b-m-cour'
 Modele[168] = u'm-cour'
-Modele[169] = u'titre alt'
+Modele[169] = u'mf'
 Modele[170] = u'n'
 Modele[171] = u'c'
 Modele[172] = u'pl-rare'
 Modele[173] = u'plus rare'
-Modele[174] = u'mf'
 
-limit3 = 175 # Paragraphes sans modèle catégorisant pouvant contenir des modèles
+limit3 = 174 # Paragraphes sans modèle catégorisant pouvant contenir des modèles
 # http://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Mod%C3%A8les_de_domaine_d%E2%80%99utilisation
+Modele[174] = u'outils'
 Modele[175] = u'saccusatif'
 Modele[176] = u'sdatif'
 Modele[177] = u'sinstrumental'
@@ -1065,7 +1065,7 @@ Modele[873] = u'fig.'
 Modele[874] = u'télévision'
 Modele[875] = u'desserts'
 Modele[876] = u'dinosaures'
-#[[Spécial:newpages]] : pas "outils" faute de lexique (technique ?) 
+#[[Spécial:newpages]]
 
 limit4 = 877	# code langue quoi qu'il arrive
 Modele[877] = u'ébauche-syn'
@@ -1377,7 +1377,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|voc}}', u'{{S|vocabulaire}}')
 		PageTemp = PageTemp.replace(u'{{S|voir}}', u'{{S|voir aussi}}')
 		PageTemp = PageTemp.replace(u'{{S|voir|en}}', u'{{S|voir aussi}}')
-		
+
 		if page.namespace() != 12:
 			if debogage: print u'Ajout des {{voir}}'
 			if PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}') != -1:
@@ -1546,7 +1546,7 @@ def modification(PageHS):
 				if Langues != u'|':
 					PageTemp = PageTemp.replace(u'{{vérifier création automatique}}', u'{{vérifier création automatique' + Langues + u'}}')
 				#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
-				
+					
 			# Clés de tri
 			if debogage: print u'Clés de tri'
 			PageTemp = PageTemp.replace(u'{{DEFAULTSORT:', u'{{clé de tri|')
@@ -1593,7 +1593,7 @@ def modification(PageHS):
 			if PageTemp.find(u'{{clé de tri|' + PageHS.lower() + u'}}') != -1 and PageTemp.find(u'{{S|verb pronominal|fr}}') == -1:
 				PageTemp = PageTemp[0:PageTemp.find(u'{{clé de tri|' + PageHS.lower() + u'}}')] + PageTemp[PageTemp.find(u'{{clé de tri|' + PageHS.lower() + u'}}')+len(u'{{clé de tri|' + PageHS.lower() + u'}}'):len(PageTemp)]
 				summary = summary + u', {{clé de tri}} supprimée'
-			
+
 			if debogage: print u'Remplacements des balises'
 			PageTemp = re.sub(ur'\[\[Category:', ur'[[Catégorie:', PageTemp)
 			while PageTemp.find(u'</br>') != -1:
@@ -1625,7 +1625,7 @@ def modification(PageHS):
 				if PageTemp.find(u'{{langue|fr}}') != -1 and PageTemp.find(u'[[Catégorie:Mots en français suffixés en -able]]') == -1:
 				
 				if PageTemp.find(u'{{langue|en}}') != -1 and PageTemp.find(u'[[Category:Mots en anglais suffixés en -able]]') == -1:'''
-			
+
 		if debogage: print u'Remplacements des modèles'
 		PageTemp = re.sub(ur'{{(formatnum|Formatnum|FORMATNUM)\:([0-9]*) ', ur'{{\1:\2', PageTemp)
 		PageTemp = re.sub(ur'{{terme*\|Registre neutre}} *', ur'', PageTemp)
@@ -1726,7 +1726,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{nl}}', u'néerlandais')
 		PageTemp = PageTemp.replace(u'{{pt}}', u'portugais')
 		PageTemp = PageTemp.replace(u'{{it}}', u'italien')
-		
+
 		while PageTemp.find(u'[[Annexe:Couleurs en français]]') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'[[Annexe:Couleurs en français]]')] + u'{{Thésaurus|fr|couleur}}' + PageTemp[PageTemp.find(u'[[Annexe:Couleurs en français]]')+len(u'[[Annexe:Couleurs en français]]'):len(PageTemp)]
 		while PageTemp.find(u'{{Annexe|Couleurs en français}}') != -1:
@@ -2056,7 +2056,7 @@ def modification(PageHS):
 					PageTemp = PageTemp[:PageTemp.find(u'{{')+2] + u'T|' + PageTemp[PageTemp.find(u'{{')+2:]
 		PageTemp = PageEnd + PageTemp
 		PageEnd = u''
-		
+
 		# Classement des traductions (et ajout des modèles T après le premier de la liste)
 		if debogage: print u'Classement des traductions'
 		while PageTemp.find(u'{{T|') != -1:
@@ -2269,7 +2269,7 @@ def modification(PageHS):
 		NouvelleLangue = False
 		position = 1
 		p = 1
-		
+
 		while position > -1:	# On sauvegarde la partie traitée d'une page provisoire dans une page finale jusqu'à disparition de la première
 			if debogageLent: 
 				print(PageEnd.encode(config.console_encoding, 'replace')[0:1000])
@@ -2360,7 +2360,7 @@ def modification(PageHS):
 				position = PageTemp.find("}}")
 			else:
 				position = PageTemp.find("|")
-			
+
 			# Ajout des anagrammes pour cette nouvelle langue détectée
 			if NouvelleLangue == True and socket.gethostname() != "willow" and socket.gethostname() != "yarrow" and socket.gethostname() != "nightshade" and PageTemp.find(u'-erreur-') == -1 and PageHS != u'six':
 				if debogage: print u' Anagrammes pour ' + codelangue
@@ -4938,7 +4938,6 @@ if len(sys.argv) > 1:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
 	# Quotidiennement :
-	TraitementPage = modification(u'tocard')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Codes langue manquants',True,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Flexions à vérifier',True,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet',False,u'')
@@ -4957,9 +4956,10 @@ else:
 	TraitementLiens = crawlerLink(u'Modèle:=langue=',u'')
 	TraitementLiens = crawlerLink(u'Modèle:-déf-',u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
+'''	
 	while 1:
 		TraitementRC = crawlerRC_last_day()
-'''
+
 TraitementLiensCategorie = crawlerCatLink(u'Catégorie:Modèles désuets',u'')
 TraitementLiens = crawlerLink(u'Modèle:SAMPA',u'') : remplacer les tableaux de prononciations ?
 TraitementLiens = crawlerLink(u'Modèle:trad-',u'')
