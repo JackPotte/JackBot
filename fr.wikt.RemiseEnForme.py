@@ -4590,6 +4590,65 @@ def modification(PageHS):
 		PageEnd = PageEnd.replace(u'{{genre|fr}}\n# Féminin ', u'{{f}}\n# Féminin ')
 		PageEnd = PageEnd.replace(u"{{genre|fr}}\n# ''Masculin ", u"{{m}}\n# ''Masculin ")
 		PageEnd = PageEnd.replace(u"{{genre|fr}}\n# ''Féminin ", u"{{f}}\n# ''Féminin ")
+		if PageHS[-3:] == u'eur':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+		if PageHS[-3:] == u'eux':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+		if PageHS[-4:] == u'euse':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+		if PageHS[-3:] == u'ant':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+		if PageHS[-4:] == u'ante':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+		if PageHS[-4:] == u'ance':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+		if PageHS[-3:] == u'age':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+		if PageHS[-4:] == u'ette':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+		if PageHS[-3:] == u'ier':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+		if PageHS[-3:] == u'ien':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+		if PageHS[-5:] == u'ienne':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+		if PageHS[-3:] == u'rie':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+		if PageHS[-3:] == u'ois':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+		if PageHS[-4:] == u'oise':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+		if PageHS[-3:] == u'ais':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+		if PageHS[-4:] == u'aise':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+		if PageHS[-5:] == u'logie':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+		if PageHS[-4:] == u'tion':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+		if PageHS[-3:] == u'ité':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+		if PageHS[-4:] == u'isme':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+		if PageHS[-2:] == u'el':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+		if PageHS[-4:] == u'elle':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+		if PageHS[-2:] == u'if':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+		if PageHS[-3:] == u'ive':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+		if PageHS[-4:] == u'ment':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+		if PageHS[-5:] == u'ments':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+		if PageHS[-4:] == u'iste':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{mf}}")
+		if PageHS[-4:] == u'aire':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{mf}}")
+		if PageHS[-1:] == u'é':
+			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+			
 		if PageHS.find(u' ') != -1:
 			PageLemme = u''
 			page2 = Page(site,PageHS[:PageHS.find(u' ')])
@@ -4933,7 +4992,7 @@ if len(sys.argv) > 1:
 	if sys.argv[1] == u'txt':
 		TraitementFichier = crawlerFile(u'articles_WTin.txt')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Pages à vérifier car créées automatiquement',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'gmina')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
@@ -4956,6 +5015,8 @@ else:
 	TraitementLiens = crawlerLink(u'Modèle:=langue=',u'')
 	TraitementLiens = crawlerLink(u'Modèle:-déf-',u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Pages à vérifier car créées automatiquement',False,u'')
+
 '''	
 	while 1:
 		TraitementRC = crawlerRC_last_day()

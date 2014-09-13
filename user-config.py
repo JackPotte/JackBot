@@ -18,7 +18,7 @@ transliteration_target = None
 # taskschd.msc
 usernames['meta']['meta'] = u'JackBot'
 usernames['species']['species'] = u'JackBot'
-usernames['commons']['commons'] = u'JackPotte'
+usernames['commons']['commons'] = u'JackBot'
 
 usernames['wikipedia']['aa'] = u'JackBot'
 usernames['wikipedia']['ab'] = u'JackBot'
