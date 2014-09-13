@@ -1262,10 +1262,7 @@ def modification(PageHS):
 			try:
 				PageBegin = page.get()
 			except wikipedia.NoPage:
-				print "NoPage l 1263"
-				return
-			except wikipedia.LockedPage: 
-				print "Locked l 1266"
+				print "NoPage l 1265"
 				return
 			except wikipedia.IsRedirectPage: 
 				PageBegin = page.get(get_redirect=True)
@@ -1275,7 +1272,7 @@ def modification(PageHS):
 					PageBegin = PageBegin[0:PageBegin.find(TxtTmp)] + summary + PageBegin[PageBegin.find(TxtTmp)+len(TxtTmp):len(PageBegin)]
 					sauvegarde(page, PageBegin, summary)
 				else:
-					print "IsRedirect l 1276"
+					print "IsRedirect l 1275"
 				return
 	else:
 		print "NoPage l 1279"
@@ -1442,9 +1439,6 @@ def modification(PageHS):
 								break
 							except wikipedia.IsRedirectPage:
 								print "Redirect page"
-								break
-							except wikipedia.LockedPage:
-								print "Locked/protected page"
 								break
 							PageTempMod = PageTempModBegin
 							if PageTempMod.find(PageHS) == -1: PageTempMod = PageTempMod[0:PageTempMod.find(u'}}')] + u'|' + PageHS + PageTempMod[PageTempMod.find(u'}}'):len(PageTempMod)]
@@ -2379,7 +2373,6 @@ def modification(PageHS):
 										PageTempAnagr = pageAnagr.get()
 									except wikipedia.NoPage: break
 									except wikipedia.IsRedirectPage: break
-									except wikipedia.LockedPage: break
 								if PageTempAnagr.find(u'{{langue|' + codelangue + u'}}') != -1:
 									ListeAnagrammes = ListeAnagrammes + u'* {{lien|' + anagramme + u'|' + codelangue + u'}}\n'
 									if debogage: print u' trouvé'
@@ -4595,19 +4588,17 @@ def modification(PageHS):
 			page2 = Page(site,PageHS[:PageHS.find(u' ')])
 			if page2.exists():
 				if page.namespace() !=0:
-					print u'Page non traitée l 4598'
+					print u'Page non traitée l 4591'
 					return
 				else:
 					try:
 						PageLemme = page2.get()
 					except wikipedia.NoPage:
-						print "NoPage l 4605"
-					except wikipedia.LockedPage: 
-						print "Locked l 4607"
+						print "NoPage l 4597"
 					except wikipedia.IsRedirectPage: 
-						print "IsRedirect l 4609"
+						print "IsRedirect l 4599"
 			else:
-				print "NoPage l 4611"
+				print "NoPage l 4601"
 			if PageLemme != u'':
 				genre = u''
 				if PageLemme.find(u'|fr}} {{m}}') != -1:
@@ -4699,10 +4690,10 @@ def modification(PageHS):
 			try:
 				PageEN = pageEN.get()
 			except wikipedia.NoPage:
-				print "NoPage l 1296"
+				print "NoPage l 4698"
 				return
 			except wikipedia.IsRedirectPage: 
-				print "IsRedirect l 1299"
+				print "IsRedirect l 4701"
 				return
 			if PageEN.find(u'==English==') != -1:
 				PageEnd = PageEnd + u'\n[[en:' + PageHS + u']]'
@@ -4882,10 +4873,8 @@ def ArretDUrgence():
 				PageTemp = page.get()
 			except wikipedia.NoPage: return
 			except wikipedia.IsRedirectPage: return
-			except wikipedia.LockedPage: return
 			except wikipedia.ServerError: return
 			except wikipedia.BadTitle: return
-			except pywikibot.EditConflict: return
 			if PageTemp != u"{{/Stop}}":
 				pywikibot.output (u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
 				exit(0)
