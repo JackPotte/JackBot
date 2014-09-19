@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/env python
 # coding: utf-8
 # Ce script formate les pages de la Wikiversité :
-# 1) Il ajoute les clés de tri pour palier au classement des catégories Mediawiki.
+# 1) Il retire les clés de tri devenues inutiles.
 # 2) Il complète les modèles {{Chapitre}} à partir des {{Leçon}}.
 # 3) Ajoute {{Bas de page}}.
 # Reste à faire :
@@ -17,7 +17,6 @@ language = "fr"
 family = "wikiversity"
 mynick = "JackBot"
 site = getSite(language,family)
-summary = u'[[Aide:Syntaxe|Autoformatage]]'
 debogage = False
 CorrigerModeles = False
 sizeT = 3
@@ -30,7 +29,7 @@ Ttemp[1] = u'numéro'
 
 # Modèle:Chapitre
 param = range(1, sizeP)
-param[1] = u'titre '
+param[1] = u'titre ' # espace pour disambiguiser
 param[2] = u'idfaculté'
 param[3] = u' leçon'
 param[4] = u'page'
@@ -43,199 +42,50 @@ param[10] = u'titre_leçon'
 
 # Modification du wiki
 def modification(PageHS):
+	summary = u'[[Aide:Syntaxe|Autoformatage]]'
 	PageEnd = "" # On sauvegarde la partie traitée d'une page provisoire dans une page finale jusqu'à disparition de la première
 	page = Page(site,PageHS)
 	print(PageHS.encode(config.console_encoding, 'replace'))
 	if page.exists():
-		if page.namespace() != 0 and page.namespace() != 106 and page.namespace() != 108 and page.title() != u'Utilisateur:JackBot/test' and page.title() != u'Utilisateur:JackBot/test/test2': 
+		try:
+			PageBegin = page.get()
+		except wikipedia.NoPage:
+			print "NoPage"
 			return
-		else:
-			try:
-				PageBegin = page.get()
-			except wikipedia.NoPage:
-				print "NoPage"
-				return
-			except wikipedia.IsRedirectPage:
-				print "Redirect page"
-				return
-			except wikipedia.LockedPage:
-				print "Locked/protected page"
-				return
+		except wikipedia.IsRedirectPage:
+			print "Redirect page"
+			return
+		except wikipedia.LockedPage:
+			print "Locked/protected page"
+			return
 	else:
 		print u'Page inexistante'
 		return
-	
 	PageTemp = PageBegin
-	# Clés de tri
-	if PageTemp.find(u'{{clé de tri') == -1 and (PageTemp.find(u'clé') == -1 or PageTemp.find(u'clé') > PageTemp.find(u'}}')):
-		PageTitre = page.title()
-		if page.namespace() == 0 or page.title() != u'Utilisateur:JackBot/test' or page.title() != u'Utilisateur:JackBot/test/test2':
-			if PageTitre.find(u'/') != -1:
-				PageTitre = PageTitre[PageTitre.rfind(u'/')+1:len(PageTitre)]
-			'''if PageTitre[len(PageTitre)-len(u'/Présentation de la leçon'):len(PageTitre)] == u'/Présentation de la leçon':
-				PageTitre = PageTitre[0:len(PageTitre)-len(u'/Présentation de la leçon')]
-			elif PageTitre[len(PageTitre)-len(u'/Objectifs'):len(PageTitre)] == u'/Objectifs':
-				PageTitre = PageTitre[0:len(PageTitre)-len(u'/Objectifs')]
-			elif PageTitre[len(PageTitre)-len(u'/Prérequis conseillés'):len(PageTitre)] == u'/Prérequis conseillés':
-				PageTitre = PageTitre[0:len(PageTitre)-len(u'/Prérequis conseillés')]
-			elif PageTitre[len(PageTitre)-len(u'/Référents'):len(PageTitre)] == u'/Référents':
-				PageTitre = PageTitre[0:len(PageTitre)-len(u'/Référents')]'''		
-		elif page.namespace() == 106 or page.title() != u'Utilisateur:JackBot/test' or page.title() != u'Utilisateur:JackBot/test/test2':
-			PageTitre = PageTitre[len(u'Faculté:'):len(PageTitre)]
-			if PageTitre[len(PageTitre)-len(u'/Présentation de la faculté'):len(PageTitre)] == u'/Présentation de la faculté':
-				PageTitre = PageTitre[0:len(PageTitre)-len(u'/Présentation de la faculté')]
-			elif PageTitre[len(PageTitre)-len(u'/Départements'):len(PageTitre)] == u'/Départements':
-				PageTitre = PageTitre[0:len(PageTitre)-len(u'/Départements')]
-			elif PageTitre[len(PageTitre)-len(u'/Transverse'):len(PageTitre)] == u'/Transverse':
-				PageTitre = PageTitre[0:len(PageTitre)-len(u'/Transverse')]
-			elif PageTitre[len(PageTitre)-len(u'/Voir aussi'):len(PageTitre)] == u'/Voir aussi':
-				PageTitre = PageTitre[0:len(PageTitre)-len(u'/Voir aussi')]		   
-		elif page.namespace() == 108 or page.title() != u'Utilisateur:JackBot/test' or page.title() != u'Utilisateur:JackBot/test/test2':
-			PageTitre = PageTitre[len(u'Département:'):len(PageTitre)]
-			if PageTitre[len(PageTitre)-len(u'/Présentation du département'):len(PageTitre)] == u'/Présentation du département':
-				PageTitre = PageTitre[0:len(PageTitre)-len(u'/Présentation du département')]
-			elif PageTitre[len(PageTitre)-len(u'/Leçons par thèmes'):len(PageTitre)] == u'/Leçons par thèmes':
-				PageTitre = PageTitre[0:len(PageTitre)-len(u'/Leçons par thèmes')]
-			elif PageTitre[len(PageTitre)-len(u'/Leçons par niveaux'):len(PageTitre)] == u'/Leçons par niveaux':
-				PageTitre = PageTitre[0:len(PageTitre)-len(u'/Leçons par niveaux')]
-			elif PageTitre[len(PageTitre)-len(u'/Contributeurs'):len(PageTitre)] == u'/Contributeurs':
-				PageTitre = PageTitre[0:len(PageTitre)-len(u'/Contributeurs')]
-			elif PageTitre[len(PageTitre)-len(u'/Voir aussi'):len(PageTitre)] == u'/Voir aussi':
-				PageTitre = PageTitre[0:len(PageTitre)-len(u'/Voir aussi')]
-		PageT = ""
-		key = "false"
-		for lettre in range(0,len(PageTitre)):
-			# Latin
-			if PageTitre[lettre:lettre+1] == u'á' or PageTitre[lettre:lettre+1] == u'à' or PageTitre[lettre:lettre+1] == u'â' or PageTitre[lettre:lettre+1] == u'ä' or PageTitre[lettre:lettre+1] == u'Á' or PageTitre[lettre:lettre+1] == u'À' or PageTitre[lettre:lettre+1] == u'Â' or PageTitre[lettre:lettre+1] == u'Ä':
-				PageT = PageT + "a"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'é' or PageTitre[lettre:lettre+1] == u'è' or PageTitre[lettre:lettre+1] == u'ê' or PageTitre[lettre:lettre+1] == u'ë' or PageTitre[lettre:lettre+1] == u'É' or PageTitre[lettre:lettre+1] == u'È' or PageTitre[lettre:lettre+1] == u'Ê' or PageTitre[lettre:lettre+1] == u'Ë' or PageTitre[lettre:lettre+1] == u'ě' or PageTitre[lettre:lettre+1] == u'Ě':
-				PageT = PageT + "e"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'í' or PageTitre[lettre:lettre+1] == u'ì' or PageTitre[lettre:lettre+1] == u'î' or PageTitre[lettre:lettre+1] == u'ï' or PageTitre[lettre:lettre+1] == u'Í' or PageTitre[lettre:lettre+1] == u'Ì' or PageTitre[lettre:lettre+1] == u'Î' or PageTitre[lettre:lettre+1] == u'Ï':
-				PageT = PageT + "i"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'ó'  or PageTitre[lettre:lettre+1] == u'ò' or PageTitre[lettre:lettre+1] == u'ô' or PageTitre[lettre:lettre+1] == u'ö' or PageTitre[lettre:lettre+1] == u'Ó'  or PageTitre[lettre:lettre+1] == u'Ò' or PageTitre[lettre:lettre+1] == u'Ô' or PageTitre[lettre:lettre+1] == u'Ö':
-				PageT = PageT + "o"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'ú' or PageTitre[lettre:lettre+1] == u'ù' or PageTitre[lettre:lettre+1] == u'û' or PageTitre[lettre:lettre+1] == u'ü' or PageTitre[lettre:lettre+1] == u'Ú' or PageTitre[lettre:lettre+1] == u'Ù' or PageTitre[lettre:lettre+1] == u'Û' or PageTitre[lettre:lettre+1] == u'Ü':
-				PageT = PageT + "u"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'ç' or PageTitre[lettre:lettre+1] == u'Ç':
-				PageT = PageT + "c"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'š' or PageTitre[lettre:lettre+1] == u'Š':
-				PageT = PageT + "c"
-				key = "yes"		
-			elif PageTitre[lettre:lettre+1] == u'æ' or PageTitre[lettre:lettre+1] == u'Æ':
-				PageT = PageT + "ae"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'œ' or PageTitre[lettre:lettre+1] == u'Œ':
-				PageT = PageT + "oe"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'ñ' or PageTitre[lettre:lettre+1] == u'Ñ':
-				PageT = PageT + "n"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'ÿ' or PageTitre[lettre:lettre+1] == u'Ÿ':
-				PageT = PageT + "y"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'-':
-				PageT = PageT + " "
-				key = "yes"'''
-			elif PageTitre[lettre:lettre+1] == u'/':
-				PageT = PageT + " "
-				key = "yes"'''
-			elif PageTitre[lettre:lettre+1] == u'\\':
-				PageT = PageT + ""
-				key = "yes"
-			# Grec
-			elif PageTitre[lettre:lettre+1] == u'α' or PageTitre[lettre:lettre+1] == u'Ἀ' or PageTitre[lettre:lettre+1] == u'ἀ' or PageTitre[lettre:lettre+1] == u'Ἁ' or PageTitre[lettre:lettre+1] == u'ἁ' or PageTitre[lettre:lettre+1] == u'Ἂ' or PageTitre[lettre:lettre+1] == u'ἂ' or PageTitre[lettre:lettre+1] == u'Ἃ' or PageTitre[lettre:lettre+1] == u'ἃ' or PageTitre[lettre:lettre+1] == u'Ἄ' or PageTitre[lettre:lettre+1] == u'ἄ' or PageTitre[lettre:lettre+1] == u'Ἅ' or PageTitre[lettre:lettre+1] == u'ἅ' or PageTitre[lettre:lettre+1] == u'Ἆ' or PageTitre[lettre:lettre+1] == u'ἆ' or PageTitre[lettre:lettre+1] == u'Ἇ' or PageTitre[lettre:lettre+1] == u'ἇ' or PageTitre[lettre:lettre+1] == u'Ὰ' or PageTitre[lettre:lettre+1] == u'ὰ' or PageTitre[lettre:lettre+1] == u'Ά' or PageTitre[lettre:lettre+1] == u'ά' or PageTitre[lettre:lettre+1] == u'ᾈ' or PageTitre[lettre:lettre+1] == u'ᾀ' or PageTitre[lettre:lettre+1] == u'ᾉ' or PageTitre[lettre:lettre+1] == u'ᾁ' or PageTitre[lettre:lettre+1] == u'ᾊ' or PageTitre[lettre:lettre+1] == u'ᾂ' or PageTitre[lettre:lettre+1] == u'ᾋ' or PageTitre[lettre:lettre+1] == u'ᾃ' or PageTitre[lettre:lettre+1] == u'ᾌ' or PageTitre[lettre:lettre+1] == u'ᾄ' or PageTitre[lettre:lettre+1] == u'ᾍ' or PageTitre[lettre:lettre+1] == u'ᾅ' or PageTitre[lettre:lettre+1] == u'ᾎ' or PageTitre[lettre:lettre+1] == u'ᾆ' or PageTitre[lettre:lettre+1] == u'ᾏ' or PageTitre[lettre:lettre+1] == u'ᾇ' or PageTitre[lettre:lettre+1] == u'Ᾰ' or PageTitre[lettre:lettre+1] == u'ᾰ' or PageTitre[lettre:lettre+1] == u'Ᾱ' or PageTitre[lettre:lettre+1] == u'ᾱ' or PageTitre[lettre:lettre+1] == u'ᾼ' or PageTitre[lettre:lettre+1] == u'ᾳ' or PageTitre[lettre:lettre+1] == u'Ὰ' or PageTitre[lettre:lettre+1] == u'ᾲ' or PageTitre[lettre:lettre+1] == u'Ά' or PageTitre[lettre:lettre+1] == u'ᾴ' or PageTitre[lettre:lettre+1] == u'Ȃ' or PageTitre[lettre:lettre+1] == u'ᾶ' or PageTitre[lettre:lettre+1] == u'Ȃ' or PageTitre[lettre:lettre+1] == u'ᾷ':
-				PageT = PageT + "α"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'Ἐ' or PageTitre[lettre:lettre+1] == u'ἐ' or PageTitre[lettre:lettre+1] == u'Ἑ' or PageTitre[lettre:lettre+1] == u'ἑ' or PageTitre[lettre:lettre+1] == u'Ἒ' or PageTitre[lettre:lettre+1] == u'ἒ' or PageTitre[lettre:lettre+1] == u'Ἓ' or PageTitre[lettre:lettre+1] == u'ἓ' or PageTitre[lettre:lettre+1] == u'Ἔ' or PageTitre[lettre:lettre+1] == u'ἔ' or PageTitre[lettre:lettre+1] == u'Ἕ' or PageTitre[lettre:lettre+1] == u'ἕ' or PageTitre[lettre:lettre+1] == u'Ὲ' or PageTitre[lettre:lettre+1] == u'ὲ' or PageTitre[lettre:lettre+1] == u'Έ' or PageTitre[lettre:lettre+1] == u'έ':
-				PageT = PageT + "ε"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'Ἠ' or PageTitre[lettre:lettre+1] == u'ἠ' or PageTitre[lettre:lettre+1] == u'Ἡ' or PageTitre[lettre:lettre+1] == u'ἡ' or PageTitre[lettre:lettre+1] == u'Ἢ' or PageTitre[lettre:lettre+1] == u'ἢ' or PageTitre[lettre:lettre+1] == u'Ἣ' or PageTitre[lettre:lettre+1] == u'ἣ' or PageTitre[lettre:lettre+1] == u'Ἤ' or PageTitre[lettre:lettre+1] == u'ἤ' or PageTitre[lettre:lettre+1] == u'Ἥ' or PageTitre[lettre:lettre+1] == u'ἥ' or PageTitre[lettre:lettre+1] == u'Ἦ' or PageTitre[lettre:lettre+1] == u'ἦ' or PageTitre[lettre:lettre+1] == u'Ἧ' or PageTitre[lettre:lettre+1] == u'ἧ' or PageTitre[lettre:lettre+1] == u'ᾘ' or PageTitre[lettre:lettre+1] == u'ᾐ' or PageTitre[lettre:lettre+1] == u'ᾙ' or PageTitre[lettre:lettre+1] == u'ᾑ' or PageTitre[lettre:lettre+1] == u'ᾚ' or PageTitre[lettre:lettre+1] == u'ᾒ' or PageTitre[lettre:lettre+1] == u'ᾛ' or PageTitre[lettre:lettre+1] == u'ᾓ' or PageTitre[lettre:lettre+1] == u'ᾜ' or PageTitre[lettre:lettre+1] == u'ᾔ' or PageTitre[lettre:lettre+1] == u'ᾝ' or PageTitre[lettre:lettre+1] == u'ᾕ' or PageTitre[lettre:lettre+1] == u'ᾞ' or PageTitre[lettre:lettre+1] == u'ᾖ' or PageTitre[lettre:lettre+1] == u'ᾟ' or PageTitre[lettre:lettre+1] == u'ᾗ' or PageTitre[lettre:lettre+1] == u'Ὴ' or PageTitre[lettre:lettre+1] == u'ὴ' or PageTitre[lettre:lettre+1] == u'Ή' or PageTitre[lettre:lettre+1] == u'ή' or PageTitre[lettre:lettre+1] == u'ῌ' or PageTitre[lettre:lettre+1] == u'ῂ' or PageTitre[lettre:lettre+1] == u'Η' or PageTitre[lettre:lettre+1] == u'ῃ' or PageTitre[lettre:lettre+1] == u'Ή' or PageTitre[lettre:lettre+1] == u'ῄ' or PageTitre[lettre:lettre+1] == u'ῌ' or PageTitre[lettre:lettre+1] == u'ῆ' or PageTitre[lettre:lettre+1] == u'ῌ' or PageTitre[lettre:lettre+1] == u'ῇ':
-				PageT = PageT + "η"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'Ὶ' or PageTitre[lettre:lettre+1] == u'ὶ' or PageTitre[lettre:lettre+1] == u'Ί' or PageTitre[lettre:lettre+1] == u'ί' or PageTitre[lettre:lettre+1] == u'Ί' or PageTitre[lettre:lettre+1] == u'ί' or PageTitre[lettre:lettre+1] == u'Ῐ' or PageTitre[lettre:lettre+1] == u'ῐ' or PageTitre[lettre:lettre+1] == u'Ῑ' or PageTitre[lettre:lettre+1] == u'ῑ' or PageTitre[lettre:lettre+1] == u'Ἰ' or PageTitre[lettre:lettre+1] == u'ἰ' or PageTitre[lettre:lettre+1] == u'Ἱ' or PageTitre[lettre:lettre+1] == u'ἱ' or PageTitre[lettre:lettre+1] == u'Ἲ' or PageTitre[lettre:lettre+1] == u'ἲ' or PageTitre[lettre:lettre+1] == u'Ἳ' or PageTitre[lettre:lettre+1] == u'ἳ' or PageTitre[lettre:lettre+1] == u'Ἴ' or PageTitre[lettre:lettre+1] == u'ἴ' or PageTitre[lettre:lettre+1] == u'Ἵ' or PageTitre[lettre:lettre+1] == u'ἵ' or PageTitre[lettre:lettre+1] == u'Ἶ' or PageTitre[lettre:lettre+1] == u'ἶ' or PageTitre[lettre:lettre+1] == u'Ἷ' or PageTitre[lettre:lettre+1] == u'ἷ' or PageTitre[lettre:lettre+1] == u'ΐ' or PageTitre[lettre:lettre+1] == u'ῖ' or PageTitre[lettre:lettre+1] == u'ῗ' or PageTitre[lettre:lettre+1] == u'ῒ':
-				PageT = PageT + "ι" 
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'Ὀ' or PageTitre[lettre:lettre+1] == u'ὀ' or PageTitre[lettre:lettre+1] == u'Ὁ' or PageTitre[lettre:lettre+1] == u'ὁ' or PageTitre[lettre:lettre+1] == u'Ὂ' or PageTitre[lettre:lettre+1] == u'ὂ' or PageTitre[lettre:lettre+1] == u'Ὃ' or PageTitre[lettre:lettre+1] == u'ὃ' or PageTitre[lettre:lettre+1] == u'Ὄ' or PageTitre[lettre:lettre+1] == u'ὄ' or PageTitre[lettre:lettre+1] == u'Ὅ' or PageTitre[lettre:lettre+1] == u'ὅ' or PageTitre[lettre:lettre+1] == u'Ὸ' or PageTitre[lettre:lettre+1] == u'ὸ' or PageTitre[lettre:lettre+1] == u'Ό' or PageTitre[lettre:lettre+1] == u'ό':
-				PageT = PageT + "ο"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'Ὠ' or PageTitre[lettre:lettre+1] == u'ὠ' or PageTitre[lettre:lettre+1] == u'Ὡ' or PageTitre[lettre:lettre+1] == u'ὡ' or PageTitre[lettre:lettre+1] == u'Ὢ' or PageTitre[lettre:lettre+1] == u'ὢ' or PageTitre[lettre:lettre+1] == u'Ὣ' or PageTitre[lettre:lettre+1] == u'ὣ' or PageTitre[lettre:lettre+1] == u'Ὤ' or PageTitre[lettre:lettre+1] == u'ὤ' or PageTitre[lettre:lettre+1] == u'Ὥ' or PageTitre[lettre:lettre+1] == u'ὥ' or PageTitre[lettre:lettre+1] == u'Ὦ' or PageTitre[lettre:lettre+1] == u'ὦ' or PageTitre[lettre:lettre+1] == u'Ὧ' or PageTitre[lettre:lettre+1] == u'ὧ' or PageTitre[lettre:lettre+1] == u'Ὼ' or PageTitre[lettre:lettre+1] == u'ὼ' or PageTitre[lettre:lettre+1] == u'Ώ' or PageTitre[lettre:lettre+1] == u'ώ' or PageTitre[lettre:lettre+1] == u'ᾨ' or PageTitre[lettre:lettre+1] == u'ᾠ' or PageTitre[lettre:lettre+1] == u'ᾩ' or PageTitre[lettre:lettre+1] == u'ᾡ' or PageTitre[lettre:lettre+1] == u'ᾪ' or PageTitre[lettre:lettre+1] == u'ᾢ' or PageTitre[lettre:lettre+1] == u'ᾫ' or PageTitre[lettre:lettre+1] == u'ᾣ' or PageTitre[lettre:lettre+1] == u'ᾬ' or PageTitre[lettre:lettre+1] == u'ᾤ' or PageTitre[lettre:lettre+1] == u'ᾭ' or PageTitre[lettre:lettre+1] == u'ᾥ' or PageTitre[lettre:lettre+1] == u'ᾮ' or PageTitre[lettre:lettre+1] == u'ᾦ' or PageTitre[lettre:lettre+1] == u'ᾯ' or PageTitre[lettre:lettre+1] == u'ᾧ' or PageTitre[lettre:lettre+1] == u'ῼ' or PageTitre[lettre:lettre+1] == u'ῳ' or PageTitre[lettre:lettre+1] == u'ῲ' or PageTitre[lettre:lettre+1] == u'ῴ' or PageTitre[lettre:lettre+1] == u'ῶ' or PageTitre[lettre:lettre+1] == u'ῷ':
-				PageT = PageT + "ω"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'Ὓ' or PageTitre[lettre:lettre+1] == u'ὓ' or PageTitre[lettre:lettre+1] == u'Υ' or PageTitre[lettre:lettre+1] == u'ὔ' or PageTitre[lettre:lettre+1] == u'Ὕ' or PageTitre[lettre:lettre+1] == u'ὕ' or PageTitre[lettre:lettre+1] == u'Ὗ' or PageTitre[lettre:lettre+1] == u'ὗ' or PageTitre[lettre:lettre+1] == u'Ὺ' or PageTitre[lettre:lettre+1] == u'ὺ' or PageTitre[lettre:lettre+1] == u'Ύ' or PageTitre[lettre:lettre+1] == u'ύ' or PageTitre[lettre:lettre+1] == u'Ῠ' or PageTitre[lettre:lettre+1] == u'ῠ' or PageTitre[lettre:lettre+1] == u'Ῡ' or PageTitre[lettre:lettre+1] == u'ῡ' or PageTitre[lettre:lettre+1] == u'ῢ' or PageTitre[lettre:lettre+1] == u'ΰ' or PageTitre[lettre:lettre+1] == u'ῦ' or PageTitre[lettre:lettre+1] == u'ῧ' or PageTitre[lettre:lettre+1] == u'ὐ' or PageTitre[lettre:lettre+1] == u'ὑ' or PageTitre[lettre:lettre+1] == u'ὒ' or PageTitre[lettre:lettre+1] == u'ὖ':
-				PageT = PageT + "υ"
-				key = "yes"
-			# Cyrillique
-			elif PageTitre[lettre:lettre+1] == u'ѐ' or PageTitre[lettre:lettre+1] == u'Ѐ' or PageTitre[lettre:lettre+1] == u'ё' or PageTitre[lettre:lettre+1] == u'Ё':
-				PageT = PageT + "е"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'ѝ' or PageTitre[lettre:lettre+1] == u'й' or PageTitre[lettre:lettre+1] == u'И' or PageTitre[lettre:lettre+1] == u'Ѝ' or PageTitre[lettre:lettre+1] == u'Й':
-				PageT = PageT + "и"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'ў' or PageTitre[lettre:lettre+1] == u'У' or PageTitre[lettre:lettre+1] == u'Ў':
-				PageT = PageT + "у"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'ѓ' or PageTitre[lettre:lettre+1] == u'ґ' or PageTitre[lettre:lettre+1] == u'Г' or PageTitre[lettre:lettre+1] == u'Ѓ' or PageTitre[lettre:lettre+1] == u'Ґ':
-				PageT = PageT + "г"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'ќ' or PageTitre[lettre:lettre+1] == u'К' or PageTitre[lettre:lettre+1] == u'Ќ':
-				PageT = PageT + "к"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'ї' or PageTitre[lettre:lettre+1] == u'І' or PageTitre[lettre:lettre+1] == u'Ї':
-				PageT = PageT + "і"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'Ѿ':
-				PageT = PageT + "Ѡ"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'Ѵ' or PageTitre[lettre:lettre+1] == u'ѷ' or PageTitre[lettre:lettre+1] == u'Ѷ':
-				PageT = PageT + "ѵ"
-				key = "yes"					
-			# Arabe
-			elif PageTitre[lettre:lettre+1] == u'أ' or PageTitre[lettre:lettre+1] == u'إ' or PageTitre[lettre:lettre+1] == u'آ' or PageTitre[lettre:lettre+1] == u'ٱ':
-				PageT = PageT + "ا"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'دَ' or PageTitre[lettre:lettre+1] == u'دِ' or PageTitre[lettre:lettre+1] == u'دُ':
-				PageT = PageT + "ﺩ"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'ذٰ':
-				PageT = PageT + "ﺫ"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'لٰ':
-				PageT = PageT + "ﻝ"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'مٰ':
-				PageT = PageT + "ﻡ"
-				key = "yes"
-			elif PageTitre[lettre:lettre+1] == u'هٰ':
-				PageT = PageT + "ﻩ"
-				key = "yes"
-			else:
-				PageT = PageT + PageTitre[lettre:lettre+1].lower()
-			#print (PageT.encode(config.console_encoding, 'replace'))
-			#raw_input("lettre")
-		if key == "yes":
-			if PageTemp.find(u'{{chapitre') != -1:
-				PageTemp = PageTemp[0:PageTemp.find(u'{{chapitre')+len(u'{{chapitre')] + u'\n|clé=' + PageT + PageTemp[PageTemp.find(u'{{chapitre')+len(u'{{chapitre'):len(PageTemp)]
-			if PageTemp.find(u'{{Chapitre') != -1:
-				PageTemp = PageTemp[0:PageTemp.find(u'{{Chapitre')+len(u'{{Chapitre')] + u'\n|clé=' + PageT + PageTemp[PageTemp.find(u'{{Chapitre')+len(u'{{Chapitre'):len(PageTemp)]
-			elif PageTemp.find(u'[[Catégorie:') != -1:
-				PageTemp = PageTemp[0:PageTemp.find(u'[[Catégorie:')] + u'\n{{clé de tri|' + PageT + u'}}\n' + PageTemp[PageTemp.find(u'[[Catégorie:'):len(PageTemp)]
-			elif PageTemp.find(u'[[Category:') != -1:
-				PageTemp = PageTemp[0:PageTemp.find(u'[[Category:')] + u'\n{{clé de tri|' + PageT + u'}}\n' + PageTemp[PageTemp.find(u'[[Category:'):len(PageTemp)]
-			else:
-				PageTemp = PageTemp + u'\n\n{{clé de tri|' + PageT + u'}}\n'
-	#raw_input (PageTemp.encode(config.console_encoding, 'replace'))
 	
+	# Clés de tri
+	sizeR = 7
+	regex = range(1, sizeR+1)
+	regex[1] = ur'()\n{{[Cc]lé de tri[^}]*}}'
+	regex[2] = ur'({{[Cc]hapitre[^}]*)\| *clé *=[^}\|]*'
+	regex[3] = ur'({{[Ll]eçon[^}]*)\| *clé *=[^}\|]*'
+	regex[4] = ur'({{[Cc]ours[^}]*)\| *clé *=[^}\|]*'
+	regex[5] = ur'({{[Dd]épartement[^}]*)\| *clé *=[^}\|]*'
+	regex[6] = ur'({{[Ff]aculté[^}]*)\| *clé *=[^}\|]*'
+	
+	for p in range(1,sizeR-1):
+		if re.search(regex[p], PageTemp):
+			PageTemp = re.sub(regex[p], ur'\1', PageTemp)
+			if summary.find(u'clé de tri') == -1: summary = summary + u', retrait de la clé de tri'
+
 	# Remplacements consensuels
+	#if page.namespace() != 0 and page.namespace() != 106 and page.namespace() != 108 and page.title() != u'Utilisateur:JackBot/test' and page.title() != u'Utilisateur:JackBot/test/test2': 
+	#	return
+	
 	for p in range(1,sizeT-1):
 		if PageTemp.find(u'{{' + temp[p] + u'|') != -1 or PageTemp.find(u'{{' + temp[p] + u'}}') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(temp[p])] + Ttemp[p] + PageTemp[PageTemp.find(temp[p])+len(temp[p]):len(PageTemp)]
-		p=p+1
+		#p=p+1
 		
 	# http://fr.wikiversity.org/wiki/Catégorie:Modèle_mal_utilisé
 	if CorrigerModeles == True:
@@ -555,6 +405,9 @@ def modification(PageHS):
 			/quiz/
 		PageEnd = PageEnd + PageTemp'''
 	
+	PageEnd = PageEnd + PageTemp
+	PageTemp = u''
+	
 	# Test des URL
 	if debogage == True: print u'Test des URL'
 	PageEnd = hyperlynx.hyperlynx(PageEnd)
@@ -653,12 +506,19 @@ def crawlerUser(username):
 		modification(Page.title())
 
 def sauvegarde(PageCourante, Contenu, summary):
-	ArretDUrgence()
 	result = "ok"
-	print(Contenu.encode(config.console_encoding, 'replace')[0:4000])	#[len(Contenu)-2000:len(Contenu)]) #
-	result = raw_input("Sauvegarder ? (o/n)")
+	if debogage:
+		if len(Contenu) < 6000:
+			print(Contenu.encode(config.console_encoding, 'replace'))
+		else:
+			taille = 3000
+			print(Contenu[:taille].encode(config.console_encoding, 'replace'))
+			print u'\n[...]\n'
+			print(Contenu[len(Contenu)-taille:].encode(config.console_encoding, 'replace'))
+		result = raw_input("Sauvegarder ? (o/n) ")
 	if result != "n" and result != "no" and result != "non":
-		if not summary: summary = u'[[Aide:Syntaxe|Autoformatage]]'
+		if PageCourante.title().find(u'Utilisateur:JackBot/') == -1: ArretDUrgence()
+		if not summary: summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
 		try:
 			PageCourante.put(Contenu, summary)
 		except wikipedia.NoPage: 
@@ -679,11 +539,16 @@ def sauvegarde(PageCourante, Contenu, summary):
 		except wikipedia.BadTitle: 
 			print "BadTitle en sauvegarde"
 			return
+		except AttributeError:
+			print "AttributeError en sauvegarde"
+			return
 			
 # Lancement
-TraitementLiens = crawlerLink(u'Modèle:cite book')
-#TraitementPage = modification(u'Initiation_à_l\'arithmétique/PGCD')
+TraitementFile = crawlerFile('articles_WVin.txt')
+#TraitementLiens = crawlerLink(u'Modèle:Clé de tri')
+#TraitementLiens = crawlerLink(u'Modèle:cite book')
 '''
+TraitementPage = modification(u'Initiation_à_l\'arithmétique/PGCD')
 TraitementFile = crawlerFile('articles_list.txt')
 TraitementCategory = crawlerCat(u'Modèle mal utilisé')
 TraitementLiens = crawlerLink(u'Modèle:Chapitre')

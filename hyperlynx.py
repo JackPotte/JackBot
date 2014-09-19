@@ -544,6 +544,8 @@ def hyperlynx(PageTemp):
 	summary = u'Vérification des URL'
 	PageEnd = u''
 	url = u''
+	PageTemp = PageTemp.replace(u'[//https://', u'[https://')
+	PageTemp = PageTemp.replace(u'[//http://', u'[http://')
 	
 	# Paramètre langue si traduction
 	for m in range(1,10):

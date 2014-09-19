@@ -1065,6 +1065,7 @@ Modele[873] = u'fig.'
 Modele[874] = u'télévision'
 Modele[875] = u'desserts'
 Modele[876] = u'dinosaures'
+#viandes
 #[[Spécial:newpages]]
 
 limit4 = 877	# code langue quoi qu'il arrive

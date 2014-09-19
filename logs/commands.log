@@ -4231,3 +4231,36 @@
 2014-09-13 18:07:54 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py "cat"
 2014-09-13 18:27:36 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py "cat"
 2014-09-13 18:50:07 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py "cat"
+2014-09-15 20:28:18 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-cat:Catégorie:Fruitiers en français" "Catégorie:Fruitiers en français" "Catégorie:Arbres fruitiers en français"
+2014-09-15 20:28:30 r-1 (unknown) Python 2.7.2 replace.py "-lang:fr" "-family:wiktionary" "-cat:Fruitiers en français" "Catégorie:Fruitiers en français" "Catégorie:Arbres fruitiers en français"
+2014-09-19 19:55:42 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 19:56:30 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 20:38:53 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 21:19:54 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 21:23:14 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 21:24:37 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 23:35:19 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 23:36:10 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 23:36:33 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 23:52:53 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 23:54:02 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 23:55:04 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 23:56:32 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 23:56:58 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 23:57:40 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 23:58:07 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 23:58:18 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-19 23:59:00 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-20 00:03:25 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-20 00:04:18 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-20 00:06:22 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-20 00:06:39 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-20 00:06:59 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-20 00:07:27 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-20 00:07:53 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-20 00:08:18 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-20 00:11:48 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-20 00:13:52 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-20 00:24:27 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-20 00:27:49 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
+2014-09-20 00:28:55 r-1 (unknown) Python 2.7.2 fr.v.formatage.py
