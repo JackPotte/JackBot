@@ -1,0 +1,54 @@
+2014-09-27 22:55:15       interwiki.py, 2185 in       generateMore: INFO     NOTE: Number of pages queued is 0, trying to add 60 more.
+2014-09-27 22:55:15       wikipedia.py, 5469 in             getall: INFO     Getting 1 page from wikiversity:en...
+2014-09-27 22:55:16       wikipedia.py, 5227 in         headerDone: WARNING  Family file wikiversity contains version number 1.22wmf12, but it should be 1.24wmf22
+2014-09-27 22:55:16       interwiki.py, 1478 in        batchLoaded: INFO     [[en:Translation]]: [[en:Translation]] gives new interwiki [[ru:Перевод]]
+2014-09-27 22:55:16       interwiki.py, 1478 in        batchLoaded: INFO     [[en:Translation]]: [[en:Translation]] gives new interwiki [[sv:Översättning]]
+2014-09-27 22:55:17       interwiki.py, 1478 in        batchLoaded: INFO     [[en:Translation]]: [[en:Translation]] gives new interwiki [[de:Übersetzung (Sprache)]]
+2014-09-27 22:55:17       interwiki.py, 1478 in        batchLoaded: INFO     [[en:Translation]]: [[en:Translation]] gives new interwiki [[ko:번역]]
+2014-09-27 22:55:17       interwiki.py, 1478 in        batchLoaded: INFO     [[en:Translation]]: [[en:Translation]] gives new interwiki [[ar:ترجمة]]
+2014-09-27 22:55:17       interwiki.py, 1478 in        batchLoaded: INFO     [[en:Translation]]: [[en:Translation]] gives new interwiki [[sl:Prevajanje]]
+2014-09-27 22:55:17       wikipedia.py, 5469 in             getall: INFO     Getting 1 page from wikiversity:ru...
+2014-09-27 22:55:17       wikipedia.py, 5227 in         headerDone: WARNING  Family file wikiversity contains version number 1.22wmf12, but it should be 1.24wmf22
+2014-09-27 22:55:17       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ru:Перевод]] does not exist. Skipping.
+2014-09-27 22:55:17       wikipedia.py, 5469 in             getall: INFO     Getting 1 page from wikiversity:de...
+2014-09-27 22:55:18       wikipedia.py, 5227 in         headerDone: WARNING  Family file wikiversity contains version number 1.22wmf12, but it should be 1.24wmf22
+2014-09-27 22:55:19       wikipedia.py, 5469 in             getall: INFO     Getting 1 page from wikiversity:ar...
+2014-09-27 22:55:20       wikipedia.py, 5227 in         headerDone: WARNING  Family file wikiversity contains version number 1.22wmf12, but it should be 1.24wmf22
+2014-09-27 22:55:20       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ar:ترجمة]] does not exist. Skipping.
+2014-09-27 22:55:20       wikipedia.py, 5469 in             getall: INFO     Getting 1 page from wikiversity:ko...
+2014-09-27 22:55:20       wikipedia.py, 5227 in         headerDone: WARNING  Family file wikiversity contains version number 1.22wmf12, but it should be 1.24wmf22
+2014-09-27 22:55:20       wikipedia.py, 5258 in         headerDone: WARNING  Outdated family file wikiversity: namespace['ko'][-1] is '특수기능', but should be '특수'
+2014-09-27 22:55:20       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[ko:번역]] does not exist. Skipping.
+2014-09-27 22:55:20       wikipedia.py, 5469 in             getall: INFO     Getting 1 page from wikiversity:sv...
+2014-09-27 22:55:21       wikipedia.py, 5227 in         headerDone: WARNING  Family file wikiversity contains version number 1.22wmf12, but it should be 1.24wmf22
+2014-09-27 22:55:21       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[sv:Översättning]] does not exist. Skipping.
+2014-09-27 22:55:21       wikipedia.py, 5469 in             getall: INFO     Getting 1 page from wikiversity:sl...
+2014-09-27 22:55:22       wikipedia.py, 5227 in         headerDone: WARNING  Family file wikiversity contains version number 1.22wmf12, but it should be 1.24wmf22
+2014-09-27 22:55:22       interwiki.py, 1290 in        batchLoaded: INFO     NOTE: [[sl:Prevajanje]] does not exist. Skipping.
+2014-09-27 22:55:22       interwiki.py, 1660 in             finish: INFO     ======Post-processing [[en:Translation]]======
+2014-09-27 22:55:22       interwiki.py, 1942 in       replaceLinks: INFO     {lightpurple}Updating links on page [[de:Übersetzung (Sprache)]].{default}
+2014-09-27 22:55:22       interwiki.py, 1943 in       replaceLinks: INFO     Changes to be made: Robot: Removing ar, ko, ru, sl, sv
+2014-09-27 22:55:22         support.py,  190 in           showDiff: INFO     {lightred}-{default} [[ar:ترجمة]]
+{lightred}-{default} [[ko:번역]]
+{lightred}-{default} [[ru:Перевод]]
+{lightred}-{default} [[sl:Prevajanje]]
+{lightred}-{default} [[sv:Översättning]]
+
+2014-09-27 22:55:22       interwiki.py, 1494 in            problem: INFO     ERROR: Found incorrect link to ar, ko, ru, sl, sv in [[de:Übersetzung (Sprache)]]
+2014-09-27 22:55:33       interwiki.py, 2015 in       replaceLinks: INFO     NOTE: Updating live wiki...
+2014-09-27 22:55:34       wikipedia.py, 6676 in       _getUserData: INFO     NOTE: You have new messages on wikiversity:de
+2014-09-27 22:55:34       wikipedia.py, 6714 in       _getUserData: WARNING  Your account on wikiversity:de does not have a bot flag. Its edits will be visible in the recent changes and it may get blocked.
+2014-09-27 22:55:34       watchlist.py,   79 in            refresh: INFO     Retrieving watchlist for wikiversity:de via API.
+2014-09-27 22:55:35       wikipedia.py, 2168 in           _putPage: INFO     Updating page [[de:Übersetzung (Sprache)]] via API
+2014-09-27 22:55:36       interwiki.py, 1942 in       replaceLinks: INFO     {lightpurple}Updating links on page [[en:Translation]].{default}
+2014-09-27 22:55:36       interwiki.py, 1943 in       replaceLinks: INFO     Changes to be made: Robot: Removing ar, ko, ru, sl, sv
+2014-09-27 22:55:36         support.py,  190 in           showDiff: INFO     {lightred}-{default} [[ar:ترجمة]]
+{lightred}-{default} [[ko:번역]]
+{lightred}-{default} [[ru:Перевод]]
+{lightred}-{default} [[sl:Prevajanje]]
+{lightred}-{default} [[sv:Översättning]]
+
+2014-09-27 22:55:36       interwiki.py, 1494 in            problem: INFO     ERROR: Found incorrect link to ar, ko, ru, sl, sv in [[en:Translation]]
+2014-09-27 22:56:00       interwiki.py, 2015 in       replaceLinks: INFO     NOTE: Updating live wiki...
+2014-09-27 22:56:01       watchlist.py,   79 in            refresh: INFO     Retrieving watchlist for wikiversity:en via API.
+2014-09-27 22:56:01       wikipedia.py, 2168 in           _putPage: INFO     Updating page [[Translation]] via API

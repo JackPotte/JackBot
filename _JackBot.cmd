@@ -16,7 +16,7 @@ python redirect.py double -always -family:wikiversity -lang:en
 python redirect.py double -always -family:wikiversity -lang:fr
 python redirect.py double -always -family:wikibooks -lang:en
 python redirect.py double -always -family:wikibooks -lang:fr
-python redirect.py double -always -family:wikisource -lang:en
+rem python redirect.py double -always -family:wikisource -lang:en
 python redirect.py double -always -family:wikisource -lang:fr
 python redirect.py double -always -family:wikiquote -lang:fr
 python redirect.py double -always -family:wikiquote -lang:en

@@ -31,1217 +31,1216 @@ siteEN = getSite('en',family)
 debogage = False
 debogageLent = False
 TailleAnagramme = 5 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
-
-# Modèles du site à traiter
-limit2 = 135 # Paragraphes sans modèle catégorisant, {{voir| et {{voir/ sont gérés individuellement
-limit6 = 1021 # Somme des modèles traités
-Modele = range(1, limit6+1)
-Section = range(1, limit2+1)
+Modele = [] # Liste des modèles du site à traiter
+Section = [] # Sections à remplacer
+# Paragraphes sans modèle catégorisant ({{voir| et {{voir/ sont gérés individuellement)
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
-Modele[0] = u'S'
-Section[0] = u'S'
-Modele[1] = u'-adj-dem-'
-Section[1] = u'adjectif démonstratif'
-Modele[2] = u'-adj-dém-'
-Section[2] = u'adjectif démonstratif'
-Modele[3] = u'-adj-excl-'
-Section[3] = u'adjectif exclamatif'
-Modele[4] = u'-adj-indef-'
-Section[4] = u'adjectif indéfini'
-Modele[5] = u'-adj-indéf-'
-Section[5] = u'adjectif indéfini'
-Modele[6] = u'-adj-int-'
-Section[6] = u'adjectif interrogatif'
-Modele[7] = u'-adj-num-'
-Section[7] = u'adjectif numéral'
-Modele[8] = u'-adj-pos-'
-Section[8] = u'adjectif possessif'
-Modele[9] = u'-adjectif-'
-Section[9] = u'adjectif'
-Modele[10] = u'-adj-'
-Section[10] = u'adjectif'
-Modele[11] = u'-adv-int-'
-Section[11] = u'adverbe interrogatif'
-Modele[12] = u'-adv-pron-'
-Section[12] = u'adverbe pronominal'
-Modele[13] = u'-adv-rel-'
-Section[13] = u'adverbe relatif'
-Modele[14] = u'-adverbe-'
-Section[14] = u'adverbe'
-Modele[15] = u'-adv-'
-Section[15] = u'adverbe'
-Modele[16] = u'-aff-'
-Section[16] = u'affixe'
-Modele[17] = u'-art-def-'
-Section[17] = u'article défini'
-Modele[18] = u'-art-déf-'
-Section[18] = u'article défini'
-Modele[19] = u'-art-indef-'
-Section[19] = u'article indéfini'
-Modele[20] = u'-art-indéf-'
-Section[20] = u'article indéfini'
-Modele[21] = u'-art-part-'
-Section[21] = u'article partitif'
-Modele[22] = u'-art-'
-Section[22] = u'article'
-Modele[23] = u'-aux-'
-Section[23] = u'verbe'
-Modele[24] = u'-circonf-'
-Section[24] = u'circonfixe'
-Modele[25] = u'-class-'
-Section[25] = u'classificateur'
-Modele[26] = u'-conj-coord-'
-Section[26] = u'conjonction de coordination'
-Modele[27] = u'-conj-'
-Section[27] = u'conjonction'
-Modele[28] = u'-copule-'
-Section[28] = u'copule'
-Modele[29] = u'-dét-'
-Section[29] = u'déterminant'
-Modele[30] = u'-erreur-'
-Section[30] = u'erreur'
-Modele[31] = u'-gismu-'
-Section[31] = u'gismu'
-Modele[32] = u'-inf-'
-Section[32] = u'infixe'
-Modele[33] = u'-interf-'
-Section[33] = u'interfixe'
-Modele[34] = u'-interj-'
-Section[34] = u'interjection'
-Modele[35] = u'-lettre-'
-Section[35] = u'lettre'
-Modele[36] = u'-nom-fam-'
-Section[36] = u'nom de famille'
-Modele[37] = u'-nom-pr-'
-Section[37] = u'nom propre'
-Modele[38] = u'-nom-propre-'
-Section[38] = u'nom propre'
-Modele[39] = u'-nom-sciences-'
-Section[39] = u'nom scientifique'
-Modele[40] = u'-nom-'
-Section[40] = u'nom'
-Modele[41] = u'-num-'
-Section[41] = u'numéral'
-Modele[42] = u'-numér-'
-Section[42] = u'numéral'
-Modele[43] = u'-numéral-'
-Section[43] = u'numéral'
-Modele[44] = u'-part-num-'
-Section[44] = u'particule numérale'
-Modele[45] = u'-part-'
-Section[45] = u'particule'
-Modele[46] = u'-patronyme-'
-Section[46] = u'patronyme'
-Modele[47] = u'-post-'
-Section[47] = u'postposition'
-Modele[48] = u'-préf-'
-Section[48] = u'préfixe'
-Modele[49] = u'-préfixe-'
-Section[49] = u'préfixe'
-Modele[50] = u'-prénom-'
-Section[50] = u'prénom'
-Modele[51] = u'-pré-nom-'
-Section[51] = u'pré-nom'
-Modele[52] = u'-prép-'
-Section[52] = u'préposition'
-Modele[53] = u'-pré-verbe-'
-Section[53] = u'pré-verbe'
-Modele[54] = u'-pronom-adj-'
-Section[54] = u'pronom-adjectif'
-Modele[55] = u'-pronom-dém-'
-Section[55] = u'pronom démonstratif'
-Modele[56] = u'-pronom-indéf-'
-Section[56] = u'pronom indéfini'
-Modele[57] = u'-pronom-int-'
-Section[57] = u'pronom interrogatif'
-Modele[58] = u'-pronom-pers-'
-Section[58] = u'pronom personnel'
-Modele[59] = u'-pronom-pos-'
-Section[59] = u'pronom possessif'
-Modele[60] = u'-pronom-rel-'
-Section[60] = u'pronom relatif'
-Modele[61] = u'-pronom-'
-Section[61] = u'pronom'
-Modele[62] = u'-quantif-'
-Section[62] = u'quantificateur'
-Modele[63] = u'-radical-'
-Section[63] = u'radical'
-Modele[64] = u'-rafsi-'
-Section[64] = u'rafsi'
-Modele[65] = u'-sinogramme-'
-Section[65] = u'sinogramme'
-Modele[66] = u'-subst-pron-pers-'
-Section[66] = u'adjectifs'
-Modele[67] = u'-suf-'
-Section[67] = u'suffixe'
-Modele[68] = u'-suffixe-'
-Section[68] = u'suffixe'
-Modele[69] = u'-symb-'
-Section[69] = u'symbole'
-Modele[70] = u'-symbole-'
-Section[70] = u'symbole'
-Modele[71] = u'-verbe-pr-'
-Section[71] = u'verbe pronominal'
-Modele[72] = u'-verb-pr-'
-Section[72] = u'verbe pronominal'
-Modele[73] = u'-verb-'
-Section[73] = u'verbe'
-Modele[74] = u'-verbe-'
-Section[74] = u'verbe'
-Modele[75] = u'-faux-prov-'
-Section[75] = u'faux proverbe'
-Modele[76] = u'-prov-'
-Section[76] = u'proverbe'
-Modele[77] = u'-loc-phr-'
-Section[77] = u'locution-phrase'
-Modele[78] = u'-loc-'
-Section[78] = u'locution'
-Modele[79] = u'-locution-'
-Section[79] = u'locution'
-Modele[80] = u'-var-typo-'
-Section[80] = u'variante typographique'
-Modele[81] = u'-onoma-'
-Section[81] = u'onomatopée'
-Modele[82] = u'-onomatopée-'
-Section[82] = u'onomatopée'
-Modele[83] = u'-interjection-'
-Section[83] = u'interjection'
-
-limit1 = 84 # Paragraphes avec modèle catégorisant
-# http://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Mod%C3%A8les_de_contexte
-Modele[84] = u'-réf-'
-Section[84] = u'références'
-Modele[85] = u'-références-'
-Section[85] = u'références'
-Modele[86] = u'-sino-dico-'
-Section[86] = u'dico sinogrammes'
-Modele[87] = u'-écrit-'
-Section[87] = u'écriture'
-Modele[88] = u'-voir-'
-Section[88] = u'voir aussi'
-Modele[89] = u'-anagrammes-'
-Section[89] = u'anagrammes'
-Modele[90] = u'-anagr-'
-Section[90] = u'anagrammes'
-Modele[91] = u'-étym-'
-Section[91] = u'étymologie'
-Modele[92] = u'-pron-'
-Section[92] = u'prononciation'
-
-limit14 = 93
-Modele[93] = u'-compos-'
-Section[93] = u'composés'
-Modele[94] = u'-décl-'
-Section[94] = u'déclinaison'
-Modele[95] = u'-dial-'
-Section[95] = u'variantes dialectales'
-Modele[96] = u'-faux-amis-'
-Section[96] = u'faux-amis'
-Modele[97] = u'-image-'
-Section[97] = u'images vidéo'
-Modele[98] = u'-trad-'
-Section[98] = u'traductions'
-Modele[99] = u'-dimin-'
-Section[99] = u'diminutifs'
-Modele[100] = u'-drv-int-'
-Section[100] = u'dérivés autres langues'
-Modele[101] = u'-drv-'
-Section[101] = u'dérivés'
-Modele[102] = u'-exp-'
-Section[102] = u'expressions'
-Modele[103] = u'-gent-'
-Section[103] = u'gentilés'
-Modele[104] = u'-hist-'
-Section[104] = u'attestations'
-Modele[105] = u'-homo-'
-Section[105] = u'homophones'
-Modele[106] = u'-holo-'
-Section[106] = u'holonymes'
-Modele[107] = u'-hyper-'
-Section[107] = u'hyperonymes'
-Modele[108] = u'-hypo-'
-Section[108] = u'hyponymes'
-Modele[109] = u'-méro-'
-Section[109] = u'méronymes'
-Modele[110] = u'-noms-vern-'
-Section[110] = u'noms vernaculaires'
-Modele[111] = u'-ortho-arch-'
-Section[111] = u'anciennes orthographes'
-Modele[112] = u'-paro-'
-Section[112] = u'paronymes'
-Modele[113] = u'-q-syn-'
-Section[113] = u'quasi-synonymes'
-Modele[114] = u'-syn-'
-Section[114] = u'synonymes'
-Modele[115] = u'-tran-'
-Section[115] = u'transcriptions'
-Modele[116] = u'-trans-'
-Section[116] = u'transcriptions'
-Modele[117] = u'-translit-'
-Section[117] = u'translittérations'
-Modele[118] = u'-tropo-'
-Section[118] = u'troponymes'
-Modele[119] = u'-var-ortho-'
-Section[119] = u'variantes orthographiques'
-Modele[120] = u'-var-ortho-'
-Section[120] = u'variantes ortho'
-Modele[121] = u'-var-'
-Section[121] = u'variantes'
-Modele[122] = u'-vidéo-'
-Section[122] = u'images vidéo'
-Modele[123] = u'-voc-'
-Section[123] = u'vocabulaire'
-Modele[124] = u'-voc-'
-Section[124] = u'vocabulaire apparenté'
-Modele[125] = u'-abréviation-'
-Section[125] = u'abréviations'
-Modele[126] = u'-ant-'
-Section[126] = u'antonymes'
-Modele[127] = u'-abrév-'
-Section[127] = u'abréviations'
-Modele[128] = u'-dial-'
-Section[128] = u'dial'
-Modele[129] = u'-apr-'
-Section[129] = u'apparentés'
-Modele[130] = u'-conjug-'
-Section[130] = u'conjugaison'
-Modele[131] = u'-cit-'
-Section[131] = u'citations'
-
-limit15 = 132
-Modele[132] = u'-notes-'
-Section[132] = u'notes'
-Modele[133] = u'-note-'
-Section[133] = u'note'
-Modele[134] = u'trad-trier'
-Section[134] = u'traductions à trier'
-
-# Attention : limit2 est déclarée plus haut
-Modele[135] = u'?'
-Modele[136] = u'doute'
-Modele[137] = u'm'
-Modele[138] = u'f'
-Modele[139] = u'vérifier'
-Modele[140] = u'formater'
-Modele[141] = u'suppression'
-Modele[142] = u'supp'
-Modele[143] = u'SI'
-Modele[144] = u'supprimer ?'
-Modele[145] = u'PàS'	
-Modele[146] = u'('
-Modele[147] = u')'
-Modele[148] = u'trad-début'
-Modele[149] = u'trad-fin'
-Modele[150] = u'titre incorrect'
-Modele[151] = u'trad--'
-Modele[152] = u'trad-'
-Modele[153] = u'trad+'
-Modele[154] = u'trad'
-Modele[155] = u'voir'
-Modele[156] = u'préciser'
-
-limit25 = 157
-Modele[157] = u'mf?'
-Modele[158] = u'fm ?'
-Modele[159] = u'comparatif'
-Modele[160] = u'superlatif'
-Modele[161] = u'beaucoup plus courant'
-Modele[162] = u'plus courant'
-Modele[163] = u'beaucoup moins courant'
-Modele[164] = u'moins courant'
-Modele[165] = u'b-pl-cour'
-Modele[166] = u'pl-cour'
-Modele[167] = u'b-m-cour'
-Modele[168] = u'm-cour'
-Modele[169] = u'mf'
-Modele[170] = u'n'
-Modele[171] = u'c'
-Modele[172] = u'pl-rare'
-Modele[173] = u'plus rare'
-
-limit3 = 174 # Paragraphes sans modèle catégorisant pouvant contenir des modèles
-# http://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Mod%C3%A8les_de_domaine_d%E2%80%99utilisation
-Modele[174] = u'outils'
-Modele[175] = u'saccusatif'
-Modele[176] = u'sdatif'
-Modele[177] = u'sinstrumental'
-Modele[178] = u'pétrochimie'
-Modele[179] = u'champignons'
-Modele[180] = u'armes'
-Modele[181] = u'langues'
-Modele[182] = u'roches'
-Modele[183] = u'chiromancie'
-Modele[184] = u'fruits'
-Modele[185] = u'légumes'
-Modele[186] = u'gallicisme'
-Modele[187] = u'abréviation'
-Modele[188] = u'par ellipse'
-Modele[189] = u'mélio'
-Modele[190] = u'hapax'
-Modele[191] = u'préhistoire'
-Modele[192] = u'dépendant'
-Modele[193] = u'humour'
-Modele[194] = u'argot scolaire'
-Modele[195] = u'argot policier'
-Modele[196] = u'hispanisme'
-Modele[197] = u'planche à neige'
-Modele[198] = u'planche à roulettes'
-Modele[199] = u'volcanologie'
-Modele[200] = u'infographie'
-Modele[201] = u'football américain'
-Modele[202] = u'football canadien'
-Modele[203] = u'idiotisme'
-Modele[204] = u'scolaire'
-Modele[205] = u'logistique'
-Modele[206] = u'lutherie'
-Modele[207] = u'pétanque'
-Modele[208] = u'accord genre ?'
-Modele[209] = u'supprimer-déf ?'
-Modele[210] = u'hyperbole'
-Modele[211] = u'interjection'
-Modele[212] = u'ironique'
-Modele[213] = u'litote'
-Modele[214] = u'littéraire'
-Modele[215] = u'péjoratif'
-Modele[216] = u'mélioratif'
-Modele[217] = u'métaphore'
-Modele[218] = u'métonymie'
-Modele[219] = u'mot-valise'
-Modele[220] = u'néologisme'
-Modele[221] = u'néol litt'
-Modele[222] = u'anglicisme'
-Modele[223] = u'antiquité'
-Modele[224] = u'ordinal'
-Modele[225] = u'palindrome'
-Modele[226] = u'archaïque'
-Modele[227] = u'poissons'
-Modele[228] = u'virologie'
-Modele[229] = u'viticulture'
-Modele[230] = u'zoologie'
-Modele[231] = u'plaisanterie'
-Modele[232] = u'poétique'
-Modele[233] = u'populaire'
-Modele[234] = u'propre'
-Modele[235] = u'proverbial'
-Modele[236] = u'rare'
-Modele[237] = u'sigle'
-Modele[238] = u'soutenu'
-Modele[239] = u'désuet'
-Modele[240] = u'insecte'
-Modele[241] = u'poisson'
-Modele[242] = u'très familier'
-Modele[243] = u'vieilli'
-Modele[244] = u'vulgaire'
-Modele[245] = u'wiki'
-Modele[246] = u'popu'
-Modele[247] = u'vx'
-Modele[248] = u'dés'
-Modele[249] = u'fam'
-Modele[250] = u'péj'
-Modele[251] = u'vulg'
-Modele[252] = u'télé'
-Modele[253] = u'administration'
-Modele[254] = u'aéronautique'
-Modele[255] = u'agriculture'
-Modele[256] = u'alpinisme'
-Modele[257] = u'anatomie'
-Modele[258] = u'anthropologie'
-Modele[259] = u'architecture'
-Modele[260] = u'archéologie'
-Modele[261] = u'arme'
-Modele[262] = u'arts'
-Modele[263] = u'astrologie'
-Modele[264] = u'astronomie'
-Modele[265] = u'audiovisuel'
-Modele[266] = u'automobile'
-Modele[267] = u'aviation'
-Modele[268] = u'bactériologie'
-Modele[269] = u'baseball'
-Modele[270] = u'basket'
-Modele[271] = u'bijouterie'
-Modele[272] = u'billard'
-Modele[273] = u'biochimie'
-Modele[274] = u'biologie'
-Modele[275] = u'botanique'
-Modele[276] = u'boucherie'
-Modele[277] = u'bowling'
-Modele[278] = u'cartes'
-Modele[279] = u'charpenterie'
-Modele[280] = u'chasse'
-Modele[281] = u'chimie'
-Modele[282] = u'chirurgie'
-Modele[283] = u'cinéma'
-Modele[284] = u'commerce'
-Modele[285] = u'construction'
-Modele[286] = u'cosmétologie'
-Modele[287] = u'couture'
-Modele[288] = u'cricket'
-Modele[289] = u'cuisine'
-Modele[290] = u'cyclisme'
-Modele[291] = u'danse'
-Modele[292] = u'dermatologie'
-Modele[293] = u'droit'
-Modele[294] = u'échecs'
-Modele[295] = u'écologie'
-Modele[296] = u'finance'
-Modele[297] = u'économie'
-Modele[298] = u'éducation'
-Modele[299] = u'électricité'
-Modele[300] = u'électronique'
-Modele[301] = u'électrotechnique'
-Modele[302] = u'élevage'
-Modele[303] = u'entomologie'
-Modele[304] = u'équitation'
-Modele[305] = u'escrime'
-Modele[306] = u'ethnologie'
-Modele[307] = u'famille'
-Modele[308] = u'fantastique'
-Modele[309] = u'fauconnerie'
-Modele[310] = u'ferro'
-Modele[311] = u'figure'
-Modele[312] = u'football'
-Modele[313] = u'gastronomie'
-Modele[314] = u'généalogie'
-Modele[315] = u'génétique'
-Modele[316] = u'géographie'
-Modele[317] = u'géologie'
-Modele[318] = u'géométrie'
-Modele[319] = u'géophysique'
-Modele[320] = u'glaciologie'
-Modele[321] = u'golf'
-Modele[322] = u'grammaire'
-Modele[323] = u'handball'
-Modele[324] = u'héraldique'
-Modele[325] = u'histoire'
-Modele[326] = u'histologie'
-Modele[327] = u'horlogerie'
-Modele[328] = u'ichtyologie'
-Modele[329] = u'imprimerie'
-Modele[330] = u'industrie'
-Modele[331] = u'informatique'
-Modele[332] = u'internet'
-Modele[333] = u'jardinage'
-Modele[334] = u'paume'
-Modele[335] = u'jeux'
-Modele[336] = u'jonglage'
-Modele[337] = u'journal'
-Modele[338] = u'jurisprudence'
-Modele[339] = u'justice'
-Modele[340] = u'législation'
-Modele[341] = u'linguistique'
-Modele[342] = u'littérature'
-Modele[343] = u'logique'
-Modele[344] = u'maçonnerie'
-Modele[345] = u'marine'
-Modele[346] = u'mathématiques'
-Modele[347] = u'mécanique'
-Modele[348] = u'médecine'
-Modele[349] = u'médecine non conv'
-Modele[350] = u'média'
-Modele[351] = u'menuiserie'
-Modele[352] = u'métallurgie'
-Modele[353] = u'météorologie'
-Modele[354] = u'métrologie'
-Modele[355] = u'microbiologie'
-Modele[356] = u'militaire'
-Modele[357] = u'minéralogie'
-Modele[358] = u'minéraux'
-Modele[359] = u'motocyclisme'
-Modele[360] = u'musique'
-Modele[361] = u'mycologie'
-Modele[362] = u'mythologie'
-Modele[363] = u'narratologie'
-Modele[364] = u'natation'
-Modele[365] = u'navigation'
-Modele[366] = u'neurologie'
-Modele[367] = u'maladies'
-Modele[368] = u'nosologie'
-Modele[369] = u'novlangue'
-Modele[370] = u'numismatique'
-Modele[371] = u'oenologie'
-Modele[372] = u'optique'
-Modele[373] = u'optométrie'
-Modele[374] = u'ornithologie'
-Modele[375] = u'paléographie'
-Modele[376] = u'paléontologie'
-Modele[377] = u'papillons'
-Modele[378] = u'pâtisserie'
-Modele[379] = u'pays'
-Modele[380] = u'pêche'
-Modele[381] = u'pédologie'
-Modele[382] = u'peinture'
-Modele[383] = u'pétrochimie'
-Modele[384] = u'pharmacologie'
-Modele[385] = u'philosophie'
-Modele[386] = u'photographie'
-Modele[387] = u'physiologie'
-Modele[388] = u'physique'
-Modele[389] = u'plante'
-Modele[390] = u'poésie'
-Modele[391] = u'poker'
-Modele[392] = u'police'
-Modele[393] = u'politique'
-Modele[394] = u'psychiatrie'
-Modele[395] = u'psychologie'
-Modele[396] = u'religion'
-Modele[397] = u'rhétorique'
-Modele[398] = u'rugby'
-Modele[399] = u'sci-fi'
-Modele[400] = u'sciences'
-Modele[401] = u'sculpture'
-Modele[402] = u'serrurerie'
-Modele[403] = u'sexualité'
-Modele[404] = u'sociologie'
-Modele[405] = u'sport'
-Modele[406] = u'statistiques'
-Modele[407] = u'sylviculture'
-Modele[408] = u'technique'
-Modele[409] = u'technologie'
-Modele[410] = u'tennis'
-Modele[411] = u'textile'
-Modele[412] = u'théâtre'
-Modele[413] = u'théologie'
-Modele[414] = u'thermodynamique'
-Modele[415] = u'topographie'
-Modele[416] = u'topologie'
-Modele[417] = u'toponymie'
-Modele[418] = u'tourisme'
-Modele[419] = u'transport'
-Modele[420] = u'travail'
-Modele[421] = u'typographie'
-Modele[422] = u'télécommunications'
-Modele[423] = u'urbanisme'
-Modele[424] = u'vêtements'
-Modele[425] = u'marketing'
-Modele[426] = u'aphérèse'
-Modele[427] = u'apocope'
-Modele[428] = u'argot'
-Modele[429] = u'cardinal'
-Modele[430] = u'informel'
-Modele[431] = u'contemporain'
-Modele[432] = u'courant'
-Modele[433] = u'dérision'
-Modele[434] = u'jazz'
-Modele[435] = u'tennis de table'
-Modele[436] = u'volley-ball'
-Modele[437] = u'volley'
-Modele[438] = u'badminton'
-Modele[438] = u'bases de données'
-Modele[439] = u'BDD'
-Modele[440] = u'pharma'
-Modele[441] = u'apiculture'
-Modele[442] = u'coiffure'
-Modele[443] = u'astronautique'
-Modele[444] = u'animaux'
-Modele[445] = u'plantes'
-Modele[446] = u'capoeira'
-Modele[447] = u'jeu vidéo'
-Modele[448] = u'skate'
-Modele[449] = u'skateboard'
-Modele[450] = u'patin'
-Modele[451] = u'escalade'
-Modele[452] = u'archéo'
-Modele[453] = u'armement'
-Modele[454] = u'astrol'
-Modele[455] = u'astron'
-Modele[456] = u'audiovis'
-Modele[457] = u'automo'
-Modele[458] = u'aviat'
-Modele[459] = u'bactério'
-Modele[460] = u'bijou'
-Modele[461] = u'biol'
-Modele[462] = u'botan'
-Modele[463] = u'chir'
-Modele[464] = u'ciné'
-Modele[465] = u'comm'
-Modele[466] = u'constr'
-Modele[467] = u'cosm'
-Modele[468] = u'text'
-Modele[469] = u'cout'
-Modele[470] = u'cuis'
-Modele[471] = u'cycl'
-Modele[472] = u'dermat'
-Modele[473] = u'écol'
-Modele[474] = u'finan'
-Modele[475] = u'écon'
-Modele[476] = u'éduc'
-Modele[477] = u'élec'
-Modele[478] = u'électro'
-Modele[479] = u'électrot'
-Modele[480] = u'équi'
-Modele[481] = u'foot'
-Modele[482] = u'gastro'
-Modele[483] = u'généal'
-Modele[484] = u'géog'
-Modele[485] = u'géol'
-Modele[486] = u'géom'
-Modele[487] = u'géoph'
-Modele[488] = u'gram'
-Modele[489] = u'hand'
-Modele[490] = u'hérald'
-Modele[491] = u'hist'
-Modele[492] = u'histol'
-Modele[493] = u'ichtyo'
-Modele[494] = u'impr'
-Modele[495] = u'indus'
-Modele[496] = u'inform'
-Modele[497] = u'jardin'
-Modele[498] = u'juri'
-Modele[499] = u'just'
-Modele[500] = u'ling'
-Modele[501] = u'littér'
-Modele[502] = u'maçon'
-Modele[503] = u'mari'
-Modele[504] = u'math'
-Modele[505] = u'méca'
-Modele[506] = u'méde'
-Modele[507] = u'métal'
-Modele[508] = u'météo'
-Modele[509] = u'métrol'
-Modele[510] = u'mili'
-Modele[511] = u'minér'
-Modele[512] = u'musi'
-Modele[513] = u'nata'
-Modele[514] = u'navig'
-Modele[515] = u'neuro'
-Modele[516] = u'numis'
-Modele[517] = u'oenol'
-Modele[518] = u'ornit'
-Modele[519] = u'paléo'
-Modele[520] = u'pêch'
-Modele[521] = u'pétro'
-Modele[522] = u'philo'
-Modele[523] = u'photo'
-Modele[524] = u'physio'
-Modele[525] = u'phys'
-Modele[526] = u'poés'
-Modele[527] = u'polit'
-Modele[528] = u'psych'
-Modele[529] = u'psycho'
-Modele[530] = u'scul'
-Modele[531] = u'serru'
-Modele[532] = u'sexe'
-Modele[533] = u'socio'
-Modele[534] = u'stat'
-Modele[535] = u'sylvi'
-Modele[536] = u'tech'
-Modele[537] = u'théol'
-Modele[538] = u'topo'
-Modele[539] = u'topon'
-Modele[540] = u'tour'
-Modele[541] = u'transp'
-Modele[542] = u'typo'
-Modele[543] = u'télécom'
-Modele[544] = u'urban'
-Modele[545] = u'vête'
-Modele[546] = u'chim'
-Modele[547] = u'phys'
-Modele[548] = u'milit'
-Modele[549] = u'méd'
-Modele[550] = u'hist'
-Modele[551] = u'gall'
-Modele[552] = u'vieux'
-Modele[553] = u'vx'
-Modele[554] = u'arch'
-Modele[555] = u'admin'
-Modele[556] = u'aéro'
-Modele[557] = u'agri'
-Modele[558] = u'text'
-Modele[559] = u'logi'
-Modele[560] = u'pop'
-Modele[561] = u'cardin'
-Modele[562] = u'ordin'
-Modele[563] = u'électron'
-Modele[564] = u'électrotech'
-Modele[565] = u'techno'
-Modele[566] = u'technol'
-Modele[567] = u'théât'
-Modele[568] = u'météorol'
-Modele[569] = u'info'
-Modele[570] = u'méton'
-Modele[571] = u'i'
-Modele[572] = u't'
-Modele[573] = u'trans'
-Modele[574] = u'transit'
-Modele[575] = u'intrans'
-Modele[576] = u'pronl'
-Modele[577] = u'prnl'
-Modele[578] = u'réfl'
-Modele[579] = u'réfléchi'
-Modele[580] = u'électoraux'
-Modele[581] = u'joaillerie'
-Modele[582] = u'rhéto'
-Modele[583] = u'exag'
-Modele[584] = u'métaph'
-Modele[585] = u'cour'
-Modele[586] = u'sout'
-Modele[587] = u'prov'
-Modele[588] = u'phon'
-Modele[589] = u'pron'
-Modele[590] = u'pron-rég'
-Modele[591] = u'term'
-Modele[592] = u'terme'
-Modele[593] = u'poét'
-Modele[594] = u'antiq'
-Modele[595] = u'litt'
-Modele[596] = u'mythol'
-Modele[597] = u'opti'
-Modele[598] = u'zool'
-Modele[599] = u'hyperb'
-Modele[600] = u'gastron'
-Modele[601] = u'didactique'
-Modele[602] = u'auxiliaire'
-Modele[603] = u'td'
-Modele[604] = u'tr-dir'
-Modele[605] = u'tr-indir'
-Modele[606] = u'dim-lex'
-Modele[607] = u'diminutif'
-Modele[608] = u'diplomatie'
-Modele[609] = u'informatique'
-Modele[610] = u'diptote'
-Modele[611] = u'alpi'
-Modele[612] = u'anat'
-Modele[613] = u'anthro'
-Modele[614] = u'archi'
-Modele[615] = u'angl'
-Modele[616] = u'vaudou'
-Modele[617] = u'maintenance'
-Modele[618] = u'phyton'
-Modele[619] = u'phytonimie'
-Modele[620] = u'généralement indénombrable'
-Modele[621] = u'bibliothéconomie'
-Modele[622] = u'comparatif de'
-Modele[623] = u'acoustique'
-Modele[624] = u'dén'
-Modele[625] = u'dénombrable'
-Modele[626] = u'affectueux'
-Modele[627] = u'glaciol'
-Modele[628] = u'fanta'
-Modele[629] = u'anal'
-Modele[630] = u'indénombrable'
-Modele[631] = u'indén'
-Modele[632] = u'nominatif'
-Modele[633] = u'nomin'
-Modele[634] = u'accusatif'
-Modele[635] = u'accus'
-Modele[636] = u'datif'
-Modele[637] = u'génitif'
-Modele[638] = u'génit'
-Modele[639] = u'vocatif'
-Modele[640] = u'vocat'
-Modele[641] = u'ablatif'
-Modele[642] = u'ablat'
-Modele[643] = u'allatif'
-Modele[644] = u'instrumental'
-Modele[645] = u'locat'
-Modele[646] = u'locatif'
-Modele[647] = u'prépositionnel'
-Modele[648] = u'indéclinable'
-Modele[649] = u'indécl'
-Modele[650] = u'ppart'
-Modele[651] = u'génitif'
-Modele[652] = u'psychol'
-Modele[653] = u'psycho'
-Modele[654] = u'chim'
-Modele[655] = u'injur'
-Modele[656] = u'mycol'
-Modele[657] = u'myco'
-Modele[658] = u'Internet'
-Modele[659] = u'liturgie'
-Modele[660] = u'diplomatie'
-Modele[661] = u'tauromachie'
-Modele[662] = u'germanisme'
-Modele[663] = u'squelette'
-Modele[664] = u'muscle'
-Modele[665] = u'gymnastique'
-Modele[666] = u'déverbal sans suffixe'
-Modele[667] = u'déverbal'
-Modele[668] = u'injurieux'
-Modele[669] = u'réflexif'
-Modele[670] = u'algèbre‎'
-Modele[671] = u'irrég'
-Modele[672] = u'irrégulier'
-Modele[673] = u'arts martiaux'
-Modele[674] = u'hydraulique'
-Modele[675] = u'par analogie'
-Modele[676] = u'genre'
-Modele[677] = u'type'
-Modele[678] = u'iron'
-Modele[679] = u'ironie'
-Modele[680] = u'plais'
-Modele[681] = u'très rare'
-Modele[682] = u'didact'
-Modele[683] = u'algèbre'
-Modele[684] = u'acronyme'
-Modele[685] = u'allatif'
-Modele[686] = u'analogie'
-Modele[687] = u'très très rare'
-Modele[688] = u'physiol'
-Modele[689] = u'reproduction'
-Modele[690] = u'repro'
-Modele[691] = u'presse'
-Modele[692] = u'meuble'
-Modele[693] = u'ellipse'
-Modele[694] = u'enclitique'
-Modele[695] = u'néol'
-Modele[696] = u'archaïsme'
-Modele[697] = u'nom'
-Modele[698] = u'indéc'
-Modele[699] = u'vétérinaire'
-Modele[700] = u'reli'
-Modele[701] = u'entom'
-Modele[702] = u'entomol'
-Modele[703] = u'pharmacie'
-Modele[704] = u'pharmacol'
-Modele[705] = u'athlétisme'
-Modele[706] = u'athlé'
-Modele[707] = u'christianisme'
-Modele[708] = u'conjugaison'
-Modele[709] = u'1ergroupe'
-Modele[710] = u'2egroupe'
-Modele[711] = u'3egroupe'
-Modele[712] = u'dénominal de'
-Modele[713] = u'déverbal de'
-Modele[714] = u'superlatif de'
-Modele[715] = u'narratol'
-Modele[716] = u'passif'
-Modele[717] = u'très-rare'
-Modele[718] = u'extrêmement rare'
-Modele[719] = u'jardi'
-Modele[720] = u'sociol'
-Modele[721] = u'papeterie'
-Modele[722] = u'papèterie'
-Modele[723] = u'Sénégal'
-Modele[724] = u'geol'
-Modele[725] = u'fami'
-Modele[726] = u'tind'
-Modele[727] = u'pédol'
-Modele[728] = u'biophysique'
-Modele[729] = u'psychia'
-Modele[730] = u'paléontol'
-Modele[731] = u'horticulture'
-Modele[732] = u'probabilités'
-Modele[733] = u'théorie des graphes'
-Modele[734] = u'graphe'
-Modele[735] = u'dessin'
-Modele[736] = u'récip'
-Modele[737] = u'réciproque'
-Modele[738] = u'minéral'
-Modele[739] = u'mah-jong'
-Modele[740] = u'mahjong'
-Modele[741] = u'majong'
-Modele[742] = u'reliure'
-Modele[743] = u'gravure'
-Modele[744] = u'livre'
-Modele[745] = u'canoe'
-Modele[746] = u'footing'
-Modele[747] = u'jogging'
-Modele[748] = u'running'
-Modele[749] = u'course à pied'
-Modele[750] = u'programmation'
-Modele[751] = u'prog'
-Modele[752] = u'jeux vidéo'
-Modele[753] = u'judo'
-Modele[754] = u'gén-indén'
-Modele[755] = u'Liban'
-Modele[756] = u'caténatif'
-Modele[757] = u'ski alpin'
-Modele[758] = u'ski de fond'
-Modele[759] = u'canoë-kayak'
-Modele[760] = u'canoë'
-Modele[761] = u'artillerie'
-Modele[762] = u'fonderie'
-Modele[763] = u'réseau'
-Modele[764] = u'impers'
-Modele[765] = u'impersonnel'
-Modele[766] = u'scol'
-Modele[767] = u'obsolète'
-Modele[768] = u'surf'
-Modele[769] = u'édition'
-Modele[770] = u'fortification'
-Modele[771] = u'dentisterie'
-Modele[772] = u'réseaux'
-Modele[773] = u'réseaux informatiques'
-Modele[774] = u'karaté'
-Modele[775] = u'argot militaire'
-Modele[776] = u'combat'
-Modele[777] = u'sports de combat'
-Modele[778] = u'capoeira'
-Modele[779] = u'aïkido'
-Modele[780] = u'argot polytechnicien'
-Modele[781] = u'élatif'
-Modele[782] = u'auxiliaire'
-Modele[783] = u'acron'
-Modele[784] = u'pronominal'
-Modele[785] = u'abrév'
-Modele[786] = u'snowboard'
-Modele[787] = u'snow'
-Modele[788] = u'transitif'
-Modele[789] = u'intransitif'
-Modele[790] = u'enfantin'
-Modele[791] = u'épithète'
-Modele[792] = u'euphémisme'
-Modele[793] = u'ex-rare'
-Modele[794] = u'exagératif'
-Modele[795] = u'expression'
-Modele[796] = u'familier'
-Modele[797] = u'figuré'
-Modele[798] = u'formel'
-Modele[799] = u'indéfini'
-Modele[800] = u'geog'	# à remplacer ?
-Modele[801] = u'singulare tantum'
-Modele[802] = u'plurale tantum'
-Modele[803] = u'islam'
-Modele[804] = u'judaïsme'
-Modele[805] = u'CB'
-Modele[806] = u'yoga'
-Modele[807] = u'couche physique'
-Modele[808] = u'couche liaison'
-Modele[809] = u'couche réseau'
-Modele[810] = u'couche transport'
-Modele[811] = u'couche session'
-Modele[812] = u'couche présentation'
-Modele[813] = u'couche application'
-Modele[814] = u'bouddhisme'
-Modele[815] = u'hindouisme'
-Modele[816] = u'pathologie'
-Modele[817] = u'boissons'
-Modele[818] = u'confiseries'
-Modele[819] = u'stéréotomie'
-Modele[820] = u'marbrerie'
-Modele[821] = u'improprement'
-Modele[822] = u'usage critiqué'
-Modele[823] = u'éléments'
-Modele[824] = u'points cardinaux'
-Modele[825] = u'unités'
-Modele[826] = u'monnaies'
-Modele[827] = u'religions'
-Modele[828] = u'voitures'
-Modele[829] = u'avions'
-Modele[830] = u'figures'
-Modele[831] = u'bateaux'
-Modele[832] = u'substances'
-Modele[833] = u'usines'
-Modele[834] = u'miroiterie'
-Modele[835] = u'ustensiles'
-Modele[836] = u'édifices'
-Modele[837] = u'danses'
-Modele[838] = u'chiens'
-Modele[839] = u'poet'
-Modele[840] = u'peu usité'
-Modele[841] = u'journalisme'
-Modele[842] = u'lézards'
-Modele[843] = u'vitrerie'
-Modele[844] = u'vents'
-Modele[845] = u'usinage'
-Modele[846] = u'maroquinerie'
-Modele[847] = u'dialectes'
-Modele[848] = u'fontainerie'
-Modele[849] = u'nucléaire'
-Modele[850] = u'phonétique'
-Modele[851] = u'par dérision'
-Modele[852] = u'dérision'
-Modele[853] = u'déris'
-Modele[854] = u'nucl'
-Modele[855] = u'un os'
-Modele[856] = u'boxe'
-Modele[857] = u'confiserie'
-Modele[858] = u'abréviation de'
-Modele[859] = u'instruments'
-Modele[860] = u'vins'
-Modele[861] = u'fleurs'
-Modele[862] = u'apiculture'
-Modele[863] = u'illégalité'
-Modele[864] = u'biologie cellulaire'
-Modele[865] = u'chimie organique'
-Modele[866] = u'histologie'
-Modele[867] = u'gâteaux'
-Modele[868] = u'loisirs'
-Modele[869] = u'golfe'
-Modele[870] = u'golfes'
-Modele[871] = u'véhicules'
-Modele[872] = u'musiques'
-Modele[873] = u'fig.'
-Modele[874] = u'télévision'
-Modele[875] = u'desserts'
-Modele[876] = u'dinosaures'
-#viandes
-#[[Spécial:newpages]]
-
-limit4 = 877	# code langue quoi qu'il arrive
-Modele[877] = u'ébauche-syn'
-Modele[878] = u'note-gentilé'
-Modele[879] = u'ébauche-trans'
-Modele[880] = u'ébauche-étym-nom-scientifique'
-Modele[881] = u'ébauche-étym'
-Modele[882] = u'ébauche-déf'
-Modele[883] = u'ébauche-exe'
-Modele[884] = u'ébauche-pron'
-Modele[885] = u'ébauche'
-'''
-# non traités
-Modele[] = u'spécialement' 
-Modele[] = u'T'
-Modele[] = u'région'
-Modele[] = u'régio'
-Modele[] = u'régional'
-Modele[] = u'déterminé'
-Modele[] = u'indéterminé'
-Modele[] = u'dét'
-Modele[] = u'indét'
-Modele[] = u'perfectif'
-Modele[] = u'imperfectif'
-Modele[] = u'perf'
-Modele[] = u'imperf'
-'''
+Modele.append(u'S')
+Section.append(u'S')
+Modele.append(u'-adj-dem-')
+Section.append(u'adjectif démonstratif')
+Modele.append(u'-adj-dém-')
+Section.append(u'adjectif démonstratif')
+Modele.append(u'-adj-excl-')
+Section.append(u'adjectif exclamatif')
+Modele.append(u'-adj-indef-')
+Section.append(u'adjectif indéfini')
+Modele.append(u'-adj-indéf-')
+Section.append(u'adjectif indéfini')
+Modele.append(u'-adj-int-')
+Section.append(u'adjectif interrogatif')
+Modele.append(u'-adj-num-')
+Section.append(u'adjectif numéral')
+Modele.append(u'-adj-pos-')
+Section.append(u'adjectif possessif')
+Modele.append(u'-adjectif-')
+Section.append(u'adjectif')
+Modele.append(u'-adj-')
+Section.append(u'adjectif')
+Modele.append(u'-adv-int-')
+Section.append(u'adverbe interrogatif')
+Modele.append(u'-adv-pron-')
+Section.append(u'adverbe pronominal')
+Modele.append(u'-adv-rel-')
+Section.append(u'adverbe relatif')
+Modele.append(u'-adverbe-')
+Section.append(u'adverbe')
+Modele.append(u'-adv-')
+Section.append(u'adverbe')
+Modele.append(u'-aff-')
+Section.append(u'affixe')
+Modele.append(u'-art-def-')
+Section.append(u'article défini')
+Modele.append(u'-art-déf-')
+Section.append(u'article défini')
+Modele.append(u'-art-indef-')
+Section.append(u'article indéfini')
+Modele.append(u'-art-indéf-')
+Section.append(u'article indéfini')
+Modele.append(u'-art-part-')
+Section.append(u'article partitif')
+Modele.append(u'-art-')
+Section.append(u'article')
+Modele.append(u'-aux-')
+Section.append(u'verbe')
+Modele.append(u'-circonf-')
+Section.append(u'circonfixe')
+Modele.append(u'-class-')
+Section.append(u'classificateur')
+Modele.append(u'-conj-coord-')
+Section.append(u'conjonction de coordination')
+Modele.append(u'-conj-')
+Section.append(u'conjonction')
+Modele.append(u'-copule-')
+Section.append(u'copule')
+Modele.append(u'-dét-')
+Section.append(u'déterminant')
+Modele.append(u'-erreur-')
+Section.append(u'erreur')
+Modele.append(u'-gismu-')
+Section.append(u'gismu')
+Modele.append(u'-inf-')
+Section.append(u'infixe')
+Modele.append(u'-interf-')
+Section.append(u'interfixe')
+Modele.append(u'-interj-')
+Section.append(u'interjection')
+Modele.append(u'-lettre-')
+Section.append(u'lettre')
+Modele.append(u'-nom-fam-')
+Section.append(u'nom de famille')
+Modele.append(u'-nom-pr-')
+Section.append(u'nom propre')
+Modele.append(u'-nom-propre-')
+Section.append(u'nom propre')
+Modele.append(u'-nom-sciences-')
+Section.append(u'nom scientifique')
+Modele.append(u'-nom-')
+Section.append(u'nom')
+Modele.append(u'-num-')
+Section.append(u'numéral')
+Modele.append(u'-numér-')
+Section.append(u'numéral')
+Modele.append(u'-numéral-')
+Section.append(u'numéral')
+Modele.append(u'-part-num-')
+Section.append(u'particule numérale')
+Modele.append(u'-part-')
+Section.append(u'particule')
+Modele.append(u'-patronyme-')
+Section.append(u'patronyme')
+Modele.append(u'-post-')
+Section.append(u'postposition')
+Modele.append(u'-préf-')
+Section.append(u'préfixe')
+Modele.append(u'-préfixe-')
+Section.append(u'préfixe')
+Modele.append(u'-prénom-')
+Section.append(u'prénom')
+Modele.append(u'-pré-nom-')
+Section.append(u'pré-nom')
+Modele.append(u'-prép-')
+Section.append(u'préposition')
+Modele.append(u'-pré-verbe-')
+Section.append(u'pré-verbe')
+Modele.append(u'-pronom-adj-')
+Section.append(u'pronom-adjectif')
+Modele.append(u'-pronom-dém-')
+Section.append(u'pronom démonstratif')
+Modele.append(u'-pronom-indéf-')
+Section.append(u'pronom indéfini')
+Modele.append(u'-pronom-int-')
+Section.append(u'pronom interrogatif')
+Modele.append(u'-pronom-pers-')
+Section.append(u'pronom personnel')
+Modele.append(u'-pronom-pos-')
+Section.append(u'pronom possessif')
+Modele.append(u'-pronom-rel-')
+Section.append(u'pronom relatif')
+Modele.append(u'-pronom-')
+Section.append(u'pronom')
+Modele.append(u'-quantif-')
+Section.append(u'quantificateur')
+Modele.append(u'-radical-')
+Section.append(u'radical')
+Modele.append(u'-rafsi-')
+Section.append(u'rafsi')
+Modele.append(u'-sinogramme-')
+Section.append(u'sinogramme')
+Modele.append(u'-subst-pron-pers-')
+Section.append(u'adjectifs')
+Modele.append(u'-suf-')
+Section.append(u'suffixe')
+Modele.append(u'-suffixe-')
+Section.append(u'suffixe')
+Modele.append(u'-symb-')
+Section.append(u'symbole')
+Modele.append(u'-symbole-')
+Section.append(u'symbole')
+Modele.append(u'-verbe-pr-')
+Section.append(u'verbe pronominal')
+Modele.append(u'-verb-pr-')
+Section.append(u'verbe pronominal')
+Modele.append(u'-verb-')
+Section.append(u'verbe')
+Modele.append(u'-verbe-')
+Section.append(u'verbe')
+Modele.append(u'-faux-prov-')
+Section.append(u'faux proverbe')
+Modele.append(u'-prov-')
+Section.append(u'proverbe')
+Modele.append(u'-loc-phr-')
+Section.append(u'locution-phrase')
+Modele.append(u'-loc-')
+Section.append(u'locution')
+Modele.append(u'-locution-')
+Section.append(u'locution')
+Modele.append(u'-var-typo-')
+Section.append(u'variante typographique')
+Modele.append(u'-onoma-')
+Section.append(u'onomatopée')
+Modele.append(u'-onomatopée-')
+Section.append(u'onomatopée')
+Modele.append(u'-interjection-')
+Section.append(u'interjection')
+limit1 = len(Modele)
+# Paragraphes avec modèle catégorisant
+# http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_contexte
+Modele.append(u'-réf-')
+Section.append(u'références')
+Modele.append(u'-références-')
+Section.append(u'références')
+Modele.append(u'-sino-dico-')
+Section.append(u'dico sinogrammes')
+Modele.append(u'-écrit-')
+Section.append(u'écriture')
+Modele.append(u'-voir-')
+Section.append(u'voir aussi')
+Modele.append(u'-anagrammes-')
+Section.append(u'anagrammes')
+Modele.append(u'-anagr-')
+Section.append(u'anagrammes')
+Modele.append(u'-étym-')
+Section.append(u'étymologie')
+Modele.append(u'-pron-')
+Section.append(u'prononciation')
+limit14 = len(Modele)
+Modele.append(u'-compos-')
+Section.append(u'composés')
+Modele.append(u'-décl-')
+Section.append(u'déclinaison')
+Modele.append(u'-dial-')
+Section.append(u'variantes dialectales')
+Modele.append(u'-faux-amis-')
+Section.append(u'faux-amis')
+Modele.append(u'-image-')
+Section.append(u'images vidéo')
+Modele.append(u'-trad-')
+Section.append(u'traductions')
+Modele.append(u'-dimin-')
+Section.append(u'diminutifs')
+Modele.append(u'-drv-int-')
+Section.append(u'dérivés autres langues')
+Modele.append(u'-drv-')
+Section.append(u'dérivés')
+Modele.append(u'-exp-')
+Section.append(u'expressions')
+Modele.append(u'-gent-')
+Section.append(u'gentilés')
+Modele.append(u'-hist-')
+Section.append(u'attestations')
+Modele.append(u'-homo-')
+Section.append(u'homophones')
+Modele.append(u'-holo-')
+Section.append(u'holonymes')
+Modele.append(u'-hyper-')
+Section.append(u'hyperonymes')
+Modele.append(u'-hypo-')
+Section.append(u'hyponymes')
+Modele.append(u'-méro-')
+Section.append(u'méronymes')
+Modele.append(u'-noms-vern-')
+Section.append(u'noms vernaculaires')
+Modele.append(u'-ortho-arch-')
+Section.append(u'anciennes orthographes')
+Modele.append(u'-paro-')
+Section.append(u'paronymes')
+Modele.append(u'-q-syn-')
+Section.append(u'quasi-synonymes')
+Modele.append(u'-syn-')
+Section.append(u'synonymes')
+Modele.append(u'-tran-')
+Section.append(u'transcriptions')
+Modele.append(u'-trans-')
+Section.append(u'transcriptions')
+Modele.append(u'-translit-')
+Section.append(u'translittérations')
+Modele.append(u'-tropo-')
+Section.append(u'troponymes')
+Modele.append(u'-var-ortho-')
+Section.append(u'variantes orthographiques')
+Modele.append(u'-var-ortho-')
+Section.append(u'variantes ortho')
+Modele.append(u'-var-')
+Section.append(u'variantes')
+Modele.append(u'-vidéo-')
+Section.append(u'images vidéo')
+Modele.append(u'-voc-')
+Section.append(u'vocabulaire')
+Modele.append(u'-voc-')
+Section.append(u'vocabulaire apparenté')
+Modele.append(u'-abréviation-')
+Section.append(u'abréviations')
+Modele.append(u'-ant-')
+Section.append(u'antonymes')
+Modele.append(u'-abrév-')
+Section.append(u'abréviations')
+Modele.append(u'-dial-')
+Section.append(u'dial')
+Modele.append(u'-apr-')
+Section.append(u'apparentés')
+Modele.append(u'-conjug-')
+Section.append(u'conjugaison')
+Modele.append(u'-cit-')
+Section.append(u'citations')
+limit15 = len(Modele)
+Modele.append(u'-notes-')
+Section.append(u'notes')
+Modele.append(u'-note-')
+Section.append(u'note')
+Modele.append(u'trad-trier')
+Section.append(u'traductions à trier')
+limit2 = len(Modele)
+Modele.append(u'?')
+Modele.append(u'doute')
+Modele.append(u'm')
+Modele.append(u'f')
+Modele.append(u'vérifier')
+Modele.append(u'formater')
+Modele.append(u'suppression')
+Modele.append(u'supp')
+Modele.append(u'SI')
+Modele.append(u'supprimer ?')
+Modele.append(u'PàS'	)
+Modele.append(u'(')
+Modele.append(u')')
+Modele.append(u'trad-début')
+Modele.append(u'trad-fin')
+Modele.append(u'titre incorrect')
+Modele.append(u'trad--')
+Modele.append(u'trad-')
+Modele.append(u'trad+')
+Modele.append(u'trad')
+Modele.append(u'voir')
+Modele.append(u'préciser')
+limit25 = len(Modele)
+Modele.append(u'mf?')
+Modele.append(u'fm ?')
+Modele.append(u'comparatif')
+Modele.append(u'superlatif')
+Modele.append(u'beaucoup plus courant')
+Modele.append(u'plus courant')
+Modele.append(u'beaucoup moins courant')
+Modele.append(u'moins courant')
+Modele.append(u'b-pl-cour')
+Modele.append(u'pl-cour')
+Modele.append(u'b-m-cour')
+Modele.append(u'm-cour')
+Modele.append(u'mf')
+Modele.append(u'n')
+Modele.append(u'c')
+Modele.append(u'pl-rare')
+Modele.append(u'plus rare')
+limit3 = len(Modele)
+# Paragraphes sans modèle catégorisant pouvant contenir des modèles
+# http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_domaine_d'utilisation
+Modele.append(u'1ergroupe')
+Modele.append(u'2egroupe')
+Modele.append(u'3egroupe')
+Modele.append(u'BDD')
+Modele.append(u'CB')
+Modele.append(u'Internet')
+Modele.append(u'Liban')
+Modele.append(u'Sénégal')
+Modele.append(u'ablat')
+Modele.append(u'ablatif')
+Modele.append(u'abrév')
+Modele.append(u'abréviation de')
+Modele.append(u'abréviation')
+Modele.append(u'accord genre ?')
+Modele.append(u'accus')
+Modele.append(u'accusatif')
+Modele.append(u'acoustique')
+Modele.append(u'acron')
+Modele.append(u'acronyme')
+Modele.append(u'admin')
+Modele.append(u'administration')
+Modele.append(u'affectueux')
+Modele.append(u'agri')
+Modele.append(u'agriculture')
+Modele.append(u'algèbre')
+Modele.append(u'algèbre‎')
+Modele.append(u'allatif')
+Modele.append(u'allatif')
+Modele.append(u'alpi')
+Modele.append(u'alpinisme')
+Modele.append(u'anal')
+Modele.append(u'analogie')
+Modele.append(u'anat')
+Modele.append(u'anatomie')
+Modele.append(u'angl')
+Modele.append(u'anglicisme')
+Modele.append(u'animaux')
+Modele.append(u'anthro')
+Modele.append(u'anthropologie')
+Modele.append(u'antiq')
+Modele.append(u'antiquité')
+Modele.append(u'aphérèse')
+Modele.append(u'apiculture')
+Modele.append(u'apiculture')
+Modele.append(u'apocope')
+Modele.append(u'arch')
+Modele.append(u'archaïque')
+Modele.append(u'archaïsme')
+Modele.append(u'archi')
+Modele.append(u'architecture')
+Modele.append(u'archéo')
+Modele.append(u'archéologie')
+Modele.append(u'argot militaire')
+Modele.append(u'argot policier')
+Modele.append(u'argot polytechnicien')
+Modele.append(u'argot scolaire')
+Modele.append(u'argot')
+Modele.append(u'arme')
+Modele.append(u'armement')
+Modele.append(u'armes')
+Modele.append(u'artillerie')
+Modele.append(u'arts martiaux')
+Modele.append(u'arts')
+Modele.append(u'astrol')
+Modele.append(u'astrologie')
+Modele.append(u'astron')
+Modele.append(u'astronautique')
+Modele.append(u'astronomie')
+Modele.append(u'athlé')
+Modele.append(u'athlétisme')
+Modele.append(u'audiovis')
+Modele.append(u'audiovisuel')
+Modele.append(u'automo')
+Modele.append(u'automobile')
+Modele.append(u'auxiliaire')
+Modele.append(u'auxiliaire')
+Modele.append(u'aviat')
+Modele.append(u'aviation')
+Modele.append(u'avions')
+Modele.append(u'aéro')
+Modele.append(u'aéronautique')
+Modele.append(u'aïkido')
+Modele.append(u'bactério')
+Modele.append(u'bactériologie')
+Modele.append(u'badminton')
+Modele.append(u'baseball')
+Modele.append(u'bases de données')
+Modele.append(u'basket')
+Modele.append(u'bateaux')
+Modele.append(u'bibliothéconomie')
+Modele.append(u'bijou')
+Modele.append(u'bijouterie')
+Modele.append(u'billard')
+Modele.append(u'biochimie')
+Modele.append(u'biol')
+Modele.append(u'biologie cellulaire')
+Modele.append(u'biologie')
+Modele.append(u'biophysique')
+Modele.append(u'boissons')
+Modele.append(u'botan')
+Modele.append(u'botanique')
+Modele.append(u'boucherie')
+Modele.append(u'bouddhisme')
+Modele.append(u'bowling')
+Modele.append(u'boxe')
+Modele.append(u'canoe')
+Modele.append(u'canoë')
+Modele.append(u'canoë-kayak')
+Modele.append(u'capoeira')
+Modele.append(u'capoeira')
+Modele.append(u'cardin')
+Modele.append(u'cardinal')
+Modele.append(u'cartes')
+Modele.append(u'caténatif')
+Modele.append(u'champignons')
+Modele.append(u'charpenterie')
+Modele.append(u'chasse')
+Modele.append(u'chiens')
+Modele.append(u'chim')
+Modele.append(u'chim')
+Modele.append(u'chimie organique')
+Modele.append(u'chimie')
+Modele.append(u'chir')
+Modele.append(u'chiromancie')
+Modele.append(u'chirurgie')
+Modele.append(u'christianisme')
+Modele.append(u'ciné')
+Modele.append(u'cinéma')
+Modele.append(u'coiffure')
+Modele.append(u'combat')
+Modele.append(u'comm')
+Modele.append(u'commerce')
+Modele.append(u'comparatif de')
+Modele.append(u'confiserie')
+Modele.append(u'confiseries')
+Modele.append(u'conjugaison')
+Modele.append(u'constr')
+Modele.append(u'construction')
+Modele.append(u'contemporain')
+Modele.append(u'cosm')
+Modele.append(u'cosmétologie')
+Modele.append(u'couche application')
+Modele.append(u'couche liaison')
+Modele.append(u'couche physique')
+Modele.append(u'couche présentation')
+Modele.append(u'couche réseau')
+Modele.append(u'couche session')
+Modele.append(u'couche transport')
+Modele.append(u'cour')
+Modele.append(u'courant')
+Modele.append(u'course à pied')
+Modele.append(u'cout')
+Modele.append(u'couture')
+Modele.append(u'cricket')
+Modele.append(u'cuis')
+Modele.append(u'cuisine')
+Modele.append(u'cycl')
+Modele.append(u'cyclisme')
+Modele.append(u'danse')
+Modele.append(u'danses')
+Modele.append(u'datif')
+Modele.append(u'dentisterie')
+Modele.append(u'dermat')
+Modele.append(u'dermatologie')
+Modele.append(u'desserts')
+Modele.append(u'desserts')
+Modele.append(u'dessin')
+Modele.append(u'dialectes')
+Modele.append(u'didact')
+Modele.append(u'didactique')
+Modele.append(u'dim-lex')
+Modele.append(u'diminutif')
+Modele.append(u'dinosaures')
+Modele.append(u'dinosaures')
+Modele.append(u'diplomatie')
+Modele.append(u'diplomatie')
+Modele.append(u'diptote')
+Modele.append(u'droit')
+Modele.append(u'dén')
+Modele.append(u'dénombrable')
+Modele.append(u'dénominal de')
+Modele.append(u'dépendant')
+Modele.append(u'déris')
+Modele.append(u'dérision')
+Modele.append(u'dérision')
+Modele.append(u'dés')
+Modele.append(u'désuet')
+Modele.append(u'déverbal de')
+Modele.append(u'déverbal sans suffixe')
+Modele.append(u'déverbal')
+Modele.append(u'ellipse')
+Modele.append(u'enclitique')
+Modele.append(u'enfantin')
+Modele.append(u'entom')
+Modele.append(u'entomol')
+Modele.append(u'entomologie')
+Modele.append(u'escalade')
+Modele.append(u'escrime')
+Modele.append(u'ethnologie')
+Modele.append(u'euphémisme')
+Modele.append(u'ex-rare')
+Modele.append(u'exag')
+Modele.append(u'exagératif')
+Modele.append(u'expression')
+Modele.append(u'extrêmement rare')
+Modele.append(u'fam')
+Modele.append(u'fami')
+Modele.append(u'familier')
+Modele.append(u'famille')
+Modele.append(u'fanta')
+Modele.append(u'fantastique')
+Modele.append(u'fauconnerie')
+Modele.append(u'ferro')
+Modele.append(u'fig.')
+Modele.append(u'figure')
+Modele.append(u'figures')
+Modele.append(u'figuré')
+Modele.append(u'finan')
+Modele.append(u'finance')
+Modele.append(u'fleurs')
+Modele.append(u'fonderie')
+Modele.append(u'fontainerie')
+Modele.append(u'foot')
+Modele.append(u'football américain')
+Modele.append(u'football canadien')
+Modele.append(u'football')
+Modele.append(u'footing')
+Modele.append(u'formel')
+Modele.append(u'fortification')
+Modele.append(u'fruits')
+Modele.append(u'gall')
+Modele.append(u'gallicisme')
+Modele.append(u'gastro')
+Modele.append(u'gastron')
+Modele.append(u'gastronomie')
+Modele.append(u'genre')
+Modele.append(u'geog')	# à remplacer ?
+Modele.append(u'geol')
+Modele.append(u'germanisme')
+Modele.append(u'glaciol')
+Modele.append(u'glaciologie')
+Modele.append(u'golf')
+Modele.append(u'golfe')
+Modele.append(u'golfes')
+Modele.append(u'gram')
+Modele.append(u'grammaire')
+Modele.append(u'graphe')
+Modele.append(u'gravure')
+Modele.append(u'gymnastique')
+Modele.append(u'gâteaux')
+Modele.append(u'gén-indén')
+Modele.append(u'génit')
+Modele.append(u'génitif')
+Modele.append(u'génitif')
+Modele.append(u'généal')
+Modele.append(u'généalogie')
+Modele.append(u'généralement indénombrable')
+Modele.append(u'génétique')
+Modele.append(u'géog')
+Modele.append(u'géographie')
+Modele.append(u'géol')
+Modele.append(u'géologie')
+Modele.append(u'géom')
+Modele.append(u'géométrie')
+Modele.append(u'géoph')
+Modele.append(u'géophysique')
+Modele.append(u'hand')
+Modele.append(u'handball')
+Modele.append(u'hapax')
+Modele.append(u'hindouisme')
+Modele.append(u'hispanisme')
+Modele.append(u'hist')
+Modele.append(u'hist')
+Modele.append(u'histoire')
+Modele.append(u'histol')
+Modele.append(u'histologie')
+Modele.append(u'histologie')
+Modele.append(u'horlogerie')
+Modele.append(u'horticulture')
+Modele.append(u'humour')
+Modele.append(u'hydraulique')
+Modele.append(u'hyperb')
+Modele.append(u'hyperbole')
+Modele.append(u'hérald')
+Modele.append(u'héraldique')
+Modele.append(u'i')
+Modele.append(u'ichtyo')
+Modele.append(u'ichtyologie')
+Modele.append(u'idiotisme')
+Modele.append(u'illégalité')
+Modele.append(u'impers')
+Modele.append(u'impersonnel')
+Modele.append(u'impr')
+Modele.append(u'imprimerie')
+Modele.append(u'improprement')
+Modele.append(u'indus')
+Modele.append(u'industrie')
+Modele.append(u'indéc')
+Modele.append(u'indécl')
+Modele.append(u'indéclinable')
+Modele.append(u'indéfini')
+Modele.append(u'indén')
+Modele.append(u'indénombrable')
+Modele.append(u'info')
+Modele.append(u'infographie')
+Modele.append(u'inform')
+Modele.append(u'informatique')
+Modele.append(u'informatique')
+Modele.append(u'informel')
+Modele.append(u'injur')
+Modele.append(u'injurieux')
+Modele.append(u'insecte')
+Modele.append(u'instrumental')
+Modele.append(u'instruments')
+Modele.append(u'interjection')
+Modele.append(u'internet')
+Modele.append(u'intrans')
+Modele.append(u'intransitif')
+Modele.append(u'iron')
+Modele.append(u'ironie')
+Modele.append(u'ironique')
+Modele.append(u'irrég')
+Modele.append(u'irrégulier')
+Modele.append(u'islam')
+Modele.append(u'jardi')
+Modele.append(u'jardin')
+Modele.append(u'jardinage')
+Modele.append(u'jazz')
+Modele.append(u'jeu vidéo')
+Modele.append(u'jeux vidéo')
+Modele.append(u'jeux')
+Modele.append(u'joaillerie')
+Modele.append(u'jogging')
+Modele.append(u'jonglage')
+Modele.append(u'journal')
+Modele.append(u'journalisme')
+Modele.append(u'judaïsme')
+Modele.append(u'judo')
+Modele.append(u'juri')
+Modele.append(u'jurisprudence')
+Modele.append(u'just')
+Modele.append(u'justice')
+Modele.append(u'karaté')
+Modele.append(u'langues')
+Modele.append(u'ling')
+Modele.append(u'linguistique')
+Modele.append(u'litote')
+Modele.append(u'litt')
+Modele.append(u'littér')
+Modele.append(u'littéraire')
+Modele.append(u'littérature')
+Modele.append(u'liturgie')
+Modele.append(u'livre')
+Modele.append(u'locat')
+Modele.append(u'locatif')
+Modele.append(u'logi')
+Modele.append(u'logique')
+Modele.append(u'logistique')
+Modele.append(u'loisirs')
+Modele.append(u'lutherie')
+Modele.append(u'législation')
+Modele.append(u'légumes')
+Modele.append(u'lézards')
+Modele.append(u'mah-jong')
+Modele.append(u'mahjong')
+Modele.append(u'maintenance')
+Modele.append(u'majong')
+Modele.append(u'maladies')
+Modele.append(u'marbrerie')
+Modele.append(u'mari')
+Modele.append(u'marine')
+Modele.append(u'marketing')
+Modele.append(u'maroquinerie')
+Modele.append(u'math')
+Modele.append(u'mathématiques')
+Modele.append(u'maçon')
+Modele.append(u'maçonnerie')
+Modele.append(u'menuiserie')
+Modele.append(u'meuble')
+Modele.append(u'microbiologie')
+Modele.append(u'mili')
+Modele.append(u'milit')
+Modele.append(u'militaire')
+Modele.append(u'minér')
+Modele.append(u'minéral')
+Modele.append(u'minéralogie')
+Modele.append(u'minéraux')
+Modele.append(u'miroiterie')
+Modele.append(u'monnaies')
+Modele.append(u'mot-valise')
+Modele.append(u'motocyclisme')
+Modele.append(u'muscle')
+Modele.append(u'musi')
+Modele.append(u'musique')
+Modele.append(u'musiques')
+Modele.append(u'myco')
+Modele.append(u'mycol')
+Modele.append(u'mycologie')
+Modele.append(u'mythol')
+Modele.append(u'mythologie')
+Modele.append(u'méca')
+Modele.append(u'mécanique')
+Modele.append(u'méd')
+Modele.append(u'méde')
+Modele.append(u'médecine non conv')
+Modele.append(u'médecine')
+Modele.append(u'média')
+Modele.append(u'médicaments')
+Modele.append(u'mélio')
+Modele.append(u'mélioratif')
+Modele.append(u'métal')
+Modele.append(u'métallurgie')
+Modele.append(u'métaph')
+Modele.append(u'métaphore')
+Modele.append(u'méton')
+Modele.append(u'métonymie')
+Modele.append(u'métrol')
+Modele.append(u'métrologie')
+Modele.append(u'météo')
+Modele.append(u'météorol')
+Modele.append(u'météorologie')
+Modele.append(u'narratol')
+Modele.append(u'narratologie')
+Modele.append(u'nata')
+Modele.append(u'natation')
+Modele.append(u'navig')
+Modele.append(u'navigation')
+Modele.append(u'neuro')
+Modele.append(u'neurologie')
+Modele.append(u'nom')
+Modele.append(u'nomin')
+Modele.append(u'nominatif')
+Modele.append(u'nosologie')
+Modele.append(u'novlangue')
+Modele.append(u'nucl')
+Modele.append(u'nucléaire')
+Modele.append(u'numis')
+Modele.append(u'numismatique')
+Modele.append(u'néol litt')
+Modele.append(u'néol')
+Modele.append(u'néologisme')
+Modele.append(u'obsolète')
+Modele.append(u'oenol')
+Modele.append(u'oenologie')
+Modele.append(u'opti')
+Modele.append(u'optique')
+Modele.append(u'optométrie')
+Modele.append(u'ordin')
+Modele.append(u'ordinal')
+Modele.append(u'ornit')
+Modele.append(u'ornithologie')
+Modele.append(u'outils')
+Modele.append(u'palindrome')
+Modele.append(u'paléo')
+Modele.append(u'paléographie')
+Modele.append(u'paléontol')
+Modele.append(u'paléontologie')
+Modele.append(u'papeterie')
+Modele.append(u'papillons')
+Modele.append(u'papèterie')
+Modele.append(u'par analogie')
+Modele.append(u'par dérision')
+Modele.append(u'par ellipse')
+Modele.append(u'passif')
+Modele.append(u'pathologie')
+Modele.append(u'patin')
+Modele.append(u'paume')
+Modele.append(u'pays')
+Modele.append(u'peinture')
+Modele.append(u'peu usité')
+Modele.append(u'pharma')
+Modele.append(u'pharmacie')
+Modele.append(u'pharmacol')
+Modele.append(u'pharmacologie')
+Modele.append(u'philo')
+Modele.append(u'philosophie')
+Modele.append(u'phon')
+Modele.append(u'phonétique')
+Modele.append(u'photo')
+Modele.append(u'photographie')
+Modele.append(u'phys')
+Modele.append(u'phys')
+Modele.append(u'physio')
+Modele.append(u'physiol')
+Modele.append(u'physiologie')
+Modele.append(u'physique')
+Modele.append(u'phyton')
+Modele.append(u'phytonimie')
+Modele.append(u'plais')
+Modele.append(u'plaisanterie')
+Modele.append(u'planche à neige')
+Modele.append(u'planche à roulettes')
+Modele.append(u'plante')
+Modele.append(u'plantes')
+Modele.append(u'plurale tantum')
+Modele.append(u'poet')
+Modele.append(u'points cardinaux')
+Modele.append(u'poisson')
+Modele.append(u'poissons')
+Modele.append(u'poker')
+Modele.append(u'police')
+Modele.append(u'polit')
+Modele.append(u'politique')
+Modele.append(u'pop')
+Modele.append(u'popu')
+Modele.append(u'populaire')
+Modele.append(u'poés')
+Modele.append(u'poésie')
+Modele.append(u'poét')
+Modele.append(u'poétique')
+Modele.append(u'ppart')
+Modele.append(u'presse')
+Modele.append(u'prnl')
+Modele.append(u'probabilités')
+Modele.append(u'prog')
+Modele.append(u'programmation')
+Modele.append(u'pron')
+Modele.append(u'pron-rég')
+Modele.append(u'pronl')
+Modele.append(u'pronominal')
+Modele.append(u'propre')
+Modele.append(u'prov')
+Modele.append(u'proverbial')
+Modele.append(u'préhistoire')
+Modele.append(u'prépositionnel')
+Modele.append(u'psych')
+Modele.append(u'psychia')
+Modele.append(u'psychiatrie')
+Modele.append(u'psycho')
+Modele.append(u'psycho')
+Modele.append(u'psychol')
+Modele.append(u'psychologie')
+Modele.append(u'pâtisserie')
+Modele.append(u'pédol')
+Modele.append(u'pédologie')
+Modele.append(u'péj')
+Modele.append(u'péjoratif')
+Modele.append(u'pétanque')
+Modele.append(u'pétro')
+Modele.append(u'pétrochimie')
+Modele.append(u'pétrochimie')
+Modele.append(u'pêch')
+Modele.append(u'pêche')
+Modele.append(u'rare')
+Modele.append(u'reli')
+Modele.append(u'religion')
+Modele.append(u'religions')
+Modele.append(u'reliure')
+Modele.append(u'repro')
+Modele.append(u'reproduction')
+Modele.append(u'rhéto')
+Modele.append(u'rhétorique')
+Modele.append(u'roches')
+Modele.append(u'rugby')
+Modele.append(u'running')
+Modele.append(u'récip')
+Modele.append(u'réciproque')
+Modele.append(u'réfl')
+Modele.append(u'réflexif')
+Modele.append(u'réfléchi')
+Modele.append(u'réseau')
+Modele.append(u'réseaux informatiques')
+Modele.append(u'réseaux')
+Modele.append(u'saccusatif')
+Modele.append(u'sci-fi')
+Modele.append(u'sciences')
+Modele.append(u'scol')
+Modele.append(u'scolaire')
+Modele.append(u'scul')
+Modele.append(u'sculpture')
+Modele.append(u'sdatif')
+Modele.append(u'serru')
+Modele.append(u'serrurerie')
+Modele.append(u'sexe')
+Modele.append(u'sexualité')
+Modele.append(u'sigle')
+Modele.append(u'singulare tantum')
+Modele.append(u'sinstrumental')
+Modele.append(u'skate')
+Modele.append(u'skateboard')
+Modele.append(u'ski alpin')
+Modele.append(u'ski de fond')
+Modele.append(u'snow')
+Modele.append(u'snowboard')
+Modele.append(u'socio')
+Modele.append(u'sociol')
+Modele.append(u'sociologie')
+Modele.append(u'sout')
+Modele.append(u'soutenu')
+Modele.append(u'sport')
+Modele.append(u'sports de combat')
+Modele.append(u'squelette')
+Modele.append(u'stat')
+Modele.append(u'statistiques')
+Modele.append(u'stéréotomie')
+Modele.append(u'substances')
+Modele.append(u'superlatif de')
+Modele.append(u'supprimer-déf ?')
+Modele.append(u'surf')
+Modele.append(u'sylvi')
+Modele.append(u'sylviculture')
+Modele.append(u't')
+Modele.append(u'tauromachie')
+Modele.append(u'td')
+Modele.append(u'tech')
+Modele.append(u'technique')
+Modele.append(u'techno')
+Modele.append(u'technol')
+Modele.append(u'technologie')
+Modele.append(u'tennis de table')
+Modele.append(u'tennis')
+Modele.append(u'term')
+Modele.append(u'terme')
+Modele.append(u'text')
+Modele.append(u'text')
+Modele.append(u'textile')
+Modele.append(u'thermodynamique')
+Modele.append(u'théol')
+Modele.append(u'théologie')
+Modele.append(u'théorie des graphes')
+Modele.append(u'théât')
+Modele.append(u'théâtre')
+Modele.append(u'tind')
+Modele.append(u'topo')
+Modele.append(u'topographie')
+Modele.append(u'topologie')
+Modele.append(u'topon')
+Modele.append(u'toponymie')
+Modele.append(u'tour')
+Modele.append(u'tourisme')
+Modele.append(u'tr-dir')
+Modele.append(u'tr-indir')
+Modele.append(u'trans')
+Modele.append(u'transit')
+Modele.append(u'transitif')
+Modele.append(u'transp')
+Modele.append(u'transport')
+Modele.append(u'travail')
+Modele.append(u'très familier')
+Modele.append(u'très rare')
+Modele.append(u'très très rare')
+Modele.append(u'très-rare')
+Modele.append(u'type')
+Modele.append(u'typo')
+Modele.append(u'typographie')
+Modele.append(u'télé')
+Modele.append(u'télécom')
+Modele.append(u'télécommunications')
+Modele.append(u'télévision')
+Modele.append(u'un os')
+Modele.append(u'unités')
+Modele.append(u'urban')
+Modele.append(u'urbanisme')
+Modele.append(u'usage critiqué')
+Modele.append(u'usinage')
+Modele.append(u'usines')
+Modele.append(u'ustensiles')
+Modele.append(u'vaudou')
+Modele.append(u'vents')
+Modele.append(u'viandes')
+Modele.append(u'vieilli')
+Modele.append(u'vieux')
+Modele.append(u'vins')
+Modele.append(u'virologie')
+Modele.append(u'viticulture')
+Modele.append(u'vitrerie')
+Modele.append(u'vocat')
+Modele.append(u'vocatif')
+Modele.append(u'voitures')
+Modele.append(u'volcanologie')
+Modele.append(u'volley')
+Modele.append(u'volley-ball')
+Modele.append(u'vulg')
+Modele.append(u'vulgaire')
+Modele.append(u'vx')
+Modele.append(u'vx')
+Modele.append(u'véhicules')
+Modele.append(u'vétérinaire')
+Modele.append(u'vête')
+Modele.append(u'vêtements')
+Modele.append(u'wiki')
+Modele.append(u'yoga')
+Modele.append(u'zool')
+Modele.append(u'zoologie')
+Modele.append(u'échecs')
+Modele.append(u'écol')
+Modele.append(u'écologie')
+Modele.append(u'écon')
+Modele.append(u'économie')
+Modele.append(u'édifices')
+Modele.append(u'édition')
+Modele.append(u'éduc')
+Modele.append(u'éducation')
+Modele.append(u'élatif')
+Modele.append(u'élec')
+Modele.append(u'électoraux')
+Modele.append(u'électricité')
+Modele.append(u'électro')
+Modele.append(u'électron')
+Modele.append(u'électronique')
+Modele.append(u'électrot')
+Modele.append(u'électrotech')
+Modele.append(u'électrotechnique')
+Modele.append(u'élevage')
+Modele.append(u'éléments')
+Modele.append(u'épithète')
+Modele.append(u'équi')
+Modele.append(u'équitation')
+limit4 = len(Modele)
+# Code langue quoi qu'il arrive
+Modele.append(u'ébauche-syn')
+Modele.append(u'note-gentilé')
+Modele.append(u'ébauche-trans')
+Modele.append(u'ébauche-étym-nom-scientifique')
+Modele.append(u'ébauche-étym')
+Modele.append(u'ébauche-déf')
+Modele.append(u'ébauche-exe')
+Modele.append(u'ébauche-pron')
+Modele.append(u'ébauche')
 # Modèles régionaux, pb du nocat pour les prononciations
-limit5 = 886
-Modele[886] = u'Salvador'
-Modele[887] = u'Suède'
-Modele[888] = u'Suisse'
-Modele[889] = u'Sénégal'
-Modele[890] = u'Taïwan'
-Modele[891] = u'Tchad'
-Modele[892] = u'Transnistrie'
-Modele[893] = u'Tunisie'
-Modele[894] = u'Uruguay'
-Modele[895] = u'Valence'
-Modele[896] = u'Var'
-Modele[897] = u'Velay'
-Modele[898] = u'Venezuela'
-Modele[899] = u'Viêt Nam'
+limit5 = len(Modele)
+
+Modele.append(u'Acadie')
+Modele.append(u'Afrique du Sud')
+Modele.append(u'Afrique')
+Modele.append(u'Algérie')
+Modele.append(u'Allemagne')
+Modele.append(u'Alsace')
+Modele.append(u'Amérique centrale')
+Modele.append(u'Amérique du Nord')
+Modele.append(u'Amérique du Sud')
+Modele.append(u'Amérique latine')
+Modele.append(u'Anjou')
+Modele.append(u'Antilles')
+Modele.append(u'Aquitaine')
+Modele.append(u'Argentine')
+Modele.append(u'Australie')
+Modele.append(u'Autriche')
+Modele.append(u'Auvergne')
+Modele.append(u'Baléares')
+Modele.append(u'Belgique')
+Modele.append(u'Berry')
+Modele.append(u'Bolivie')
+Modele.append(u'Bordelais')
+Modele.append(u'Bourgogne')
+Modele.append(u'Bretagne')
+Modele.append(u'Brésil')
+Modele.append(u'Burkina Faso')
+Modele.append(u'Bénin')
+Modele.append(u'Cameroun')
+Modele.append(u'Canada')
+Modele.append(u'Catalogne')
+Modele.append(u'Champagne')
+Modele.append(u'Chili')
+Modele.append(u'Chine')
+Modele.append(u'Colombie')
+Modele.append(u'Commonwealth')
+Modele.append(u'Congo')
+Modele.append(u'Congo-Brazzaville')
+Modele.append(u'Congo-Kinshasa')
+Modele.append(u'Corse')
+Modele.append(u'Corée du Nord')
+Modele.append(u'Corée du Sud')
+Modele.append(u'Costa Rica')
+Modele.append(u'Cuba')
+Modele.append(u'Côte d’Ivoire')
+Modele.append(u'Espagne')
+Modele.append(u'Europe')
+Modele.append(u'France')
+Modele.append(u'Franche-Comté')
+Modele.append(u'Gascogne')
+Modele.append(u'Gaspésie')
+Modele.append(u'Guadeloupe')
+Modele.append(u'Guinée')
+Modele.append(u'Guyane')
+Modele.append(u'Haïti')
+Modele.append(u'Honduras')
+Modele.append(u'Inde')
+Modele.append(u'Irlande')
+Modele.append(u'Jamaïque')
+Modele.append(u'Japon')
+Modele.append(u'Languedoc-Roussillon')
+Modele.append(u'Le Mans')
+Modele.append(u'Liban')
+Modele.append(u'Liechtenstein')
+Modele.append(u'Limousin')
+Modele.append(u'Louisiane')
+Modele.append(u'Luxembourg')
+Modele.append(u'Lyonnais')
+Modele.append(u'Madagascar')
+Modele.append(u'Maghreb')
+Modele.append(u'Mali')
+Modele.append(u'Maroc')
+Modele.append(u'Marseille')
+Modele.append(u'Maurice')
+Modele.append(u'Mayotte')
+Modele.append(u'Mexique')
+Modele.append(u'Midi toulousain')
+Modele.append(u'Midi')
+Modele.append(u'Moldavie')
+Modele.append(u'Nantes')
+Modele.append(u'Navarre')
+Modele.append(u'Niger')
+Modele.append(u'Nigéria')
+Modele.append(u'Normandie')
+Modele.append(u'Nouvelle-Calédonie')
+Modele.append(u'Nouvelle-Zélande')
+Modele.append(u'Occitanie')
+Modele.append(u'Océanie')
+Modele.append(u'Orient')
+Modele.append(u'Paraguay')
+Modele.append(u'Paris')
+Modele.append(u'Pays basque')
+Modele.append(u'Pays-Bas')
+Modele.append(u'Picardie')
+Modele.append(u'Poitou')
+Modele.append(u'Polynésie française')
+Modele.append(u'Portugal')
+Modele.append(u'Provence')
+Modele.append(u'Pérou')
+Modele.append(u'Quercy')
+Modele.append(u'Québec')
+Modele.append(u'Roumanie')
+Modele.append(u'Royaume-Uni')
+Modele.append(u'Réunion')
+Modele.append(u'Salvador')
+Modele.append(u'Savoie')
+Modele.append(u'Suisse')
+Modele.append(u'Suède')
+Modele.append(u'Sénégal')
+Modele.append(u'Taïwan')
+Modele.append(u'Tchad')
+Modele.append(u'Transnistrie')
+Modele.append(u'Tunisie')
+Modele.append(u'Uruguay')
+Modele.append(u'Valence')
+Modele.append(u'Var')
+Modele.append(u'Velay')
+Modele.append(u'Venezuela')
+Modele.append(u'Viêt Nam')
+Modele.append(u'Écosse')
+Modele.append(u'États-Unis')
+Modele.append(u'Île-de-France')
 # Abréviations (python pagegenerators.py -redirectonly:Template:!)
-Modele[900] = u'EU'
-Modele[901] = u'FR'
-Modele[902] = u'BE'
-Modele[903] = u'CH'
-Modele[904] = u'QC'
-Modele[905] = u'CA'
-Modele[906] = u'US'
-Modele[907] = u'USA'
-Modele[908] = u'UK'
-Modele[909] = u'GB'
-Modele[910] = u'AU'
-Modele[911] = u'NZ'
-Modele[912] = u'IE'
-
-Modele[913] = u'Europe'
-Modele[914] = u'France'
-Modele[915] = u'Franche-Comté'
-Modele[916] = u'Gascogne'
-Modele[917] = u'Gaspésie'
-Modele[918] = u'Guinée'
-Modele[919] = u'Guyane'
-Modele[920] = u'Haïti'
-Modele[921] = u'Honduras'
-Modele[922] = u'Île-de-France'
-Modele[923] = u'Inde'
-Modele[924] = u'Irlande'
-Modele[925] = u'Jamaïque'
-Modele[926] = u'Languedoc-Roussillon'
-Modele[927] = u'Le Mans'
-Modele[928] = u'Liban'
-Modele[929] = u'Liechtenstein'
-Modele[930] = u'Limousin'
-Modele[931] = u'Louisiane'
-Modele[932] = u'Lyonnais'
-Modele[933] = u'Madagascar'
-Modele[934] = u'Maghreb'
-Modele[935] = u'Mali'
-Modele[936] = u'Maroc'
-Modele[937] = u'Marseille'
-Modele[938] = u'Savoie'
-Modele[939] = u'Maurice'
-Modele[940] = u'Mayotte'
-Modele[941] = u'Mexique'
-Modele[942] = u'Midi'
-Modele[943] = u'Midi toulousain'
-Modele[944] = u'Moldavie'
-Modele[945] = u'Nantes'
-
-Modele[946] = u'Afrique'
-Modele[947] = u'Afrique du Sud'
-Modele[948] = u'Algérie'
-Modele[949] = u'Allemagne'
-Modele[950] = u'Alsace'
-Modele[951] = u'Amérique centrale'
-Modele[952] = u'Amérique du Nord'
-Modele[953] = u'Amérique du Sud'
-Modele[954] = u'Amérique latine'
-Modele[955] = u'Anjou'
-Modele[956] = u'Antilles'
-Modele[957] = u'Aquitaine'
-Modele[958] = u'Japon'
-Modele[959] = u'Argentine'
-Modele[960] = u'Australie'
-Modele[961] = u'Autriche'
-Modele[962] = u'Auvergne'
-Modele[963] = u'Baléares'
-Modele[964] = u'Orient'
-Modele[965] = u'Belgique'
-Modele[966] = u'Luxembourg'
-Modele[967] = u'Bénin'
-Modele[968] = u'Berry'
-Modele[969] = u'Bolivie'
-Modele[970] = u'Bordelais'
-Modele[971] = u'Bourgogne'
-Modele[972] = u'Brésil'
-Modele[973] = u'Bretagne'
-Modele[974] = u'Burkina Faso'
-Modele[975] = u'Cameroun'
-Modele[976] = u'Canada'
-Modele[977] = u'Catalogne'
-Modele[978] = u'Champagne'
-Modele[979] = u'Chili'
-Modele[980] = u'Chine'
-Modele[981] = u'Colombie'
-Modele[982] = u'Commonwealth'
-Modele[983] = u'Congo'
-Modele[984] = u'Congo-Brazzaville'
-Modele[985] = u'Congo-Kinshasa'
-Modele[986] = u'Corse'
-Modele[987] = u'Corée du Nord'
-Modele[988] = u'Corée du Sud'
-Modele[989] = u'Costa Rica'
-Modele[990] = u'Côte d’Ivoire'
-Modele[991] = u'Cuba'
-Modele[992] = u'Écosse'
-Modele[993] = u'Espagne'
-Modele[994] = u'États-Unis'
-Modele[995] = u'Guadeloupe'
-
-Modele[996] = u'Acadie'
-
-Modele[997] = u'Navarre'
-Modele[998] = u'Niger'
-Modele[999] = u'Nigéria'
-Modele[1000] = u'Normandie'
-Modele[1001] = u'Nouvelle-Calédonie'
-Modele[1002] = u'Nouvelle-Zélande'
-Modele[1003] = u'Occitanie'
-Modele[1004] = u'Océanie'
-Modele[1005] = u'Paraguay'
-Modele[1006] = u'Paris'
-Modele[1007] = u'Pays-Bas'
-Modele[1008] = u'Pays basque'
-Modele[1009] = u'Picardie'
-Modele[1010] = u'Poitou'
-Modele[1011] = u'Polynésie française'
-Modele[1012] = u'Portugal'
-Modele[1013] = u'Provence'
-Modele[1014] = u'Pérou'
-Modele[1015] = u'Québec'
-Modele[1016] = u'Quercy'
-Modele[1017] = u'Réunion'
-Modele[1018] = u'Roumanie'
-Modele[1019] = u'Royaume-Uni'
-
+Modele.append(u'EU')
+Modele.append(u'FR')
+Modele.append(u'BE')
+Modele.append(u'CH')
+Modele.append(u'QC')
+Modele.append(u'CA')
+Modele.append(u'US')
+Modele.append(u'USA')
+Modele.append(u'UK')
+Modele.append(u'GB')
+Modele.append(u'AU')
+Modele.append(u'NZ')
+Modele.append(u'IE')
 # Modèles de pronociation à synchroniser
-Modele[1020] = u'fr-verbe-flexion'
-#Modele[] = u'fr-rég'
-#Modele[] = u'fr-inv'
-#Modele[] = u'fr-accord-rég'
-#Modele[] = u'en-nom-rég'
+Modele.append(u'fr-verbe-flexion')
+limit6 = len(Modele) # Somme des modèles traités
+'''
+# Non traités
+arbres : 3 paramètres
+
+Modele[] = u'fr-rég'
+Modele[] = u'fr-inv'
+Modele[] = u'fr-accord-rég'
+Modele[] = u'en-nom-rég'
+
+	# Sans code langue
+		Modele[] = u'spécialement'
+		Modele[] = u'région'
+		Modele[] = u'régio'
+		Modele[] = u'régional'
+		
+	# Utilisés sur la ligne de forme (parfois sans parenthèses)
+		Modele[] = u'déterminé'
+		Modele[] = u'indéterminé'
+		Modele[] = u'dét'
+		Modele[] = u'indét'
+		Modele[] = u'perfectif'
+		Modele[] = u'imperfectif'
+		Modele[] = u'perf'
+		Modele[] = u'imperf'
+		
+Modele[] = u'T' : à synchroniser
+'''
 
 # Modification du wiki
 def modification(PageHS):
@@ -1352,6 +1351,8 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|drv}}', u'{{S|dérivés}}')
 		PageTemp = PageTemp.replace(u'{{S|drv-int}}', u'{{S|dérivés autres langues}}')
 		PageTemp = PageTemp.replace(u'{{S|etym}}', u'{{S|étymologie}}')
+		PageTemp = PageTemp.replace(u'{{S|étym}}', u'{{S|étymologie}}')
+		PageTemp = PageTemp.replace(u'{{S|etymologie}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|exp}}', u'{{S|expressions}}')
 		PageTemp = PageTemp.replace(u'{{S|gent}}', u'{{S|gentilés}}')
 		PageTemp = PageTemp.replace(u'{{S|holo}}', u'{{S|holonymes}}')
@@ -1576,6 +1577,10 @@ def modification(PageHS):
 			if debogageLent: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 			
 			baratin = u'{{clé de tri|}}<!-- supprimer si le mot ne contient pas de caractères accentués ni de caractères typographiques (par ex. trait d’union ou apostrophe) ; sinon suivez les instructions à [[Modèle:clé de tri]] -->'
+			if PageTemp.find(baratin) != -1:
+				PageTemp = PageTemp[0:PageTemp.find(baratin)] + PageTemp[PageTemp.find(baratin)+len(baratin):len(PageTemp)]
+				summary = summary + u', {{clé de tri|}} supprimée'
+			baratin = u'{{clé de tri|}}<!-- Veuillez mettre juste après « {{clé de tri| » le titre de la page en y enlevant tous les accents et éventuels apostrophes, et en changeant les éventuels traits d’union et autres caractères spéciaux par une espace ; s’il n’y a rien à changer, merci d’effacer ces lignes. -->'
 			if PageTemp.find(baratin) != -1:
 				PageTemp = PageTemp[0:PageTemp.find(baratin)] + PageTemp[PageTemp.find(baratin)+len(baratin):len(PageTemp)]
 				summary = summary + u', {{clé de tri|}} supprimée'
@@ -2216,31 +2221,31 @@ def modification(PageHS):
 		if debogage: print u'Remplacement des anciens codes langue'
 		while PageTemp.find(u'=prv=') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'=prv=')] + u'langue|oc' + PageTemp[PageTemp.find(u'=prv=')+len(u'=prv='):len(PageTemp)]
-		AncienModele = range(1, 13)
-		NouveauModele = range(1, 13)
-		AncienModele[1] = u'ko-hanja'
-		NouveauModele[1] = u'ko-Hani'
-		AncienModele[2] = u'be-x-old'
-		NouveauModele[2] = u'be-tarask'
-		AncienModele[3] = u'zh-min-nan'
-		NouveauModele[3] = u'nan'
-		AncienModele[4] = u'lsf'
-		NouveauModele[4] = u'fsl'
-		AncienModele[5] = u'arg'
-		NouveauModele[5] = u'an'
-		AncienModele[6] = u'nav'
-		NouveauModele[6] = u'nv'
-		AncienModele[7] = u'prv'
-		NouveauModele[7] = u'oc'
-		AncienModele[8] = u'nds-NL'
-		NouveauModele[8] = u'nds-nl'	
-		AncienModele[9] = u'gsw-FR'
-		NouveauModele[9] = u'gsw-fr'
-		AncienModele[10] = u'zh-sc'
-		NouveauModele[10] = u'zh-Hans'
-		AncienModele[11] = u'roa-rup'
-		NouveauModele[11] = u'rup'
-		for p in range(1,12):
+		AncienModele = []
+		NouveauModele = []
+		AncienModele.append(u'ko-hanja')
+		NouveauModele.append(u'ko-Hani')
+		AncienModele.append(u'be-x-old')
+		NouveauModele.append(u'be-tarask')
+		AncienModele.append(u'zh-min-nan')
+		NouveauModele.append(u'nan')
+		AncienModele.append(u'lsf')
+		NouveauModele.append(u'fsl')
+		AncienModele.append(u'arg')
+		NouveauModele.append(u'an')
+		AncienModele.append(u'nav')
+		NouveauModele.append(u'nv')
+		AncienModele.append(u'prv')
+		NouveauModele.append(u'oc')
+		AncienModele.append(u'nds-NL')
+		NouveauModele.append(u'nds-nl')
+		AncienModele.append(u'gsw-FR')
+		NouveauModele.append(u'gsw-fr')
+		AncienModele.append(u'zh-sc')
+		NouveauModele.append(u'zh-Hans')
+		AncienModele.append(u'roa-rup')
+		NouveauModele.append(u'rup')
+		for p in range(1,len(AncienModele)):
 			while PageTemp.find(u'|' + AncienModele[p] + u'|') != -1:
 				PageTemp = PageTemp[0:PageTemp.find(u'|' + AncienModele[p] + u'|')+1] + NouveauModele[p] + PageTemp[PageTemp.find(u'|' + AncienModele[p] + u'|')+len(u'|' + AncienModele[p] + u'|')-1:len(PageTemp)]
 			while PageTemp.find(u'|' + AncienModele[p] + u'}') != -1:
