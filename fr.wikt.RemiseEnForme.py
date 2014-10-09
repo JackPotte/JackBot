@@ -1361,6 +1361,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|hyper}}', u'{{S|hyperonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|hypo}}', u'{{S|hyponymes}}')
 		PageTemp = PageTemp.replace(u'{{S|méro}}', u'{{S|méronymes}}')
+		PageTemp = PageTemp.replace(u'{{S|paro}}', u'{{S|paronymes}}')
 		PageTemp = PageTemp.replace(u'{{S|pron}}', u'{{S|prononciation}}')
 		PageTemp = PageTemp.replace(u'{{S|prononciations}}', u'{{S|prononciation}}')
 		PageTemp = PageTemp.replace(u'{{S|q-syn}}', u'{{S|quasi-synonymes}}')
@@ -4344,7 +4345,12 @@ def modification(PageHS):
 							TitreSection = trim(TitreSection[:TitreSection.find(u'}')])
 
 						if debogage: print TitreSection.encode(config.console_encoding, 'replace')
-						if Section.index(TitreSection) < limit1:
+						try:
+							Index = Section.index(TitreSection)
+						except ValueError:
+							print u'Section introuvable : ' + TitreSection
+							return
+						if Index < limit1:
 							# Paragraphe définition
 							EstCodeLangue = "true"
 							trad = u'false'
@@ -5035,5 +5041,5 @@ TraitementTout = crawlerAll(u'')
 	
 python delete.py -lang:fr -family:wiktionary -file:articles_WTin.txt
 python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -noredirect -pairs
-python interwiki.py -lang:fr -family:wiktionary -wiktionary -new:60
+python interwiki.py -lang:fr -family:wiktionary -wiktionary -page:Wiktionnaire:Accueil communautaire
 '''
