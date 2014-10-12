@@ -583,6 +583,7 @@ Modele.append(u'football')
 Modele.append(u'footing')
 Modele.append(u'formel')
 Modele.append(u'fortification')
+Modele.append(u'fromages')
 Modele.append(u'fruits')
 Modele.append(u'gall')
 Modele.append(u'gallicisme')
@@ -848,6 +849,7 @@ Modele.append(u'planche à neige')
 Modele.append(u'planche à roulettes')
 Modele.append(u'plante')
 Modele.append(u'plantes')
+Modele.append(u'plongée')
 Modele.append(u'plurale tantum')
 Modele.append(u'poet')
 Modele.append(u'points cardinaux')
@@ -5041,5 +5043,5 @@ TraitementTout = crawlerAll(u'')
 	
 python delete.py -lang:fr -family:wiktionary -file:articles_WTin.txt
 python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -noredirect -pairs
-python interwiki.py -lang:fr -family:wiktionary -wiktionary -page:Wiktionnaire:Accueil communautaire
+python interwiki.py -lang:fr -family:wiktionary -page:"Wiktionnaire:Accueil communautaire"
 '''
