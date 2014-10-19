@@ -30,7 +30,7 @@ site = getSite(language,family)
 siteEN = getSite('en',family)
 debogage = False
 debogageLent = False
-TailleAnagramme = 5 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
+TailleAnagramme = 4 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 Modele = [] # Liste des modèles du site à traiter
 Section = [] # Sections à remplacer
 # Paragraphes sans modèle catégorisant ({{voir| et {{voir/ sont gérés individuellement)
@@ -550,6 +550,7 @@ Modele.append(u'enfantin')
 Modele.append(u'entom')
 Modele.append(u'entomol')
 Modele.append(u'entomologie')
+Modele.append(u'enzymes')
 Modele.append(u'escalade')
 Modele.append(u'escrime')
 Modele.append(u'ethnologie')
@@ -923,6 +924,7 @@ Modele.append(u'réseau')
 Modele.append(u'réseaux informatiques')
 Modele.append(u'réseaux')
 Modele.append(u'saccusatif')
+Modele.append(u'satellites')
 Modele.append(u'sci-fi')
 Modele.append(u'sciences')
 Modele.append(u'scol')
@@ -949,6 +951,7 @@ Modele.append(u'sociologie')
 Modele.append(u'sout')
 Modele.append(u'soutenu')
 Modele.append(u'sport')
+Modele.append(u'sports')
 Modele.append(u'sports de combat')
 Modele.append(u'squelette')
 Modele.append(u'stat')
@@ -1308,6 +1311,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier}}}}', u'{{trad-trier}}\n{{trad-début}}')
 		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier|fr}}}}', u'{{trad-trier}}\n{{trad-début}}')
 		PageTemp = PageTemp.replace(u'-pronom-personnel-', u'-pronom-pers-')
+		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad}}\n\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n\n')
 		
 		if debogage: print u'Conversion vers {{S}}'
 		EgalSection = u'==='
@@ -1732,7 +1736,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{nl}}', u'néerlandais')
 		PageTemp = PageTemp.replace(u'{{pt}}', u'portugais')
 		PageTemp = PageTemp.replace(u'{{it}}', u'italien')
-
+		
 		while PageTemp.find(u'[[Annexe:Couleurs en français]]') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'[[Annexe:Couleurs en français]]')] + u'{{Thésaurus|fr|couleur}}' + PageTemp[PageTemp.find(u'[[Annexe:Couleurs en français]]')+len(u'[[Annexe:Couleurs en français]]'):len(PageTemp)]
 		while PageTemp.find(u'{{Annexe|Couleurs en français}}') != -1:

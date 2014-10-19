@@ -33,6 +33,7 @@ def modification(PageHS):
 	if page.namespace() != ns and PageHS.find(u'Utilisateur:JackBot/test') == -1 and PageHS.find(u'Modèle:Cite pmid/') == -1:
 		return
 	else:
+		print 'ok'
 		try:
 			PageBegin = page.get()
 		except wikipedia.NoPage:
@@ -304,6 +305,8 @@ def sauvegarde(PageCourante, Contenu, summary):
 if len(sys.argv) > 1:
 	if sys.argv[1] == u'txt':
 		TraitementFile = crawlerFile(input)
+	elif sys.argv[1] == u'm':
+		TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
