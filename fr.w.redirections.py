@@ -1,13 +1,5 @@
 ﻿#!/usr/bin/env python
-# Ce script :
-# 	Ajoute les {{DEFAULTSORT:}} dans les articles (attente de consensus pour les évaluations)
-# 	Retire les espaces dans {{FORMATNUM:}} qui empêche de les trier dans les tableaux
-# 	Ajoute des liens vers les projets frères dans les pages d'homonymie, multilatéralement
-#	Vérifie les hyperliens
-# A terme peut-être :
-# 	Mettra à jour les liens vers les projets frères existants (fusions avec Sisterlinks...)
-# 	Mettra à jour les évaluations à partir du bandeau ébauche
-# 	Corrigera les fautes d'orthographes courantes, signalées dans http://fr.wikipedia.org/wiki/Wikip%C3%A9dia:AutoWikiBrowser/Typos (semi-auto)
+# Ce script crée des redirections vers les articles avec apostrophes
 
 # Importation des modules
 import os, catlib, pagegenerators, re

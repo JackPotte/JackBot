@@ -487,6 +487,7 @@ Modele.append(u'combat')
 Modele.append(u'comm')
 Modele.append(u'commerce')
 Modele.append(u'comparatif de')
+Modele.append(u'composants')
 Modele.append(u'confiserie')
 Modele.append(u'confiseries')
 Modele.append(u'conjugaison')
@@ -508,6 +509,7 @@ Modele.append(u'course à pied')
 Modele.append(u'cout')
 Modele.append(u'couture')
 Modele.append(u'cricket')
+Modele.append(u'crimes')
 Modele.append(u'cuis')
 Modele.append(u'cuisine')
 Modele.append(u'cycl')
@@ -785,6 +787,7 @@ Modele.append(u'navig')
 Modele.append(u'navigation')
 Modele.append(u'neuro')
 Modele.append(u'neurologie')
+Modele.append(u'noblesse')
 Modele.append(u'nom')
 Modele.append(u'nomin')
 Modele.append(u'nominatif')
@@ -952,7 +955,10 @@ Modele.append(u'sout')
 Modele.append(u'soutenu')
 Modele.append(u'sport')
 Modele.append(u'sports')
+Modele.append(u'sport de combat')
 Modele.append(u'sports de combat')
+Modele.append(u'sport de glisse')
+Modele.append(u'sports de glisse')
 Modele.append(u'squelette')
 Modele.append(u'stat')
 Modele.append(u'statistiques')
@@ -1312,6 +1318,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier|fr}}}}', u'{{trad-trier}}\n{{trad-début}}')
 		PageTemp = PageTemp.replace(u'-pronom-personnel-', u'-pronom-pers-')
 		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad}}\n\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n\n')
+		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad|fr}}\n\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n\n')
 		
 		if debogage: print u'Conversion vers {{S}}'
 		EgalSection = u'==='
@@ -5003,6 +5010,8 @@ if len(sys.argv) > 1:
 		TraitementFichier = crawlerFile(u'articles_WTin.txt')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'gmina')
+	elif sys.argv[1] == u'lien':
+		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
