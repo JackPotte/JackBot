@@ -1647,18 +1647,24 @@ def modification(PageHS):
 		PageTemp = re.sub(ur'{{(formatnum|Formatnum|FORMATNUM)\:([0-9]*) ', ur'{{\1:\2', PageTemp)
 		PageTemp = re.sub(ur'{{terme*\|Registre neutre}} *', ur'', PageTemp)
 		# Ligne de forme
-		while PageTemp.find(u'[[' + PageHS + u']]') != -1:
-			PageTemp = PageTemp[:PageTemp.find(u'[[' + PageHS + u']]')] + u'\'\'\'' + PageHS + u'\'\'\'' + PageTemp[PageTemp.find(u'[[' + PageHS + u']]')+len(u'[[' + PageHS + u']]'):]
-		while PageTemp.find(u'{{fr-rég}}\'\'\'') != -1:
-			PageTemp = PageTemp[:PageTemp.find(u'{{fr-rég}}\'\'\'')+len(u'{{fr-rég}}')] + u'\n' + PageTemp[PageTemp.find(u'{{fr-rég}}\'\'\'')+len(u'{{fr-rég}}'):]
-		while PageTemp.find(u'{{es-rég}}\'\'\'') != -1:
-			PageTemp = PageTemp[:PageTemp.find(u'{{es-rég}}\'\'\'')+len(u'{{es-rég}}')] + u'\n' + PageTemp[PageTemp.find(u'{{es-rég}}\'\'\'')+len(u'{{es-rég}}'):]
-		while PageTemp.find(u'{{pt-rég}}\'\'\'') != -1:
-			PageTemp = PageTemp[:PageTemp.find(u'{{pt-rég}}\'\'\'')+len(u'{{pt-rég}}')] + u'\n' + PageTemp[PageTemp.find(u'{{pt-rég}}\'\'\'')+len(u'{{pt-rég}}'):]
+		PageTemp = PageTemp.replace(u'[[' + PageHS + u']]', u'\'\'\'' + PageHS + u'\'\'\'')
+		PageTemp = PageTemp.replace(u'-rég}}\'\'\'', u'-rég}}\n\'\'\'')
 		PageTemp = PageTemp.replace(u']] {{imperf}}', u']] {{imperf|nocat=1}}')
 		PageTemp = PageTemp.replace(u']] {{perf}}', u']] {{perf|nocat=1}}')
 		PageTemp = PageTemp.replace(u'{{perf}} / \'\'\'', u'{{perf|nocat=1}} / \'\'\'')
-		
+		regex = ur'({{fr\-[^}]*\|[\'’]+=[^}]*)\|[\'’]+=[oui|1]'
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'\1', PageTemp)
+		regex = ur'({{fr\-[^}]*\|s=[^}]*)\|s=[^}\|]*'
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'\1', PageTemp)
+		regex = ur'({{fr\-[^}]*\|ms=[^}]*)\|ms=[^}\|]*'
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'\1', PageTemp)
+		regex = ur'({{fr\-[^}]*\|fs=[^}]*)\|fs=[^}\|]*'
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'\1', PageTemp)
+
 		PageTemp = re.sub(ur'([^d\-]+\-\|[a-z]+\}\}\n)\# *', ur"\1'''" + PageHS + ur"''' {{pron}}\n# ", PageTemp)
 		if PageTemp.find(u'{{Latn') == -1 and PageTemp.find(u'{{Grek') == -1 and PageTemp.find(u'{{Cyrl') == -1 and PageTemp.find(u'{{Armn') == -1 and PageTemp.find(u'{{Geor') == -1 and PageTemp.find(u'{{Hebr') == -1 and PageTemp.find(u'{{Arab') == -1 and PageTemp.find(u'{{Syrc') == -1 and PageTemp.find(u'{{Thaa') == -1 and PageTemp.find(u'{{Deva') == -1 and PageTemp.find(u'{{Hang') == -1 and PageTemp.find(u'{{Hira') == -1 and PageTemp.find(u'{{Kana') == -1 and PageTemp.find(u'{{Hrkt') == -1 and PageTemp.find(u'{{Hani') == -1 and PageTemp.find(u'{{Jpan') == -1 and PageTemp.find(u'{{Hans') == -1 and PageTemp.find(u'{{Hant') == -1 and PageTemp.find(u'{{zh-mot') == -1 and PageTemp.find(u'{{kohan') == -1 and PageTemp.find(u'{{ko-nom') == -1 and PageTemp.find(u'{{la-verb') == -1 and PageTemp.find(u'{{grc-verb') == -1 and PageTemp.find(u'{{polytonique') == -1 and PageTemp.find(u'FAchar') == -1:
 			if debogage: print u'Ajout du mot vedette'
@@ -4200,7 +4206,7 @@ def modification(PageHS):
 							# http://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:fr-verbe-flexion&action=edit
 							if Page2.find(u'{{impers') != -1 and Infinitif != u'être':
 								PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|impers=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
-							elif Page2.find(u'|groupe=1') != -1 or Page2.find(u'|grp=1') != -1:
+							elif (Page2.find(u'|groupe=1') != -1 or Page2.find(u'|grp=1') != -1) and Page2.find(u'|groupe2=') == -1:
 								# je
 								if PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.3s=oui') != -1 and PageTemp2.find(u'sub.p.1s=oui') != -1 and PageTemp2.find(u'sub.p.3s=oui') != -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
 									break
@@ -4263,7 +4269,7 @@ def modification(PageHS):
 								if PageTemp2.find(u'ind.p.3p=oui') == -1 and PageTemp2.find(u'sub.p.3p=oui') != -1:
 									PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.3p=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
 							# Certains -ir sont du 3ème
-							elif Page2.find(u'{{impers') == -1 and (Page2.find(u'|groupe=2') != -1 or Page2.find(u'|grp=2') != -1):
+							elif Page2.find(u'{{impers') == -1 and (Page2.find(u'|groupe=2') != -1 or Page2.find(u'|grp=2') != -1) and Page2.find(u'|groupe2=') == -1:
 								# je
 								if PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.2s=oui') != -1 and PageTemp2.find(u'ind.ps.1s=oui') != -1 and PageTemp2.find(u'ind.ps.2s=oui') != -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
 									break
@@ -4343,7 +4349,7 @@ def modification(PageHS):
 									PageTemp = PageTemp[0:PageTemp.find(u'ind.p.3p=oui')+len(u'ind.p.3p=oui')] + u'|sub.p.3p=oui' + PageTemp[PageTemp.find(u'ind.p.3p=oui')+len(u'ind.p.3p=oui'):len(PageTemp)]
 								if PageTemp2.find(u'ind.p.3p=oui') == -1 and PageTemp2.find(u'sub.p.3p=oui') != -1:
 									PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.3p=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
-							elif Page2.find(u'|groupe=3') != -1 or Page2.find(u'|grp=3') != -1:
+							elif (Page2.find(u'|groupe=3') != -1 or Page2.find(u'|grp=3') != -1) and Page2.find(u'|groupe2=') == -1:
 								if PageTemp2.find(u'grp=3') == -1:
 									PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|grp=3' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
 						
@@ -5009,7 +5015,7 @@ if len(sys.argv) > 1:
 	if sys.argv[1] == u'txt':
 		TraitementFichier = crawlerFile(u'articles_WTin.txt')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'gmina')
+		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
 	else:
