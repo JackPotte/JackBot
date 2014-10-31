@@ -4047,6 +4047,8 @@ def modification(PageHS):
 						# http://fr.wiktionary.org/wiki/Mod%C3%A8le:code_interwiki
 						elif PageTemp2[0:PageTemp2.find(u'|')] == u'cmn':
 							PageTemp = PageTemp[0:PageTemp.find(u'cmn')] + u'zh' + PageTemp[PageTemp.find(u'cmn')+len(u'cmn'):len(PageTemp)]
+						elif PageTemp2[0:PageTemp2.find(u'|')] == u'nn':
+							PageTemp = PageTemp[0:PageTemp.find(u'nn')] + u'no' + PageTemp[PageTemp.find(u'nn')+len(u'nn'):len(PageTemp)]
 						elif PageTemp2[0:PageTemp2.find(u'|')] == u'zh-classical':
 							PageTemp = PageTemp[0:PageTemp.find(u'zh-classical')] + u'lzh' + PageTemp[PageTemp.find(u'zh-classical')+len(u'zh-classical'):len(PageTemp)]
 						elif PageTemp2[0:PageTemp2.find(u'|')] == u'ko-Hani':

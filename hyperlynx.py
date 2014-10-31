@@ -80,7 +80,7 @@ ModeleEN[16] = u'lire en ligne'
 ModeleFR[16] = u'lire en ligne'
 ModeleEN[17] = u'dts'
 ModeleFR[17] = u'dts'
-# Désactivé à la demande d'un contributeur sur WP
+# Désactivé à la demande d'un contributeur sur WP : https://fr.wikipedia.org/wiki/Discussion_utilisateur:JackPotte/Archives2013#Traduction_de_cite_book_vers_ouvrage
 #ModeleEN[18] = u'cite book'
 #ModeleFR[18] = u'ouvrage'
 

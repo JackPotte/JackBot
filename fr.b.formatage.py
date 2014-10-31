@@ -43,29 +43,17 @@ def modification(PageHS):
 	# Traitement des hyperliens
 	PageTemp = hyperlynx.hyperlynx(PageTemp)
 	
-	# Clés de tri pour les noms
+	# Clés de tri pour les noms propres
 	if PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') != -1:
-		PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')]
-		PageTemp = PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'):PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie')] + PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}'):len(PageTemp)]
-	if PageTemp.find(u'{{DEFAULTSORT:') == -1:
-		ClePage = CleDeTri.CleDeTri(PageHS)
-		if ClePage != u'' and ClePage != None:
-			if PageHS.rfind(u' ') != -1:
-				Nom = PageHS[PageHS.rfind(u' ')+1:len(PageHS)]
-				PageHS2 = PageHS[PageHS.find(u'/')+1:len(PageHS)]
-				PageHS2 = PageHS2[PageHS2.find(u'/')+1:len(PageHS2)]
-				Prenom = PageHS2[PageHS2.find(u'/')+1:len(PageHS2)]
-				Prenom = Prenom[Prenom.find(u'/')+1:len(Prenom)]
-				Prenom = Prenom[0:Prenom.find(u' ')]
-				print PageHS2
-				print Nom
-				print Prenom
-				if Nom[0:1] == PageHS2[0:1]:
-					PageEnd = PageEnd + u'{{DEFAULTSORT:' + CleDeTri.CleDeTri(Nom) + u', ' + CleDeTri.CleDeTri(Prenom) + u'}}\n\n'
-				else:
-					print PageHS.encode(config.console_encoding, 'replace')
-			else:
-				print PageHS.encode(config.console_encoding, 'replace')
+		PageEnd = PageEnd + PageTemp[:PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')]
+		PageTemp = PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'):PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie')] + PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}'):]
+	
+	regex = ur'()\n{{DEFAULTSORT[^}]*}}'
+	if re.search(regex, PageTemp):
+		PageTemp = re.sub(regex, ur'\1', PageTemp)
+	regex = ur'()\n{{defaultsort[^}]*}}'
+	if re.search(regex, PageTemp):
+		PageTemp = re.sub(regex, ur'\1', PageTemp)
 	PageEnd = PageEnd + PageTemp
 	if PageEnd != PageBegin: sauvegarde(page,PageEnd,summary)
 
@@ -237,12 +225,11 @@ def sauvegarde(PageCourante, Contenu, summary):
 			return
 			
 # Lancement
-TraitementLiens = crawlerLink(u'Modèle:cite book',u'')
+TraitementFile = crawlerFile('articles_WLin.txt')
 '''
 TraitementLiens = crawlerLink(u'Modèle:Portail',u'')
 TraitementLiens = crawlerLink(u'Modèle:Palette',u'')
 TraitementCategory = crawlerCat(u'Catégorie:Personnalités de la photographie')
-TraitementFile = crawlerFile('articles_list.txt')
 while 1:
 	TraitementRC = crawlerRC()
 '''
