@@ -1,6 +1,7 @@
 # -*- coding: utf-8  -*-
+"""Communication layer."""
 #
-# (C) Pywikipedia bot team, 2012
+# (C) Pywikibot team, 2007-2008
 #
 # Distributed under the terms of the MIT license.
 #

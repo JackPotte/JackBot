@@ -5015,7 +5015,7 @@ def sauvegarde(PageCourante, Contenu, summary):
 # Lancement
 if len(sys.argv) > 1:
 	if sys.argv[1] == u'txt':
-		TraitementFichier = crawlerFile(u'articles_WTin.txt')
+		TraitementFichier = crawlerFile(u'articles_WTin2.txt')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
 	elif sys.argv[1] == u'lien':
