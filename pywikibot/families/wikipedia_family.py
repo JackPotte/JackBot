@@ -3,7 +3,7 @@
 
 from pywikibot import family
 
-__version__ = '$Id: dc01e913d14783b59f462fab351a19f253309924 $'
+__version__ = '$Id: d2731fac0b596de14a4722f3c559aaac0c8b4a29 $'
 
 
 # The Wikimedia family that is known as Wikipedia, the Free Encyclopedia

@@ -11,7 +11,7 @@
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id: 350bdf75139313ac7785870c2c0574c51f1be571 $'
+__version__ = '$Id: c983d014bad620b38b6cd81f048145b9d6cbe554 $'
 #
 
 import re
