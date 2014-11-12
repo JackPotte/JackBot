@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 import family
 
-__version__ = '$Id: 4d25b430fece23e11c8c9d25daf13f84397f8719 $'
+__version__ = '$Id: bd75452024381b99b506d2721977657e04aff83d $'
 
 
 # The Wikimedia family that is known as Wikipedia, the Free Encyclopedia

@@ -225,9 +225,19 @@ def sauvegarde(PageCourante, Contenu, summary):
 			return
 			
 # Lancement
-TraitementFile = crawlerFile('articles_WLin.txt')
+if len(sys.argv) > 1:
+	if sys.argv[1] == u'txt':
+		TraitementFichier = crawlerFile(u'articles_WLin.txt')
+	elif sys.argv[1] == u'cat':
+		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
+	elif sys.argv[1] == u'lien':
+		TraitementLiens = crawlerLink(u'Modèle:cite books',u'')
+	else:
+		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
+else:
+	TraitementLiens = crawlerLink(u'Modèle:cite web',u'')
+
 '''
-TraitementLiens = crawlerLink(u'Modèle:Portail',u'')
 TraitementLiens = crawlerLink(u'Modèle:Palette',u'')
 TraitementCategory = crawlerCat(u'Catégorie:Personnalités de la photographie')
 while 1:

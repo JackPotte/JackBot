@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__version__ = '$Id: 90888e7d8739a6a31e2287c96e2faf2dd221d218 $'
+__version__ = '$Id: 0f401775e909e9107a79d19a56335f05d4ab5672 $'
 
 # The new wikivoyage family that is hosted at wikimedia
 

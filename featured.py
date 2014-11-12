@@ -38,7 +38,7 @@ This script understands various command-line arguments:
 usage: featured.py [-interactive] [-nocache] [-top] [-after:zzzz] [-fromlang:xx,yy--zz|-fromall]
 
 """
-__version__ = '$Id: 1f0dc5ed377700ac2040117d57daafd21aa25cdc $'
+__version__ = '$Id: 094703efa7891db3c56a0ba291259d5cb57feeb4 $'
 
 #
 # (C) Maxim Razin, 2005

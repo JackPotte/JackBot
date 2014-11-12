@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 import family
 
-__version__ = '$Id: 4de1265a4323e32d3fae069b6909a16fe0e9455e $'
+__version__ = '$Id: 0b1397a67f3398f0fa2fcb0b4977d289bec9c93b $'
 
 # The Wikimedia family that is known as Wikisource
 
