@@ -752,8 +752,8 @@ def handle_args(args=None, do_help=True):
         # have to - some git versions (like 1.7.0.4) seem to treat lines
         # containing just `$Id:` as if they were ident lines (see
         # gitattributes(5)) leading to unwanted behaviour like automatic
-        # replacement with `$Id: 3eff6fa2d6cda086862b1399bcebbd3815d9ef27 $`
-        # or `$Id: 3eff6fa2d6cda086862b1399bcebbd3815d9ef27 $`.
+        # replacement with `$Id: 56deed22045ccea4fde525e4aca06f38827a9283 $`
+        # or `$Id: 56deed22045ccea4fde525e4aca06f38827a9283 $`.
         m = re.search(r"\$Id"
                       r": (\w+) \$", pywikibot.__version__)
         if m:

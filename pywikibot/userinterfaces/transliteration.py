@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 """Module to transliterate text."""
-__version__ = '$Id: df4809191e8e4786722845cee29b4efdf6b14a64 $'
+__version__ = '$Id: 4c0eb59021e4f73b96e9c76ea46fe2e8b4888c0b $'
 
 
 class transliterator(object):

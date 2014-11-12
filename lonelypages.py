@@ -44,7 +44,7 @@ python lonelypages.py -enable:User:Bot/CheckBot -always
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id: cb53a89ba4f1ea82f6db935d9270cbc46508f3a1 $'
+__version__ = '$Id: 13fe8c0154de2c347bd417e1623cfbcb7da3915d $'
 #
 
 import wikipedia as pywikibot

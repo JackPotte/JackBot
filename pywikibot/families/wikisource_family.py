@@ -2,7 +2,7 @@
 """Family module for Wikisource."""
 from pywikibot import family
 
-__version__ = '$Id: 0405329190d796409233ddfc6df570a76bcc1d87 $'
+__version__ = '$Id: 84ab39f01dadfcf58da3c5654b15c0c0d704ea6a $'
 
 
 # The Wikimedia family that is known as Wikisource
