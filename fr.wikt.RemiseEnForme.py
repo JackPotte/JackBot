@@ -4060,6 +4060,8 @@ def modification(PageHS):
 							PageTemp = PageTemp[0:PageTemp.find(u'nn')] + u'no' + PageTemp[PageTemp.find(u'nn')+len(u'nn'):len(PageTemp)]
 						elif PageTemp2[0:PageTemp2.find(u'|')] == u'per':
 							PageTemp = PageTemp[0:PageTemp.find(u'per')] + u'fa' + PageTemp[PageTemp.find(u'per')+len(u'per'):len(PageTemp)]
+						elif PageTemp2[0:PageTemp2.find(u'|')] == u'wel':
+							PageTemp = PageTemp[0:PageTemp.find(u'wel')] + u'cy' + PageTemp[PageTemp.find(u'wel')+len(u'wel'):len(PageTemp)]
 						elif PageTemp2[0:PageTemp2.find(u'|')] == u'zh-classical':
 							PageTemp = PageTemp[0:PageTemp.find(u'zh-classical')] + u'lzh' + PageTemp[PageTemp.find(u'zh-classical')+len(u'zh-classical'):len(PageTemp)]
 						elif PageTemp2[0:PageTemp2.find(u'|')] == u'ko-Hani':
