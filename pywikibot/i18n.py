@@ -1,70 +1,59 @@
 # -*- coding: utf-8  -*-
-"""
-Various i18n functions.
-
-Helper functions for both the internal translation system
-and for TranslateWiki-based translations.
+""" Various i18n functions, both for the internal translation system
+    and for TranslateWiki-based translations
 """
 #
-# (C) Pywikibot team, 2004-2014
+# (C) Pywikipedia bot team, 2004-2013
 #
 # Distributed under the terms of the MIT license.
 #
 __version__ = '$Id$'
-#
 
-import sys
 import re
+import sys
 import locale
-from pywikibot import Error
-from .plural import plural_rules
-import pywikibot
-from . import config2 as config
-
-if sys.version_info[0] > 2:
-    basestring = (str, )
+from pywikibot.exceptions import Error
+import wikipedia as pywikibot
+import config
 
 PLURAL_PATTERN = '{{PLURAL:(?:%\()?([^\)]*?)(?:\)d)?\|(.*?)}}'
-
-# Package name for the translation messages
-messages_package_name = 'scripts.i18n'
 
 
 def _altlang(code):
     """Define fallback languages for particular languages.
 
+    @param code The language code
+    @type code string
+    @return a list of strings as language codes
+    
     If no translation is available to a specified language, translate() will
     try each of the specified fallback languages, in order, until it finds
     one with a translation, with 'en' and '_default' as a last resort.
 
     For example, if for language 'xx', you want the preference of languages
-    to be: xx > fr > ru > en, you let this method return ['fr', 'ru'].
+    to be: xx > fr > ru > en, you let altlang return ['fr', 'ru'].
 
     This code is used by other translating methods below.
 
-    @param code: The language code
-    @type code: string
-    @return: language codes
-    @rtype: list of str
     """
-    # Akan
+    #Akan
     if code in ['ak', 'tw']:
         return ['ak', 'tw']
-    # Amharic
+    #Amharic
     if code in ['aa', 'ti']:
         return ['am']
-    # Arab
-    if code in ['arc', 'arz', 'so']:
+    #Arab
+    if code in ['arc', 'arz', 'fa', 'so']:
         return ['ar']
     if code == 'kab':
         return ['ar', 'fr']
-    # Bulgarian
+    #Bulgarian
     if code in ['cu', 'mk']:
         return ['bg', 'sr', 'sh']
-    # Czech
+    #Czech
     if code in ['cs', 'sk']:
         return ['cs', 'sk']
-    # German
+    #German
     if code in ['bar', 'frr', 'ksh', 'pdc', 'pfl']:
         return ['de']
     if code == 'lb':
@@ -81,13 +70,13 @@ def _altlang(code):
         return ['de', 'it']
     if code == 'stq':
         return ['nds', 'de']
-    # Greek
+    #Greek
     if code in ['grc', 'pnt']:
         return ['el']
-    # Esperanto
+    #Esperanto
     if code in ['io', 'nov']:
         return ['eo']
-    # Spanish
+    #Spanish
     if code in ['an', 'arn', 'ast', 'ay', 'ca', 'ext', 'lad', 'nah', 'nv', 'qu',
                 'yua']:
         return ['es']
@@ -97,22 +86,22 @@ def _altlang(code):
         return ['es', 'fr']
     if code == 'cbk-zam':
         return ['es', 'tl']
-    # Estonian
+    #Estonian
     if code == 'fiu-vro':
         return ['et']
     if code == 'liv':
         return ['et', 'lv']
-    # Persian (Farsi)
+    #Persian (Farsi)
     if code == 'ps':
         return ['fa']
     if code in ['glk', 'mzn']:
         return ['glk', 'mzn', 'fa', 'ar']
-    # Finnish
+    #Finnish
     if code == 'vep':
         return ['fi', 'ru']
     if code == 'fit':
         return ['fi', 'sv']
-    # French
+    #French
     if code in ['bm', 'br', 'ht', 'kg', 'ln', 'mg', 'nrm', 'pcd',
                 'rw', 'sg', 'ty', 'wa']:
         return ['fr']
@@ -120,46 +109,46 @@ def _altlang(code):
         return ['fr', 'ca', 'es']
     if code in ['co', 'frp']:
         return ['fr', 'it']
-    # Hindi
+    #Hindi
     if code in ['sa']:
         return ['hi']
     if code in ['ne', 'new']:
         return ['ne', 'new', 'hi']
-    # Indonesian and Malay
+    #Indonesian and Malay
     if code in ['ace', 'bug', 'bjn', 'id', 'jv', 'ms', 'su']:
         return ['id', 'ms', 'jv']
     if code == 'map-bms':
         return ['jv', 'id', 'ms']
-    # Inuit languages
+    #Inuit languages
     if code in ['ik', 'iu']:
         return ['iu', 'kl']
     if code == 'kl':
         return ['da', 'iu', 'no']
-    # Italian
+    #Italian
     if code in ['eml', 'fur', 'lij', 'lmo', 'nap', 'pms', 'roa-tara', 'sc',
                 'scn', 'vec']:
         return ['it']
-    # Lithuanian
+    #Lithuanian
     if code in ['bat-smg']:
         return ['lt']
-    # Latvian
+    #Latvian
     if code == 'ltg':
         return ['lv']
-    # Dutch
+    #Dutch
     if code in ['af', 'fy', 'li', 'pap', 'srn', 'vls', 'zea']:
         return ['nl']
     if code == ['nds-nl']:
         return ['nds', 'nl']
-    # Polish
+    #Polish
     if code in ['csb', 'szl']:
         return ['pl']
-    # Portuguese
+    #Portuguese
     if code in ['fab', 'mwl', 'tet']:
         return ['pt']
-    # Romanian
+    #Romanian
     if code in ['mo', 'roa-rup']:
         return ['ro']
-    # Russian and Belarusian
+    #Russian and Belarusian
     if code in ['ab', 'av', 'ba', 'bxr', 'ce', 'cv', 'inh', 'kk', 'koi', 'krc',
                 'kv', 'ky', 'lbe', 'lez', 'mdf', 'mhr', 'mn', 'mrj', 'myv',
                 'os', 'sah', 'tg', 'udm', 'uk', 'xal']:
@@ -172,32 +161,32 @@ def _altlang(code):
         return ['be', 'be-x-old', 'ru']
     if code == 'kaa':
         return ['uz', 'ru']
-    # Serbocroatian
+    #Serbocroatian
     if code in ['bs', 'hr', 'sh']:
         return ['sh', 'hr', 'bs', 'sr', 'sr-el']
     if code == 'sr':
         return ['sr-el', 'sh', 'hr', 'bs']
-    # Tagalog
+    #Tagalog
     if code in ['bcl', 'ceb', 'ilo', 'pag', 'pam', 'war']:
         return ['tl']
-    # Turkish and Kurdish
+    #Turkish and Kurdish
     if code in ['diq', 'ku']:
         return ['ku', 'ku-latn', 'tr']
     if code == 'gag':
         return ['tr']
     if code == 'ckb':
-        return ['ku']
-    # Ukrainian
+        return ['ku', 'fa']
+    #Ukrainian
     if code in ['crh', 'rue']:
         return ['uk', 'ru']
-    # Chinese
+    #Chinese
     if code in ['minnan', 'zh', 'zh-classical', 'zh-min-nan', 'zh-tw',
                 'zh-hans', 'zh-hant']:
         return ['zh', 'zh-tw', 'zh-cn', 'zh-classical']
     if code in ['cdo', 'gan', 'hak', 'ii', 'wuu', 'za', 'zh-cdo',
                 'zh-classical', 'zh-cn', 'zh-yue']:
         return ['zh', 'zh-cn', 'zh-tw', 'zh-classical']
-    # Scandinavian languages
+    #Scandinavian languages
     if code in ['da', 'sv']:
         return ['da', 'no', 'nb', 'sv', 'nn']
     if code in ['fo', 'is']:
@@ -208,7 +197,7 @@ def _altlang(code):
         return ['no', 'nb', 'da', 'nn', 'sv']
     if code == 'se':
         return ['sv', 'no', 'nb', 'nn', 'fi']
-    # Other languages
+    #Other languages
     if code in ['bi', 'tpi']:
         return ['bi', 'tpi']
     if code == 'yi':
@@ -225,62 +214,33 @@ def _altlang(code):
         return ['meu', 'hmo']
     if code == ['as']:
         return ['bn']
-    # Default value
+    #Default value
     return []
 
 
 class TranslationError(Error):
-
-    """Raised when no correct translation could be found."""
-
+    """ Raised when no correct translation could be found """
     pass
 
 
-def _extract_plural(code, message, parameters):
-    """Check for the plural variants in message and replace them.
-
-    @param message: the message to be replaced
-    @type message: unicode string
-    @param parameters: plural parameters passed from other methods
-    @type parameters: int, basestring, tuple, list, dict
-
-    """
-    plural_items = re.findall(PLURAL_PATTERN, message)
-    if plural_items:  # we found PLURAL patterns, process it
-        if len(plural_items) > 1 and isinstance(parameters, (tuple, list)) and \
-           len(plural_items) != len(parameters):
-            raise ValueError("Length of parameter does not match PLURAL "
-                             "occurences.")
-        i = 0
-        for selector, variants in plural_items:
-            if isinstance(parameters, dict):
-                num = int(parameters[selector])
-            elif isinstance(parameters, basestring):
-                num = int(parameters)
-            elif isinstance(parameters, (tuple, list)):
-                num = int(parameters[i])
-                i += 1
-            else:
-                num = parameters
-            # TODO: check against plural_rules[code]['nplurals']
-            try:
-                index = plural_rules[code]['plural'](num)
-            except KeyError:
-                index = plural_rules['_default']['plural'](num)
-            except TypeError:
-                # we got an int, not a function
-                index = plural_rules[code]['plural']
-            repl = variants.split('|')[index]
-            message = re.sub(PLURAL_PATTERN, repl, message, count=1)
-    return message
-
-
-def translate(code, xdict, parameters=None, fallback=False):
+def translate(code, xdict, parameters=None, fallback=True):
     """Return the most appropriate translation from a translation dict.
+
+    @param code The language code
+    @type code string or Site object
+    @param xdict dictionary with language codes as keys or extended dictionary
+                 with family names as keys containing language dictionaries or
+                 a single (unicode) string. May contain PLURAL tags as described
+                 in twntranslate
+    @type xdict dict, string, unicode
+    @param parameters For passing (plural) parameters
+    @type parameters dict, string, unicode, int
+    @param fallback Try an alternate language code
+    @type fallback boolean
 
     Given a language code and a dictionary, returns the dictionary's value for
     key 'code' if this key exists; otherwise tries to return a value for an
-    alternative language that is most applicable to use on the wiki in
+    alternative language that is most applicable to use on the Wikipedia in
     language 'code' except fallback is False.
 
     The language itself is always checked first, then languages that
@@ -290,27 +250,19 @@ def translate(code, xdict, parameters=None, fallback=False):
 
     For PLURAL support have a look at the twntranslate method
 
-    @param code: The language code
-    @type code: string or Site object
-    @param xdict: dictionary with language codes as keys or extended dictionary
-                  with family names as keys containing language dictionaries or
-                  a single (unicode) string. May contain PLURAL tags as
-                  described in twntranslate
-    @type xdict: dict, string, unicode
-    @param parameters: For passing (plural) parameters
-    @type parameters: dict, string, unicode, int
-    @param fallback: Try an alternate language code
-    @type fallback: boolean
-
     """
-    family = pywikibot.config.family
+    param = None
+    if type(parameters) == dict:
+        param = parameters
+
+    family = pywikibot.default_family
     # If a site is given instead of a code, use its language
-    if hasattr(code, 'code'):
+    if hasattr(code, 'lang'):
         family = code.family.name
-        code = code.code
+        code = code.lang
 
     # Check whether xdict has multiple projects
-    if isinstance(xdict, dict):
+    if type(xdict) == dict:
         if family in xdict:
             xdict = xdict[family]
         elif 'wikipedia' in xdict:
@@ -318,7 +270,7 @@ def translate(code, xdict, parameters=None, fallback=False):
 
     # Get the translated string
     trans = None
-    if not isinstance(xdict, dict):
+    if type(xdict) != dict:
         trans = xdict
     elif code in xdict:
         trans = xdict[code]
@@ -329,44 +281,66 @@ def translate(code, xdict, parameters=None, fallback=False):
                 code = alt
                 break
         else:
-            trans = list(xdict.values())[0]
-            code = list(xdict.keys())[0]
-    if trans is None:
+            trans = xdict.values()[0]
+            code = xdict.keys()[0]
+    if not trans:
         return  # return None if we have no translation found
     if parameters is None:
         return trans
 
     # else we check for PLURAL variants
-    trans = _extract_plural(code, trans, parameters)
-    if parameters:
+    try:
+        selector, variants = re.search(PLURAL_PATTERN, trans).groups()
+    except AttributeError:
+        pass
+    else:  # we found PLURAL patterns, process it
+        # no python 2.5 support anymore but we won't break old code
+        # therefore we import plural_rules here
+        from plural import plural_rules
+        if type(parameters) == dict:
+            num = param[selector]
+        elif isinstance(parameters, basestring):
+            num = int(parameters)
+        else:
+            num = parameters
+        # TODO: check against plural_rules[lang]['nplurals']
         try:
-            return trans % parameters
-        except (KeyError, TypeError):
+            index = plural_rules[code]['plural'](num)
+        except KeyError:
+            index = plural_rules['_default']['plural'](num)
+        except TypeError:
+            # we got an int, not a function
+            index = plural_rules[code]['plural']
+        trans = re.sub(PLURAL_PATTERN, variants.split('|')[index], trans)
+    if param:
+        try:
+            return trans % param
+        except KeyError:
             # parameter is for PLURAL variants only, don't change the string
             pass
     return trans
 
 
 def twtranslate(code, twtitle, parameters=None):
-    """
-    Translate a message.
+    """ Uses TranslateWiki files to provide translations based on the TW title
+        twtitle, which corresponds to a page on TW.
 
-    The translations are retrieved from i18n.<package>, based on the callers
-    import table.
+        @param code The language code
+        @param twtitle The TranslateWiki string title, in <package>-<key> format
+        @param parameters For passing parameters.
 
-    @param code: The language code
-    @param twtitle: The TranslateWiki string title, in <package>-<key> format
-    @param parameters: For passing parameters.
+        The translations are retrieved from i18n.<package>, based on the callers
+        import table.
     """
     package = twtitle.split("-")[0]
-    transdict = getattr(__import__(messages_package_name, fromlist=[package]), package).msg
+    transdict = getattr(__import__("i18n", {}, {}, [package]), package).msg
 
     code_needed = False
     # If a site is given instead of a code, use its language
-    if hasattr(code, 'code'):
-        lang = code.code
+    if hasattr(code, 'lang'):
+        lang = code.lang
     # check whether we need the language code back
-    elif isinstance(code, list):
+    elif type(code) == list:
         lang = code.pop()
         code_needed = True
     else:
@@ -389,7 +363,7 @@ def twtranslate(code, twtitle, parameters=None):
                 break
             except KeyError:
                 continue
-        if trans is None:
+        if not trans:
             raise TranslationError("No English translation has been defined "
                                    "for TranslateWiki key %r" % twtitle)
     # send the language code back via the given list
@@ -403,112 +377,140 @@ def twtranslate(code, twtitle, parameters=None):
 
 # Maybe this function should be merged with twtranslate
 def twntranslate(code, twtitle, parameters=None):
-    r"""Translate a message with plural support.
+    """ First implementation of plural support for translations based on the
+    TW title twtitle, which corresponds to a page on TW.
 
-    Support is implemented like in MediaWiki extension. If the TranslateWiki
-    message contains a plural tag inside which looks like::
+    @param code The language code
+    @param twtitle The TranslateWiki string title, in <package>-<key> format
+    @param parameters For passing (plural) parameters.
 
-        {{PLURAL:<number>|<variant1>|<variant2>[|<variantn>]}}
+    Support is implemented like in MediaWiki extension. If the tw message
+    contains a plural tag inside which looks like
+    {{PLURAL:<number>|<variant1>|<variant2>[|<variantn>]}}
+    it takes that variant calculated by the plural_func depending on the number
+    value.
 
-    it takes that variant calculated by the plural_rules depending on the number
-    value. Multiple plurals are allowed.
-
-    As an examples, if we had a test dictionary in test.py like::
-
-        msg = {
-            'en': {
-                # number value as format string is allowed
-                'test-plural': u'Bot: Changing %(num)s {{PLURAL:%(num)d|page|pages}}.',
-            },
-            'nl': {
-                # format string inside PLURAL tag is allowed
-                'test-plural': u'Bot: Pas {{PLURAL:num|1 pagina|%(num)d pagina\'s}} aan.',
-            },
-            'fr': {
-                # additional string inside or outside PLURAL tag is allowed
-                'test-plural': u'Robot: Changer %(descr)s {{PLURAL:num|une page|quelques pages}}.',
-            },
-        }
-
-    >>> from pywikibot import i18n
-    >>> i18n.messages_package_name = 'tests.i18n'
-    >>> # use a number
-    >>> str(i18n.twntranslate('en', 'test-plural', 0) % {'num': 'no'})
-    'Bot: Changing no pages.'
-    >>> # use a string
-    >>> str(i18n.twntranslate('en', 'test-plural', '1') % {'num': 'one'})
-    'Bot: Changing one page.'
-    >>> # use a dictionary
-    >>> str(i18n.twntranslate('en', 'test-plural', {'num':2}))
-    'Bot: Changing 2 pages.'
-    >>> # use additional format strings
-    >>> str(i18n.twntranslate('fr', 'test-plural', {'num': 1, 'descr': 'seulement'}))
-    'Robot: Changer seulement une page.'
-    >>> # use format strings also outside
-    >>> str(i18n.twntranslate('fr', 'test-plural', 10) % {'descr': 'seulement'})
-    'Robot: Changer seulement quelques pages.'
-    >>> i18n.messages_package_name = 'scripts.i18n'
+    Examples:
+    If we had a test dictionary in test.py like
+    msg = {
+        'de': {
+            'test-changing': u'Bot: Ändere %(num)d {{PLURAL:num|Seite|Seiten}}.',
+        },
+        'en': {
+            # number value as format sting is allowed
+            'test-changing': u'Bot: Changing %(num)s {{PLURAL:%(num)d|page|pages}}.',
+        },
+        'nl': {
+            # format sting inside PLURAL tag is allowed
+            'test-changing': u'Bot: Endrer {{PLURAL:num|1 pagina|%(num)d pagina\'s}}.',
+        },
+        'fr': {
+            # additional sting inside or outside PLURAL tag is allowed
+            'test-changing': u'Robot: Changer %(descr)s {{PLURAL:num|une page|un peu pages}}.',
+        },
+    }
+    #use a number
+    >>> i18n.twntranslate('en', 'test-changing', 0) % {'num': 'no'}
+    Bot: Changing no pages.
+    #use a string
+    >>> i18n.twntranslate('en', 'test-changing', '1') % {'num': 'one'}
+    Bot: Changing one page.
+    #use a dictionary
+    >>> i18n.twntranslate('en', 'test-changing', {'num':2})
+    Bot: Changing 2 pages.
+    #use additional format strings
+    >>> i18n.twntranslate('fr', 'test-changing', {'num':1, 'descr':'seulement'})
+    Bot: Changer seulement une pages.
+    #use format strings also outside
+    >>> i18n.twntranslate('fr', 'test-changing', 0) % {'descr':'seulement'}
+    Bot: Changer seulement un peu pages.
 
     The translations are retrieved from i18n.<package>, based on the callers
     import table.
 
-    @param code: The language code
-    @param twtitle: The TranslateWiki string title, in <package>-<key> format
-    @param parameters: For passing (plural) parameters.
-
     """
+    param = None
+    if type(parameters) == dict:
+        param = parameters
     # If a site is given instead of a code, use its language
-    if hasattr(code, 'code'):
-        code = code.code
+    if hasattr(code, 'lang'):
+        code = code.lang
     # we send the code via list and get the alternate code back
     code = [code]
-    trans = twtranslate(code, twtitle)
-    # get the alternate language code modified by twtranslate
-    lang = code.pop()
-    # check for PLURAL variants
-    trans = _extract_plural(lang, trans, parameters)
-    # we always have a dict for replacement of translatewiki messages
-    if parameters and isinstance(parameters, dict):
+    trans = twtranslate(code, twtitle, None)
+    try:
+        selector, variants = re.search(PLURAL_PATTERN, trans).groups()
+    # No PLURAL tag found: nothing to replace
+    except AttributeError:
+        pass
+    else:
+        if type(parameters) == dict:
+            num = param[selector]
+        elif isinstance(parameters, basestring):
+            num = int(parameters)
+        else:
+            num = parameters
+        # get the alternate language code modified by twtranslate
+        lang = code.pop()
+        # Compatibility check for old python releases which are unable
+        # to use plural.py - use _default rules for all
+        if sys.version_info < (2, 5):
+            plural_func = lambda n: (n != 1)
+            index = plural_rules(num)
+        else:
+            from plural import plural_rules
+            # we only need the lang or _default, not a _altlang code
+            # maybe we should implement this to i18n.translate()
+            # TODO: check against plural_rules[lang]['nplurals']
+            try:
+                index = plural_rules[lang]['plural'](num)
+            except KeyError:
+                index = plural_rules['_default']['plural'](num)
+            except TypeError:
+                # we got an int not a function
+                index = plural_rules[lang]['plural']
+        repl = variants.split('|')[index]
+        trans = re.sub(PLURAL_PATTERN, repl, trans)
+    if param:
         try:
-            return trans % parameters
+            return trans % param
         except KeyError:
-            # parameter is for PLURAL variants only, don't change the string
             pass
     return trans
 
 
 def twhas_key(code, twtitle):
-    """
-    Check if a message has a translation in the specified language code.
+    """ Uses TranslateWiki files to to check whether specified translation
+        based on the TW title is provided. No code fallback is made.
 
-    The translations are retrieved from i18n.<package>, based on the callers
-    import table.
+        @param code The language code
+        @param twtitle The TranslateWiki string title, in <package>-<key> format
 
-    No code fallback is made.
-
-    @param code: The language code
-    @param twtitle: The TranslateWiki string title, in <package>-<key> format
+        The translations are retrieved from i18n.<package>, based on the callers
+        import table.
     """
     package = twtitle.split("-")[0]
-    transdict = getattr(__import__("i18n", fromlist=[package]), package).msg
+    transdict = getattr(__import__("i18n", {}, {}, [package]), package).msg
     # If a site is given instead of a code, use its language
-    if hasattr(code, 'code'):
-        code = code.code
+    if hasattr(code, 'lang'):
+        code = code.lang
     return code in transdict and twtitle in transdict[code]
 
 
 def input(twtitle, parameters=None, password=False):
-    """
-    Ask the user a question, return the user's answer.
+    """ Ask the user a question, return the user's answer.
+        @param twtitle The TranslateWiki string title, in <package>-<key> format
+        @param parameters For passing parameters. In the future, this will
+                          be used for plural support.
+        @param password Hides the user's input (for password entry)
+        Returns a unicode string
 
-    The prompt message is retrieved via L{twtranslate} and either uses the
-    config variable 'userinterface_lang' or the default locale as the language
-    code.
+        The translations are retrieved from i18n.<package>, based on the callers
+        import table.
+        Translation code should be set by in the user_config.py like
+        userinterface_lang = 'de'
+        default is os locale setting
 
-    @param twtitle: The TranslateWiki string title, in <package>-<key> format
-    @param parameters: The values which will be applied to the translated text
-    @param password: Hides the user's input (for password entry)
-    @rtype: unicode string
     """
     code = config.userinterface_lang or \
            locale.getdefaultlocale()[0].split('_')[0]

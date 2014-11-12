@@ -544,21 +544,16 @@ def sauvegarde(PageCourante, Contenu, summary):
 			return
 			
 # Lancement
-if len(sys.argv) > 1:
-	if sys.argv[1] == u'txt':
-		TraitementFichier = crawlerFile(u'articles_WVin.txt')
-	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
-	elif sys.argv[1] == u'lien':
-		TraitementLiens = crawlerLink(u'Modèle:cite book',u'')
-	else:
-		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
-else:
-	TraitementCategory = crawlerCat(u'Modèle mal utilisé')
+TraitementFile = crawlerFile('articles_WVin.txt')
+#TraitementLiens = crawlerLink(u'Modèle:Clé de tri')
+#TraitementLiens = crawlerLink(u'Modèle:cite book')
 '''
-TraitementPage = modification(u'Utilisateur:JackBot/test')
+TraitementPage = modification(u'Initiation_à_l\'arithmétique/PGCD')
+TraitementFile = crawlerFile('articles_list.txt')
+TraitementCategory = crawlerCat(u'Modèle mal utilisé')
 TraitementLiens = crawlerLink(u'Modèle:Chapitre')
 TraitementLiens = crawlerLink(u'Modèle:CfExo')
+TraitementPage = modification(u'Utilisateur:JackBot/test')
 TraitementUtilisateur = crawlerUser(u'Utilisateur:JackBot')
 TraitementRecherche = crawlerSearch(u'chinois')
 while 1:

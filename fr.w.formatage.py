@@ -33,7 +33,7 @@ def modification(PageHS):
 	if page.namespace() != ns and PageHS.find(u'Utilisateur:JackBot/test') == -1 and PageHS.find(u'Modèle:Cite pmid/') == -1:
 		return
 	else:
-		#print 'ok'
+		print 'ok'
 		try:
 			PageBegin = page.get()
 		except wikipedia.NoPage:
@@ -307,8 +307,6 @@ if len(sys.argv) > 1:
 		TraitementFile = crawlerFile(input)
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
-	elif sys.argv[1] == u'test':
-		TraitementPage = modification(u'Utilisateur:JackBot/test')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
@@ -326,7 +324,7 @@ else:
 	TraitementLiens = crawlerLink(u'Modèle:Docu',u'')
 	TraitementLiens = crawlerLink(u'Modèle:Cita web',u'')
 	TraitementLiens = crawlerLink(u'Modèle:Cita noticia',u'')
-	#à faire : les cite pmid/* de Catégorie:Modèle de source
+	
 	#TraitementLiens = crawlerLink(u'Modèle:Cite book',u'')	# En stand by suite à réticences d'un tiers
 	#TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
 '''
