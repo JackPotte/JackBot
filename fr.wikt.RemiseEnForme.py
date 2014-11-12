@@ -808,6 +808,7 @@ Modele.append(u'optique')
 Modele.append(u'optométrie')
 Modele.append(u'ordin')
 Modele.append(u'ordinal')
+Modele.append(u'orfèvrerie')
 Modele.append(u'ornit')
 Modele.append(u'ornithologie')
 Modele.append(u'outils')
@@ -2104,7 +2105,11 @@ def modification(PageHS):
 				if len(langue1) > 3 and langue1.find(u'-') == -1:
 					langue = langue1
 				else:
-					langue = CleDeTri.CleDeTri(langues.langues[langue1].decode("utf8"))
+					try:
+						langue = CleDeTri.CleDeTri(langues.langues[langue1].decode("utf8"))
+					except KeyError:
+						print "KeyError l 2111"
+						break
 				langue2 = u'zzz'
 				if PageEnd.rfind(u'\n') == -1 or PageTemp.find(u'\n') == -1: break
 				TradCourante = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + PageTemp[0:PageTemp.find(u'\n')]
@@ -3642,6 +3647,10 @@ def modification(PageHS):
 	) != -1 and (PageTemp.find(u':Catégorie:Dicotylédones') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Dicotylédones') + 1 != PageTemp.rfind(u'Catégorie:Dicotylédones'))
 
+	) or (PageTemp.find(u'Catégorie:Cypéracées'
+	) != -1 and (PageTemp.find(u':Catégorie:Cypéracées') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Cypéracées') + 1 != PageTemp.rfind(u'Catégorie:Cypéracées'))
+	
 	) or (PageTemp.find(u'Catégorie:Fabacées'
 	) != -1 and (PageTemp.find(u':Catégorie:Fabacées') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Fabacées') + 1 != PageTemp.rfind(u'Catégorie:Fabacées'))):
@@ -4049,6 +4058,10 @@ def modification(PageHS):
 							PageTemp = PageTemp[0:PageTemp.find(u'cmn')] + u'zh' + PageTemp[PageTemp.find(u'cmn')+len(u'cmn'):len(PageTemp)]
 						elif PageTemp2[0:PageTemp2.find(u'|')] == u'nn':
 							PageTemp = PageTemp[0:PageTemp.find(u'nn')] + u'no' + PageTemp[PageTemp.find(u'nn')+len(u'nn'):len(PageTemp)]
+						elif PageTemp2[0:PageTemp2.find(u'|')] == u'per':
+							PageTemp = PageTemp[0:PageTemp.find(u'per')] + u'fa' + PageTemp[PageTemp.find(u'per')+len(u'per'):len(PageTemp)]
+						elif PageTemp2[0:PageTemp2.find(u'|')] == u'wel':
+							PageTemp = PageTemp[0:PageTemp.find(u'wel')] + u'cy' + PageTemp[PageTemp.find(u'wel')+len(u'wel'):len(PageTemp)]
 						elif PageTemp2[0:PageTemp2.find(u'|')] == u'zh-classical':
 							PageTemp = PageTemp[0:PageTemp.find(u'zh-classical')] + u'lzh' + PageTemp[PageTemp.find(u'zh-classical')+len(u'zh-classical'):len(PageTemp)]
 						elif PageTemp2[0:PageTemp2.find(u'|')] == u'ko-Hani':
@@ -5015,7 +5028,7 @@ def sauvegarde(PageCourante, Contenu, summary):
 # Lancement
 if len(sys.argv) > 1:
 	if sys.argv[1] == u'txt':
-		TraitementFichier = crawlerFile(u'articles_WTin.txt')
+		TraitementFichier = crawlerFile(u'articles_WTin2.txt')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
 	elif sys.argv[1] == u'lien':
@@ -5027,6 +5040,7 @@ else:
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Codes langue manquants',True,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Flexions à vérifier',True,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet',False,u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Ébauches à compléter',False,u'')
 	TraitementLiens = crawlerLink(u'Modèle:trad',u'')
 	TraitementLiens = crawlerLink(u'Modèle:1ergroupe',u'')
 	TraitementLiens = crawlerLink(u'Modèle:2egroupe',u'')
