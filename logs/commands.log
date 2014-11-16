@@ -4729,3 +4729,4 @@
 2014-11-15 23:53:26 r-1 (unknown) Python 2.7.2 fr.v.formatage.py "cat"
 2014-11-16 00:54:15 r-1 (unknown) Python 2.7.2 touch.py "-lang:fr" "-family:wikiversity" "-cat::Pages using duplicate arguments in template calls"
 2014-11-16 00:54:40 r-1 (unknown) Python 2.7.2 touch.py "-lang:fr" "-family:wikiversity" "-cat:Pages using duplicate arguments in template calls"
+2014-11-17 00:50:22 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py "m"

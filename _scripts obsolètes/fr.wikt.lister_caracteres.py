@@ -1,63 +1,44 @@
 ﻿#!/usr/bin/env python
 # coding: utf-8
-# Ce script formate les articles de Wikilivres
-
+# Liste les caractères d'une page
 # Importation des modules
-import catlib, pagegenerators, os, codecs, urllib, re, collections, socket
+import catlib, pagegenerators, os, codecs, urllib, re, collections, socket, langues
 import hyperlynx, CleDeTri, HTMLUnicode		# Faits maison
 from wikipedia import *
-mynick = "JackBot"
+
+# Déclaration
 language = "fr"
-family = "wikibooks"
+family = "wiktionary"
+mynick = "JackBot"
 site = getSite(language,family)
-debogage = False
-debogageLent = False
+debogage = True
 
 # Modification du wiki
 def modification(PageHS):
-	summary = u'Formatage'
+	if debogage: print u'------------------------------------'
+	print(PageHS.encode(config.console_encoding, 'replace'))
 	page = Page(site,PageHS)
-	if page.namespace() != 0: return
-	try:
-		PageBegin = page.get()
-	except wikipedia.NoPage:
-		print "NoPage"
+	if page.exists():
+		try:
+			PageBegin = page.get()
+		except wikipedia.NoPage:
+			print "NoPage l 25"
+			return
+		except wikipedia.LockedPage: 
+			print "Locked l 28"
+			return
+		except wikipedia.IsRedirectPage: 
+			print "IsRedirect l 31"
+			return
+	else:
+		print "NoPage l 34"
 		return
-	except wikipedia.IsRedirectPage:
-		print "Redirect page"
-		return
-	PageTemp = PageBegin
-	PageEnd = u''
+	cpt = 1
+	while len(PageBegin) > 0:
+		print str(cpt) + u' : ' + PageBegin[:1] + u' : ' + str(ord(PageBegin[:1]))
+		cpt += 1
+		PageBegin = PageBegin[1:]
 	
-	# Traitement des modèles
-	regex = ur'\{\{[P|p]ortail([^\}]*)\}\}'
-	if re.search(regex, PageTemp):
-		summary += ', retrait des portails'
-		PageTemp = re.sub(regex, ur'', PageTemp)
-	regex = ur'\{\{[P|p]alette([^\}]*)\}\}'
-	if re.search(regex, PageTemp):
-		summary += ', retrait des palettes'
-		PageTemp = re.sub(regex, ur'', PageTemp)
-	PageTemp = PageTemp.replace(u'{{PDC}}', u'profondeur de champ')
-	
-	# Traitement des hyperliens
-	PageTemp = hyperlynx.hyperlynx(PageTemp)
-	
-	# Clés de tri pour les noms propres
-	if PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') != -1:
-		PageEnd = PageEnd + PageTemp[:PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')]
-		PageTemp = PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'):PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie')] + PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}'):]
-	
-	regex = ur'()\n{{DEFAULTSORT[^}]*}}'
-	if re.search(regex, PageTemp):
-		PageTemp = re.sub(regex, ur'\1', PageTemp)
-	regex = ur'()\n{{defaultsort[^}]*}}'
-	if re.search(regex, PageTemp):
-		PageTemp = re.sub(regex, ur'\1', PageTemp)
-	PageEnd = PageEnd + PageTemp
-	if PageEnd != PageBegin: sauvegarde(page,PageEnd,summary)
-
-
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
 
@@ -88,7 +69,8 @@ def crawlerFile(source):
 				PageHS = PageHS[PageHS.find(u'[[')+2:len(PageHS)]
 			if PageHS.find(u']]') != -1:
 				PageHS = PageHS[0:PageHS.find(u']]')]
-			modification(PageHS)
+			# Conversion ASCII => Unicode (pour les .txt)
+			modification(HTMLUnicode.HTMLUnicode(PageHS))
 		PagesHS.close()
 
 # Traitement d'une catégorie
@@ -152,10 +134,13 @@ def crawlerRC():
 		modification(Page.title())
 
 # Traitement des modifications d'un compte
-def crawlerUser(username):
+def crawlerUser(username,jusqua):
+	compteur = 0
 	gen = pagegenerators.UserContributionsGenerator(username)
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		modification(Page.title())
+		compteur = compteur + 1
+		if compteur > jusqua: break
 
 # Toutes les redirections
 def crawlerRedirects():
@@ -188,7 +173,7 @@ def ArretDUrgence():
 
 def sauvegarde(PageCourante, Contenu, summary):
 	result = "ok"
-	if debogage == True:
+	if debogage:
 		if len(Contenu) < 6000:
 			print(Contenu.encode(config.console_encoding, 'replace'))
 		else:
@@ -225,23 +210,31 @@ def sauvegarde(PageCourante, Contenu, summary):
 			return
 			
 # Lancement
-if len(sys.argv) > 1:
-	if sys.argv[1] == u'test':
-		TraitementPage = modification(u'User:' + mynick + u'/test')
-	elif sys.argv[1] == u'txt':
-		TraitementFichier = crawlerFile(u'articles_' + family + u'.txt')
-	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
-	elif sys.argv[1] == u'lien':
-		TraitementLiens = crawlerLink(u'Modèle:cite books',u'')
-	else:
-		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
-else:
-	TraitementLiens = crawlerLink(u'Modèle:cite web',u'')
-
+TraitementPage = modification(u'installation nucléaire de base')
 '''
-TraitementLiens = crawlerLink(u'Modèle:Palette',u'')
-TraitementCategory = crawlerCat(u'Catégorie:Personnalités de la photographie')
+# Modèles
+TraitementPage = modification(u'Modèle:terme')
+TraitementLiens = crawlerLink(u'Modèle:terme',u'')
+TraitementFichier = crawlerFile(u'articles_WTin.txt')
+TraitementLiensCategorie = crawlerCatLink(u'Modèles de code langue',u'')
+TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects',True,u'')
+TraitementRecherche = crawlerSearch(u'"en terme de"')
+TraitementUtilisateur = crawlerUser(u'Utilisateur:JackBot', 800)
+TraitementRedirections = crawlerRedirects()
+TraitementTout = crawlerAll(u'')
 while 1:
 	TraitementRC = crawlerRC()
+	
+python delete.py -lang:fr -family:wiktionary -file:articles_WTin.txt
+python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -noredirect -pairs
+python interwiki.py -lang:fr -family:wiktionary -wiktionary -new:100000
 '''
+# à faire : remplacer == titre section == par S|titreSection
+# 			chercher {{trad-début|= (trad-trier)
+#           ajouter les {{pron|remplie|xx}} sur la ligne de définition des pluriels
+# refondre le tableau des modèles en xml avec les catégories nocat en colonne3
+# lister du dump les :en {{t-|fr|inexistants}} et vice-versa
+#trier les {{L| comme {{T|
+#revérifier les &# dans le dump
+# Traiter les modèles à deux paramètres : {{toponymes}}, {{localités}} et {{quartiers}}
+# remplacer {{tem|génie électronique / génétique...

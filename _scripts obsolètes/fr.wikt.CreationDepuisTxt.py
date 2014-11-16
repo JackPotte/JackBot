@@ -1,62 +1,48 @@
 ﻿#!/usr/bin/env python
 # coding: utf-8
-# Ce script formate les articles de Wikilivres
+# Crée des pages à partir d'un tableau
 
-# Importation des modules
-import catlib, pagegenerators, os, codecs, urllib, re, collections, socket
-import hyperlynx, CleDeTri, HTMLUnicode		# Faits maison
+# Importing modules
 from wikipedia import *
-mynick = "JackBot"
+import urllib, config, re, sys, codecs
+import CleDeTri, HTMLUnicode
+# Declaring all global values
 language = "fr"
-family = "wikibooks"
+family = "wiktionary"
+mynick = "JackBot"
 site = getSite(language,family)
+summary = u'[[Annexe:Noces en français]]'
 debogage = False
-debogageLent = False
-
+cpt = 0
 # Modification du wiki
 def modification(PageHS):
-	summary = u'Formatage'
+	global cpt
+	cpt += 1
+	print(PageHS.encode(config.console_encoding, 'replace'))
 	page = Page(site,PageHS)
-	if page.namespace() != 0: return
-	try:
-		PageBegin = page.get()
-	except wikipedia.NoPage:
-		print "NoPage"
+	if page.exists():
+		print "Page existante l 22"
 		return
-	except wikipedia.IsRedirectPage:
-		print "Redirect page"
-		return
-	PageTemp = PageBegin
-	PageEnd = u''
 	
-	# Traitement des modèles
-	regex = ur'\{\{[P|p]ortail([^\}]*)\}\}'
-	if re.search(regex, PageTemp):
-		summary += ', retrait des portails'
-		PageTemp = re.sub(regex, ur'', PageTemp)
-	regex = ur'\{\{[P|p]alette([^\}]*)\}\}'
-	if re.search(regex, PageTemp):
-		summary += ', retrait des palettes'
-		PageTemp = re.sub(regex, ur'', PageTemp)
-	PageTemp = PageTemp.replace(u'{{PDC}}', u'profondeur de champ')
+	CleTri = CleDeTri.CleDeTri(PageHS)
+	if CleTri != PageHS:
+		CleTri = u'{{clé de tri|' + CleTri + u'}}\n'
+	else:
+		CleTri = u''
+		
+	if PageHS.find(u'’') != -1:
+		Mot = PageHS[PageHS.rfind(u'’')+1:]
+	else:
+		Mot = PageHS[PageHS.rfind(u' ')+1:]
+		
+	PageEnd = u'\n=={{langue|fr}}==\n=== {{S|étymologie}} ===\n:{{cf|noce|' + Mot + u'}}.\n\n'	
+	PageEnd += u'=== {{S|nom|fr}} ===\n\'\'\'{{subst:PAGENAME}}\'\'\' {{fplur}}\n'
+	PageEnd += u'# Anniversaire pour les ' + str(cpt) + u' ans de [[mariage]].\n\n'
+	PageEnd += u'==== {{S|apparentés}} ====\n* {{annexe|Noces en français}}\n\n'
+	PageEnd += u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n\n' 
+	PageEnd += CleTri
+	sauvegarde(page, PageEnd, summary)
 	
-	# Traitement des hyperliens
-	PageTemp = hyperlynx.hyperlynx(PageTemp)
-	
-	# Clés de tri pour les noms propres
-	if PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') != -1:
-		PageEnd = PageEnd + PageTemp[:PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')]
-		PageTemp = PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'):PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie')] + PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}'):]
-	
-	regex = ur'()\n{{DEFAULTSORT[^}]*}}'
-	if re.search(regex, PageTemp):
-		PageTemp = re.sub(regex, ur'\1', PageTemp)
-	regex = ur'()\n{{defaultsort[^}]*}}'
-	if re.search(regex, PageTemp):
-		PageTemp = re.sub(regex, ur'\1', PageTemp)
-	PageEnd = PageEnd + PageTemp
-	if PageEnd != PageBegin: sauvegarde(page,PageEnd,summary)
-
 
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
@@ -72,6 +58,7 @@ def rec_anagram(counter):
                 for _ in rec_anagram(counter):
                     yield c + _
                 counter[c] += 1
+				
 def anagram(word):
     return rec_anagram(collections.Counter(word))
 	
@@ -88,16 +75,16 @@ def crawlerFile(source):
 				PageHS = PageHS[PageHS.find(u'[[')+2:len(PageHS)]
 			if PageHS.find(u']]') != -1:
 				PageHS = PageHS[0:PageHS.find(u']]')]
-			modification(PageHS)
+			# Conversion ASCII => Unicode (pour les .txt)
+			modification(HTMLUnicode.HTMLUnicode(PageHS))
 		PagesHS.close()
-
+		
 # Traitement d'une catégorie
 def crawlerCat(category,recursif,apres):
 	modifier = u'False'
 	cat = catlib.Category(site, category)
 	pages = cat.articlesList(False)
-	gen =  pagegenerators.NamespaceFilterPageGenerator(pages, [0])
-	for Page in pagegenerators.PreloadingGenerator(gen,100):
+	for Page in pagegenerators.PreloadingGenerator(pages,100):
 		if not apres or apres == u'' or modifier == u'True':
 			modification(Page.title()) #crawlerLink(Page.title())
 		elif Page.title() == apres:
@@ -115,7 +102,7 @@ def crawlerLink(pagename,apres):
 	#pagename = unicode(arg[len('-links:'):], 'utf-8')
 	page = wikipedia.Page(site, pagename)
 	gen = pagegenerators.ReferringPageGenerator(page)
-	gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])
+	#gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		#print(Page.title().encode(config.console_encoding, 'replace'))
 		if not apres or apres == u'' or modifier == u'True':
@@ -131,7 +118,7 @@ def crawlerCatLink(pagename,apres):
 	for Page in pagegenerators.PreloadingGenerator(pages,100):
 		page = wikipedia.Page(site, Page.title())
 		gen = pagegenerators.ReferringPageGenerator(page)
-		gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])
+		#gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
 		for PageLiee in pagegenerators.PreloadingGenerator(gen,100):
 			#print(Page.title().encode(config.console_encoding, 'replace'))
 			if not apres or apres == u'' or modifier == u'True':
@@ -141,7 +128,7 @@ def crawlerCatLink(pagename,apres):
 				
 # Traitement d'une recherche
 def crawlerSearch(pagename):
-	gen = pagegenerators.SearchPageGenerator(pagename, site = site, namespaces = "0")
+	gen = pagegenerators.SearchPageGenerator(pagename, namespaces = "0")
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		modification(Page.title())
 
@@ -225,23 +212,17 @@ def sauvegarde(PageCourante, Contenu, summary):
 			return
 			
 # Lancement
-if len(sys.argv) > 1:
-	if sys.argv[1] == u'test':
-		TraitementPage = modification(u'User:' + mynick + u'/test')
-	elif sys.argv[1] == u'txt':
-		TraitementFichier = crawlerFile(u'articles_' + family + u'.txt')
-	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
-	elif sys.argv[1] == u'lien':
-		TraitementLiens = crawlerLink(u'Modèle:cite books',u'')
-	else:
-		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
-else:
-	TraitementLiens = crawlerLink(u'Modèle:cite web',u'')
-
+TraitementFichier = crawlerFile(u'articles_WTin.txt')
 '''
-TraitementLiens = crawlerLink(u'Modèle:Palette',u'')
-TraitementCategory = crawlerCat(u'Catégorie:Personnalités de la photographie')
+# Modèles
+TraitementPage = modification(u'Utilisateur:JackBot/test')
+TraitementLiens = crawlerLink(u'Modèle:R:DAF8',u'homme')
+TraitementLiensCategorie = crawlerCatLink(u'Modèles de code langue',u'')
+TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects',True)
+TraitementRecherche = crawlerSearch(u'clé de tri')
+TraitementUtilisateur = crawlerUser(u'Utilisateur:JackBot')
+TraitementRedirections = crawlerRedirects()
+TraitementTout = crawlerAll(u'')
 while 1:
 	TraitementRC = crawlerRC()
 '''

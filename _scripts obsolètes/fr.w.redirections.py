@@ -1,16 +1,9 @@
 ﻿#!/usr/bin/env python
-# Ce script :
-# 	Vérifie tous les hyperliens, les marque comme {{lien brisé}} le cas échéant, et traduit leurs modèles en français
-# 	Retire les espaces dans {{FORMATNUM:}} qui empêche de les trier dans les tableaux
-# 	Ajoute des liens vers les projets frères dans les pages d'homonymie, multilatéralement
-# A terme peut-être :
-# 	Mettra à jour les liens vers les projets frères existants (fusions avec Sisterlinks...), et remplacement des liens bleu fr.wikipedia.org/wiki par [[ ]], des liens rouges par {{lien|lang=xx}}
-# 	Mettra à jour les évaluations à partir du bandeau ébauche
-# 	Corrigera les fautes d'orthographes courantes, signalées dans http://fr.wikipedia.org/wiki/Wikip%C3%A9dia:AutoWikiBrowser/Typos (semi-auto) ou : python cosmetic_changes.py -lang:"fr" -recentchanges
+# Ce script crée des redirections vers les articles avec apostrophes
 
 # Importation des modules
 import os, catlib, pagegenerators, re
-import hyperlynx, HTMLUnicode		# Faits maison
+import HTMLUnicode		# Faits maison
 from wikipedia import *
 
 # Déclaration
@@ -20,81 +13,29 @@ mynick = "JackBot"
 site = getSite(language,family)
 debogage = False
 debogageLent = False
+input = u'articles_WPin.txt'
 output = u'articles_WPout.txt'
-ns = 0 #10 pour les Modèle:Cite pmid/
+ns = 0
 
 # Modification du wiki
 def modification(PageHS):
-	summary = u'Formatage'
-	page = Page(site,PageHS)
 	print(PageHS.encode(config.console_encoding, 'replace'))
-	if not page.exists(): return
-	if page.namespace() != ns and PageHS.find(u'Utilisateur:JackBot/test') == -1 and PageHS.find(u'Modèle:Cite pmid/') == -1:
-		return
+	summary = u'[[Aide:Redirection#Usages|Redirection pour apostrophe]]'
+	page = Page(site,PageHS)
+	if PageHS.find(u'’') != -1:
+		Page2 = PageHS.replace(u'’', u'\'')
+	elif PageHS.find(u'\'') != -1:
+		Page2 = PageHS.replace(u'\'', u'’')
 	else:
-		#print 'ok'
-		try:
-			PageBegin = page.get()
-		except wikipedia.NoPage:
-			print "NoPage"
-			return
-		except wikipedia.IsRedirectPage:
-			print "Redirect page"
-			return
-		except wikipedia.LockedPage:
-			print "Locked/protected page"
-			return
-	PageTemp = PageBegin
-	
-	# Traitements des URL et leurs modèles
-	if debogage == True: print u'Test des URL'
-	PageTemp = hyperlynx.hyperlynx(PageTemp)
-	if debogage == True: raw_input (u'--------------------------------------------------------------------------------------------')
-	if PageTemp != PageBegin:
-		summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/11#Identifier les liens brisés (le retour ;-))|Vérification des liens externes]]'
-		summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/12#Remplacer_les_.7B.7BCite_web.7D.7D_par_.7B.7BLien_web.7D.7D|traduction de leurs modèles]]'
-	regex = ur'({{[l|L]ien *\|[^}]*)traducteur( *=)'
-	if re.search(regex, PageTemp):
-		PageTemp = re.sub(regex, ur'\1trad\2', PageTemp)
-	
-	# Nombres
-	PageTemp = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', PageTemp)
-
-	# Protocoles
-	PageTemp = PageTemp.replace(u'http://http://', u'http://')
-	
-	# Analyse des crochets et accolades (à faire : hors LaTex)
-	if PageTemp.count('{') - PageTemp.count('}') != 0:
-		if PageHS.find(u'Utilisateur:JackBot/') == -1: log(u'*[[' + PageHS + u']] : accolade cassée')
-		#if debogageLent == True: raise Exception(u'Accolade cassée')
-	if PageTemp.count('[') - PageTemp.count(']') != 0:
-		if PageHS.find(u'Utilisateur:JackBot/') == -1: log(u'*[[' + PageHS + u']] : crochet cassé')
-		#if debogageLent == True: raise Exception(u'Crochet cassé')
-	if PageBegin.count('[[') - PageBegin.count(']]') != PageTemp.count('[[') - PageTemp.count(']]'):
-		txtfile = codecs.open(output, 'a', 'utf-8')
-		txtfile.write(PageTemp + u'\n\n------------------------------------------------------------------------------------------------------------\n\n')
-		txtfile.close()	
-		if debogage == True: print u'Crochets cassés'	#raise Exception(u'Crochets cassés')
 		return
-	if PageBegin.count('{{') - PageBegin.count('}}') != PageTemp.count('{{') - PageTemp.count('}}'):
-		txtfile = codecs.open(output, 'a', 'utf-8')
-		txtfile.write(PageTemp + u'\n\n------------------------------------------------------------------------------------------------------------\n\n')
-		txtfile.close()	
-		if debogage == True: print u'Accolades cassées'	#raise Exception(u'Accolades cassées')
-		return
-
-	# Catégories
-	if PageHS.find(u'Modèle:Cite pmid/') != -1:
-		PageTemp = PageTemp.replace(u'Catégorie:Modèle de source‎', u'Catégorie:Modèle pmid')
-		PageTemp = PageTemp.replace(u'[[Catégorie:Modèle pmid]]', u'[[Catégorie:Modèle pmid‎|{{SUBPAGENAME}}]]')
-
-	# Sauvegarde
-	PageEnd = PageTemp
-	if PageEnd != PageBegin:
-		PageEnd = re.sub(ur'<br>', ur'<br/>', PageEnd)
-		PageEnd = PageEnd.replace(ur'</ref><ref>', ur'</ref>{{,}}<ref>', )
-		sauvegarde(page,PageEnd,summary)
-		
+	page2 = Page(site,Page2)
+	if not page.exists() and page2.exists():
+		if debogage == True: print u'Création d\'une redirection apostrophe'
+		sauvegarde(page, u'#REDIRECT[[' + Page2.replace(u'\n', u'') + u']]', summary)
+	elif page.exists() and not page2.exists():
+		if debogage == True: print u'Création d\'une redirection apostrophe'
+		sauvegarde(page2, u'#REDIRECT[[' + PageHS.replace(u'\n', u'') + u']]', summary)
+ 
 # Traitement d'une catégorie
 def crawlerCat(category):
 	cat = catlib.Category(site, category)
@@ -123,7 +64,7 @@ def crawlerLink(pagename):
 		elif Page.namespace() == 0: modification(u'Discussion:' + Page.title())
 
 # Blacklist
-def crawlerFile(PageCourante):
+'''def crawlerFile(PageCourante):
     PagesHS = open(u'BL.txt', 'r')
     while 1:
 		PageHS = PagesHS.readline()
@@ -133,7 +74,7 @@ def crawlerFile(PageCourante):
 			break
 		elif PageHS == PageCourante: 
 			return "False"
-    PagesHS.close()
+    PagesHS.close()'''
 	
 # Lecture du fichier articles_list.txt (au même format que pour replace.py)
 def crawlerFile(source):
@@ -148,7 +89,7 @@ def crawlerFile(source):
 				PageHS = PageHS[PageHS.find(u'[[')+2:len(PageHS)]
 			if PageHS.find(u']]') != -1:
 				PageHS = PageHS[0:PageHS.find(u']]')]
-			modification(HTMLUnicode.HTMLUnicode(PageHS))
+			modification(HTMLUnicode.HTMLUnicode(PageHS.replace(u'\n',u'')))
 		PagesHS.close()
 
 # Traitement d'une catégorie
@@ -202,7 +143,7 @@ def crawlerCatLink(pagename,apres):
 				
 # Traitement d'une recherche
 def crawlerSearch(pagename):
-	gen = pagegenerators.SearchPageGenerator(pagename, site = site, namespaces = ns)
+	gen = pagegenerators.SearchPageGenerator(pagename, namespaces = ns)
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		modification(Page.title())
 
@@ -271,7 +212,7 @@ def sauvegarde(PageCourante, Contenu, summary):
 			taille = 3000
 			print(Contenu[:taille].encode(config.console_encoding, 'replace'))
 			print u'\n[...]\n'
-			print(Contenu[max(len(Contenu)-taille,0):].encode(config.console_encoding, 'replace'))
+			print(Contenu[len(Contenu)-taille:].encode(config.console_encoding, 'replace'))
 		result = raw_input("Sauvegarder ? (o/n) ")
 	if result != "n" and result != "no" and result != "non":
 		if PageCourante.title().find(u'Utilisateur:JackBot/') == -1: ArretDUrgence()
@@ -299,45 +240,21 @@ def sauvegarde(PageCourante, Contenu, summary):
 		except AttributeError:
 			print "AttributeError en sauvegarde"
 			return
-
+			
 # Lancement
-if len(sys.argv) > 1:
-	if sys.argv[1] == u'test':
-		TraitementPage = modification(u'User:' + mynick + u'/test')
-	elif sys.argv[1] == u'txt':
-		TraitementFichier = crawlerFile(u'articles_' + family + u'.txt')
-	elif sys.argv[1] == u'm':
-		TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
-	elif sys.argv[1] == u'test':
-		TraitementPage = modification(u'Utilisateur:JackBot/test')
-	else:
-		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
-else:
-	# Quotidiennement :
-	TraitementLiens = crawlerLink(u'Modèle:Cite web',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cite news',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cite press release',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cite episode',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cite video',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cite conference',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cite arXiv',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Lien news',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Lien mort',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Docu',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cita web',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cita noticia',u'')
-	#à faire : les cite pmid/* de Catégorie:Modèle de source
-	#TraitementLiens = crawlerLink(u'Modèle:Cite book',u'')	# En stand by suite à réticences d'un tiers
-	#TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
+TraitementFile = crawlerFile(input)
 '''
 #Modeles :
+TraitementFile = crawlerFile(input)
+TraitementPage = modification(u'Utilisateur:JackBot/test')
 TraitementPage = modification(u'Utilisateur:JackBot/test/À faire')
-TraitementCategory = crawlerCat(u'Page du modèle Article comportant une erreur',False,u'')
-TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
+TraitementLiens = crawlerLink(u'Modèle:ko-hanja')
 TraitementRecherche = crawlerSearch(u'chinois')
 TraitementUtilisateur = crawlerUser(u'Utilisateur:JackBot')
 while 1:
 	TraitementRC = crawlerRC()
 '''
-
+#ajouter : python cosmetic_changes.py -lang:"fr" -recentchanges
+#défaultsort : http://fr.wikipedia.org/w/index.php?title=Sp%C3%A9cial%3AToutes+les+pages&from=%C3%A9&to=&namespace=14
+# traiter les liens vers WP ([[ ]] + {{lien|lang=}}) + mai 27, 2010 -> 27 mai 2010 ou 2010-05-27
+#(¤|₳|฿|¢|₡|₵|₢|₫|€|ƒ|₣|₲|G€|₭|k€|£|₤|₥|₦|₱|₧|₨|\$|₮|₩|¥|Ƶ|₯|₴|₪|₠|₰)[0-9]+

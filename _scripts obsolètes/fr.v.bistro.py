@@ -1,5 +1,5 @@
 ﻿#!/usr/bin/env python
-# Ce script crée les pages de la salle café.
+# Ce script crée les sommaires des pages de la salle café, qu'elles existent ou non.
 
 # Importation des modules
 import catlib, pagegenerators, os, codecs, urllib
@@ -12,7 +12,7 @@ mynick = "JackBot"
 site = getSite(language,family)
 summary = u'Création du café de la semaine'
 bisextile = 28
-debogage = True
+debogage = False
 
 # Calcul des dates
 def date(j,m,a):
@@ -174,37 +174,72 @@ def zero(n):
 
 # Modification du wiki
 def modification():
-	#j = 7 # 1e lundi de l'année
-	j = 23 # avant-avant dernier lundi de décembre
-	m = u'décembre'
-	a = 2013
-	for s in range(1, 53): # on commence semaine 4 pour coller au sommaire
-		PageHS = u'Wikiversité:La salle café/' + zero(s) + u' ' + str(a)
+	a = 2014 # plus ancienne année du premier sommaire
+	a2 = 2015 # année à traiter
+	m = u'décembre' # plus ancien mois du sommaire
+	j = 29 # lundi de la semaine 1 (généralement en décembre)
+	regex = ur'\= La salle café du [^€]*</noinclude>'
+	for s in range(4, 53): # traiter les trois permiers sommaires à la main
+		PageHS = u'Wikiversité:La salle café/' + zero(s) + u' ' + str(max(a, a2))
+		if debogage == True: print PageHS
 		page = Page(site,PageHS)
-		if not page.exists():
-			PageEnd = u'= La salle café du ' + date(j+21,m,int(a)) + u' au ' + date(j+27,m,int(a)) + u' =\n<noinclude>\n{| align="right" rules="all" width="100px" cellpadding="0" cellspacing="0" style="margin: 0 0 1em 1em; border: 1px solid #999; border-right-width: 2px; border-bottom-width: 2px; font-size:90%; text-align:center; background-color: #FFFFFF;"\n! bgcolor="#bfbfff" | <font color="gray">Sous-pages</font>''''
-			'''u'|-\n|[[Wikiversité:La salle café/' + zero(s - 3) + u' ' + str(a) + u'|Du ' + date2(j,m) + u' au ' + date2(j+6,m) + u']]''''
-			'''u'|-\n|[[Wikiversité:La salle café/' + zero(s - 2) + u' ' + str(a) + u'|Du ' + date2(j+7,m) + u' au ' + date2(j+13,m) + u']]''''
-			'''u'|-\n|[[Wikiversité:La salle café/' + zero(s - 1) + u' ' + str(a) + u'|Du ' + date2(j+14,m) + u' au ' + date2(j+20,m) + u']]''''
-			'''u'|-\n|bgcolor="#ccccff"| Semaine du ' + date2(j+21,m) + u' au ' + date2(j+27,m) + '''
-			'''u'|-\n|[[Wikiversité:La salle café/' + zero(s + 1) + u' ' + str(a) + u'|Du ' + date2(j+28,m) + u' au ' + date2(j+34,m) + u']]''''
-			'''u'|-\n|[[Wikiversité:La salle café/' + zero(s + 2) + u' ' + str(a) + u'|Du ' + date2(j+35,m) + u' au ' + date2(j+41,m) + u']]''''
-			'''u'|-\n|[[Wikiversité:La salle café/' + zero(s + 3) + u' ' + str(a) + u'|Du ' + date2(j+42,m) + u' au ' + date2(j+48,m) + u']]''''
-			'''u'|-\n|<!-- choisissez une image et remplacez ce commentaire par [[Image:Nom_de_l\'image.jpg|150px]] <small>description de l\'image</small> -->''''
-			'''u'|}\n[http://fr.wikiversity.org/w/index.php?title=Wikiversité:La_salle_café&action=purge <small>Café rafraîchi</small>][{{SERVER}}{{localurl:Wikiversité:La salle café/{{#time:W Y}}|action=edit&section=new}} <small>Ajouter un message</small>]__TOC__</noinclude>'
-			if PageEnd.find(u'Wikiversité:La salle café/0 ' + str(a)) > 1: PageEnd = PageEnd[0:PageEnd.find(u'Wikiversité:La salle café/0 ' + str(a))] + u'Wikiversité:La salle café/53 ' + str(int(a)-1) + PageEnd[PageEnd.find(u'Wikiversité:La salle café/0 ' + str(a))+len(u'Wikiversité:La salle café/0 ' + str(a)):len(PageEnd)]
-			if PageEnd.find(u'Wikiversité:La salle café/-1 ' + str(a)) > 1: PageEnd = PageEnd[0:PageEnd.find(u'Wikiversité:La salle café/-1 ' + str(a))] + u'Wikiversité:La salle café/52 ' + str(int(a)-1) + PageEnd[PageEnd.find(u'Wikiversité:La salle café/-1 ' + str(a))+len(u'Wikiversité:La salle café/-1 ' + str(a)):len(PageEnd)]
-			if PageEnd.find(u'Wikiversité:La salle café/-2 ' + str(a)) > 1: PageEnd = PageEnd[0:PageEnd.find(u'Wikiversité:La salle café/-2 ' + str(a))] + u'Wikiversité:La salle café/51 ' + str(int(a)-1) + PageEnd[PageEnd.find(u'Wikiversité:La salle café/-2 ' + str(a))+len(u'Wikiversité:La salle café/-2 ' + str(a)):len(PageEnd)]
-			if PageEnd.find(u'Wikiversité:La salle café/-3 ' + str(a)) > 1: PageEnd = PageEnd[0:PageEnd.find(u'Wikiversité:La salle café/-3 ' + str(a))] + u'Wikiversité:La salle café/50 ' + str(int(a)-1) + PageEnd[PageEnd.find(u'Wikiversité:La salle café/-3 ' + str(a))+len(u'Wikiversité:La salle café/-3 ' + str(a)):len(PageEnd)]
-			#print (PageEnd.encode(config.console_encoding, 'replace'))
-			#raw_input(PageHS.encode(config.console_encoding, 'replace'))
-			sauvegarde(page, PageEnd, summary)
+		if page.exists():
+			try:
+				PageBegin = page.get()
+			except wikipedia.NoPage:
+				print "NoPage l 189"
+				return
+			if re.search(regex, PageBegin):
+				# Remplacement du précédent sommaire
+				PageBegin = re.sub(regex, ur'', PageBegin)
+		else:
+			PageBegin = u''
+			
+		PageEnd = u'= La salle café du ' + date(j+21,m,int(a)) + u' au ' + date(j+27,m,int(a)) + u' =\n<noinclude>\n{| align="right" rules="all" width="100px" cellpadding="0" cellspacing="0" style="margin: 0 0 1em 1em; border: 1px solid #999; border-right-width: 2px; border-bottom-width: 2px; font-size:90%; text-align:center; background-color: #FFFFFF;"\n! bgcolor="#bfbfff" | <font color="gray">Sous-pages</font>''''
+		'''u'|-\n|[[Wikiversité:La salle café/' + zero(s - 3) + u' ' + str(max(a, a2)) + u'|Du ' + date2(j,m) + u' au ' + date2(j+6,m) + u']]''''
+		'''u'|-\n|[[Wikiversité:La salle café/' + zero(s - 2) + u' ' + str(max(a, a2)) + u'|Du ' + date2(j+7,m) + u' au ' + date2(j+13,m) + u']]''''
+		'''u'|-\n|[[Wikiversité:La salle café/' + zero(s - 1) + u' ' + str(max(a, a2)) + u'|Du ' + date2(j+14,m) + u' au ' + date2(j+20,m) + u']]''''
+		'''u'|-\n|bgcolor="#ccccff"| Semaine du ' + date2(j+21,m) + u' au ' + date2(j+27,m) + '''
+		'''u'|-\n|[[Wikiversité:La salle café/' + zero(s + 1) + u' ' + str(max(a, a2)) + u'|Du ' + date2(j+28,m) + u' au ' + date2(j+34,m) + u']]''''
+		'''u'|-\n|[[Wikiversité:La salle café/' + zero(s + 2) + u' ' + str(max(a, a2)) + u'|Du ' + date2(j+35,m) + u' au ' + date2(j+41,m) + u']]''''
+		'''u'|-\n|[[Wikiversité:La salle café/' + zero(s + 3) + u' ' + str(max(a, a2)) + u'|Du ' + date2(j+42,m) + u' au ' + date2(j+48,m) + u']]''''
+		'''u'|-\n|<!-- choisissez une image et remplacez ce commentaire par [[Image:Nom_de_l\'image.jpg|150px]] <small>description de l\'image</small> -->''''
+		'''u'|}\n[//fr.wikiversity.org/w/index.php?title=Wikiversité:La_salle_café&action=purge <small>Café rafraîchi</small>][{{SERVER}}{{localurl:Wikiversité:La salle café/{{#time:W Y}}|action=edit&section=new}} <small>Ajouter un message</small>]__TOC__</noinclude>'
+		if PageEnd.find(u'Wikiversité:La salle café/0 ' + str(a)) > 1: PageEnd = PageEnd[0:PageEnd.find(u'Wikiversité:La salle café/0 ' + str(a))] + u'Wikiversité:La salle café/53 ' + str(int(a)-1) + PageEnd[PageEnd.find(u'Wikiversité:La salle café/0 ' + str(a))+len(u'Wikiversité:La salle café/0 ' + str(a)):len(PageEnd)]
+		if PageEnd.find(u'Wikiversité:La salle café/-1 ' + str(a)) > 1: PageEnd = PageEnd[0:PageEnd.find(u'Wikiversité:La salle café/-1 ' + str(a))] + u'Wikiversité:La salle café/52 ' + str(int(a)-1) + PageEnd[PageEnd.find(u'Wikiversité:La salle café/-1 ' + str(a))+len(u'Wikiversité:La salle café/-1 ' + str(a)):len(PageEnd)]
+		if PageEnd.find(u'Wikiversité:La salle café/-2 ' + str(a)) > 1: PageEnd = PageEnd[0:PageEnd.find(u'Wikiversité:La salle café/-2 ' + str(a))] + u'Wikiversité:La salle café/51 ' + str(int(a)-1) + PageEnd[PageEnd.find(u'Wikiversité:La salle café/-2 ' + str(a))+len(u'Wikiversité:La salle café/-2 ' + str(a)):len(PageEnd)]
+		if PageEnd.find(u'Wikiversité:La salle café/-3 ' + str(a)) > 1: PageEnd = PageEnd[0:PageEnd.find(u'Wikiversité:La salle café/-3 ' + str(a))] + u'Wikiversité:La salle café/50 ' + str(int(a)-1) + PageEnd[PageEnd.find(u'Wikiversité:La salle café/-3 ' + str(a))+len(u'Wikiversité:La salle café/-3 ' + str(a)):len(PageEnd)]
+		#print (PageEnd.encode(config.console_encoding, 'replace'))
+		#raw_input(PageHS.encode(config.console_encoding, 'replace'))
+		sauvegarde(page, PageEnd + PageBegin, summary)
 		DateCourante = date(j+7,m,int(a))
 		j = int(DateCourante[0:DateCourante.find(u' ')])
 		m = DateCourante[DateCourante.find(u' ')+1:DateCourante.rfind(u' ')]
 		a = DateCourante[DateCourante.rfind(u' ')+1:len(DateCourante)]
+		if debogage == True:
+			print ''
+			print '**********************************'
+			print ''
+			print DateCourante
 
 
+# Permet à tout le monde de stopper le bot en lui écrivant
+def ArretDUrgence():
+		page = Page(site,u'User talk:' + mynick)
+		if page.exists():
+			PageTemp = u''
+			try:
+				PageTemp = page.get()
+			except wikipedia.NoPage: return
+			except wikipedia.IsRedirectPage: return
+			except wikipedia.LockedPage: return
+			except wikipedia.ServerError: return
+			except wikipedia.BadTitle: return
+			except pywikibot.EditConflict: return
+			if PageTemp != u"{{/Stop}}":
+				pywikibot.output (u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
+				exit(0)
+				
 def sauvegarde(PageCourante, Contenu, summary):
 	result = "ok"
 	if debogage == True:

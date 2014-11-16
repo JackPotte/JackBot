@@ -1,93 +1,105 @@
 ﻿#!/usr/bin/env python
 # coding: utf-8
-# Ce script formate les articles de Wikilivres
+# Ce script identifie les palindrome depuis un dump TXT (List of page titles in main namespace)
 
 # Importation des modules
-import catlib, pagegenerators, os, codecs, urllib, re, collections, socket
-import hyperlynx, CleDeTri, HTMLUnicode		# Faits maison
+import catlib, pagegenerators, os, langues
 from wikipedia import *
-mynick = "JackBot"
+
+# Déclaration
 language = "fr"
-family = "wikibooks"
+family = "wiktionary"
+mynick = "JackBot"
 site = getSite(language,family)
 debogage = False
-debogageLent = False
 
 # Modification du wiki
 def modification(PageHS):
-	summary = u'Formatage'
-	page = Page(site,PageHS)
-	if page.namespace() != 0: return
-	try:
-		PageBegin = page.get()
-	except wikipedia.NoPage:
-		print "NoPage"
-		return
-	except wikipedia.IsRedirectPage:
-		print "Redirect page"
-		return
-	PageTemp = PageBegin
-	PageEnd = u''
+	summary = u'[[Catégorie:Palindromes]]'
+	#if debogage == True: print u'------------------------------------'
+	#print(PageHS.encode(config.console_encoding, 'replace'))
 	
-	# Traitement des modèles
-	regex = ur'\{\{[P|p]ortail([^\}]*)\}\}'
-	if re.search(regex, PageTemp):
-		summary += ', retrait des portails'
-		PageTemp = re.sub(regex, ur'', PageTemp)
-	regex = ur'\{\{[P|p]alette([^\}]*)\}\}'
-	if re.search(regex, PageTemp):
-		summary += ', retrait des palettes'
-		PageTemp = re.sub(regex, ur'', PageTemp)
-	PageTemp = PageTemp.replace(u'{{PDC}}', u'profondeur de champ')
-	
-	# Traitement des hyperliens
-	PageTemp = hyperlynx.hyperlynx(PageTemp)
-	
-	# Clés de tri pour les noms propres
-	if PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') != -1:
-		PageEnd = PageEnd + PageTemp[:PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')]
-		PageTemp = PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'):PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie')] + PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}'):]
-	
-	regex = ur'()\n{{DEFAULTSORT[^}]*}}'
-	if re.search(regex, PageTemp):
-		PageTemp = re.sub(regex, ur'\1', PageTemp)
-	regex = ur'()\n{{defaultsort[^}]*}}'
-	if re.search(regex, PageTemp):
-		PageTemp = re.sub(regex, ur'\1', PageTemp)
-	PageEnd = PageEnd + PageTemp
-	if PageEnd != PageBegin: sauvegarde(page,PageEnd,summary)
-
-
+	# On retire les diacritiques et ignore la casse
+	# le flag re.UNICODE est utilisé pour que \w matche toute lettre de tout alphabet
+	titre_denude = unicodedata.normalize('NFKD', PageHS).lower()
+	titre_denude = re.sub(ur'[^\w]', u'', titre_denude, flags=re.UNICODE)
+	if len(titre_denude) > 1 and titre_denude == titre_denude[::-1]:
+		try:
+			page = Page(site,PageHS)
+		except UnicodeDecodeError: 
+			print "UnicodeDecodeError l 30"
+			return
+			
+		if page.exists() and page.namespace() == 0:
+			try:
+				PageBegin = page.get()
+			except wikipedia.NoPage:
+				print "NoPage l 36"
+				return
+			except wikipedia.LockedPage: 
+				print "Locked l 40"
+				return
+			except wikipedia.IsRedirectPage: 
+				print "IsRedirect l 43"
+				return
+		else:
+			print "NoPage l 46"
+			return
+		PageTemp = PageBegin
+		PageEnd = u''
+		
+		# Pour chaque langue, recherche de la catégorie des palindromes
+		while PageTemp.find('{{langue|') != -1:
+			PageEnd = PageEnd + PageTemp[:PageTemp.find('{{langue|')+len('{{langue|')]
+			PageTemp = PageTemp[PageTemp.find('{{langue|')+len('{{langue|'):]
+			codelangue = PageTemp[:PageTemp.find('}}')]
+			if len(codelangue) < 4:
+				NomLangue = langues.langues[codelangue].decode("utf8")
+				if NomLangue != u'':
+					#if debogage == True: print NomLangue.encode(config.console_encoding, 'replace')
+					if PageTemp.find(u'[[Catégorie:Palindromes en ' + NomLangue + ']]') == -1:
+						# Modification de la page
+						if PageTemp.find('{{langue|') != -1:
+							PageTemp2 = PageTemp[:PageTemp.find('{{langue|')]
+							PageTemp = PageTemp[:PageTemp2.rfind(u'\n')] + u'\n[[Catégorie:Palindromes en '+NomLangue+']]\n\n' + PageTemp[PageTemp2.rfind(u'\n'):]
+						else:
+							PageTemp = PageTemp + u'\n\n[[Catégorie:Palindromes en '+NomLangue+']]'
+						# On retire les lignes vides entre les catégories
+						PageTemp = re.sub(ur'(\[\[Catégorie:[^\]]*?\]\])\n{2,}\[\[Catégorie', ur'\1\n[[Catégorie', PageTemp)
+						PageTemp = PageTemp.replace('\n\n\n==', '\n\n==')
+			
+		PageEnd = PageEnd + PageTemp		
+		#if debogage == True: print (u'--------------------------------------------------------------------------------------------')
+		if PageEnd != PageBegin:
+			sauvegarde(page,PageEnd, summary)
+		elif debogage == True:
+			print "Aucun changement"
+		
+		
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
 
-def rec_anagram(counter):
-	# Copyright http://www.siteduzero.com/forum-83-541573-p2-exercice-generer-tous-les-anagrammes.html
-    if sum(counter.values()) == 0:
-        yield ''
-    else:
-        for c in counter:
-            if counter[c] != 0:
-                counter[c] -= 1
-                for _ in rec_anagram(counter):
-                    yield c + _
-                counter[c] += 1
-def anagram(word):
-    return rec_anagram(collections.Counter(word))
+def crawlerXML(source):
+	pages = [r for r in xmlreader.XmlDump(source, allrevisions=False).parse()]
+	for Page in pages:
+		modification(Page.title())
 	
 # Lecture du fichier articles_list.txt (au même format que pour replace.py)
 def crawlerFile(source):
 	if source:
 		PagesHS = open(source, 'r')
+		#PagesHS = codecs.open(source,"r","utf-8")
 		while 1:
 			PageHS = PagesHS.readline()
 			fin = PageHS.find("\t")
 			PageHS = PageHS[0:fin]
 			if PageHS == '': break
-			if PageHS.find(u'[[') != -1:
+			'''if PageHS.find(u'[[') != -1:
 				PageHS = PageHS[PageHS.find(u'[[')+2:len(PageHS)]
 			if PageHS.find(u']]') != -1:
-				PageHS = PageHS[0:PageHS.find(u']]')]
+				PageHS = PageHS[0:PageHS.find(u']]')]'''
+			# Conversion ASCII => Unicode (pour les .txt)
+			#modification(HTMLUnicode.HTMLUnicode(PageHS))
 			modification(PageHS)
 		PagesHS.close()
 
@@ -141,7 +153,7 @@ def crawlerCatLink(pagename,apres):
 				
 # Traitement d'une recherche
 def crawlerSearch(pagename):
-	gen = pagegenerators.SearchPageGenerator(pagename, site = site, namespaces = "0")
+	gen = pagegenerators.SearchPageGenerator(pagename, namespaces = "0")
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		modification(Page.title())
 
@@ -152,10 +164,13 @@ def crawlerRC():
 		modification(Page.title())
 
 # Traitement des modifications d'un compte
-def crawlerUser(username):
+def crawlerUser(username,jusqua):
+	compteur = 0
 	gen = pagegenerators.UserContributionsGenerator(username)
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		modification(Page.title())
+		compteur = compteur + 1
+		if compteur > jusqua: break
 
 # Toutes les redirections
 def crawlerRedirects():
@@ -225,23 +240,5 @@ def sauvegarde(PageCourante, Contenu, summary):
 			return
 			
 # Lancement
-if len(sys.argv) > 1:
-	if sys.argv[1] == u'test':
-		TraitementPage = modification(u'User:' + mynick + u'/test')
-	elif sys.argv[1] == u'txt':
-		TraitementFichier = crawlerFile(u'articles_' + family + u'.txt')
-	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
-	elif sys.argv[1] == u'lien':
-		TraitementLiens = crawlerLink(u'Modèle:cite books',u'')
-	else:
-		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
-else:
-	TraitementLiens = crawlerLink(u'Modèle:cite web',u'')
+TraitementFichier = crawlerFile(u'frwiktionary-20140314-all-titles-in-ns0.txt')
 
-'''
-TraitementLiens = crawlerLink(u'Modèle:Palette',u'')
-TraitementCategory = crawlerCat(u'Catégorie:Personnalités de la photographie')
-while 1:
-	TraitementRC = crawlerRC()
-'''

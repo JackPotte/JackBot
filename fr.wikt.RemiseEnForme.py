@@ -1752,7 +1752,28 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{nl}}', u'néerlandais')
 		PageTemp = PageTemp.replace(u'{{pt}}', u'portugais')
 		PageTemp = PageTemp.replace(u'{{it}}', u'italien')
-
+		
+		# Modèles trop courts
+		if debogage: print u'Modèles courts'
+		PageTemp = PageTemp.replace(u'{{fp}}', u'{{fplur}}')
+		PageTemp = PageTemp.replace(u'{{mp}}', u'{{mplur}}')
+		PageTemp = PageTemp.replace(u'{{np}}', u'{{nlur}}')
+		PageTemp = PageTemp.replace(u'{{mascul}}', u'{{au masculin}}')
+		PageTemp = PageTemp.replace(u'{{fémin}}', u'{{au féminin}}')
+		PageTemp = PageTemp.replace(u'{{femin}}', u'{{au féminin}}')
+		PageTemp = PageTemp.replace(u'{{sing}}', u'{{au singulier}}')
+		PageTemp = PageTemp.replace(u'{{plur}}', u'{{au pluriel}}')
+		PageTemp = PageTemp.replace(u'{{pluri}}', u'{{au pluriel}}')
+		PageTemp = PageTemp.replace(u'{{mascul|', u'{{au masculin|')
+		PageTemp = PageTemp.replace(u'{{fémin|', u'{{au féminin|')
+		PageTemp = PageTemp.replace(u'{{femin|', u'{{au féminin|')
+		PageTemp = PageTemp.replace(u'{{sing|', u'{{au singulier|')
+		PageTemp = PageTemp.replace(u'{{plur|', u'{{au pluriel|')
+		PageTemp = PageTemp.replace(u'{{pluri|', u'{{au pluriel|')
+		PageTemp = PageTemp.replace(u'{{dét|', u'{{déterminé|')
+		PageTemp = PageTemp.replace(u'{{dén|', u'{{dénombrable|')
+		PageTemp = PageTemp.replace(u'{{pl-cour}}', u'{{plus courant}}')
+		
 		while PageTemp.find(u'[[Annexe:Couleurs en français]]') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'[[Annexe:Couleurs en français]]')] + u'{{Thésaurus|fr|couleur}}' + PageTemp[PageTemp.find(u'[[Annexe:Couleurs en français]]')+len(u'[[Annexe:Couleurs en français]]'):len(PageTemp)]
 		while PageTemp.find(u'{{Annexe|Couleurs en français}}') != -1:
@@ -1918,44 +1939,7 @@ def modification(PageHS):
 			PageTemp = PageTemp[0:PageTemp.find(u'|pinv=. ')+len(u'|pinv=.')] + PageTemp[PageTemp.find(u'|pinv=. ')+len(u'|pinv=. '):len(PageTemp)]
 		#while PageTemp.find(u'|pinv=&nbsp;') != -1:
 		#	PageTemp = PageTemp[0:PageTemp.find(u'|pinv=&nbsp;')+len(u'|pinv=')] + PageTemp[PageTemp.find(u'|pinv=&nbsp;')+len(u'|pinv=&nbsp;'):len(PageTemp)]
-			
-		# Modèles trop courts
-		if debogage: print u'Modèles courts'
-		while PageTemp.find(u'{{fp}}') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{fp}}')+4] + u'lur' + PageTemp[PageTemp.find(u'{{fp}}')+4:len(PageTemp)] 
-		while PageTemp.find(u'{{mp}}') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{mp}}')+4] + u'lur' + PageTemp[PageTemp.find(u'{{mp}}')+4:len(PageTemp)] 
-		while PageTemp.find(u'{{np}}') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{np}}')+4] + u'lur' + PageTemp[PageTemp.find(u'{{np}}')+4:len(PageTemp)]
-		while PageTemp.find(u'{{mascul}}') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{mascul}}')] + u'{{au masculin}}' + PageTemp[PageTemp.find(u'{{mascul}}')+len(u'{{mascul}}'):len(PageTemp)] 
-		while PageTemp.find(u'{{fémin}}') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{fémin}}')] + u'{{au féminin}}' + PageTemp[PageTemp.find(u'{{fémin}}')+len(u'{{fémin}}'):len(PageTemp)]
-		while PageTemp.find(u'{{femin}}') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{femin}}')] + u'{{au féminin}}' + PageTemp[PageTemp.find(u'{{femin}}')+len(u'{{femin}}'):len(PageTemp)] 
-		while PageTemp.find(u'{{sing}}') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{sing}}')] + u'{{au singulier}}' + PageTemp[PageTemp.find(u'{{sing}}')+len(u'{{sing}}'):len(PageTemp)]  
-		while PageTemp.find(u'{{plur}}') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{plur}}')] + u'{{au pluriel}}' + PageTemp[PageTemp.find(u'{{plur}}')+len(u'{{plur}}'):len(PageTemp)] 
-		while PageTemp.find(u'{{pluri}}') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{pluri}}')] + u'{{au pluriel}}' + PageTemp[PageTemp.find(u'{{pluri}}')+len(u'{{pluri}}'):len(PageTemp)] 
-		while PageTemp.find(u'{{mascul|') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{mascul|')] + u'{{au masculin|' + PageTemp[PageTemp.find(u'{{mascul|')+len(u'{{mascul|'):len(PageTemp)] 
-		while PageTemp.find(u'{{fémin|') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{fémin|')] + u'{{au féminin|' + PageTemp[PageTemp.find(u'{{fémin|')+len(u'{{fémin|'):len(PageTemp)]
-		while PageTemp.find(u'{{femin|') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{femin|')] + u'{{au féminin|' + PageTemp[PageTemp.find(u'{{femin|')+len(u'{{femin|'):len(PageTemp)] 
-		while PageTemp.find(u'{{sing|') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{sing|')] + u'{{au singulier|' + PageTemp[PageTemp.find(u'{{sing|')+len(u'{{sing|'):len(PageTemp)]  
-		while PageTemp.find(u'{{plur|') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{plur|')] + u'{{au pluriel|' + PageTemp[PageTemp.find(u'{{plur|')+len(u'{{plur|'):len(PageTemp)] 
-		while PageTemp.find(u'{{pluri|') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{pluri|')] + u'{{au pluriel|' + PageTemp[PageTemp.find(u'{{pluri|')+len(u'{{pluri|'):len(PageTemp)] 
-		while PageTemp.find(u'{{dét|') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{dét|')+2] + u'déterminé' + PageTemp[PageTemp.find(u'{{dét|')+len(u'{{dét'):len(PageTemp)]
-		while PageTemp.find(u'{{dén|') != -1:
-			PageTemp = PageTemp[0:PageTemp.find(u'{{dén|')+2] + u'dénombrable' + PageTemp[PageTemp.find(u'{{dén|')+len(u'{{dén'):len(PageTemp)]
-
+		
 		# Faux homophones : lemme et sa flexion
 		if debogage: print u'Faux homophones'
 		if PageTemp.find(u'|flexion}}') != -1 and PageHS[len(PageHS)-1:len(PageHS)] == u's' and PageTemp.find(u'{{S|homophones}}\n*[[' + PageHS[0:len(PageHS)-1] + u']]\n*') == -1 and PageTemp.find(u'{{S|homophones}}\n*[[' + PageHS[0:len(PageHS)-1] + u']]') != -1 and PageTemp.find(u'{{S|homophones}}\n*[[' + PageHS[0:len(PageHS)-1] + u']] ') == -1 and PageTemp.find(u'{{S|homophones}}\n*[[' + PageHS[0:len(PageHS)-1] + u']],') == -1:
@@ -5043,6 +5027,8 @@ if len(sys.argv) > 1:
 		TraitementPage = modification(u'User:' + mynick + u'/test')
 	elif sys.argv[1] == u'txt':
 		TraitementFichier = crawlerFile(u'articles_' + family + u'.txt')
+	elif sys.argv[1] == u'm':
+		TraitementLiens = crawlerLink(u'Modèle:pl-cour',u'')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
 	elif sys.argv[1] == u'lien':
