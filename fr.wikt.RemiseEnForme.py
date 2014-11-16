@@ -473,9 +473,9 @@ Modele.append(u'charpenterie')
 Modele.append(u'chasse')
 Modele.append(u'chiens')
 Modele.append(u'chim')
-Modele.append(u'chim')
-Modele.append(u'chimie organique')
 Modele.append(u'chimie')
+Modele.append(u'chimie organique')
+Modele.append(u'chimie physique')
 Modele.append(u'chir')
 Modele.append(u'chiromancie')
 Modele.append(u'chirurgie')
@@ -797,6 +797,7 @@ Modele.append(u'nucl')
 Modele.append(u'nucléaire')
 Modele.append(u'numis')
 Modele.append(u'numismatique')
+Modele.append(u'nutrition')
 Modele.append(u'néol litt')
 Modele.append(u'néol')
 Modele.append(u'néologisme')
@@ -963,6 +964,7 @@ Modele.append(u'sports de glisse')
 Modele.append(u'squelette')
 Modele.append(u'stat')
 Modele.append(u'statistiques')
+Modele.append(u'stéréochimie')
 Modele.append(u'stéréotomie')
 Modele.append(u'substances')
 Modele.append(u'superlatif de')
@@ -1750,7 +1752,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{nl}}', u'néerlandais')
 		PageTemp = PageTemp.replace(u'{{pt}}', u'portugais')
 		PageTemp = PageTemp.replace(u'{{it}}', u'italien')
-		
+
 		while PageTemp.find(u'[[Annexe:Couleurs en français]]') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'[[Annexe:Couleurs en français]]')] + u'{{Thésaurus|fr|couleur}}' + PageTemp[PageTemp.find(u'[[Annexe:Couleurs en français]]')+len(u'[[Annexe:Couleurs en français]]'):len(PageTemp)]
 		while PageTemp.find(u'{{Annexe|Couleurs en français}}') != -1:
@@ -2492,7 +2494,7 @@ def modification(PageHS):
 					if Modele[p] == u'term' or Modele[p] == u'terme' or Modele[p] == u'term_lien' or Modele[p] == u'régio' or Modele[p] == u'région':
 						ModeleT = PageTemp[PageTemp.find("|")+1:PageTemp.find("}}")]
 						for p2 in range(1,limit6):
-							if Modele[p2] == ModeleT or Modele[p2] == ModeleT[0:1].lower() + ModeleT[1:len(ModeleT)]:
+							if Modele[p2] == ModeleT or Modele[p2] == ModeleT[:1].lower() + ModeleT[1:] or u'génie ' + Modele[p2] == ModeleT or u'Génie ' + Modele[p2] == ModeleT:
 								if EstCodeLangue == "false":
 									PageEnd = PageEnd + Modele[p2] + "|nocat=1}}"
 								else:
@@ -3967,6 +3969,16 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+					elif Modele[p] == u'construction' or Modele[p] == u'constr' or Modele[p] == u'bâtiment':
+						if (EstCodeLangue == "false"
+	) or (PageTemp.find(u'Catégorie:Édifices'
+	) != -1 and (PageTemp.find(u'Catégorie:Édifices') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Édifices') + 1 != PageTemp.rfind(u'Catégorie:Édifices'))):
+							PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+						else:
+							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
+						break
 					elif Modele[p] == u'électricité' or Modele[p] == u'élec':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Composants électriques'
@@ -5027,8 +5039,10 @@ def sauvegarde(PageCourante, Contenu, summary):
 
 # Lancement
 if len(sys.argv) > 1:
-	if sys.argv[1] == u'txt':
-		TraitementFichier = crawlerFile(u'articles_WTin2.txt')
+	if sys.argv[1] == u'test':
+		TraitementPage = modification(u'User:' + mynick + u'/test')
+	elif sys.argv[1] == u'txt':
+		TraitementFichier = crawlerFile(u'articles_' + family + u'.txt')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
 	elif sys.argv[1] == u'lien':

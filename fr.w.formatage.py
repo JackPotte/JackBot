@@ -20,7 +20,6 @@ mynick = "JackBot"
 site = getSite(language,family)
 debogage = False
 debogageLent = False
-input = u'articles_WPin.txt'
 output = u'articles_WPout.txt'
 ns = 0 #10 pour les Modèle:Cite pmid/
 
@@ -303,8 +302,10 @@ def sauvegarde(PageCourante, Contenu, summary):
 
 # Lancement
 if len(sys.argv) > 1:
-	if sys.argv[1] == u'txt':
-		TraitementFile = crawlerFile(input)
+	if sys.argv[1] == u'test':
+		TraitementPage = modification(u'User:' + mynick + u'/test')
+	elif sys.argv[1] == u'txt':
+		TraitementFichier = crawlerFile(u'articles_' + family + u'.txt')
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
 	elif sys.argv[1] == u'test':
@@ -331,11 +332,9 @@ else:
 	#TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
 '''
 #Modeles :
-TraitementPage = modification(u'Utilisateur:JackBot/test')
 TraitementPage = modification(u'Utilisateur:JackBot/test/À faire')
 TraitementCategory = crawlerCat(u'Page du modèle Article comportant une erreur',False,u'')
 TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
-TraitementFile = crawlerFile(input)
 TraitementRecherche = crawlerSearch(u'chinois')
 TraitementUtilisateur = crawlerUser(u'Utilisateur:JackBot')
 while 1:

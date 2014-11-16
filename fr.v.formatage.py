@@ -450,6 +450,7 @@ def Valeur(Mot,Page):
 			PageTemp2 = u'[[..' + PageTemp2[2:len(PageTemp2)]
 		return PageTemp2
 	'''			
+
 # Lecture du fichier articles_list.txt (au même format que pour replace.py)
 def crawlerFile(source):
 	if source:
@@ -463,30 +464,58 @@ def crawlerFile(source):
 				PageHS = PageHS[PageHS.find(u'[[')+2:len(PageHS)]
 			if PageHS.find(u']]') != -1:
 				PageHS = PageHS[0:PageHS.find(u']]')]
-			modification(PageHS)
+			# Conversion ASCII => Unicode (pour les .txt)
+			modification(HTMLUnicode.HTMLUnicode(PageHS))
 		PagesHS.close()
-		
+
 # Traitement d'une catégorie
-def crawlerCat(category):
+def crawlerCat(category,recursif,apres):
+	modifier = u'False'
 	cat = catlib.Category(site, category)
 	pages = cat.articlesList(False)
-	for Page in pagegenerators.PreloadingGenerator(pages,100):
-		modification(Page.title()) #crawlerLink(Page.title())
-	subcat = cat.subcategories(recurse = True)
-	for subcategory in subcat:
-		pages = subcategory.articlesList(False)
-		for Page in pagegenerators.PreloadingGenerator(pages,100):
-			modification(Page.title())
-		
+	gen =  pagegenerators.NamespaceFilterPageGenerator(pages, [0])
+	for Page in pagegenerators.PreloadingGenerator(gen,100):
+		if not apres or apres == u'' or modifier == u'True':
+			modification(Page.title()) #crawlerLink(Page.title())
+		elif Page.title() == apres:
+			modifier = u'True'
+	if recursif == True:
+		subcat = cat.subcategories(recurse = True)
+		for subcategory in subcat:
+			pages = subcategory.articlesList(False)
+			for Page in pagegenerators.PreloadingGenerator(pages,100):
+				modification(Page.title())
+
 # Traitement des pages liées
-def crawlerLink(pagename):
+def crawlerLink(pagename,apres):
+	modifier = u'False'
 	#pagename = unicode(arg[len('-links:'):], 'utf-8')
 	page = wikipedia.Page(site, pagename)
 	gen = pagegenerators.ReferringPageGenerator(page)
-	#gen =  pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
+	gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
-		modification(Page.title())
+		#print(Page.title().encode(config.console_encoding, 'replace'))
+		if not apres or apres == u'' or modifier == u'True':
+			modification(Page.title()) #crawlerLink(Page.title())
+		elif Page.title() == apres:
+			modifier = u'True'
 
+# Traitement des pages liées des entrées d'une catégorie
+def crawlerCatLink(pagename,apres):
+	modifier = u'False'
+	cat = catlib.Category(site, pagename)
+	pages = cat.articlesList(False)
+	for Page in pagegenerators.PreloadingGenerator(pages,100):
+		page = wikipedia.Page(site, Page.title())
+		gen = pagegenerators.ReferringPageGenerator(page)
+		gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])
+		for PageLiee in pagegenerators.PreloadingGenerator(gen,100):
+			#print(Page.title().encode(config.console_encoding, 'replace'))
+			if not apres or apres == u'' or modifier == u'True':
+				modification(PageLiee.title()) #crawlerLink(Page.title())
+			elif PageLiee.title() == apres:
+				modifier = u'True'
+				
 # Traitement d'une recherche
 def crawlerSearch(pagename):
 	gen = pagegenerators.SearchPageGenerator(pagename, site = site, namespaces = "0")
@@ -494,15 +523,65 @@ def crawlerSearch(pagename):
 		modification(Page.title())
 
 # Traitement des modifications récentes
-def crawlerRC():
-	gen = pagegenerators.RecentchangesPageGenerator()
-	for Page in pagegenerators.PreloadingGenerator(gen,100):
-		modification(Page.title())
+def crawlerRC_last_day(site=site, nobots=True, namespace='0'):
+    # Génère les modifications récentes de la dernière journée
+	ecart_last_edit = 30 # minutes
+	
+	date_now = datetime.datetime.utcnow()
+	# Date de la plus récente modification à récupérer
+	date_start = date_now - datetime.timedelta(minutes=ecart_last_edit)
+	# Date d'un jour plus tôt
+	date_end = date_start - datetime.timedelta(1)
+	
+	start_timestamp = date_start.strftime('%Y%m%d%H%M%S')
+	end_timestamp = date_end.strftime('%Y%m%d%H%M%S')
 
+	for item in site.recentchanges(number=5000, rcstart=start_timestamp, rcend=end_timestamp, rcshow=None,
+					rcdir='older', rctype='edit|new', namespace=namespace,
+					includeredirects=True, repeat=False, user=None,
+					returndict=False, nobots=nobots):
+		yield item[0]
+		
+def crawlerRC():
+	gen = pagegenerators.RecentchangesPageGenerator(site = site)
+	ecart_minimal_requis = 30 # min
+	for Page in pagegenerators.PreloadingGenerator(gen,100):
+		#print str(ecart_last_edit(Page)) + ' =? ' + str(ecart_minimal_requis)
+		if ecart_last_edit(Page) > ecart_minimal_requis:
+			modification(Page.title())
+
+def ecart_last_edit(page):
+	# Timestamp au format MediaWiki de la dernière version
+	time_last_edit = page.getVersionHistory()[0][1]
+	match_time = re.match(r'(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})', time_last_edit)
+	# Mise au format "datetime" du timestamp de la dernière version
+	datetime_last_edit = datetime.datetime(int(match_time.group(1)), int(match_time.group(2)), int(match_time.group(3)),
+		int(match_time.group(4)), int(match_time.group(5)), int(match_time.group(6)))
+	datetime_now = datetime.datetime.utcnow()
+	diff_last_edit_time = datetime_now - datetime_last_edit
+ 
+	# Ecart en minutes entre l'horodotage actuelle et l'horodotage de la dernière version
+	return diff_last_edit_time.seconds/60 + diff_last_edit_time.days*24*60
+	
 # Traitement des modifications d'un compte
-def crawlerUser(username):
+def crawlerUser(username,jusqua):
+	compteur = 0
 	gen = pagegenerators.UserContributionsGenerator(username)
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
+		modification(Page.title())
+		compteur = compteur + 1
+		if compteur > jusqua: break
+
+# Toutes les redirections
+def crawlerRedirects():
+	for Page in site.allpages(start=u'', namespace=0, includeredirects='only'):
+		modification(Page.title())	
+										
+# Traitement de toutes les pages du site
+def crawlerAll(start):
+	gen = pagegenerators.AllpagesPageGenerator(start,namespace=0,includeredirects=False)
+	for Page in pagegenerators.PreloadingGenerator(gen,100):
+		#print (Page.title().encode(config.console_encoding, 'replace'))
 		modification(Page.title())
 
 def sauvegarde(PageCourante, Contenu, summary):
@@ -545,10 +624,12 @@ def sauvegarde(PageCourante, Contenu, summary):
 			
 # Lancement
 if len(sys.argv) > 1:
-	if sys.argv[1] == u'txt':
-		TraitementFichier = crawlerFile(u'articles_WVin.txt')
+	if sys.argv[1] == u'test':
+		TraitementPage = modification(u'User:' + mynick + u'/test')
+	elif sys.argv[1] == u'txt':
+		TraitementFichier = crawlerFile(u'articles_' + family + u'.txt')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:SPARQL Protocol and RDF Query Language',False,u"SPARQL Protocol and RDF Query Language/Système d'implication")
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:cite book',u'')
 	else:
@@ -556,7 +637,6 @@ if len(sys.argv) > 1:
 else:
 	TraitementCategory = crawlerCat(u'Modèle mal utilisé')
 '''
-TraitementPage = modification(u'Utilisateur:JackBot/test')
 TraitementLiens = crawlerLink(u'Modèle:Chapitre')
 TraitementLiens = crawlerLink(u'Modèle:CfExo')
 TraitementUtilisateur = crawlerUser(u'Utilisateur:JackBot')

@@ -389,27 +389,29 @@ if debogage == False:
 	Balise[ligneB-1][2] = u'-->'
 
 limiteE = 20
-Erreur = range(1, limiteE +1)
-Erreur[1] = "Error 404 (Not Found)"
-Erreur[2] = "404 error"
-Erreur[3] = "404 Not Found"
-Erreur[4] = "404 – File not found"
-Erreur[5] = "Error 404 - Not found"
-Erreur[6] = "Error 503 (Server Error)"
-Erreur[7] = "Page not found"	# bug avec http://www.ifpi.org/content/section_news/plat2000.html et http://www.edinburgh.gov.uk/trams/include/uploads/story_so_far/Tram_Factsheets_2.pdf
-Erreur[8] = "The page you requested cannot be found"
-Erreur[9] = "this page can't be found"
-Erreur[10] = "The service you requested is not available at this time"
-Erreur[11] = "Cette forme est introuvable !"
-Erreur[12] = "Sorry, no matching records for query"
-Erreur[13] = "Runtime Error"
-Erreur[14] = "server timedout"
-Erreur[15] = "404. That’s an error."
+Erreur = []
+Erreur.append("Error 404 (Not Found)")
+Erreur.append("404 error")
+Erreur.append("404 Not Found")
+Erreur.append("404 – File not found")
+Erreur.append("Error 404 - Not found")
+Erreur.append("Error 503 (Server Error)")
+Erreur.append("Page not found")	# bug avec http://www.ifpi.org/content/section_news/plat2000.html et http://www.edinburgh.gov.uk/trams/include/uploads/story_so_far/Tram_Factsheets_2.pdf
+Erreur.append("The page you requested cannot be found")
+Erreur.append("this page can't be found")
+Erreur.append("The service you requested is not available at this time")
+Erreur.append("Sorry, no matching records for query")
+Erreur.append("Runtime Error")
+Erreur.append("server timedout")
+Erreur.append("404. That’s an error.")
+Erreur.append("There is currently no text in this page.") # wiki
 # En français
-Erreur[16] = "Soit vous avez mal &#233;crit le titre"	# mediawiki
-Erreur[17] = u'Soit vous avez mal écrit le titre'
-Erreur[18] = u'Terme introuvable'
-Erreur[19] = u"nom de domaine demandé n'est plus actif"
+Erreur.append("Cette forme est introuvable !")
+Erreur.append("Soit vous avez mal &#233;crit le titre")
+Erreur.append(u'Soit vous avez mal écrit le titre')
+Erreur.append(u'Terme introuvable')
+Erreur.append(u"nom de domaine demandé n'est plus actif")
+Erreur.append("Il n'y a pour l'instant aucun texte sur cette page.")
 	
 # Média trop volumineux	
 limiteF = 52
@@ -795,7 +797,7 @@ def hyperlynx(PageTemp):
 					except UnicodeDecodeError:
 						print u'*HS : ' + str(LienBrise)
 						print "UnicodeDecodeError l 466"
-				if debogageLent: raw_input (htmlSource[0:1000])
+				if debogageLent: raw_input (htmlSource[:7000])
 				
 				# Modification du wiki en conséquence	
 				DebutPage = PageTemp[0:PageTemp.find(u'//')+2]
@@ -1412,18 +1414,31 @@ def TestPage(htmlSource,url):
 			LienBrise = True
 		else:
 			if debogage: print u' Page non vide'
+			#print htmlSource.find(u'texte sur cette page')
 			for e in range(1,limiteE):
+				if debogageLent: print Erreur[e]
 				if htmlSource.find(Erreur[e]) != -1 and not re.search("\n[^\n]*if[^\n]*" + Erreur[e], htmlSource):
+					if debogageLent: print u'  Trouvé'
 					# Exceptions
 					if Erreur[e] == "404 Not Found" and url.find("audiofilemagazine.com") == -1:	# Exception avec popup formulaire en erreur
 						LienBrise = True
 						if debogage: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
 						break
-					elif Erreur[e] == "The page you requested cannot be found" and url.find("restaurantnewsresource.com") == -1:	# bug avec http://www.restaurantnewsresource.com/article35143 (Landry_s_Restaurants_Opens_T_REX_Cafe_at_Downtown_Disney.html)
+					# Wikis : page vide à créer
+					if Erreur[e] == "Soit vous avez mal &#233;crit le titre" and url.find("wiki") != -1:
 						LienBrise = True
 						if debogage: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
 						break
-					elif Erreur[e] == "Soit vous avez mal &#233;crit le titre" and (url.find("wiki") == True or url.find("wiktionary") == True):
+					elif Erreur[e] == "Il n'y a pour l'instant aucun texte sur cette page." != -1 and htmlSource.find("wiki") != -1:
+						LienBrise = True
+						if debogage: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+						break
+					elif Erreur[e] == "There is currently no text in this page." != -1 and htmlSource.find("wiki") != -1:
+						LienBrise = True
+						if debogage: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+						break
+					# Sites particuliers
+					elif Erreur[e] == "The page you requested cannot be found" and url.find("restaurantnewsresource.com") == -1:	# bug avec http://www.restaurantnewsresource.com/article35143 (Landry_s_Restaurants_Opens_T_REX_Cafe_at_Downtown_Disney.html)
 						LienBrise = True
 						if debogage: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
 						break
@@ -1469,8 +1484,10 @@ def TestPage(htmlSource,url):
 		LienBrise = False
 
 	if url.find(u'www.bbc.co.uk') != -1 or url.find(u'www.cia.gov') != -1 or url.find(u'itunes.apple.com') != -1 or url.find(u'twitter.com') != -1: # or url.find(u'nytimes.com') != -1: pb à 3h32 # http://www.bbc.co.uk/cult/buffy/indetail/earshot/reviews.shtml, https://www.cia.gov/library/publications/the-world-factbook/fields/2060.html
+		print u'Site particulier'
 		return False #top40.nl
 	else:
+		if debogageLent: print u'Fin du test du contenu'
 		return LienBrise
 
 def trim(s):
