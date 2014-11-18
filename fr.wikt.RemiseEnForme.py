@@ -1773,6 +1773,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{dét|', u'{{déterminé|')
 		PageTemp = PageTemp.replace(u'{{dén|', u'{{dénombrable|')
 		PageTemp = PageTemp.replace(u'{{pl-cour}}', u'{{plus courant}}')
+		PageTemp = PageTemp.replace(u'{{pl-rare}}', u'{{plus rare}}')
 		
 		while PageTemp.find(u'[[Annexe:Couleurs en français]]') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'[[Annexe:Couleurs en français]]')] + u'{{Thésaurus|fr|couleur}}' + PageTemp[PageTemp.find(u'[[Annexe:Couleurs en français]]')+len(u'[[Annexe:Couleurs en français]]'):len(PageTemp)]
@@ -1931,7 +1932,7 @@ def modification(PageHS):
 			PageTemp = PageTemp[0:PageTemp.find(u'#*')+2] + u'\'\'' + PageTemp[PageTemp.find(u'#*')+2:len(PageTemp)]'''
 		while PageTemp.find(u'\n# [[' + PageHS + u'|') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'\n# [[' + PageHS + u'|')+len(u'\n# [[')] + u'#fr' + PageTemp[PageTemp.find(u'\n# [[' + PageHS + u'|')+len(u'\n# [[' + PageHS):len(PageTemp)]
-			
+		
 		# Retrait des espaces intégrés au modèle
 		while PageTemp.find(u'|pinv= ') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'|pinv= ')+len(u'|pinv=')] + PageTemp[PageTemp.find(u'|pinv= ')+len(u'|pinv= '):len(PageTemp)]
@@ -1947,6 +1948,23 @@ def modification(PageHS):
 		elif PageTemp.find(u'|flexion}}') != -1 and PageHS[len(PageHS)-1:len(PageHS)] == u's' and PageTemp.find(u'{{S|homophones}}\n* [[' + PageHS[0:len(PageHS)-1] + u']]\n*') == -1 and PageTemp.find(u'{{S|homophones}}\n* [[' + PageHS[0:len(PageHS)-1] + u']]') != -1 and PageTemp.find(u'{{S|homophones}}\n* [[' + PageHS[0:len(PageHS)-1] + u']] ') == -1 and PageTemp.find(u'{{S|homophones}}\n* [[' + PageHS[0:len(PageHS)-1] + u']],') == -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'{{S|homophones}}\n* [[' + PageHS[0:len(PageHS)-1] + u']]')] + PageTemp[PageTemp.find(u'{{S|homophones}}\n* [[' + PageHS[0:len(PageHS)-1] + u']]')+len(u'{{S|homophones}}\n* [[' + PageHS[0:len(PageHS)-1] + u']]')+1:len(PageTemp)]
 		
+		# Ajout des redirections des pronominaux
+		if PageTemp.find(u'{{S|verbe|fr}}') != -1:
+			PageTemp2 = PageTemp[PageTemp.find(u'{{S|verbe|fr}}'):]
+			regex = ur'(\n|\')s(e |’)\'\'\''
+			if re.search(regex, PageTemp2) < PageTemp2.find(u'{{S|') or (re.search(regex, PageTemp2) != -1 and PageTemp2.find(u'{{S|') == -1):
+				regex = ur'aeiouyàéèêôù.+'
+				#print HTMLUnicode.HTMLUnicode(PageHS).encode(config.console_encoding, 'replace')
+				if re.search(regex, HTMLUnicode.HTMLUnicode(PageHS)) != -1:	# ne pas prendre [:1] car = & si encodage ASCII du .txt
+					PageHS2 = u's’'+PageHS
+				else:
+					PageHS2 = u'se '+PageHS
+				page2 = Page(site,PageHS2)
+				if not page2.exists():
+					if debogage: print u'Création de ' + PageHS2.encode(config.console_encoding, 'replace')
+					summary2 = u'Création d\'une redirection provisoire catégorisante du pronominal'
+					sauvegarde(page2, u'#REDIRECT[[' + PageHS + u']]\n<!-- Redirection temporaire avant de créer le verbe pronominal -->\n[[Catégorie:Wiktionnaire:Verbes pronominaux à créer en français]]', summary2)
+				
 		# Ajout de modèles pour les gentités et leurs adjectifs
 		if debogage: print u'Gentilés'
 		if PageTemp.find(u'{{langue|fr}}') != -1:
@@ -5029,6 +5047,7 @@ if len(sys.argv) > 1:
 		TraitementFichier = crawlerFile(u'articles_' + family + u'.txt')
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:pl-cour',u'')
+		TraitementLiens = crawlerLink(u'Modèle:pl-rare',u'')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
 	elif sys.argv[1] == u'lien':
