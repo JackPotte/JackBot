@@ -1953,15 +1953,14 @@ def modification(PageHS):
 			PageTemp2 = PageTemp[PageTemp.find(u'{{S|verbe|fr}}'):]
 			regex = ur'(\n|\')s(e |’)\'\'\''
 			if re.search(regex, PageTemp2) < PageTemp2.find(u'{{S|') or (re.search(regex, PageTemp2) != -1 and PageTemp2.find(u'{{S|') == -1):
-				regex = ur'aeiouyàéèêôù.+'
-				#print HTMLUnicode.HTMLUnicode(PageHS).encode(config.console_encoding, 'replace')
-				if re.search(regex, HTMLUnicode.HTMLUnicode(PageHS)) != -1:	# ne pas prendre [:1] car = & si encodage ASCII du .txt
+				regex = ur'^[aeiouyàéèêôù]'
+				if re.search(regex, PageHS):	# ne pas prendre [:1] car = & si encodage ASCII du paramètre DOS / Unix
 					PageHS2 = u's’'+PageHS
 				else:
 					PageHS2 = u'se '+PageHS
 				page2 = Page(site,PageHS2)
 				if not page2.exists():
-					if debogage: print u'Création de ' + PageHS2.encode(config.console_encoding, 'replace')
+					if debogage: print u'Création de ' + CleDeTri.CleDeTri(PageHS2)
 					summary2 = u'Création d\'une redirection provisoire catégorisante du pronominal'
 					sauvegarde(page2, u'#REDIRECT[[' + PageHS + u']]\n<!-- Redirection temporaire avant de créer le verbe pronominal -->\n[[Catégorie:Wiktionnaire:Verbes pronominaux à créer en français]]', summary2)
 				
