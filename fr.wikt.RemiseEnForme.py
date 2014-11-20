@@ -1949,7 +1949,7 @@ def modification(PageHS):
 			PageTemp = PageTemp[0:PageTemp.find(u'{{S|homophones}}\n* [[' + PageHS[0:len(PageHS)-1] + u']]')] + PageTemp[PageTemp.find(u'{{S|homophones}}\n* [[' + PageHS[0:len(PageHS)-1] + u']]')+len(u'{{S|homophones}}\n* [[' + PageHS[0:len(PageHS)-1] + u']]')+1:len(PageTemp)]
 		
 		# Ajout des redirections des pronominaux
-		if PageTemp.find(u'{{S|verbe|fr}}') != -1:
+		if PageTemp.find(u'{{S|verbe|fr}}') != -1 and PageHS[:3] != u'se' and PageHS[:2] != u's’':
 			PageTemp2 = PageTemp[PageTemp.find(u'{{S|verbe|fr}}'):]
 			regex = ur'(\n|\')s(e |’)\'\'\''
 			if re.search(regex, PageTemp2) < PageTemp2.find(u'{{S|') or (re.search(regex, PageTemp2) != -1 and PageTemp2.find(u'{{S|') == -1):

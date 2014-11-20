@@ -16,7 +16,7 @@ site = getSite(language2,family)
 #template = u'past tense of'
 #after = u'hed'
 template = u'en-past of'
-after = u'martyred'
+after = u'tranquillised'
 texte = u'Passé de'
 debogage = False
 
@@ -126,7 +126,7 @@ def modification(Page2):
 		interwiki = wikipedia.replaceLanguageLinks(u'', interwikiInside, site)
 		while interwiki.find(u'[[wiktionary:') != -1:
 			interwiki = interwiki[:interwiki.find(u'[[wiktionary:')+2] + interwiki[interwiki.find(u'[[wiktionary:')+len(u'[[wiktionary:'):len(interwiki)]
-		Page1 = u'=={{langue|' + codelangue + u'|flexion}}==\n=== {{' + nature + u'|' + codelangue + u'}} ===\n\'\'\'' + page2.title() + u'\'\'\' {{pron||' + codelangue + u'}}\n# \'\'' + texte + u'\'\' ' + mot + u'.\n\n[[en:' + page2.title() + u']]\n' + trim(interwiki)
+		Page1 = u'=={{langue|' + codelangue + u'}}==\n=== {{' + nature + u'|' + codelangue + u'|flexion}} ===\n\'\'\'' + page2.title() + u'\'\'\' {{pron||' + codelangue + u'}}\n# \'\'Prétérit de\'\' ' + mot + u'.\n# \'\'Participe passé de\'\' ' + mot + u'.\n\n[[en:' + page2.title() + u']]\n' + trim(interwiki)
 		summary = u'Importation depuis [[en:' + page2.title() + u']]'
 		sauvegarde(page1, Page1, summary)
 
