@@ -1,138 +1,203 @@
 ﻿#!/usr/bin/env python
 # coding: utf-8
-# Ce script important masse
+# Ce script crée les pluriels en français à partir des singuliers
 
 # Importation des modules
 import catlib, pagegenerators, os, codecs, urllib
+import CleDeTri, HTMLUnicode
 from wikipedia import *
 
 # Déclaration
 mynick = "JackBot"
-language1 = "fr"
+language = "fr"
 family = "wiktionary"
-site1 = getSite(language1,family)
-language2 = "en"
-site = getSite(language2,family)
-#template = u'past tense of'
-#after = u'hed'
-template = u'en-past of'
-after = u''
-texte = u'Passé de'
-debogage = False
+site = getSite(language,family)
+Langue = u'fr'
+debogage = True
+debogageLent = False
 
 # Modification du wiki
-def modification(Page2):
-	page2 = Page(site,Page2)
-	page1 = Page(site1,Page2)
-	print (Page2.encode(config.console_encoding, 'replace'))
-	if page2.exists() and page2.namespace() == 0 and not page1.exists():
-		try: PageTemp = page2.get()
-		except wikipedia.NoPage:
-			print u' No page'
-			return
-		except wikipedia.IsRedirectPage:
-			print " Redirect page"
-			return
-		except wikipedia.InvalidPage:
-			print " Invalid page"
-			return
-		except wikipedia.ServerError:
-			print " Server error"
-			return
-		# Nature grammaticale
-		PageTemp2 = PageTemp[:PageTemp.find(template)]
-		# Code langue
-		PageTemp = PageTemp[PageTemp.find(template)+len(template)+1:len(PageTemp)]
-		if PageTemp.find("lang=") != -1 and PageTemp.find("lang=") < PageTemp.find(u'}}'):
-			PageTemp2 = PageTemp[PageTemp.find("lang=")+5:len(PageTemp)]
-			if PageTemp2.find(u'|') != -1 and PageTemp2.find(u'|') < PageTemp2.find(u'}}'):
-				codelangue = PageTemp2[:PageTemp2.find("|")]
-				PageTemp = PageTemp[:PageTemp.find("lang=")] + PageTemp[PageTemp.find("lang=")+5+PageTemp2.find("|"):len(PageTemp)]
-			else:
-				codelangue = PageTemp2[:PageTemp2.find("}}")]
-				PageTemp = PageTemp[:PageTemp.find("lang=")] + PageTemp[PageTemp.find("lang=")+5+PageTemp2.find("}"):len(PageTemp)]
-			if codelangue == u'': codelangue = u'en'
-			elif codelangue == u'Italian': codelangue = u'it'
-			elif codelangue == u'Irish': codelangue = u'ga'
-			elif codelangue == u'German': codelangue = u'de'
-			elif codelangue == u'Middle English': codelangue = u'enm'
-			elif codelangue == u'Old English': codelangue = u'ang'
-			elif codelangue == u'Dutch': codelangue = u'nl'
-			elif codelangue == u'Romanian': codelangue = u'ro'
-			elif codelangue == u'Spanish': codelangue = u'es'
-			elif codelangue == u'Catalan': codelangue = u'ca'
-			elif codelangue == u'Portuguese': codelangue = u'pt'
-			elif codelangue == u'Russian': codelangue = u'ru'
-			elif codelangue == u'French': codelangue = u'fr'
-			elif codelangue == u'Scots': codelangue = u'sco'
-			elif codelangue == u'Chinese': codelangue = u'zh'
-			elif codelangue == u'Mandarin': codelangue = u'zh'
-			elif codelangue == u'Japanese': codelangue = u'ja'
-		else:
-			codelangue = u'en'
-		if debogage: print u' ' + codelangue
-		
-		while PageTemp[:1] == u' ' or PageTemp[:1] == u'|':
-			PageTemp = PageTemp[1:len(PageTemp)]
-		# Lemme
-		if PageTemp.find(u']]') != -1 and PageTemp.find(u']]') < PageTemp.find(u'}}'): # Si on est dans un lien
-			mot = PageTemp[:PageTemp.find(u']]')+2]
-		elif PageTemp.find(u'|') != -1 and PageTemp.find(u'|') < PageTemp.find(u'}}'):
-			mot = PageTemp[:PageTemp.find(u'|')] # A faire : si dièse on remplace en même temps que les codelangue ci-dessous, à patir d'un tableau des langues
-		else:
-			mot = PageTemp[:PageTemp.find(u'}}')]
-		if mot[:2] != u'[[': mot = u'[[' + mot + u']]'
-		
-		# Demande de Lmaltier : on ne crée que les flexions des lemmes existant
-		page3 = Page(site1,mot[2:len(mot)-2])
-		if page3.exists() == u'False':
-			print 'Page du lemme absente du Wiktionnaire'
-			return
-		try: Test = page3.get()
-		except wikipedia.NoPage:
-			print u' No page'
-			return
-		except wikipedia.IsRedirectPage:
-			print " Redirect page"
-			return
-		except wikipedia.InvalidPage:
-			print " Invalid page"
-			return
-		except wikipedia.ServerError:
-			print " Server error"
-			print 
-		if Test.find(u'{{langue|' + codelangue + u'}}') == -1:
-			print ' Paragraphe du lemme absent du Wiktionnaire'
-			return
-		
-		if PageTemp2.rfind(u'===') == -1: return
-		else:
-			PageTemp3 = PageTemp2[:PageTemp2.rfind(u'===')]
-			nature = PageTemp3[PageTemp3.rfind(u'===')+3:len(PageTemp3)]
-		if nature == 'Noun':
-			nature = u'S|nom'
-		elif nature == 'Adjective':
-			nature = u'S|adjectif'
-		elif nature == 'Pronoun':
-			nature = u'S|pronom'
-		elif nature == 'Verb':
-			nature = u'S|verbe'
-		else:
-			print ' Nature inconnue'
-			return
-		if debogage: print nature
-		# Interwikis
-		interwikiInside = pywikibot.getLanguageLinks(PageTemp, site)
-		interwiki = wikipedia.replaceLanguageLinks(u'', interwikiInside, site)
-		while interwiki.find(u'[[wiktionary:') != -1:
-			interwiki = interwiki[:interwiki.find(u'[[wiktionary:')+2] + interwiki[interwiki.find(u'[[wiktionary:')+len(u'[[wiktionary:'):len(interwiki)]
-		Page1 = u'=={{langue|' + codelangue + u'}}==\n=== {{' + nature + u'|' + codelangue + u'|flexion}} ===\n\'\'\'' + page2.title() + u'\'\'\' {{pron||' + codelangue + u'}}\n# \'\'Prétérit de\'\' ' + mot + u'.\n# \'\'Participe passé de\'\' ' + mot + u'.\n\n[[en:' + page2.title() + u']]\n' + trim(interwiki)
-		summary = u'Importation depuis [[en:' + page2.title() + u']]'
-		sauvegarde(page1, Page1, summary)
+def modification(PageHS):
+	if debogage: print u'------------------------------------'
+	print(PageHS.encode(config.console_encoding, 'replace'))
+	page = Page(site,PageHS)
+	if page.exists():
+		if page.namespace() != 0 and page.title() != u'Utilisateur:JackBot/test': return
+	else:
+		print u' Autre namespace l 25'
+		return
+	Modele = [] # Liste des modèles du site à traiter
+	Param = [] # Paramètre du lemme associé
+	Modele.append(u'fr-rég')
+	Param.append(u's')
+	Modele.append(u'fr-accord-cons')
+	Param.append(u'ms')
+	# à faire : ajouter Catégorie:Modèles d’accord en français
 
+	try:
+		PageSing = page.get()
+	except wikipedia.NoPage:
+		print u' NoPage l 40'
+		return
+	except wikipedia.IsRedirectPage:
+		print u' IsRedirectPage l 43'
+		return
+	except wikipedia.BadTitle:
+		print u' BadTitle l 46'
+		return
+	except wikipedia.InvalidPage:
+		print u' InvalidPage l 49'
+		return
+	except wikipedia.ServerError:
+		print u' ServerError l 52'
+		return
+
+	for m in range(1,len(Modele)):
+		# Parcours de la page pour chaque modèle
+		if PageSing.find(Modele[m]) == -1:
+			print u' Modèle absent l 58'
+			return
+		else:
+			PageTemp = PageSing
+		
+		while PageTemp.find(Modele[m]) != -1:
+			# Parcours de la page pour chaque occurence du modèle
+			nature = PageTemp[:PageTemp.find(Modele[m])]
+			nature = nature[nature.rfind(u'{{S|')+len(u'{{S|'):]
+			nature = nature[:nature.find(u'|')]
+			if debogage:
+				print u' Nature : ' + nature.encode(config.console_encoding, 'replace')
+			if nature == u'erreur' or nature == u'faute':
+				return
+				
+			PageTemp = PageTemp[PageTemp.find(Modele[m])+len(Modele[m]):]
+			if PageTemp.find(u'inv=') != -1 and PageTemp.find(u'inv=') < PageTemp.find(u'}}'): return
+			if PageTemp.find(u's=') != -1 and (PageTemp.find(u's=') < PageTemp.find(u'}}') or PageTemp.find(u's=') < PageTemp.find(u'\n')): return
+			# Prononciation
+			if PageTemp.find(u'|pp=') != -1 and PageTemp.find(u'|pp=') < PageTemp.find(u'}}'):
+				PageTemp2 = PageTemp[PageTemp.find(u'|pp=')+4:PageTemp.find(u'}}')]
+				if PageTemp2.find(u'|') != -1:
+					pron = PageTemp[PageTemp.find(u'|pp=')+4:PageTemp.find(u'|pp=')+4+PageTemp2.find(u'|')]
+				else:
+					pron = PageTemp[PageTemp.find(u'|pp=')+4:PageTemp.find(u'}}')]
+			else:
+				pron = PageTemp[:PageTemp.find(u'}}')]
+				while pron.find(u'=') != -1:
+					pron2 = pron[0:pron.find(u'=')]
+					pron3 = pron[pron.find(u'='):len(pron)]
+					if pron2.find(u'|') == -1:
+						pron = pron[pron.find(u'|')+1:len(pron)]
+					else:
+						if pron3.find(u'|') == -1:
+							pron = pron[0:pron2.rfind(u'|')]
+						else:
+							pron = pron[0:pron2.rfind(u'|')]
+					if pron3.find(u'|') == -1:
+						pron = pron[0:pron2.rfind(u'|')]
+					else:
+						pron = pron[0:pron2.rfind(u'|')] + pron[pron2.rfind(u'|')+pron3.find(u'|'):len(pron)]
+			while pron[0:1] == u' ': pron = pron[1:len(pron)]
+			if pron.rfind(u'|') > 2:
+				pronM = pron[:pron.rfind(u'|')]
+				while pronM.rfind(u'|') != -1:
+					pronM = pronM[:pronM.rfind(u'|')]
+			else:
+				pronM = pron
+			if debogage:
+				print u' Prononciation : ' + pron.encode(config.console_encoding, 'replace')
+			# h aspiré
+			H = u''
+			if PageTemp.find(u'|prefpron={{h aspiré') != -1 and PageTemp.find(u'|prefpron={{h aspiré') < PageTemp.find(u'}}'): H = u'|prefpron={{h aspiré}}'
+			if PageTemp.find(u'|préfpron={{h aspiré') != -1 and PageTemp.find(u'|préfpron={{h aspiré') < PageTemp.find(u'}}'): H = u'|préfpron={{h aspiré}}'
+			# genre
+			genre = u''
+			PageTemp2 = PageTemp[PageTemp.find(u'\n')+1:len(PageTemp)]
+			while PageTemp2[:1] == u'[' or PageTemp2[:1] == u'\n' and len(PageTemp2) > 1: PageTemp2 = PageTemp2[PageTemp2.find(u'\n')+1:len(PageTemp2)]
+			if PageTemp2.find(u'{{m}}') != -1 and PageTemp2.find(u'{{m}}') < PageTemp2.find(u'\n'): genre = u' {{m}}'	
+			if PageTemp2.find(u'{{f}}') != -1 and PageTemp2.find(u'{{f}}') < PageTemp2.find(u'\n'): genre = u' {{f}}'
+			MF = u''
+			if PageTemp2.find(u'{{mf}}') != -1 and PageTemp2.find(u'{{mf}}') < PageTemp2.find(u'\n'):
+				genre = u' {{mf}}'
+				MF = u'|mf=oui'
+				if PageSing.find(u'|mf=') == -1:
+					PageSing = PageSing[0:PageSing.find(Modele[m])+len(Modele[m])] + u'|mf=oui' + PageSing[PageSing.find(Modele[m])+len(Modele[m]):len(PageSing)]
+					sauvegarde(page, PageSing, u'|mf=oui')
+			if PageTemp.find(u'|mf=') != -1 and PageTemp.find(u'|mf=') < PageTemp.find(u'}}'): MF = u'|mf=oui' 
+			# Pluriel
+			summary = u'Création du pluriel de [[' + PageHS + u']]'
+			pluriel = u''
+			if (PageTemp.find(u'|p=') != -1 and PageTemp.find(u'|p=') < PageTemp.find(u'}}')):
+				pluriel = PageTemp[PageTemp.find(u'|p=')+3:PageTemp.find(u'}}')]
+				if pluriel.find(u'|') != -1: pluriel = pluriel[0:pluriel.find(u'|')]
+			if not pluriel: pluriel = PageHS + u's'
+			if pluriel[-2:] == u'ss' or pluriel.find(u'{') != -1:
+				print pluriel[-2:]
+				return
+			if debogageLent:
+				print ' Paramètre du modèle du lemme'
+				raw_input(PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace'))
+			
+			page2 = Page(site,pluriel)
+			if page2.exists():
+				try:
+					PagePluriel = page2.get()
+				except wikipedia.NoPage:
+					print u' NoPage l 120'
+					return
+				except wikipedia.IsRedirectPage:
+					print u' IsRedirectPage l 123'
+					return
+				except wikipedia.BadTitle:
+					print u' BadTitle l 126'
+					return
+				except wikipedia.InvalidPage:
+					print u' InvalidPage l 129'
+					return
+				except wikipedia.ServerError:
+					print u' ServerError l 132'
+					return
+				if PagePluriel.find(u'{{langue|' + Langue + u'}}') != -1:
+					print u' Pluriel existant l 135'
+					return
+			else:
+				if debogage: print u' Pluriel introuvable l 138'
+				PagePluriel = u''
+			
+			# **************** Pluriel 1 ****************
+			if debogage: print u' Pluriel 1'
+			Modele = u'{{' + Modele[m] + pron + H + MF + '|' + Param[m] + u'=' + PageHS + u'}}'
+			PageEnd = u'== {{langue|fr}} ==\n=== {{S|' + nature + u'|fr|flexion}} ===\n' + Modele + u'\n\'\'\'' + pluriel + u'\'\'\' {{pron' + pronM + '|fr}}' + genre + u'\n# \'\'Pluriel de\'\' [[' + PageHS +']].\n'
+			while PageEnd.find(u'{{pron|fr}}') != -1:
+				PageEnd = PageEnd[0:PageEnd.find(u'{{pron|fr}}')+7] + u'|' + PageEnd[PageEnd.find(u'{{pron|fr}}')+7:len(PageEnd)]
+			if debogageLent:
+				raw_input(PageEnd.encode(config.console_encoding, 'replace'))
+				
+			if pluriel[len(pluriel)-2:len(pluriel)] == u'ss':
+				PageSing = PageSing[0:PageSing.find(Modele[m])+len(Modele[m])] + u'|' + Param[m] + u'=' + pluriel[0:len(pluriel)-2] + PageSing[PageSing.find(Modele[m])+len(Modele[m]):len(PageSing)]
+				sauvegarde(page, PageSing, u'{{' + Modele[m] + u'|s=...}}')
+			elif pluriel[len(pluriel)-2:len(pluriel)] == u'xs':
+				print u' Pluriel en xs'
+				return
+			else:
+				PageEnd = HTMLUnicode.HTMLUnicode(PageEnd)
+				sauvegarde(page2, PageEnd + u'\n' + PagePluriel, summary)
 
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
+
+def rec_anagram(counter):
+	# Copyright http://www.siteduzero.com/forum-83-541573-p2-exercice-generer-tous-les-anagrammes.html
+    if sum(counter.values()) == 0:
+        yield ''
+    else:
+        for c in counter:
+            if counter[c] != 0:
+                counter[c] -= 1
+                for _ in rec_anagram(counter):
+                    yield c + _
+                counter[c] += 1
+def anagram(word):
+    return rec_anagram(collections.Counter(word))
 	
 # Lecture du fichier articles_list.txt (au même format que pour replace.py)
 def crawlerFile(source):
@@ -329,10 +394,11 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:pl-cour',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in Modele[m] calls',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
-	TraitementLiens = crawlerLink(u'Template:'+template, after)
+	TraitementLiens = crawlerLink(u'Modèle:fr-accord-cons',u'blinquant')
+
