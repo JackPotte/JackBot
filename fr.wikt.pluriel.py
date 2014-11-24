@@ -30,6 +30,7 @@ def modification(PageHS):
 	Param = [] # Paramètre du lemme associé
 	Modele.append(u'fr-rég')
 	Param.append(u's')
+	limiteMF = 2
 	Modele.append(u'fr-accord-cons')
 	Param.append(u'ms')
 	# à faire : ajouter Catégorie:Modèles d’accord en français
@@ -66,7 +67,12 @@ def modification(PageHS):
 			nature = nature[nature.rfind(u'{{S|')+len(u'{{S|'):]
 			nature = nature[:nature.find(u'|')]
 			if debogage:
-				print u' Nature : ' + nature.encode(config.console_encoding, 'replace')
+				try:
+					print u' Nature : ' + nature.encode(config.console_encoding, 'replace')
+				except UnicodeDecodeError:
+					print u' Nature à décoder'
+				except UnicodeEncodeError:
+					print u' Nature à encoder'
 			if nature == u'erreur' or nature == u'faute':
 				return
 				
@@ -83,28 +89,34 @@ def modification(PageHS):
 			else:
 				pron = PageTemp[:PageTemp.find(u'}}')]
 				while pron.find(u'=') != -1:
-					pron2 = pron[0:pron.find(u'=')]
+					pron2 = pron[:pron.find(u'=')]
 					pron3 = pron[pron.find(u'='):len(pron)]
 					if pron2.find(u'|') == -1:
 						pron = pron[pron.find(u'|')+1:len(pron)]
 					else:
 						if pron3.find(u'|') == -1:
-							pron = pron[0:pron2.rfind(u'|')]
+							pron = pron[:pron2.rfind(u'|')]
 						else:
-							pron = pron[0:pron2.rfind(u'|')]
+							pron = pron[:pron2.rfind(u'|')]
 					if pron3.find(u'|') == -1:
-						pron = pron[0:pron2.rfind(u'|')]
+						pron = pron[:pron2.rfind(u'|')]
 					else:
-						pron = pron[0:pron2.rfind(u'|')] + pron[pron2.rfind(u'|')+pron3.find(u'|'):len(pron)]
-			while pron[0:1] == u' ': pron = pron[1:len(pron)]
-			if pron.rfind(u'|') > 2:
+						pron = pron[:pron2.rfind(u'|')] + pron[pron2.rfind(u'|')+pron3.find(u'|'):len(pron)]
+			while pron[:1] == u' ': pron = pron[1:len(pron)]
+			if pron.rfind(u'|') > 0:
 				pronM = pron[:pron.rfind(u'|')]
-				while pronM.rfind(u'|') != -1:
+				while pronM.rfind(u'|') > 0:
 					pronM = pronM[:pronM.rfind(u'|')]
 			else:
 				pronM = pron
 			if debogage:
-				print u' Prononciation : ' + pron.encode(config.console_encoding, 'replace')
+				try:
+					print u' Prononciation : ' + pron.encode(config.console_encoding, 'replace')
+				except UnicodeDecodeError:
+					print u' Prononciation à décoder'
+				except UnicodeEncodeError:
+					print u' Prononciation à encoder'
+					
 			# h aspiré
 			H = u''
 			if PageTemp.find(u'|prefpron={{h aspiré') != -1 and PageTemp.find(u'|prefpron={{h aspiré') < PageTemp.find(u'}}'): H = u'|prefpron={{h aspiré}}'
@@ -119,8 +131,8 @@ def modification(PageHS):
 			if PageTemp2.find(u'{{mf}}') != -1 and PageTemp2.find(u'{{mf}}') < PageTemp2.find(u'\n'):
 				genre = u' {{mf}}'
 				MF = u'|mf=oui'
-				if PageSing.find(u'|mf=') == -1:
-					PageSing = PageSing[0:PageSing.find(Modele[m])+len(Modele[m])] + u'|mf=oui' + PageSing[PageSing.find(Modele[m])+len(Modele[m]):len(PageSing)]
+				if PageSing.find(u'|mf=') == -1 and m < limiteMF:
+					PageSing = PageSing[:PageSing.find(Modele[m])+len(Modele[m])] + u'|mf=oui' + PageSing[PageSing.find(Modele[m])+len(Modele[m]):len(PageSing)]
 					sauvegarde(page, PageSing, u'|mf=oui')
 			if PageTemp.find(u'|mf=') != -1 and PageTemp.find(u'|mf=') < PageTemp.find(u'}}'): MF = u'|mf=oui' 
 			# Pluriel
@@ -128,7 +140,7 @@ def modification(PageHS):
 			pluriel = u''
 			if (PageTemp.find(u'|p=') != -1 and PageTemp.find(u'|p=') < PageTemp.find(u'}}')):
 				pluriel = PageTemp[PageTemp.find(u'|p=')+3:PageTemp.find(u'}}')]
-				if pluriel.find(u'|') != -1: pluriel = pluriel[0:pluriel.find(u'|')]
+				if pluriel.find(u'|') != -1: pluriel = pluriel[:pluriel.find(u'|')]
 			if not pluriel: pluriel = PageHS + u's'
 			if pluriel[-2:] == u'ss' or pluriel.find(u'{') != -1:
 				print pluriel[-2:]
@@ -168,12 +180,12 @@ def modification(PageHS):
 			Modele = u'{{' + Modele[m] + pron + H + MF + '|' + Param[m] + u'=' + PageHS + u'}}'
 			PageEnd = u'== {{langue|fr}} ==\n=== {{S|' + nature + u'|fr|flexion}} ===\n' + Modele + u'\n\'\'\'' + pluriel + u'\'\'\' {{pron' + pronM + '|fr}}' + genre + u'\n# \'\'Pluriel de\'\' [[' + PageHS +']].\n'
 			while PageEnd.find(u'{{pron|fr}}') != -1:
-				PageEnd = PageEnd[0:PageEnd.find(u'{{pron|fr}}')+7] + u'|' + PageEnd[PageEnd.find(u'{{pron|fr}}')+7:len(PageEnd)]
+				PageEnd = PageEnd[:PageEnd.find(u'{{pron|fr}}')+7] + u'|' + PageEnd[PageEnd.find(u'{{pron|fr}}')+7:len(PageEnd)]
 			if debogageLent:
 				raw_input(PageEnd.encode(config.console_encoding, 'replace'))
 				
 			if pluriel[len(pluriel)-2:len(pluriel)] == u'ss':
-				PageSing = PageSing[0:PageSing.find(Modele[m])+len(Modele[m])] + u'|' + Param[m] + u'=' + pluriel[0:len(pluriel)-2] + PageSing[PageSing.find(Modele[m])+len(Modele[m]):len(PageSing)]
+				PageSing = PageSing[:PageSing.find(Modele[m])+len(Modele[m])] + u'|' + Param[m] + u'=' + pluriel[:len(pluriel)-2] + PageSing[PageSing.find(Modele[m])+len(Modele[m]):len(PageSing)]
 				sauvegarde(page, PageSing, u'{{' + Modele[m] + u'|s=...}}')
 			elif pluriel[len(pluriel)-2:len(pluriel)] == u'xs':
 				print u' Pluriel en xs'
@@ -206,12 +218,12 @@ def crawlerFile(source):
 		while 1:
 			PageHS = PagesHS.readline()
 			fin = PageHS.find("\t")
-			PageHS = PageHS[0:fin]
+			PageHS = PageHS[:fin]
 			if PageHS == '': break
 			if PageHS.find(u'[[') != -1:
 				PageHS = PageHS[PageHS.find(u'[[')+2:len(PageHS)]
 			if PageHS.find(u']]') != -1:
-				PageHS = PageHS[0:PageHS.find(u']]')]
+				PageHS = PageHS[:PageHS.find(u']]')]
 			# Conversion ASCII => Unicode (pour les .txt)
 			modification(HTMLUnicode.HTMLUnicode(PageHS))
 		PagesHS.close()
@@ -400,5 +412,5 @@ if len(sys.argv) > 1:
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
-	TraitementLiens = crawlerLink(u'Modèle:fr-accord-cons',u'blinquant')
+	TraitementLiens = crawlerLink(u'Modèle:fr-accord-cons',u'magistrat')
 
