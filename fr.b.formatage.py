@@ -237,7 +237,7 @@ if len(sys.argv) > 1:
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
-	TraitementLiens = crawlerLink(u'Modèle:cite web',u'')
+	TraitementPage = modification(u'Diaspora : Le guide du parfait débutant/Icônes des réseaux sociaux sur le profil')
 
 '''
 TraitementLiens = crawlerLink(u'Modèle:Palette',u'')

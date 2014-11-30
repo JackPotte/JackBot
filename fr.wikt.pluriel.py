@@ -412,5 +412,6 @@ if len(sys.argv) > 1:
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
-	TraitementLiens = crawlerLink(u'Modèle:fr-accord-cons',u'magistrat')
+	#TraitementLiens = crawlerLink(u'Modèle:fr-accord-cons',u'')
+	TraitementLiens = crawlerLink(u'Modèle:fr-accord-al',u'')
 
