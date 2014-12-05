@@ -4848,7 +4848,10 @@ def trim(s):
     return s.strip(" \t\n\r\0\x0B")
 
 def addCat(PageTemp, lang, cat):
-	return PageTemp + u'\n' + cat
+	if PageTemp.find(cat) != -1:
+		return PageTemp
+	else:
+		return PageTemp + u'\n' + cat
 
 def rec_anagram(counter):
 	# Copyright http://www.siteduzero.com/forum-83-541573-p2-exercice-generer-tous-les-anagrammes.html
