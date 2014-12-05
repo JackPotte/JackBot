@@ -112,7 +112,7 @@ def CleDeTri(PageTitre):
 		elif PageTitre[lettre:lettre+1] == u'’' or PageTitre[lettre:lettre+1] == u'ʼ' or PageTitre[lettre:lettre+1] == u'\'':
 			PageT = PageT + ""
 			key = "yes"
-		elif PageTitre[lettre:lettre+1] == u'\\' or PageTitre[lettre:lettre+1] == u'/' or PageTitre[lettre:lettre+1] == u'×' or PageTitre[lettre:lettre+1] == u'·' or PageTitre[lettre:lettre+1] == u'...' or PageTitre[lettre:lettre+1] == u'-' PageTitre[lettre:lettre+1] == u'\'' or PageTitre[lettre:lettre+1] == u'.' or PageTitre[lettre:lettre+1] == u',' or PageTitre[lettre:lettre+1] == u'(' or PageTitre[lettre:lettre+1] == u')':
+		elif PageTitre[lettre:lettre+1] == u'\\' or PageTitre[lettre:lettre+1] == u'/' or PageTitre[lettre:lettre+1] == u'×' or PageTitre[lettre:lettre+1] == u'·' or PageTitre[lettre:lettre+1] == u'...' or PageTitre[lettre:lettre+1] == u'-' or PageTitre[lettre:lettre+1] == u'\'' or PageTitre[lettre:lettre+1] == u'.' or PageTitre[lettre:lettre+1] == u',' or PageTitre[lettre:lettre+1] == u'(' or PageTitre[lettre:lettre+1] == u')':
 			PageT = PageT + " "
 			key = "yes"'''
 		# Grec

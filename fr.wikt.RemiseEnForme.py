@@ -1623,31 +1623,38 @@ def modification(PageHS):
 			while PageTemp.find(u'<sup/>') != -1:
 				PageTemp = PageTemp[0:PageTemp.find(u'<sup/>')] + u'</sup>' + PageTemp[PageTemp.find(u'<sup/>')+len(u'<sup/>'):len(PageTemp)]
 		
-			# Ajout de catégories
-			'''if PageHS[len(PageHS)-len(u'ejar'):] == u'ejar':
-				if PageTemp.find(u'{{langue|ca}}') != -1 and PageTemp.find(u'[[Catégorie:Verbes en catalan suffixés en -ejar]]') == -1:
-					PageTemp2 = PageTemp[:PageTemp.find(u'{{langue|ca}}')+len(u'{{langue|ca}}'):]
-					if PageTemp2.find(u'\n== {{langue|') != -1:
-						if debogage: print u'cat au milieu'
-						PageTemp = PageTemp[:PageTemp.find(u'{{langue|ca}}')+len(u'{{langue|ca}}')+PageTemp2.find(u'\n== {{langue|')] + u'\n[[Catégorie:Verbes en catalan suffixés en -ejar]]\n\n' + PageTemp[PageTemp.find(u'{{langue|ca}}')+len(u'{{langue|ca}}')+PageTemp2.find(u'\n== {{langue|'):]
-					else:
-						if debogage: print u'cat à la fin'
-						PageTemp = PageTemp + u'\n\n[[Catégorie:Verbes en occitan suffixés en -ejar]]\n'
-
-				if PageTemp.find(u'{{langue|oc}}') != -1 and PageTemp.find(u'[[Catégorie:Verbes en occitan suffixés en -ejar]]') == -1:
-					PageTemp2 = PageTemp[PageTemp.find(u'{{langue|oc}}')+len(u'{{langue|oc}}'):]
-					if PageTemp2.find(u'\n== {{langue|') != -1:
-						if debogage: print u'cat au milieu'
-						PageTemp = PageTemp[:PageTemp.find(u'{{langue|oc}}')+len(u'{{langue|oc}}')+PageTemp2.find(u'\n== {{langue|')] + u'\n[[Catégorie:Verbes en occitan suffixés en -ejar]]\n\n' + PageTemp[PageTemp.find(u'{{langue|oc}}')+len(u'{{langue|oc}}')+PageTemp2.find(u'\n== {{langue|'):]
-					else:
-						if debogage: print u'cat à la fin'
-						PageTemp = PageTemp + u'\n\n[[Catégorie:Verbes en occitan suffixés en -ejar]]\n'
-			
-			elif PageHS[len(PageHS)-len(u'-able'):] == u'-able':
-				if PageTemp.find(u'{{langue|fr}}') != -1 and PageTemp.find(u'[[Catégorie:Mots en français suffixés en -able]]') == -1:
-				
-				if PageTemp.find(u'{{langue|en}}') != -1 and PageTemp.find(u'[[Category:Mots en anglais suffixés en -able]]') == -1:'''
-
+		# Ajout de catégories
+		if PageHS.find(u'à‎') != -1 or PageHS.find(u'À‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:A avec un accent grave en anglais‎]]')
+		if PageHS.find(u'á‎‎') != -1 or PageHS.find(u'Á‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:A avec un accent aigu en anglais‎]]')
+		if PageHS.find(u'â‎‎') != -1 or PageHS.find(u'Â‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:A avec un accent circonflexe en anglais‎]]')		
+		if PageHS.find(u'ä‎‎') != -1 or PageHS.find(u'Ä‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:A avec un tréma en anglais‎]]')
+		if PageHS.find(u'ã‎‎') != -1 or PageHS.find(u'Ã‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:A avec un tilde en anglais‎]]')
+		if PageHS.find(u'ā‎‎') != -1 or PageHS.find(u'Ā‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:A avec un macron en anglais‎]]')
+		
+		if PageHS.find(u'è') != -1 or PageHS.find(u'È‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:E avec un accent grave en anglais‎]]')
+		if PageHS.find(u'é‎‎') != -1 or PageHS.find(u'É‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:E avec un accent aigu en anglais‎]]')
+		if PageHS.find(u'ê‎‎') != -1 or PageHS.find(u'Ê‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:E avec un accent circonflexe en anglais‎]]')		
+		if PageHS.find(u'ë‎‎‎') != -1 or PageHS.find(u'Ë‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:E avec un tréma en anglais‎]]')
+		if PageHS.find(u'ē‎‎') != -1 or PageHS.find(u'Ē‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:E avec un macron en anglais‎]]')
+		
+		if PageHS.find(u'ì‎') != -1 or PageHS.find(u'Ì‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:I avec un accent grave en anglais‎]]')
+		if PageHS.find(u'í') != -1 or PageHS.find(u'Í‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:I avec un accent aigu en anglais‎]]')
+		if PageHS.find(u'î‎‎') != -1 or PageHS.find(u'Î‎‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:I avec un accent circonflexe en anglais‎]]')		
+		if PageHS.find(u'ï‎‎‎') != -1 or PageHS.find(u'Ï‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:I avec un tréma en anglais‎]]')
+		if PageHS.find(u'ī') != -1 or PageHS.find(u'Ī‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:I avec un macron en anglais‎]]')
+		
+		if PageHS.find(u'ó‎‎') != -1 or PageHS.find(u'Ó‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:O avec un accent aigu en anglais‎]]')
+		if PageHS.find(u'ô‎') != -1 or PageHS.find(u'Ô‎‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:O avec un accent circonflexe en anglais‎]]')		
+		if PageHS.find(u'ö‎‎‎') != -1 or PageHS.find(u'Ö‎‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:O avec un tréma en anglais‎]]')
+		if PageHS.find(u'õ‎‎‎') != -1 or PageHS.find(u'Õ‎‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:O avec un tilde en anglais‎]]')
+		
+		if PageHS.find(u'ù‎') != -1 or PageHS.find(u'Ù‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:U avec un accent grave en anglais‎]]')
+		if PageHS.find(u'ú‎') != -1 or PageHS.find(u'Ú‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:U avec un accent aigu en anglais‎]]')
+		if PageHS.find(u'û‎‎‎') != -1 or PageHS.find(u'Û‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:U avec un accent circonflexe en anglais‎]]')		
+		if PageHS.find(u'ü‎‎‎') != -1 or PageHS.find(u'Ü‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:U avec un tréma en anglais‎]]')
+		if PageHS.find(u'ũ‎‎') != -1 or PageHS.find(u'Ũ‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:U avec un tilde en anglais‎]]')
+		if PageHS.find(u'ū‎‎‎') != -1 or PageHS.find(u'Ū‎‎') != -1: PageTemp = addCat(PageTemp, 'en', '[[Catégorie:U avec un macron en anglais‎]]')
+		
 		if debogage: print u'Remplacements des modèles'
 		PageTemp = re.sub(ur'{{(formatnum|Formatnum|FORMATNUM)\:([0-9]*) ', ur'{{\1:\2', PageTemp)
 		PageTemp = re.sub(ur'{{terme*\|Registre neutre}} *', ur'', PageTemp)
@@ -4839,6 +4846,9 @@ def modification(PageHS):
 
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
+
+def addCat(PageTemp, lang, cat):
+	return PageTemp + u'\n' + cat
 
 def rec_anagram(counter):
 	# Copyright http://www.siteduzero.com/forum-83-541573-p2-exercice-generer-tous-les-anagrammes.html
