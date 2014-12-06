@@ -1625,6 +1625,40 @@ def modification(PageHS):
 				PageTemp = PageTemp[0:PageTemp.find(u'<sup/>')] + u'</sup>' + PageTemp[PageTemp.find(u'<sup/>')+len(u'<sup/>'):len(PageTemp)]
 		
 		if debogage: print u'Ajout de catégories'
+		
+		if re.search(ur'æ|Æ', PageHS) or PageHS.find(u'æ‎') != -1 or PageHS.find(u'Æ‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:æ en français]]')
+		if re.search(ur'œ|Œ', PageHS) or PageHS.find(u'œ‎') != -1 or PageHS.find(u'Œ‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:œ en français]]')
+		
+		if re.search(ur'à|À‎', PageHS) or PageHS.find(u'à‎') != -1 or PageHS.find(u'À‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:A avec un accent grave en français]]')
+		if re.search(ur'á‎|Á‎‎', PageHS) or PageHS.find(u'á‎‎') != -1 or PageHS.find(u'Á‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:A avec un accent aigu en français]]')
+		if re.search(ur'â‎|Â‎‎', PageHS) or PageHS.find(u'â‎‎') != -1 or PageHS.find(u'Â‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:A avec un accent circonflexe en français]]')		
+		if re.search(ur'ä‎|Ä‎‎', PageHS) or PageHS.find(u'ä‎‎') != -1 or PageHS.find(u'Ä‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:A avec un tréma en français]]')
+		if re.search(ur'ã‎|Ã‎‎', PageHS) or PageHS.find(u'ã‎‎') != -1 or PageHS.find(u'Ã‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:A avec un tilde en français]]')
+		if re.search(ur'ā‎|Ā‎‎', PageHS) or PageHS.find(u'ā‎‎') != -1 or PageHS.find(u'Ā‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:A avec un macron en français]]')
+
+		if re.search(ur'ë‎‎|Ë‎‎', PageHS) or PageHS.find(u'ë‎‎‎') != -1 or PageHS.find(u'Ë‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:E avec un tréma en français]]')
+		if re.search(ur'ē‎|Ē‎‎', PageHS) or PageHS.find(u'ē‎‎') != -1 or PageHS.find(u'Ē‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:E avec un macron en français]]')
+
+		if re.search(ur'ì|Ì‎', PageHS) or PageHS.find(u'ì‎') != -1 or PageHS.find(u'Ì‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:I avec un accent grave en français]]')
+		if re.search(ur'í|Í‎‎', PageHS) or PageHS.find(u'í') != -1 or PageHS.find(u'Í‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:I avec un accent aigu en français]]')
+		if re.search(ur'î‎|Î‎‎‎', PageHS) or PageHS.find(u'î‎‎') != -1 or PageHS.find(u'Î‎‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:I avec un accent circonflexe en français]]')		
+		if re.search(ur'ï‎‎|Ï‎‎', PageHS) or PageHS.find(u'ï‎‎‎') != -1 or PageHS.find(u'Ï‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:I avec un tréma en français]]')
+		if re.search(ur'ī|Ī‎‎', PageHS) or PageHS.find(u'ī') != -1 or PageHS.find(u'Ī‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:I avec un macron en français]]')
+
+		if re.search(ur'ñ‎‎|Ñ‎‎‎', PageHS) or PageHS.find(u'ñ‎‎‎') != -1 or PageHS.find(u'Ñ‎‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:N avec un tilde en français]]')
+		
+		if re.search(ur'ó‎|Ó‎‎', PageHS) or PageHS.find(u'ó‎‎') != -1 or PageHS.find(u'Ó‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:O avec un accent aigu en français]]')
+		if re.search(ur'ö‎‎|Ö‎‎‎', PageHS) or PageHS.find(u'ö‎‎‎') != -1 or PageHS.find(u'Ö‎‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:O avec un tréma en français]]')
+		if re.search(ur'õ‎‎|Õ‎‎‎', PageHS) or PageHS.find(u'õ‎‎‎') != -1 or PageHS.find(u'Õ‎‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:O avec un tilde en français]]')
+
+		if re.search(ur'ù|Ù‎‎', PageHS) or PageHS.find(u'ù‎') != -1 or PageHS.find(u'Ù‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:U avec un accent grave en français]]')
+		if re.search(ur'ú|Ú‎‎', PageHS) or PageHS.find(u'ú‎') != -1 or PageHS.find(u'Ú‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:U avec un accent aigu en français]]')
+		if re.search(ur'û‎‎|Û‎‎', PageHS) or PageHS.find(u'û‎‎‎') != -1 or PageHS.find(u'Û‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:U avec un accent circonflexe en français]]')		
+		if re.search(ur'ü‎‎|Ü‎', PageHS) or PageHS.find(u'ü‎‎‎') != -1 or PageHS.find(u'Ü‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:U avec un tréma en français]]')
+		if re.search(ur'ũ‎|Ũ‎‎', PageHS) or PageHS.find(u'ũ‎‎') != -1 or PageHS.find(u'Ũ‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:U avec un tilde en français]]')
+		if re.search(ur'ū‎‎|Ū‎‎', PageHS) or PageHS.find(u'ū‎‎‎') != -1 or PageHS.find(u'Ū‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:U avec un macron en français]]')
+
+		
 		if re.search(ur'æ|Æ', PageHS) or PageHS.find(u'æ‎') != -1 or PageHS.find(u'Æ‎') != -1: PageTemp = addCat(PageTemp, u'en', u'[[Catégorie:æ en anglais‎]]')
 		if re.search(ur'œ|Œ', PageHS) or PageHS.find(u'œ‎') != -1 or PageHS.find(u'Œ‎') != -1: PageTemp = addCat(PageTemp, u'en', u'[[Catégorie:œ en anglais‎]]')
 		
@@ -1647,6 +1681,8 @@ def modification(PageHS):
 		if re.search(ur'ï‎‎|Ï‎‎', PageHS) or PageHS.find(u'ï‎‎‎') != -1 or PageHS.find(u'Ï‎‎') != -1: PageTemp = addCat(PageTemp, u'en', u'[[Catégorie:I avec un tréma en anglais‎]]')
 		if re.search(ur'ī|Ī‎‎', PageHS) or PageHS.find(u'ī') != -1 or PageHS.find(u'Ī‎‎') != -1: PageTemp = addCat(PageTemp, u'en', u'[[Catégorie:I avec un macron en anglais‎]]')
 
+		if re.search(ur'ñ‎‎|Ñ‎‎‎', PageHS) or PageHS.find(u'ñ‎‎‎') != -1 or PageHS.find(u'Ñ‎‎‎') != -1: PageTemp = addCat(PageTemp, u'en', u'[[Catégorie:N avec un tilde en anglais]]')
+		
 		if re.search(ur'ó‎|Ó‎‎', PageHS) or PageHS.find(u'ó‎‎') != -1 or PageHS.find(u'Ó‎‎') != -1: PageTemp = addCat(PageTemp, u'en', u'[[Catégorie:O avec un accent aigu en anglais‎]]')
 		if re.search(ur'ô|Ô‎‎‎', PageHS) or PageHS.find(u'ô‎') != -1 or PageHS.find(u'Ô‎‎‎') != -1: PageTemp = addCat(PageTemp, u'en', u'[[Catégorie:O avec un accent circonflexe en anglais‎]]')		
 		if re.search(ur'ö‎‎|Ö‎‎‎', PageHS) or PageHS.find(u'ö‎‎‎') != -1 or PageHS.find(u'Ö‎‎‎') != -1: PageTemp = addCat(PageTemp, u'en', u'[[Catégorie:O avec un tréma en anglais‎]]')
@@ -1766,6 +1802,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{nl}}', u'néerlandais')
 		PageTemp = PageTemp.replace(u'{{pt}}', u'portugais')
 		PageTemp = PageTemp.replace(u'{{it}}', u'italien')
+		PageTemp = PageTemp.replace(u'{{nds}}', u'bas allemand')
 		
 		# Modèles trop courts
 		if debogage: print u'Modèles courts'
