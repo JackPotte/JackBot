@@ -15,6 +15,8 @@ def HTMLUnicode(PageHS):
 	PageHS = PageHS.replace(u'&#228;', u'ä')
 	PageHS = PageHS.replace(u'&#261;', u'ą')
 	PageHS = PageHS.replace(u'&#227;', u'ã')
+	PageHS = PageHS.replace(u'&#257;', u'ā')
+
 	PageHS = PageHS.replace(u'&#230;', u'æ')
 	PageHS = PageHS.replace(u'&#7855;', u'ắ')
 	PageHS = PageHS.replace(u'&#7847;', u'ầ')
