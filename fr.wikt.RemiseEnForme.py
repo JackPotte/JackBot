@@ -28,7 +28,7 @@ family = "wiktionary"
 mynick = "JackBot"
 site = getSite(language,family)
 siteEN = getSite('en',family)
-debogage = True
+debogage = False
 debogageLent = False
 TailleAnagramme = 4 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 Modele = [] # Liste des modèles du site à traiter
@@ -5090,7 +5090,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'Achæan')
+		TraitementPage = modification(u'Ajië')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
