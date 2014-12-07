@@ -1604,6 +1604,7 @@ def modification(PageHS):
 				PageTemp = PageTemp[0:PageTemp.find(baratin)] + PageTemp[PageTemp.find(baratin)+len(baratin):len(PageTemp)]
 				summary = summary + u', {{clé de tri|}} supprimée'
 			baratin = u'{{clé de tri|}}<!-- Veuillez mettre juste après « {{clé de tri| » le titre de la page en y enlevant tous les accents et éventuels apostrophes, et en changeant les éventuels traits d’union et autres caractères spéciaux par une espace ; s’il n’y a rien à changer, merci d’effacer ces lignes. -->'
+			'''Inhibé depuis migration Lua :
 			if PageTemp.find(baratin) != -1:
 				PageTemp = PageTemp[0:PageTemp.find(baratin)] + PageTemp[PageTemp.find(baratin)+len(baratin):len(PageTemp)]
 				summary = summary + u', {{clé de tri|}} supprimée'
@@ -1615,7 +1616,7 @@ def modification(PageHS):
 				summary = summary + u', {{clé de tri}} supprimée'
 			if PageTemp.find(u'{{clé de tri|' + PageHS.lower() + u'}}') != -1 and PageTemp.find(u'{{S|verb pronominal|fr}}') == -1:
 				PageTemp = PageTemp[0:PageTemp.find(u'{{clé de tri|' + PageHS.lower() + u'}}')] + PageTemp[PageTemp.find(u'{{clé de tri|' + PageHS.lower() + u'}}')+len(u'{{clé de tri|' + PageHS.lower() + u'}}'):len(PageTemp)]
-				summary = summary + u', {{clé de tri}} supprimée'
+				summary = summary + u', {{clé de tri}} supprimée'''
 
 			if debogage: print u'Remplacements des balises'
 			PageTemp = re.sub(ur'\[\[Category:', ur'[[Catégorie:', PageTemp)
@@ -1635,7 +1636,7 @@ def modification(PageHS):
 			if re.search(ur'ä‎|Ä‎‎', PageHS) or PageHS.find(u'ä‎‎') != -1 or PageHS.find(u'Ä‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:A avec un tréma en français]]')
 			if re.search(ur'ã‎|Ã‎‎', PageHS) or PageHS.find(u'ã‎‎') != -1 or PageHS.find(u'Ã‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:A avec un tilde en français]]')
 			if re.search(ur'ā‎|Ā‎‎', PageHS) or PageHS.find(u'ā‎‎') != -1 or PageHS.find(u'Ā‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:A avec un macron en français]]')
-
+			
 			if re.search(ur'ë‎‎|Ë‎‎', PageHS) or PageHS.find(u'ë‎‎‎') != -1 or PageHS.find(u'Ë‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:E avec un tréma en français]]')
 			if re.search(ur'ē‎|Ē‎‎', PageHS) or PageHS.find(u'ē‎‎') != -1 or PageHS.find(u'Ē‎‎') != -1: PageTemp = addCat(PageTemp, u'fr', u'[[Catégorie:E avec un macron en français]]')
 
@@ -1668,7 +1669,9 @@ def modification(PageHS):
 			if re.search(ur'ä‎|Ä‎‎', PageHS) or PageHS.find(u'ä‎‎') != -1 or PageHS.find(u'Ä‎‎') != -1: PageTemp = addCat(PageTemp, u'en', u'[[Catégorie:A avec un tréma en anglais‎]]')
 			if re.search(ur'ã‎|Ã‎‎', PageHS) or PageHS.find(u'ã‎‎') != -1 or PageHS.find(u'Ã‎‎') != -1: PageTemp = addCat(PageTemp, u'en', u'[[Catégorie:A avec un tilde en anglais‎]]')
 			if re.search(ur'ā‎|Ā‎‎', PageHS) or PageHS.find(u'ā‎‎') != -1 or PageHS.find(u'Ā‎‎') != -1: PageTemp = addCat(PageTemp, u'en', u'[[Catégorie:A avec un macron en anglais‎]]')
-
+			
+			if re.search(ur'ç|Ç‎', PageHS) or PageHS.find(u'ç') != -1 or PageHS.find(u'Ç‎') != -1: PageTemp = addCat(PageTemp, u'en', u'[[Catégorie:C cédille en anglais‎]]')
+			
 			if re.search(ur'è|È‎', PageHS) or PageHS.find(u'è') != -1 or PageHS.find(u'È‎') != -1: PageTemp = addCat(PageTemp, u'en', u'[[Catégorie:E avec un accent grave en anglais‎]]')
 			if re.search(ur'é‎|É‎‎', PageHS) or PageHS.find(u'é‎‎') != -1 or PageHS.find(u'É‎‎') != -1: PageTemp = addCat(PageTemp, u'en', u'[[Catégorie:E avec un accent aigu en anglais‎]]')
 			if re.search(ur'ê‎|Ê‎‎', PageHS) or PageHS.find(u'ê‎‎') != -1 or PageHS.find(u'Ê‎‎') != -1: PageTemp = addCat(PageTemp, u'en', u'[[Catégorie:E avec un accent circonflexe en anglais‎]]')		
@@ -5123,6 +5126,7 @@ if len(sys.argv) > 1:
 		TraitementLiens = crawlerLink(u'Modèle:pl-cour',u'')
 		TraitementLiens = crawlerLink(u'Modèle:pl-rare',u'')
 	elif sys.argv[1] == u'cat':
+		TraitementCategorie = crawlerCat(u'Catégorie:Termes anglais avec des diacritiques',False,u'')
 		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
