@@ -28,7 +28,7 @@ family = "wiktionary"
 mynick = "JackBot"
 site = getSite(language,family)
 siteEN = getSite('en',family)
-debogage = False
+debogage = True
 debogageLent = False
 TailleAnagramme = 4 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 Modele = [] # Liste des modèles du site à traiter
@@ -2006,18 +2006,19 @@ def modification(PageHS):
 		if PageTemp.find(u'{{S|verbe|fr}}') != -1 and PageHS[:3] != u'se' and PageHS[:2] != u's’':
 			PageTemp2 = PageTemp[PageTemp.find(u'{{S|verbe|fr}}'):]
 			regex = ur'(\n|\')s(e |’)\'\'\''
-			if re.search(regex, PageTemp2) < PageTemp2.find(u'{{S|') or (re.search(regex, PageTemp2) != -1 and PageTemp2.find(u'{{S|') == -1):
-				regex = ur'^[aeiouyàéèêôù]'
-				if re.search(regex, PageHS):	# ne pas prendre [:1] car = & si encodage ASCII du paramètre DOS / Unix
-					PageHS2 = u's’'+PageHS
-				else:
-					PageHS2 = u'se '+PageHS
-				page2 = Page(site,PageHS2)
-				if not page2.exists():
-					if debogage: print u'Création de ' + CleDeTri.CleDeTri(PageHS2)
-					summary2 = u'Création d\'une redirection provisoire catégorisante du pronominal'
-					sauvegarde(page2, u'#REDIRECT[[' + PageHS + u']]\n<!-- Redirection temporaire avant de créer le verbe pronominal -->\n[[Catégorie:Wiktionnaire:Verbes pronominaux à créer en français]]', summary2)
-				
+			if re.search(regex, PageTemp2) is not None:
+				if re.search(regex, PageTemp2) < PageTemp2.find(u'{{S|') or PageTemp2.find(u'{{S|') == -1:
+					regex = ur'^[aeiouyàéèêôù]'
+					if re.search(regex, PageHS):	# ne pas prendre [:1] car = & si encodage ASCII du paramètre DOS / Unix
+						PageHS2 = u's’'+PageHS
+					else:
+						PageHS2 = u'se '+PageHS
+					page2 = Page(site,PageHS2)
+					if not page2.exists():
+						if debogage: print u'Création de ' + CleDeTri.CleDeTri(PageHS2)
+						summary2 = u'Création d\'une redirection provisoire catégorisante du pronominal'
+						sauvegarde(page2, u'#REDIRECT[[' + PageHS + u']]\n<!-- Redirection temporaire avant de créer le verbe pronominal -->\n[[Catégorie:Wiktionnaire:Verbes pronominaux à créer en français]]', summary2)
+					
 		# Ajout de modèles pour les gentités et leurs adjectifs
 		if debogage: print u'Gentilés'
 		if PageTemp.find(u'{{langue|fr}}') != -1:
@@ -5131,7 +5132,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'Ajië')
+		TraitementPage = modification(u'pleuvoir')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
