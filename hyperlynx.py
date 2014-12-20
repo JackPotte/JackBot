@@ -42,47 +42,50 @@ TabModeles[4][1] = u'R:Littré'
 TabModeles[4][2] = u'http://artflx.uchicago.edu/cgi-bin/dicos/pubdico1look.pl?strippedhw='
 
 # Modèles qui incluent des URL dans leurs paramètres
-limiteM = 18
-ModeleEN = range(1, limiteM +1)
-ModeleFR = range(1, limiteM +1)
-ModeleEN[1] = u'cite web'
-ModeleFR[1] = u'lien web'
-ModeleEN[2] = u'cite news'
-ModeleFR[2] = u'article'
-ModeleEN[3] = u'cite journal'
-ModeleFR[3] = u'article'
-ModeleEN[4] = u'lien news'
-ModeleFR[4] = u'article'
-ModeleEN[5] = u'cite video'
-ModeleFR[5] = u'lien vidéo'
-ModeleEN[6] = u'cite episode'
-ModeleFR[6] = u'citation épisode'
-ModeleEN[7] = u'cite arXiv'
-ModeleFR[7] = u'lien arXiv'
-ModeleEN[8] = u'cite press release'
-ModeleFR[8] = u'lien web'
-ModeleEN[9] = u'cite conference'
-ModeleFR[9] = u'lien conférence'
-ModeleEN[10] = u'docu'
-ModeleFR[10] = u'lien vidéo'
-ModeleEN[11] = u'lien mort'
-ModeleFR[11] = u'lien brisé'
+ModeleEN = []
+ModeleFR = []
+ModeleEN.append(u'cite web')
+ModeleFR.append(u'lien web')
+ModeleEN.append(u'cite news')
+ModeleFR.append(u'article')
+ModeleEN.append(u'cite journal')
+ModeleFR.append(u'article')
+ModeleEN.append(u'lien news')
+ModeleFR.append(u'article')
+ModeleEN.append(u'cite video')
+ModeleFR.append(u'lien vidéo')
+ModeleEN.append(u'cite episode')
+ModeleFR.append(u'citation épisode')
+ModeleEN.append(u'cite arXiv')
+ModeleFR.append(u'lien arXiv')
+ModeleEN.append(u'cite press release')
+ModeleFR.append(u'lien web')
+ModeleEN.append(u'cite conference')
+ModeleFR.append(u'lien conférence')
+ModeleEN.append(u'docu')
+ModeleFR.append(u'lien vidéo')
+ModeleEN.append(u'lien mort')
+ModeleFR.append(u'lien brisé')
 # Modèles sans paramètre langue l 545
-ModeleEN[12] = u'cita web'
-ModeleFR[12] = u'lien web'
-ModeleEN[13] = u'cita noticia'
-ModeleFR[13] = u'lien news'
-ModeleEN[14] = u'web site'
-ModeleFR[14] = u'lien web'
-ModeleEN[15] = u'site web'
-ModeleFR[15] = u'lien web'
-ModeleEN[16] = u'lire en ligne'
-ModeleFR[16] = u'lire en ligne'
-ModeleEN[17] = u'dts'
-ModeleFR[17] = u'dts'
+ModeleEN.append(u'cita web')
+ModeleFR.append(u'lien web')
+ModeleEN.append(u'cita noticia')
+ModeleFR.append(u'lien news')
+ModeleEN.append(u'web site')
+ModeleFR.append(u'lien web')
+ModeleEN.append(u'site web')
+ModeleFR.append(u'lien web')
+ModeleEN.append(u'lire en ligne')
+ModeleFR.append(u'lire en ligne')
+ModeleEN.append(u'dts')
+ModeleFR.append(u'dts')
+ModeleEN.append(u'Quote')
+ModeleFR.append(u'Citation bloc')
+limiteM = len(ModeleFR)
 # Désactivé à la demande d'un contributeur sur WP : https://fr.wikipedia.org/wiki/Discussion_utilisateur:JackPotte/Archives2013#Traduction_de_cite_book_vers_ouvrage
 #ModeleEN[18] = u'cite book'
 #ModeleFR[18] = u'ouvrage'
+#spécifier le remplacement “citation” s'il a les paramètres du modèle anglais.
 
 # Demande de [[Discussion modèle:ouvrage]]
 #ModeleEN[] = u'cite book'
