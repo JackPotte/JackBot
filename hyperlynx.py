@@ -553,7 +553,7 @@ def hyperlynx(PageTemp):
 	PageTemp = PageTemp.replace(u'[//http://', u'[http://')
 	
 	# Paramètre langue si traduction
-	for m in range(1,10):
+	for m in range(0,10):
 		# Formatage des anciens modèles
 		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'_'), ModeleEN[m], PageTemp)
 		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'  '), ModeleEN[m], PageTemp)
@@ -600,8 +600,10 @@ def hyperlynx(PageTemp):
 		PageTemp = PageEnd + PageTemp
 		PageEnd = u''
 			
-	for m in range(1,limiteM):
-		# Traduction des noms des modèles
+	for m in range(0,limiteM):
+		if debogageLent: print(u'Traduction des noms du modèle ' + ModeleEN[m])
+		PageTemp = PageTemp.replace(u'{{' + ModeleEN[m] + u' ', u'{{' + ModeleEN[m] + u'')
+		#if ModeleEN[m] == 'cite web': raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 		PageTemp = re.sub(ur'({{[\n ]*)[' + ModeleEN[m][0:1] + ur'|' + ModeleEN[m][0:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])] + ur'( *[\||\n\t|}])', ur'\1' +  ModeleFR[m] + ur'\2', PageTemp)
 		# Suppression des modèles vides
 		regex = u'{{ *[' + ModeleFR[m][0:1] + ur'|' + ModeleFR[m][0:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *}}'
@@ -1418,7 +1420,7 @@ def TestPage(htmlSource,url):
 		else:
 			if debogage: print u' Page non vide'
 			#print htmlSource.find(u'texte sur cette page')
-			for e in range(1,limiteE):
+			for e in range(0,limiteE):
 				if debogageLent: print Erreur[e]
 				if htmlSource.find(Erreur[e]) != -1 and not re.search("\n[^\n]*if[^\n]*" + Erreur[e], htmlSource):
 					if debogageLent: print u'  Trouvé'

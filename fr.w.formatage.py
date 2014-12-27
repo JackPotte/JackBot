@@ -308,8 +308,8 @@ if len(sys.argv) > 1:
 		TraitementFichier = crawlerFile(u'articles_' + family + u'.txt')
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
-	elif sys.argv[1] == u'test':
-		TraitementPage = modification(u'Utilisateur:JackBot/test')
+	elif sys.argv[1] == u'page':
+		TraitementPage = modification(u'Semir Osmanagić')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
