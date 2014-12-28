@@ -3879,6 +3879,11 @@ def modification(PageHS):
 						break
 					elif Modele[p] == u'chimie' or Modele[p] == u'chim' or Modele[p] == u'biochimie' or Modele[p] == u'bioch':
 						if (EstCodeLangue == "false"
+
+	) or (PageTemp.find(u'Catégorie:Acides gras'
+	) != -1 and (PageTemp.find(u'Catégorie:Acides gras') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Acides gras') + 1 != PageTemp.rfind(u'Catégorie:Acides gras'))
+
 	) or (PageTemp.find(u'Catégorie:Éléments chimiques'
 	) != -1 and (PageTemp.find(u'Catégorie:Éléments chimiques') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Éléments chimiques') + 1 != PageTemp.rfind(u'Catégorie:Éléments chimiques'))
@@ -4770,23 +4775,24 @@ def modification(PageHS):
 			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{mf}}")
 		if PageHS[-1:] == u'é':
 			PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
-			
-		if PageHS.find(u' ') != -1:
+		
+		if debogage: print u'Genre manquant de locution'
+		if PageHS.find(u' ') != -1 and PageHS.find(u'{{langue|fr}}') != -1:
 			PageLemme = u''
 			page2 = Page(site,PageHS[:PageHS.find(u' ')])
 			if page2.exists():
 				if page.namespace() !=0:
-					print u'Page non traitée l 4591'
+					print u'Page non traitée l 4785'
 					return
 				else:
 					try:
 						PageLemme = page2.get()
 					except wikipedia.NoPage:
-						print "NoPage l 4597"
+						print "NoPage l 4791"
 					except wikipedia.IsRedirectPage: 
-						print "IsRedirect l 4599"
+						print "IsRedirect l 4793"
 			else:
-				print "NoPage l 4601"
+				print "NoPage l 4795"
 			if PageLemme != u'':
 				genre = u''
 				if PageLemme.find(u'|fr}} {{m}}') != -1:
@@ -5139,8 +5145,7 @@ if len(sys.argv) > 1:
 		TraitementLiens = crawlerLink(u'Modèle:pl-cour',u'')
 		TraitementLiens = crawlerLink(u'Modèle:pl-rare',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Termes anglais avec des diacritiques',False,u'')
-		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:finnois',False,u'Raamatussa')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
 	elif sys.argv[1] == u'page':
