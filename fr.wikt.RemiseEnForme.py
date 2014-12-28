@@ -5148,7 +5148,7 @@ if len(sys.argv) > 1:
 		TraitementLiens = crawlerLink(u'Modèle:pl-cour',u'')
 		TraitementLiens = crawlerLink(u'Modèle:pl-rare',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:finnois',False,u'i')
+		TraitementCategorie = crawlerCat(u'Catégorie:finnois',False,u'iso')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
 	elif sys.argv[1] == u'page':
