@@ -1055,7 +1055,6 @@ Modele.append(u'volley-ball')
 Modele.append(u'vulg')
 Modele.append(u'vulgaire')
 Modele.append(u'vx')
-Modele.append(u'vx')
 Modele.append(u'véhicules')
 Modele.append(u'vétérinaire')
 Modele.append(u'vête')
@@ -2456,7 +2455,23 @@ def modification(PageHS):
 				position = PageTemp.find("|")
 
 			# Ajout des anagrammes pour cette nouvelle langue détectée
-			if NouvelleLangue == True and socket.gethostname() != "willow" and socket.gethostname() != "yarrow" and socket.gethostname() != "nightshade" and PageTemp.find(u'-erreur-') == -1 and PageHS != u'six':
+			if codelangue == u'conv':
+				regex = ur'[= ]*{{S\|anagrammes}}[^}]+\|conv}}\n'
+				if re.compile(regex).search(PageTemp):
+					if debogage: print u'Retrait d\'anagramme en conv'
+					print re.compile(regex).search(PageTemp).start()
+					print re.compile(regex).search(PageTemp).end()
+					PageEnd2 = PageTemp[:re.compile(regex).search(PageTemp).start()]
+					PageTemp2 = PageTemp[re.compile(regex).search(PageTemp).end():]
+					delta = re.compile(regex).search(PageTemp).end()
+					regex = ur'[^}]+\|conv}}\n'
+					while re.compile(regex).search(PageTemp2):
+						if debogage: print u' autre anagramme en conv'
+						delta = delta + re.compile(regex).search(PageTemp2).end()
+						PageTemp2 = PageTemp2[re.compile(regex).search(PageTemp2).end():]
+					PageTemp = PageEnd2 + PageTemp[delta:]
+				
+			elif NouvelleLangue == True and socket.gethostname() != "willow" and socket.gethostname() != "yarrow" and socket.gethostname() != "nightshade" and PageTemp.find(u'S|erreur|' + codelangue) == -1 and PageTemp.find(u'S|faute|' + codelangue) == -1  and codelangue != u'conv': #and PageHS != u'six':
 				if debogage: print u' Anagrammes pour ' + codelangue
 				if PageTemp.find(u'{{S|anagr') == -1 and PageHS.find(u' ') == -1 and len(PageHS) <= TailleAnagramme: 
 					anagrammes = anagram(PageHS)
@@ -5153,7 +5168,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'i')
+		TraitementPage = modification(u'new')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
