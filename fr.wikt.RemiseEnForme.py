@@ -2459,8 +2459,6 @@ def modification(PageHS):
 				regex = ur'[= ]*{{S\|anagrammes}}[^}]+\|conv}}\n'
 				if re.compile(regex).search(PageTemp):
 					if debogage: print u'Retrait d\'anagramme en conv'
-					print re.compile(regex).search(PageTemp).start()
-					print re.compile(regex).search(PageTemp).end()
 					PageEnd2 = PageTemp[:re.compile(regex).search(PageTemp).start()]
 					PageTemp2 = PageTemp[re.compile(regex).search(PageTemp).end():]
 					delta = re.compile(regex).search(PageTemp).end()
@@ -5159,7 +5157,7 @@ if len(sys.argv) > 1:
 	if sys.argv[1] == u'test':
 		TraitementPage = modification(u'User:' + mynick + u'/test')
 	elif sys.argv[1] == u'txt':
-		TraitementFichier = crawlerFile(u'articles_' + family + u'.txt')
+		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:pl-cour',u'')
 		TraitementLiens = crawlerLink(u'Modèle:pl-rare',u'')

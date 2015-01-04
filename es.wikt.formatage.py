@@ -229,7 +229,7 @@ if len(sys.argv) > 1:
 	if sys.argv[1] == u'test':
 		TraitementPage = modification(u'User:' + mynick + u'/test')
 	elif sys.argv[1] == u'txt':
-		TraitementFichier = crawlerFile(u'articles_' + family + u'.txt')
+		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
 	elif sys.argv[1] == u'lien':
@@ -239,7 +239,7 @@ if len(sys.argv) > 1:
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
-	TraitementFichier = crawlerFile(u'articles_' + family + u'.txt')
+	TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
 '''
 while 1:
 	TraitementRC = crawlerRC()
