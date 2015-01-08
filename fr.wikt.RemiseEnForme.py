@@ -382,7 +382,7 @@ Modele.append(u'agri')
 Modele.append(u'agriculture')
 Modele.append(u'algèbre')
 Modele.append(u'algèbre‎')
-Modele.append(u'allatif')
+Modele.append(u'algues‎')
 Modele.append(u'allatif')
 Modele.append(u'alpi')
 Modele.append(u'alpinisme')
@@ -395,6 +395,7 @@ Modele.append(u'anglicisme')
 Modele.append(u'animaux')
 Modele.append(u'anthro')
 Modele.append(u'anthropologie')
+Modele.append(u'antilopes')
 Modele.append(u'antiq')
 Modele.append(u'antiquité')
 Modele.append(u'aphérèse')
@@ -4839,6 +4840,7 @@ def modification(PageHS):
 	# Syntaxe humaine imprévue de {{terme}} dans l'étymologie
 	PageEnd = PageEnd.replace(u'{{nom|nocat=1}}', u"''(Nom)''")
 	
+	#Traitement de crawlerSearch(u'"source à préciser"')
 	'''regex = ur'({{source\|)([^1}}])'
 	if re.search(regex, PageEnd):
 		if debogage: print u'source à préciser'
@@ -5151,4 +5153,3 @@ python delete.py -lang:fr -family:wiktionary -file:articles_WTin.txt
 python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -noredirect -pairs
 python interwiki.py -lang:fr -family:wiktionary -page:"Wiktionnaire:Accueil communautaire"
 '''
-#deployer {{nombre}} sauf si p, mplur, plurale tantum et fr-*, et alias fplur...

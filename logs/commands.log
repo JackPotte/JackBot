@@ -5289,3 +5289,9 @@
 2015-01-08 01:14:32 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py "s"
 2015-01-08 01:16:42 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py "s"
 2015-01-08 01:17:30 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py
+2015-01-08 13:44:03 r-1 (unknown) Python 2.7.2 fr.wikt.RemiseEnForme.py "s"
+2015-01-08 18:08:21 r-1 (unknown) Python 2.7.2 touch.py "-family:wiktionary" "-cat:É en français"
+2015-01-08 18:09:36 r-1 (unknown) Python 2.7.2 touch.py "-family:wiktionary" "-cat:’ en français"
+2015-01-08 18:11:33 r-1 (unknown) Python 2.7.2 touch.py "-family:wiktionary" "-cat:Î en français"
+2015-01-08 18:15:29 r-1 (unknown) Python 2.7.2 touch.py "-family:wiktionary" "-cat:’ en anglais"
+2015-01-08 18:25:20 r-1 (unknown) Python 2.7.2 touch.py "-family:wiktionary" "-cat:Æ en français"
