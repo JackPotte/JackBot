@@ -5295,3 +5295,8 @@
 2015-01-08 18:11:33 r-1 (unknown) Python 2.7.2 touch.py "-family:wiktionary" "-cat:Î en français"
 2015-01-08 18:15:29 r-1 (unknown) Python 2.7.2 touch.py "-family:wiktionary" "-cat:’ en anglais"
 2015-01-08 18:25:20 r-1 (unknown) Python 2.7.2 touch.py "-family:wiktionary" "-cat:Æ en français"
+2015-01-10 18:45:31 r-1 (unknown) Python 2.7.2 touch.py "-family:wiktionary" "-cat’ en français"
+2015-01-10 18:45:43 r-1 (unknown) Python 2.7.2 touch.py "-family:wiktionary" "-lang:fr" "-cat’ en français"
+2015-01-10 18:46:02 r-1 (unknown) Python 2.7.2 touch.py "-family:wiktionary" "-lang:fr" "-catCatégorie:’ en français"
+2015-01-10 18:46:18 r-1 (unknown) Python 2.7.2 touch.py "-family:wiktionary" "-lang:fr" "-cat:’" "en" "français"
+2015-01-10 18:46:25 r-1 (unknown) Python 2.7.2 touch.py "-family:wiktionary" "-lang:fr" "-cat:’ en français"
