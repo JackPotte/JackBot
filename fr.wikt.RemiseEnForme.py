@@ -797,6 +797,7 @@ Modele.append(u'neuro')
 Modele.append(u'neurologie')
 Modele.append(u'noblesse')
 Modele.append(u'nom')
+Modele.append(u'nombre')
 Modele.append(u'nomin')
 Modele.append(u'nominatif')
 Modele.append(u'nosologie')
@@ -1269,6 +1270,35 @@ Modele[] = u'en-nom-rég'
 		
 Modele[] = u'T' : à synchroniser
 '''
+
+Nombre = []
+Nombre.append(u'nombre')
+Nombre.append(u'msing')
+Nombre.append(u'fsing')
+Nombre.append(u'nsing')
+Nombre.append(u'mplur')
+Nombre.append(u'fplur')
+Nombre.append(u'nplur')
+Nombre.append(u's')
+Nombre.append(u'p')
+Nombre.append(u'd')
+Nombre.append(u'sp')
+Nombre.append(u'singulare tantum')
+Nombre.append(u'plurale tantum') 
+Nombre.append(u'invariable')
+
+Genre = []
+Genre.append(u'genre')
+Genre.append(u'm')
+Genre.append(u'f')
+Genre.append(u'n')
+Genre.append(u'c')
+Genre.append(u'msing')
+Genre.append(u'fsing')
+Genre.append(u'nsing')
+Genre.append(u'mplur')
+Genre.append(u'fplur')
+Genre.append(u'nplur')
 
 # Modification du wiki
 def modification(PageHS):
@@ -4413,13 +4443,33 @@ def modification(PageHS):
 							EstCodeLangue = "true"
 							trad = u'false'
 							# Ajouts en fin de ligne de forme
-							if TitreSection == 'nom' and (codelangue == 'fr' or codelangue == 'es' or codelangue == 'pt' or codelangue == 'it' or codelangue == 'de' or codelangue == 'ar' or codelangue == 'ru'):
-								if debogage: print u'Recherche du genre manquant'
+							if TitreSection == 'nom' and (codelangue == 'fr' or codelangue == 'en' or codelangue == 'es' or codelangue == 'pt' or codelangue == 'it' or codelangue == 'de' or codelangue == 'ar' or codelangue == 'ru'):
+								
+								if debogage: print u'Recherche du nombre manquant'
+								NombreManquant = True
 								if PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'') != -1 and PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'') < 100:
-									PageTemp2 = PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\''):]
-									if (PageTemp2.find(u'{{genre') > PageTemp2.find(u'\n') or PageTemp2.find(u'{{genre') == -1) and (PageTemp2.find(u'{{m') > PageTemp2.find(u'\n') or PageTemp2.find(u'{{m') == -1) and (PageTemp2.find(u'{{f') > PageTemp2.find(u'\n') or PageTemp2.find(u'{{f') == -1) and (PageTemp2.find(u'{{n') > PageTemp2.find(u'\n') or PageTemp2.find(u'{{n') == -1):
-										PageTemp = PageTemp[:PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n')] + u' {{genre|' + codelangue + u'}}' + PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n'):]
-
+									PageTemp2 = PageTemp[PageTemp.find(u'\n')+1:]
+									if PageTemp2.find(u'{{' + codelangue + u'-') > PageTemp2.find(u'\n') or PageTemp2.find(u'{{' + codelangue + u'-') == -1:
+										PageTemp2 = PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\''):]
+										for n in range(0,len(Nombre)):
+											if PageTemp2.find(u'{{' + Nombre[n] + u'|') != -1 or PageTemp2.find(u'{{' + Nombre[n] + u'}}') != -1:
+												if debogage: print u' ' + Nombre[n] + u' trouvé'
+												NombreManquant = False
+										if NombreManquant == True:
+											PageTemp = PageTemp[:PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n')] + u' {{nombre|' + codelangue + u'}}' + PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n'):]
+								
+								if codelangue != u'en':
+									if debogage: print u'Recherche du genre manquant'
+									GenreManquant = True
+									if PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'') != -1 and PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'') < 100:
+										PageTemp2 = PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\''):]
+										for n in range(0,len(Genre)): 
+											if PageTemp2.find(u'{{' + Genre[n] + u'|') != -1 or PageTemp2.find(u'{{' + Genre[n] + u'}}') != -1:
+												if debogage: print u' ' + Genre[n] + u' trouvé'
+												GenreManquant = False
+										if GenreManquant == True:
+											PageTemp = PageTemp[:PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n')] + u' {{genre|' + codelangue + u'}}' + PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n'):]
+								
 						else:
 							# Paragraphe sans code langue
 							EstCodeLangue = "false"
@@ -4443,9 +4493,9 @@ def modification(PageHS):
 						if debogage: print " EstCodeLangue = " + EstCodeLangue
 						# Tous ces modèles peuvent facultativement contenir |clé= et |num=, et |genre= pour les prénoms
 						if ((p < limit1 and p > 0) or (p == 0 and Section.index(TitreSection) < limit1)) and (PageTemp.find(u'|clé=') == -1 or PageTemp.find(u'|clé=') > PageTemp.find(u'}}')):
-							if debogage: print u'  ' + str(p)
-							if debogage: print u'  ' + str(Section.index(TitreSection))
-							if debogage: print PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace')
+							if debogageLent: print u'  ' + str(p)
+							if debogageLent: print u'  ' + str(Section.index(TitreSection))
+							if debogageLent: print PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace')
 							TitreTemp = PageHS
 							if codelangue == u'es':
 								if TitreTemp.find(u'ñ') !=-1: TitreTemp = TitreTemp.replace(u'ñ',u'n€')
@@ -5101,7 +5151,8 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'fibuler')
+		TraitementPage = modification(u'récapitulatif')
+		TraitementPage = modification(u'mariage-sacrement')
 	elif sys.argv[1] == u's':
 		TraitementRecherche = crawlerSearch(u'"source à préciser"')
 	else:
