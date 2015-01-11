@@ -948,6 +948,7 @@ Modele.append(u'scolaire')
 Modele.append(u'scul')
 Modele.append(u'sculpture')
 Modele.append(u'sdatif')
+Modele.append(u'serpents')
 Modele.append(u'serru')
 Modele.append(u'serrurerie')
 Modele.append(u'sexe')
@@ -1773,6 +1774,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{pt}}', u'portugais')
 		PageTemp = PageTemp.replace(u'{{it}}', u'italien')
 		PageTemp = PageTemp.replace(u'{{nds}}', u'bas allemand')
+		PageTemp = PageTemp.replace(u'=== {{S|voir aussi}} ===\n{{Autres projets\n|w=' + PageHS + u'}}', u'=== {{S|voir aussi}} ===\n* {{WP}}')
 		
 		# Modèles trop courts
 		if debogage: print u'Modèles courts'
@@ -1850,7 +1852,7 @@ def modification(PageHS):
 		regex = ur'\{\{ISBN\|([^\}]*)\}\}'
 		if re.search(regex, PageTemp):
 			PageTemp = re.sub(regex, ur'ISBN \1', PageTemp)
-
+		
 		LimiteReg = 13
 		ModRegion = range(1, LimiteReg)
 		ModRegion[1] = u'AU'
@@ -4460,7 +4462,8 @@ def modification(PageHS):
 												NombreManquant = False
 										if NombreManquant == True:
 											PageTemp = PageTemp[:PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n')] + u' {{nombre|' + codelangue + u'}}' + PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n'):]
-								
+											if summary.find(u'nombre') == -1: summary = summary + u', nombre manquant'
+											
 								if codelangue != u'en':
 									if debogage: print u'Recherche du genre manquant'
 									GenreManquant = True
@@ -4472,7 +4475,7 @@ def modification(PageHS):
 												GenreManquant = False
 										if GenreManquant == True:
 											PageTemp = PageTemp[:PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n')] + u' {{genre|' + codelangue + u'}}' + PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n'):]
-								
+											if summary.find(u'genre') == -1: summary = summary + u', genre manquant'
 						else:
 							# Paragraphe sans code langue
 							EstCodeLangue = "false"
@@ -4890,9 +4893,14 @@ def modification(PageHS):
 				PageEnd = PageEnd + u'\n[[en:' + PageHS + u']]'
 				summary = summary + u', ajout d\'interwiki'
 				
-	# Syntaxe humaine imprévue de {{terme}} dans l'étymologie
+	if debogage: print u'Remplacements finaux'
 	PageEnd = PageEnd.replace(u'{{nom|nocat=1}}', u"''(Nom)''")
 	
+	PageTemp = PageTemp.replace(u'{{nombre|fr}} {{f}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
+	PageTemp = PageTemp.replace(u'{{f}} {{nombre|fr}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
+	PageTemp = PageTemp.replace(u'{{nombre|fr}} {{f}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
+	PageTemp = PageTemp.replace(u'{{f}} {{nombre|fr}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
+		
 	#Traitement de crawlerSearch(u'"source à préciser"')
 	'''regex = ur'({{source\|)([^1}}])'
 	if re.search(regex, PageEnd):
@@ -5154,8 +5162,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'récapitulatif')
-		TraitementPage = modification(u'mariage-sacrement')
+		TraitementPage = modification(u'AG')
 	elif sys.argv[1] == u's':
 		TraitementRecherche = crawlerSearch(u'"source à préciser"')
 	else:
