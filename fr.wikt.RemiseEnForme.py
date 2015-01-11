@@ -2534,10 +2534,13 @@ def modification(PageHS):
 						ModeleT = PageTemp[PageTemp.find("|")+1:PageTemp.find("}}")]
 						for p2 in range(1,limit6):
 							if Modele[p2] == ModeleT or Modele[p2] == ModeleT[:1].lower() + ModeleT[1:] or u'génie ' + Modele[p2] == ModeleT or u'Génie ' + Modele[p2] == ModeleT:
-								if EstCodeLangue == "false":
-									PageEnd = PageEnd + Modele[p2] + "|nocat=1}}"
-								else:
-									PageEnd = PageEnd + Modele[p2] + "|" + codelangue + "}}"
+								if p2 >= limit25 and p2 < limit3:
+									PageEnd = PageEnd + Modele[p2] + "}}"
+								elif p2 >= limit3:
+									if EstCodeLangue == "false":
+										PageEnd = PageEnd + Modele[p2] + "|nocat=1}}"
+									else:
+										PageEnd = PageEnd + Modele[p2] + "|" + codelangue + "}}"
 								PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 								break							
 						break
@@ -4894,14 +4897,27 @@ def modification(PageHS):
 				summary = summary + u', ajout d\'interwiki'
 				
 	if debogage: print u'Remplacements finaux'
-	PageEnd = PageEnd.replace(u'{{nom|nocat=1}}', u"''(Nom)''")
+	PageEnd = PageEnd.replace(u'{{nombre|fr}} {{m}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
+	PageEnd = PageEnd.replace(u'{{m}} {{nombre|fr}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
+	PageEnd = PageEnd.replace(u'{{nombre|fr}} {{m}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
+	PageEnd = PageEnd.replace(u'{{m}} {{nombre|fr}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
+
+	PageEnd = PageEnd.replace(u'{{nombre|fr}} {{f}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
+	PageEnd = PageEnd.replace(u'{{f}} {{nombre|fr}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
+	PageEnd = PageEnd.replace(u'{{nombre|fr}} {{f}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
+	PageEnd = PageEnd.replace(u'{{f}} {{nombre|fr}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
+
+	PageEnd = PageEnd.replace(u'{{nombre|fr}}\n# \'\'Pluriel', u'{{p}}\n# \'\'Pluriel')
+	PageEnd = PageEnd.replace(u'{{nombre|fr}} {{genre|fr}}\n# \'\'Pluriel', u'{{genre|fr}} {{p}}\n# \'\'Pluriel')
 	
-	PageTemp = PageTemp.replace(u'{{nombre|fr}} {{f}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
-	PageTemp = PageTemp.replace(u'{{f}} {{nombre|fr}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
-	PageTemp = PageTemp.replace(u'{{nombre|fr}} {{f}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
-	PageTemp = PageTemp.replace(u'{{f}} {{nombre|fr}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
-		
-	#Traitement de crawlerSearch(u'"source à préciser"')
+	PageEnd = PageEnd.replace(u'{{m}} {{p}}', u'{{mplur}}')
+	PageEnd = PageEnd.replace(u'{{p}} {{m}}', u'{{mplur}}')
+	PageEnd = PageEnd.replace(u'{{f}} {{p}}', u'{{fplur}}')
+	PageEnd = PageEnd.replace(u'{{p}} {{f}}', u'{{fplur}}')
+	PageEnd = PageEnd.replace(u'{{n}} {{p}}', u'{{nplur}}')
+	PageEnd = PageEnd.replace(u'{{p}} {{n}}', u'{{nplur}}')
+	
+	# Traitement de crawlerSearch(u'"source à préciser"')
 	'''regex = ur'({{source\|)([^1}}])'
 	if re.search(regex, PageEnd):
 		if debogage: print u'source à préciser'
@@ -5162,7 +5178,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'AG')
+		TraitementPage = modification(u'Empyrée')
 	elif sys.argv[1] == u's':
 		TraitementRecherche = crawlerSearch(u'"source à préciser"')
 	else:
