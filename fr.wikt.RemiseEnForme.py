@@ -1774,8 +1774,27 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{pt}}', u'portugais')
 		PageTemp = PageTemp.replace(u'{{it}}', u'italien')
 		PageTemp = PageTemp.replace(u'{{nds}}', u'bas allemand')
-		PageTemp = PageTemp.replace(u'=== {{S|voir aussi}} ===\n{{Autres projets\n|w=' + PageHS + u'}}', u'=== {{S|voir aussi}} ===\n* {{WP}}')
+		PageTemp = PageTemp.replace(u'{{nds}}', u'bas allemand')
+		PageTemp = PageTemp.replace(u'|ko-hani}}', u'|ko-Hani}}')
 		
+		# Modèle à vider des paramètres non nommés ({{{1}}}, {{{2}}}...)
+		Temp = []
+		Temp.append(u'{{ko-nom|')
+		Temp.append(u'{{ko-nom-dup|')
+		Temp.append(u'{{ko-inv|')
+		for t in range(0, len(Temp)):
+			if PageTemp.find(Temp[t]) != -1:
+				PageTemp2 = PageTemp[PageTemp.find(Temp[t])+len(Temp[t]):]
+				delta = PageTemp.find(Temp[t])+len(Temp[t]) + PageTemp2.find(u'}}')
+				PageTemp2 = PageTemp2[:PageTemp2.find(u'}}')]
+				PageTemp3 = u''
+				while PageTemp2.find(u'|') != -1:
+					if PageTemp2.find(u'=') != -1 and PageTemp2.find(u'=') < PageTemp2.find(u'|'):
+						PageTemp3 = PageTemp3 + PageTemp2[:PageTemp2.find(u'|')+1]
+					PageTemp2 = PageTemp2[PageTemp2.find(u'|')+1:]
+				if PageTemp2.find(u'=') != -1: PageTemp3 = PageTemp3 + PageTemp2
+				PageTemp = PageTemp[:PageTemp.find(Temp[t])+len(Temp[t])] + PageTemp3 + PageTemp[delta:]
+				
 		# Modèles trop courts
 		if debogage: print u'Modèles courts'
 		PageTemp = PageTemp.replace(u'{{fp}}', u'{{fplur}}')
@@ -5170,15 +5189,17 @@ if len(sys.argv) > 1:
 		TraitementPage = modification(u'User:' + mynick + u'/test')
 	elif sys.argv[1] == u'txt':
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
+	elif sys.argv[1] == u'txt2':
+		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'2.txt')
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:pl-cour',u'')
 		TraitementLiens = crawlerLink(u'Modèle:pl-rare',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:finnois',False,u'tuulla')
+		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections de titre avec langue non définie',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'Empyrée')
+		TraitementPage = modification(u'어머니')
 	elif sys.argv[1] == u's':
 		TraitementRecherche = crawlerSearch(u'"source à préciser"')
 	else:
