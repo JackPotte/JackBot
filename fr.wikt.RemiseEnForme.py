@@ -867,6 +867,7 @@ Modele.append(u'plante')
 Modele.append(u'plantes')
 Modele.append(u'plongée')
 Modele.append(u'plurale tantum')
+Modele.append(u'pluriel ?')
 Modele.append(u'poet')
 Modele.append(u'points cardinaux')
 Modele.append(u'poisson')
@@ -1777,24 +1778,6 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{nds}}', u'bas allemand')
 		PageTemp = PageTemp.replace(u'|ko-hani}}', u'|ko-Hani}}')
 		
-		# Modèle à vider des paramètres non nommés ({{{1}}}, {{{2}}}...)
-		Temp = []
-		Temp.append(u'{{ko-nom|')
-		Temp.append(u'{{ko-nom-dup|')
-		Temp.append(u'{{ko-inv|')
-		for t in range(0, len(Temp)):
-			if PageTemp.find(Temp[t]) != -1:
-				PageTemp2 = PageTemp[PageTemp.find(Temp[t])+len(Temp[t]):]
-				delta = PageTemp.find(Temp[t])+len(Temp[t]) + PageTemp2.find(u'}}')
-				PageTemp2 = PageTemp2[:PageTemp2.find(u'}}')]
-				PageTemp3 = u''
-				while PageTemp2.find(u'|') != -1:
-					if PageTemp2.find(u'=') != -1 and PageTemp2.find(u'=') < PageTemp2.find(u'|'):
-						PageTemp3 = PageTemp3 + PageTemp2[:PageTemp2.find(u'|')+1]
-					PageTemp2 = PageTemp2[PageTemp2.find(u'|')+1:]
-				if PageTemp2.find(u'=') != -1: PageTemp3 = PageTemp3 + PageTemp2
-				PageTemp = PageTemp[:PageTemp.find(Temp[t])+len(Temp[t])] + PageTemp3 + PageTemp[delta:]
-				
 		# Modèles trop courts
 		if debogage: print u'Modèles courts'
 		PageTemp = PageTemp.replace(u'{{fp}}', u'{{fplur}}')
@@ -4472,7 +4455,7 @@ def modification(PageHS):
 							# Ajouts en fin de ligne de forme
 							if TitreSection == 'nom' and (codelangue == 'fr' or codelangue == 'en' or codelangue == 'es' or codelangue == 'pt' or codelangue == 'it' or codelangue == 'de' or codelangue == 'ar' or codelangue == 'ru'):
 								
-								if debogage: print u'Recherche du nombre manquant'
+								if debogage: print u'Recherche du pluriel manquant'
 								NombreManquant = True
 								if PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'') != -1 and PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'') < 100:
 									PageTemp2 = PageTemp[PageTemp.find(u'\n')+1:]
@@ -4483,8 +4466,8 @@ def modification(PageHS):
 												if debogage: print u' ' + Nombre[n] + u' trouvé'
 												NombreManquant = False
 										if NombreManquant == True:
-											PageTemp = PageTemp[:PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n')] + u' {{nombre|' + codelangue + u'}}' + PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n'):]
-											if summary.find(u'nombre') == -1: summary = summary + u', nombre manquant'
+											PageTemp = PageTemp[:PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n')] + u' {{pluriel ?|' + codelangue + u'}}' + PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n'):]
+											if summary.find(u'nombre') == -1: summary = summary + u', pluriel manquant'
 											
 								if codelangue != u'en':
 									if debogage: print u'Recherche du genre manquant'
@@ -4916,18 +4899,18 @@ def modification(PageHS):
 				summary = summary + u', ajout d\'interwiki'
 				
 	if debogage: print u'Remplacements finaux'
-	PageEnd = PageEnd.replace(u'{{nombre|fr}} {{m}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
-	PageEnd = PageEnd.replace(u'{{m}} {{nombre|fr}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
-	PageEnd = PageEnd.replace(u'{{nombre|fr}} {{m}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
-	PageEnd = PageEnd.replace(u'{{m}} {{nombre|fr}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
+	PageEnd = PageEnd.replace(u'{{pluriel ?|fr}} {{m}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
+	PageEnd = PageEnd.replace(u'{{m}} {{pluriel ?|fr}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
+	PageEnd = PageEnd.replace(u'{{pluriel ?|fr}} {{m}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
+	PageEnd = PageEnd.replace(u'{{m}} {{pluriel ?|fr}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
 
-	PageEnd = PageEnd.replace(u'{{nombre|fr}} {{f}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
-	PageEnd = PageEnd.replace(u'{{f}} {{nombre|fr}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
-	PageEnd = PageEnd.replace(u'{{nombre|fr}} {{f}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
-	PageEnd = PageEnd.replace(u'{{f}} {{nombre|fr}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
+	PageEnd = PageEnd.replace(u'{{pluriel ?|fr}} {{f}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
+	PageEnd = PageEnd.replace(u'{{f}} {{pluriel ?|fr}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
+	PageEnd = PageEnd.replace(u'{{pluriel ?|fr}} {{f}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
+	PageEnd = PageEnd.replace(u'{{f}} {{pluriel ?|fr}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
 
-	PageEnd = PageEnd.replace(u'{{nombre|fr}}\n# \'\'Pluriel', u'{{p}}\n# \'\'Pluriel')
-	PageEnd = PageEnd.replace(u'{{nombre|fr}} {{genre|fr}}\n# \'\'Pluriel', u'{{genre|fr}} {{p}}\n# \'\'Pluriel')
+	PageEnd = PageEnd.replace(u'{{pluriel ?|fr}}\n# \'\'Pluriel', u'{{p}}\n# \'\'Pluriel')
+	PageEnd = PageEnd.replace(u'{{pluriel ?|fr}} {{genre|fr}}\n# \'\'Pluriel', u'{{genre|fr}} {{p}}\n# \'\'Pluriel')
 	
 	PageEnd = PageEnd.replace(u'{{m}} {{p}}', u'{{mplur}}')
 	PageEnd = PageEnd.replace(u'{{p}} {{m}}', u'{{mplur}}')
