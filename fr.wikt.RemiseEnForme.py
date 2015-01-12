@@ -1275,6 +1275,7 @@ Modele[] = u'T' : à synchroniser
 
 Nombre = []
 Nombre.append(u'nombre')
+Nombre.append(u'pluriel ?')
 Nombre.append(u'msing')
 Nombre.append(u'fsing')
 Nombre.append(u'nsing')
@@ -4462,12 +4463,12 @@ def modification(PageHS):
 									if PageTemp2.find(u'{{' + codelangue + u'-') > PageTemp2.find(u'\n') or PageTemp2.find(u'{{' + codelangue + u'-') == -1:
 										PageTemp2 = PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\''):]
 										for n in range(0,len(Nombre)):
-											if PageTemp2.find(u'{{' + Nombre[n] + u'|') != -1 or PageTemp2.find(u'{{' + Nombre[n] + u'}}') != -1:
-												if debogage: print u' ' + Nombre[n] + u' trouvé'
+											if PageTemp2.find(u'{{'+Nombre[n]+u'|') != -1 or PageTemp2.find(u'{{'+Nombre[n]+u'}}') != -1:
+												if debogage: print u' '+Nombre[n]+u' trouvé'
 												NombreManquant = False
 										if NombreManquant == True:
 											PageTemp = PageTemp[:PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n')] + u' {{pluriel ?|' + codelangue + u'}}' + PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n'):]
-											if summary.find(u'nombre') == -1: summary = summary + u', pluriel manquant'
+											if summary.find(u'pluriel manquant') == -1: summary = summary + u', pluriel manquant'
 											
 								if codelangue != u'en':
 									if debogage: print u'Recherche du genre manquant'
@@ -4481,6 +4482,26 @@ def modification(PageHS):
 										if GenreManquant == True:
 											PageTemp = PageTemp[:PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n')] + u' {{genre|' + codelangue + u'}}' + PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n'):]
 											if summary.find(u'genre') == -1: summary = summary + u', genre manquant'
+								
+								# Remplacement post-recherche
+								for n in range(0,2):
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{m}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
+									PageTemp = PageTemp.replace(u'{{m}} {{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{m}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
+									PageTemp = PageTemp.replace(u'{{m}} {{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
+
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{f}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
+									PageTemp = PageTemp.replace(u'{{f}} {{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{f}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
+									PageTemp = PageTemp.replace(u'{{f}} {{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
+
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Pluriel', u'{{p}}\n# \'\'Pluriel')
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{genre|'+codelangue+u'}}\n# \'\'Pluriel', u'{{genre|'+codelangue+u'}} {{p}}\n# \'\'Pluriel')
+					
 						else:
 							# Paragraphe sans code langue
 							EstCodeLangue = "false"
@@ -4899,19 +4920,6 @@ def modification(PageHS):
 				summary = summary + u', ajout d\'interwiki'
 				
 	if debogage: print u'Remplacements finaux'
-	PageEnd = PageEnd.replace(u'{{pluriel ?|fr}} {{m}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
-	PageEnd = PageEnd.replace(u'{{m}} {{pluriel ?|fr}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
-	PageEnd = PageEnd.replace(u'{{pluriel ?|fr}} {{m}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
-	PageEnd = PageEnd.replace(u'{{m}} {{pluriel ?|fr}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
-
-	PageEnd = PageEnd.replace(u'{{pluriel ?|fr}} {{f}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
-	PageEnd = PageEnd.replace(u'{{f}} {{pluriel ?|fr}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
-	PageEnd = PageEnd.replace(u'{{pluriel ?|fr}} {{f}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
-	PageEnd = PageEnd.replace(u'{{f}} {{pluriel ?|fr}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
-
-	PageEnd = PageEnd.replace(u'{{pluriel ?|fr}}\n# \'\'Pluriel', u'{{p}}\n# \'\'Pluriel')
-	PageEnd = PageEnd.replace(u'{{pluriel ?|fr}} {{genre|fr}}\n# \'\'Pluriel', u'{{genre|fr}} {{p}}\n# \'\'Pluriel')
-	
 	PageEnd = PageEnd.replace(u'{{m}} {{p}}', u'{{mplur}}')
 	PageEnd = PageEnd.replace(u'{{p}} {{m}}', u'{{mplur}}')
 	PageEnd = PageEnd.replace(u'{{f}} {{p}}', u'{{fplur}}')
@@ -5178,7 +5186,11 @@ if len(sys.argv) > 1:
 		TraitementLiens = crawlerLink(u'Modèle:pl-cour',u'')
 		TraitementLiens = crawlerLink(u'Modèle:pl-rare',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections de titre avec langue non définie',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en anglais',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en allemand',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en espagnol',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en portugais',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en italien',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
 	elif sys.argv[1] == u'page':
