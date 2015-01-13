@@ -4485,13 +4485,31 @@ def modification(PageHS):
 								
 								# Remplacement post-recherche
 								for n in range(0,2):
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{genre|'+codelangue+u'}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
+									PageTemp = PageTemp.replace(u'{{genre|'+codelangue+u'}} {{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{genre|'+codelangue+u'}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
+									PageTemp = PageTemp.replace(u'{{genre|'+codelangue+u'}} {{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
+									
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{genre|'+codelangue+u'}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
+									PageTemp = PageTemp.replace(u'{{genre|'+codelangue+u'}} {{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{genre|'+codelangue+u'}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
+									PageTemp = PageTemp.replace(u'{{genre|'+codelangue+u'}} {{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
+
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Pluriel', u'{{p}}\n# \'\'Pluriel')
+									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{genre|'+codelangue+u'}}\n# \'\'Pluriel', u'{{genre|'+codelangue+u'}} {{p}}\n# \'\'Pluriel')
+								
+								
 									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{m}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
 									PageTemp = PageTemp.replace(u'{{m}} {{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
 									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{m}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
 									PageTemp = PageTemp.replace(u'{{m}} {{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
 									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin pluriel', u'{{mplur}}\n# \'\'Masculin pluriel')
 									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin singulier', u'{{msing}}\n# \'\'Masculin singulier')
-
+									
 									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{f}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
 									PageTemp = PageTemp.replace(u'{{f}} {{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
 									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{f}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
@@ -4501,7 +4519,9 @@ def modification(PageHS):
 
 									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Pluriel', u'{{p}}\n# \'\'Pluriel')
 									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{genre|'+codelangue+u'}}\n# \'\'Pluriel', u'{{genre|'+codelangue+u'}} {{p}}\n# \'\'Pluriel')
-					
+								
+								#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
+								
 						else:
 							# Paragraphe sans code langue
 							EstCodeLangue = "false"
@@ -5186,6 +5206,7 @@ if len(sys.argv) > 1:
 		TraitementLiens = crawlerLink(u'Modèle:pl-cour',u'')
 		TraitementLiens = crawlerLink(u'Modèle:pl-rare',u'')
 	elif sys.argv[1] == u'cat':
+		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en français',False,u'capoc')
 		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en anglais',False,u'')
 		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en allemand',False,u'')
 		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en espagnol',False,u'')
