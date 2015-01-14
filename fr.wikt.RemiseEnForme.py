@@ -2154,7 +2154,11 @@ def modification(PageHS):
 					if len(langue2) > 3 and langue2.find(u'-') == -1:
 						langue = langue2
 					else:
-						langue2 = CleDeTri.CleDeTri(langues.langues[langue2].decode("utf8"))
+						try:
+							langue2 = CleDeTri.CleDeTri(langues.langues[langue2].decode("utf8"))
+						except KeyError:
+							print "KeyError l 2160"
+							break
 					if langue2 != u'' and langue2 > langue:
 						if debogage: langue2 + u' > ' + langue
 						if PageEnd.rfind(u'\n') > PageEnd.rfind(u'trad-début'):
@@ -5198,7 +5202,7 @@ def sauvegarde(PageCourante, Contenu, summary):
 if len(sys.argv) > 1:
 	if sys.argv[1] == u'test':
 		TraitementPage = modification(u'User:' + mynick + u'/test')
-	elif sys.argv[1] == u'txt':
+	elif sys.argv[1] == u'txt': 
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
 	elif sys.argv[1] == u'txt2':
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'2.txt')
