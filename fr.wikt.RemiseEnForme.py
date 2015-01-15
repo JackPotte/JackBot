@@ -4451,7 +4451,7 @@ def modification(PageHS):
 						try:
 							Index = Section.index(TitreSection)
 						except ValueError:
-							print u'Section introuvable : ' + TitreSection
+							if debogage: print u'Section introuvable : ' + TitreSection
 							return
 						if Index < limit1:
 							# Paragraphe définition
