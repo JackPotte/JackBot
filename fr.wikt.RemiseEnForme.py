@@ -2156,6 +2156,7 @@ def modification(PageHS):
 					else:
 						try:
 							langue2 = CleDeTri.CleDeTri(langues.langues[langue2].decode("utf8"))
+							print(langue2.encode(config.console_encoding, 'replace'))
 						except KeyError:
 							print "KeyError l 2160"
 							break
@@ -5219,7 +5220,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'어머니')
+		TraitementPage = modification(u'Première Guerre mondiale')
 	elif sys.argv[1] == u's':
 		TraitementRecherche = crawlerSearch(u'"source à préciser"')
 	else:
