@@ -1856,6 +1856,7 @@ def modification(PageHS):
 		if re.search(regex, PageTemp):
 			PageTemp = re.sub(regex, ur'ISBN \1', PageTemp)
 		
+		# {{écoutez -> {{écouter
 		LimiteReg = 13
 		ModRegion = range(1, LimiteReg)
 		ModRegion[1] = u'AU'
@@ -2156,7 +2157,6 @@ def modification(PageHS):
 					else:
 						try:
 							langue2 = CleDeTri.CleDeTri(langues.langues[langue2].decode("utf8"))
-							print(langue2.encode(config.console_encoding, 'replace'))
 						except KeyError:
 							print "KeyError l 2160"
 							break
