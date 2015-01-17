@@ -1865,6 +1865,9 @@ def modification(PageHS):
 		if re.search(regex, PageTemp):
 			PageTemp = re.sub(regex, ur'{{écouter|audio=\1}}', PageTemp)
 			summary = summary + u', conversion de modèle de son'
+		regex = ur'\n *{{écouter\|'
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'\n* {{écouter|', PageTemp)
 		
 		LimiteReg = 13
 		ModRegion = range(1, LimiteReg)
