@@ -33,7 +33,7 @@ debogageLent = False
 TailleAnagramme = 4 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 Modele = [] # Liste des modèles du site à traiter
 Section = [] # Sections à remplacer
-# Paragraphes sans modèle catégorisant ({{voir| et {{voir/ sont gérés individuellement)
+# Paragraphes autorisant les modèles catégorisants par langue ({{voir| et {{voir/ sont gérés individuellement)
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
 Modele.append(u'S')
 Section.append(u'S')
@@ -204,7 +204,7 @@ Section.append(u'onomatopée')
 Modele.append(u'-interjection-')
 Section.append(u'interjection')
 limit1 = len(Modele)
-# Paragraphes avec modèle catégorisant
+# Paragraphes sans modèle catégorisant
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_contexte
 Modele.append(u'-réf-')
 Section.append(u'références')
@@ -313,6 +313,7 @@ Section.append(u'note')
 Modele.append(u'trad-trier')
 Section.append(u'traductions à trier')
 limit2 = len(Modele)
+# Modèles qui ne sont pas des titres de paragraphes
 Modele.append(u'?')
 Modele.append(u'doute')
 Modele.append(u'm')
@@ -323,7 +324,7 @@ Modele.append(u'suppression')
 Modele.append(u'supp')
 Modele.append(u'SI')
 Modele.append(u'supprimer ?')
-Modele.append(u'PàS'	)
+Modele.append(u'PàS')
 Modele.append(u'(')
 Modele.append(u')')
 Modele.append(u'trad-début')
@@ -354,7 +355,8 @@ Modele.append(u'c')
 Modele.append(u'pl-rare')
 Modele.append(u'plus rare')
 limit3 = len(Modele)
-# Paragraphes sans modèle catégorisant pouvant contenir des modèles
+Modele.append(u'pron')
+Modele.append(u'écouter')
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_domaine_d'utilisation
 Modele.append(u'1ergroupe')
 Modele.append(u'2egroupe')
@@ -889,8 +891,6 @@ Modele.append(u'prnl')
 Modele.append(u'probabilités')
 Modele.append(u'prog')
 Modele.append(u'programmation')
-Modele.append(u'pron')
-Modele.append(u'pron-rég')
 Modele.append(u'pronl')
 Modele.append(u'pronominal')
 Modele.append(u'propre')
@@ -1103,9 +1103,8 @@ Modele.append(u'ébauche-exe')
 Modele.append(u'ébauche-pron')
 Modele.append(u'ébauche')
 Modele.append(u'...')
-# Modèles régionaux, pb du nocat pour les prononciations
 limit5 = len(Modele)
-
+# Modèles régionaux, avec "nocat" pour les prononciations
 Modele.append(u'Acadie')
 Modele.append(u'Afrique du Sud')
 Modele.append(u'Afrique')
@@ -1856,7 +1855,17 @@ def modification(PageHS):
 		if re.search(regex, PageTemp):
 			PageTemp = re.sub(regex, ur'ISBN \1', PageTemp)
 		
-		# {{écoutez -> {{écouter
+		# Modèles de son. Ex : {{écoutez | {{audio | | {{sound -> {{écouter
+		PageTemp = PageTemp.replace(u'{{pron-rég|', u'{{écouter|')
+		regex = ur'\* ?{{sound}} ?: \[\[Media:([^\|\]]*)\|[^\|\]]*\]\]'
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'{{écouter|audio=\1}}', PageTemp)
+			summary = summary + u', conversion de modèle de son'
+		regex = ur'\{{audio\|([^\|}]*)\|[^\|}]*}}'
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'{{écouter|audio=\1}}', PageTemp)
+			summary = summary + u', conversion de modèle de son'
+		
 		LimiteReg = 13
 		ModRegion = range(1, LimiteReg)
 		ModRegion[1] = u'AU'
@@ -1871,8 +1880,8 @@ def modification(PageHS):
 		ModRegion[10] = u'UK'
 		ModRegion[11] = u'US'
 		for m in range(1, LimiteReg-1):
-			while PageTemp.find(u'{{pron-rég|' + ModRegion[m] + u'|') != -1:
-				PageTemp = PageTemp[:PageTemp.find(u'{{pron-rég|' + ModRegion[m] + u'|')+len('{{pron-rég|')-1] + u'{{' + ModRegion[m] + u'|nocat=1}}' + PageTemp[PageTemp.find(u'{{pron-rég|' + ModRegion[m] + u'|')+len(u'{{pron-rég|' + ModRegion[m]):]
+			while PageTemp.find(u'{{écouter|' + ModRegion[m] + u'|') != -1:
+				PageTemp = PageTemp[:PageTemp.find(u'{{écouter|' + ModRegion[m] + u'|')+len('{{écouter|')-1] + u'{{' + ModRegion[m] + u'|nocat=1}}' + PageTemp[PageTemp.find(u'{{écouter|' + ModRegion[m] + u'|')+len(u'{{écouter|' + ModRegion[m]):]
 
 		while PageTemp.find(u'\n{{colonnes|') != -1:
 			PageTemp2 = PageTemp[0:PageTemp.find(u'\n{{colonnes|')]
@@ -2598,7 +2607,7 @@ def modification(PageHS):
 							PageTemp = PageTemp[PageTemp.find(u'}}')+2:len(PageTemp)]
 							break
 					
-					elif Modele[p] == u'pron-rég':
+					elif Modele[p] == u'écouter':
 						#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 						PageTemp2 = PageTemp[position+1:len(PageTemp)]
 						
@@ -5208,8 +5217,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'txt2':
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'2.txt')
 	elif sys.argv[1] == u'm':
-		TraitementLiens = crawlerLink(u'Modèle:pl-cour',u'')
-		TraitementLiens = crawlerLink(u'Modèle:pl-rare',u'')
+		TraitementLiens = crawlerLink(u'Modèle:sound',u'')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en français',False,u'capoc')
 		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en anglais',False,u'')
@@ -5246,7 +5254,7 @@ else:
 	TraitementLiens = crawlerLink(u'Modèle:=langue=',u'')
 	TraitementLiens = crawlerLink(u'Modèle:-déf-',u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
-
+	#TraitementLiens = crawlerLink(u'Modèle:audio',u'')
 '''	
 	while 1:
 		TraitementRC = crawlerRC_last_day()
@@ -5271,3 +5279,4 @@ python delete.py -lang:fr -family:wiktionary -file:articles_WTin.txt
 python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -noredirect -pairs
 python interwiki.py -lang:fr -family:wiktionary -page:"Wiktionnaire:Accueil communautaire"
 '''
+# Ajout du paragraphe traduction dans [[tri sélectif]]
