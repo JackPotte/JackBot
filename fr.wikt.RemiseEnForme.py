@@ -622,6 +622,7 @@ Modele.append(u'génitif')
 Modele.append(u'généal')
 Modele.append(u'généalogie')
 Modele.append(u'généralement indénombrable')
+Modele.append(u'généralement pluriel')
 Modele.append(u'génétique')
 Modele.append(u'géog')
 Modele.append(u'géographie')
@@ -1297,6 +1298,7 @@ Genre.append(u'f')
 Genre.append(u'n')
 Genre.append(u'c')
 Genre.append(u'mf')
+Genre.append(u'mf?')
 Genre.append(u'mf ?')
 Genre.append(u'msing')
 Genre.append(u'fsing')
@@ -1350,7 +1352,7 @@ def modification(PageHS):
 	if page.namespace() == 0 or PageHS.find(u'Utilisateur:JackBot/') != -1:
 		while PageTemp.find(u'{{ ') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'{{ ')+2] + PageTemp[PageTemp.find(u'{{ ')+3:len(PageTemp)]
-		if PageTemp.find(u'{{formater') != -1 or PageTemp.find(u'{{SI|') != -1 or PageTemp.find(u'{{SI}}') != -1 or PageTemp.find(u'{{supp|') != -1 or PageTemp.find(u'{{supp}}') != -1 or PageTemp.find(u'{{supprimer|') != -1 or PageTemp.find(u'{{supprimer') != -1 or PageTemp.find(u'{{PàS') != -1 or PageTemp.find(u'{{S|faute') != -1:
+		if PageTemp.find(u'{{formater') != -1 or PageTemp.find(u'{{SI|') != -1 or PageTemp.find(u'{{SI}}') != -1 or PageTemp.find(u'{{supp|') != -1 or PageTemp.find(u'{{supp}}') != -1 or PageTemp.find(u'{{supprimer|') != -1 or PageTemp.find(u'{{supprimer') != -1 or PageTemp.find(u'{{PàS') != -1 or PageTemp.find(u'{{S|faute') != -1 or PageTemp.find(u'{{S|erreur') != -1:
 			print "Page en travaux : non traitée"
 			return
 		
@@ -1367,6 +1369,11 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'-pronom-personnel-', u'-pronom-pers-')
 		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad}}\n\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n\n')
 		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad|fr}}\n\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n\n')
+		''' Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
+		if PageTemp.find(u'{{langue|fr}}') != -1 and PageTemp.find(u'{{S|traductions}}') == -1 and PageTemp.find(u'Variante d') == -1 and PageTemp.find(u'Synonyme d') == -1:
+			PageTemp = addCat(PageTemp, u'fr', u'\n==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}')
+			summary = summary + u', ajout de {{S|traductions}}'
+		'''
 		
 		if debogage: print u'Conversion vers {{S}}'
 		EgalSection = u'==='
@@ -4471,7 +4478,7 @@ def modification(PageHS):
 							EstCodeLangue = "true"
 							trad = u'false'
 							# Ajouts en fin de ligne de forme
-							if TitreSection == 'nom' and (codelangue == 'fr' or codelangue == 'en' or codelangue == 'es' or codelangue == 'pt' or codelangue == 'it' or codelangue == 'de' or codelangue == 'ar' or codelangue == 'ru'):
+							if TitreSection == 'nom' and (codelangue == 'fr' or codelangue == 'en' or codelangue == 'es' or codelangue == 'pt' or codelangue == 'it' or codelangue == 'ar' or codelangue == 'ru'):	# or codelangue == 'de' : déplacer les {{de-tab-cas qui sont sous la ligne de forme 
 								
 								if debogage: print u'Recherche du pluriel manquant'
 								NombreManquant = True
@@ -5282,4 +5289,3 @@ python delete.py -lang:fr -family:wiktionary -file:articles_WTin.txt
 python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -noredirect -pairs
 python interwiki.py -lang:fr -family:wiktionary -page:"Wiktionnaire:Accueil communautaire"
 '''
-# Ajout du paragraphe traduction dans [[tri sélectif]]
