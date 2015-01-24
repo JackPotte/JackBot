@@ -1274,38 +1274,43 @@ Modele[] = u'T' : à synchroniser
 '''
 
 Nombre = []
-Nombre.append(u'nombre')
-Nombre.append(u'pluriel ?')
-Nombre.append(u'msing')
-Nombre.append(u'fsing')
-Nombre.append(u'nsing')
-Nombre.append(u'mplur')
-Nombre.append(u'fplur')
-Nombre.append(u'nplur')
-Nombre.append(u's')
-Nombre.append(u'p')
+Nombre.append(u'au singulier')
 Nombre.append(u'd')
-Nombre.append(u'sp')
-Nombre.append(u'singulare tantum')
-Nombre.append(u'plurale tantum') 
-Nombre.append(u'invariable')
+Nombre.append(u'fplur')
+Nombre.append(u'fsing')
+Nombre.append(u'indén')
+Nombre.append(u'indénombrable')
 Nombre.append(u'invar')
+Nombre.append(u'invariable')
+Nombre.append(u'mplur')
+Nombre.append(u'msing')
+Nombre.append(u'nombre')
+Nombre.append(u'nplur')
+Nombre.append(u'nsing')
+Nombre.append(u'p')
+Nombre.append(u'plurale tantum') 
+Nombre.append(u'pluriel')
+Nombre.append(u'pluriel ?')
+Nombre.append(u's')
+Nombre.append(u'singulier')
+Nombre.append(u'singulare tantum')
+Nombre.append(u'sp')
 
 Genre = []
+Genre.append(u'c')
+Genre.append(u'f')
+Genre.append(u'fplur')
+Genre.append(u'fsing')
 Genre.append(u'genre')
 Genre.append(u'm')
-Genre.append(u'f')
-Genre.append(u'n')
-Genre.append(u'c')
 Genre.append(u'mf')
-Genre.append(u'mf?')
 Genre.append(u'mf ?')
-Genre.append(u'msing')
-Genre.append(u'fsing')
-Genre.append(u'nsing')
+Genre.append(u'mf?')
 Genre.append(u'mplur')
-Genre.append(u'fplur')
+Genre.append(u'msing')
+Genre.append(u'n')
 Genre.append(u'nplur')
+Genre.append(u'nsing')
 
 # Modification du wiki
 def modification(PageHS):
@@ -1356,24 +1361,11 @@ def modification(PageHS):
 			print "Page en travaux : non traitée"
 			return
 		
-		# Titres de section
-		PageTemp = PageTemp.replace(u'==== {{\n{{trad-début}{{trad-fin}}\n}S|traductions}} ====', u'==== {{S|traductions}} ====')
-		PageTemp = PageTemp.replace(u'==== {{\n\n{{trad-début}{{trad-fin}}\n}S|traductions}} ====', u'==== {{S|traductions}} ====')
-		PageTemp = PageTemp.replace(u'==== {{\n\n{{trad-début}{{)}}\n}S|traductions}} ====', u'==== {{S|traductions}} ====')
-		PageTemp = PageTemp.replace(u'<!--* {{T|}} : {{trad||}}-->', u'')
+		# Alias d'anciens titres de section
 		PageTemp = PageTemp.replace(u'{{-car-}}', u'{{caractère}}')
 		PageTemp = PageTemp.replace(u'{{-note-|s=s}}', u'{{-notes-}}')
 		PageTemp = PageTemp.replace(u'{{-etym-}}', u'{{-étym-}}')
-		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier}}}}', u'{{trad-trier}}\n{{trad-début}}')
-		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier|fr}}}}', u'{{trad-trier}}\n{{trad-début}}')
 		PageTemp = PageTemp.replace(u'-pronom-personnel-', u'-pronom-pers-')
-		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad}}\n\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n\n')
-		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad|fr}}\n\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n\n')
-		''' Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
-		if PageTemp.find(u'{{langue|fr}}') != -1 and PageTemp.find(u'{{S|traductions}}') == -1 and PageTemp.find(u'Variante d') == -1 and PageTemp.find(u'Synonyme d') == -1:
-			PageTemp = addCat(PageTemp, u'fr', u'\n==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}')
-			summary = summary + u', ajout de {{S|traductions}}'
-		'''
 		
 		if debogage: print u'Conversion vers {{S}}'
 		EgalSection = u'==='
@@ -1447,6 +1439,20 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|voir}}', u'{{S|voir aussi}}')
 		PageTemp = PageTemp.replace(u'{{S|voir|en}}', u'{{S|voir aussi}}')
 
+		PageTemp = PageTemp.replace(u'==== {{\n{{trad-début}{{trad-fin}}\n}S|traductions}} ====', u'==== {{S|traductions}} ====')
+		PageTemp = PageTemp.replace(u'==== {{\n\n{{trad-début}{{trad-fin}}\n}S|traductions}} ====', u'==== {{S|traductions}} ====')
+		PageTemp = PageTemp.replace(u'==== {{\n\n{{trad-début}{{)}}\n}S|traductions}} ====', u'==== {{S|traductions}} ====')
+		PageTemp = PageTemp.replace(u'<!--* {{T|}} : {{trad||}}-->', u'')
+		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier}}}}', u'{{trad-trier}}\n{{trad-début}}')
+		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier|fr}}}}', u'{{trad-trier}}\n{{trad-début}}')
+		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad}}\n\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n\n')
+		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad|fr}}\n\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n\n')
+		''' Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
+		if PageTemp.find(u'{{langue|fr}}') != -1 and PageTemp.find(u'{{S|traductions}}') == -1 and PageTemp.find(u'Variante d') == -1 and PageTemp.find(u'Synonyme d') == -1:
+			PageTemp = addCat(PageTemp, u'fr', u'\n==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}')
+			summary = summary + u', ajout de {{S|traductions}}'
+		'''
+		
 		if page.namespace() != 12:
 			if debogage: print u'Ajout des {{voir}}'
 			if PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}') != -1:
@@ -1674,7 +1680,10 @@ def modification(PageHS):
 				PageTemp = PageTemp[0:PageTemp.find(u'</br>')] + u'<br/>' + PageTemp[PageTemp.find(u'</br>')+len(u'</br>'):len(PageTemp)]
 			while PageTemp.find(u'<sup/>') != -1:
 				PageTemp = PageTemp[0:PageTemp.find(u'<sup/>')] + u'</sup>' + PageTemp[PageTemp.find(u'<sup/>')+len(u'<sup/>'):len(PageTemp)]
-		
+			
+			if PageHS[-2:] == u'um' and PageTemp.find(u'ɔm|fr}}') != -1:
+				PageTemp = addCat(PageTemp, u'fr', u'um prononcés /ɔm/ en français')
+			
 		if debogage: print u'Remplacements des modèles'
 		PageTemp = re.sub(ur'{{(formatnum|Formatnum|FORMATNUM)\:([0-9]*) ', ur'{{\1:\2', PageTemp)
 		PageTemp = re.sub(ur'{{terme*\|Registre neutre}} *', ur'', PageTemp)
@@ -4996,6 +5005,7 @@ def trim(s):
 
 def addCat(PageTemp, lang, cat):
 	if PageTemp.find(cat) == -1:
+		if cat.find(u'[[Catégorie:') == -1: cat = u'[[Catégorie:' + cat + u']]'
 		PageTemp2 = PageTemp[PageTemp.find(u'{{langue|' + lang + u'}}')+len(u'{{langue|' + lang + u'}}'):]
 		if PageTemp2.find(u'{{langue|') != -1:
 			if debogage: print u' catégorie ajoutée avant la section suivante'
