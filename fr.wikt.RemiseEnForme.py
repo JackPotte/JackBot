@@ -411,6 +411,7 @@ Modele.append(u'archi')
 Modele.append(u'architecture')
 Modele.append(u'archéo')
 Modele.append(u'archéologie')
+Modele.append(u'architecture des ordinateurs')
 Modele.append(u'argot militaire')
 Modele.append(u'argot policier')
 Modele.append(u'argot polytechnicien')
@@ -495,6 +496,8 @@ Modele.append(u'commerce')
 Modele.append(u'commerces')
 Modele.append(u'comparatif de')
 Modele.append(u'composants')
+Modele.append(u'composants électriques')
+Modele.append(u'composants électroniques')
 Modele.append(u'confiserie')
 Modele.append(u'confiseries')
 Modele.append(u'conjugaison')
@@ -710,6 +713,7 @@ Modele.append(u'jurisprudence')
 Modele.append(u'just')
 Modele.append(u'justice')
 Modele.append(u'karaté')
+Modele.append(u'langages informatiques')
 Modele.append(u'langues')
 Modele.append(u'latinisme')
 Modele.append(u'ling')
@@ -879,6 +883,7 @@ Modele.append(u'poker')
 Modele.append(u'police')
 Modele.append(u'polit')
 Modele.append(u'politique')
+Modele.append(u'ponctuations')
 Modele.append(u'pop')
 Modele.append(u'popu')
 Modele.append(u'populaire')
@@ -1681,8 +1686,14 @@ def modification(PageHS):
 			while PageTemp.find(u'<sup/>') != -1:
 				PageTemp = PageTemp[0:PageTemp.find(u'<sup/>')] + u'</sup>' + PageTemp[PageTemp.find(u'<sup/>')+len(u'<sup/>'):len(PageTemp)]
 			
+			if debogage: print u'Catégories de prononciation'
 			if PageHS[-2:] == u'um' and PageTemp.find(u'ɔm|fr}}') != -1:
 				PageTemp = addCat(PageTemp, u'fr', u'um prononcés /ɔm/ en français')
+			
+			if PageHS[:2] == u'qu':
+				regex = ur'{{pron\|kw[^}\|]+\|fr}}'
+				if re.search(regex, PageTemp):
+					PageTemp = addCat(PageTemp, u'fr', u'qu prononcés /kw/ en français')
 			
 		if debogage: print u'Remplacements des modèles'
 		PageTemp = re.sub(ur'{{(formatnum|Formatnum|FORMATNUM)\:([0-9]*) ', ur'{{\1:\2', PageTemp)
