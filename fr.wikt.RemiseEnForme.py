@@ -848,6 +848,7 @@ Modele.append(u'paume')
 Modele.append(u'pays')
 Modele.append(u'peinture')
 Modele.append(u'peu usité')
+Modele.append(u'peuplier')
 Modele.append(u'pharma')
 Modele.append(u'pharmacie')
 Modele.append(u'pharmacol')
@@ -948,6 +949,7 @@ Modele.append(u'rugby')
 Modele.append(u'running')
 Modele.append(u'saccusatif')
 Modele.append(u'satellites')
+Modele.append(u'saules')
 Modele.append(u'sci-fi')
 Modele.append(u'sciences')
 Modele.append(u'scol')
@@ -1689,12 +1691,47 @@ def modification(PageHS):
 			if debogage: print u'Catégories de prononciation'
 			if PageHS[-2:] == u'um' and PageTemp.find(u'ɔm|fr}}') != -1:
 				PageTemp = addCat(PageTemp, u'fr', u'um prononcés /ɔm/ en français')
-			
 			if PageHS[:2] == u'qu':
 				regex = ur'{{pron\|kw[^}\|]+\|fr}}'
 				if re.search(regex, PageTemp):
 					PageTemp = addCat(PageTemp, u'fr', u'qu prononcés /kw/ en français')
-			
+			if PageHS[:2] == u'qu':
+				regex = ur'{{fr\-rég\|kw[^}\|]+}}'
+				if re.search(regex, PageTemp):
+					PageTemp = addCat(PageTemp, u'fr', u'qu prononcés /kw/ en français')
+			if PageHS[:2] == u'ch':
+				regex = ur'{{pron\|k[^}\|]+\|fr}}'
+				if re.search(regex, PageTemp):
+					PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+			if PageHS[:2] == u'ch':
+				regex = ur'{{fr\-rég\|k[^}\|]+}}'
+				if re.search(regex, PageTemp):
+					PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+			if PageHS[:2] == u'Ch':
+				regex = ur'{{pron\|k[^}\|]+\|fr}}'
+				if re.search(regex, PageTemp):
+					PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+			if PageHS[:2] == u'Ch':
+				regex = ur'{{fr\-rég\|k[^}\|]+}}'
+				if re.search(regex, PageTemp):
+					PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+			if PageHS[-2:] == u'ch':
+				regex = ur'{{pron\|[^}\|]+k\|fr}}'
+				if re.search(regex, PageTemp):
+					PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+			if PageHS[-2:] == u'ch':
+				regex = ur'{{fr\-rég\|[^}\|]+k}}'
+				if re.search(regex, PageTemp):
+					PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+			if PageHS[-3:] == u'chs':
+				regex = ur'{{pron\|[^}\|]+k}}'
+				if re.search(regex, PageTemp):
+					PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+			if PageHS[-3:] == u'chs':
+				regex = ur'{{fr\-rég\|[^}\|]+k}}'
+				if re.search(regex, PageTemp):
+					PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+
 		if debogage: print u'Remplacements des modèles'
 		PageTemp = re.sub(ur'{{(formatnum|Formatnum|FORMATNUM)\:([0-9]*) ', ur'{{\1:\2', PageTemp)
 		PageTemp = re.sub(ur'{{terme*\|Registre neutre}} *', ur'', PageTemp)
@@ -3682,6 +3719,14 @@ def modification(PageHS):
 	) != -1 and (PageTemp.find(u':Catégorie:Arbres') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Arbres') + 1 != PageTemp.rfind(u'Catégorie:Arbres'))
 
+	) or (PageTemp.find(u'Catégorie:Peupliers'
+	) != -1 and (PageTemp.find(u':Catégorie:Peupliers') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Peupliers') + 1 != PageTemp.rfind(u'Catégorie:Peupliers'))
+
+	) or (PageTemp.find(u'Catégorie:Saules'
+	) != -1 and (PageTemp.find(u':Catégorie:Saules') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Saules') + 1 != PageTemp.rfind(u'Catégorie:Saules'))
+
 	) or (PageTemp.find(u'Catégorie:Céréales'
 	) != -1 and (PageTemp.find(u':Catégorie:Céréales') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Céréales') + 1 != PageTemp.rfind(u'Catégorie:Céréales'))
@@ -4990,15 +5035,7 @@ def modification(PageHS):
 	PageEnd = PageEnd.replace(u'{{p}} {{f}}', u'{{fplur}}')
 	PageEnd = PageEnd.replace(u'{{n}} {{p}}', u'{{nplur}}')
 	PageEnd = PageEnd.replace(u'{{p}} {{n}}', u'{{nplur}}')
-	
-	# Traitement de crawlerSearch(u'"source à préciser"')
-	'''regex = ur'({{source\|)([^1}}])'
-	if re.search(regex, PageEnd):
-		if debogage: print u'source à préciser'
-		PageEnd = re.sub(regex, ur'{{source|1=\2', PageEnd)
-		summary = summary + u', précision de "(source à préciser)"'
-	'''
-	
+
 	if debogage: print u'Test des URL'
 	#PageEnd = hyperlynx.hyperlynx(PageEnd)
 	if debogage: print (u'--------------------------------------------------------------------------------------------')
@@ -5015,7 +5052,7 @@ def trim(s):
     return s.strip(" \t\n\r\0\x0B")
 
 def addCat(PageTemp, lang, cat):
-	if PageTemp.find(cat) == -1:
+	if PageTemp.find(cat) == -1 and PageTemp.find(u'{{langue|' + lang + u'}}') != -1:
 		if cat.find(u'[[Catégorie:') == -1: cat = u'[[Catégorie:' + cat + u']]'
 		PageTemp2 = PageTemp[PageTemp.find(u'{{langue|' + lang + u'}}')+len(u'{{langue|' + lang + u'}}'):]
 		if PageTemp2.find(u'{{langue|') != -1:
