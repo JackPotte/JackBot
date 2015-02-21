@@ -3400,6 +3400,10 @@ def modification(PageHS):
 	) != -1 and (PageTemp.find(u':Catégorie:Animaux') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Animaux') + 1 != PageTemp.rfind(u'Catégorie:Animaux'))
 
+	) or (PageTemp.find(u'Catégorie:Crapauds'
+	) != -1 and (PageTemp.find(u':Catégorie:Crapauds') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Crapauds') + 1 != PageTemp.rfind(u'Catégorie:Crapauds'))
+
 	) or (PageTemp.find(u'Catégorie:Créatures'
 	) != -1 and (PageTemp.find(u':Catégorie:Créatures') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Créatures') + 1 != PageTemp.rfind(u'Catégorie:Créatures'))

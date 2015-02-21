@@ -555,8 +555,8 @@ def hyperlynx(PageTemp):
 	# Paramètre langue si traduction
 	for m in range(0,10):
 		# Formatage des anciens modèles
-		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'_'), ModeleEN[m], PageTemp)
-		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'  '), ModeleEN[m], PageTemp)
+		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'_') + ur'\|', ModeleEN[m], PageTemp)
+		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'  ') + ur'\|', ModeleEN[m], PageTemp)
 		# Pour chaque modèle de la page
 		while re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]+', PageTemp):
 			PageEnd = PageEnd + PageTemp[:re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1]
