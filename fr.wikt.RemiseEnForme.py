@@ -382,6 +382,7 @@ Modele.append(u'agriculture')
 Modele.append(u'aïkido')
 Modele.append(u'algèbre')
 Modele.append(u'algèbre‎')
+Modele.append(u'algèbre linéaire')
 Modele.append(u'algues‎')
 Modele.append(u'allatif')
 Modele.append(u'alpi')
@@ -1088,6 +1089,7 @@ Modele.append(u'vieilli')
 Modele.append(u'vieux')
 Modele.append(u'vins')
 Modele.append(u'virologie')
+Modele.append(u'virus')
 Modele.append(u'viticulture')
 Modele.append(u'vitrerie')
 Modele.append(u'vocat')
@@ -1870,7 +1872,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{dén|', u'{{dénombrable|')
 		PageTemp = PageTemp.replace(u'{{pl-cour}}', u'{{plus courant}}')
 		PageTemp = PageTemp.replace(u'{{pl-rare}}', u'{{plus rare}}')
-		
+
 		while PageTemp.find(u'[[Annexe:Couleurs en français]]') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'[[Annexe:Couleurs en français]]')] + u'{{Thésaurus|fr|couleur}}' + PageTemp[PageTemp.find(u'[[Annexe:Couleurs en français]]')+len(u'[[Annexe:Couleurs en français]]'):len(PageTemp)]
 		while PageTemp.find(u'{{Annexe|Couleurs en français}}') != -1:
@@ -5298,12 +5300,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:sound',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en français',False,u'capoc')
-		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en anglais',False,u'')
-		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en allemand',False,u'')
-		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en espagnol',False,u'')
-		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en portugais',False,u'')
-		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en italien',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects/fr-flexion-lua',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:fs',u'')
 	elif sys.argv[1] == u'page':

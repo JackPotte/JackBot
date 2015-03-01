@@ -559,6 +559,7 @@ def hyperlynx(PageTemp):
 		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'  ') + ur'\|', ModeleEN[m] + ur'\|', PageTemp)
 		# Pour chaque modèle de la page
 		while re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]+', PageTemp):
+			if debogageLent: raw_input(PageTemp[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1:][:100].encode(config.console_encoding, 'replace'))
 			PageEnd = PageEnd + PageTemp[:re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1]
 			PageTemp = PageTemp[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1:]	
 			
@@ -596,7 +597,7 @@ def hyperlynx(PageTemp):
 					PageTemp = u'|langue=' + codelangue + PageTemp
 				elif re.search(u'[^}]*langu[ag]*e *=[^}]*}}', PageTemp).end() > PageTemp.find(u'}}')+2:
 					PageTemp = u'|langue=' + codelangue + PageTemp
-				
+		
 		PageTemp = PageEnd + PageTemp
 		PageEnd = u''
 			
@@ -608,16 +609,19 @@ def hyperlynx(PageTemp):
 		# Suppression des modèles vides
 		regex = u'{{ *[' + ModeleFR[m][0:1] + ur'|' + ModeleFR[m][0:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *}}'
 		while re.search(regex, PageTemp):
+			if debogageLent: print(u' while1')
 			PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + PageTemp[re.search(regex, PageTemp).end():]
 		# Traduction des paramètres de chaque modèle de la page
 		regex = u'{{ *[' + ModeleFR[m][0:1] + ur'|' + ModeleFR[m][0:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *[\||\n]'
 		while re.search(regex, PageTemp):
+			if debogageLent: print(u' while2')
 			PageEnd = PageEnd + PageTemp[:re.search(regex, PageTemp).start()+2]
 			PageTemp = PageTemp[re.search(regex, PageTemp).start()+2:]
 			FinPageURL = PageTemp
 			FinModele = 0
 			# Gestion des modèles inclus dans le modèle de lien
 			while FinPageURL.find(u'{{') != -1 and FinPageURL.find(u'{{') < FinPageURL.find(u'}}'):
+				if debogageLent: print(u'  while3')
 				FinModele = FinModele + FinPageURL.find(u'}}')+2
 				FinPageURL = FinPageURL[FinPageURL.find(u'}}')+2:]
 			FinModele = FinModele + FinPageURL.find(u'}}')+2
@@ -637,6 +641,7 @@ def hyperlynx(PageTemp):
 					else:
 						ParamFR[p] = u'périodique'
 				ModeleCourant = re.sub(ur'(\| *)' + ParamEN[p] + ur'( *=)', ur'\1' + ParamFR[p] + ur'\2', ModeleCourant)			
+			if debogageLent: print FinModele
 			PageTemp = ModeleCourant + PageTemp[FinModele:]
 			
 		PageTemp = PageEnd + PageTemp

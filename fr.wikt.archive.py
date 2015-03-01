@@ -7,6 +7,7 @@ from wikipedia import *
 import os, sys, catlib, pagegenerators, time, datetime, locale, re
 
 # Déclaration
+debogage = True
 language = "fr"
 family = "wiktionary"
 mynick = "JackBot"
@@ -43,7 +44,7 @@ def modification(PageHS):
 					return
 				if PageEnd2.find(u'{{NavigBOT') == -1:
 					PageEnd2 = u'{{NavigBOT|' + page2.title()[len(page2.title())-4:len(page2.title())] + u'}}\n' + PageEnd2
-					sauvegarde(page2,PageEnd2)
+					sauvegarde(page2,PageEnd2,summary)
 				return
 			except wikipedia.LockedPage:
 				print "Locked/protected page"
@@ -61,10 +62,10 @@ def modification(PageHS):
 		# Si c'est le dernier paragraphe
 		if PageTemp[i1:].find('\n==') == -1:
 			PageEnd = PageEnd + PageTemp[:i1][PageTemp[:i1].rfind('\n=='):len(PageTemp[:i1])] + PageTemp[i1:]
-			PageTemp = PageTemp[:i1][0:PageTemp[:i1].rfind('\n==')]
+			PageTemp = PageTemp[:i1][:PageTemp[:i1].rfind('\n==')]
 		else:
-			PageEnd = PageEnd + PageTemp[:i1][PageTemp[:i1].rfind('\n=='):len(PageTemp[:i1])] + PageTemp[i1:][0:PageTemp[i1:].find('\n==')]
-			PageTemp = PageTemp[:i1][0:PageTemp[:i1].rfind('\n==')] + PageTemp[i1:][PageTemp[i1:].find('\n=='):len(PageTemp[i1:])]
+			PageEnd = PageEnd + PageTemp[:i1][PageTemp[:i1].rfind('\n=='):len(PageTemp[:i1])] + PageTemp[i1:][:PageTemp[i1:].find('\n==')]
+			PageTemp = PageTemp[:i1][:PageTemp[:i1].rfind('\n==')] + PageTemp[i1:][PageTemp[i1:].find('\n=='):len(PageTemp[i1:])]
 			
 	# Sauvegardes
 	if PageTemp != page.get():
@@ -83,8 +84,8 @@ def modification(PageHS):
 				print "Locked/protected page"
 				return		
 		if PageEnd2.find(u'{{NavigBOT') == -1: PageEnd2 = u'{{NavigBOT|' + page2.title()[len(page2.title())-4:len(page2.title())] + u'}}\n' + PageEnd2
-		sauvegarde(page2,PageEnd2 + PageEnd)
-		sauvegarde(page,PageTemp)
+		sauvegarde(page2,PageEnd2 + PageEnd,summary)
+		sauvegarde(page,PageTemp,summary)
 	
 				
 # Traitement d'une catégorie
@@ -182,24 +183,58 @@ def DatePlusMois(months):
 	if new_month == 2 and day > 28: day = 28
 	return datetime.date(year, new_month, day)
 
-def sauvegarde(PageCourante, Contenu):
-	try:
-		result = "ok"
-		#print(Contenu.encode(config.console_encoding, 'replace'))
-		#result = raw_input("Sauvegarder ? (o/n)")
-		if result != "n" and result != "no" and result != "non": PageCourante.put(Contenu, summary)
-	except wikipedia.NoPage:
-		print "No page"
-		return
-	except wikipedia.IsRedirectPage:
-		print "Redirect page"
-		return
-	except wikipedia.LockedPage:
-		print "Protected page"
-		return
-	except pywikibot.EditConflict:
-		print "Edit conflict"
-		return
+# Permet à tout le monde de stopper le bot en lui écrivant
+def ArretDUrgence():
+	page = Page(site,u'User talk:' + mynick)
+	if page.exists():
+		PageTemp = u''
+		try:
+			PageTemp = page.get()
+		except wikipedia.NoPage: return
+		except wikipedia.IsRedirectPage: return
+		except wikipedia.ServerError: return
+		except wikipedia.BadTitle: return
+		if PageTemp != u"{{/Stop}}":
+			pywikibot.output (u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
+			exit(0)
+	
+def sauvegarde(PageCourante, Contenu, summary):
+	result = "ok"
+	if debogage:
+		if len(Contenu) < 6000:
+			print(Contenu.encode(config.console_encoding, 'replace'))
+		else:
+			taille = 3000
+			print(Contenu[:taille].encode(config.console_encoding, 'replace'))
+			print u'\n[...]\n'
+			print(Contenu[len(Contenu)-taille:].encode(config.console_encoding, 'replace'))
+		result = raw_input("Sauvegarder ? (o/n) ")
+	if result != "n" and result != "no" and result != "non":
+		if PageCourante.title().find(u'Utilisateur:JackBot/') == -1: ArretDUrgence()
+		if not summary: summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
+		try:
+			PageCourante.put(Contenu, summary)
+		except wikipedia.NoPage: 
+			print "NoPage en sauvegarde"
+			return
+		except wikipedia.IsRedirectPage: 
+			print "IsRedirectPage en sauvegarde"
+			return
+		except wikipedia.LockedPage: 
+			print "LockedPage en sauvegarde"
+			return
+		except pywikibot.EditConflict: 
+			print "EditConflict en sauvegarde"
+			return
+		except wikipedia.ServerError: 
+			print "ServerError en sauvegarde"
+			return
+		except wikipedia.BadTitle: 
+			print "BadTitle en sauvegarde"
+			return
+		except AttributeError:
+			print "AttributeError en sauvegarde"
+			return
 		
 # Lancement
 modification(u'Wiktionnaire:Bot/Requêtes')
@@ -209,4 +244,6 @@ TraitementPage = modification(u'Wikipédia:Bot/Requêtes/' + time.strftime(u'%Y/
 TraitementLiens = crawlerLink(u'Modèle:mois')
 TraitementSearch = crawlerSearch(u'reference')
 TraitementCategory = crawlerCat(u'')
+
+à faire : prévoir les autres paragraphes que ==
 '''
