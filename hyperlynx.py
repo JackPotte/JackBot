@@ -1494,7 +1494,7 @@ def TestPage(htmlSource,url):
 		LienBrise = False
 
 	if url.find(u'www.bbc.co.uk') != -1 or url.find(u'www.cia.gov') != -1 or url.find(u'itunes.apple.com') != -1 or url.find(u'twitter.com') != -1: # or url.find(u'nytimes.com') != -1: pb à 3h32 # http://www.bbc.co.uk/cult/buffy/indetail/earshot/reviews.shtml, https://www.cia.gov/library/publications/the-world-factbook/fields/2060.html
-		print u'Site particulier'
+		if debogage: print u' Site particulier'
 		return False #top40.nl
 	else:
 		if debogageLent: print u'Fin du test du contenu'

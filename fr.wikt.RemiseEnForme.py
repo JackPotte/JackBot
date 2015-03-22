@@ -806,6 +806,7 @@ Modele.append(u'minéral')
 Modele.append(u'minéralogie')
 Modele.append(u'minéraux')
 Modele.append(u'miroiterie')
+Modele.append(u'mollusques')
 Modele.append(u'monnaies')
 Modele.append(u'mot-valise')
 Modele.append(u'motocyclisme')
@@ -1739,7 +1740,7 @@ def modification(PageHS):
 				regex = ur'{{fr\-rég\|[^}\|]+k}}'
 				if re.search(regex, PageTemp):
 					PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
-
+			
 		if debogage: print u'Remplacements des modèles'
 		PageTemp = re.sub(ur'{{(formatnum|Formatnum|FORMATNUM)\:([0-9]*) ', ur'{{\1:\2', PageTemp)
 		PageTemp = re.sub(ur'{{terme*\|Registre neutre}} *', ur'', PageTemp)
@@ -1941,7 +1942,7 @@ def modification(PageHS):
 		regex = ur'\n *{{écouter\|'
 		if re.search(regex, PageTemp):
 			PageTemp = re.sub(regex, ur'\n* {{écouter|', PageTemp)
-		
+
 		LimiteReg = 13
 		ModRegion = range(1, LimiteReg)
 		ModRegion[1] = u'AU'
@@ -5300,7 +5301,8 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:sound',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects/fr-flexion-lua',False,u'')
+		#TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects/fr-flexion-lua',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects:fr-accord-mf',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:fs',u'')
 	elif sys.argv[1] == u'page':

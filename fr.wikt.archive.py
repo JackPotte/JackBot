@@ -7,7 +7,7 @@ from wikipedia import *
 import os, sys, catlib, pagegenerators, time, datetime, locale, re
 
 # Déclaration
-debogage = True
+debogage = False
 language = "fr"
 family = "wiktionary"
 mynick = "JackBot"
@@ -52,11 +52,11 @@ def modification(PageHS):
 	else:
 		return
 	
-	PageEnd = ""
+	PageEnd = ''
 	annee = time.strftime('%Y')
 	regex = u'\n==[ ]*{{[rR]equête [fait|refus|refusée|sans suite]+}}.*==[ \t]*\n'
 	while re.compile(regex).search(PageTemp):
-		i1 = re.search(regex,PageTemp).end()
+		'''i1 = re.search(regex,PageTemp).end()
 		#raw_input (PageTemp[:i1].encode(config.console_encoding, 'replace'))	# Début avec titre inclu
 		#raw_input (PageTemp[i1:].encode(config.console_encoding, 'replace'))	# Fin avec titre exclu
 		# Si c'est le dernier paragraphe
@@ -66,6 +66,23 @@ def modification(PageHS):
 		else:
 			PageEnd = PageEnd + PageTemp[:i1][PageTemp[:i1].rfind('\n=='):len(PageTemp[:i1])] + PageTemp[i1:][:PageTemp[i1:].find('\n==')]
 			PageTemp = PageTemp[:i1][:PageTemp[:i1].rfind('\n==')] + PageTemp[i1:][PageTemp[i1:].find('\n=='):len(PageTemp[i1:])]
+		'''
+		DebutParagraphe = re.search(regex,PageTemp).end()
+		if re.search(ur'\n==[^=]',PageTemp[DebutParagraphe:]):
+			FinParagraphe = re.search(ur'\n==[^=]',PageTemp[DebutParagraphe:]).start()
+		else:
+			FinParagraphe = len(PageTemp[DebutParagraphe:])
+		if debogage:
+			raw_input(PageTemp[DebutParagraphe:][:FinParagraphe].encode(config.console_encoding, 'replace'))
+			print u'-------------------------------------'
+		if PageTemp[DebutParagraphe:].find('\n==') == -1:
+			# Dernier paragraphe
+			PageEnd = PageEnd + PageTemp[:DebutParagraphe][PageTemp[:DebutParagraphe].rfind('\n=='):] + PageTemp[DebutParagraphe:]
+			PageTemp = PageTemp[:DebutParagraphe][:PageTemp[:DebutParagraphe].rfind('\n==')]
+		else:
+			PageEnd = PageEnd + PageTemp[:DebutParagraphe][PageTemp[:DebutParagraphe].rfind('\n=='):] + PageTemp[DebutParagraphe:][:FinParagraphe]
+			PageTemp = PageTemp[:DebutParagraphe][:PageTemp[:DebutParagraphe].rfind('\n==')] + PageTemp[DebutParagraphe:][FinParagraphe:]
+			
 			
 	# Sauvegardes
 	if PageTemp != page.get():
