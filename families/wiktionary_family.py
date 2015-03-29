@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 import family
 
-__version__ = '$Id: fb0885f570896fcab8b2f1162ede2f2d7961024d $'
+__version__ = '$Id$'
 
 # The Wikimedia family that is known as Wiktionary
 

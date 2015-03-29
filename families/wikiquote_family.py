@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 import family
 
-__version__ = '$Id: 9d22075a4a4aa5996cca51381c9e9418ec3afed8 $'
+__version__ = '$Id$'
 
 # The Wikimedia family that is known as Wikiquote
 

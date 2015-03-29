@@ -56,17 +56,6 @@ def modification(PageHS):
 	annee = time.strftime('%Y')
 	regex = u'\n==[ ]*{{[rR]equête [fait|refus|refusée|sans suite]+}}.*==[ \t]*\n'
 	while re.compile(regex).search(PageTemp):
-		'''i1 = re.search(regex,PageTemp).end()
-		#raw_input (PageTemp[:i1].encode(config.console_encoding, 'replace'))	# Début avec titre inclu
-		#raw_input (PageTemp[i1:].encode(config.console_encoding, 'replace'))	# Fin avec titre exclu
-		# Si c'est le dernier paragraphe
-		if PageTemp[i1:].find('\n==') == -1:
-			PageEnd = PageEnd + PageTemp[:i1][PageTemp[:i1].rfind('\n=='):len(PageTemp[:i1])] + PageTemp[i1:]
-			PageTemp = PageTemp[:i1][:PageTemp[:i1].rfind('\n==')]
-		else:
-			PageEnd = PageEnd + PageTemp[:i1][PageTemp[:i1].rfind('\n=='):len(PageTemp[:i1])] + PageTemp[i1:][:PageTemp[i1:].find('\n==')]
-			PageTemp = PageTemp[:i1][:PageTemp[:i1].rfind('\n==')] + PageTemp[i1:][PageTemp[i1:].find('\n=='):len(PageTemp[i1:])]
-		'''
 		DebutParagraphe = re.search(regex,PageTemp).end()
 		if re.search(ur'\n==[^=]',PageTemp[DebutParagraphe:]):
 			FinParagraphe = re.search(ur'\n==[^=]',PageTemp[DebutParagraphe:]).start()

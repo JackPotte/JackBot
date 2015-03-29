@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 import family
 
-__version__ = '$Id: d1d47ed1f5bdeb9c69195b4e580e54a89d65fd0f $'
+__version__ = '$Id$'
 
 # The Wikimedia family that is known as Wikibooks
 

@@ -5,7 +5,7 @@
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id: 803ac93e51a4e3714afca04bfc5fa6cb5ac40dc6 $'
+__version__ = '$Id$'
 
 import re
 import urllib

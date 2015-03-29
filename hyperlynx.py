@@ -631,12 +631,12 @@ def hyperlynx(PageTemp):
 			for p in range(1,limiteP):
 				# Faux-amis
 				if ParamEN[p] == u'work':
-					if ModeleCourant.find(u'rticle') != -1 and ModeleCourant.find(u'rticle') < ModeleCourant.find(u'|'):
+					if (ModeleCourant.find(u'rticle') != -1 and ModeleCourant.find(u'rticle') < ModeleCourant.find(u'|')) and ModeleCourant.find(u'ériodique') == -1:
 						ParamFR[p] = u'périodique'
 					elif ModeleCourant.find(u'ien web') != -1 and ModeleCourant.find(u'ien web') < ModeleCourant.find(u'|'):
 						ParamFR[p] = u'série'
 				elif ParamEN[p] == u'publisher':
-					if ModeleCourant.find(u'ewspaper') != -1 or ModeleCourant.find(u'ériodique') != -1 or ModeleCourant.find(u'revue') != -1 or ModeleCourant.find(u'journal') != -1:
+					if ModeleCourant.find(u'ewspaper') != -1 or ModeleCourant.find(u'rticle') != -1 or ModeleCourant.find(u'revue') != -1 or ModeleCourant.find(u'journal') != -1:
 						ParamFR[p] = u'éditeur'
 					else:
 						ParamFR[p] = u'périodique'
