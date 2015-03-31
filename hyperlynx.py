@@ -1493,7 +1493,7 @@ def TestPage(htmlSource,url):
 		if debogage: print u'URLError lors de la lecture'
 		LienBrise = False
 
-	if url.find(u'www.bbc.co.uk') != -1 or url.find(u'www.cia.gov') != -1 or url.find(u'itunes.apple.com') != -1 or url.find(u'twitter.com') != -1 or url.find(u'biodiversitylibrary.org') != -1 or url.find(u'nytimes.com') != -1 or url.find(u'finnishcharts.com') != -1:
+	if url.find(u'cia.gov') != -1 or url.find(u'nytimes.com') != -1 or url.find(u'bbc.co.uk') != -1 or url.find(u'itunes.apple.com') != -1 or url.find(u'twitter.com') != -1 or url.find(u'biodiversitylibrary.org') != -1 or url.find(u'finnishcharts.com') != -1 or url.find(u'charts.fi'):
 		if debogage: print u' Site particulier'
 		return False #top40.nl
 	else:
