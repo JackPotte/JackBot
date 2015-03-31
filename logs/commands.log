@@ -5934,3 +5934,7 @@
 2015-03-28 22:53:37 r-1 (unknown) Python 2.7.9 redirect.py "double" "-always" "-family:wikinews" "-lang:fr"
 2015-03-28 22:53:51 r-1 (unknown) Python 2.7.9 redirect.py "double" "-always" "-family:wikivoyage" "-lang:de"
 2015-03-28 22:53:57 r-1 (unknown) Python 2.7.9 redirect.py "double" "-always" "-family:wikivoyage" "-lang:fr"
+2015-03-31 22:00:07 r-1 (unknown) Python 2.7.9 fr.w.formatage.py
+2015-03-31 22:00:35 r-1 (unknown) Python 2.7.9 fr.w.formatage.py "page"
+2015-03-31 22:06:39 r-1 (unknown) Python 2.7.9 fr.w.formatage.py "page"
+2015-03-31 22:10:46 r-1 (unknown) Python 2.7.9 fr.w.formatage.py "page"
