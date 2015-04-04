@@ -5939,3 +5939,7 @@
 2015-03-31 22:06:39 r-1 (unknown) Python 2.7.9 fr.w.formatage.py "page"
 2015-03-31 22:10:46 r-1 (unknown) Python 2.7.9 fr.w.formatage.py "page"
 2015-03-31 22:20:38 r-1 (unknown) Python 2.7.9 fr.w.formatage.py
+2015-04-03 20:13:56 r-1 (unknown) Python 2.7.9 delete.py "-lang:fr" "-family:wiktionary" "-cat:Catégorie:Pages à supprimer rapidement"
+2015-04-03 20:14:13 r-1 (unknown) Python 2.7.9 delete.py "-lang:fr" "-family:wiktionary" "-cat:Pages à supprimer rapidement"
+2015-04-04 15:21:25 r-1 (unknown) Python 2.7.9 fr.wikt.RemiseEnForme.py "renards"
+2015-04-04 15:27:31 r-1 (unknown) Python 2.7.9 fr.wikt.RemiseEnForme.py "renards"

@@ -4633,9 +4633,10 @@ def modification(PageHS):
 
 									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Pluriel', u'{{p}}\n# \'\'Pluriel')
 									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{genre|'+codelangue+u'}}\n# \'\'Pluriel', u'{{genre|'+codelangue+u'}} {{p}}\n# \'\'Pluriel')
-								
+
 								#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
-								
+							PageTemp = PageTemp.replace(u' {{pluriel ?|fr}}\n# \'\'Pluriel', u'\n# \'\'Pluriel')
+							
 						else:
 							# Paragraphe sans code langue
 							EstCodeLangue = "false"
