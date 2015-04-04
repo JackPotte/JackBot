@@ -4850,11 +4850,16 @@ def modification(PageHS):
 							
 					elif p < limit5:
 						if debogage: print "limit5"
-						if debogage: print u'Catégorisée quel que soit EstCodeLangue (ex : ébauches)'
+						if debogage: print u' Catégorisée quel que soit EstCodeLangue (ex : ébauches)'
 						if codelangue:
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+						elif Modele[p] == u'ébauche' and PageTemp.find(u'== {{langue') !=-1:
+							PageTemp2 = PageTemp[PageTemp.find(u'== {{langue'):]
+							PageTemp = PageTemp[PageTemp.find(u'}}')+2:PageTemp.find(u'== {{langue')+PageTemp2.find(u'\n')+1] + u'{{ébauche}}\n' + PageTemp[PageTemp.find(u'== {{langue')+PageTemp2.find(u'\n')+1:]
+							PageEnd = PageEnd[:-2]
+							break
 						else:
-							PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"	
+							PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
 					else:
 						if debogage: print u'Paragraphe régional : non catégorisé dans la prononciation'
 						if debogageLent: 
