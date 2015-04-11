@@ -589,6 +589,7 @@ Modele.append(u'équitation')
 Modele.append(u'escalade')
 Modele.append(u'escrime')
 Modele.append(u'ethnologie')
+Modele.append(u'étoiles')
 Modele.append(u'euphémisme')
 Modele.append(u'ex-rare')
 Modele.append(u'exag')
@@ -1472,11 +1473,22 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'<!--* {{T|}} : {{trad||}}-->', u'')
 		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier}}}}', u'{{trad-trier}}\n{{trad-début}}')
 		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier|fr}}}}', u'{{trad-trier}}\n{{trad-début}}')
-		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad}}\n\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n\n')
-		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad|fr}}\n\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n\n')
+		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad}}\n\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad|en}}\n{{trad-fin}}\n\n')
+		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad|fr}}\n\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad|en}}\n{{trad-fin}}\n\n')
+		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad}}\n<!--* {{T|en}} : {{trad|en|}}-->\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad|en}}\n{{trad-fin}}\n')
+		PageTemp = PageTemp.replace(u"<!--\n* {{T|en}} : {{trad|en|}} ''(homme ou femme)'' -->", '')
+		if PageTemp.find(u'{{ébauche-trad|fr}}') != -1:
+			if PageTemp.find(u'{{T|en}}') == -1:
+				PageTemp = PageTemp.replace(u'{{ébauche-trad|fr}}', u'{{ébauche-trad|en}}')
+			else:
+				PageTemp = PageTemp.replace(u'{{ébauche-trad|fr}}\n', u'')
+		regex = ur'==== {{S\|traductions}} ====\n{{ébauche\-trad}}\n\<![^>]+>\n'
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad|en}}\n{{trad-fin}}\n', PageTemp)
+		
 		''' Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
 		if PageTemp.find(u'{{langue|fr}}') != -1 and PageTemp.find(u'{{S|traductions}}') == -1 and PageTemp.find(u'Variante d') == -1 and PageTemp.find(u'Synonyme d') == -1:
-			PageTemp = addCat(PageTemp, u'fr', u'\n==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}')
+			PageTemp = addCat(PageTemp, u'fr', u'\n==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n')
 			summary = summary + u', ajout de {{S|traductions}}'
 		'''
 		
@@ -2906,7 +2918,14 @@ def modification(PageHS):
 								PageTemp = PageTemp[0:PageTemp.find(u'|nocat=1')] + PageTemp[PageTemp.find(u'|nocat=1')+len(u'|nocat=1'):len(PageTemp)]
 							PageTemp = u'|' + codelangue + PageTemp
 						break
-							
+					
+					
+					elif Modele[p] == u'note-gentilé':
+						# Deux paramètres possibles
+						PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
+						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
+						break
+					
 					elif Modele[p] == u'mythologie' or Modele[p] == u'mythol' or Modele[p] == u'myth' or Modele[p] == u'fantastique' or Modele[p] == u'fanta':	# Modèle à deux paramètres
 						param = u''
 						if (PageTemp.find(u'myt=') != -1 and PageTemp.find(u'myt=') < PageTemp.find("}}")):
@@ -5318,8 +5337,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:sound',u'')
 	elif sys.argv[1] == u'cat':
-		#TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects/fr-flexion-lua',False,u'')
-		TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects:fr-accord-mf',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Traductions manquantes en français',False,u'Búri')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:fs',u'')
 	elif sys.argv[1] == u'page':
