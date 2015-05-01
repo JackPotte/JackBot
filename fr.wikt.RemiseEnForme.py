@@ -477,6 +477,7 @@ Modele.append(u'chaînes de montagnes')
 Modele.append(u'champignons')
 Modele.append(u'charpenterie')
 Modele.append(u'chasse')
+Modele.append(u'chats')
 Modele.append(u'chiens')
 Modele.append(u'chim')
 Modele.append(u'chimie')
@@ -589,6 +590,7 @@ Modele.append(u'équitation')
 Modele.append(u'escalade')
 Modele.append(u'escrime')
 Modele.append(u'ethnologie')
+Modele.append(u'ethnonymes')
 Modele.append(u'étoiles')
 Modele.append(u'euphémisme')
 Modele.append(u'ex-rare')
@@ -791,6 +793,7 @@ Modele.append(u'métal')
 Modele.append(u'métallurgie')
 Modele.append(u'métaph')
 Modele.append(u'métaphore')
+Modele.append(u'métaplasmes')
 Modele.append(u'météo')
 Modele.append(u'météorol')
 Modele.append(u'météorologie')
@@ -949,6 +952,7 @@ Modele.append(u'propre')
 Modele.append(u'protéines')
 Modele.append(u'protocoles')
 Modele.append(u'prov')
+Modele.append(u'proverbes')
 Modele.append(u'proverbial')
 Modele.append(u'psych')
 Modele.append(u'psychia')
@@ -1473,9 +1477,9 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'<!--* {{T|}} : {{trad||}}-->', u'')
 		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier}}}}', u'{{trad-trier}}\n{{trad-début}}')
 		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier|fr}}}}', u'{{trad-trier}}\n{{trad-début}}')
-		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad}}\n\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad|en}}\n{{trad-fin}}\n\n')
-		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad|fr}}\n\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad|en}}\n{{trad-fin}}\n\n')
-		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad}}\n<!--* {{T|en}} : {{trad|en|}}-->\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad|en}}\n{{trad-fin}}\n')
+		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad}}\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n')
+		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad|fr}}\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n')
+		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad}}\n<!--* {{T|en}} : {{trad|en|}}-->\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n')
 		PageTemp = PageTemp.replace(u"<!--\n* {{T|en}} : {{trad|en|}} ''(homme ou femme)'' -->", '')
 		if PageTemp.find(u'{{ébauche-trad|fr}}') != -1:
 			if PageTemp.find(u'{{T|en}}') == -1:
@@ -4595,10 +4599,20 @@ def modification(PageHS):
 									PageTemp2 = PageTemp[PageTemp.find(u'\n')+1:]
 									if PageTemp2.find(u'{{' + codelangue + u'-') > PageTemp2.find(u'\n') or PageTemp2.find(u'{{' + codelangue + u'-') == -1:
 										PageTemp2 = PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\''):]
+										
 										for n in range(0,len(Nombre)):
 											if PageTemp2.find(u'{{'+Nombre[n]+u'|') != -1 or PageTemp2.find(u'{{'+Nombre[n]+u'}}') != -1:
 												if debogage: print u' '+Nombre[n]+u' trouvé'
 												NombreManquant = False
+											elif debogage:
+												print u' '+Nombre[n]+u' non trouvé'
+												# [[Wiktionnaire:Flexions]]
+												if PageTemp2.find(u'Pluriel d') != -1:
+													if debogage: print u' "Pluriel d" trouvé'
+													NombreManquant = False
+												elif debogage:
+													print u' "Pluriel d" non trouvé'
+												
 										if NombreManquant == True:
 											PageTemp = PageTemp[:PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n')] + u' {{pluriel ?|' + codelangue + u'}}' + PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n'):]
 											if summary.find(u'pluriel manquant') == -1: summary = summary + u', pluriel manquant'
@@ -5337,11 +5351,12 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:sound',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Traductions manquantes en français',False,u'Búri')
+		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Traductions manquantes en français',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:fs',u'')
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'Première Guerre mondiale')
+		#TraitementPage = modification(u'C++')
+		TraitementPage = modification(u'refrains')
 	elif sys.argv[1] == u's':
 		TraitementRecherche = crawlerSearch(u'"source à préciser"')
 	else:
