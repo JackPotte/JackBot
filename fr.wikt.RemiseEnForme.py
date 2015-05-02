@@ -4651,11 +4651,11 @@ def modification(PageHS):
 										PageTemp2 = PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\''):]
 										
 										for n in range(0,len(Nombre)):
-											if PageTemp2.find(u'{{'+Nombre[n]+u'|') != -1 or PageTemp2.find(u'{{'+Nombre[n]+u'}}') != -1:
-												if debogage: print u' '+Nombre[n]+u' trouvé'
+											if PageTemp2.find(u'{{'+Nombre[n]+u'|') != -1:
+												if debogageLent: print u' '+Nombre[n]+u' trouvé'
 												NombreManquant = False
-											elif debogageLent:
-												print u' '+Nombre[n]+u' non trouvé'
+											else:
+												if debogageLent: print u' '+Nombre[n]+u' non trouvé'
 												# [[Wiktionnaire:Flexions]]
 												if PageTemp2.find(u'Pluriel d') != -1:
 													if debogage: print u' "Pluriel d" trouvé'
@@ -4666,7 +4666,7 @@ def modification(PageHS):
 										if NombreManquant == True:
 											PageTemp = PageTemp[:PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n')] + u' {{pluriel ?|' + codelangue + u'}}' + PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n'):]
 											if summary.find(u'pluriel manquant') == -1: summary = summary + u', pluriel manquant'
-											
+
 								if codelangue != u'en':
 									if debogage: print u'Recherche du genre manquant'
 									GenreManquant = True
@@ -4715,7 +4715,7 @@ def modification(PageHS):
 									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
 									'''
 								#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
-							PageTemp = PageTemp.replace(u' {{pluriel ?|fr}}\n# \'\'Pluriel', u'\n# \'\'Pluriel')
+							PageTemp = PageTemp.replace(u' {{pluriel ?|' + codelangue + u'}}\n# \'\'Pluriel', u'\n# \'\'Pluriel')
 							
 						else:
 							# Paragraphe sans code langue
@@ -5397,6 +5397,7 @@ if len(sys.argv) > 1:
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'2.txt')
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:mplur',u'')
+	elif sys.argv[1] == u'm2':
 		TraitementLiens = crawlerLink(u'Modèle:fplur',u'')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Traductions manquantes en français',False,u'')
