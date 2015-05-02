@@ -403,6 +403,7 @@ Modele.append(u'aphérèse')
 Modele.append(u'apiculture')
 Modele.append(u'apiculture')
 Modele.append(u'apocope')
+Modele.append(u'apocope familière')
 Modele.append(u'arch')
 Modele.append(u'archaïque')
 Modele.append(u'archaïsme')
@@ -498,6 +499,8 @@ Modele.append(u'comparatif de')
 Modele.append(u'composants')
 Modele.append(u'composants électriques')
 Modele.append(u'composants électroniques')
+Modele.append(u'compta')
+Modele.append(u'comptabilité')
 Modele.append(u'confiserie')
 Modele.append(u'confiseries')
 Modele.append(u'conjugaison')
@@ -1489,6 +1492,41 @@ def modification(PageHS):
 		regex = ur'==== {{S\|traductions}} ====\n{{ébauche\-trad}}\n\<![^>]+>\n'
 		if re.search(regex, PageTemp):
 			PageTemp = re.sub(regex, ur'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad|en}}\n{{trad-fin}}\n', PageTemp)
+		PageTemp.replace(ur"{{ébauche-trad|fr}}<!--\n* {{T|en}} : {{ébauche-trad|en}} ''(homme ou femme)'' -->", u'{{ébauche-trad}}')
+		PageTemp.replace(ur'{{ébauche-trad|fr}}', u'{{ébauche-trad}}') # Bug, d'où le paragraphe ci-dessous
+		regex = ur'{{ébauche\-trad\|fr}}'
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'{{ébauche-trad}}', PageTemp)
+		
+		PageTemp.replace(ur'{{ébauche-trad}}\n{{trad-début}}', u'{{trad-début}}\n{{ébauche-trad}}')
+		# à faire : contrôle du nombre de paragraphes de traduction par rapport au nombre de sens
+		'''NbSens = 1
+		replace(
+			{{trad-début}}	
+			{{ébauche-trad}}
+			{{trad-fin}}
+			{{trad-début}}
+		'''
+		# Anciens commentaires d'aide à l'édition (tolérés avant l'éditeur visuel et editor.js)
+		PageTemp.replace(ur'<!--* {{T|en}} : {{trad|en|}}-->', '') # Bug, d'où le paragraphe ci-dessous
+		regex = ur'<!\-\-[^{]*{{T\|[^>]+>\n'
+		if re.search(regex, PageTemp):
+			if debogage: print ' Commentaire trouvé'
+			PageTemp = re.sub(regex, ur'', PageTemp)
+		# Cosmétique
+		regex = ur'{{ébauche\-trad}}{{'
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'{{ébauche-trad}}\n{{', PageTemp)
+		
+		#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
+		while PageTemp.find(u'{{trad-fin}}\n* {{T|') != -1:
+			PageTemp2 = PageTemp[PageTemp.find(u'{{trad-fin}}\n* {{T|'):]
+			delta = PageTemp2.find(u'\n')+1
+			PageTemp2 = PageTemp2[delta:]
+			if debogage: print PageTemp2[:PageTemp2.find(u'\n')+1].encode(config.console_encoding, 'replace')
+			if PageTemp2[:PageTemp2.find(u'\n')+1].find(u'trier') != -1: break
+			PageTemp = PageTemp[:PageTemp.find(u'{{trad-fin}}\n* {{T|'):] + PageTemp2[:PageTemp2.find(u'\n')+1] + u'{{trad-fin}}\n' + PageTemp[PageTemp.find(u'{{trad-fin}}\n* {{T|')+delta+PageTemp2.find(u'\n')+1:]
+			
 		
 		''' Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
 		if PageTemp.find(u'{{langue|fr}}') != -1 and PageTemp.find(u'{{S|traductions}}') == -1 and PageTemp.find(u'Variante d') == -1 and PageTemp.find(u'Synonyme d') == -1:
@@ -2750,7 +2788,7 @@ def modification(PageHS):
 							PageEnd = PageEnd[0:len(PageEnd)-2]
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
-					elif Modele[p] == u'aphérèse' or Modele[p] == u'apocope' or Modele[p] == u'mot-valise' or Modele[p] == u'contraction' or Modele[p] == u'contr' or (
+					elif Modele[p] == u'aphérèse' or Modele[p] == u'apocope' or Modele[p] == u'apocope familière' or Modele[p] == u'mot-valise' or Modele[p] == u'contraction' or Modele[p] == u'contr' or (
 						Modele[p] == u'ellipse') or Modele[p] == u'par ellipse' or Modele[p] == u'abréviation' or Modele[p] == u'abrév' or Modele[p] == u'métonymie' or (
 						Modele[p] == u'méton') or Modele[p] == u'antonomase':
 						if (EstCodeLangue == u'false') and PageEnd.rfind(u'{{S|') != PageEnd.rfind(u'{{S|étymologie}}'):
@@ -5352,11 +5390,14 @@ if len(sys.argv) > 1:
 		TraitementLiens = crawlerLink(u'Modèle:sound',u'')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Traductions manquantes en français',False,u'')
+	elif sys.argv[1] == u'cat2':
+		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Traductions manquantes sans langue précisée',False,u'')
+	elif sys.argv[1] == u'cat3':
+		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Traductions manquantes en anglais',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:fs',u'')
 	elif sys.argv[1] == u'page':
-		#TraitementPage = modification(u'C++')
-		TraitementPage = modification(u'refrains')
+		TraitementPage = modification(u'C++')
 	elif sys.argv[1] == u's':
 		TraitementRecherche = crawlerSearch(u'"source à préciser"')
 	else:
@@ -5406,4 +5447,5 @@ TraitementTout = crawlerAll(u'')
 python delete.py -lang:fr -family:wiktionary -file:articles_WTin.txt
 python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -noredirect -pairs
 python interwiki.py -lang:fr -family:wiktionary -page:"Wiktionnaire:Accueil communautaire"
+python interwiki.py -lang:fr -family:wiktionary -wiktionary -autonomous -force -usercontribs:Otourly
 '''
