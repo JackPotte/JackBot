@@ -4651,7 +4651,7 @@ def modification(PageHS):
 										PageTemp2 = PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\''):]
 										
 										for n in range(0,len(Nombre)):
-											if PageTemp2.find(u'{{'+Nombre[n]+u'|') != -1:
+											if PageTemp2.find(u'{{'+Nombre[n]+u'|') != -1 or PageTemp2.find(u'{{'+Nombre[n]+u'}') != -1:
 												if debogageLent: print u' '+Nombre[n]+u' trouvé'
 												NombreManquant = False
 											else:
@@ -4699,23 +4699,20 @@ def modification(PageHS):
 										PageTemp = PageTemp.replace(u'{{'+G[g][1]+u'plur}}\n# \'\''+G[g][0]+u' pluriel', u'{{'+G[g][1]+u'}}\n# \'\'Pluriel')
 										PageTemp = PageTemp.replace(u'{{'+G[g][1]+u'sing}}\n# \'\''+G[g][0]+u' singulier', u'{{'+G[g][1]+u'}}\n# \'\'Singulier')
 										
-									'''	
-									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{genre|'+codelangue+u'}}\n# \'\'Masculin pluriel', u'{{m}}\n# \'\'Pluriel')
-									PageTemp = PageTemp.replace(u'{{genre|'+codelangue+u'}} {{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin pluriel', u'{{m}}\n# \'\'Pluriel')
-									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{genre|'+codelangue+u'}}\n# \'\'Masculin singulier', u'{{m}}\n# \'\'Singulier')
-									PageTemp = PageTemp.replace(u'{{genre|'+codelangue+u'}} {{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin singulier', u'{{m}}\n# \'\'Singulier')
-									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin pluriel', u'{{m}}\n# \'\'Pluriel')
-									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Masculin singulier', u'{{m}}\n# \'\'Singulier')
-									
-									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{genre|'+codelangue+u'}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
-									PageTemp = PageTemp.replace(u'{{genre|'+codelangue+u'}} {{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
-									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}} {{genre|'+codelangue+u'}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
-									PageTemp = PageTemp.replace(u'{{genre|'+codelangue+u'}} {{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
-									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Féminin pluriel', u'{{fplur}}\n# \'\'Féminin pluriel')
-									PageTemp = PageTemp.replace(u'{{'+Nombre[n]+u'|'+codelangue+u'}}\n# \'\'Féminin singulier', u'{{fsing}}\n# \'\'Féminin singulier')
-									'''
-								#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
-							PageTemp = PageTemp.replace(u' {{pluriel ?|' + codelangue + u'}}\n# \'\'Pluriel', u'\n# \'\'Pluriel')
+										# Retrait des modèles de maintenance
+										PageTemp = PageTemp.replace(u'{{'+G[g][1]+u'sing}} {{pluriel ?|' + codelangue + u'}}', u'{{'+G[g][1]+u'plur}}')
+										PageTemp = PageTemp.replace(u'{{'+G[g][1]+u'plur}} {{pluriel ?|' + codelangue + u'}}', u'{{'+G[g][1]+u'plur}}')
+										regex = ur'({{p}}[^\n]*) ?{{pluriel \?\|' + codelangue + u'}}'
+										if re.search(regex, PageTemp):
+											PageTemp = re.sub(regex, ur'\1', PageTemp)
+										regex = ur'({{invari?a?b?l?e?}}[^\n]*) ?{{pluriel \?\|' + codelangue + u'}}'
+										if re.search(regex, PageTemp):
+											PageTemp = re.sub(regex, ur'\1', PageTemp)
+										
+							#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
+							regex = ur'{{pluriel \?\|' + codelangue + u'}}(\n# ?\'*Pluriel)'
+							if re.search(regex, PageTemp):
+								PageTemp = re.sub(regex, ur'\1', PageTemp)
 							
 						else:
 							# Paragraphe sans code langue
@@ -5138,14 +5135,6 @@ def modification(PageHS):
 			if PageEN.find(u'==English==') != -1:
 				PageEnd = PageEnd + u'\n[[en:' + PageHS + u']]'
 				summary = summary + u', ajout d\'interwiki'
-				
-	'''if debogage: print u'Remplacements finaux'
-	PageEnd = PageEnd.replace(u'{{m}} {{p}}', u'{{mplur}}')
-	PageEnd = PageEnd.replace(u'{{p}} {{m}}', u'{{mplur}}')
-	PageEnd = PageEnd.replace(u'{{f}} {{p}}', u'{{fplur}}')
-	PageEnd = PageEnd.replace(u'{{p}} {{f}}', u'{{fplur}}')
-	PageEnd = PageEnd.replace(u'{{n}} {{p}}', u'{{nplur}}')
-	PageEnd = PageEnd.replace(u'{{p}} {{n}}', u'{{nplur}}')'''
 
 	if debogage: print u'Test des URL'
 	#PageEnd = hyperlynx.hyperlynx(PageEnd)
@@ -5396,9 +5385,9 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'txt2':
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'2.txt')
 	elif sys.argv[1] == u'm':
-		TraitementLiens = crawlerLink(u'Modèle:mplur',u'')
+		TraitementLiens = crawlerLink(u'Modèle:mplur',u'français')
 	elif sys.argv[1] == u'm2':
-		TraitementLiens = crawlerLink(u'Modèle:fplur',u'')
+		TraitementLiens = crawlerLink(u'Modèle:fplur',u'un')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Traductions manquantes en français',False,u'')
 	elif sys.argv[1] == u'cat2':
