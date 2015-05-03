@@ -1,8 +1,8 @@
 cookieprefix=None
-frwikisourceToken=deleted
 GeoIP=FR:Saint-denis:48.9333:2.3667:v4
-frwikisourceUserID=15519
-WMF-Last-Access=01-May-2015
+frwikisourceToken=deleted
+WMF-Last-Access=03-May-2015
 frwikisourceUserName=JackBot
+frwikisourceUserID=15519
 frwikisourceSession=fa4259c56f142af54973c3164ec9ab46
 forceHTTPS=true
