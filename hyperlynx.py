@@ -92,7 +92,7 @@ limiteM = len(ModeleFR)
 #ModeleFR[] = u'ouvrage'
 
 # Paramètres à remplacer
-limiteP = 121
+limiteP = 122
 ParamEN = range(1, limiteP +1)
 ParamFR = range(1, limiteP +1)
 ParamEN[1] = u'author'
@@ -335,6 +335,8 @@ ParamEN[119] = u'editorial'
 ParamFR[119] = u'journal'
 ParamEN[120] = u'archivedate'
 ParamFR[120] = u'en ligne le'
+ParamEN[121] = u'series'
+ParamFR[121] = u'collection'
 
 # URL à remplacer
 limiteU = 3
