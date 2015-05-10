@@ -529,6 +529,7 @@ Modele.append(u'courant')
 Modele.append(u'course à pied')
 Modele.append(u'cout')
 Modele.append(u'couture')
+Modele.append(u'créatures')
 Modele.append(u'cricket')
 Modele.append(u'crimes')
 Modele.append(u'cuis')
@@ -933,6 +934,7 @@ Modele.append(u'planche à neige')
 Modele.append(u'planche à roulettes')
 Modele.append(u'plante')
 Modele.append(u'plantes')
+Modele.append(u'plantes aromatiques')
 Modele.append(u'plongée')
 Modele.append(u'plurale tantum')
 Modele.append(u'pluriel ?')
@@ -1400,7 +1402,7 @@ def modification(PageHS):
 	
 	regex = ur'{{=([a-z\-]+)=}}'
 	if re.search(regex, PageTemp):
-		PageTemp = re.sub(regex, u'{{langue|\1}}', PageTemp)
+		PageTemp = re.sub(regex, ur'{{langue|\1}}', PageTemp)
 
 	if page.namespace() == 0 or PageHS.find(u'Utilisateur:JackBot/') != -1:
 		while PageTemp.find(u'{{ ') != -1:
@@ -1716,7 +1718,8 @@ def modification(PageHS):
 			PageTemp = PageTemp.replace(u']]&#32;[[', u']] [[')
 			regex = ur'\[\[([^\]]*)\|\1\]\]'
 			if re.search(regex, PageTemp):
-				PageTemp = re.sub(regex, u'[[\1]]', PageTemp)
+				if debogage: print u'Lien interne inutile'
+				PageTemp = re.sub(regex, ur'[[\1]]', PageTemp)
 
 			if PageTemp.find(u'{{vérifier création automatique}}') != -1:
 				if debogage: print u' {{vérifier création automatique}} trouvé'
@@ -1843,16 +1846,16 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{perf}} / \'\'\'', u'{{perf|nocat=1}} / \'\'\'')
 		regex = ur'({{fr\-[^}]*\|[\'’]+=[^}]*)\|[\'’]+=[oui|1]'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, u'\1', PageTemp)
+			PageTemp = re.sub(regex, ur'\1', PageTemp)
 		regex = ur'({{fr\-[^}]*\|s=[^}]*)\|s=[^}\|]*'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, u'\1', PageTemp)
+			PageTemp = re.sub(regex, ur'\1', PageTemp)
 		regex = ur'({{fr\-[^}]*\|ms=[^}]*)\|ms=[^}\|]*'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, u'\1', PageTemp)
+			PageTemp = re.sub(regex, ur'\1', PageTemp)
 		regex = ur'({{fr\-[^}]*\|fs=[^}]*)\|fs=[^}\|]*'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, u'\1', PageTemp)
+			PageTemp = re.sub(regex, ur'\1', PageTemp)
 
 		PageTemp = re.sub(ur'([^d\-]+\-\|[a-z]+\}\}\n)\# *', ur"\1'''" + PageHS + ur"''' {{pron}}\n# ", PageTemp)
 		if PageTemp.find(u'{{Latn') == -1 and PageTemp.find(u'{{Grek') == -1 and PageTemp.find(u'{{Cyrl') == -1 and PageTemp.find(u'{{Armn') == -1 and PageTemp.find(u'{{Geor') == -1 and PageTemp.find(u'{{Hebr') == -1 and PageTemp.find(u'{{Arab') == -1 and PageTemp.find(u'{{Syrc') == -1 and PageTemp.find(u'{{Thaa') == -1 and PageTemp.find(u'{{Deva') == -1 and PageTemp.find(u'{{Hang') == -1 and PageTemp.find(u'{{Hira') == -1 and PageTemp.find(u'{{Kana') == -1 and PageTemp.find(u'{{Hrkt') == -1 and PageTemp.find(u'{{Hani') == -1 and PageTemp.find(u'{{Jpan') == -1 and PageTemp.find(u'{{Hans') == -1 and PageTemp.find(u'{{Hant') == -1 and PageTemp.find(u'{{zh-mot') == -1 and PageTemp.find(u'{{kohan') == -1 and PageTemp.find(u'{{ko-nom') == -1 and PageTemp.find(u'{{la-verb') == -1 and PageTemp.find(u'{{grc-verb') == -1 and PageTemp.find(u'{{polytonique') == -1 and PageTemp.find(u'FAchar') == -1:
@@ -2020,21 +2023,21 @@ def modification(PageHS):
 			PageTemp = PageTemp[0:PageTemp.find(u'|notat=1')] + u'|nocat=1' + PageTemp[PageTemp.find(u'|notat=1')+len(u'|notat=1'):len(PageTemp)]
 		regex = ur'\{\{ISBN\|([^\}]*)\}\}'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, u'ISBN \1', PageTemp)
+			PageTemp = re.sub(regex, ur'ISBN \1', PageTemp)
 		
 		# Modèles de son. Ex : {{écoutez | {{audio | | {{sound -> {{écouter
 		PageTemp = PageTemp.replace(u'{{pron-rég|', u'{{écouter|')
 		regex = ur'\* ?{{sound}} ?: \[\[Media:([^\|\]]*)\|[^\|\]]*\]\]'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, u'{{écouter|audio=\1}}', PageTemp)
+			PageTemp = re.sub(regex, ur'{{écouter|audio=\1}}', PageTemp)
 			summary = summary + u', conversion de modèle de son'
 		regex = ur'\{{audio\|([^\|}]*)\|[^\|}]*}}'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, u'{{écouter|audio=\1}}', PageTemp)
+			PageTemp = re.sub(regex, ur'{{écouter|audio=\1}}', PageTemp)
 			summary = summary + u', conversion de modèle de son'
 		regex = ur'\n *{{écouter\|'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, u'\n* {{écouter|', PageTemp)
+			PageTemp = re.sub(regex, ur'\n* {{écouter|', PageTemp)
 
 		LimiteReg = 13
 		ModRegion = range(1, LimiteReg)
@@ -2220,7 +2223,7 @@ def modification(PageHS):
 				if debogage: print u' son'
 				regex = ur'(\n\'\'\'' + PageHS + u'\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + ModeleGent[l][1] + ur'\|[pron\=]*)}}'
 				if re.search(regex, PageTemp):
-					PageTemp = re.sub(regex, u'\n\4\2}}\1\2\3', PageTemp)
+					PageTemp = re.sub(regex, ur'\n\4\2}}\1\2\3', PageTemp)
 		
 		elif PageTemp.find(u'{{langue|es}}') != -1:
 			ligne = 1
@@ -2245,7 +2248,7 @@ def modification(PageHS):
 				if debogage: print u' son'
 				regex = ur'(\n\'\'\'' + PageHS + u'\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + ModeleGent[l][1] + ur'\|' + PageHS[:-1] + ur')}}'
 				if re.search(regex, PageTemp):
-					PageTemp = re.sub(regex, u'\n\4|\2}}\1\2\3', PageTemp)
+					PageTemp = re.sub(regex, ur'\n\4|\2}}\1\2\3', PageTemp)
 					
 		# URL de références : elles ne contiennent pas les diacritiques des {{PAGENAME}}
 		if debogage: print u'Références'
@@ -4774,15 +4777,15 @@ def modification(PageHS):
 										PageTemp = PageTemp.replace(u'{{'+G[g][1]+u'plur}} {{pluriel ?|' + codelangue + u'}}', u'{{'+G[g][1]+u'plur}}')
 										regex = ur'({{p}}[^\n]*) ?{{pluriel \?\|' + codelangue + u'}}'
 										if re.search(regex, PageTemp):
-											PageTemp = re.sub(regex, u'\1', PageTemp)
+											PageTemp = re.sub(regex, ur'\1', PageTemp)
 										regex = ur'({{invari?a?b?l?e?}}[^\n]*) ?{{pluriel \?\|' + codelangue + u'}}'
 										if re.search(regex, PageTemp):
-											PageTemp = re.sub(regex, u'\1', PageTemp)
+											PageTemp = re.sub(regex, ur'\1', PageTemp)
 										
 							#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 							regex = ur'{{pluriel \?\|' + codelangue + u'}}(\n# ?\'*Pluriel)'
 							if re.search(regex, PageTemp):
-								PageTemp = re.sub(regex, u'\1', PageTemp)
+								PageTemp = re.sub(regex, ur'\1', PageTemp)
 							
 						else:
 							# Paragraphe sans code langue
