@@ -1400,7 +1400,7 @@ def modification(PageHS):
 	
 	regex = ur'{{=([a-z\-]+)=}}'
 	if re.search(regex, PageTemp):
-		PageTemp = re.sub(regex, ur'{{langue|\1}}', PageTemp)
+		PageTemp = re.sub(regex, u'{{langue|\1}}', PageTemp)
 
 	if page.namespace() == 0 or PageHS.find(u'Utilisateur:JackBot/') != -1:
 		while PageTemp.find(u'{{ ') != -1:
@@ -1421,11 +1421,11 @@ def modification(PageHS):
 			if p == limit14: EgalSection = u'===='
 			if p == limit15: EgalSection = u'====='
 			
-			regex = ur'[= ]*{{[\-loc]*(' + Modele[p] + u'|S\|'+ Section[p] + ur')([^}]*)}}[= ]*'
+			regex = ur'[= ]*{{[\-loc]*(' + Modele[p] + ur'|S\|'+ Section[p] + ur')([^}]*)}}[= ]*'
 			if re.search(regex, PageTemp):
 				PageTemp = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'\2}} ' + EgalSection, PageTemp)
 
-			regex = ur'[= ]*{{\-flex[\-loc]*(' + Modele[p] + u'|S\|' + Section[p] + ur')\|([^}]*)}}[= ]*'
+			regex = ur'[= ]*{{\-flex[\-loc]*(' + Modele[p] + ur'|S\|' + Section[p] + ur')\|([^}]*)}}[= ]*'
 			if re.search(regex, PageTemp):
 				PageTemp = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'|\2|flexion}} ' + EgalSection, PageTemp)
 
@@ -1500,29 +1500,29 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(ur'{{ébauche-trad|fr}}', u'{{ébauche-trad}}')	 # bug ?
 		regex = ur'{{ébauche\-trad\|fr}}'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, ur'{{ébauche-trad}}', PageTemp)
+			PageTemp = re.sub(regex, u'{{ébauche-trad}}', PageTemp)
 		
 			# 2) Aucun modèle d'ébauche en dehors d'une boite déroulante
 		PageTemp = PageTemp.replace(ur'{{ébauche-trad}}\n{{trad-début}}', u'{{trad-début}}\n{{ébauche-trad}}') # bug ?
 		regex = ur'{{ébauche\-trad}}\n{{trad\-début}}'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, ur'{{trad-début}}\n{{ébauche-trad}}', PageTemp)
+			PageTemp = re.sub(regex, u'{{trad-début}}\n{{ébauche-trad}}', PageTemp)
 		
 		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad}}\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n')	 # bug ?	
 		regex = ur'==== {{S\|traductions}} ====\n{{ébauche\-trad}}\n\<![^>]+>\n'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, ur'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad|en}}\n{{trad-fin}}\n', PageTemp)
+			PageTemp = re.sub(regex, u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad|en}}\n{{trad-fin}}\n', PageTemp)
 			
 			# 3) Anciens commentaires d'aide à l'édition (tolérés avant l'éditeur visuel et editor.js)
 		PageTemp = PageTemp.replace(ur'<!--* {{T|en}} : {{trad|en|}}-->', '')	 # bug ?
 		regex = ur'<!\-\-[^{>]*{{T\|[^>]+>\n?'
 		if re.search(regex, PageTemp):
 			if debogage: print ' Commentaire trouvé l 1517'
-			PageTemp = re.sub(regex, ur'', PageTemp)
+			PageTemp = re.sub(regex, u'', PageTemp)
 			# Cosmétique
 		regex = ur'{{ébauche\-trad}}{{'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, ur'{{ébauche-trad}}\n{{', PageTemp)
+			PageTemp = re.sub(regex, u'{{ébauche-trad}}\n{{', PageTemp)
 		
 		#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 		
@@ -1552,7 +1552,7 @@ def modification(PageHS):
 			# Cosmétique
 		regex = ur'}}{{trad\-fin}}'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, ur'}}\n{{trad-fin}}', PageTemp)
+			PageTemp = re.sub(regex, u'}}\n{{trad-fin}}', PageTemp)
 		
 		''' Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
 		if PageTemp.find(u'{{langue|fr}}') != -1 and PageTemp.find(u'{{S|traductions}}') == -1 and PageTemp.find(u'Variante d') == -1 and PageTemp.find(u'Synonyme d') == -1:
@@ -1716,7 +1716,7 @@ def modification(PageHS):
 			PageTemp = PageTemp.replace(u']]&#32;[[', u']] [[')
 			regex = ur'\[\[([^\]]*)\|\1\]\]'
 			if re.search(regex, PageTemp):
-				PageTemp = re.sub(regex, ur'[[\1]]', PageTemp)
+				PageTemp = re.sub(regex, u'[[\1]]', PageTemp)
 
 			if PageTemp.find(u'{{vérifier création automatique}}') != -1:
 				if debogage: print u' {{vérifier création automatique}} trouvé'
@@ -1843,16 +1843,16 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{perf}} / \'\'\'', u'{{perf|nocat=1}} / \'\'\'')
 		regex = ur'({{fr\-[^}]*\|[\'’]+=[^}]*)\|[\'’]+=[oui|1]'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, ur'\1', PageTemp)
+			PageTemp = re.sub(regex, u'\1', PageTemp)
 		regex = ur'({{fr\-[^}]*\|s=[^}]*)\|s=[^}\|]*'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, ur'\1', PageTemp)
+			PageTemp = re.sub(regex, u'\1', PageTemp)
 		regex = ur'({{fr\-[^}]*\|ms=[^}]*)\|ms=[^}\|]*'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, ur'\1', PageTemp)
+			PageTemp = re.sub(regex, u'\1', PageTemp)
 		regex = ur'({{fr\-[^}]*\|fs=[^}]*)\|fs=[^}\|]*'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, ur'\1', PageTemp)
+			PageTemp = re.sub(regex, u'\1', PageTemp)
 
 		PageTemp = re.sub(ur'([^d\-]+\-\|[a-z]+\}\}\n)\# *', ur"\1'''" + PageHS + ur"''' {{pron}}\n# ", PageTemp)
 		if PageTemp.find(u'{{Latn') == -1 and PageTemp.find(u'{{Grek') == -1 and PageTemp.find(u'{{Cyrl') == -1 and PageTemp.find(u'{{Armn') == -1 and PageTemp.find(u'{{Geor') == -1 and PageTemp.find(u'{{Hebr') == -1 and PageTemp.find(u'{{Arab') == -1 and PageTemp.find(u'{{Syrc') == -1 and PageTemp.find(u'{{Thaa') == -1 and PageTemp.find(u'{{Deva') == -1 and PageTemp.find(u'{{Hang') == -1 and PageTemp.find(u'{{Hira') == -1 and PageTemp.find(u'{{Kana') == -1 and PageTemp.find(u'{{Hrkt') == -1 and PageTemp.find(u'{{Hani') == -1 and PageTemp.find(u'{{Jpan') == -1 and PageTemp.find(u'{{Hans') == -1 and PageTemp.find(u'{{Hant') == -1 and PageTemp.find(u'{{zh-mot') == -1 and PageTemp.find(u'{{kohan') == -1 and PageTemp.find(u'{{ko-nom') == -1 and PageTemp.find(u'{{la-verb') == -1 and PageTemp.find(u'{{grc-verb') == -1 and PageTemp.find(u'{{polytonique') == -1 and PageTemp.find(u'FAchar') == -1:
@@ -2020,21 +2020,21 @@ def modification(PageHS):
 			PageTemp = PageTemp[0:PageTemp.find(u'|notat=1')] + u'|nocat=1' + PageTemp[PageTemp.find(u'|notat=1')+len(u'|notat=1'):len(PageTemp)]
 		regex = ur'\{\{ISBN\|([^\}]*)\}\}'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, ur'ISBN \1', PageTemp)
+			PageTemp = re.sub(regex, u'ISBN \1', PageTemp)
 		
 		# Modèles de son. Ex : {{écoutez | {{audio | | {{sound -> {{écouter
 		PageTemp = PageTemp.replace(u'{{pron-rég|', u'{{écouter|')
 		regex = ur'\* ?{{sound}} ?: \[\[Media:([^\|\]]*)\|[^\|\]]*\]\]'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, ur'{{écouter|audio=\1}}', PageTemp)
+			PageTemp = re.sub(regex, u'{{écouter|audio=\1}}', PageTemp)
 			summary = summary + u', conversion de modèle de son'
 		regex = ur'\{{audio\|([^\|}]*)\|[^\|}]*}}'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, ur'{{écouter|audio=\1}}', PageTemp)
+			PageTemp = re.sub(regex, u'{{écouter|audio=\1}}', PageTemp)
 			summary = summary + u', conversion de modèle de son'
 		regex = ur'\n *{{écouter\|'
 		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, ur'\n* {{écouter|', PageTemp)
+			PageTemp = re.sub(regex, u'\n* {{écouter|', PageTemp)
 
 		LimiteReg = 13
 		ModRegion = range(1, LimiteReg)
@@ -2210,17 +2210,17 @@ def modification(PageHS):
 			for l in range(1,ligne+1):
 				regex = ur'\({{p}} : [\[\']*' + PageHS + ModeleGent[l][2] + ur'[\]\']*, {{f}} : [\[\']*' + PageHS + ModeleGent[l][3] + ur'[\]\']*, {{fplur}} : [\[\']*' + PageHS + ModeleGent[l][4] + ur'[\]\']*\)'
 				if re.search(regex, PageTemp):
-					PageTemp = re.sub(regex, ur'{{' + ModeleGent[l][1] + u'|pron=}}', PageTemp)
+					PageTemp = re.sub(regex, u'{{' + ModeleGent[l][1] + u'|pron=}}', PageTemp)
 					summary = summary + u', conversion des liens flexions en modèle boite'
 				regex = ur'\({{f}} : [\[\']*' + PageHS + ModeleGent[l][3] + ur'[\]\']*, {{mplur}} : [\[\']*' + PageHS + ModeleGent[l][2] + ur'[\]\']*, {{fplur}} : [\[\']*' + PageHS + ModeleGent[l][4] + ur'[\]\']*\)'
 				if re.search(regex, PageTemp):
-					PageTemp = re.sub(regex, ur'{{' + ModeleGent[l][1] + u'|pron=}}', PageTemp)
+					PageTemp = re.sub(regex, u'{{' + ModeleGent[l][1] + u'|pron=}}', PageTemp)
 					summary = summary + u', conversion des liens flexions en modèle boite'
 				# Son
 				if debogage: print u' son'
 				regex = ur'(\n\'\'\'' + PageHS + u'\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + ModeleGent[l][1] + ur'\|[pron\=]*)}}'
 				if re.search(regex, PageTemp):
-					PageTemp = re.sub(regex, ur'\n\4\2}}\1\2\3', PageTemp)
+					PageTemp = re.sub(regex, u'\n\4\2}}\1\2\3', PageTemp)
 		
 		elif PageTemp.find(u'{{langue|es}}') != -1:
 			ligne = 1
@@ -2234,18 +2234,18 @@ def modification(PageHS):
 			for l in range(1,ligne+1):
 				regex = ur'\({{p}} : [\[\']*' + PageHS[:-1] + ModeleGent[l][2] + ur'[\]\']*, {{f}} : [\[\']*' + PageHS[:-1] + ModeleGent[l][3] + ur'[\]\']*, {{fplur}} : [\[\']*' + PageHS[:-1] + ModeleGent[l][4] + ur'[\]\']*\)'
 				if re.search(regex, PageTemp):
-					PageTemp = re.sub(regex, ur'{{' + ModeleGent[l][1] + u'|' + PageHS[:-1] + ur'}}', PageTemp)
+					PageTemp = re.sub(regex, u'{{' + ModeleGent[l][1] + u'|' + PageHS[:-1] + ur'}}', PageTemp)
 					summary = summary + u', conversion des liens flexions en modèle boite'
 				regex = ur'\({{f}} : [\[\']*' + PageHS[:-1] + ModeleGent[l][3] + ur'[\]\']*, {{mplur}} : [\[\']*' + PageHS[:-1] + ModeleGent[l][2] + ur'[\]\']*, {{fplur}} : [\[\']*' + PageHS[:-1] + ModeleGent[l][4] + ur'[\]\']*\)'
 				if debogage: print regex.encode(config.console_encoding, 'replace')
 				if re.search(regex, PageTemp):
-					PageTemp = re.sub(regex, ur'{{' + ModeleGent[l][1] + u'|' + PageHS[:-1] + ur'}}', PageTemp)
+					PageTemp = re.sub(regex, u'{{' + ModeleGent[l][1] + u'|' + PageHS[:-1] + ur'}}', PageTemp)
 					summary = summary + u', conversion des liens flexions en modèle boite'
 				# Son
 				if debogage: print u' son'
 				regex = ur'(\n\'\'\'' + PageHS + u'\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + ModeleGent[l][1] + ur'\|' + PageHS[:-1] + ur')}}'
 				if re.search(regex, PageTemp):
-					PageTemp = re.sub(regex, ur'\n\4|\2}}\1\2\3', PageTemp)
+					PageTemp = re.sub(regex, u'\n\4|\2}}\1\2\3', PageTemp)
 					
 		# URL de références : elles ne contiennent pas les diacritiques des {{PAGENAME}}
 		if debogage: print u'Références'
@@ -4725,48 +4725,48 @@ def modification(PageHS):
 										if TitreSection == 'nom':
 											try:
 												regex = ur'{{'+Nombre[n]+ur'\|'+codelangue+ur'}}\n# \'\''+G[g][0]+ur' pluriel'
-												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'{{'+G[g][1]+ur'}}\n# \'\'Pluriel' + PageTemp[re.search(regex, PageTemp).end():]
+												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + u'{{'+G[g][1]+u"}}\n# ''Pluriel" + PageTemp[re.search(regex, PageTemp).end():]
 											except:
 												if debogage: print 'erreur l 4731'
 											try:	
 												regex = ur'{{'+Nombre[n]+ur'\|'+codelangue+ur'}}\n# \'\''+G[g][0]+u' singulier'
-												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'{{'+G[g][1]+ur'}}\n# \'\'Singulier' + PageTemp[re.search(regex, PageTemp).end():]
+												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + u'{{'+G[g][1]+u"}}\n# ''Singulier" + PageTemp[re.search(regex, PageTemp).end():]
 											except:
 												if debogage: print 'erreur l 4731'
 											try:
 												regex = ur'{{'+G[g][1]+ur'plur}}\n# \'\''+G[g][0]+ur' pluriel'
-												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'{{'+G[g][1]+ur'}}\n# \'\'Pluriel' + PageTemp[re.search(regex, PageTemp).end():]
+												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + u'{{'+G[g][1]+u"}}\n# ''Pluriel" + PageTemp[re.search(regex, PageTemp).end():]
 											except:
 												if debogage: print 'erreur l 4731'
 											try:
 												regex = ur'{{'+G[g][1]+ur'sing}}\n# \'\''+G[g][0]+ur' singulier'
-												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + u'{{'+G[g][1]+ur'}}\n# \'\'Singulier' + PageTemp[re.search(regex, PageTemp).end():]
+												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + u'{{'+G[g][1]+u"}}\n# ''Singulier" + PageTemp[re.search(regex, PageTemp).end():]
 											except:
 												if debogage: print 'erreur l 4731'
 											try:
 												regex = ur'{{'+G[g][1]+ur'plur}}\n# \'\'Pluriel'
-												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'{{'+G[g][1]+ur'}}\n# \'\'Pluriel' + PageTemp[re.search(regex, PageTemp).end():]
+												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + u'{{'+G[g][1]+u"}}\n# ''Pluriel" + PageTemp[re.search(regex, PageTemp).end():]
 											except:
 												if debogage: print 'erreur l 4731'
 											try:
 												regex = ur'{{'+G[g][1]+ur'sing}}\n# \'\'Singulier'
-												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'{{'+G[g][1]+ur'}}\n# \'\'Singulier' + PageTemp[re.search(regex, PageTemp).end():]
+												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + u'{{'+G[g][1]+u"}}\n# ''Singulier" + PageTemp[re.search(regex, PageTemp).end():]
 											except:
 												if debogage: print 'erreur l 4731'
 										elif TitreSection == 'adjectif':
 											try:
 												regex = ur'{{'+G[g][1]+ur'plur}}\n# \'\'Pluriel'
-												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'\n# \'\'Pluriel' + PageTemp[re.search(regex, PageTemp).end():]
+												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + u"\n# ''Pluriel" + PageTemp[re.search(regex, PageTemp).end():]
 											except:
 												if debogage: print 'erreur l 4751'
 											try:	
 												regex = ur'{{'+G[g][1]+ur'sing}}\n# \'\'Singulier'
-												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'\n# \'\'Singulier' + PageTemp[re.search(regex, PageTemp).end():]
+												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + u"\n# ''Singulier" + PageTemp[re.search(regex, PageTemp).end():]
 											except:
 												if debogage: print 'erreur l 4756'
 											try:	
 												regex = ur'({{invar[^}]*}}) {{genre\|[^}]*}}'
-												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'\1' + PageTemp[re.search(regex, PageTemp).end():]
+												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + u'\1' + PageTemp[re.search(regex, PageTemp).end():]
 											except:
 												if debogage: print 'erreur l 4761'
 										# Retrait des modèles de maintenance
@@ -4774,15 +4774,15 @@ def modification(PageHS):
 										PageTemp = PageTemp.replace(u'{{'+G[g][1]+u'plur}} {{pluriel ?|' + codelangue + u'}}', u'{{'+G[g][1]+u'plur}}')
 										regex = ur'({{p}}[^\n]*) ?{{pluriel \?\|' + codelangue + u'}}'
 										if re.search(regex, PageTemp):
-											PageTemp = re.sub(regex, ur'\1', PageTemp)
+											PageTemp = re.sub(regex, u'\1', PageTemp)
 										regex = ur'({{invari?a?b?l?e?}}[^\n]*) ?{{pluriel \?\|' + codelangue + u'}}'
 										if re.search(regex, PageTemp):
-											PageTemp = re.sub(regex, ur'\1', PageTemp)
+											PageTemp = re.sub(regex, u'\1', PageTemp)
 										
 							#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 							regex = ur'{{pluriel \?\|' + codelangue + u'}}(\n# ?\'*Pluriel)'
 							if re.search(regex, PageTemp):
-								PageTemp = re.sub(regex, ur'\1', PageTemp)
+								PageTemp = re.sub(regex, u'\1', PageTemp)
 							
 						else:
 							# Paragraphe sans code langue
