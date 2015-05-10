@@ -4769,7 +4769,7 @@ def modification(PageHS):
 												if debogage: print 'erreur l 4756'
 											try:	
 												regex = ur'({{invar[^}]*}}) {{genre\|[^}]*}}'
-												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + u'\1' + PageTemp[re.search(regex, PageTemp).end():]
+												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'\1' + PageTemp[re.search(regex, PageTemp).end():]
 											except:
 												if debogage: print 'erreur l 4761'
 										# Retrait des modèles de maintenance
