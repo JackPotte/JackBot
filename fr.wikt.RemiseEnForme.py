@@ -4667,6 +4667,7 @@ def modification(PageHS):
 							EstCodeLangue = "true"
 							trad = u'false'
 							# Ajouts en fin de ligne de forme
+							''' bug https://fr.wiktionary.org/w/index.php?title=nulle&diff=next&oldid=19819870
 							if (TitreSection == 'nom' or TitreSection == 'adjectif') and (codelangue == 'fr' or codelangue == 'en' or codelangue == 'es' or codelangue == 'pt' or codelangue == 'it' or codelangue == 'ar' or codelangue == 'ru' or codelangue == 'bg'):	# or codelangue == 'de' : déplacer les {{de-tab-cas qui sont sous la ligne de forme 
 								
 								if debogage: print u'Recherche du pluriel manquant'
@@ -4781,7 +4782,7 @@ def modification(PageHS):
 										regex = ur'({{invari?a?b?l?e?}}[^\n]*) ?{{pluriel \?\|' + codelangue + u'}}'
 										if re.search(regex, PageTemp):
 											PageTemp = re.sub(regex, ur'\1', PageTemp)
-										
+							'''	
 							#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 							regex = ur'{{pluriel \?\|' + codelangue + u'}}(\n# ?\'*Pluriel)'
 							if re.search(regex, PageTemp):
