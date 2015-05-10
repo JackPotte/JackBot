@@ -1406,7 +1406,7 @@ def modification(PageHS):
 		while PageTemp.find(u'{{ ') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'{{ ')+2] + PageTemp[PageTemp.find(u'{{ ')+3:len(PageTemp)]
 		if PageTemp.find(u'{{formater') != -1 or PageTemp.find(u'{{SI|') != -1 or PageTemp.find(u'{{SI}}') != -1 or PageTemp.find(u'{{supp|') != -1 or PageTemp.find(u'{{supp}}') != -1 or PageTemp.find(u'{{supprimer|') != -1 or PageTemp.find(u'{{supprimer') != -1 or PageTemp.find(u'{{PàS') != -1 or PageTemp.find(u'{{S|faute') != -1 or PageTemp.find(u'{{S|erreur') != -1:
-			print u'Page en travaux : non traitée l 1409'
+			if debogage: print u'Page en travaux : non traitée l 1409'
 			return
 		
 		# Alias d'anciens titres de section
@@ -1620,10 +1620,10 @@ def modification(PageHS):
 							try:
 								PageTempModBegin = pageMod.get()
 							except wikipedia.NoPage:
-								print u'no page'
+								if debogage: print u'no page'
 								break
 							except wikipedia.IsRedirectPage:
-								print "Redirect page"
+								if debogage: print "Redirect page"
 								break
 							PageTempMod = PageTempModBegin
 							if PageTempMod.find(PageHS) == -1: PageTempMod = PageTempMod[0:PageTempMod.find(u'}}')] + u'|' + PageHS + PageTempMod[PageTempMod.find(u'}}'):len(PageTempMod)]
@@ -2323,7 +2323,7 @@ def modification(PageHS):
 					try:
 						langue = CleDeTri.CleDeTri(langues.langues[langue1].decode("utf8"))
 					except KeyError:
-						print "KeyError l 2111"
+						if debogage: print "KeyError l 2111"
 						break
 				langue2 = u'zzz'
 				if PageEnd.rfind(u'\n') == -1 or PageTemp.find(u'\n') == -1: break
@@ -2342,7 +2342,7 @@ def modification(PageHS):
 						try:
 							langue2 = CleDeTri.CleDeTri(langues.langues[langue2].decode("utf8"))
 						except KeyError:
-							print "KeyError l 2160"
+							if debogage: print "KeyError l 2160"
 							break
 					if langue2 != u'' and langue2 > langue:
 						if debogage: langue2 + u' > ' + langue
@@ -2667,7 +2667,7 @@ def modification(PageHS):
 								try:
 									PageTemp = PageTemp[:re.search(regex,PageTemp).start()] + u'\n=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[re.search(regex,PageTemp).start():]
 								except:
-									print u'pb regex interwiki'
+									if debogage: print u'pb regex interwiki'
 							else:
 								PageTemp = PageTemp + u'\n\n=== {{S|anagrammes}} ===\n' + ListeAnagrammes
 			
@@ -4467,13 +4467,13 @@ def modification(PageHS):
 							page2 = Page(site,Infinitif)
 							Page2 = page2.get()
 						except wikipedia.NoPage:
-							print "NoPage flex-verb : " + Infinitif.encode(config.console_encoding, 'replace')
+							if debogage: print "NoPage flex-verb : " + Infinitif.encode(config.console_encoding, 'replace')
 							break
 						except wikipedia.SectionError:
-							print "SectionError flex-verb : " + Infinitif.encode(config.console_encoding, 'replace')
+							if debogage: print "SectionError flex-verb : " + Infinitif.encode(config.console_encoding, 'replace')
 							break
 						except wikipedia.IsRedirectPage:
-							print "Redirect page flex-verb : " + Infinitif.encode(config.console_encoding, 'replace')
+							if debogage: print "Redirect page flex-verb : " + Infinitif.encode(config.console_encoding, 'replace')
 							break
 						# http://fr.wiktionary.org/w/index.php?title=Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet
 						PageTemp2 = PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
@@ -4690,7 +4690,7 @@ def modification(PageHS):
 											PageTemp = PageTemp[:PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n')] + u' {{pluriel ?|' + codelangue + u'}}' + PageTemp[PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'')+len(u'\n\'\'\'' + PageHS + u'\'\'\'')+PageTemp2.find(u'\n'):]
 											if summary.find(u'pluriel manquant') == -1: summary = summary + u', pluriel manquant'
 
-								if codelangue != u'en':
+								if TitreSection == 'nom' and codelangue != u'en':	# pb pour les adjectifs https://fr.wiktionary.org/w/index.php?title=ma%C3%AFs&curid=9466&diff=19817873&oldid=19282563
 									if debogage: print u'Recherche du genre manquant'
 									GenreManquant = True
 									if PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'') != -1 and PageTemp.find(u'\n\'\'\'' + PageHS + u'\'\'\'') < 100:
@@ -4726,19 +4726,29 @@ def modification(PageHS):
 											try:
 												regex = ur'{{'+Nombre[n]+ur'\|'+codelangue+ur'}}\n# \'\''+G[g][0]+ur' pluriel'
 												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'{{'+G[g][1]+ur'}}\n# \'\'Pluriel' + PageTemp[re.search(regex, PageTemp).end():]
-											
+											except:
+												if debogage: print 'erreur l 4731'
+											try:	
 												regex = ur'{{'+Nombre[n]+ur'\|'+codelangue+ur'}}\n# \'\''+G[g][0]+u' singulier'
 												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'{{'+G[g][1]+ur'}}\n# \'\'Singulier' + PageTemp[re.search(regex, PageTemp).end():]
-											
+											except:
+												if debogage: print 'erreur l 4731'
+											try:
 												regex = ur'{{'+G[g][1]+ur'plur}}\n# \'\''+G[g][0]+ur' pluriel'
 												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'{{'+G[g][1]+ur'}}\n# \'\'Pluriel' + PageTemp[re.search(regex, PageTemp).end():]
-											
+											except:
+												if debogage: print 'erreur l 4731'
+											try:
 												regex = ur'{{'+G[g][1]+ur'sing}}\n# \'\''+G[g][0]+ur' singulier'
 												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + u'{{'+G[g][1]+ur'}}\n# \'\'Singulier' + PageTemp[re.search(regex, PageTemp).end():]
-											
+											except:
+												if debogage: print 'erreur l 4731'
+											try:
 												regex = ur'{{'+G[g][1]+ur'plur}}\n# \'\'Pluriel'
 												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'{{'+G[g][1]+ur'}}\n# \'\'Pluriel' + PageTemp[re.search(regex, PageTemp).end():]
-											
+											except:
+												if debogage: print 'erreur l 4731'
+											try:
 												regex = ur'{{'+G[g][1]+ur'sing}}\n# \'\'Singulier'
 												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'{{'+G[g][1]+ur'}}\n# \'\'Singulier' + PageTemp[re.search(regex, PageTemp).end():]
 											except:
@@ -4747,11 +4757,18 @@ def modification(PageHS):
 											try:
 												regex = ur'{{'+G[g][1]+ur'plur}}\n# \'\'Pluriel'
 												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'\n# \'\'Pluriel' + PageTemp[re.search(regex, PageTemp).end():]
-											
+											except:
+												if debogage: print 'erreur l 4751'
+											try:	
 												regex = ur'{{'+G[g][1]+ur'sing}}\n# \'\'Singulier'
 												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'\n# \'\'Singulier' + PageTemp[re.search(regex, PageTemp).end():]
 											except:
-												if debogage: print 'erreur l 4740'
+												if debogage: print 'erreur l 4756'
+											try:	
+												regex = ur'({{invar[^}]*}}) {{genre\|[^}]*}}'
+												PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + ur'\1' + PageTemp[re.search(regex, PageTemp).end():]
+											except:
+												if debogage: print 'erreur l 4761'
 										# Retrait des modèles de maintenance
 										PageTemp = PageTemp.replace(u'{{'+G[g][1]+u'sing}} {{pluriel ?|' + codelangue + u'}}', u'{{'+G[g][1]+u'plur}}')
 										PageTemp = PageTemp.replace(u'{{'+G[g][1]+u'plur}} {{pluriel ?|' + codelangue + u'}}', u'{{'+G[g][1]+u'plur}}')
@@ -5078,17 +5095,17 @@ def modification(PageHS):
 			page2 = Page(site,PageHS[:PageHS.find(u' ')])
 			if page2.exists():
 				if page.namespace() !=0:
-					print u'Page non traitée l 4785'
+					if debogage: print u'Page non traitée l 4785'
 					return
 				else:
 					try:
 						PageLemme = page2.get()
 					except wikipedia.NoPage:
-						print "NoPage l 4791"
+						if debogage: print "NoPage l 4791"
 					except wikipedia.IsRedirectPage: 
-						print "IsRedirect l 4793"
+						if debogage: print "IsRedirect l 4793"
 			else:
-				print "NoPage l 4795"
+				if debogage: print "NoPage l 4795"
 			if PageLemme != u'':
 				genre = u''
 				if PageLemme.find(u'|fr}} {{m}}') != -1:
@@ -5456,7 +5473,7 @@ if len(sys.argv) > 1:
 		TraitementLiens = crawlerLink(u'Modèle:fs',u'')
 	elif sys.argv[1] == u'page':
 		#TraitementPage = modification(u'C++')
-		TraitementPage = modification(u'фосфатите')
+		TraitementPage = modification(u'maïs')
 	elif sys.argv[1] == u's':
 		TraitementRecherche = crawlerSearch(u'"source à préciser"')
 	else:
