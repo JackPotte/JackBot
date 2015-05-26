@@ -88,256 +88,194 @@ limiteM = len(ModeleFR)
 #spécifier le remplacement “citation” s'il a les paramètres du modèle anglais.
 
 # Demande de [[Discussion modèle:ouvrage]]
-#ModeleEN[] = u'cite book'
-#ModeleFR[] = u'ouvrage'
+#ModeleEN.append(u'cite book'
+#ModeleFR.append(u'ouvrage'
 
 # Paramètres à remplacer
-limiteP = 122
-ParamEN = range(1, limiteP +1)
-ParamFR = range(1, limiteP +1)
-ParamEN[1] = u'author'
-ParamFR[1] = u'auteur'
-ParamEN[2] = u'authorlink1'
-ParamFR[2] = u'lien auteur1'
-ParamEN[3] = u'title'
-ParamFR[3] = u'titre'
-ParamEN[4] = u'publisher'
-ParamFR[4] = u'éditeur'
-ParamEN[5] = u'work'	# paramètre de {{lien web}} différent pour {{article}}
-ParamFR[5] = u'périodique'
-ParamEN[6] = u'newspaper'
-ParamFR[6] = u'journal'
-ParamEN[7] = u'day'
-ParamFR[7] = u'jour'
-ParamEN[8] = u'month'
-ParamFR[8] = u'mois'
-ParamEN[9] = u'year'
-ParamFR[9] = u'année'
-ParamEN[10] = u'accessdate'
-ParamFR[10] = u'consulté le'
-ParamEN[11] = u'language'
-ParamFR[11] = u'langue'
-ParamEN[12] = u'quote'
-ParamFR[12] = u'extrait'
-ParamEN[13] = u'titre vo'
-ParamFR[13] = u'titre original'
-ParamEN[14] = u'first'
-ParamFR[14] = u'prénom'
-ParamEN[15] = u'surname'
-ParamFR[15] = u'nom'
-ParamEN[16] = u'last'
-ParamFR[16] = u'nom'
-ParamEN[17] = u'first1'
-ParamFR[17] = u'prénom1'
-ParamEN[18] = u'last1'
-ParamFR[18] = u'nom1'
-ParamEN[19] = u'first2'
-ParamFR[19] = u'prénom2'
-ParamEN[20] = u'last2'
-ParamFR[20] = u'nom2'
-ParamEN[21] = u'first3'
-ParamFR[21] = u'prénom3'
-ParamEN[22] = u'last3'
-ParamFR[22] = u'nom3'
-ParamEN[23] = u'first4'
-ParamFR[23] = u'prénom4'
-ParamEN[24] = u'last4'
-ParamFR[24] = u'nom4'
-ParamEN[25] = u'first5'
-ParamFR[25] = u'prénom5'
-ParamEN[26] = u'last5'
-ParamFR[26] = u'nom5'
-ParamEN[27] = u'first6'
-ParamFR[27] = u'prénom6'
-ParamEN[28] = u'last6'
-ParamFR[28] = u'nom6'
-ParamEN[29] = u'first7'
-ParamFR[29] = u'prénom7'
-ParamEN[30] = u'last7'
-ParamFR[30] = u'nom7'
-ParamEN[31] = u'first8'
-ParamFR[31] = u'prénom8'
-ParamEN[32] = u'last8'
-ParamFR[32] = u'nom8'
-ParamEN[33] = u'first9'
-ParamFR[33] = u'prénom9'
-ParamEN[34] = u'last9'
-ParamFR[34] = u'nom9'
-ParamEN[35] = u'issue'
-ParamFR[35] = u'numéro'
-ParamEN[36] = u'authorlink'
-ParamFR[36] = u'lien auteur'
-ParamEN[37] = u'author-link'
-ParamFR[37] = u'lien auteur'
-ParamEN[38] = u'authorlink1'
-ParamFR[38] = u'lien auteur1'
-ParamEN[39] = u'author1-link'
-ParamFR[39] = u'lien auteur1'
-ParamEN[40] = u'coauthorlink'
-ParamFR[40] = u'lien coauteur'
-ParamEN[41] = u'coauthor-link'
-ParamFR[41] = u'lien coauteur'
-ParamEN[42] = u'authorlink2'
-ParamFR[42] = u'lien auteur2'
-ParamEN[43] = u'author2-link'
-ParamFR[43] = u'lien auteur2'
-ParamEN[44] = u'authorlink3'
-ParamFR[44] = u'lien auteur3'
-ParamEN[45] = u'author3-link'
-ParamFR[45] = u'lien auteur3'
-ParamEN[46] = u'authorlink4'
-ParamFR[46] = u'lien auteur4'
-ParamEN[47] = u'author4-link'
-ParamFR[47] = u'lien auteur4'
-ParamEN[48] = u'authorlink5'
-ParamFR[48] = u'lien auteur5'
-ParamEN[49] = u'author5-link'
-ParamFR[49] = u'lien auteur5'
-ParamEN[50] = u'authorlink6'
-ParamFR[50] = u'lien auteur6'
-ParamEN[51] = u'author6-link'
-ParamFR[51] = u'lien auteur6'
-ParamEN[52] = u'authorlink7'
-ParamFR[52] = u'lien auteur7'
-ParamEN[53] = u'author7-link'
-ParamFR[53] = u'lien auteur7'
-ParamEN[54] = u'authorlink8'
-ParamFR[54] = u'lien auteur8'
-ParamEN[55] = u'author8-link'
-ParamFR[55] = u'lien auteur8'
-ParamEN[56] = u'authorlink9'
-ParamFR[56] = u'lien auteur9'
-ParamEN[57] = u'author9-link'
-ParamFR[57] = u'lien auteur9'
-ParamEN[58] = u'authorlink10'
-ParamFR[58] = u'lien auteur10'
-ParamEN[59] = u'author10-link'
-ParamFR[59] = u'lien auteur10'
-ParamEN[60] = u'surname1'
-ParamFR[60] = u'nom1'
-ParamEN[61] = u'coauthors'
-ParamFR[61] = u'coauteurs'
-ParamEN[62] = u'co-auteurs'
-ParamFR[62] = u'coauteurs'
-ParamEN[63] = u'co-auteur'
-ParamFR[63] = u'coauteur'
-ParamEN[64] = u'surname2'
-ParamFR[64] = u'nom2'
-ParamEN[65] = u'surname3'
-ParamFR[65] = u'nom3'
-ParamEN[66] = u'surname4'
-ParamFR[66] = u'nom4'
-ParamEN[67] = u'surname5'
-ParamFR[67] = u'nom5'
-ParamEN[68] = u'surname6'
-ParamFR[68] = u'nom6'
-ParamEN[69] = u'surname7'
-ParamFR[69] = u'nom7'
-ParamEN[70] = u'surname8'
-ParamFR[70] = u'nom8'
-ParamEN[71] = u'surname9'
-ParamFR[71] = u'nom9'
-ParamEN[72] = u'surname10'
-ParamFR[72] = u'nom10'
-ParamEN[73] = u'given'
-ParamFR[73] = u'prénom'
-ParamEN[74] = u'given1'
-ParamFR[74] = u'prénom1'
-ParamEN[75] = u'given2'
-ParamFR[75] = u'prénom2'
-ParamEN[76] = u'given3'
-ParamFR[76] = u'prénom3'
-ParamEN[77] = u'given4'
-ParamFR[77] = u'prénom4'
-ParamEN[78] = u'given5'
-ParamFR[78] = u'prénom5'
-ParamEN[79] = u'given6'
-ParamFR[79] = u'prénom6'
-ParamEN[80] = u'given7'
-ParamFR[80] = u'prénom7'
-ParamEN[81] = u'given8'
-ParamFR[81] = u'prénom8'
-ParamEN[82] = u'given9'
-ParamFR[82] = u'prénom9'
-ParamEN[83] = u'given10'
-ParamFR[83] = u'prénom10'
-ParamEN[84] = u'trad'
-ParamFR[84] = u'traducteur'
-ParamEN[85] = u'at'
-ParamFR[85] = u'passage'
-ParamEN[86] = u'origyear'
-ParamFR[86] = u'année première impression'
-ParamEN[87] = u'location'
-ParamFR[87] = u'lieu'
-ParamEN[88] = u'place'
-ParamFR[88] = u'lieu'
-ParamEN[89] = u'publication-date'
-ParamFR[89] = u'année'
-ParamEN[90] = u'writers'
-ParamFR[90] = u'scénario'
-ParamEN[91] = u'episodelink'
-ParamFR[91] = u'lien épisode'
-ParamEN[92] = u'serieslink'
-ParamFR[92] = u'lien série'
-ParamEN[93] = u'titlelink'
-ParamFR[93] = u'lien titre'
-ParamEN[94] = u'credits'
-ParamFR[94] = u'crédits'
-ParamEN[95] = u'network'
-ParamFR[95] = u'réseau'
-ParamEN[96] = u'station'
-ParamFR[96] = u'chaîne'
-ParamEN[97] = u'city'
-ParamFR[97] = u'ville'
-ParamEN[98] = u'began'
-ParamFR[98] = u'début'
-ParamEN[99] = u'ended'
-ParamFR[99] = u'fin'
-ParamEN[100] = u'diffusion'
-ParamFR[100] = u'airdate'
-ParamEN[101] = u'number'
-ParamFR[101] = u'numéro'
-ParamEN[102] = u'season'
-ParamFR[102] = u'saison'
-ParamEN[103] = u'year2'
-ParamFR[103] = u'année2'
-ParamEN[104] = u'month2'
-ParamFR[104] = u'mois2'
-ParamEN[105] = u'time'
-ParamFR[105] = u'temps'
-ParamEN[106] = u'accessyear'
-ParamFR[106] = u'année accès'
-ParamEN[107] = u'accessmonth'
-ParamFR[107] = u'mois accès'
-ParamEN[108] = u'conference'
-ParamFR[108] = u'conférence'
-ParamEN[109] = u'conferenceurl'
-ParamFR[109] = u'urlconférence'
-ParamEN[110] = u'others'
-ParamFR[110] = u'autres'
-ParamEN[111] = u'booktitle'
-ParamFR[111] = u'titre livre'
-ParamEN[112] = u'autor'
-ParamFR[112] = u'auteur'
-ParamEN[113] = u'título'
-ParamFR[113] = u'titre' 
-ParamEN[114] = u'fechaacceso'
-ParamFR[114] = u'consulté le'
-ParamEN[115] = u'fecha'
-ParamFR[115] = u'date'
-ParamEN[116] = u'obra'
-ParamFR[116] = u'série' 
-ParamEN[117] = u'idioma'
-ParamFR[117] = u'langue' 
-ParamEN[118] = u'publicació'
-ParamFR[118] = u'éditeur' 
-ParamEN[119] = u'editorial'
-ParamFR[119] = u'journal'
-ParamEN[120] = u'archivedate'
-ParamFR[120] = u'en ligne le'
-ParamEN[121] = u'series'
-ParamFR[121] = u'collection'
+ParamEN = []
+ParamFR = []
+ParamEN.append(u'author')
+ParamFR.append(u'auteur')
+ParamEN.append(u'authorlink1')
+ParamFR.append(u'lien auteur1')
+ParamEN.append(u'title')
+ParamFR.append(u'titre')
+ParamEN.append(u'publisher')
+ParamFR.append(u'éditeur')
+ParamEN.append(u'work')	# paramètre de {{lien web}} différent pour {{article}}
+ParamFR.append(u'périodique')
+ParamEN.append(u'newspaper')
+ParamFR.append(u'journal')
+ParamEN.append(u'day')
+ParamFR.append(u'jour')
+ParamEN.append(u'month')
+ParamFR.append(u'mois')
+ParamEN.append(u'year')
+ParamFR.append(u'année')
+ParamEN.append(u'accessdate')
+ParamFR.append(u'consulté le')
+ParamEN.append(u'language')
+ParamFR.append(u'langue')
+ParamEN.append(u'quote')
+ParamFR.append(u'extrait')
+ParamEN.append(u'titre vo')
+ParamFR.append(u'titre original')
+ParamEN.append(u'first')
+ParamFR.append(u'prénom')
+ParamEN.append(u'surname')
+ParamFR.append(u'nom')
+ParamEN.append(u'last')
+ParamFR.append(u'nom')
+for p in range(1,20):
+	ParamEN.append(u'first'+str(p))
+	ParamFR.append(u'prénom'+str(p))
+	ParamEN.append(u'given'+str(p))
+	ParamFR.append(u'prénom'+str(p))
+	ParamEN.append(u'last'+str(p))
+	ParamFR.append(u'nom'+str(p))
+	ParamEN.append(u'surname'+str(p))
+	ParamFR.append(u'nom'+str(p))
+ParamEN.append(u'issue')
+ParamFR.append(u'numéro')
+ParamEN.append(u'authorlink')
+ParamFR.append(u'lien auteur')
+ParamEN.append(u'author-link')
+ParamFR.append(u'lien auteur')
+ParamEN.append(u'authorlink1')
+ParamFR.append(u'lien auteur1')
+ParamEN.append(u'author1-link')
+ParamFR.append(u'lien auteur1')
+ParamEN.append(u'coauthorlink')
+ParamFR.append(u'lien coauteur')
+ParamEN.append(u'coauthor-link')
+ParamFR.append(u'lien coauteur')
+ParamEN.append(u'authorlink2')
+ParamFR.append(u'lien auteur2')
+ParamEN.append(u'author2-link')
+ParamFR.append(u'lien auteur2')
+ParamEN.append(u'authorlink3')
+ParamFR.append(u'lien auteur3')
+ParamEN.append(u'author3-link')
+ParamFR.append(u'lien auteur3')
+ParamEN.append(u'authorlink4')
+ParamFR.append(u'lien auteur4')
+ParamEN.append(u'author4-link')
+ParamFR.append(u'lien auteur4')
+ParamEN.append(u'authorlink5')
+ParamFR.append(u'lien auteur5')
+ParamEN.append(u'author5-link')
+ParamFR.append(u'lien auteur5')
+ParamEN.append(u'authorlink6')
+ParamFR.append(u'lien auteur6')
+ParamEN.append(u'author6-link')
+ParamFR.append(u'lien auteur6')
+ParamEN.append(u'authorlink7')
+ParamFR.append(u'lien auteur7')
+ParamEN.append(u'author7-link')
+ParamFR.append(u'lien auteur7')
+ParamEN.append(u'authorlink8')
+ParamFR.append(u'lien auteur8')
+ParamEN.append(u'author8-link')
+ParamFR.append(u'lien auteur8')
+ParamEN.append(u'authorlink9')
+ParamFR.append(u'lien auteur9')
+ParamEN.append(u'author9-link')
+ParamFR.append(u'lien auteur9')
+ParamEN.append(u'authorlink10')
+ParamFR.append(u'lien auteur10')
+ParamEN.append(u'author10-link')
+ParamFR.append(u'lien auteur10')
+ParamEN.append(u'surname1')
+ParamFR.append(u'nom1')
+ParamEN.append(u'coauthors')
+ParamFR.append(u'coauteurs')
+ParamEN.append(u'co-auteurs')
+ParamFR.append(u'coauteurs')
+ParamEN.append(u'co-auteur')
+ParamFR.append(u'coauteur')
+ParamEN.append(u'given')
+ParamFR.append(u'prénom')
+ParamEN.append(u'trad')
+ParamFR.append(u'traducteur')
+ParamEN.append(u'at')
+ParamFR.append(u'passage')
+ParamEN.append(u'origyear')
+ParamFR.append(u'année première impression')
+ParamEN.append(u'location')
+ParamFR.append(u'lieu')
+ParamEN.append(u'place')
+ParamFR.append(u'lieu')
+ParamEN.append(u'publication-date')
+ParamFR.append(u'année')
+ParamEN.append(u'writers')
+ParamFR.append(u'scénario')
+ParamEN.append(u'episodelink')
+ParamFR.append(u'lien épisode')
+ParamEN.append(u'serieslink')
+ParamFR.append(u'lien série')
+ParamEN.append(u'titlelink')
+ParamFR.append(u'lien titre')
+ParamEN.append(u'credits')
+ParamFR.append(u'crédits')
+ParamEN.append(u'network')
+ParamFR.append(u'réseau')
+ParamEN.append(u'station')
+ParamFR.append(u'chaîne')
+ParamEN.append(u'city')
+ParamFR.append(u'ville')
+ParamEN.append(u'began')
+ParamFR.append(u'début')
+ParamEN.append(u'ended')
+ParamFR.append(u'fin')
+ParamEN.append(u'diffusion')
+ParamFR.append(u'airdate')
+ParamEN.append(u'number')
+ParamFR.append(u'numéro')
+ParamEN.append(u'season')
+ParamFR.append(u'saison')
+ParamEN.append(u'year2')
+ParamFR.append(u'année2')
+ParamEN.append(u'month2')
+ParamFR.append(u'mois2')
+ParamEN.append(u'time')
+ParamFR.append(u'temps')
+ParamEN.append(u'accessyear')
+ParamFR.append(u'année accès')
+ParamEN.append(u'accessmonth')
+ParamFR.append(u'mois accès')
+ParamEN.append(u'conference')
+ParamFR.append(u'conférence')
+ParamEN.append(u'conferenceurl')
+ParamFR.append(u'urlconférence')
+ParamEN.append(u'others')
+ParamFR.append(u'autres')
+ParamEN.append(u'booktitle')
+ParamFR.append(u'titre livre')
+ParamEN.append(u'autor')
+ParamFR.append(u'auteur')
+ParamEN.append(u'título')
+ParamFR.append(u'titre')
+ParamEN.append(u'fechaacceso')
+ParamFR.append(u'consulté le')
+ParamEN.append(u'fecha')
+ParamFR.append(u'date')
+ParamEN.append(u'obra')
+ParamFR.append(u'série')
+ParamEN.append(u'idioma')
+ParamFR.append(u'langue')
+ParamEN.append(u'publicació')
+ParamFR.append(u'éditeur')
+ParamEN.append(u'editorial')
+ParamFR.append(u'journal')
+ParamEN.append(u'archivedate')
+ParamFR.append(u'en ligne le')
+ParamEN.append(u'series')
+ParamFR.append(u'collection')
 
+limiteP = len(ParamEN)
+if limiteP != len(ParamFR):
+	raw_input(u'Erreur l 227')
+	
 # URL à remplacer
 limiteU = 3
 URLDeplace = range(1, limiteU +1)
@@ -362,7 +300,7 @@ FinDURL[10] = u'^'
 FinDURL[11] = u'\\'
 FinDURL[12] = u'`'
 FinDURL[13] = u'"'
-#FinDURL[] = u'~'	# dans 1ère RFC seulement
+#FinDURL.append(u'~'	# dans 1ère RFC seulement
 # Caractères qui ne peuvent pas être en dernière position d'une URL :
 limiteURL2 = 7
 FinDURL2 = range(1, limiteURL +1)
@@ -638,7 +576,7 @@ def hyperlynx(PageTemp):
 					elif ModeleCourant.find(u'ien web') != -1 and ModeleCourant.find(u'ien web') < ModeleCourant.find(u'|'):
 						ParamFR[p] = u'série'
 				elif ParamEN[p] == u'publisher':
-					if ModeleCourant.find(u'ewspaper') != -1 or ModeleCourant.find(u'rticle') != -1 or ModeleCourant.find(u'revue') != -1 or ModeleCourant.find(u'journal') != -1:
+					if ModeleCourant.find(u'ien web') != -1 or ModeleCourant.find(u'ewspaper') != -1 or ModeleCourant.find(u'rticle') != -1 or ModeleCourant.find(u'revue') != -1 or ModeleCourant.find(u'journal') != -1:
 						ParamFR[p] = u'éditeur'
 					else:
 						ParamFR[p] = u'périodique'

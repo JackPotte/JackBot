@@ -144,10 +144,10 @@ def crawlerFile(source):
 			fin = PageHS.find("\t")
 			PageHS = PageHS[0:fin]
 			if PageHS == '': break
-			if PageHS.find(u'[[') != -1:
-				PageHS = PageHS[PageHS.find(u'[[')+2:len(PageHS)]
-			if PageHS.find(u']]') != -1:
-				PageHS = PageHS[0:PageHS.find(u']]')]
+			if PageHS.find('[[') != -1:
+				PageHS = PageHS[PageHS.find('[[')+2:len(PageHS)]
+			if PageHS.find(']]') != -1:
+				PageHS = PageHS[0:PageHS.find(']]')]
 			modification(HTMLUnicode.HTMLUnicode(PageHS))
 		PagesHS.close()
 
@@ -309,7 +309,9 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'Folk metal')
+		TraitementPage = modification(u'Modèle:Cite pmid/17267789')
+	elif sys.argv[1] == u'cat':
+		TraitementCat = crawlerCat(u'Catégorie:Modèle pmid',False,u'')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:

@@ -232,8 +232,8 @@ Section.append(u'prononciation')
 limit14 = len(Modele)
 Modele.append(u'-compos-')
 Section.append(u'composés')
-Modele.append(u'-décl-')
-Section.append(u'déclinaison')
+#Modele.append(u'-décl-')
+#Section.append(u'déclinaison')
 Modele.append(u'-dial-')
 Section.append(u'variantes dialectales')
 Modele.append(u'-faux-amis-')
@@ -310,6 +310,12 @@ Modele.append(u'-conjug-')
 Section.append(u'conjugaison')
 Modele.append(u'-cit-')
 Section.append(u'citations')
+Modele.append(u'vidéos')
+Section.append(u'vidéos')
+Modele.append(u'augmentatifs')
+Section.append(u'augmentatifs')
+Modele.append(u'diminutifs')
+Section.append(u'diminutifs')
 limit15 = len(Modele)
 Modele.append(u'-notes-')
 Section.append(u'notes')
@@ -1035,6 +1041,7 @@ Modele.append(u'soutenu')
 Modele.append(u'sport')
 Modele.append(u'sport de combat')
 Modele.append(u'sport de glisse')
+Modele.append(u'sportifs')
 Modele.append(u'sports')
 Modele.append(u'sports de combat')
 Modele.append(u'sports de glisse')
@@ -1443,22 +1450,28 @@ def modification(PageHS):
 		# Alias peu intuitifs
 		PageTemp = PageTemp.replace(u'{{S|adj|', u'{{S|adjectif|')
 		PageTemp = PageTemp.replace(u'{{S|adjectifs|', u'{{S|adjectif|')
+		PageTemp = PageTemp.replace(u'{{S|adj-num|', u'{{S|adjectif numéral|')
 		PageTemp = PageTemp.replace(u'{{S|adv|', u'{{S|adverbe}}')
+		PageTemp = PageTemp.replace(u'{{S|interj|', u'{{S|interjection|')
 		PageTemp = PageTemp.replace(u'{{S|locution phrase|', u'{{S|locution-phrase|')
-		PageTemp = PageTemp.replace(u'{{S|phrase|', u'{{S|locution-phrase|')
 		PageTemp = PageTemp.replace(u'{{S|nom commun', u'{{S|nom|')
 		PageTemp = PageTemp.replace(u'{{S|nom-fam|', u'{{S|nom de famille|')
 		PageTemp = PageTemp.replace(u'{{S|nom-pr|', u'{{S|nom propre|')
+		PageTemp = PageTemp.replace(u'{{S|phrase|', u'{{S|locution-phrase|')
 		PageTemp = PageTemp.replace(u'{{S|symb|', u'{{S|symbole|')
 		PageTemp = PageTemp.replace(u'{{S|verb|', u'{{S|verbe|')
 		
+		PageTemp = PageTemp.replace(u'{{S|abrév}}', u'{{S|abréviations}}')
 		PageTemp = PageTemp.replace(u'{{S|anagramme}}', u'{{S|anagrammes}}')
 		PageTemp = PageTemp.replace(u'{{S|anagr}}', u'{{S|anagrammes}}')
 		PageTemp = PageTemp.replace(u'{{S|ant}}', u'{{S|antonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|anto}}', u'{{S|antonymes}}')
+		PageTemp = PageTemp.replace(u'{{S|app}}', u'{{S|apparentés}}')
 		PageTemp = PageTemp.replace(u'{{S|apr}}', u'{{S|apparentés}}')
+		PageTemp = PageTemp.replace(u'{{S|apparentés étymologiques}}', u'{{S|apparentés}}')
 		PageTemp = PageTemp.replace(u'{{S|compos}}', u'{{S|composés}}')
 		PageTemp = PageTemp.replace(u'{{S|dimin}}', u'{{S|diminutifs}}')
+		PageTemp = PageTemp.replace(u'{{S|derives}}', u'{{S|dérivés}}')
 		PageTemp = PageTemp.replace(u'{{S|drv|en}}', u'{{S|dérivés}}')
 		PageTemp = PageTemp.replace(u'{{S|drv}}', u'{{S|dérivés}}')
 		PageTemp = PageTemp.replace(u'{{S|drv-int}}', u'{{S|dérivés autres langues}}')
@@ -1466,6 +1479,8 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|étym}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|etymologie}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|exp}}', u'{{S|expressions}}')
+		PageTemp = PageTemp.replace(u'{{S|expr}}', u'{{S|expressions}}')
+		PageTemp = PageTemp.replace(u'{{S|expression}}', u'{{S|expressions}}')
 		PageTemp = PageTemp.replace(u'{{S|gent}}', u'{{S|gentilés}}')
 		PageTemp = PageTemp.replace(u'{{S|holo}}', u'{{S|holonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|homo}}', u'{{S|homophones}}')
@@ -1478,6 +1493,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{S|prononciations}}', u'{{S|prononciation}}')
 		PageTemp = PageTemp.replace(u'{{S|q-syn}}', u'{{S|quasi-synonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|réf}}', u'{{S|références}}')
+		PageTemp = PageTemp.replace(u'{{S|référence}}', u'{{S|références}}')
 		PageTemp = PageTemp.replace(u'{{S|syn}}', u'{{S|synonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|trad-trier}}', u'{{S|traductions à trier}}')
 		PageTemp = PageTemp.replace(u'{{S|trad}}', u'{{S|traductions}}')
@@ -1486,7 +1502,9 @@ def modification(PageHS):
 		#PageTemp = PageTemp.replace(u'{{S|variantes ortho}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|var-ortho}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|var-ortho|fr}}', u'{{S|variantes orthographiques}}')
+		PageTemp = PageTemp.replace(u'{{S|var-ortho|en}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|voc}}', u'{{S|vocabulaire}}')
+		PageTemp = PageTemp.replace(u'{{S|voc|en}}', u'{{S|vocabulaire}}')
 		PageTemp = PageTemp.replace(u'{{S|voir}}', u'{{S|voir aussi}}')
 		PageTemp = PageTemp.replace(u'{{S|voir|en}}', u'{{S|voir aussi}}')
 		
@@ -1969,7 +1987,9 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{dén|', u'{{dénombrable|')
 		PageTemp = PageTemp.replace(u'{{pl-cour}}', u'{{plus courant}}')
 		PageTemp = PageTemp.replace(u'{{pl-rare}}', u'{{plus rare}}')
-
+		PageTemp = PageTemp.replace(u"# ''féminin de", u"# ''Féminin de")
+		PageTemp = PageTemp.replace(u"# ''masculin de", u"# ''Masculin de")
+		
 		while PageTemp.find(u'[[Annexe:Couleurs en français]]') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'[[Annexe:Couleurs en français]]')] + u'{{Thésaurus|fr|couleur}}' + PageTemp[PageTemp.find(u'[[Annexe:Couleurs en français]]')+len(u'[[Annexe:Couleurs en français]]'):len(PageTemp)]
 		while PageTemp.find(u'{{Annexe|Couleurs en français}}') != -1:
@@ -4667,7 +4687,10 @@ def modification(PageHS):
 							EstCodeLangue = "true"
 							trad = u'false'
 							# Ajouts en fin de ligne de forme
-							''' bug https://fr.wiktionary.org/w/index.php?title=nulle&diff=next&oldid=19819870
+							''' bugs
+								https://fr.wiktionary.org/w/index.php?title=nulle&diff=next&oldid=19819870
+								https://fr.wiktionary.org/w/index.php?title=protectrice&type=revision&diff=19820554&oldid=19260710
+								https://fr.wiktionary.org/w/index.php?title=ma%C3%AForale&type=revision&diff=19820545&oldid=16796920
 							if (TitreSection == 'nom' or TitreSection == 'adjectif') and (codelangue == 'fr' or codelangue == 'en' or codelangue == 'es' or codelangue == 'pt' or codelangue == 'it' or codelangue == 'ar' or codelangue == 'ru' or codelangue == 'bg'):	# or codelangue == 'de' : déplacer les {{de-tab-cas qui sont sous la ligne de forme 
 								
 								if debogage: print u'Recherche du pluriel manquant'
@@ -5477,7 +5500,7 @@ if len(sys.argv) > 1:
 		TraitementLiens = crawlerLink(u'Modèle:fs',u'')
 	elif sys.argv[1] == u'page':
 		#TraitementPage = modification(u'C++')
-		TraitementPage = modification(u'maïs')
+		TraitementPage = modification(u'négriat littéraire')
 	elif sys.argv[1] == u's':
 		TraitementRecherche = crawlerSearch(u'"source à préciser"')
 	else:
@@ -5503,6 +5526,7 @@ else:
 	TraitementLiens = crawlerLink(u'Modèle:=langue=',u'')
 	TraitementLiens = crawlerLink(u'Modèle:-déf-',u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
+	TraitementLiens = crawlerLink(u'Modèle:pron-rég',u'')
 	#TraitementLiens = crawlerLink(u'Modèle:audio',u'')
 '''	
 	while 1:
@@ -5528,5 +5552,11 @@ python delete.py -lang:fr -family:wiktionary -file:articles_WTin.txt
 python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -noredirect -pairs
 python interwiki.py -lang:fr -family:wiktionary -page:"Wiktionnaire:Accueil communautaire"
 python interwiki.py -lang:fr -family:wiktionary -wiktionary -autonomous -force -usercontribs:Otourly
-python touch.py -lang:fr -family:wiktionary -cat:
+ 
+# Pages modifiée par X :
+SELECT page_title FROM pp_value JOIN page ON page_id = pp_page WHERE pp_value = 'JackPotte';
+# Contenu de la page nommée X :
+SELECT CAST(pp_page AS CHAR(1000000) CHARACTER SET utf8) FROM page JOIN page_props ON page_id = pp_page WHERE page_namespace = '' and page_title = 'jackpot';
+
+'fin}}\n*{{T'
 '''
