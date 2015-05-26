@@ -44,6 +44,9 @@ def modification(PageHS):
 		except wikipedia.LockedPage:
 			print "Locked/protected page"
 			return
+	if PageTemp.find(u'{{en travaux}}') != -1 or PageTemp.find(u'{{En travaux}}') != -1:
+		print "Page en travaux"
+		return
 	PageTemp = PageBegin
 	
 	# Traitements des URL et leurs modèles
@@ -311,7 +314,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'page':
 		TraitementPage = modification(u'Modèle:Cite pmid/17267789')
 	elif sys.argv[1] == u'cat':
-		TraitementCat = crawlerCat(u'Catégorie:Modèle pmid',False,u'')
+		TraitementCat = crawlerCat(u'Catégorie:Modèle pmid',False,u'Modèle:Cite pmid/18472213')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
