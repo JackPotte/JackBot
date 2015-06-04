@@ -178,7 +178,6 @@ class SandboxBot:
 					text = sandboxPage.get()
 					translatedContent = pywikibot.translate(self.site, content,fallback=False)
 					translatedMsg = i18n.twtranslate(self.site,'clean_sandbox-cleaned')
-					translatedContent = '{{Sandbox heading}}'
 					subst = 'subst:' in translatedContent
 					pos = text.find(translatedContent.strip())
 					if text.strip() == translatedContent.strip():
