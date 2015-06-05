@@ -665,6 +665,7 @@ Modele.append(u'geol')
 Modele.append(u'géol')
 Modele.append(u'géologie')
 Modele.append(u'géom')
+Modele.append(u'géomatique')
 Modele.append(u'géométrie')
 Modele.append(u'géoph')
 Modele.append(u'géophysique')
@@ -785,6 +786,7 @@ Modele.append(u'lutherie')
 Modele.append(u'machines')
 Modele.append(u'maçon')
 Modele.append(u'maçonnerie')
+Modele.append(u'magnétique')
 Modele.append(u'mah-jong')
 Modele.append(u'mahjong')
 Modele.append(u'maintenance')
@@ -1371,6 +1373,7 @@ Genre.append(u'nsing')
 
 # Modification du wiki
 def modification(PageHS):
+	#PageHS = u'Catégorie:'+PageHS[:1].upper()+PageHS[1:]
 	summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
 	if debogage: print u'------------------------------------'
 	print(PageHS.encode(config.console_encoding, 'replace'))
@@ -1407,11 +1410,16 @@ def modification(PageHS):
 	PageTemp = PageBegin
 	CleTri = CleDeTri.CleDeTri(PageHS)
 	
-	regex = ur'{{=([a-z\-]+)=}}'
-	if re.search(regex, PageTemp):
-		PageTemp = re.sub(regex, ur'{{langue|\1}}', PageTemp)
-
-	if page.namespace() == 0 or PageHS.find(u'Utilisateur:JackBot/') != -1:
+	if page.namespace() == 14:
+		# Catégorie
+		if PageHS.find(u'Catégorie:Lexique en français d') != -1 and PageTemp.find(u'[[Catégorie:Lexiques en français|') == -1:
+			PageTemp = PageTemp + u'\n[[Catégorie:Lexiques en français|' + CleDeTri.CleDeTri(trim(PageHS[PageHS.rfind(' '):])) + u']]\n'
+			
+	elif page.namespace() == 0 or PageHS.find(u'Utilisateur:JackBot/') != -1:
+		regex = ur'{{=([a-z\-]+)=}}'
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'{{langue|\1}}', PageTemp)
+		
 		while PageTemp.find(u'{{ ') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'{{ ')+2] + PageTemp[PageTemp.find(u'{{ ')+3:len(PageTemp)]
 		if PageTemp.find(u'{{formater') != -1 or PageTemp.find(u'{{SI|') != -1 or PageTemp.find(u'{{SI}}') != -1 or PageTemp.find(u'{{supp|') != -1 or PageTemp.find(u'{{supp}}') != -1 or PageTemp.find(u'{{supprimer|') != -1 or PageTemp.find(u'{{supprimer') != -1 or PageTemp.find(u'{{PàS') != -1 or PageTemp.find(u'{{S|faute') != -1 or PageTemp.find(u'{{S|erreur') != -1:
@@ -5214,24 +5222,25 @@ def modification(PageHS):
 			txtfile = codecs.open(u'articles_listed.txt', 'a', 'utf-8')
 			txtfile.write(u'* [[' + PageHS + u']]\n')
 			txtfile.close()'''
+			
+		# Interwikis
+		if PageEnd.find(u'{{langue|en}}') != -1 and PageEnd.find(u'[[en:') == -1:
+			pageEN = Page(siteEN,PageHS)
+			if pageEN.exists():
+				try:
+					PageEN = pageEN.get()
+				except wikipedia.NoPage:
+					print "NoPage l 4698"
+					return
+				except wikipedia.IsRedirectPage: 
+					print "IsRedirect l 4701"
+					return
+				if PageEN.find(u'==English==') != -1:
+					PageEnd = PageEnd + u'\n[[en:' + PageHS + u']]'
+					summary = summary + u', ajout d\'interwiki'
+					
 	else:
 		PageEnd = PageTemp
-
-	# Interwikis
-	if PageEnd.find(u'{{langue|en}}') != -1 and PageEnd.find(u'[[en:') == -1:
-		pageEN = Page(siteEN,PageHS)
-		if pageEN.exists():
-			try:
-				PageEN = pageEN.get()
-			except wikipedia.NoPage:
-				print "NoPage l 4698"
-				return
-			except wikipedia.IsRedirectPage: 
-				print "IsRedirect l 4701"
-				return
-			if PageEN.find(u'==English==') != -1:
-				PageEnd = PageEnd + u'\n[[en:' + PageHS + u']]'
-				summary = summary + u', ajout d\'interwiki'
 
 	if debogage: print u'Test des URL'
 	#PageEnd = hyperlynx.hyperlynx(PageEnd)
@@ -5250,28 +5259,29 @@ def trim(s):
     return s.strip(" \t\n\r\0\x0B")
 
 def addCat(PageTemp, lang, cat):
-	if PageTemp.find(cat) == -1 and PageTemp.find(u'{{langue|' + lang + u'}}') != -1:
-		if cat.find(u'[[Catégorie:') == -1: cat = u'[[Catégorie:' + cat + u']]'
-		PageTemp2 = PageTemp[PageTemp.find(u'{{langue|' + lang + u'}}')+len(u'{{langue|' + lang + u'}}'):]
-		if PageTemp2.find(u'{{langue|') != -1:
-			if debogage: print u' catégorie ajoutée avant la section suivante'
-			if PageTemp2.find(u'== {{langue|') != -1:
-				PageTemp = PageTemp[:PageTemp.find(u'{{langue|' + lang + u'}}')+len(u'{{langue|' + lang + u'}}')+PageTemp2.find(u'== {{langue|')] + cat + u'\n\n' + PageTemp[PageTemp.find(u'{{langue|' + lang + u'}}')+len(u'{{langue|' + lang + u'}}')+PageTemp2.find(u'== {{langue|'):]
-			elif PageTemp2.find(u'=={{langue|') != -1:
-				PageTemp = PageTemp[:PageTemp.find(u'{{langue|' + lang + u'}}')+len(u'{{langue|' + lang + u'}}')+PageTemp2.find(u'=={{langue|')] + cat + u'\n\n' + PageTemp[PageTemp.find(u'{{langue|' + lang + u'}}')+len(u'{{langue|' + lang + u'}}')+PageTemp2.find(u'=={{langue|'):]
+	if lang != u'':
+		if PageTemp.find(cat) == -1 and PageTemp.find(u'{{langue|' + lang + u'}}') != -1:
+			if cat.find(u'[[Catégorie:') == -1: cat = u'[[Catégorie:' + cat + u']]'
+			PageTemp2 = PageTemp[PageTemp.find(u'{{langue|' + lang + u'}}')+len(u'{{langue|' + lang + u'}}'):]
+			if PageTemp2.find(u'{{langue|') != -1:
+				if debogage: print u' catégorie ajoutée avant la section suivante'
+				if PageTemp2.find(u'== {{langue|') != -1:
+					PageTemp = PageTemp[:PageTemp.find(u'{{langue|' + lang + u'}}')+len(u'{{langue|' + lang + u'}}')+PageTemp2.find(u'== {{langue|')] + cat + u'\n\n' + PageTemp[PageTemp.find(u'{{langue|' + lang + u'}}')+len(u'{{langue|' + lang + u'}}')+PageTemp2.find(u'== {{langue|'):]
+				elif PageTemp2.find(u'=={{langue|') != -1:
+					PageTemp = PageTemp[:PageTemp.find(u'{{langue|' + lang + u'}}')+len(u'{{langue|' + lang + u'}}')+PageTemp2.find(u'=={{langue|')] + cat + u'\n\n' + PageTemp[PageTemp.find(u'{{langue|' + lang + u'}}')+len(u'{{langue|' + lang + u'}}')+PageTemp2.find(u'=={{langue|'):]
+				else:
+					 print u'Modèle {{langue| mal positionné'
 			else:
-				 print u'Modèle {{langue| mal positionné'
-		else:
-			if debogage: print u' catégorie ajoutée avant les interwikis'
-			regex = ur'\n\[\[\w?\w?\w?:'
-			if re.compile(regex).search(PageTemp):
-				try:
-					PageTemp = PageTemp[:re.search(regex,PageTemp).start()] + u'\n' + cat + u'\n' + PageTemp[re.search(regex,PageTemp).start():]
-				except:
-					print u'pb regex interwiki'
-			else:
-				if debogage: print u' catégorie ajoutée en fin de page'
-				PageTemp = PageTemp + u'\n' + cat
+				if debogage: print u' catégorie ajoutée avant les interwikis'
+				regex = ur'\n\[\[\w?\w?\w?:'
+				if re.compile(regex).search(PageTemp):
+					try:
+						PageTemp = PageTemp[:re.search(regex,PageTemp).start()] + u'\n' + cat + u'\n' + PageTemp[re.search(regex,PageTemp).start():]
+					except:
+						print u'pb regex interwiki'
+				else:
+					if debogage: print u' catégorie ajoutée en fin de page'
+					PageTemp = PageTemp + u'\n' + cat
 	return PageTemp
 
 def rec_anagram(counter):
@@ -5552,7 +5562,8 @@ python delete.py -lang:fr -family:wiktionary -file:articles_WTin.txt
 python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -noredirect -pairs
 python interwiki.py -lang:fr -family:wiktionary -page:"Wiktionnaire:Accueil communautaire"
 python interwiki.py -lang:fr -family:wiktionary -wiktionary -autonomous -force -usercontribs:Otourly
- 
+python protect.py -lang:fr -family:wiktionary -cat:"Élections de patrouilleurs" -summary:"Vote archivé" -move:sysop -edit:sysop
+
 # Pages modifiée par X :
 SELECT page_title FROM pp_value JOIN page ON page_id = pp_page WHERE pp_value = 'JackPotte';
 # Contenu de la page nommée X :

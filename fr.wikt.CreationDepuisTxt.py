@@ -11,17 +11,41 @@ language = "fr"
 family = "wiktionary"
 mynick = "JackBot"
 site = getSite(language,family)
-summary = u'[[Annexe:Noces en français]]'
-debogage = False
+summary = u'[[Portail:Géomatique]]'
+debogage = True
 cpt = 0
 # Modification du wiki
-def modification(PageHS):
+def modification(Ligne):
 	global cpt
 	cpt += 1
+	if Ligne.find(u';') != -1:
+		Tableau = Ligne.split(';')
+		Domaine = u'{{géomatique|fr}}'
+		PageHS = Tableau[1].replace(u'\'', u'’')
+		if PageHS.find(u'’') != -1:
+			page = Page(site,PageHS.replace(u'’', u'\''))
+			if not page.exists():
+				if debogage: print u'Création d\'une redirection apostrophe'
+				sauvegarde(page, u'#REDIRECT[[' + PageHS + ']]', u'Redirection pour apostrophe')
+				page = Page(site,PageHS)
+				
+		if Tableau[4][0:2] == u'n.':
+			Nature = u'nom'
+			Genre = Tableau[4][2:3]
+			if Genre == '' or Genre.find(u'.') != -1:
+				raw_input('Erreur de genre')
+		else:
+			Nature = u'verbe'
+			Genre = u''
+		Definition = Tableau[5]
+		Reference = u'Glossaire CFC 1990'
+	else:
+		PageHS = Ligne
+		
 	print(PageHS.encode(config.console_encoding, 'replace'))
 	page = Page(site,PageHS)
 	if page.exists():
-		print "Page existante l 22"
+		print "Page existante l 34"
 		return
 	
 	CleTri = CleDeTri.CleDeTri(PageHS)
@@ -29,17 +53,12 @@ def modification(PageHS):
 		CleTri = u'{{clé de tri|' + CleTri + u'}}\n'
 	else:
 		CleTri = u''
-		
-	if PageHS.find(u'’') != -1:
-		Mot = PageHS[PageHS.rfind(u'’')+1:]
-	else:
-		Mot = PageHS[PageHS.rfind(u' ')+1:]
-		
-	PageEnd = u'\n=={{langue|fr}}==\n=== {{S|étymologie}} ===\n:{{cf|noce|' + Mot + u'}}.\n\n'	
-	PageEnd += u'=== {{S|nom|fr}} ===\n\'\'\'{{subst:PAGENAME}}\'\'\' {{fplur}}\n'
-	PageEnd += u'# Anniversaire pour les ' + str(cpt) + u' ans de [[mariage]].\n\n'
-	PageEnd += u'==== {{S|apparentés}} ====\n* {{annexe|Noces en français}}\n\n'
+	
+	PageEnd = u'\n=={{langue|fr}}==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}.\n\n'	
+	PageEnd += u'=== {{S|'+Nature+'|fr}} ===\n\'\'\'{{subst:PAGENAME}}\'\'\' {{pron||fr}} {{'+Genre+u'}}\n'
+	PageEnd += u'# '+Domaine+u' '+Definition+u'\n\n'
 	PageEnd += u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n\n' 
+	PageEnd += u'=== {{S|références}} ===\n* '+Reference+u'\n'
 	PageEnd += CleTri
 	sauvegarde(page, PageEnd, summary)
 	
@@ -212,7 +231,8 @@ def sauvegarde(PageCourante, Contenu, summary):
 			return
 			
 # Lancement
-TraitementFichier = crawlerFile(u'articles_WTin.txt')
+TraitementFichier = crawlerFile(u'_imports\GlossaireVersionDeTravailPourWiktionnaire.csv')
+#TraitementFichier = crawlerFile(u'articles_WTin.txt')
 '''
 # Modèles
 TraitementPage = modification(u'Utilisateur:JackBot/test')
