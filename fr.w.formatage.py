@@ -44,7 +44,7 @@ def modification(PageHS):
 		except wikipedia.LockedPage:
 			print "Locked/protected page"
 			return
-	if PageBegin.find(u'{{en travaux}}') != -1 or PageBegin.find(u'{{En travaux}}') != -1:
+	if PageBegin.find(u'{{en travaux') != -1 or PageBegin.find(u'{{En travaux') != -1:
 		print "Page en travaux"
 		return
 	PageTemp = PageBegin

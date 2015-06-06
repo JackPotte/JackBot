@@ -6548,3 +6548,5 @@
 2015-06-05 17:53:17 r-1 (unknown) Python 2.7.9 fr.wikt.RemiseEnForme.py
 2015-06-05 18:00:43 r-1 (unknown) Python 2.7.9 fr.w.formatage.py
 2015-06-05 18:06:55 r-1 (unknown) Python 2.7.9 fr.wikt.RemiseEnForme.py
+2015-06-05 23:43:56 r-1 (unknown) Python 2.7.9 pwb.py "redirect" "-lang:fr" "-family:wiktionary"
+2015-06-05 23:44:11 r-1 (unknown) Python 2.7.9 pwb.py "redirect" "-lang:fr" "-family:wikipedia"
