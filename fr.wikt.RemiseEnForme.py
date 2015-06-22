@@ -574,6 +574,8 @@ Modele.append(u'diplomatie')
 Modele.append(u'diplomatie')
 Modele.append(u'diptote')
 Modele.append(u'droit')
+Modele.append(u'ébauche-trad-exe')
+Modele.append(u'trad-exe')
 Modele.append(u'échecs')
 Modele.append(u'écol')
 Modele.append(u'écologie')
@@ -1970,6 +1972,8 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{nds}}', u'bas allemand')
 		PageTemp = PageTemp.replace(u'{{nds}}', u'bas allemand')
 		PageTemp = PageTemp.replace(u'|ko-hani}}', u'|ko-Hani}}')
+		PageTemp = PageTemp.replace(u'#*: {{trad-exe|fr}}', u'')
+		PageTemp = PageTemp.replace(u'{{pron|}}', u'{{pron||fr}}')
 		
 		# Modèles trop courts
 		if debogage: print u'Modèles courts'
@@ -2496,8 +2500,7 @@ def modification(PageHS):
 		PageTemp = PageEnd + PageTemp
 		PageEnd = u''"""
 		
-		# Remplacement des codes langues
-		if debogage: print u'Remplacement des anciens codes langue'
+		if debogage: print u'Remplacements des anciens codes langue'
 		while PageTemp.find(u'=prv=') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'=prv=')] + u'langue|oc' + PageTemp[PageTemp.find(u'=prv=')+len(u'=prv='):len(PageTemp)]
 		AncienModele = []
@@ -5501,11 +5504,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm3':
 		TraitementLiens = crawlerLink(u'Modèle:pron-rég',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Traductions manquantes en français',False,u'')
-	elif sys.argv[1] == u'cat2':
-		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Traductions manquantes sans langue précisée',False,u'')
-	elif sys.argv[1] == u'cat3':
-		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Traductions manquantes en anglais',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:fs',u'')
 	elif sys.argv[1] == u'page':
@@ -5518,6 +5517,7 @@ if len(sys.argv) > 1:
 else:
 	# Quotidiennement :
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Terminologie sans langue précisée',True,u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée',False,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Flexions à vérifier',True,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet',False,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Ébauches à compléter',False,u'')
@@ -5537,6 +5537,7 @@ else:
 	TraitementLiens = crawlerLink(u'Modèle:-déf-',u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
 	TraitementLiens = crawlerLink(u'Modèle:pron-rég',u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français',False,u'')
 	#TraitementLiens = crawlerLink(u'Modèle:audio',u'')
 '''	
 	while 1:
