@@ -5416,7 +5416,7 @@ def ecart_last_edit(page):
 # Traitement des modifications d'un compte
 def crawlerUser(username,jusqua):
 	compteur = 0
-	gen = pagegenerators.UserContributionsGenerator(username)
+	gen = pagegenerators.UserContributionsGenerator(username, site = site)
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		modification(Page.title())
 		compteur = compteur + 1
@@ -5429,7 +5429,7 @@ def crawlerRedirects():
 										
 # Traitement de toutes les pages du site
 def crawlerAll(start):
-	gen = pagegenerators.AllpagesPageGenerator(start,namespace=0,includeredirects=False)
+	gen = pagegenerators.AllpagesPageGenerator(start,namespace=0,includeredirects=False, site = site)
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		#print (Page.title().encode(config.console_encoding, 'replace'))
 		modification(Page.title())

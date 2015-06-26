@@ -19,43 +19,64 @@ language = "fr"
 family = "wiktionary"
 mynick = "JackBot"
 site = getSite(language,family)
-debogage = True
+debogage = False
 debogageLent = False
+Action = u'révocation'
+Bloquer = False
 
 # Modification du wiki
 def modification(PageHS, Username):
-	summary = u'Annulation de '+Username
 	if debogage: print u'------------------------------------'
 	print(PageHS.encode(config.console_encoding, 'replace'))
-
 	page = Page(site,PageHS)
-	if page.namespace() == 6 or PageHS == u'User:JackBot/test':
+	if (page.namespace() != 1 and page.namespace() != 3 and page.namespace() != 5) or PageHS == u'User:JackBot/test':	#page.namespace() == 0 
 		if page.exists():
-			if page.userName() == Username:
-				# à faire : while en option
-				#for rev in page.getVersionHistory():
-				#	print rev
-				if debogage: print Username + u' trouvé'
+			PageBegin = u''
+			if Action == u'annulation':
+				summary = u'Annulation de ' + Username
+				if page.userName() == Username and page.getCreator() != Username:
+					if debogage: print Username + u' trouvé'
+					try:
+						PageBegin = page.getOldVersion(page.previousRevision())
+					except wikipedia.NoPage:
+						print u'NoPage l 42'
+						return
+					except wikipedia.IsRedirectPage: 
+						print u'IsRedirect l 45'
+						return
+				else:
+					if debogage: print page.userName() + u' trouvé'
+			else:
+				summary = u'Révocation de ' + Username
+				Found = False
+				cpt = 0
 				try:
-					PageBegin = page.getOldVersion(page.previousRevision())
-					# Reset de page pour éditer la dernière version
-					page = Page(site,PageHS)
+					while page.getVersionHistory()[cpt][2] == Username and page.getCreator() != Username:
+						Found = True
+						cpt = cpt + 1
+						if debogage: print Username + u' trouvé'
+					if Found: 
+						PageBegin = page.getOldVersion(page.getVersionHistory()[cpt][0])
 				except wikipedia.NoPage:
-					print u'NoPage l 41'
+					print u'NoPage l 56'
 					return
 				except wikipedia.IsRedirectPage: 
-					print u'IsRedirect l 44'
+					print u'IsRedirect l 59'
 					return
+				except IndexError: 
+					print u'IndexError Out Of Range l 67'
+					return
+			if PageBegin != u'': 
+				page = Page(site,PageHS)	# Reset de page pour éditer la dernière version
 				sauvegarde(page, PageBegin, summary)
-			else:
-				if debogage: print page.userName() + u' trouvé'
+			
 		else:
 			if debogage: print u'page inexistante'
 	else:
 		if debogage: print u'page non ciblée'
 
 # Lecture du fichier articles_list.txt (au même format que pour replace.py)
-def crawlerFile(source):
+def crawlerFile(source, Username):
 	if source:
 		PagesHS = open(source, 'r')
 		while 1:
@@ -68,18 +89,18 @@ def crawlerFile(source):
 			if PageHS.find(u']]') != -1:
 				PageHS = PageHS[0:PageHS.find(u']]')]
 			# Conversion ASCII => Unicode (pour les .txt)
-			modification(HTMLUnicode.HTMLUnicode(PageHS))
+			modification(HTMLUnicode.HTMLUnicode(PageHS), Username)
 		PagesHS.close()
 
 # Traitement d'une catégorie
-def crawlerCat(category,recursif,apres):
+def crawlerCat(category,recursif,apres, Username):
 	modifier = u'False'
 	cat = catlib.Category(site, category)
 	pages = cat.articlesList(False)
 	gen =  pagegenerators.NamespaceFilterPageGenerator(pages, [0])
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		if not apres or apres == u'' or modifier == u'True':
-			modification(Page.title()) #crawlerLink(Page.title())
+			modification(Page.title(), Username) #crawlerLink(Page.title())
 		elif Page.title() == apres:
 			modifier = u'True'
 	if recursif == True:
@@ -87,10 +108,10 @@ def crawlerCat(category,recursif,apres):
 		for subcategory in subcat:
 			pages = subcategory.articlesList(False)
 			for Page in pagegenerators.PreloadingGenerator(pages,100):
-				modification(Page.title())
+				modification(Page.title(), Username)
 
 # Traitement des pages liées
-def crawlerLink(pagename,apres):
+def crawlerLink(pagename,apres, Username):
 	modifier = u'False'
 	#pagename = unicode(arg[len('-links:'):], 'utf-8')
 	page = wikipedia.Page(site, pagename)
@@ -99,12 +120,12 @@ def crawlerLink(pagename,apres):
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		#print(Page.title().encode(config.console_encoding, 'replace'))
 		if not apres or apres == u'' or modifier == u'True':
-			modification(Page.title()) #crawlerLink(Page.title())
+			modification(Page.title(), Username) #crawlerLink(Page.title())
 		elif Page.title() == apres:
 			modifier = u'True'
 
 # Traitement des pages liées des entrées d'une catégorie
-def crawlerCatLink(pagename,apres):
+def crawlerCatLink(pagename,apres, Username):
 	modifier = u'False'
 	cat = catlib.Category(site, pagename)
 	pages = cat.articlesList(False)
@@ -115,15 +136,15 @@ def crawlerCatLink(pagename,apres):
 		for PageLiee in pagegenerators.PreloadingGenerator(gen,100):
 			#print(Page.title().encode(config.console_encoding, 'replace'))
 			if not apres or apres == u'' or modifier == u'True':
-				modification(PageLiee.title()) #crawlerLink(Page.title())
+				modification(PageLiee.title(), Username) #crawlerLink(Page.title())
 			elif PageLiee.title() == apres:
 				modifier = u'True'
 				
 # Traitement d'une recherche
-def crawlerSearch(pagename):
+def crawlerSearch(pagename, Username):
 	gen = pagegenerators.SearchPageGenerator(pagename, site = site, namespaces = "0")
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
-		modification(Page.title())
+		modification(Page.title(), Username)
 
 # Traitement des modifications récentes
 def crawlerRC_last_day(site=site, nobots=True, namespace='0'):
@@ -145,15 +166,15 @@ def crawlerRC_last_day(site=site, nobots=True, namespace='0'):
 					returndict=False, nobots=nobots):
 		yield item[0]
 		
-def crawlerRC():
+def crawlerRC(Username):
 	gen = pagegenerators.RecentchangesPageGenerator(site = site)
 	ecart_minimal_requis = 30 # min
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		#print str(ecart_last_edit(Page)) + ' =? ' + str(ecart_minimal_requis)
 		if ecart_last_edit(Page) > ecart_minimal_requis:
-			modification(Page.title())
+			modification(Page.title(), Username)
 
-def ecart_last_edit(page):
+def ecart_last_edit(page, Username):
 	# Timestamp au format MediaWiki de la dernière version
 	time_last_edit = page.getVersionHistory()[0][1]
 	match_time = re.match(r'(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})', time_last_edit)
@@ -167,25 +188,25 @@ def ecart_last_edit(page):
 	return diff_last_edit_time.seconds/60 + diff_last_edit_time.days*24*60
 	
 # Traitement des modifications d'un compte
-def crawlerUser(username,jusqua):
+def crawlerUser(username, jusqua, Username):
 	compteur = 0
-	gen = pagegenerators.UserContributionsGenerator(username)
+	gen = pagegenerators.UserContributionsGenerator(username, site = site)
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
-		modification(Page.title())
+		modification(Page.title(), Username)
 		compteur = compteur + 1
 		if compteur > jusqua: break
 
 # Toutes les redirections
-def crawlerRedirects():
+def crawlerRedirects(Username):
 	for Page in site.allpages(start=u'', namespace=0, includeredirects='only'):
-		modification(Page.title())	
+		modification(Page.title(), Username)	
 										
 # Traitement de toutes les pages du site
-def crawlerAll(start):
+def crawlerAll(start, Username):
 	gen = pagegenerators.AllpagesPageGenerator(start,namespace=0,includeredirects=False)
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		#print (Page.title().encode(config.console_encoding, 'replace'))
-		modification(Page.title())
+		modification(Page.title(), Username)
 	
 # Permet à tout le monde de stopper le bot en lui écrivant
 def ArretDUrgence():
@@ -247,20 +268,22 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'page':
 		TraitementPage = modification(u'négriat littéraire', sys.argv[2])
 	elif sys.argv[1] == u'txt': 
-		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
+		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt', sys.argv[2])
 	elif sys.argv[1] == u'm':
-		TraitementLiens = crawlerLink(u'Modèle:mp',u'')
+		TraitementLiens = crawlerLink(u'Modèle:mp',u'', sys.argv[2])
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée',False,u'', sys.argv[2])
 	elif sys.argv[1] == u'lien':
-		TraitementLiens = crawlerLink(u'Modèle:fs',u'')
+		TraitementLiens = crawlerLink(u'Modèle:fs',u'', sys.argv[2])
+	elif sys.argv[1] == u'user':	
+		TraitementUtilisateur = crawlerUser(sys.argv[3], 1000, sys.argv[2])
 	else:
-		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
+		TraitementPage = modification(sys.argv[1], sys.argv[2])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
 	print 'Please enter a username'
 '''	
 # Modèles
-TraitementPage = modification(u'Modèle:terme')
+TraitementPage = modification(u'Modèle:terme', '78.217.232.147')
 TraitementLiens = crawlerLink(u'Modèle:terme',u'')
 TraitementFichier = crawlerFile(u'articles_WTin.txt')
 TraitementLiensCategorie = crawlerCatLink(u'Modèles de code langue',u'')
@@ -277,4 +300,5 @@ python interwiki.py -lang:fr -family:wiktionary -page:"Wiktionnaire:Accueil comm
 python interwiki.py -lang:fr -family:wiktionary -wiktionary -autonomous -force -usercontribs:Otourly
 python protect.py -lang:fr -family:wiktionary -cat:"Élections de patrouilleurs" -summary:"Vote archivé" -move:sysop -edit:sysop
 
+python commons.revocator.py user 78.217.232.147 78.217.232.147
 '''
