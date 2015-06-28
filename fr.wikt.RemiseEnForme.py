@@ -660,6 +660,7 @@ Modele.append(u'génit')
 Modele.append(u'génitif')
 Modele.append(u'génitif')
 Modele.append(u'genre')
+Modele.append(u'genre ?')
 Modele.append(u'géog')
 Modele.append(u'geog')	# à remplacer ?
 Modele.append(u'géographie')
@@ -947,6 +948,7 @@ Modele.append(u'plantes')
 Modele.append(u'plantes aromatiques')
 Modele.append(u'plongée')
 Modele.append(u'plurale tantum')
+Modele.append(u'pluriel')
 Modele.append(u'pluriel ?')
 Modele.append(u'poés')
 Modele.append(u'poésie')
@@ -1538,11 +1540,12 @@ def modification(PageHS):
 		if re.search(regex, PageTemp):
 			PageTemp = re.sub(regex, u'{{trad-début}}\n{{ébauche-trad}}', PageTemp)
 		
-		PageTemp = PageTemp.replace(u'==== {{S|traductions}} ====\n{{ébauche-trad}}\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n')	 # bug ?	
-		regex = ur'==== {{S\|traductions}} ====\n{{ébauche\-trad}}\n\<![^>]+>\n'
+		PageTemp = PageTemp.replace(ur'==== {{S|traductions}} ====\n{{ébauche-trad}}\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n')	 # bug ?	
+		regex = ur'==== {{S\|traductions}} ====\n{{ébauche\-trad}}(\n<![^>]+>)*(\n|$)'
 		if re.search(regex, PageTemp):
+			if debogage: print ' ébauche sans boite'
 			PageTemp = re.sub(regex, u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad|en}}\n{{trad-fin}}\n', PageTemp)
-			
+
 			# 3) Anciens commentaires d'aide à l'édition (tolérés avant l'éditeur visuel et editor.js)
 		PageTemp = PageTemp.replace(ur'<!--* {{T|en}} : {{trad|en|}}-->', '')	 # bug ?
 		regex = ur'<!\-\-[^{>]*{{T\|[^>]+>\n?'
@@ -5504,7 +5507,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm3':
 		TraitementLiens = crawlerLink(u'Modèle:pron-rég',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Théorie des graphes en français',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:fs',u'')
 	elif sys.argv[1] == u'page':
