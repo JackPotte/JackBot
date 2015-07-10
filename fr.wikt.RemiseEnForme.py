@@ -432,6 +432,8 @@ Modele.append(u'argot scolaire')
 Modele.append(u'arme')
 Modele.append(u'armement')
 Modele.append(u'armes')
+Modele.append(u'armes blanches')
+Modele.append(u'arthropodes')
 Modele.append(u'artillerie')
 Modele.append(u'arts')
 Modele.append(u'arts martiaux')
@@ -1004,6 +1006,7 @@ Modele.append(u'religions')
 Modele.append(u'reliure')
 Modele.append(u'repro')
 Modele.append(u'reproduction')
+Modele.append(u'reptiles')
 Modele.append(u'réseau')
 Modele.append(u'réseaux')
 Modele.append(u'réseaux informatiques')
@@ -2005,6 +2008,22 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u"# ''féminin de", u"# ''Féminin de")
 		PageTemp = PageTemp.replace(u"# ''masculin de", u"# ''Masculin de")
 		
+		PageTemp = PageTemp.replace(u'{{arbre|', u'{{arbres|')
+		PageTemp = PageTemp.replace(u'{{arme|', u'{{armement|')
+		PageTemp = PageTemp.replace(u'{{astro|', u'{{astronomie|')
+		PageTemp = PageTemp.replace(u'{{{bota|', u'{{botanique|')
+		PageTemp = PageTemp.replace(u'{{électro|', u'{{électronique|')
+		PageTemp = PageTemp.replace(u'{{équi|', u'{{équitation|')
+		PageTemp = PageTemp.replace(u'{{gastro|', u'{{gastronomie|')
+		PageTemp = PageTemp.replace(u'{{légume|', u'{{légumes|')
+		PageTemp = PageTemp.replace(u'{{minéral|', u'{{minéralogie|')
+		PageTemp = PageTemp.replace(u'{{myth|', u'{{mythologie|')
+		PageTemp = PageTemp.replace(u'{{oiseau|', u'{{oiseaux|')
+		PageTemp = PageTemp.replace(u'{{plante|', u'{{plantes|')
+		PageTemp = PageTemp.replace(u'{{psycho|', u'{{psychologie|')
+		PageTemp = PageTemp.replace(u'{{réseau|', u'{{réseaux|')
+		PageTemp = PageTemp.replace(u'{{vêtement|', u'{{vêtements|')
+	
 		while PageTemp.find(u'[[Annexe:Couleurs en français]]') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'[[Annexe:Couleurs en français]]')] + u'{{Thésaurus|fr|couleur}}' + PageTemp[PageTemp.find(u'[[Annexe:Couleurs en français]]')+len(u'[[Annexe:Couleurs en français]]'):len(PageTemp)]
 		while PageTemp.find(u'{{Annexe|Couleurs en français}}') != -1:
@@ -5499,12 +5518,26 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'txt2':
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'2.txt')
 	elif sys.argv[1] == u'm':
+		TraitementLiens = crawlerLink(u'Modèle:arbre',u'')
+		TraitementLiens = crawlerLink(u'Modèle:arme',u'')
+		TraitementLiens = crawlerLink(u'Modèle:astro',u'')
+		TraitementLiens = crawlerLink(u'Modèle:bota',u'')
+		TraitementLiens = crawlerLink(u'Modèle:électro',u'')
+		TraitementLiens = crawlerLink(u'Modèle:équi',u'')
+		TraitementLiens = crawlerLink(u'Modèle:gastro',u'')
+		TraitementLiens = crawlerLink(u'Modèle:légume',u'')
+		TraitementLiens = crawlerLink(u'Modèle:minéral',u'')
+		TraitementLiens = crawlerLink(u'Modèle:myth',u'')
+		TraitementLiens = crawlerLink(u'Modèle:oiseau',u'')
+		TraitementLiens = crawlerLink(u'Modèle:plante',u'')
+		TraitementLiens = crawlerLink(u'Modèle:psycho',u'')
+		TraitementLiens = crawlerLink(u'Modèle:réseau',u'')
+		TraitementLiens = crawlerLink(u'Modèle:vêtement',u'')
+	elif sys.argv[1] == u'm2':
 		TraitementLiens = crawlerLink(u'Modèle:mp',u'')
 		TraitementLiens = crawlerLink(u'Modèle:fp',u'')
 		TraitementLiens = crawlerLink(u'Modèle:mplur',u'français')
-	elif sys.argv[1] == u'm2':
 		TraitementLiens = crawlerLink(u'Modèle:fplur',u'un')
-	elif sys.argv[1] == u'm3':
 		TraitementLiens = crawlerLink(u'Modèle:pron-rég',u'')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Théorie des graphes en français',False,u'')
