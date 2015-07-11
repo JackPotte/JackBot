@@ -11,8 +11,8 @@ language = "fr"
 family = "wiktionary"
 mynick = "JackBot"
 site = getSite(language,family)
-summary = u'[[Portail:Géomatique]]'
-debogage = True
+summary = u'[[w:Catégorie:Dinosaure (nom scientifique)]]'
+debogage = False
 cpt = 0
 # Modification du wiki
 def modification(Ligne):
@@ -38,10 +38,16 @@ def modification(Ligne):
 			Nature = u'verbe'
 			Genre = u''
 		Definition = Tableau[5]
-		Reference = u'Glossaire CFC 1990'
+		
 	else:
 		PageHS = Ligne
-		
+		Domaine = u'{{dinosaures|fr}}'
+		Nature = u'nom'
+		Genre = u'm'
+		Definition = u'Type de [[dinosaure]].'
+		Voir = u'=== {{S|voir aussi}} ===\n* {{WP}}\n\n'
+	
+	Reference = u''	
 	print(PageHS.encode(config.console_encoding, 'replace'))
 	page = Page(site,PageHS)
 	if page.exists():
@@ -58,7 +64,8 @@ def modification(Ligne):
 	PageEnd += u'=== {{S|'+Nature+'|fr}} ===\n\'\'\'{{subst:PAGENAME}}\'\'\' {{pron||fr}} {{'+Genre+u'}}\n'
 	PageEnd += u'# '+Domaine+u' '+Definition+u'\n\n'
 	PageEnd += u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n\n' 
-	PageEnd += u'=== {{S|références}} ===\n* '+Reference+u'\n'
+	if Voir != u'': PageEnd += Voir
+	if Reference != u'': PageEnd += u'=== {{S|références}} ===\n* '+Reference+u'\n'
 	PageEnd += CleTri
 	sauvegarde(page, PageEnd, summary)
 	
@@ -231,8 +238,7 @@ def sauvegarde(PageCourante, Contenu, summary):
 			return
 			
 # Lancement
-TraitementFichier = crawlerFile(u'_imports\GlossaireVersionDeTravailPourWiktionnaire.csv')
-#TraitementFichier = crawlerFile(u'articles_WTin.txt')
+TraitementFichier = crawlerFile(u'articles_fr_wiktionary.txt')
 '''
 # Modèles
 TraitementPage = modification(u'Utilisateur:JackBot/test')
