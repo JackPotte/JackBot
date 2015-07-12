@@ -486,6 +486,7 @@ Modele.append(u'capoeira')
 Modele.append(u'capoeira')
 Modele.append(u'cardin')
 Modele.append(u'cardinal')
+Modele.append(u'carnivore')
 Modele.append(u'cartes')
 Modele.append(u'catch')
 Modele.append(u'caténatif')
@@ -540,6 +541,7 @@ Modele.append(u'couture')
 Modele.append(u'créatures')
 Modele.append(u'cricket')
 Modele.append(u'crimes')
+Modele.append(u'crustacés')
 Modele.append(u'cuis')
 Modele.append(u'cuisine')
 Modele.append(u'cycl')
@@ -770,6 +772,7 @@ Modele.append(u'langues')
 Modele.append(u'latinisme')
 Modele.append(u'législation')
 Modele.append(u'légumes')
+Modele.append(u'léporidé')
 Modele.append(u'lézards')
 Modele.append(u'Liban')
 Modele.append(u'ling')
@@ -803,6 +806,7 @@ Modele.append(u'mari')
 Modele.append(u'marine')
 Modele.append(u'marketing')
 Modele.append(u'maroquinerie')
+Modele.append(u'marsupial')
 Modele.append(u'math')
 Modele.append(u'mathématiques')
 Modele.append(u'méca')
@@ -1014,6 +1018,7 @@ Modele.append(u'rhéto')
 Modele.append(u'rhétorique')
 Modele.append(u'robotiques')
 Modele.append(u'roches')
+Modele.append(u'rongeur')
 Modele.append(u'rugby')
 Modele.append(u'running')
 Modele.append(u'saccusatif')
@@ -5519,12 +5524,8 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'txt2':
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'2.txt')
 	elif sys.argv[1] == u'm':
-		TraitementLiens = crawlerLink(u'Modèle:typo',u'')
-	elif sys.argv[1] == u'm2':
-		TraitementLiens = crawlerLink(u'Modèle:mp',u'')
-		TraitementLiens = crawlerLink(u'Modèle:fp',u'')
-		TraitementLiens = crawlerLink(u'Modèle:mplur',u'français')
-		TraitementLiens = crawlerLink(u'Modèle:fplur',u'un')
+		TraitementLiens = crawlerLink(u'Modèle:mplur',u'')
+		TraitementLiens = crawlerLink(u'Modèle:fplur',u'')
 		TraitementLiens = crawlerLink(u'Modèle:pron-rég',u'')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Théorie des graphes en français',False,u'')
@@ -5561,7 +5562,9 @@ else:
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
 	TraitementLiens = crawlerLink(u'Modèle:pron-rég',u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français',False,u'')
-	#TraitementLiens = crawlerLink(u'Modèle:audio',u'')
+	TraitementLiens = crawlerLink(u'Modèle:mp',u'')
+	TraitementLiens = crawlerLink(u'Modèle:fp',u'')
+	TraitementLiens = crawlerLink(u'Modèle:pron-rég',u'')
 '''	
 	while 1:
 		TraitementRC = crawlerRC_last_day()
@@ -5587,11 +5590,4 @@ python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -nore
 python interwiki.py -lang:fr -family:wiktionary -page:"Wiktionnaire:Accueil communautaire"
 python interwiki.py -lang:fr -family:wiktionary -wiktionary -autonomous -force -usercontribs:Otourly
 python protect.py -lang:fr -family:wiktionary -cat:"Élections de patrouilleurs" -summary:"Vote archivé" -move:sysop -edit:sysop
-
-# Pages modifiée par X :
-SELECT page_title FROM pp_value JOIN page ON page_id = pp_page WHERE pp_value = 'JackPotte';
-# Contenu de la page nommée X :
-SELECT CAST(pp_page AS CHAR(1000000) CHARACTER SET utf8) FROM page JOIN page_props ON page_id = pp_page WHERE page_namespace = '' and page_title = 'jackpot';
-
-'fin}}\n*{{T'
 '''
