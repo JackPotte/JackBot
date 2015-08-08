@@ -349,7 +349,7 @@ Modele.append(u'voir')
 Modele.append(u'préciser')
 limit25 = len(Modele)
 Modele.append(u'mf?')
-Modele.append(u'fm ?')
+Modele.append(u'fm?')
 Modele.append(u'comparatif')
 Modele.append(u'superlatif')
 Modele.append(u'beaucoup plus courant')
@@ -405,6 +405,7 @@ Modele.append(u'anat')
 Modele.append(u'anatomie')
 Modele.append(u'angl')
 Modele.append(u'anglicisme')
+Modele.append(u'anglicismes informatiques')
 Modele.append(u'animaux')
 Modele.append(u'anthro')
 Modele.append(u'anthropologie')
@@ -479,6 +480,7 @@ Modele.append(u'boucherie')
 Modele.append(u'bouddhisme')
 Modele.append(u'bowling')
 Modele.append(u'boxe')
+Modele.append(u'calendrier')
 Modele.append(u'canoe')
 Modele.append(u'canoë')
 Modele.append(u'canoë-kayak')
@@ -756,6 +758,7 @@ Modele.append(u'jardinage')
 Modele.append(u'jazz')
 Modele.append(u'jeu vidéo')
 Modele.append(u'jeux')
+Modele.append(u'jeux de cartes')
 Modele.append(u'jeux vidéo')
 Modele.append(u'joaillerie')
 Modele.append(u'jogging')
@@ -937,6 +940,7 @@ Modele.append(u'pharmacol')
 Modele.append(u'pharmacologie')
 Modele.append(u'philo')
 Modele.append(u'philosophie')
+Modele.append(u'phobies')
 Modele.append(u'phon')
 Modele.append(u'phonétique')
 Modele.append(u'photo')
@@ -5534,9 +5538,8 @@ if len(sys.argv) > 1:
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'2.txt')
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:mf ?',u'')
-		TraitementLiens = crawlerLink(u'Modèle:fm ?',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Théorie des graphes en français',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Mots parfois féminins ou masculins sans langue précisée',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:fs',u'')
 	elif sys.argv[1] == u'page':
@@ -5592,7 +5595,8 @@ TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects',Tru
 TraitementUtilisateur = crawlerUser(u'Utilisateur:JackBot', 800)
 TraitementRedirections = crawlerRedirects()
 TraitementTout = crawlerAll(u'')
-	
+
+python replace.py -lang:commons -family:commons -file:articles_commons.txt "[[Category:PDF Wikibooks]]" "[[Category:English Wikibooks PDF]]"
 python delete.py -lang:fr -family:wiktionary -file:articles_WTin.txt
 python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -noredirect -pairs
 python interwiki.py -lang:fr -family:wiktionary -page:"Wiktionnaire:Accueil communautaire"
