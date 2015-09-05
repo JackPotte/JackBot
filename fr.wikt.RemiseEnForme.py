@@ -1833,7 +1833,20 @@ def modification(PageHS):
 			if PageTemp.find(u'{{clé de tri|' + PageHS.lower() + u'}}') != -1 and PageTemp.find(u'{{S|verb pronominal|fr}}') == -1:
 				PageTemp = PageTemp[0:PageTemp.find(u'{{clé de tri|' + PageHS.lower() + u'}}')] + PageTemp[PageTemp.find(u'{{clé de tri|' + PageHS.lower() + u'}}')+len(u'{{clé de tri|' + PageHS.lower() + u'}}'):len(PageTemp)]
 				summary = summary + u', {{clé de tri}} supprimée'''
-
+			while PageTemp.find(u'{{S|verbe pronominal|') != -1:
+				# Remplacement de modèle suite à vote
+				PageTemp2 = PageTemp[PageTemp.find(u'{{S|verbe pronominal|'):]
+				if PageTemp2.find(u'{{conj') != -1 and PageTemp2.find(u'{{pronominal|') == -1 and PageTemp2.find(u'{{pronl|') == -1 and PageTemp2.find(u'{{prnl|') == -1 and PageTemp2.find(u'{{réflexif|') == -1 and PageTemp2.find(u'{{réfléchi|') == -1 and PageTemp2.find(u'{{réfl|') == -1:
+					PageTemp3 = PageTemp2[PageTemp2.find(u'{{conj'):]
+					if PageTemp3.find(u'|prnl=') == -1 or PageTemp3.find(u'|prnl=') > PageTemp3.find(u'}}'):
+						PageTemp = PageTemp[:PageTemp.find(u'{{S|verbe pronominal|')] + PageTemp2[:PageTemp2.find(u'{{conj')] + PageTemp3[:PageTemp3.find(u'}}')] + u'|prnl=1' + PageTemp3[PageTemp3.find(u'}}'):]
+				PageTemp = PageTemp[:PageTemp.find(u'{{S|verbe pronominal|')] + u'{{S|verbe|' + PageTemp[PageTemp.find(u'{{S|verbe pronominal|')+len(u'{{S|verbe pronominal|'):]
+			while PageTemp.find(u'\'\'(pronominal)\'\'') != -1:
+				PageTemp2 = PageTemp[PageTemp.find(u'\'\'(pronominal)\'\''):]
+				if PageTemp2.find(u'|prnl=1') != -1 and PageTemp2.find(u'|prnl=1') < PageTemp2.find(u'\n'):
+					PageTemp = PageTemp[:PageTemp.find(u'\'\'(pronominal)\'\'')] + PageTemp[PageTemp.find(u'\'\'(pronominal)\'\'')+ len(u'\'\'(pronominal)\'\''):]
+				else:
+					PageTemp = PageTemp[:PageTemp.find(u'\'\'(pronominal)\'\'')] + u'{{prnl}}' + PageTemp[PageTemp.find(u'\'\'(pronominal)\'\'')+ len(u'\'\'(pronominal)\'\''):]
 			if debogage: print u'Remplacements des balises'
 			PageTemp = re.sub(ur'\[\[Category:', ur'[[Catégorie:', PageTemp)
 			while PageTemp.find(u'</br>') != -1:
