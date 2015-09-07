@@ -13,7 +13,7 @@ language = "fr"
 family = "wiktionary"
 site = getSite(language,family)
 Langue = u'fr'
-debogage = True
+debogage = False
 debogageLent = False
 
 # Modification du wiki
@@ -22,15 +22,18 @@ def modification(PageHS):
 	print(PageHS.encode(config.console_encoding, 'replace'))
 	page = Page(site,PageHS)
 	if page.exists():
-		if page.namespace() != 0 and page.title() != u'Utilisateur:JackBot/test': return
+		if page.namespace() != 0 and page.title() != u'Utilisateur:JackBot/test':
+			print u' Autre namespace l 26'
+			return
 	else:
-		print u' Autre namespace l 25'
+		print u' Page inexistante'
 		return
 	Modele = [] # Liste des modèles du site à traiter
 	Param = [] # Paramètre du lemme associé
 	Modele.append(u'fr-rég')
 	Param.append(u's')
 	limiteMF = 2
+	# Pb car boucle quand-même
 	Modele.append(u'fr-accord-cons')
 	Param.append(u'ms')
 	# à faire : ajouter Catégorie:Modèles d’accord en français
@@ -53,15 +56,23 @@ def modification(PageHS):
 		print u' ServerError l 52'
 		return
 
-	for m in range(1,len(Modele)):
+	for m in range(0,len(Modele)):
 		# Parcours de la page pour chaque modèle
+		if debogageLent: print ' début du for'
 		if PageSing.find(Modele[m]) == -1:
-			print u' Modèle absent l 58'
+			print u' Modèle ' + Modele[m] + u' absent l 58'
 			return
 		else:
 			PageTemp = PageSing
 		
 		while PageTemp.find(Modele[m]) != -1:
+			if len(Modele[m]) < 3:
+				print u' bug'
+				return
+			if debogageLent: 
+				print Modele[m].encode(config.console_encoding, 'replace')
+				print PageTemp.find(Modele[m])
+				
 			# Parcours de la page pour chaque occurence du modèle
 			nature = PageTemp[:PageTemp.find(Modele[m])]
 			nature = nature[nature.rfind(u'{{S|')+len(u'{{S|'):]
@@ -74,34 +85,70 @@ def modification(PageHS):
 				except UnicodeEncodeError:
 					print u' Nature à encoder'
 			if nature == u'erreur' or nature == u'faute':
+				print u' section erreur'
 				return
 				
 			PageTemp = PageTemp[PageTemp.find(Modele[m])+len(Modele[m]):]
-			if PageTemp.find(u'inv=') != -1 and PageTemp.find(u'inv=') < PageTemp.find(u'}}'): return
-			if PageTemp.find(u's=') != -1 and (PageTemp.find(u's=') < PageTemp.find(u'}}') or PageTemp.find(u's=') < PageTemp.find(u'\n')): return
+			if PageTemp.find(u'inv=') != -1 and PageTemp.find(u'inv=') < PageTemp.find(u'}}'):
+				print u' inv='
+				return
+			if PageTemp.find(u's=') != -1 and (PageTemp.find(u's=') < PageTemp.find(u'}}') or PageTemp.find(u's=') < PageTemp.find(u'\n')):
+				print u' s='
+				# à traiter
+				return
 			# Prononciation
 			if PageTemp.find(u'|pp=') != -1 and PageTemp.find(u'|pp=') < PageTemp.find(u'}}'):
+				if debogage: print ' pp='
 				PageTemp2 = PageTemp[PageTemp.find(u'|pp=')+4:PageTemp.find(u'}}')]
 				if PageTemp2.find(u'|') != -1:
 					pron = PageTemp[PageTemp.find(u'|pp=')+4:PageTemp.find(u'|pp=')+4+PageTemp2.find(u'|')]
 				else:
 					pron = PageTemp[PageTemp.find(u'|pp=')+4:PageTemp.find(u'}}')]
 			else:
+				if debogageLent: print ' prononciation identique au singulier'
 				pron = PageTemp[:PageTemp.find(u'}}')]
+				if debogageLent: print u'  pron avant while : ' + pron.encode(config.console_encoding, 'replace')
+				if pron.find(u'|pron=') != -1:
+					pron = u'|' + pron[pron.find(u'|pron=')+len(u'|pron='):]
+				
+				'''
+				print pron.encode(config.console_encoding, 'replace')
+				pattern = ur'.*\|([^}\|]*)}|\|'
+				regex = re.search(pattern, pron)
+				print regex.start()
+				print regex.end()
+				raw_input(pron[regex.start():regex.end()])
+				'''
+				
+				TabPron = pron.split(u'|')
+				# {{fr-rég|a.kʁɔ.sɑ̃.tʁik|mf=oui}}
+				n = 0
+				while n < len(TabPron) and (TabPron[n] == '' or TabPron[n].find(u'=') != -1):
+					if debogageLent: print TabPron[n].find(u'=')
+					n += 1
+				if n == len(TabPron):
+					pron = u'|'
+				else:
+					pron = u'|' + TabPron[n]
+				'''
 				while pron.find(u'=') != -1:
 					pron2 = pron[:pron.find(u'=')]
-					pron3 = pron[pron.find(u'='):len(pron)]
+					pron3 = pron[pron.find(u'='):]
+					if debogage: print u'  pron2 : ' + pron2.encode(config.console_encoding, 'replace')
 					if pron2.find(u'|') == -1:
-						pron = pron[pron.find(u'|')+1:len(pron)]
+						pron = pron[pron.find(u'|')+1:]
+						if debogageLent: print u'  pron dans while1 : ' + pron.encode(config.console_encoding, 'replace')
 					else:
-						if pron3.find(u'|') == -1:
-							pron = pron[:pron2.rfind(u'|')]
+						if debogage: print u'  pron3 : ' + pron3.encode(config.console_encoding, 'replace')
+						if pron3.rfind(u'|') == -1:
+							limitPron = len(pron3)
 						else:
-							pron = pron[:pron2.rfind(u'|')]
-					if pron3.find(u'|') == -1:
-						pron = pron[:pron2.rfind(u'|')]
-					else:
-						pron = pron[:pron2.rfind(u'|')] + pron[pron2.rfind(u'|')+pron3.find(u'|'):len(pron)]
+							limitPron = pron3.rfind(u'|')
+						if debogage: print u'  limitPron : ' + str(limitPron)
+						pron = pron[pron.find(u'=')+limitPron:]
+						if debogage: print u'  pron dans while2 : ' + pron.encode(config.console_encoding, 'replace')
+				'''
+				if debogage: print u'  pron après while : ' + pron.encode(config.console_encoding, 'replace')
 			while pron[:1] == u' ': pron = pron[1:len(pron)]
 			if pron.rfind(u'|') > 0:
 				pronM = pron[:pron.rfind(u'|')]
@@ -111,12 +158,12 @@ def modification(PageHS):
 				pronM = pron
 			if debogage:
 				try:
-					print u' Prononciation : ' + pron.encode(config.console_encoding, 'replace')
+					print u' Prononciation : ' + pronM.encode(config.console_encoding, 'replace')
 				except UnicodeDecodeError:
 					print u' Prononciation à décoder'
 				except UnicodeEncodeError:
 					print u' Prononciation à encoder'
-					
+			
 			# h aspiré
 			H = u''
 			if PageTemp.find(u'|prefpron={{h aspiré') != -1 and PageTemp.find(u'|prefpron={{h aspiré') < PageTemp.find(u'}}'): H = u'|prefpron={{h aspiré}}'
@@ -146,8 +193,7 @@ def modification(PageHS):
 				print pluriel[-2:]
 				return
 			if debogageLent:
-				print ' Paramètre du modèle du lemme'
-				raw_input(PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace'))
+				print ' Paramètre du modèle du lemme : ' + PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace')
 			
 			page2 = Page(site,pluriel)
 			if page2.exists():
@@ -177,13 +223,14 @@ def modification(PageHS):
 			
 			# **************** Pluriel 1 ****************
 			if debogage: print u' Pluriel 1'
-			Modele = u'{{' + Modele[m] + pron + H + MF + '|' + Param[m] + u'=' + PageHS + u'}}'
+			Modele = u'{{' + Modele[m] + pronM + H + MF + '|' + Param[m] + u'=' + PageHS
+			if pluriel.find(u' ') != -1:
+				Modele += u'|p={{subst:PAGENAME}}'
+			Modele += u'}}'
 			PageEnd = u'== {{langue|fr}} ==\n=== {{S|' + nature + u'|fr|flexion}} ===\n' + Modele + u'\n\'\'\'' + pluriel + u'\'\'\' {{pron' + pronM + '|fr}}' + genre + u'\n# \'\'Pluriel de\'\' [[' + PageHS +']].\n'
 			while PageEnd.find(u'{{pron|fr}}') != -1:
 				PageEnd = PageEnd[:PageEnd.find(u'{{pron|fr}}')+7] + u'|' + PageEnd[PageEnd.find(u'{{pron|fr}}')+7:len(PageEnd)]
-			if debogageLent:
-				raw_input(PageEnd.encode(config.console_encoding, 'replace'))
-				
+
 			if pluriel[len(pluriel)-2:len(pluriel)] == u'ss':
 				PageSing = PageSing[:PageSing.find(Modele[m])+len(Modele[m])] + u'|' + Param[m] + u'=' + pluriel[:len(pluriel)-2] + PageSing[PageSing.find(Modele[m])+len(Modele[m]):len(PageSing)]
 				sauvegarde(page, PageSing, u'{{' + Modele[m] + u'|s=...}}')
@@ -193,6 +240,8 @@ def modification(PageHS):
 			else:
 				PageEnd = HTMLUnicode.HTMLUnicode(PageEnd)
 				sauvegarde(page2, PageEnd + u'\n' + PagePluriel, summary)
+			#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
+			if debogage: print u'Fin du while'
 
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
@@ -405,8 +454,10 @@ if len(sys.argv) > 1:
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:pl-cour',u'')
+	elif sys.argv[1] == u'p':
+		TraitementLiens = modification(u'acide hydrothionique')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in Modele[m] calls',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels manquants en français',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:sports de combat',u'')
 	else:
@@ -414,4 +465,5 @@ if len(sys.argv) > 1:
 else:
 	#TraitementLiens = crawlerLink(u'Modèle:fr-accord-cons',u'')
 	TraitementLiens = crawlerLink(u'Modèle:fr-accord-al',u'')
-
+# python touch.py -lang:fr -family:wiktionary -cat:"Pluriels manquants en français"
+# python fr.wikt.pluriel.py cat
