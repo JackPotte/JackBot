@@ -30,10 +30,10 @@ def modification(PageHS):
 		return
 	Modele = [] # Liste des modèles du site à traiter
 	Param = [] # Paramètre du lemme associé
+	Modele.append(u'fr-rég-x')
+	Param.append(u's')
 	Modele.append(u'fr-rég')
 	Param.append(u's')
-	limiteMF = 2
-	# Pb car boucle quand-même
 	Modele.append(u'fr-accord-cons')
 	Param.append(u'ms')
 	# à faire : ajouter Catégorie:Modèles d’accord en français
@@ -58,17 +58,20 @@ def modification(PageHS):
 
 	for m in range(0,len(Modele)):
 		# Parcours de la page pour chaque modèle
-		if debogageLent: print ' début du for'
-		if PageSing.find(Modele[m]) == -1:
+		if debogageLent: print ' début du for ' + str(m)
+		while PageSing.find(Modele[m] + u'|') == -1 and PageSing.find(Modele[m] + u'}') == -1 and m < len(Modele)-1:
 			print u' Modèle ' + Modele[m] + u' absent l 58'
-			return
+			m += 1
+		if m == len(Modele):
+			break
 		else:
+			if debogage: print Modele[m].encode(config.console_encoding, 'replace') #+ u' présent'
 			PageTemp = PageSing
 		
 		while PageTemp.find(Modele[m]) != -1:
 			if len(Modele[m]) < 3:
 				print u' bug'
-				return
+				break
 			if debogageLent: 
 				print Modele[m].encode(config.console_encoding, 'replace')
 				print PageTemp.find(Modele[m])
@@ -91,11 +94,23 @@ def modification(PageHS):
 			PageTemp = PageTemp[PageTemp.find(Modele[m])+len(Modele[m]):]
 			if PageTemp.find(u'inv=') != -1 and PageTemp.find(u'inv=') < PageTemp.find(u'}}'):
 				print u' inv='
-				return
+				break
 			if PageTemp.find(u's=') != -1 and (PageTemp.find(u's=') < PageTemp.find(u'}}') or PageTemp.find(u's=') < PageTemp.find(u'\n')):
 				print u' s='
-				# à traiter
-				return
+				PageTemp2 = PageTemp[PageTemp.find(u's=')+2:]
+				''' Non-greedy !?
+				pattern = ur'([^}\|]*?)}|\|'
+				regex = re.search(pattern, PageTemp2)
+				print regex.start()
+				print regex.end()
+				raw_input(PageTemp2[regex.start():regex.end()-1])
+				'''
+				if PageTemp2.find(u'|') != -1 and PageTemp2.find(u'|') < PageTemp2.find(u'}}'):
+					singulier = PageTemp2[:PageTemp2.find(u'|')]
+				else:
+					singulier = PageTemp2[:PageTemp2.find(u'}')]
+				if singulier != PageHS: break
+				
 			# Prononciation
 			if PageTemp.find(u'|pp=') != -1 and PageTemp.find(u'|pp=') < PageTemp.find(u'}}'):
 				if debogage: print ' pp='
@@ -148,7 +163,7 @@ def modification(PageHS):
 						pron = pron[pron.find(u'=')+limitPron:]
 						if debogage: print u'  pron dans while2 : ' + pron.encode(config.console_encoding, 'replace')
 				'''
-				if debogage: print u'  pron après while : ' + pron.encode(config.console_encoding, 'replace')
+				if debogageLent: print u'  pron après while : ' + pron.encode(config.console_encoding, 'replace')
 			while pron[:1] == u' ': pron = pron[1:len(pron)]
 			if pron.rfind(u'|') > 0:
 				pronM = pron[:pron.rfind(u'|')]
@@ -178,7 +193,7 @@ def modification(PageHS):
 			if PageTemp2.find(u'{{mf}}') != -1 and PageTemp2.find(u'{{mf}}') < PageTemp2.find(u'\n'):
 				genre = u' {{mf}}'
 				MF = u'|mf=oui'
-				if PageSing.find(u'|mf=') == -1 and m < limiteMF:
+				if PageSing.find(u'|mf=') == -1:
 					PageSing = PageSing[:PageSing.find(Modele[m])+len(Modele[m])] + u'|mf=oui' + PageSing[PageSing.find(Modele[m])+len(Modele[m]):len(PageSing)]
 					sauvegarde(page, PageSing, u'|mf=oui')
 			if PageTemp.find(u'|mf=') != -1 and PageTemp.find(u'|mf=') < PageTemp.find(u'}}'): MF = u'|mf=oui' 
@@ -188,9 +203,13 @@ def modification(PageHS):
 			if (PageTemp.find(u'|p=') != -1 and PageTemp.find(u'|p=') < PageTemp.find(u'}}')):
 				pluriel = PageTemp[PageTemp.find(u'|p=')+3:PageTemp.find(u'}}')]
 				if pluriel.find(u'|') != -1: pluriel = pluriel[:pluriel.find(u'|')]
-			if not pluriel: pluriel = PageHS + u's'
+			if not pluriel:
+				if Modele[m][-1:] == u'x':
+					pluriel = PageHS + u'x'
+				else:
+					pluriel = PageHS + u's'
 			if pluriel[-2:] == u'ss' or pluriel.find(u'{') != -1:
-				print pluriel[-2:]
+				print u' pluriel en -ss'
 				return
 			if debogageLent:
 				print ' Paramètre du modèle du lemme : ' + PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace')
@@ -216,7 +235,8 @@ def modification(PageHS):
 					return
 				if PagePluriel.find(u'{{langue|' + Langue + u'}}') != -1:
 					print u' Pluriel existant l 135'
-					return
+					print pluriel.encode(config.console_encoding, 'replace')
+					break
 			else:
 				if debogage: print u' Pluriel introuvable l 138'
 				PagePluriel = u''
@@ -241,7 +261,8 @@ def modification(PageHS):
 				PageEnd = HTMLUnicode.HTMLUnicode(PageEnd)
 				sauvegarde(page2, PageEnd + u'\n' + PagePluriel, summary)
 			#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
-			if debogage: print u'Fin du while'
+			if debogageLent: print u'Fin du while'
+		if debogageLent: print u'Fin du for'
 
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
@@ -267,12 +288,12 @@ def crawlerFile(source):
 		while 1:
 			PageHS = PagesHS.readline()
 			fin = PageHS.find("\t")
-			PageHS = PageHS[:fin]
+			PageHS = PageHS[0:fin]
 			if PageHS == '': break
 			if PageHS.find(u'[[') != -1:
 				PageHS = PageHS[PageHS.find(u'[[')+2:len(PageHS)]
 			if PageHS.find(u']]') != -1:
-				PageHS = PageHS[:PageHS.find(u']]')]
+				PageHS = PageHS[0:PageHS.find(u']]')]
 			# Conversion ASCII => Unicode (pour les .txt)
 			modification(HTMLUnicode.HTMLUnicode(PageHS))
 		PagesHS.close()
@@ -375,7 +396,7 @@ def ecart_last_edit(page):
 # Traitement des modifications d'un compte
 def crawlerUser(username,jusqua):
 	compteur = 0
-	gen = pagegenerators.UserContributionsGenerator(username)
+	gen = pagegenerators.UserContributionsGenerator(username, site = site)
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		modification(Page.title())
 		compteur = compteur + 1
@@ -388,10 +409,11 @@ def crawlerRedirects():
 										
 # Traitement de toutes les pages du site
 def crawlerAll(start):
-	gen = pagegenerators.AllpagesPageGenerator(start,namespace=0,includeredirects=False)
+	gen = pagegenerators.AllpagesPageGenerator(start,namespace=0,includeredirects=False, site = site)
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		#print (Page.title().encode(config.console_encoding, 'replace'))
 		modification(Page.title())
+
 	
 # Permet à tout le monde de stopper le bot en lui écrivant
 def ArretDUrgence():
@@ -466,4 +488,4 @@ else:
 	#TraitementLiens = crawlerLink(u'Modèle:fr-accord-cons',u'')
 	TraitementLiens = crawlerLink(u'Modèle:fr-accord-al',u'')
 # python touch.py -lang:fr -family:wiktionary -cat:"Pluriels manquants en français"
-# python fr.wikt.pluriel.py cat
+# recherche les frm utilisant fr-rég
