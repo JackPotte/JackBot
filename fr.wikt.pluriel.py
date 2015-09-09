@@ -60,7 +60,7 @@ def modification(PageHS):
 		# Parcours de la page pour chaque modèle
 		if debogageLent: print ' début du for ' + str(m)
 		while PageSing.find(Modele[m] + u'|') == -1 and PageSing.find(Modele[m] + u'}') == -1 and m < len(Modele)-1:
-			print u' Modèle ' + Modele[m] + u' absent l 58'
+			if debogage: print u' Modèle ' + Modele[m] + u' absent l 58'
 			m += 1
 		if m == len(Modele):
 			break
@@ -70,7 +70,7 @@ def modification(PageHS):
 		
 		while PageTemp.find(Modele[m]) != -1:
 			if len(Modele[m]) < 3:
-				print u' bug'
+				if debogage: print u' bug'
 				break
 			if debogageLent: 
 				print Modele[m].encode(config.console_encoding, 'replace')
@@ -93,10 +93,10 @@ def modification(PageHS):
 				
 			PageTemp = PageTemp[PageTemp.find(Modele[m])+len(Modele[m]):]
 			if PageTemp.find(u'inv=') != -1 and PageTemp.find(u'inv=') < PageTemp.find(u'}}'):
-				print u' inv='
+				if debogage: print u' inv='
 				break
 			if PageTemp.find(u's=') != -1 and (PageTemp.find(u's=') < PageTemp.find(u'}}') or PageTemp.find(u's=') < PageTemp.find(u'\n')):
-				print u' s='
+				if debogage: print u' s='
 				PageTemp2 = PageTemp[PageTemp.find(u's=')+2:]
 				''' Non-greedy !?
 				pattern = ur'([^}\|]*?)}|\|'
@@ -236,7 +236,7 @@ def modification(PageHS):
 				if PagePluriel.find(u'{{langue|' + Langue + u'}}') != -1:
 					print u' Pluriel existant l 135'
 					print pluriel.encode(config.console_encoding, 'replace')
-					break
+					if not debogage: break
 			else:
 				if debogage: print u' Pluriel introuvable l 138'
 				PagePluriel = u''
@@ -244,7 +244,7 @@ def modification(PageHS):
 			# **************** Pluriel 1 ****************
 			if debogage: print u' Pluriel 1'
 			Modele = u'{{' + Modele[m] + pronM + H + MF + '|' + Param[m] + u'=' + PageHS
-			if pluriel.find(u' ') != -1:
+			if pluriel != PageHS + u's' and pluriel != PageHS + u'x':
 				Modele += u'|p={{subst:PAGENAME}}'
 			Modele += u'}}'
 			PageEnd = u'== {{langue|fr}} ==\n=== {{S|' + nature + u'|fr|flexion}} ===\n' + Modele + u'\n\'\'\'' + pluriel + u'\'\'\' {{pron' + pronM + '|fr}}' + genre + u'\n# \'\'Pluriel de\'\' [[' + PageHS +']].\n'
@@ -477,7 +477,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:pl-cour',u'')
 	elif sys.argv[1] == u'p':
-		TraitementLiens = modification(u'acide hydrothionique')
+		TraitementLiens = modification(u'arrière-arrière-grand-père')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels manquants en français',False,u'')
 	elif sys.argv[1] == u'lien':
