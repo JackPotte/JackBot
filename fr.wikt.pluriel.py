@@ -234,9 +234,11 @@ def modification(PageHS):
 					print u' ServerError l 132'
 					return
 				if PagePluriel.find(u'{{langue|' + Langue + u'}}') != -1:
-					print u' Pluriel existant l 135'
-					print pluriel.encode(config.console_encoding, 'replace')
-					if not debogage: break
+					if debogage:
+						print u' Pluriel existant l 135'
+						print pluriel.encode(config.console_encoding, 'replace')
+					else:
+						break
 			else:
 				if debogage: print u' Pluriel introuvable l 138'
 				PagePluriel = u''
@@ -488,4 +490,3 @@ else:
 	#TraitementLiens = crawlerLink(u'Modèle:fr-accord-cons',u'')
 	TraitementLiens = crawlerLink(u'Modèle:fr-accord-al',u'')
 # python touch.py -lang:fr -family:wiktionary -cat:"Pluriels manquants en français"
-# recherche les frm utilisant fr-rég
