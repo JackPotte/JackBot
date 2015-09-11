@@ -19,6 +19,7 @@ debogageLent = False
 # Modification du wiki
 def modification(PageHS):
 	if debogage: print u'------------------------------------'
+	if debogage: print u'------------------------------------'
 	print(PageHS.encode(config.console_encoding, 'replace'))
 	page = Page(site,PageHS)
 	if page.exists():
@@ -92,24 +93,18 @@ def modification(PageHS):
 				return
 				
 			PageTemp = PageTemp[PageTemp.find(Modele[m])+len(Modele[m]):]
-			if PageTemp.find(u'inv=') != -1 and PageTemp.find(u'inv=') < PageTemp.find(u'}}'):
-				if debogage: print u' inv='
+			suffixe = getParameter(PageTemp, u'inv')
+			singulier = getParameter(PageTemp, u's')
+			pluriel = u''
+			if suffixe != u'':
+				if singulier == u'':
+					if debogage: print u'  inv= sans s='
+					break
+				pluriel = singulier + u's ' + suffixe
+				singulier = singulier + u' ' + suffixe
+			elif singulier != PageHS:
+				if debogage: print u'  s= ne correspond pas'
 				break
-			if PageTemp.find(u's=') != -1 and (PageTemp.find(u's=') < PageTemp.find(u'}}') or PageTemp.find(u's=') < PageTemp.find(u'\n')):
-				if debogage: print u' s='
-				PageTemp2 = PageTemp[PageTemp.find(u's=')+2:]
-				''' Non-greedy !?
-				pattern = ur'([^}\|]*?)}|\|'
-				regex = re.search(pattern, PageTemp2)
-				print regex.start()
-				print regex.end()
-				raw_input(PageTemp2[regex.start():regex.end()-1])
-				'''
-				if PageTemp2.find(u'|') != -1 and PageTemp2.find(u'|') < PageTemp2.find(u'}}'):
-					singulier = PageTemp2[:PageTemp2.find(u'|')]
-				else:
-					singulier = PageTemp2[:PageTemp2.find(u'}')]
-				if singulier != PageHS: break
 				
 			# Prononciation
 			if PageTemp.find(u'|pp=') != -1 and PageTemp.find(u'|pp=') < PageTemp.find(u'}}'):
@@ -125,15 +120,6 @@ def modification(PageHS):
 				if debogageLent: print u'  pron avant while : ' + pron.encode(config.console_encoding, 'replace')
 				if pron.find(u'|pron=') != -1:
 					pron = u'|' + pron[pron.find(u'|pron=')+len(u'|pron='):]
-				
-				'''
-				print pron.encode(config.console_encoding, 'replace')
-				pattern = ur'.*\|([^}\|]*)}|\|'
-				regex = re.search(pattern, pron)
-				print regex.start()
-				print regex.end()
-				raw_input(pron[regex.start():regex.end()])
-				'''
 				
 				TabPron = pron.split(u'|')
 				# {{fr-rég|a.kʁɔ.sɑ̃.tʁik|mf=oui}}
@@ -171,6 +157,7 @@ def modification(PageHS):
 					pronM = pronM[:pronM.rfind(u'|')]
 			else:
 				pronM = pron
+			if pronM[:1] != u'|': pronM = u'|' + pronM
 			if debogage:
 				try:
 					print u' Prononciation : ' + pronM.encode(config.console_encoding, 'replace')
@@ -199,20 +186,20 @@ def modification(PageHS):
 			if PageTemp.find(u'|mf=') != -1 and PageTemp.find(u'|mf=') < PageTemp.find(u'}}'): MF = u'|mf=oui' 
 			# Pluriel
 			summary = u'Création du pluriel de [[' + PageHS + u']]'
-			pluriel = u''
-			if (PageTemp.find(u'|p=') != -1 and PageTemp.find(u'|p=') < PageTemp.find(u'}}')):
-				pluriel = PageTemp[PageTemp.find(u'|p=')+3:PageTemp.find(u'}}')]
-				if pluriel.find(u'|') != -1: pluriel = pluriel[:pluriel.find(u'|')]
-			if not pluriel:
-				if Modele[m][-1:] == u'x':
-					pluriel = PageHS + u'x'
-				else:
-					pluriel = PageHS + u's'
-			if pluriel[-2:] == u'ss' or pluriel.find(u'{') != -1:
-				print u' pluriel en -ss'
-				return
-			if debogageLent:
-				print ' Paramètre du modèle du lemme : ' + PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace')
+			if pluriel == u'':
+				if (PageTemp.find(u'|p=') != -1 and PageTemp.find(u'|p=') < PageTemp.find(u'}}')):
+					pluriel = PageTemp[PageTemp.find(u'|p=')+3:PageTemp.find(u'}}')]
+					if pluriel.find(u'|') != -1: pluriel = pluriel[:pluriel.find(u'|')]
+				if not pluriel:
+					if Modele[m][-1:] == u'x':
+						pluriel = PageHS + u'x'
+					else:
+						pluriel = PageHS + u's'
+				if (pluriel[-2:] == u'ss' or pluriel.find(u'{') != -1) and suffixe == u'':
+					print u' pluriel en -ss'
+					return
+				if debogageLent:
+					print ' Paramètre du modèle du lemme : ' + PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace')
 			
 			page2 = Page(site,pluriel)
 			if page2.exists():
@@ -266,6 +253,22 @@ def modification(PageHS):
 			if debogageLent: print u'Fin du while'
 		if debogageLent: print u'Fin du for'
 
+def getParameter(Page, p):				
+	'''
+	print pron.encode(config.console_encoding, 'replace')
+	pattern = ur'.*\|([^}\|]*)}|\|'
+	regex = re.search(pattern, pron)
+	print regex.start()
+	print regex.end()
+	raw_input(pron[regex.start():regex.end()])
+	'''
+	if Page.find(p + u'=') == -1 or Page.find(u'}}') == -1: return u''
+	Page = Page[Page.find(p + u'=')+len(p + u'='):]
+	if Page.find(u'|') != -1 and Page.find(u'|') < Page.find(u'}}'):
+		return trim(Page[:Page.find(u'|')])
+	else:
+		return trim(Page[:Page.find(u'}')])
+		
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
 
