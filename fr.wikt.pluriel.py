@@ -102,7 +102,7 @@ def modification(PageHS):
 					break
 				pluriel = singulier + u's ' + suffixe
 				singulier = singulier + u' ' + suffixe
-			elif singulier != PageHS:
+			elif singulier != u'' and singulier != PageHS:
 				if debogage: print u'  s= ne correspond pas'
 				break
 				
