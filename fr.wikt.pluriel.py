@@ -19,7 +19,6 @@ debogageLent = False
 # Modification du wiki
 def modification(PageHS):
 	if debogage: print u'------------------------------------'
-	if debogage: print u'------------------------------------'
 	print(PageHS.encode(config.console_encoding, 'replace'))
 	page = Page(site,PageHS)
 	if page.exists():
@@ -103,7 +102,9 @@ def modification(PageHS):
 				pluriel = singulier + u's ' + suffixe
 				singulier = singulier + u' ' + suffixe
 			elif singulier != u'' and singulier != PageHS:
-				if debogage: print u'  s= ne correspond pas'
+				if debogage:
+					print u'  s= ne correspond pas'
+					print singulier.encode(config.console_encoding, 'replace')
 				break
 				
 			# Prononciation
@@ -262,7 +263,7 @@ def getParameter(Page, p):
 	print regex.end()
 	raw_input(pron[regex.start():regex.end()])
 	'''
-	if Page.find(p + u'=') == -1 or Page.find(u'}}') == -1: return u''
+	if Page.find(p + u'=') == -1 or Page.find(u'}}') == -1 or Page.find(p + u'=') > Page.find(u'}}'): return u''
 	Page = Page[Page.find(p + u'=')+len(p + u'='):]
 	if Page.find(u'|') != -1 and Page.find(u'|') < Page.find(u'}}'):
 		return trim(Page[:Page.find(u'|')])
