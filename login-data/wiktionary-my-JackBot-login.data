@@ -1,7 +1,7 @@
 mywiktionarySession=007be2eefdab013ec7a1f6fb2fa1ebb0
-GeoIP=FR:Saint-denis:48.9333:2.3667:v4
-cookieprefix=None
 mywiktionaryUserID=633
-forceHTTPS=true
+GeoIP=FR:Saint-denis:48.9333:2.3667:v4
+WMF-Last-Access=13-Sep-2015
+cookieprefix=None
 mywiktionaryUserName=JackBot
-WMF-Last-Access=08-Aug-2015
+forceHTTPS=true

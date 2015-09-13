@@ -395,6 +395,7 @@ Modele.append(u'algèbre')
 Modele.append(u'algèbre‎')
 Modele.append(u'algèbre linéaire')
 Modele.append(u'algues‎')
+Modele.append(u'aliments‎')
 Modele.append(u'allatif')
 Modele.append(u'alpi')
 Modele.append(u'alpinisme')
@@ -493,6 +494,7 @@ Modele.append(u'cartes')
 Modele.append(u'catch')
 Modele.append(u'caténatif')
 Modele.append(u'CB')
+Modele.append(u'céphalopodes')
 Modele.append(u'chaînes de montagnes')
 Modele.append(u'champignons')
 Modele.append(u'charpenterie')
@@ -582,6 +584,7 @@ Modele.append(u'dinosaures')
 Modele.append(u'diplomatie')
 Modele.append(u'diplomatie')
 Modele.append(u'diptote')
+Modele.append(u'drogues')
 Modele.append(u'droit')
 Modele.append(u'ébauche-trad-exe')
 Modele.append(u'trad-exe')
@@ -1442,6 +1445,7 @@ def modification(PageHS):
 	CleTri = CleDeTri.CleDeTri(PageHS)
 	
 	if page.namespace() == 14:
+		if debogage: print u'Catégorie'
 		# Catégorie
 		#if PageHS.find(u'Catégorie:Lexique en français d') != -1 and PageTemp.find(u'[[Catégorie:Lexiques en français|') == -1:
 		#	PageTemp = PageTemp + u'\n[[Catégorie:Lexiques en français|' + CleDeTri.CleDeTri(trim(PageHS[PageHS.rfind(' '):])) + u']]\n'
