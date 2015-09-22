@@ -7155,3 +7155,13 @@
 2015-09-13 12:16:00 r-1 (unknown) Python 2.7 fr.wikt.archive.py
 2015-09-13 12:16:17 r-1 (unknown) Python 2.7 fr.w.formatage.py
 2015-09-13 12:17:15 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py
+2015-09-16 21:01:59 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "ablutions"
+2015-09-16 21:04:03 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "cat"
+2015-09-16 22:22:29 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "cat"
+2015-09-16 22:31:10 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "cat"
+2015-09-16 22:40:06 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "cat"
+2015-09-22 19:47:32 r-1 (unknown) Python 2.7 touch.py "-lang:fr" "-family:wikibooks" "-cat:Catégories Commons avec lien local différent sur Wikidata"
+2015-09-22 19:58:43 r-1 (unknown) Python 2.7 touch.py "-lang:fr" "-family:wikibooks" "-cat:Catégories Commons avec lien local différent sur Wikidata"
+2015-09-22 20:01:28 r-1 (unknown) Python 2.7 touch.py "-lang:fr" "-family:wikibooks" "-cat:Catégories Commons avec lien local différent sur Wikidata" "-namespace:14"
+2015-09-22 20:01:36 r-1 (unknown) Python 2.7 touch.py "-lang:fr" "-family:wikibooks" "-cat:Catégories Commons avec lien local différent sur Wikidata" "-namespace:12"
+2015-09-22 20:02:06 r-1 (unknown) Python 2.7 touch.py "-lang:fr" "-family:wikibooks" "-cat:Catégories Commons avec lien local différent sur Wikidata" "-namespace:14"

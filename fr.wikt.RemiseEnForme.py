@@ -495,6 +495,7 @@ Modele.append(u'catch')
 Modele.append(u'caténatif')
 Modele.append(u'CB')
 Modele.append(u'céphalopodes')
+Modele.append(u'céréales')
 Modele.append(u'chaînes de montagnes')
 Modele.append(u'champignons')
 Modele.append(u'charpenterie')
@@ -584,6 +585,7 @@ Modele.append(u'dinosaures')
 Modele.append(u'diplomatie')
 Modele.append(u'diplomatie')
 Modele.append(u'diptote')
+Modele.append(u'distinctions')
 Modele.append(u'drogues')
 Modele.append(u'droit')
 Modele.append(u'ébauche-trad-exe')
@@ -704,6 +706,7 @@ Modele.append(u'hapax')
 Modele.append(u'hérald')
 Modele.append(u'héraldique')
 Modele.append(u'hindouisme')
+Modele.append(u'hippisme')
 Modele.append(u'hispanisme')
 Modele.append(u'hist')
 Modele.append(u'hist')
@@ -1037,9 +1040,11 @@ Modele.append(u'rongeur')
 Modele.append(u'rugby')
 Modele.append(u'running')
 Modele.append(u'saccusatif')
+Modele.append(u'salades')
 Modele.append(u'satellites')
 Modele.append(u'saules')
 Modele.append(u'sci-fi')
+Modele.append(u'scientifiques')
 Modele.append(u'sciences')
 Modele.append(u'scol')
 Modele.append(u'scolaire')
@@ -1088,6 +1093,7 @@ Modele.append(u'sylvi')
 Modele.append(u'sylviculture')
 Modele.append(u'symboles unités')
 Modele.append(u't')
+Modele.append(u't/i')
 Modele.append(u'tauromachie')
 Modele.append(u'td')
 Modele.append(u'tech')
@@ -2023,6 +2029,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'|ko-hani}}', u'|ko-Hani}}')
 		PageTemp = PageTemp.replace(u'#*: {{trad-exe|fr}}', u'')
 		PageTemp = PageTemp.replace(u'{{pron|}}', u'{{pron||fr}}')
+		PageTemp = PageTemp.replace(u'{{nombre|es}}\n# \'\'Pluriel', u'\n# \'\'Pluriel')
 		
 		# Modèles trop courts
 		if debogage: print u'Modèles courts'
@@ -4017,7 +4024,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
-					elif Modele[p] == u'médecine' or Modele[p] == u'méde' or Modele[p] == u'vétérinaire' or Modele[p] == u'chirurgie' or Modele[p] == u'chir' or Modele[p] == u'pharmacologie' or Modele[p] == u'pharmacol' or Modele[p] == u'pharmacie':
+					elif Modele[p] == u'médecine' or Modele[p] == u'méde' or Modele[p] == u'vétérinaire' or Modele[p] == u'chirurgie' or Modele[p] == u'chir' or Modele[p] == u'pharmacologie' or Modele[p] == u'pharmacol' or Modele[p] == u'pharmacie' or Modele[p] == u'nosologie' or Modele[p] == u'obstétrique' or Modele[p] == u'pédiatrie' or Modele[p] == u'ophtalmologie' or Modele[p] == u'secourisme' or Modele[p] == u'oncologie' or Modele[p] == u'gynécologie':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Médecine non conventionnelles'
 	) != -1 and (PageTemp.find(u'Catégorie:Médecine non conventionnelles') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
@@ -4765,7 +4772,7 @@ def modification(PageHS):
 							# Paragraphe définition
 							EstCodeLangue = "true"
 							trad = u'false'
-							# Ajouts en fin de ligne de forme
+							# Ajouts en fin de ligne de forme (ex : traitement de Genres_manquants_en_français)
 							''' bugs
 								https://fr.wiktionary.org/w/index.php?title=nulle&diff=next&oldid=19819870
 								https://fr.wiktionary.org/w/index.php?title=protectrice&type=revision&diff=19820554&oldid=19260710
@@ -5566,7 +5573,8 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:conj-it',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Mots parfois féminins ou masculins sans langue précisée',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en espagnol',False,u'')
+		#TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:conj-pl',u'')
 	elif sys.argv[1] == u'page':
