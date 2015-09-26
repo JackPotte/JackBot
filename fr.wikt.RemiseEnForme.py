@@ -512,6 +512,7 @@ Modele.append(u'chirurgie')
 Modele.append(u'christianisme')
 Modele.append(u'ciné')
 Modele.append(u'cinéma')
+Modele.append(u'cocktails')
 Modele.append(u'coiffure')
 Modele.append(u'combat')
 Modele.append(u'comm')
@@ -670,6 +671,7 @@ Modele.append(u'généal')
 Modele.append(u'généalogie')
 Modele.append(u'généralement indénombrable')
 Modele.append(u'généralement pluriel')
+Modele.append(u'généralement singulier')
 Modele.append(u'génétique')
 Modele.append(u'génit')
 Modele.append(u'génitif')
@@ -2031,6 +2033,15 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{pron|}}', u'{{pron||fr}}')
 		PageTemp = PageTemp.replace(u'{{nombre|es}}\n# \'\'Pluriel', u'\n# \'\'Pluriel')
 		
+		# Modèle en doublon
+		regex = ur"(\{\{localités\|[^}]*\}\}) ?\{\{géographie\|[^}]*\}\}"
+		pattern = re.compile(regex)
+		PageTemp = pattern.sub(ur"\1", PageTemp)
+		# Espace manquant
+		regex = ur'(\{\{localités\|[^}]*\}\})([^ ]+)'
+		pattern = re.compile(regex)
+		PageTemp = pattern.sub(ur'\1 \2', PageTemp)
+
 		# Modèles trop courts
 		if debogage: print u'Modèles courts'
 		PageTemp = PageTemp.replace(u'{{fp}}', u'{{fplur}}')
@@ -5571,7 +5582,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'txt2':
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'2.txt')
 	elif sys.argv[1] == u'm':
-		TraitementLiens = crawlerLink(u'Modèle:conj-it',u'')
+		TraitementLiens = crawlerLink(u'Modèle:localités',u'')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en espagnol',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'')
