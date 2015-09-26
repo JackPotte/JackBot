@@ -501,6 +501,7 @@ Modele.append(u'champignons')
 Modele.append(u'charpenterie')
 Modele.append(u'chasse')
 Modele.append(u'chats')
+Modele.append(u'chaussures')
 Modele.append(u'chiens')
 Modele.append(u'chim')
 Modele.append(u'chimie')
@@ -5429,6 +5430,7 @@ def crawlerLink(pagename,apres):
 	page = wikipedia.Page(site, pagename)
 	gen = pagegenerators.ReferringPageGenerator(page)
 	gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])
+	#for Page in pagegenerators.PreloadingGenerator(gen,100):
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		#print(Page.title().encode(config.console_encoding, 'replace'))
 		if not apres or apres == u'' or modifier == u'True':
