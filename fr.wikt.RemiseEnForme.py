@@ -213,6 +213,8 @@ limit1 = len(Modele)
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_contexte
 Modele.append(u'-réf-')
 Section.append(u'références')
+Modele.append(u'-ref-')
+Section.append(u'références')
 Modele.append(u'-références-')
 Section.append(u'références')
 Modele.append(u'-sino-dico-')
@@ -5587,7 +5589,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:localités',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Pluriels non précisés en espagnol',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Lexique en français de la géographie',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:conj-pl',u'')
