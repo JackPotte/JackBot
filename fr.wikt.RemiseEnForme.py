@@ -2045,6 +2045,14 @@ def modification(PageHS):
 		regex = ur'(\{\{localités\|[^}]*\}\})([^ ]+)'
 		pattern = re.compile(regex)
 		PageTemp = pattern.sub(ur'\1 \2', PageTemp)
+		
+		regex = ur"(\{\{provinces\|[^}]*\}\}) ?\{\{géographie\|[^}]*\}\}"
+		pattern = re.compile(regex)
+		PageTemp = pattern.sub(ur"\1", PageTemp)
+		# Espace manquant
+		regex = ur'(\{\{provinces\|[^}]*\}\})([^ ]+)'
+		pattern = re.compile(regex)
+		PageTemp = pattern.sub(ur'\1 \2', PageTemp)
 
 		# Modèles trop courts
 		if debogage: print u'Modèles courts'
@@ -5580,6 +5588,10 @@ def sauvegarde(PageCourante, Contenu, summary):
 
 # Lancement
 if len(sys.argv) > 1:
+	if len(sys.argv) == 2:
+		DebutScan = sys.argv[2]
+	else
+		DebutScan = u''
 	if sys.argv[1] == u'test':
 		TraitementPage = modification(u'User:' + mynick + u'/test')
 	elif sys.argv[1] == u'txt': 
@@ -5589,7 +5601,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:localités',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Lexique en français de la géographie',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Lexique en français de la géographie',False,DebutScan)
 		#TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:conj-pl',u'')
