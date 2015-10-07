@@ -1055,6 +1055,7 @@ Modele.append(u'Scrabble')
 Modele.append(u'scul')
 Modele.append(u'sculpture')
 Modele.append(u'sdatif')
+Modele.append(u'seigneuries')
 Modele.append(u'sentiments')
 Modele.append(u'serpents')
 Modele.append(u'serru')
@@ -3118,7 +3119,7 @@ def modification(PageHS):
 					
 					
 					elif Modele[p] == u'note-gentilé':
-						# Deux paramètres possibles
+						# Trois paramètres possibles
 						PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
@@ -5618,12 +5619,13 @@ else:
 	TraitementLiens = crawlerLink(u'Modèle:pluri',u'')
 	TraitementLiens = crawlerLink(u'Modèle:=langue=',u'')
 	TraitementLiens = crawlerLink(u'Modèle:-déf-',u'')
-	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
 	TraitementLiens = crawlerLink(u'Modèle:pron-rég',u'')
-	TraitementCategorie = crawlerCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français',False,u'')
 	TraitementLiens = crawlerLink(u'Modèle:mp',u'')
 	TraitementLiens = crawlerLink(u'Modèle:fp',u'')
 	TraitementLiens = crawlerLink(u'Modèle:pron-rég',u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français',False,u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section',False,u'')
 '''	
 	while 1:
 		TraitementRC = crawlerRC_last_day()
