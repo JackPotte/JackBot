@@ -2038,6 +2038,14 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{nombre|es}}\n# \'\'Pluriel', u'\n# \'\'Pluriel')
 		
 		# Modèle en doublon
+		regex = ur"(\{\{départements\|[^}]*\}\}) ?\{\{géographie\|[^}]*\}\}"
+		pattern = re.compile(regex)
+		PageTemp = pattern.sub(ur"\1", PageTemp)
+		# Espace manquant
+		regex = ur'(\{\{départements\|[^}]*\}\})([^ ]+)'
+		pattern = re.compile(regex)
+		PageTemp = pattern.sub(ur'\1 \2', PageTemp)
+		
 		regex = ur"(\{\{localités\|[^}]*\}\}) ?\{\{géographie\|[^}]*\}\}"
 		pattern = re.compile(regex)
 		PageTemp = pattern.sub(ur"\1", PageTemp)
@@ -3602,6 +3610,10 @@ def modification(PageHS):
 	) or (PageTemp.find(u'Catégorie:Provinces'
 	) != -1 and (PageTemp.find(u':Catégorie:Provinces') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Provinces') + 1 != PageTemp.rfind(u'Catégorie:Provinces'))
+
+	) or (PageTemp.find(u'Catégorie:Länder'
+	) != -1 and (PageTemp.find(u':Catégorie:Länder') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Länder') + 1 != PageTemp.rfind(u'Catégorie:Länder'))
 
 	) or (PageTemp.find(u'Catégorie:Départements'
 	) != -1 and (PageTemp.find(u':Catégorie:Départements') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
