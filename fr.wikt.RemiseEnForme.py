@@ -5600,7 +5600,7 @@ def sauvegarde(PageCourante, Contenu, summary):
 
 # Lancement
 if len(sys.argv) > 1:
-	if len(sys.argv) == 2:
+	if len(sys.argv) > 2:
 		DebutScan = sys.argv[2]
 	else:
 		DebutScan = u''
