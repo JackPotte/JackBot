@@ -5590,7 +5590,7 @@ def sauvegarde(PageCourante, Contenu, summary):
 if len(sys.argv) > 1:
 	if len(sys.argv) == 2:
 		DebutScan = sys.argv[2]
-	else
+	else:
 		DebutScan = u''
 	if sys.argv[1] == u'test':
 		TraitementPage = modification(u'User:' + mynick + u'/test')
