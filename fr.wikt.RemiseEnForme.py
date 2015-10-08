@@ -5649,7 +5649,6 @@ else:
 	TraitementLiens = crawlerLink(u'Modèle:mp',u'')
 	TraitementLiens = crawlerLink(u'Modèle:fp',u'')
 	TraitementLiens = crawlerLink(u'Modèle:pron-rég',u'')
-	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d\'anciens modèles de section',True,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français',False,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section',False,u'')
 '''	
