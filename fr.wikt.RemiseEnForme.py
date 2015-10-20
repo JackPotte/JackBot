@@ -406,6 +406,8 @@ Modele.append(u'analogie')
 Modele.append(u'analyse')
 Modele.append(u'anat')
 Modele.append(u'anatomie')
+Modele.append(u'anciennes divisions')
+Modele.append(u'anciennes localités')
 Modele.append(u'angl')
 Modele.append(u'anglicisme')
 Modele.append(u'anglicismes informatiques')
@@ -446,6 +448,7 @@ Modele.append(u'astrologie')
 Modele.append(u'astron')
 Modele.append(u'astronautique')
 Modele.append(u'astronomie')
+Modele.append(u'assurance')
 Modele.append(u'athlé')
 Modele.append(u'athlétisme')
 Modele.append(u'audiovis')
@@ -681,6 +684,7 @@ Modele.append(u'génitif')
 Modele.append(u'génitif')
 Modele.append(u'genre')
 Modele.append(u'genre ?')
+Modele.append(u'genres musicaux')
 Modele.append(u'gentilés ?')
 Modele.append(u'géog')
 Modele.append(u'geog')	# à remplacer ?
@@ -787,6 +791,7 @@ Modele.append(u'jurisprudence')
 Modele.append(u'just')
 Modele.append(u'justice')
 Modele.append(u'karaté')
+Modele.append(u'langage SMS')
 Modele.append(u'langages informatiques')
 Modele.append(u'langues')
 Modele.append(u'latinisme')
@@ -1702,8 +1707,9 @@ def modification(PageHS):
 								if debogage: print "Redirect page"
 								break
 							PageTempMod = PageTempModBegin
-							if PageTempMod.find(PageHS) == -1: PageTempMod = PageTempMod[0:PageTempMod.find(u'}}')] + u'|' + PageHS + PageTempMod[PageTempMod.find(u'}}'):len(PageTempMod)]
-							if PageTempMod.find(PageVoir) == -1: PageTempMod = PageTempMod[0:PageTempMod.find(u'}}')] + u'|' + PageVoir + PageTempMod[PageTempMod.find(u'}}'):len(PageTempMod)]
+							if PageTempMod.find(u'!') == -1:
+								if PageTempMod.find(PageHS) == -1: PageTempMod = PageTempMod[0:PageTempMod.find(u'}}')] + u'|' + PageHS + PageTempMod[PageTempMod.find(u'}}'):len(PageTempMod)]
+								if PageTempMod.find(PageVoir) == -1: PageTempMod = PageTempMod[0:PageTempMod.find(u'}}')] + u'|' + PageVoir + PageTempMod[PageTempMod.find(u'}}'):len(PageTempMod)]
 							if PageTempMod != PageTempModBegin: sauvegarde(pageMod,PageTempMod, summary)
 							PagesCleRestant = u''
 							if debogage: print u'PagesCleRestant vide'
