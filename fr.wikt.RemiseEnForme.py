@@ -399,6 +399,7 @@ Modele.append(u'algèbre linéaire')
 Modele.append(u'algues‎')
 Modele.append(u'aliments‎')
 Modele.append(u'allatif')
+Modele.append(u'alliages')
 Modele.append(u'alpi')
 Modele.append(u'alpinisme')
 Modele.append(u'anal')
@@ -1116,6 +1117,7 @@ Modele.append(u'télé')
 Modele.append(u'télécom')
 Modele.append(u'télécommunications')
 Modele.append(u'télévision')
+Modele.append(u'temps géologiques')
 Modele.append(u'tennis')
 Modele.append(u'tennis de table')
 Modele.append(u'term')
@@ -3645,6 +3647,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'zoologie' or Modele[p] == u'zool' or Modele[p] == u'animaux' or Modele[p] == u'entomologie' or Modele[p] == u'entomol' or Modele[p] == u'entom' or Modele[p] == u'ornithologie' or Modele[p] == u'poissons' or Modele[p] == u'insectes':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Amphibiens'
@@ -3979,6 +3982,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'botanique' or Modele[p] == u'botan' or Modele[p] == u'phytonymie' or Modele[p] == u'phyton':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Plantes'
@@ -4065,6 +4069,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'médecine' or Modele[p] == u'méde' or Modele[p] == u'vétérinaire' or Modele[p] == u'chirurgie' or Modele[p] == u'chir' or Modele[p] == u'pharmacologie' or Modele[p] == u'pharmacol' or Modele[p] == u'pharmacie' or Modele[p] == u'nosologie' or Modele[p] == u'obstétrique' or Modele[p] == u'pédiatrie' or Modele[p] == u'ophtalmologie' or Modele[p] == u'secourisme' or Modele[p] == u'oncologie' or Modele[p] == u'gynécologie':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Médecine non conventionnelles'
@@ -4107,6 +4112,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'métrologie' or Modele[p] == u'métrol':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Unités de mesure'
@@ -4117,6 +4123,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'rhétorique' or Modele[p] == u'rhéto':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Figures de style'
@@ -4127,6 +4134,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'linguistique' or Modele[p] == u'ling':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Langues'
@@ -4149,6 +4157,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'typographie' or Modele[p] == u'typo':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Ponctuations'
@@ -4159,6 +4168,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'sciences':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Noms de sciences'
@@ -4169,6 +4179,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'astronomie' or Modele[p] == u'astro' or Modele[p] == u'astron':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Étoiles'
@@ -4191,6 +4202,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'astrologie' or Modele[p] == u'astrol':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Zodiaques'
@@ -4201,6 +4213,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'mycologie' or Modele[p] == u'mycol' or Modele[p] == u'myco':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Champignons'
@@ -4211,6 +4224,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'sexualité' or Modele[p] == u'sexe':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Positions sexuelles'
@@ -4221,6 +4235,18 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
+					elif Modele[p] == u'géologie' or Modele[p] == u'géol':
+						if (EstCodeLangue == "false"
+	) or (PageTemp.find(u'Catégorie:Temps géologiques'
+	) != -1 and (PageTemp.find(u'Catégorie:Temps géologiques') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Temps géologiques') + 1 != PageTemp.rfind(u'Catégorie:Temps géologiques'))):
+							PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+						else:
+							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
+						break
+						
 					elif Modele[p] == u'chimie' or Modele[p] == u'chim' or Modele[p] == u'biochimie' or Modele[p] == u'bioch':
 						if (EstCodeLangue == "false"
 
@@ -4260,6 +4286,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'cuisine' or Modele[p] == u'cuis':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Aliments'
@@ -4330,6 +4357,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'œnologie' or Modele[p] == u'œnol':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Vins'
@@ -4344,6 +4372,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'militaire' or Modele[p] == u'mili' or Modele[p] == u'guerre':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Soldats'
@@ -4358,6 +4387,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'armement' or Modele[p] == u'arme':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Armes'
@@ -4368,6 +4398,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'musique' or Modele[p] == u'musi':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Instruments'
@@ -4378,6 +4409,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'construction' or Modele[p] == u'constr' or Modele[p] == u'bâtiment':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Édifices'
@@ -4388,6 +4420,7 @@ def modification(PageHS):
 							PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
+						
 					elif Modele[p] == u'électricité' or Modele[p] == u'élec':
 						if (EstCodeLangue == "false"
 	) or (PageTemp.find(u'Catégorie:Composants électriques'
