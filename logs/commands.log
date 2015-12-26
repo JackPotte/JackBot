@@ -7234,3 +7234,15 @@
 2015-10-01 22:34:57 r-1 (unknown) Python 2.7 fr.n.bas.py "-lang:fr" "-family:wikinews"
 2015-10-01 22:34:59 r-1 (unknown) Python 2.7 fr.wikt.archive.py
 2015-10-01 22:35:17 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py
+2015-10-25 22:30:54 r-1 (unknown) Python 2.7 clean_sandbox.py "-lang:fr" "-family:wikiversity"
+2015-10-27 19:34:10 r-1 (unknown) Python 2.7 redirect.py "double" "-always" "-family:wikipedia" "-lang:fr"
+2015-10-27 19:34:15 r-1 (unknown) Python 2.7 redirect.py "double" "-always" "-family:wikipedia" "-lang:pl"
+2015-10-27 19:34:18 r-1 (unknown) Python 2.7 redirect.py "double" "-always" "-family:wikipedia" "-lang:se"
+2015-10-27 19:34:23 r-1 (unknown) Python 2.7 redirect.py "double" "-always" "-family:wikipedia" "-lang:tr"
+2015-11-07 12:14:29 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "écran mat"
+2015-11-07 12:16:17 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "page"
+2015-11-07 22:59:14 r-1 (unknown) Python 2.7 touch.py "-family:wiktionary" "-lang=fr" "-cat:Catégorie:Hanjas coréens"
+2015-11-07 22:59:26 r-1 (unknown) Python 2.7 touch.py "-family:wiktionary" "-lang=fr" "-cat:Hanjas coréens"
+2015-11-11 18:36:41 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "txt"
+2015-11-15 16:51:14 r-1 (unknown) Python 2.7 touch.py "-lang:fr" "-family:wiktionary" "-file:articles_fr_wiktionary.txt"
+2015-11-15 16:51:56 r-1 (unknown) Python 2.7 touch.py "-lang:fr" "-family:wiktionary" "-file:articles_fr_wiktionary.txt"
