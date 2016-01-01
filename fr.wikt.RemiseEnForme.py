@@ -2778,7 +2778,7 @@ def modification(PageHS):
 						PageTemp2 = PageTemp2[re.compile(regex).search(PageTemp2).end():]
 					PageTemp = PageEnd2 + PageTemp[delta:]
 				
-			elif NouvelleLangue == True and socket.gethostname() != "willow" and socket.gethostname() != "yarrow" and socket.gethostname() != "nightshade" and PageTemp.find(u'S|erreur|' + codelangue) == -1 and PageTemp.find(u'S|faute|' + codelangue) == -1  and codelangue != u'conv': #and PageHS != u'six':
+			elif NouvelleLangue == True and socket.gethostname() != "willow" and socket.gethostname() != "yarrow" and socket.gethostname() != "nightshade" and PageTemp.find(u'S|erreur|' + codelangue) == -1 and PageTemp.find(u'S|faute|' + codelangue) == -1  and codelangue != u'conv' and PageHS[:1] != u'-' and PageHS[-1:] != u'-': #and PageHS != u'six':
 				if debogage: print u' Anagrammes pour ' + codelangue
 				if PageTemp.find(u'{{S|anagr') == -1 and PageHS.find(u' ') == -1 and len(PageHS) <= TailleAnagramme: 
 					anagrammes = anagram(PageHS)
