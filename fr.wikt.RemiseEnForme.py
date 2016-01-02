@@ -5667,6 +5667,8 @@ if len(sys.argv) > 1:
 		TraitementPage = modification(u'écran brillant')
 		TraitementPage = modification(u'écran de veille')
 		TraitementPage = modification(u'écran mat')
+	elif sys.argv[1] == u'trad':
+		TraitementLiens = crawlerLink(u'Modèle:trad-',u'')
 	elif sys.argv[1] == u's':
 		TraitementRecherche = crawlerSearch(u'"source à préciser"')
 	else:
