@@ -1,4 +1,5 @@
 bean
+muffin
 BeanShell
 classpath
 GCJ
@@ -44,7 +45,6 @@ JVMTI
 JWSDP
 MIDlet
 KVM
-muffin
 SAAJ
 session bean
 SWT
