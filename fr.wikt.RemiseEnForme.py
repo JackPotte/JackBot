@@ -504,6 +504,7 @@ Modele.append(u'CB')
 Modele.append(u'cépages')
 Modele.append(u'céphalopodes')
 Modele.append(u'céréales')
+Modele.append(u'cétacés')
 Modele.append(u'chaînes de montagnes')
 Modele.append(u'champignons')
 Modele.append(u'charpenterie')
@@ -521,6 +522,7 @@ Modele.append(u'chirurgie')
 Modele.append(u'christianisme')
 Modele.append(u'ciné')
 Modele.append(u'cinéma')
+Modele.append(u'cirque')
 Modele.append(u'cocktails')
 Modele.append(u'coiffure')
 Modele.append(u'coléoptères')
@@ -909,6 +911,7 @@ Modele.append(u'nom')
 Modele.append(u'nombre')
 Modele.append(u'nomin')
 Modele.append(u'nominatif')
+Modele.append(u'non standard')
 Modele.append(u'nosologie')
 Modele.append(u'novlangue')
 Modele.append(u'nucl')
@@ -960,6 +963,7 @@ Modele.append(u'pétanque')
 Modele.append(u'pétro')
 Modele.append(u'pétrochimie')
 Modele.append(u'pétrochimie')
+Modele.append(u'peu attesté')
 Modele.append(u'peu usité')
 Modele.append(u'peuplier')
 Modele.append(u'pharma')
@@ -1129,6 +1133,7 @@ Modele.append(u'tennis')
 Modele.append(u'tennis de table')
 Modele.append(u'term')
 Modele.append(u'terme')
+Modele.append(u'terme non standard')
 Modele.append(u'text')
 Modele.append(u'text')
 Modele.append(u'textile')
@@ -1475,7 +1480,8 @@ def modification(PageHS):
 		# Catégorie
 		#if PageHS.find(u'Catégorie:Lexique en français d') != -1 and PageTemp.find(u'[[Catégorie:Lexiques en français|') == -1:
 		#	PageTemp = PageTemp + u'\n[[Catégorie:Lexiques en français|' + CleDeTri.CleDeTri(trim(PageHS[PageHS.rfind(' '):])) + u']]\n'
-			
+		PageEnd = PageBegin
+		
 	elif page.namespace() == 0 or PageHS.find(u'Utilisateur:JackBot/') != -1:
 		regex = ur'{{=([a-z\-]+)=}}'
 		if re.search(regex, PageTemp):
@@ -2047,6 +2053,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{it}}', u'italien')
 		PageTemp = PageTemp.replace(u'{{nds}}', u'bas allemand')
 		PageTemp = PageTemp.replace(u'{{nds}}', u'bas allemand')
+		PageTemp = PageTemp.replace(u'{{lb}}', u'luxembourgeois')
 		PageTemp = PageTemp.replace(u'|ko-hani}}', u'|ko-Hani}}')
 		PageTemp = PageTemp.replace(u'#*: {{trad-exe|fr}}', u'')
 		PageTemp = PageTemp.replace(u'{{pron|}}', u'{{pron||fr}}')
@@ -5571,13 +5578,17 @@ def ecart_last_edit(page):
 	return diff_last_edit_time.seconds/60 + diff_last_edit_time.days*24*60
 	
 # Traitement des modifications d'un compte
-def crawlerUser(username,jusqua):
+def crawlerUser(username,jusqua,apres):
+	modifier = u'False'
 	compteur = 0
 	gen = pagegenerators.UserContributionsGenerator(username, site = site)
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
-		modification(Page.title())
-		compteur = compteur + 1
-		if compteur > jusqua: break
+		if not apres or apres == u'' or modifier == u'True':
+			modification(Page.title())
+			compteur = compteur + 1
+			if compteur > jusqua: break
+		elif Page.title() == apres:
+			modifier = u'True'
 
 # Toutes les redirections
 def crawlerRedirects():
@@ -5659,7 +5670,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:localités',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Lexique en français de la géographie',False,DebutScan)
+		TraitementCategorie = crawlerCat(u'Termes peu attestés sans langue précisée',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:conj-pl',u'')
@@ -5671,6 +5682,8 @@ if len(sys.argv) > 1:
 		TraitementLiens = crawlerLink(u'Modèle:trad-',u'')
 	elif sys.argv[1] == u's':
 		TraitementRecherche = crawlerSearch(u'"source à préciser"')
+	elif sys.argv[1] == u'u':
+		crawlerUser(u'Utilisateur:Nicasser', 1000,u'')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:

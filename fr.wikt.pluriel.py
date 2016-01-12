@@ -55,7 +55,11 @@ def modification(PageHS):
 	except wikipedia.ServerError:
 		print u' ServerError l 52'
 		return
-
+		
+	if PageSing.find(u'{{formater') != -1 or PageSing.find(u'{{SI|') != -1 or PageSing.find(u'{{SI}}') != -1 or PageSing.find(u'{{supp|') != -1 or PageSing.find(u'{{supp}}') != -1 or PageSing.find(u'{{supprimer|') != -1 or PageSing.find(u'{{supprimer') != -1 or PageSing.find(u'{{PàS') != -1 or PageSing.find(u'{{S|faute') != -1 or PageSing.find(u'{{S|erreur') != -1:
+		if debogage: print u'Page en travaux : non traitée l 60'
+		return
+		
 	for m in range(0,len(Modele)):
 		# Parcours de la page pour chaque modèle
 		if debogageLent: print ' début du for ' + str(m)
