@@ -26,7 +26,7 @@ site = getSite(language,family)
 debogage = False
 debogageLent = False
 semiauto = False
-retablirNonBrise = False
+retablirNonBrise = False	# Reteste les liens brisés
 
 # Modèles qui incluent des URL dans leurs pages
 ligne = 4
@@ -64,11 +64,11 @@ ModeleEN.append(u'cite conference')
 ModeleFR.append(u'lien conférence')
 ModeleEN.append(u'docu')
 ModeleFR.append(u'lien vidéo')
-#ModeleEN.append(u'cite book')
-#ModeleFR.append(u'ouvrage')
+ModeleEN.append(u'cite book')
+ModeleFR.append(u'ouvrage')
+limiteL = len(ModeleFR)	# Liste des modèles traduis de l'anglais (langue=en)
 ModeleEN.append(u'lien mort')
 ModeleFR.append(u'lien brisé')
-# Modèles sans paramètre langue l 545
 ModeleEN.append(u'cita web')
 ModeleFR.append(u'lien web')
 ModeleEN.append(u'cita noticia')
@@ -486,12 +486,12 @@ def hyperlynx(PageTemp):
 	PageTemp = PageTemp.replace(u'[//https://', u'[https://')
 	PageTemp = PageTemp.replace(u'[//http://', u'[http://')
 	
-	# Paramètre langue si traduction
-	for m in range(0,10):
+	# Paramètre langue= si traduction
+	for m in range(0,limiteL):
 		# Formatage des anciens modèles
 		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'_') + ur'\|', ModeleEN[m] + ur'\|', PageTemp)
 		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'  ') + ur'\|', ModeleEN[m] + ur'\|', PageTemp)
-		# Pour chaque modèle de la page
+		# Traitement de chaque modèle à traduire
 		while re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]+', PageTemp):
 			if debogageLent: raw_input(PageTemp[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1:][:100].encode(config.console_encoding, 'replace'))
 			PageEnd = PageEnd + PageTemp[:re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1]
@@ -562,15 +562,16 @@ def hyperlynx(PageTemp):
 			
 			ModeleCourant = PageTemp[:FinModele]
 			if debogageLent: raw_input(ModeleCourant.encode(config.console_encoding, 'replace'))
-			for p in range(1,limiteP):
-				# Faux-amis
+			for p in range(0,limiteP):
+				# Faux-amis variables selon les modèles
+				if debogageLent: print ParamEN[p].encode(config.console_encoding, 'replace')
 				if ParamEN[p] == u'work':
 					if (ModeleCourant.find(u'rticle') != -1 and ModeleCourant.find(u'rticle') < ModeleCourant.find(u'|')) and ModeleCourant.find(u'ériodique') == -1:
 						ParamFR[p] = u'périodique'
 					elif ModeleCourant.find(u'ien web') != -1 and ModeleCourant.find(u'ien web') < ModeleCourant.find(u'|'):
 						ParamFR[p] = u'série'
 				elif ParamEN[p] == u'publisher':
-					if ModeleCourant.find(u'ien web') != -1 or ModeleCourant.find(u'ewspaper') != -1 or ModeleCourant.find(u'rticle') != -1 or ModeleCourant.find(u'revue') != -1 or ModeleCourant.find(u'journal') != -1:
+					if ModeleCourant.find(u'diteur') == -1:
 						ParamFR[p] = u'éditeur'
 					else:
 						ParamFR[p] = u'périodique'
