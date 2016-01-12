@@ -64,6 +64,8 @@ ModeleEN.append(u'cite conference')
 ModeleFR.append(u'lien conférence')
 ModeleEN.append(u'docu')
 ModeleFR.append(u'lien vidéo')
+#ModeleEN.append(u'cite book')
+#ModeleFR.append(u'ouvrage')
 ModeleEN.append(u'lien mort')
 ModeleFR.append(u'lien brisé')
 # Modèles sans paramètre langue l 545
@@ -81,8 +83,6 @@ ModeleEN.append(u'dts')
 ModeleFR.append(u'dts')
 ModeleEN.append(u'Quote')
 ModeleFR.append(u'Citation bloc')
-ModeleEN.append(u'cite book')
-ModeleFR.append(u'ouvrage')
 limiteM = len(ModeleFR)
 
 # Paramètres à remplacer
@@ -503,27 +503,28 @@ def hyperlynx(PageTemp):
 				PageDebut = PageEnd[:PageEnd.rfind(u'{{')]
 				if PageDebut.rfind(u'{{') != -1 and PageDebut.rfind(u'}}') != -1 and (PageDebut[len(PageDebut)-2:] == u'}}' or PageDebut[len(PageDebut)-3:] == u'}} '):
 					codelangue = PageDebut[PageDebut.rfind(u'{{')+2:PageDebut.rfind(u'}}')]
-					'''Abandon de la recherche de validité car tous les code ne sont pas encore sur les sites francophones
-					page2 = Page(site,u'Modèle:' + codelangue)
-					try:
-						PageCode = page2.get()
-					except wikipedia.NoPage:
-						print "NoPage l 425"
-						PageCode = u''
-					except wikipedia.LockedPage: 
-						print "Locked l 428"
-						PageCode = u''
-					except wikipedia.IsRedirectPage: 
-						PageCode = page2.get(get_redirect=True)
-					raw_input(PageCode.encode(config.console_encoding, 'replace'))
-					if PageCode.find(u'Indication de langue') == -1:
-						codelangue = u'en'
-					else:	'''
-					if len(codelangue) == 2:	# or len(codelangue) == 3: if codelangue == u'pdf': |format=codelangue, absent de {{lien web}}
-						# Retrait du modèle de langue devenu inutile
-						PageEnd = PageEnd[:PageEnd.rfind(u'{{' + codelangue + u'}}')] + PageEnd[PageEnd.rfind(u'{{' + codelangue + u'}}')+len(u'{{' + codelangue + u'}}'):]
-					else:
-						codelangue = u''
+					if site == 'wikipedia' or site == 'wiktionary':
+						# Recherche de validité mais tous les codes ne sont pas encore sur les sites francophones
+						page2 = Page(site,u'Modèle:' + codelangue)
+						try:
+							PageCode = page2.get()
+						except wikipedia.NoPage:
+							print "NoPage l 425"
+							PageCode = u''
+						except wikipedia.LockedPage: 
+							print "Locked l 428"
+							PageCode = u''
+						except wikipedia.IsRedirectPage: 
+							PageCode = page2.get(get_redirect=True)
+						if debogage: raw_input(PageCode.encode(config.console_encoding, 'replace'))
+						if PageCode.find(u'Indication de langue') == -1:
+							codelangue = u'en'
+						else:
+							if len(codelangue) == 2:	# or len(codelangue) == 3: if codelangue == u'pdf': |format=codelangue, absent de {{lien web}}
+								# Retrait du modèle de langue devenu inutile
+								PageEnd = PageEnd[:PageEnd.rfind(u'{{' + codelangue + u'}}')] + PageEnd[PageEnd.rfind(u'{{' + codelangue + u'}}')+len(u'{{' + codelangue + u'}}'):]
+							else:
+								codelangue = u''
 			if codelangue != u'':
 				# Ajout du code langue dans le modèle
 				if debogage: print(u'Modèle préalable : ' + codelangue.encode(config.console_encoding, 'replace'))
@@ -538,7 +539,6 @@ def hyperlynx(PageTemp):
 	for m in range(0,limiteM):
 		if debogageLent: print(u'Traduction des noms du modèle ' + ModeleEN[m])
 		PageTemp = PageTemp.replace(u'{{' + ModeleEN[m] + u' ', u'{{' + ModeleEN[m] + u'')
-		#if ModeleEN[m] == 'cite web': raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 		PageTemp = re.sub(ur'({{[\n ]*)[' + ModeleEN[m][0:1] + ur'|' + ModeleEN[m][0:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])] + ur'( *[\||\n\t|}])', ur'\1' +  ModeleFR[m] + ur'\2', PageTemp)
 		# Suppression des modèles vides
 		regex = u'{{ *[' + ModeleFR[m][0:1] + ur'|' + ModeleFR[m][0:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *}}'

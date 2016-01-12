@@ -316,7 +316,7 @@ def sauvegarde(PageCourante, Contenu, summary):
 # Lancement
 if len(sys.argv) > 1:
 	if sys.argv[1] == u'test':
-		TraitementPage = modification(u'User:' + mynick + u'/test')
+		TraitementPage = modification(u'Utilisateur:' + mynick + u'/test')
 	elif sys.argv[1] == u'txt':
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
 	elif sys.argv[1] == u'u':
