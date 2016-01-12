@@ -81,15 +81,9 @@ ModeleEN.append(u'dts')
 ModeleFR.append(u'dts')
 ModeleEN.append(u'Quote')
 ModeleFR.append(u'Citation bloc')
+ModeleEN.append(u'cite book')
+ModeleFR.append(u'ouvrage')
 limiteM = len(ModeleFR)
-# Désactivé à la demande d'un contributeur sur WP : https://fr.wikipedia.org/wiki/Discussion_utilisateur:JackPotte/Archives2013#Traduction_de_cite_book_vers_ouvrage
-#ModeleEN[18] = u'cite book'
-#ModeleFR[18] = u'ouvrage'
-#spécifier le remplacement “citation” s'il a les paramètres du modèle anglais.
-
-# Demande de [[Discussion modèle:ouvrage]]
-#ModeleEN.append(u'cite book'
-#ModeleFR.append(u'ouvrage'
 
 # Paramètres à remplacer
 ParamEN = []
@@ -1449,5 +1443,5 @@ def log(source):
 	txtfile.close()
 
 # à faire : sauter les longs PDF comme dans [[w:Apollo 11]]
-
+# à faire : spécifier le remplacement “citation” s'il a les paramètres du modèle anglais.
 
