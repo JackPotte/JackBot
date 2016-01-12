@@ -1144,6 +1144,7 @@ Modele.append(u'théologie')
 Modele.append(u'théorie des graphes')
 Modele.append(u'thermodynamique')
 Modele.append(u'tind')
+Modele.append(u'tissage')
 Modele.append(u'topo')
 Modele.append(u'topographie')
 Modele.append(u'topologie')
@@ -5676,8 +5677,6 @@ if len(sys.argv) > 1:
 		TraitementLiens = crawlerLink(u'Modèle:conj-pl',u'')
 	elif sys.argv[1] == u'page':
 		TraitementPage = modification(u'écran brillant')
-		TraitementPage = modification(u'écran de veille')
-		TraitementPage = modification(u'écran mat')
 	elif sys.argv[1] == u'trad':
 		TraitementLiens = crawlerLink(u'Modèle:trad-',u'')
 	elif sys.argv[1] == u's':

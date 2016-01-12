@@ -115,6 +115,16 @@ def crawlerCat(category):
 			main = main[11:len(main)]
 			modification(main)
 
+# Traitement des modèles PMID
+def crawlerCatPMID(category):
+	cat = catlib.Category(site, category)
+	pages = cat.articlesList(False)
+	for Page in pagegenerators.PreloadingGenerator(pages,100):
+		main = Page.title()
+		#main = main[11:len(main)]
+		if main.find(u'pmid') != -1:
+			modification(main)
+			
 # Traitement des pages liées			
 def crawlerLink(pagename):
 	#pagename = unicode(arg[len('-links:'):], 'utf-8')
@@ -309,16 +319,25 @@ if len(sys.argv) > 1:
 		TraitementPage = modification(u'User:' + mynick + u'/test')
 	elif sys.argv[1] == u'txt':
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
+	elif sys.argv[1] == u'u':
+		TraitementUtilisateur = crawlerUser(u'Utilisateur:JackBot')
+	elif sys.argv[1] == u'r':
+		if len(sys.argv) > 2:
+			TraitementRecherche = crawlerSearch(sys.argv[2])
+		else:
+			TraitementRecherche = crawlerSearch(u'chinois')
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
+	elif sys.argv[1] == u'cat':
+		TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
+		#TraitementCategory = crawlerCat(u'Page du modèle Article comportant une erreur',False,u'')
 	elif sys.argv[1] == u'page':
 		TraitementPage = modification(u'Modèle:Cite pmid/17267789')
-	elif sys.argv[1] == u'cat':
-		TraitementCat = crawlerCat(u'Catégorie:Modèle pmid',False,u'Modèle:Cite pmid/18472213')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
 	# Quotidiennement :
+	TraitementCatPMID = crawlerCatPMID(u'Catégorie:Modèle de source')
 	TraitementLiens = crawlerLink(u'Modèle:Cite web',u'')
 	TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
 	TraitementLiens = crawlerLink(u'Modèle:Cite news',u'')
@@ -332,16 +351,8 @@ else:
 	TraitementLiens = crawlerLink(u'Modèle:Docu',u'')
 	TraitementLiens = crawlerLink(u'Modèle:Cita web',u'')
 	TraitementLiens = crawlerLink(u'Modèle:Cita noticia',u'')
-	#à faire : les cite pmid/* de Catégorie:Modèle de source
-	#TraitementLiens = crawlerLink(u'Modèle:Cite book',u'')	# En stand by suite à réticences d'un tiers
-	#TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
+	TraitementLiens = crawlerLink(u'Modèle:Cite book',u'')
 '''
-#Modeles :
-TraitementPage = modification(u'Utilisateur:JackBot/test/À faire')
-TraitementCategory = crawlerCat(u'Page du modèle Article comportant une erreur',False,u'')
-TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
-TraitementRecherche = crawlerSearch(u'chinois')
-TraitementUtilisateur = crawlerUser(u'Utilisateur:JackBot')
 while 1:
 	TraitementRC = crawlerRC()
 '''

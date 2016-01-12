@@ -7388,3 +7388,11 @@
 2016-01-12 14:16:07 r-1 (unknown) Python 2.7 fr.wikt.archive.py
 2016-01-12 14:16:09 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py
 2016-01-12 14:29:13 r-1 (unknown) Python 2.7 fr.w.formatage.py
+2016-01-12 14:59:15 r-1 (unknown) Python 2.7 fr.wikt.pluriel.py
+2016-01-12 14:59:24 r-1 (unknown) Python 2.7 fr.wikt.pluriel.py "cat"
+2016-01-12 15:03:58 r-1 (unknown) Python 2.7 fr.w.formatage.py "Liste des municipalités du Yukon"
+2016-01-12 15:04:22 r-1 (unknown) Python 2.7 fr.w.formatage.py "Liste des municipalit&#233;s du Yukon"
+2016-01-12 15:22:53 r-1 (unknown) Python 2.7 fr.w.formatage.py "cat"
+2016-01-12 15:23:02 r-1 (unknown) Python 2.7 fr.w.formatage.py "cat"
+2016-01-12 15:23:17 r-1 (unknown) Python 2.7 fr.w.formatage.py "cat"
+2016-01-12 15:24:24 r-1 (unknown) Python 2.7 fr.w.formatage.py "cat"
