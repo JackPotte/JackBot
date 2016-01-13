@@ -132,6 +132,8 @@ for p in range(1,20):
 	ParamFR.append(u'nom'+str(p))
 	ParamEN.append(u'surname'+str(p))
 	ParamFR.append(u'nom'+str(p))
+	ParamEN.append(u'author'+str(p))
+	ParamFR.append(u'auteur'+str(p))
 ParamEN.append(u'issue')
 ParamFR.append(u'numéro')
 ParamEN.append(u'authorlink')
