@@ -498,7 +498,7 @@ def hyperlynx(PageTemp):
 			PageTemp = PageTemp[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1:]	
 			
 			# Identification du code langue existant
-			codelangue = u''
+			codelangue = u'en'
 			if PageEnd.rfind(u'{{') != -1:
 				PageDebut = PageEnd[:PageEnd.rfind(u'{{')]
 				if PageDebut.rfind(u'{{') != -1 and PageDebut.rfind(u'}}') != -1 and (PageDebut[len(PageDebut)-2:] == u'}}' or PageDebut[len(PageDebut)-3:] == u'}} '):
