@@ -506,7 +506,7 @@ def hyperlynx(PageTemp):
 				PageDebut = PageEnd[:PageEnd.rfind(u'{{')]
 				if PageDebut.rfind(u'{{') != -1 and PageDebut.rfind(u'}}') != -1 and (PageDebut[len(PageDebut)-2:] == u'}}' or PageDebut[len(PageDebut)-3:] == u'}} '):
 					codelangue = PageDebut[PageDebut.rfind(u'{{')+2:PageDebut.rfind(u'}}')]
-					if site == 'wikipedia' or site == 'wiktionary':
+					if family == 'wikipedia' or family == 'wiktionary':
 						# Recherche de validité mais tous les codes ne sont pas encore sur les sites francophones
 						page2 = Page(site,u'Modèle:' + codelangue)
 						try:
