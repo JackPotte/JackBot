@@ -77,12 +77,15 @@ ModeleEN.append(u'web site')
 ModeleFR.append(u'lien web')
 ModeleEN.append(u'site web')
 ModeleFR.append(u'lien web')
+ModeleEN.append(u'Quote')
+ModeleFR.append(u'Citation bloc')
+# Doublons pour traduire leurs paramètres uniquement
 ModeleEN.append(u'lire en ligne')
 ModeleFR.append(u'lire en ligne')
 ModeleEN.append(u'dts')
 ModeleFR.append(u'dts')
-ModeleEN.append(u'Quote')
-ModeleFR.append(u'Citation bloc')
+ModeleEN.append(u'Chapitre')
+ModeleFR.append(u'Chapitre')
 limiteM = len(ModeleFR)
 
 # Paramètres à remplacer
