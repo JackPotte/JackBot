@@ -123,7 +123,7 @@ ParamEN.append(u'surname')
 ParamFR.append(u'nom')
 ParamEN.append(u'last')
 ParamFR.append(u'nom')
-for p in range(1,20):
+for p in range(1,30):
 	ParamEN.append(u'first'+str(p))
 	ParamFR.append(u'prénom'+str(p))
 	ParamEN.append(u'given'+str(p))
