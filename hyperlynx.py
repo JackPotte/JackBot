@@ -123,7 +123,7 @@ ParamEN.append(u'surname')
 ParamFR.append(u'nom')
 ParamEN.append(u'last')
 ParamFR.append(u'nom')
-for p in range(1,30):
+for p in range(1,31):
 	ParamEN.append(u'first'+str(p))
 	ParamFR.append(u'prénom'+str(p))
 	ParamEN.append(u'given'+str(p))
@@ -1044,11 +1044,13 @@ def TestURL(url):
 	except UnicodeDecodeError:
 		if debogage: print Method + u' : UnicodeDecodeError'
 	except UnicodeError:
-			if debogage: print Method + u' : UnicodeError'
+		if debogage: print Method + u' : UnicodeError'
 	except httplib.BadStatusLine:
 		if debogage: print Method + u' : BadStatusLine'
 	except httplib.InvalidURL:
 		if debogage: print Method + u' : InvalidURL'
+	except httplib.IncompleteRead:
+		if debogage: print Method + u' : IncompleteRead'
 	except urllib2.HTTPError, e:
 		if debogage: print Method + u' : HTTPError %s.' % e.code
 		Method = u'HTTPCookieProcessor'
@@ -1148,6 +1150,8 @@ def TestURL(url):
 		if debogage: print Method + u' : UnicodeError'
 	except httplib.BadStatusLine:
 		if debogage: print Method + u' : BadStatusLine'
+	except httplib.IncompleteRead:
+		if debogage: print Method + u' : IncompleteRead'
 	except httplib.InvalidURL:
 		if debogage: print Method + u' : InvalidURL'
 	except urllib2.HTTPError, e:
@@ -1246,6 +1250,8 @@ def TestURL(url):
 		if debogage: print Method + u' : BadStatusLine'
 	except httplib.InvalidURL:
 		if debogage: print Method + u' : InvalidURL'
+	except httplib.IncompleteRead:
+		if debogage: print Method + u' : IncompleteRead'
 	except urllib2.HTTPError, e:
 		if debogage: print Method + u' : HTTPError %s.' % e.code
 		Method = u'HTTPRedirectHandler'
