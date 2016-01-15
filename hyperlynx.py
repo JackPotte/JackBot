@@ -494,9 +494,9 @@ def hyperlynx(PageTemp):
 	# Paramètre langue= si traduction
 	for m in range(0,limiteL):
 		# Formatage des anciens modèles
-		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'_') + ur'\|', ModeleEN[m] + ur'|', PageTemp)
-		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'  ') + ur'\|', ModeleEN[m] + ur'|', PageTemp)
-		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]) + ur'\|', ModeleEN[m] + ur'|', PageTemp)
+		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'_') + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
+		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'  ') + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
+		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]) + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
 		# Traitement de chaque modèle à traduire
 		while re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]+', PageTemp):
 			if debogageLent: raw_input(PageTemp[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1:][:100].encode(config.console_encoding, 'replace'))
@@ -1003,6 +1003,8 @@ def TestURL(url):
 		if debogage: print Method + u' : InvalidURL'
 	except urllib2.URLError:
 		if debogage: print Method + u' : URLError'
+	except httplib.IncompleteRead:
+		if debogage: print Method + u' : IncompleteRead'
 	except urllib2.HTTPError, e:
 		if debogage: print Method + u' : HTTPError %s.' % e.code
 		Method = u'opener'
@@ -1101,6 +1103,8 @@ def TestURL(url):
 		if debogage: print Method + u' : BadStatusLine'
 	except httplib.InvalidURL:
 		if debogage: print Method + u' : InvalidURL'
+	except httplib.IncompleteRead:
+		if debogage: print Method + u' : IncompleteRead'
 	except urllib2.HTTPError, e:
 		if debogage: print Method + u' : HTTPError %s.' % e.code
 		Method = u'geturl()'
@@ -1300,6 +1304,8 @@ def TestURL(url):
 		if debogage: print Method + u' : BadStatusLine'
 	except httplib.InvalidURL:
 		if debogage: print Method + u' : InvalidURL'
+	except httplib.IncompleteRead:
+		if debogage: print Method + u' : IncompleteRead'
 	except urllib2.HTTPError, e:
 		if debogage: print Method + u' : HTTPError %s.' % e.code
 		if e.code == 401: return "ok"	# http://www.nature.com/nature/journal/v442/n7104/full/nature04945.html
@@ -1329,6 +1335,8 @@ def TestURL(url):
 		if debogage: print Method + u' : UnicodeEncodeError'
 	except UnicodeDecodeError:
 		if debogage: print Method + u' : UnicodeDecodeError'
+	except httplib.IncompleteRead:
+		if debogage: print Method + u' : IncompleteRead'
 	except UnicodeError:
 		if debogage: print Method + u' : UnicodeError'
 		Method = u"Méthode url.encode('utf8')"
