@@ -270,6 +270,8 @@ ParamEN.append(u'archivedate')
 ParamFR.append(u'en ligne le')
 ParamEN.append(u'series')
 ParamFR.append(u'collection')
+ParamEN.append(u'agency')
+ParamFR.append(u'auteur institutionnel')
 
 limiteP = len(ParamEN)
 if limiteP != len(ParamFR):
