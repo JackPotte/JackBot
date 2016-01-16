@@ -7449,3 +7449,10 @@
 2016-01-15 13:31:08 r-1 (unknown) Python 2.7 fr.w.formatage.py "Utilisateur:JackBot/test2"
 2016-01-15 13:32:09 r-1 (unknown) Python 2.7 fr.w.formatage.py "Utilisateur:JackBot/test2"
 2016-01-15 13:34:11 r-1 (unknown) Python 2.7 fr.w.formatage.py "Utilisateur:JackBot/test2"
+2016-01-15 17:16:31 r-1 (unknown) Python 2.7 fr.wikt.pluriel.py
+2016-01-15 17:16:36 r-1 (unknown) Python 2.7 fr.wikt.pluriel.py "cat"
+2016-01-16 13:35:37 r-1 (unknown) Python 2.7 fr.wikt.pluriel.py
+2016-01-16 13:35:49 r-1 (unknown) Python 2.7 fr.wikt.pluriel.py "cat"
+2016-01-16 13:48:59 r-1 (unknown) Python 2.7 touch.py "-lang:fr" "-family:wiktionary" "-cat:Pluriels manquants en français"
+2016-01-17 00:16:03 r-1 (unknown) Python 2.7 fr.w.formatage.py "Nathalie Cabrol"
+2016-01-17 00:20:21 r-1 (unknown) Python 2.7 fr.w.formatage.py "Nathalie Cabrol"

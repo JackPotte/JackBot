@@ -494,9 +494,9 @@ def hyperlynx(PageTemp):
 	# Paramètre langue= si traduction
 	for m in range(0,limiteL):
 		# Formatage des anciens modèles
-		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'_') + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
-		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'  ') + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
-		PageTemp = re.sub((u'[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]) + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
+		PageTemp = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'_') + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
+		PageTemp = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'  ') + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
+		PageTemp = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]) + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
 		# Traitement de chaque modèle à traduire
 		while re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]+', PageTemp):
 			if debogageLent: raw_input(PageTemp[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1:][:100].encode(config.console_encoding, 'replace'))
@@ -576,10 +576,10 @@ def hyperlynx(PageTemp):
 					elif ModeleCourant.find(u'ien web') != -1 and ModeleCourant.find(u'ien web') < ModeleCourant.find(u'|'):
 						ParamFR[p] = u'série'
 				elif ParamEN[p] == u'publisher':
-					if ModeleCourant.find(u'diteur') == -1:
-						ParamFR[p] = u'éditeur'
-					else:
+					if (ModeleCourant.find(u'rticle') != -1 and ModeleCourant.find(u'rticle') < ModeleCourant.find(u'|')) and ModeleCourant.find(u'ériodique') == -1:
 						ParamFR[p] = u'périodique'
+					else:
+						ParamFR[p] = u'éditeur'
 				ModeleCourant = re.sub(ur'(\| *)' + ParamEN[p] + ur'( *=)', ur'\1' + ParamFR[p] + ur'\2', ModeleCourant)			
 			if debogageLent: print FinModele
 			PageTemp = ModeleCourant + PageTemp[FinModele:]
