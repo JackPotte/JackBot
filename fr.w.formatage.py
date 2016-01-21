@@ -60,6 +60,41 @@ def modification(PageHS):
 	if re.search(regex, PageTemp):
 		PageTemp = re.sub(regex, ur'\1trad\2', PageTemp)
 	
+	# Autres modèles (https://fr.wikipedia.org/wiki/Cat%C3%A9gorie:Page_utilisant_un_mod%C3%A8le_avec_un_param%C3%A8tre_obsol%C3%A8te)
+	PageTemp = PageTemp.replace(u'{{Reflist|2}}', u'{{Références}}')
+	PageTemp = PageTemp.replace(u'{{reflist|2}}', u'{{Références}}')
+	PageTemp = PageTemp.replace(u'{{Reflist|3}}', u'{{Références}}')
+	PageTemp = PageTemp.replace(u'{{reflist|3}}', u'{{Références}}')
+	PageTemp = PageTemp.replace(u'{{Reflist|30em}}', u'{{Références}}')
+	PageTemp = PageTemp.replace(u'{{reflist|30em}}', u'{{Références}}')
+	PageTemp = PageTemp.replace(u'{{Reflist|colwidth = 30em}}', u'{{Références}}')
+	PageTemp = PageTemp.replace(u'{{Reflist|colwidth=40em}}', u'{{Références}}')
+	PageTemp = PageTemp.replace(u'{{Références|2}}', u'{{Références}}')
+	PageTemp = PageTemp.replace(u'{{références|2}}', u'{{Références}}')
+	PageTemp = PageTemp.replace(u'{{Références|30em}}', u'{{Références}}')
+	PageTemp = PageTemp.replace(u'{{références|colonnes}}', u'{{Références}}')
+	PageTemp = PageTemp.replace(u'{{Références|taille}}', u'{{Références}}')
+	
+	# Rustine temporaire pour https://fr.wikipedia.org/wiki/Cat%C3%A9gorie:Page_du_mod%C3%A8le_Article_comportant_une_erreur
+	'''
+	PageEnd = u''
+	while PageTemp.find(u'{{article') != -1:
+		PageEnd = PageEnd + PageTemp[:PageTemp.find(u'{{article')+len(u'{{article')]
+		PageTemp = PageTemp[PageTemp.find(u'{{article')+len(u'{{article'):]
+		if PageTemp.find(u'éditeur=') != -1 and PageTemp.find(u'éditeur=') < PageTemp.find(u'}}') and (PageTemp.find(u'pédiorique=') == -1 or PageTemp.find(u'pédiorique=') > PageTemp.find(u'}}')) and (PageTemp.find(u'revue=') == -1 or PageTemp.find(u'revue=') > PageTemp.find(u'}}')) and (PageTemp.find(u'journal=') == -1 or PageTemp.find(u'journal=') > PageTemp.find(u'}}')):
+			PageEnd = PageEnd + PageTemp[:PageTemp.find(u'éditeur=')] + u'périodique='
+			PageTemp = PageTemp[PageTemp.find(u'éditeur=')+len(u'éditeur='):]
+	PageTemp = PageEnd + PageTemp
+	PageEnd = u''
+	while PageTemp.find(u'{{Article') != -1:
+		PageEnd = PageEnd + PageTemp[:PageTemp.find(u'{{Article')+len(u'{{Article')]
+		PageTemp = PageTemp[PageTemp.find(u'{{Article')+len(u'{{Article'):]
+		if PageTemp.find(u'éditeur=') != -1 and PageTemp.find(u'éditeur=') < PageTemp.find(u'}}') and (PageTemp.find(u'pédiorique=') == -1 or PageTemp.find(u'pédiorique=') > PageTemp.find(u'}}')) and (PageTemp.find(u'revue=') == -1 or PageTemp.find(u'revue=') > PageTemp.find(u'}}')) and (PageTemp.find(u'journal=') == -1 or PageTemp.find(u'journal=') > PageTemp.find(u'}}')):
+			PageEnd = PageEnd + PageTemp[:PageTemp.find(u'éditeur=')] + u'périodique='
+			PageTemp = PageTemp[PageTemp.find(u'éditeur=')+len(u'éditeur='):]		
+	PageTemp = PageEnd + PageTemp
+	'''
+	
 	# Nombres
 	PageTemp = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', PageTemp)
 
@@ -319,6 +354,8 @@ if len(sys.argv) > 1:
 		TraitementPage = modification(u'Utilisateur:' + mynick + u'/test')
 	elif sys.argv[1] == u'txt':
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
+	elif sys.argv[1] == u'txt2':
+		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'2.txt')
 	elif sys.argv[1] == u'u':
 		TraitementUtilisateur = crawlerUser(u'Utilisateur:JackBot')
 	elif sys.argv[1] == u'r':
@@ -329,10 +366,11 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
-		#TraitementCategory = crawlerCat(u'Page du modèle Article comportant une erreur',False,u'')
+		#TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec un paramètre obsolète',False,u'')
+		TraitementCategory = crawlerCat(u'Page du modèle Article comportant une erreur',False,u'')
+		#TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'Chaîne de transport d\'électrons')
+		TraitementPage = modification(u'A Bigger Splash (film, 2015)')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:

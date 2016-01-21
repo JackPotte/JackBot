@@ -625,6 +625,19 @@ def hyperlynx(PageTemp):
 			print u'Langue ' + str(l)
 			print TradL[l][1]
 		PageTemp = re.sub(ur'(\| *langue *= *)' + TradL[l][1] + ur'( *[<|\||\n\t|}])', ur'\1' +  TradL[l][2] + ur'\2', PageTemp)
+	# Rustine suite à un imprévu censé être réglé ci-dessus, mais qui touche presque 10 % des pages.
+	PageTemp = PageTemp.replace(u'{{en}}{{lien web|langue=en|', u'{{lien web|langue=en|')
+	PageTemp = PageTemp.replace(u'{{en}} {{lien web|langue=en|', u'{{lien web|langue=en|')
+	PageTemp = PageTemp.replace(u'{{en}}{{article|langue=en|', u'{{article|langue=en|')
+	PageTemp = PageTemp.replace(u'{{en}} {{article|langue=en|', u'{{article|langue=en|')
+	PageTemp = PageTemp.replace(u'{{en}}{{ouvrage|langue=en|', u'{{ouvrage|langue=en|')
+	PageTemp = PageTemp.replace(u'{{en}} {{ouvrage|langue=en|', u'{{ouvrage|langue=en|')
+	PageTemp = PageTemp.replace(u'{{en}}{{Lien web|langue=en|', u'{{lien web|langue=en|')
+	PageTemp = PageTemp.replace(u'{{en}} {{Lien web|langue=en|', u'{{lien web|langue=en|')
+	PageTemp = PageTemp.replace(u'{{en}}{{Article|langue=en|', u'{{article|langue=en|')
+	PageTemp = PageTemp.replace(u'{{en}} {{Article|langue=en|', u'{{article|langue=en|')
+	PageTemp = PageTemp.replace(u'{{en}}{{Ouvrage|langue=en|', u'{{ouvrage|langue=en|')
+	PageTemp = PageTemp.replace(u'{{en}} {{Ouvrage|langue=en|', u'{{ouvrage|langue=en|')
 	
 	if debogageLent:
 		print u'Fin des traductions :'
@@ -1465,6 +1478,7 @@ def log(source):
 	txtfile.write(u'\n' + source + u'\n')
 	txtfile.close()
 
-# à faire : sauter les longs PDF comme dans [[w:Apollo 11]]
-# à faire : spécifier le remplacement “citation” s'il a les paramètres du modèle anglais.
-
+# à faire : 
+#	sauter les longs PDF comme dans [[w:Apollo 11]]
+#	spécifier le remplacement “citation” s'il a les paramètres du modèle anglais
+# 	remplacer "éditeur" par "périodique" dans "article"

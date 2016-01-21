@@ -3,6 +3,7 @@ python redirect.py double -always -family:wikipedia -lang:pl
 python redirect.py double -always -family:wikipedia -lang:se
 python redirect.py double -always -family:wikipedia -lang:tr
 python redirect.py double -always -family:wikipedia -lang:ta
+
 python redirect.py double -always -family:wiktionary -lang:de
 python redirect.py double -always -family:wiktionary -lang:en
 python redirect.py double -always -family:wiktionary -lang:es
@@ -13,6 +14,7 @@ python redirect.py double -always -family:wiktionary -lang:pt
 python redirect.py double -always -family:wiktionary -lang:ru
 python redirect.py double -always -family:wiktionary -lang:sv
 python redirect.py double -always -family:wiktionary -lang:zh
+
 python redirect.py double -always -family:wikiversity -lang:en
 python redirect.py double -always -family:wikiversity -lang:fr
 python redirect.py double -always -family:wikibooks -lang:en
