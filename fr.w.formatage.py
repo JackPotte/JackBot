@@ -21,7 +21,6 @@ site = getSite(language,family)
 debogage = False
 debogageLent = False
 output = u'articles_WPout.txt'
-ns = 0 #10 pour les Modèle:Cite pmid/
 
 # Modification du wiki
 def modification(PageHS):
@@ -29,7 +28,7 @@ def modification(PageHS):
 	page = Page(site,PageHS)
 	print(PageHS.encode(config.console_encoding, 'replace'))
 	if not page.exists(): return
-	if page.namespace() != ns and PageHS.find(u'Utilisateur:JackBot/test') == -1 and PageHS.find(u'Modèle:Cite pmid/') == -1:
+	if page.namespace() != 0 and PageHS.find(u'Utilisateur:JackBot/test') == -1 and PageHS.find(u'Modèle:Cite pmid/') == -1:
 		return
 	else:
 		#print 'ok'
@@ -204,7 +203,7 @@ def crawlerCat(category,recursif,apres):
 	modifier = u'False'
 	cat = catlib.Category(site, category)
 	pages = cat.articlesList(False)
-	gen =  pagegenerators.NamespaceFilterPageGenerator(pages, [ns])
+	gen =  pagegenerators.NamespaceFilterPageGenerator(pages, [0])
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		if not apres or apres == u'' or modifier == u'True':
 			modification(Page.title()) #crawlerLink(Page.title())
@@ -222,21 +221,21 @@ def crawlerLink(pagename,apres):
 	modifier = u'False'
 	#pagename = unicode(arg[len('-links:'):], 'utf-8')
 	page = wikipedia.Page(site, pagename)
-	gen = pagegenerators.ReferringPageGenerator(page)
-	gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [ns])
+	gen = pagegenerators.ReferringPageGenerator(page)				#,onlyTemplateInclusion=True
+	gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])	#Même désactivé, survient le bug du quota (de 500 + 300 transclusions ?). Cela fonctionne sur AWB
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		#print(Page.title().encode(config.console_encoding, 'replace'))
 		if not apres or apres == u'' or modifier == u'True':
 			modification(Page.title()) #crawlerLink(Page.title())
 		elif Page.title() == apres:
 			modifier = u'True'
-
+			
 # Traitement des pages liées des entrées d'une catégorie
 def crawlerCatLink(pagename,apres):
 	modifier = u'False'
 	cat = catlib.Category(site, pagename)
 	pages = cat.articlesList(False)
-	gen =  pagegenerators.NamespaceFilterPageGenerator(pages, [ns])
+	gen =  pagegenerators.NamespaceFilterPageGenerator(pages, [0])
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		page = wikipedia.Page(site, Page.title())
 		gen = pagegenerators.ReferringPageGenerator(page)
@@ -364,7 +363,7 @@ if len(sys.argv) > 1:
 		else:
 			TraitementRecherche = crawlerSearch(u'chinois')
 	elif sys.argv[1] == u'm':
-		TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
+		TraitementLiens = crawlerLink(u'Modèle:cite web',u'')
 	elif sys.argv[1] == u'cat':
 		#TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec un paramètre obsolète',False,u'')
 		TraitementCategory = crawlerCat(u'Page du modèle Article comportant une erreur',False,u'')

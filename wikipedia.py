@@ -1696,8 +1696,8 @@ not supported by PyWikipediaBot!"""
                 params['blredirect'] = 1
             if redirectsOnly:
                 params['blfilterredir'] = 'redirects'
-            if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 500:
-                params['bllimit'] = 500
+            if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 5000:
+                params['bllimit'] = 5000
 
         if withTemplateInclusion or onlyTemplateInclusion:
             params['list'].append('embeddedin')
@@ -1708,8 +1708,8 @@ not supported by PyWikipediaBot!"""
                 params['eiredirect'] = 1
             if redirectsOnly:
                 params['eifilterredir'] = 'redirects'
-            if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 500:
-                params['eilimit'] = 500
+            if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 5000:
+                params['eilimit'] = 5000
 
         allDone = False
 
@@ -1765,8 +1765,8 @@ not supported by PyWikipediaBot!"""
         """Yield all pages that link to the page.
         """
         # Temporary bug-fix while researching more robust solution:
-        if config.special_page_limit > 999:
-            config.special_page_limit = 999
+        if config.special_page_limit > 9999:
+            config.special_page_limit = 9999
         site = self.site()
         path = self.site().references_address(self.urlname())
         if withTemplateInclusion:
@@ -2656,8 +2656,8 @@ u'Page %s is semi-protected. Getting edit page to find out if we are allowed to 
                 'titles' : self.title(),
             }
             if not self.site().isAllowed('apihighlimits') and \
-               config.special_page_limit > 500:
-                params['cllimit'] = 500
+               config.special_page_limit > 5000:
+                params['cllimit'] = 5000
             iwlinks=[]
             while True:
                 datas = query.GetData(params, self.site())
@@ -2706,8 +2706,8 @@ u'Page %s is semi-protected. Getting edit page to find out if we are allowed to 
                 'prop'  : 'categories',
                 'titles' : self.title(),
             }
-            if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 500:
-                params['cllimit'] = 500
+            if not self.site().isAllowed('apihighlimits') and config.special_page_limit > 5000:
+                params['cllimit'] = 5000
 
             output(u'Getting categories in %s via API...' % self.title(asLink=True))
             allDone = False
@@ -8020,7 +8020,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
             else:
                 break
 
-    def linksearch(self, siteurl, limit=500):
+    def linksearch(self, siteurl, limit=5000):
         """Yield Pages from results of Special:Linksearch for 'siteurl'."""
         cache = []
         R = re.compile('title ?=\"([^<>]*?)\">[^<>]*</a></li>')
@@ -8346,7 +8346,7 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         }
         return query.GetData(params, self, back_response=True)
 
-    def linksearch_address(self, s, limit=500, offset=0):
+    def linksearch_address(self, s, limit=5000, offset=0):
         """Return path to Special:Linksearch for target 's'."""
         return self.family.linksearch_address(self.lang, s, limit=limit, offset=offset)
 
@@ -8366,67 +8366,67 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         """Return path to Special:Newpages."""
         return self.family.newpages_address(self.lang, n, namespace)
 
-    def longpages_address(self, n=500):
+    def longpages_address(self, n=5000):
         """Return path to Special:Longpages."""
         return self.family.longpages_address(self.lang, n)
 
-    def shortpages_address(self, n=500):
+    def shortpages_address(self, n=5000):
         """Return path to Special:Shortpages."""
         return self.family.shortpages_address(self.lang, n)
 
-    def unusedfiles_address(self, n=500):
+    def unusedfiles_address(self, n=5000):
         """Return path to Special:Unusedimages."""
         return self.family.unusedfiles_address(self.lang, n)
 
-    def categories_address(self, n=500):
+    def categories_address(self, n=5000):
         """Return path to Special:Categories."""
         return self.family.categories_address(self.lang, n)
 
-    def deadendpages_address(self, n=500):
+    def deadendpages_address(self, n=5000):
         """Return path to Special:Deadendpages."""
         return self.family.deadendpages_address(self.lang, n)
 
-    def ancientpages_address(self, n=500):
+    def ancientpages_address(self, n=5000):
         """Return path to Special:Ancientpages."""
         return self.family.ancientpages_address(self.lang, n)
 
-    def lonelypages_address(self, n=500):
+    def lonelypages_address(self, n=5000):
         """Return path to Special:Lonelypages."""
         return self.family.lonelypages_address(self.lang, n)
 
-    def protectedpages_address(self, n=500):
+    def protectedpages_address(self, n=5000):
         """Return path to Special:ProtectedPages"""
         return self.family.protectedpages_address(self.lang, n)
 
-    def unwatchedpages_address(self, n=500):
+    def unwatchedpages_address(self, n=5000):
         """Return path to Special:Unwatchedpages."""
         return self.family.unwatchedpages_address(self.lang, n)
 
-    def uncategorizedcategories_address(self, n=500):
+    def uncategorizedcategories_address(self, n=5000):
         """Return path to Special:Uncategorizedcategories."""
         return self.family.uncategorizedcategories_address(self.lang, n)
 
-    def uncategorizedimages_address(self, n=500):
+    def uncategorizedimages_address(self, n=5000):
         """Return path to Special:Uncategorizedimages."""
         return self.family.uncategorizedimages_address(self.lang, n)
 
-    def uncategorizedpages_address(self, n=500):
+    def uncategorizedpages_address(self, n=5000):
         """Return path to Special:Uncategorizedpages."""
         return self.family.uncategorizedpages_address(self.lang, n)
 
-    def uncategorizedtemplates_address(self, n=500):
+    def uncategorizedtemplates_address(self, n=5000):
         """Return path to Special:Uncategorizedpages."""
         return self.family.uncategorizedtemplates_address(self.lang, n)
 
-    def unusedcategories_address(self, n=500):
+    def unusedcategories_address(self, n=5000):
         """Return path to Special:Unusedcategories."""
         return self.family.unusedcategories_address(self.lang, n)
 
-    def wantedcategories_address(self, n=500):
+    def wantedcategories_address(self, n=5000):
         """Return path to Special:Wantedcategories."""
         return self.family.wantedcategories_address(self.lang, n)
 
-    def withoutinterwiki_address(self, n=500):
+    def withoutinterwiki_address(self, n=5000):
         """Return path to Special:Withoutinterwiki."""
         return self.family.withoutinterwiki_address(self.lang, n)
 
@@ -8470,11 +8470,11 @@ sysopnames['%s']['%s']='name' to your user-config.py"""
         """Return path to Special:Watchlist editor."""
         return self.family.watchlist_address(self.lang)
 
-    def contribs_address(self, target, limit=500, offset=''):
+    def contribs_address(self, target, limit=5000, offset=''):
         """Return path to Special:Contributions for user 'target'."""
         return self.family.contribs_address(self.lang,target,limit,offset)
 
-    def globalusers_address(self, target='', limit=500, offset='', group=''):
+    def globalusers_address(self, target='', limit=5000, offset='', group=''):
         """Return path to Special:GlobalUsers for user 'target' and/or group 'group'."""
         return self.family.globalusers_address(self.lang, target, limit, offset, group)
 
@@ -8928,7 +8928,7 @@ def handleArgs(*args):
             if not logger:
                 init_handlers()
             logging.getLogger().setLevel(DEBUG)
-            config.special_page_limit = 500
+            config.special_page_limit = 5000
         else:
             # the argument is not global. Let the specific bot script care
             # about it.

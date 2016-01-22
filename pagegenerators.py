@@ -781,7 +781,7 @@ def PagesFromTitlesGenerator(iterable, site=None):
             break
         yield pywikibot.Page(site, title)
 
-def LinksearchPageGenerator(link, step=500, site=None):
+def LinksearchPageGenerator(link, step=100, site=None):
     """Yields all pages that include a specified link, according to
     [[Special:Linksearch]].
     """
