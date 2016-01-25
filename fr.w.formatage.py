@@ -127,7 +127,7 @@ def modification(PageHS):
 
 	# Sauvegarde
 	PageEnd = PageTemp
-	if PageEnd != PageBegin:
+	if PageEnd != PageBegin and PageEnd != PageBegin.replace(u'{{chapitre |', u'{{chapitre|') and PageEnd != PageBegin.replace(u'{{Chapitre |', u'{{Chapitre|'):
 		PageEnd = re.sub(ur'<br>', ur'<br/>', PageEnd)
 		PageEnd = PageEnd.replace(ur'</ref><ref>', ur'</ref>{{,}}<ref>', )
 		sauvegarde(page,PageEnd,summary)
@@ -351,6 +351,8 @@ def sauvegarde(PageCourante, Contenu, summary):
 if len(sys.argv) > 1:
 	if sys.argv[1] == u'test':
 		TraitementPage = modification(u'Utilisateur:' + mynick + u'/test')
+	elif sys.argv[1] == u'test2':
+		TraitementPage = modification(u'Utilisateur:' + mynick + u'/test2')
 	elif sys.argv[1] == u'txt':
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
 	elif sys.argv[1] == u'txt2':

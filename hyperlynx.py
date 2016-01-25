@@ -79,7 +79,7 @@ ModeleEN.append(u'site web')
 ModeleFR.append(u'lien web')
 ModeleEN.append(u'Quote')
 ModeleFR.append(u'Citation bloc')
-# Doublons pour traduire leurs paramètres uniquement
+# "Faux" modèles en anglais pour traduire leurs paramètres uniquement
 ModeleEN.append(u'lire en ligne')
 ModeleFR.append(u'lire en ligne')
 ModeleEN.append(u'dts')
@@ -582,7 +582,15 @@ def hyperlynx(PageTemp):
 						ParamFR[p] = u'périodique'
 					else:
 						ParamFR[p] = u'éditeur'
-				ModeleCourant = re.sub(ur'(\| *)' + ParamEN[p] + ur'( *=)', ur'\1' + ParamFR[p] + ur'\2', ModeleCourant)			
+				elif ParamEN[p] == u'language' and ModeleCourant.find(u'|langue=') < ModeleCourant.find(u'}}'):
+					ParamFR[p] = u''
+				ModeleCourant = re.sub(ur'(\| *)' + ParamEN[p] + ur'( *=)', ur'\1' + ParamFR[p] + ur'\2', ModeleCourant)
+				ModeleCourant = ModeleCourant.replace(u'|=',u'|')
+				ModeleCourant = ModeleCourant.replace(u'| =',u'|')
+				ModeleCourant = ModeleCourant.replace(u'|  =',u'|')
+				ModeleCourant = ModeleCourant.replace(u'|}}',u'}}')
+				ModeleCourant = ModeleCourant.replace(u'| }}',u'}}')
+				#raw_input(ModeleCourant.encode(config.console_encoding, 'replace'))
 			if debogageLent: print FinModele
 			PageTemp = ModeleCourant + PageTemp[FinModele:]
 			
@@ -638,6 +646,7 @@ def hyperlynx(PageTemp):
 	PageTemp = PageTemp.replace(u'{{en}} {{Article|langue=en|', u'{{article|langue=en|')
 	PageTemp = PageTemp.replace(u'{{en}}{{Ouvrage|langue=en|', u'{{ouvrage|langue=en|')
 	PageTemp = PageTemp.replace(u'{{en}} {{Ouvrage|langue=en|', u'{{ouvrage|langue=en|')
+	# Suppression des paramètres vides en doublon
 	
 	if debogageLent:
 		print u'Fin des traductions :'
