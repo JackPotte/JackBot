@@ -28,21 +28,18 @@ def modification(PageHS):
 	page = Page(site,PageHS)
 	print(PageHS.encode(config.console_encoding, 'replace'))
 	if not page.exists(): return
-	if page.namespace() != 0 and PageHS.find(u'Utilisateur:JackBot/test') == -1 and PageHS.find(u'Modèle:Cite pmid/') == -1:
+	if page.namespace() != 0 and PageHS.find(u'Utilisateur:JackBot/test') == -1 and PageHS.find(u'Modèle:Cite pmid/') == -1: return
+	try:
+		PageBegin = page.get()
+	except wikipedia.NoPage:
+		print "NoPage"
 		return
-	else:
-		#print 'ok'
-		try:
-			PageBegin = page.get()
-		except wikipedia.NoPage:
-			print "NoPage"
-			return
-		except wikipedia.IsRedirectPage:
-			print "Redirect page"
-			return
-		except wikipedia.LockedPage:
-			print "Locked/protected page"
-			return
+	except wikipedia.IsRedirectPage:
+		print "Redirect page"
+		return
+	except wikipedia.LockedPage:
+		print "Locked/protected page"
+		return
 	if PageBegin.find(u'{{en travaux') != -1 or PageBegin.find(u'{{En travaux') != -1:
 		print "Page en travaux"
 		return
@@ -364,6 +361,8 @@ if len(sys.argv) > 1:
 			TraitementRecherche = crawlerSearch(sys.argv[2])
 		else:
 			TraitementRecherche = crawlerSearch(u'chinois')
+	elif sys.argv[1] == u'mod':
+		modification(u'Modèle:Commandes et livraisons A380')
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:cite web',u'')
 	elif sys.argv[1] == u'cat':

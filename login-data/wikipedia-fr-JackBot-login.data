@@ -1,9 +1,10 @@
 cookieprefix=None
-frwikiSession=d0ba8c08db0844200886c6368b8fc448
+frwikiSession=amr8e586brq5nnpi1r1e626gc67ao8b4
 GeoIP=FR:Saint-denis:48.9333:2.3667:v4
-WMF-Last-Access=25-Jan-2016
+WMF-Last-Access=29-Jan-2016
 UseDC=master
-frwikiUserID=550160
+forceHTTPS=true
+UseCDNCache=false
 frwikiUserName=JackBot
 frwikiforceHTTPS=true
-forceHTTPS=true
+frwikiUserID=550160
