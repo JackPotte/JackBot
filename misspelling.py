@@ -20,7 +20,7 @@ Command line options:
    -main       only check pages in the main namespace, not in the talk,
                wikipedia, user, etc. namespaces.
 """
-__version__ = '$Id: 75171ba7dc42466ba2c59519ec3f52cba3804446 $'
+__version__ = '$Id$'
 
 # (C) Daniel Herding, 2007
 # (C) Pywikipedia bot team 2007-2013
