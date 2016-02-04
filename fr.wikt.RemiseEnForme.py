@@ -711,6 +711,7 @@ Modele.append(u'gladiateurs')
 Modele.append(u'golf')
 Modele.append(u'golfe')
 Modele.append(u'golfes')
+Modele.append(u'grades')
 Modele.append(u'gram')
 Modele.append(u'grammaire')
 Modele.append(u'graphe')
@@ -2112,6 +2113,8 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{pl-rare}}', u'{{plus rare}}')
 		PageTemp = PageTemp.replace(u"# ''féminin de", u"# ''Féminin de")
 		PageTemp = PageTemp.replace(u"# ''masculin de", u"# ''Masculin de")
+		PageTemp = PageTemp.replace(u'{{mf?}}', u'{{mf ?}}')
+		PageTemp = PageTemp.replace(u'{{fm?}}', u'{{fm ?}}')
 		
 		PageTemp = PageTemp.replace(u'{{arbre|', u'{{arbres|')
 		PageTemp = PageTemp.replace(u'{{arme|', u'{{armement|')
@@ -2119,6 +2122,7 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{bota|', u'{{botanique|')
 		PageTemp = PageTemp.replace(u'{{électro|', u'{{électronique|')
 		PageTemp = PageTemp.replace(u'{{équi|', u'{{équitation|')
+		PageTemp = PageTemp.replace(u'{{ex|', u'{{e|')
 		PageTemp = PageTemp.replace(u'{{gastro|', u'{{gastronomie|')
 		PageTemp = PageTemp.replace(u'{{légume|', u'{{légumes|')
 		PageTemp = PageTemp.replace(u'{{minéral|', u'{{minéralogie|')
@@ -2129,8 +2133,6 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{réseau|', u'{{réseaux|')
 		PageTemp = PageTemp.replace(u'{{typo|', u'{{typographie|')
 		PageTemp = PageTemp.replace(u'{{vêtement|', u'{{vêtements|')
-		PageTemp = PageTemp.replace(u'{{mf?}}', u'{{mf ?}}')
-		PageTemp = PageTemp.replace(u'{{fm?}}', u'{{fm ?}}')
 	
 		while PageTemp.find(u'[[Annexe:Couleurs en français]]') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'[[Annexe:Couleurs en français]]')] + u'{{Thésaurus|fr|couleur}}' + PageTemp[PageTemp.find(u'[[Annexe:Couleurs en français]]')+len(u'[[Annexe:Couleurs en français]]'):len(PageTemp)]
@@ -5670,7 +5672,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'txt2':
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'2.txt')
 	elif sys.argv[1] == u'm':
-		TraitementLiens = crawlerLink(u'Modèle:localités',u'')
+		TraitementLiens = crawlerLink(u'Modèle:ex',u'')
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Termes peu attestés sans langue précisée',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'')

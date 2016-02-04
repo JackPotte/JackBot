@@ -572,6 +572,7 @@ def hyperlynx(PageTemp):
 			for p in range(0,limiteP):
 				# Faux-amis variables selon les modèles
 				if debogageLent: print ParamEN[p].encode(config.console_encoding, 'replace')
+				tradFr = ParamFR[p]
 				if ParamEN[p] == u'work':
 					if (ModeleCourant.find(u'rticle') != -1 and ModeleCourant.find(u'rticle') < ModeleCourant.find(u'|')) and ModeleCourant.find(u'ériodique') == -1:
 						ParamFR[p] = u'périodique'
@@ -582,9 +583,9 @@ def hyperlynx(PageTemp):
 						ParamFR[p] = u'périodique'
 					else:
 						ParamFR[p] = u'éditeur'
-				elif ParamEN[p] == u'language' and ModeleCourant.find(u'|langue=') < ModeleCourant.find(u'}}'):
-					ParamFR[p] = u''
-				ModeleCourant = re.sub(ur'(\| *)' + ParamEN[p] + ur'( *=)', ur'\1' + ParamFR[p] + ur'\2', ModeleCourant)
+				elif ParamEN[p] == u'language' and (ModeleCourant.find(u'|langue=') != -1 and ModeleCourant.find(u'|langue=') < ModeleCourant.find(u'}}')):
+					tradFr = u''
+				ModeleCourant = re.sub(ur'(\| *)' + ParamEN[p] + ur'( *=)', ur'\1' + tradFr + ur'\2', ModeleCourant)
 				ModeleCourant = ModeleCourant.replace(u'|=',u'|')
 				ModeleCourant = ModeleCourant.replace(u'| =',u'|')
 				ModeleCourant = ModeleCourant.replace(u'|  =',u'|')
