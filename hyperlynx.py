@@ -585,13 +585,15 @@ def hyperlynx(PageTemp):
 						ParamFR[p] = u'éditeur'
 				elif ParamEN[p] == u'language' and (ModeleCourant.find(u'|langue=') != -1 and ModeleCourant.find(u'|langue=') < ModeleCourant.find(u'}}')):
 					tradFr = u''
+				elif ParamEN[p] == u'issue' and ModeleCourant.find(u'rticle') != -1 and ModeleCourant.find(u'rticle') < ModeleCourant.find(u'|') and (ModeleCourant.find(u'|date=') != -1 and ModeleCourant.find(u'|date=') < ModeleCourant.find(u'}}')):
+					ParamFR[p] = u'date'
 				ModeleCourant = re.sub(ur'(\| *)' + ParamEN[p] + ur'( *=)', ur'\1' + tradFr + ur'\2', ModeleCourant)
 				ModeleCourant = ModeleCourant.replace(u'|=',u'|')
 				ModeleCourant = ModeleCourant.replace(u'| =',u'|')
 				ModeleCourant = ModeleCourant.replace(u'|  =',u'|')
 				ModeleCourant = ModeleCourant.replace(u'|}}',u'}}')
 				ModeleCourant = ModeleCourant.replace(u'| }}',u'}}')
-				#raw_input(ModeleCourant.encode(config.console_encoding, 'replace'))
+				
 			if debogageLent: print FinModele
 			PageTemp = ModeleCourant + PageTemp[FinModele:]
 			
