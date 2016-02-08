@@ -370,7 +370,7 @@ if len(sys.argv) > 1:
 		TraitementCategory = crawlerCat(u'Page du modèle Article comportant une erreur',False,u'')
 		#TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'A Bigger Splash (film, 2015)')
+		TraitementPage = modification(u'Modèle:Cite tweet')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:

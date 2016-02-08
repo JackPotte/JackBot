@@ -575,18 +575,18 @@ def hyperlynx(PageTemp):
 				tradFr = ParamFR[p]
 				if ParamEN[p] == u'work':
 					if (ModeleCourant.find(u'rticle') != -1 and ModeleCourant.find(u'rticle') < ModeleCourant.find(u'|')) and ModeleCourant.find(u'ériodique') == -1:
-						ParamFR[p] = u'périodique'
+						tradFr = u'périodique'
 					elif ModeleCourant.find(u'ien web') != -1 and ModeleCourant.find(u'ien web') < ModeleCourant.find(u'|'):
-						ParamFR[p] = u'série'
+						tradFr = u'série'
 				elif ParamEN[p] == u'publisher':
 					if (ModeleCourant.find(u'rticle') != -1 and ModeleCourant.find(u'rticle') < ModeleCourant.find(u'|')) and ModeleCourant.find(u'ériodique') == -1:
-						ParamFR[p] = u'périodique'
+						tradFr = u'périodique'
 					else:
-						ParamFR[p] = u'éditeur'
+						tradFr = u'éditeur'
 				elif ParamEN[p] == u'language' and (ModeleCourant.find(u'|langue=') != -1 and ModeleCourant.find(u'|langue=') < ModeleCourant.find(u'}}')):
 					tradFr = u''
 				elif ParamEN[p] == u'issue' and ModeleCourant.find(u'rticle') != -1 and ModeleCourant.find(u'rticle') < ModeleCourant.find(u'|') and (ModeleCourant.find(u'|date=') != -1 and ModeleCourant.find(u'|date=') < ModeleCourant.find(u'}}')):
-					ParamFR[p] = u'date'
+					tradFr = u'date'
 				ModeleCourant = re.sub(ur'(\| *)' + ParamEN[p] + ur'( *=)', ur'\1' + tradFr + ur'\2', ModeleCourant)
 				ModeleCourant = ModeleCourant.replace(u'|=',u'|')
 				ModeleCourant = ModeleCourant.replace(u'| =',u'|')
@@ -636,20 +636,14 @@ def hyperlynx(PageTemp):
 			print u'Langue ' + str(l)
 			print TradL[l][1]
 		PageTemp = re.sub(ur'(\| *langue *= *)' + TradL[l][1] + ur'( *[<|\||\n\t|}])', ur'\1' +  TradL[l][2] + ur'\2', PageTemp)
+	
 	# Rustine suite à un imprévu censé être réglé ci-dessus, mais qui touche presque 10 % des pages.
-	PageTemp = PageTemp.replace(u'{{en}}{{lien web|langue=en|', u'{{lien web|langue=en|')
-	PageTemp = PageTemp.replace(u'{{en}} {{lien web|langue=en|', u'{{lien web|langue=en|')
-	PageTemp = PageTemp.replace(u'{{en}}{{article|langue=en|', u'{{article|langue=en|')
-	PageTemp = PageTemp.replace(u'{{en}} {{article|langue=en|', u'{{article|langue=en|')
-	PageTemp = PageTemp.replace(u'{{en}}{{ouvrage|langue=en|', u'{{ouvrage|langue=en|')
-	PageTemp = PageTemp.replace(u'{{en}} {{ouvrage|langue=en|', u'{{ouvrage|langue=en|')
-	PageTemp = PageTemp.replace(u'{{en}}{{Lien web|langue=en|', u'{{lien web|langue=en|')
-	PageTemp = PageTemp.replace(u'{{en}} {{Lien web|langue=en|', u'{{lien web|langue=en|')
-	PageTemp = PageTemp.replace(u'{{en}}{{Article|langue=en|', u'{{article|langue=en|')
-	PageTemp = PageTemp.replace(u'{{en}} {{Article|langue=en|', u'{{article|langue=en|')
-	PageTemp = PageTemp.replace(u'{{en}}{{Ouvrage|langue=en|', u'{{ouvrage|langue=en|')
-	PageTemp = PageTemp.replace(u'{{en}} {{Ouvrage|langue=en|', u'{{ouvrage|langue=en|')
+	PageTemp = re.sub(ur'{{en}}[ \n]*({{[Aa]rticle\|langue=en\|)', ur'\1', PageTemp)
+	PageTemp = re.sub(ur'{{en}}[ \n]*({{[Ll]ien web\|langue=en\|)', ur'\1', PageTemp)
+	PageTemp = re.sub(ur'{{en}}[ \n]*({{[Oo]uvrage\|langue=en\|)', ur'\1', PageTemp)
+	
 	# Suppression des paramètres vides en doublon
+	# à faire...
 	
 	if debogageLent:
 		print u'Fin des traductions :'
