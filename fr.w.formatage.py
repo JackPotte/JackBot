@@ -77,7 +77,7 @@ def modification(PageHS):
 	while PageTemp.find(u'{{article') != -1:
 		PageEnd = PageEnd + PageTemp[:PageTemp.find(u'{{article')+len(u'{{article')]
 		PageTemp = PageTemp[PageTemp.find(u'{{article')+len(u'{{article'):]
-		if PageTemp.find(u'éditeur=') != -1 and PageTemp.find(u'éditeur=') < PageTemp.find(u'}}') and (PageTemp.find(u'pédiorique=') == -1 or PageTemp.find(u'pédiorique=') > PageTemp.find(u'}}')) and (PageTemp.find(u'revue=') == -1 or PageTemp.find(u'revue=') > PageTemp.find(u'}}')) and (PageTemp.find(u'journal=') == -1 or PageTemp.find(u'journal=') > PageTemp.find(u'}}')):
+		if PageTemp.find(u'éditeur=') != -1 and PageTemp.find(u'éditeur=') < PageTemp.find(u'}}') and (PageTemp.find(u'périodique=') == -1 or PageTemp.find(u'périodique=') > PageTemp.find(u'}}')) and (PageTemp.find(u'revue=') == -1 or PageTemp.find(u'revue=') > PageTemp.find(u'}}')) and (PageTemp.find(u'journal=') == -1 or PageTemp.find(u'journal=') > PageTemp.find(u'}}')):
 			PageEnd = PageEnd + PageTemp[:PageTemp.find(u'éditeur=')] + u'périodique='
 			PageTemp = PageTemp[PageTemp.find(u'éditeur=')+len(u'éditeur='):]
 	PageTemp = PageEnd + PageTemp
@@ -85,11 +85,14 @@ def modification(PageHS):
 	while PageTemp.find(u'{{Article') != -1:
 		PageEnd = PageEnd + PageTemp[:PageTemp.find(u'{{Article')+len(u'{{Article')]
 		PageTemp = PageTemp[PageTemp.find(u'{{Article')+len(u'{{Article'):]
-		if PageTemp.find(u'éditeur=') != -1 and PageTemp.find(u'éditeur=') < PageTemp.find(u'}}') and (PageTemp.find(u'pédiorique=') == -1 or PageTemp.find(u'pédiorique=') > PageTemp.find(u'}}')) and (PageTemp.find(u'revue=') == -1 or PageTemp.find(u'revue=') > PageTemp.find(u'}}')) and (PageTemp.find(u'journal=') == -1 or PageTemp.find(u'journal=') > PageTemp.find(u'}}')):
+		if PageTemp.find(u'éditeur=') != -1 and PageTemp.find(u'éditeur=') < PageTemp.find(u'}}') and (PageTemp.find(u'périodique=') == -1 or PageTemp.find(u'périodique=') > PageTemp.find(u'}}')) and (PageTemp.find(u'revue=') == -1 or PageTemp.find(u'revue=') > PageTemp.find(u'}}')) and (PageTemp.find(u'journal=') == -1 or PageTemp.find(u'journal=') > PageTemp.find(u'}}')):
 			PageEnd = PageEnd + PageTemp[:PageTemp.find(u'éditeur=')] + u'périodique='
 			PageTemp = PageTemp[PageTemp.find(u'éditeur=')+len(u'éditeur='):]		
 	PageTemp = PageEnd + PageTemp
 	'''
+	
+	# Rustine pour https://fr.wikipedia.org/w/index.php?title=Achille_Varzi&diff=123170171&oldid=122929021
+	PageTemp = PageTemp.replace(u'{{lien mortarchive|',u'{{lien mort archive|')
 	
 	# Nombres
 	PageTemp = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', PageTemp)
@@ -364,13 +367,13 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'mod':
 		modification(u'Modèle:Commandes et livraisons A380')
 	elif sys.argv[1] == u'm':
-		TraitementLiens = crawlerLink(u'Modèle:cite web',u'')
+		TraitementLiens = crawlerLink(u'Modèle:périodique',u'')
 	elif sys.argv[1] == u'cat':
 		#TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec un paramètre obsolète',False,u'')
 		TraitementCategory = crawlerCat(u'Page du modèle Article comportant une erreur',False,u'')
 		#TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'Modèle:Cite tweet')
+		TraitementPage = modification(u'Baha&#239;sme')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:

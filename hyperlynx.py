@@ -66,7 +66,9 @@ ModeleEN.append(u'docu')
 ModeleFR.append(u'lien vidéo')
 ModeleEN.append(u'cite book')
 ModeleFR.append(u'ouvrage')
-limiteL = len(ModeleFR)	# Liste des modèles traduis de l'anglais (langue=en)
+limiteL = len(ModeleFR)	# Limite de la liste des modèles traduis de l'anglais (langue=en)
+
+# Modèle avec alias français
 ModeleEN.append(u'lien mort')
 ModeleFR.append(u'lien brisé')
 ModeleEN.append(u'cita web')
@@ -77,9 +79,12 @@ ModeleEN.append(u'web site')
 ModeleFR.append(u'lien web')
 ModeleEN.append(u'site web')
 ModeleFR.append(u'lien web')
-ModeleEN.append(u'Quote')
-ModeleFR.append(u'Citation bloc')
-# "Faux" modèles en anglais pour traduire leurs paramètres uniquement
+ModeleEN.append(u'périodique')
+ModeleFR.append(u'article')
+ModeleEN.append(u'quote')
+ModeleFR.append(u'citation bloc')
+
+# Modèles pour traduire leurs paramètres uniquement
 ModeleEN.append(u'lire en ligne')
 ModeleFR.append(u'lire en ligne')
 ModeleEN.append(u'dts')
@@ -593,6 +598,7 @@ def hyperlynx(PageTemp):
 				ModeleCourant = ModeleCourant.replace(u'|  =',u'|')
 				ModeleCourant = ModeleCourant.replace(u'|}}',u'}}')
 				ModeleCourant = ModeleCourant.replace(u'| }}',u'}}')
+				ModeleCourant = ModeleCourant.replace(u'||',u'|')
 				
 			if debogageLent: print FinModele
 			PageTemp = ModeleCourant + PageTemp[FinModele:]
