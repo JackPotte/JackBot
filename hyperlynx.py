@@ -598,9 +598,10 @@ def hyperlynx(PageTemp):
 				ModeleCourant = ModeleCourant.replace(u'|  =',u'|')
 				ModeleCourant = ModeleCourant.replace(u'|}}',u'}}')
 				ModeleCourant = ModeleCourant.replace(u'| }}',u'}}')
-				ModeleCourant = ModeleCourant.replace(u'||',u'|')
-				
+				if ModeleCourant.find(u'{{') == -1:	# Sans modèle inclus
+					ModeleCourant = ModeleCourant.replace(u'||',u'|')
 			if debogageLent: print FinModele
+			
 			PageTemp = ModeleCourant + PageTemp[FinModele:]
 			
 		PageTemp = PageEnd + PageTemp
