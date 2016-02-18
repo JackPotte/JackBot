@@ -590,7 +590,7 @@ def hyperlynx(PageTemp):
 						tradFr = u'éditeur'
 				elif ParamEN[p] == u'language' and (ModeleCourant.find(u'|langue=') != -1 and ModeleCourant.find(u'|langue=') < ModeleCourant.find(u'}}')):
 					tradFr = u''
-				elif ParamEN[p] == u'issue' and ModeleCourant.find(u'rticle') != -1 and ModeleCourant.find(u'rticle') < ModeleCourant.find(u'|') and (ModeleCourant.find(u'|date=') != -1 and ModeleCourant.find(u'|date=') < ModeleCourant.find(u'}}')):
+				elif ParamEN[p] == u'issue' and (ModeleCourant.find(u'|numéro=') != -1 and ModeleCourant.find(u'|numéro=') < ModeleCourant.find(u'}}')):
 					tradFr = u'date'
 				ModeleCourant = re.sub(ur'(\| *)' + ParamEN[p] + ur'( *=)', ur'\1' + tradFr + ur'\2', ModeleCourant)
 				ModeleCourant = ModeleCourant.replace(u'|=',u'|')
