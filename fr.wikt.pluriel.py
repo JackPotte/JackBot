@@ -252,8 +252,12 @@ def modification(PageHS):
 				print u' Pluriel en xs'
 				return
 			else:
+				PageEnd = PageEnd + u'\n' + PagePluriel
+				CleTri = CleDeTri.CleDeTri(PageHS)
+				if PageEnd.find(u'{{clé de tri') == -1 and CleTri != u'' and CleTri.lower() != PageHS.lower():
+					PageEnd = PageEnd +  u'\n' + CleTri
 				PageEnd = HTMLUnicode.HTMLUnicode(PageEnd)
-				sauvegarde(page2, PageEnd + u'\n' + PagePluriel, summary)
+				sauvegarde(page2, PageEnd, summary)
 			#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 			if debogageLent: print u'Fin du while'
 		if debogageLent: print u'Fin du for'

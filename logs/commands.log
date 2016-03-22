@@ -7508,3 +7508,13 @@
 2016-02-09 02:32:31 r-1 (unknown) Python 2.7 fr.w.formatage.py "txt"
 2016-02-13 13:55:52 r-1 (unknown) Python 2.7 fr.w.formatage.py "txt"
 2016-02-13 14:01:46 r-1 (unknown) Python 2.7 fr.w.formatage.py "txt"
+2016-02-20 13:41:34 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "Kosova"
+2016-02-20 13:48:36 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py
+2016-02-20 13:48:47 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "Kosova"
+2016-02-20 13:49:34 r-1 (unknown) Python 2.7 fr.w.formatage.py "txt"
+2016-02-27 12:10:42 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "txt"
+2016-02-27 12:11:05 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "txt"
+2016-02-27 12:12:21 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "txt"
+2016-03-13 11:17:44 r-1 (unknown) Python 2.7 touch.py "-lang:fr" "-family:wiktionary" "-txt:articles_fr_wiktionary.txt"
+2016-03-13 11:17:56 r-1 (unknown) Python 2.7 touch.py "-lang:fr" "-family:wiktionary" "-file:articles_fr_wiktionary.txt"
+2016-03-13 11:19:39 r-1 (unknown) Python 2.7 touch.py "-lang:fr" "-family:wiktionary" "-file:articles_fr_wiktionary.txt"

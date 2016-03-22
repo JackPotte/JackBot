@@ -768,6 +768,7 @@ Modele.append(u'instrumental')
 Modele.append(u'instruments')
 Modele.append(u'instruments de mesure')
 Modele.append(u'insultes')
+Modele.append(u'intelligence artificielle')
 Modele.append(u'interjection')
 Modele.append(u'Internet')
 Modele.append(u'internet')
@@ -1067,6 +1068,7 @@ Modele.append(u'rugby')
 Modele.append(u'running')
 Modele.append(u'saccusatif')
 Modele.append(u'salades')
+Modele.append(u'sandwitchs')
 Modele.append(u'satellites')
 Modele.append(u'saules')
 Modele.append(u'sci-fi')
@@ -1086,6 +1088,7 @@ Modele.append(u'serrurerie')
 Modele.append(u'sexe')
 Modele.append(u'sexualité')
 Modele.append(u'sigle')
+Modele.append(u'singes')
 Modele.append(u'singulare tantum')
 Modele.append(u'sinstrumental')
 Modele.append(u'skate')
@@ -2060,6 +2063,12 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{nds}}', u'bas allemand')
 		PageTemp = PageTemp.replace(u'{{nds}}', u'bas allemand')
 		PageTemp = PageTemp.replace(u'{{lb}}', u'luxembourgeois')
+		PageTemp = PageTemp.replace(u'{{sq}}', u'albanais')
+		PageTemp = PageTemp.replace(u'{{kw}}', u'cornique')
+		PageTemp = PageTemp.replace(u'{{diq}}', u'dimli (zazaki du Sud)')
+		PageTemp = PageTemp.replace(u'{{lv}}', u'letton')
+		PageTemp = PageTemp.replace(u'{{oc}}', u'occitan')
+		PageTemp = PageTemp.replace(u'{{tr}}', u'turc')
 		PageTemp = PageTemp.replace(u'|ko-hani}}', u'|ko-Hani}}')
 		PageTemp = PageTemp.replace(u'#*: {{trad-exe|fr}}', u'')
 		PageTemp = PageTemp.replace(u'{{pron|}}', u'{{pron||fr}}')
@@ -2188,10 +2197,11 @@ def modification(PageHS):
 			PageTemp = PageTemp[0:PageTemp.find(u'\n{{trad-milieu}}')] + PageTemp[PageTemp.find(u'\n{{trad-milieu}}')+len(u'\n{{trad-milieu}}'):len(PageTemp)]
 		while PageTemp.find(u'|notat=1') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'|notat=1')] + u'|nocat=1' + PageTemp[PageTemp.find(u'|notat=1')+len(u'|notat=1'):len(PageTemp)]
-		regex = ur'\{\{ISBN\|([^\}]*)\}\}'
+
+		regex = ur'\{\{ISBN\|([^\}\n]*)\}\}'
 		if re.search(regex, PageTemp):
 			PageTemp = re.sub(regex, ur'ISBN \1', PageTemp)
-		
+
 		# Modèles de son. Ex : {{écoutez | {{audio | | {{sound -> {{écouter
 		PageTemp = PageTemp.replace(u'{{pron-rég|', u'{{écouter|')
 		regex = ur'\* ?{{sound}} ?: \[\[Media:([^\|\]]*)\|[^\|\]]*\]\]'
