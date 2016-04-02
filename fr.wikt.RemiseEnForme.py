@@ -1690,9 +1690,21 @@ def modification(PageHS):
 				if PagesCleTotal.find(u'-' + PageHS[0:1].lower() + PageHS[1:len(PageHS)]) == -1: PagesCleTotal = PagesCleTotal + u'|-' + PageHS[0:1].lower() + PageHS[1:len(PageHS)]
 				if PagesCleTotal.find(PageHS[0:1].lower() + PageHS[1:len(PageHS)] + u'-') == -1: PagesCleTotal = PagesCleTotal + u'|' + PageHS[0:1].lower() + PageHS[1:len(PageHS)] + u'-'
 				if PagesCleTotal.find(u'-') != -1: PagesCleTotal = PagesCleTotal + u'|' + PagesCleTotal.replace(u'-',u'')
-				if PageHS.find(u'e') != -1: PagesCleTotal = PagesCleTotal + u'|' + PageHS[0:PageHS.find(u'e')] + u'é' + PageHS[PageHS.find(u'e')+1:len(PageHS)] + u'|' + PageHS[0:PageHS.find(u'e')] + u'è' + PageHS[PageHS.find(u'e')+1:len(PageHS)]
-				if PageHS.find(u'é') != -1: PagesCleTotal = PagesCleTotal + u'|' + PageHS[0:PageHS.find(u'é')] + u'e' + PageHS[PageHS.find(u'é')+1:len(PageHS)]
-				if PageHS.find(u'è') != -1: PagesCleTotal = PagesCleTotal + u'|' + PageHS[0:PageHS.find(u'è')] + u'e' + PageHS[PageHS.find(u'è')+1:len(PageHS)]
+				LettresDiacritiques = []
+				LettresDiacritiques.append([u'a',u'á',u'à',u'ä',u'â',u'ã'])
+				LettresDiacritiques.append([u'c',u'ç'])
+				LettresDiacritiques.append([u'e',u'é',u'è',u'ë',u'ê'])
+				LettresDiacritiques.append([u'i',u'í',u'ì',u'ï',u'î'])
+				LettresDiacritiques.append([u'n',u'ñ'])
+				LettresDiacritiques.append([u'o',u'ó',u'ò',u'ö',u'ô',u'õ'])
+				LettresDiacritiques.append([u'u',u'ú',u'ù',u'ü',u'û'])
+				for l in range(0,len(LettresDiacritiques)):
+					for d in range(0,len(LettresDiacritiques[l])):
+						if PageHS.find(LettresDiacritiques[l][d]) != -1:
+							if debogage: print u'Titre contenant : ' + LettresDiacritiques[l][d]
+							Lettre = LettresDiacritiques[l][d]
+							for d in range(0,len(LettresDiacritiques[l])):
+								PagesCleTotal = PagesCleTotal + u'|' + PageHS.replace(Lettre,LettresDiacritiques[l][d])
 				if PagesCleTotal.find(CleTri) == -1: PagesCleTotal = PagesCleTotal + u'|' + CleTri	# exception ? and PageTemp.find(u'{{langue|eo}}') == -1
 				# Filtre des pages de la liste "à voir"
 				PagesCleRestant = PagesCleTotal + u'|'
@@ -5687,7 +5699,8 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:ex',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Termes peu attestés sans langue précisée',False,u'')
+		TraitementCategorie = crawlerCat(u'ñ en français',False,u'')
+		#TraitementCategorie = crawlerCat(u'Termes peu attestés sans langue précisée',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:conj-pl',u'')
