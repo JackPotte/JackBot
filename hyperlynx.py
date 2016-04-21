@@ -584,7 +584,7 @@ def hyperlynx(PageTemp):
 					elif ModeleCourant.find(u'ien web') != -1 and ModeleCourant.find(u'ien web') < ModeleCourant.find(u'|'):
 						tradFr = u'série'
 				elif ParamEN[p] == u'publisher':
-					if (ModeleCourant.find(u'rticle') != -1 and ModeleCourant.find(u'rticle') < ModeleCourant.find(u'|')) and ModeleCourant.find(u'ériodique') == -1:
+					if (ModeleCourant.find(u'rticle') != -1 and ModeleCourant.find(u'rticle') < ModeleCourant.find(u'|')) and ModeleCourant.find(u'ériodique') == -1 and ModeleCourant.find(u'|work=') == -1:
 						tradFr = u'périodique'
 					else:
 						tradFr = u'éditeur'

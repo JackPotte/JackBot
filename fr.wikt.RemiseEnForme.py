@@ -2086,6 +2086,9 @@ def modification(PageC):
 		PageTemp = PageTemp.replace(u'#*: {{trad-exe|fr}}', u'')
 		PageTemp = PageTemp.replace(u'{{pron|}}', u'{{pron}}')
 		PageTemp = PageTemp.replace(u'{{prononciation|}}', u'{{prononciation}}')
+		PageTemp = PageTemp.replace(u'{{f}} {{fsing}}', u'{{f}}')
+		PageTemp = PageTemp.replace(u'{{m}} {{msing}}', u'{{m}}')
+		PageTemp = PageTemp.replace(u'{{vx|', u'{{vieilli|')
 		
 		# Modèle en doublon
 		regex = ur"(\{\{départements\|[^}]*\}\}) ?\{\{géographie\|[^}]*\}\}"
@@ -5739,7 +5742,7 @@ if len(sys.argv) > 1:
 		#TraitementCategorie = crawlerCat(u'Termes peu attestés sans langue précisée',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'')
 	elif sys.argv[1] == u'lien':
-		TraitementLiens = crawlerLink(u'Modèle:conj-pl',u'')
+		TraitementLiens = crawlerLink(u'Modèle:vx',u'')
 	elif sys.argv[1] == u'page':
 		TraitementPage = modification(u'абонироваться')
 	elif sys.argv[1] == u'trad':
@@ -5774,6 +5777,7 @@ else:
 	TraitementLiens = crawlerLink(u'Modèle:pron-rég',u'')
 	TraitementLiens = crawlerLink(u'Modèle:mp',u'')
 	TraitementLiens = crawlerLink(u'Modèle:fp',u'')
+	TraitementLiens = crawlerLink(u'Modèle:vx',u'')
 	TraitementLiens = crawlerLink(u'Modèle:pron-rég',u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français',False,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section',False,u'')
@@ -5803,4 +5807,6 @@ python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -nore
 python interwiki.py -lang:fr -family:wiktionary -page:"Wiktionnaire:Accueil communautaire"
 python interwiki.py -lang:fr -family:wiktionary -wiktionary -autonomous -force -usercontribs:Otourly
 python protect.py -lang:fr -family:wiktionary -cat:"Élections de patrouilleurs" -summary:"Vote archivé" -move:sysop -edit:sysop
+
+à faire vite : ajouter les groupes des verbes, les paragraphes {{S|traduction}}, et les {{pron}}/{{prononciation}}
 '''
