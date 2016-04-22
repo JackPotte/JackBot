@@ -1,4 +1,8 @@
-hewikivoyageSession=6fe238a5e80643e45ed4b466894cf6ea
+hewikivoyageSession=7uhp703skhmuo5ki1eum5k6987upuei5
+hewikivoyageUserID=1204
+hewikivoyageUserName=JackBot
 GeoIP=FR:Stains:48.9500:2.3833:v4
 UseDC=master
-WMF-Last-Access=12-Jan-2016
+forceHTTPS=true
+UseCDNCache=false
+WMF-Last-Access=22-Apr-2016

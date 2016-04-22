@@ -1,8 +1,10 @@
 cookieprefix=None
-enwikibooksSession=694550e29228bf64f5bcace0fd4b9084
+UseDC=master
+enwikibooksSession=d48qkkmj8irh0v1fpck79tkkcm6tgna0
 GeoIP=FR:Saint-denis:48.9333:2.3667:v4
-enwikibooksUserID=396820
-WMF-Last-Access=12-Jan-2016
-forceHTTPS=true
-enwikibooksToken=deleted
+WMF-Last-Access=22-Apr-2016
 enwikibooksUserName=JackBot
+enwikibooksUserID=396820
+UseCDNCache=false
+enwikibooksToken=deleted
+forceHTTPS=true

@@ -1,8 +1,9 @@
 cookieprefix=None
-WMF-Last-Access=12-Jan-2016
+WMF-Last-Access=22-Apr-2016
 GeoIP=FR:Saint-denis:48.9333:2.3667:v4
 frwikiversityUserName=JackBot
 frwikiversityUserID=8020
 UseDC=master
-frwikiversitySession=d37a2084c89f849d9e703375bfa92c50
+UseCDNCache=false
+frwikiversitySession=85mhofnvbvuoledifv2s4bi0ajsgjr7i
 forceHTTPS=true

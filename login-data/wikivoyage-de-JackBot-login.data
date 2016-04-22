@@ -1,8 +1,9 @@
 cookieprefix=None
 GeoIP=FR:Stains:48.9500:2.3833:v4
-WMF-Last-Access=12-Jan-2016
+WMF-Last-Access=22-Apr-2016
 UseDC=master
-dewikivoyageSession=3bc5c4fcac9b5e408505dff97d1f9666
+dewikivoyageSession=8gj8r6572u0vk2jltjvvmel21ag9odr4
+UseCDNCache=false
 dewikivoyageUserName=JackBot
 forceHTTPS=true
 dewikivoyageUserID=12897
