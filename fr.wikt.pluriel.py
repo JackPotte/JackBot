@@ -253,8 +253,8 @@ def modification(PageHS):
 				return
 			else:
 				PageEnd = PageEnd + u'\n' + PagePluriel
-				CleTri = CleDeTri.CleDeTri(PageHS)
-				if PageEnd.find(u'{{clé de tri') == -1 and CleTri != u'' and CleTri.lower() != PageHS.lower():
+				CleTri = CleDeTri.CleDeTri(pluriel)
+				if PageEnd.find(u'{{clé de tri') == -1 and CleTri != u'' and CleTri.lower() != pluriel.lower():
 					PageEnd = PageEnd +  u'\n{{clé de tri|' + CleTri + u'}}\n'
 				PageEnd = HTMLUnicode.HTMLUnicode(PageEnd)
 				sauvegarde(page2, PageEnd, summary)

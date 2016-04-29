@@ -1484,6 +1484,19 @@ def modification(PageC):
 	PageTemp = PageBegin
 	CleTri = CleDeTri.CleDeTri(PageC)
 	
+	# Rustine des créations de 2016
+	if PageTemp.find(u'{{S|nom|fr|flexion}}') != -1:
+		singulier = PageTemp[PageTemp.find(u'{{S|nom|fr|flexion}}'):]
+		if singulier.find(u'{{fr-rég|') != -1:
+			singulier = singulier[singulier.find(u'{{fr-rég|'):]
+			if singulier.find(u'|s=') != -1 and singulier.find(u'|s=') < singulier.find(u'}}'):
+				singulier = singulier[singulier.find(u'|s=')+3:]
+				if singulier.find(u'|') != -1 and singulier.find(u'|') < singulier.find(u'}}'):
+					singulier = singulier[:singulier.find(u'|')]
+				else:
+					singulier = singulier[:singulier.find(u'}}')]
+				PageTemp = PageTemp.replace(u'\n\n'+CleDeTri.CleDeTri(singulier),u'\n\n{{clé de tri|'+CleTri+u'}}')
+	
 	if page.namespace() == 14:
 		if debogage: print u'Catégorie'
 		# Catégorie
@@ -5744,7 +5757,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:vx',u'')
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'абонироваться')
+		TraitementPage = modification(u'véhicules métis')
 	elif sys.argv[1] == u'trad':
 		TraitementLiens = crawlerLink(u'Modèle:trad-',u'')
 	elif sys.argv[1] == u's':
