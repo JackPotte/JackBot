@@ -503,6 +503,7 @@ Modele.append(u'caténatif')
 Modele.append(u'CB')
 Modele.append(u'cépages')
 Modele.append(u'céphalopodes')
+Modele.append(u'céramique')
 Modele.append(u'céréales')
 Modele.append(u'cétacés')
 Modele.append(u'chaînes de montagnes')
@@ -511,6 +512,7 @@ Modele.append(u'charpenterie')
 Modele.append(u'chasse')
 Modele.append(u'chats')
 Modele.append(u'chaussures')
+Modele.append(u'chevaux')
 Modele.append(u'chiens')
 Modele.append(u'chim')
 Modele.append(u'chimie')
@@ -1152,6 +1154,7 @@ Modele.append(u'théorie des graphes')
 Modele.append(u'thermodynamique')
 Modele.append(u'tind')
 Modele.append(u'tissage')
+Modele.append(u'tonnellerie')
 Modele.append(u'topo')
 Modele.append(u'topographie')
 Modele.append(u'topologie')
@@ -1483,19 +1486,6 @@ def modification(PageC):
 		return
 	PageTemp = PageBegin
 	CleTri = CleDeTri.CleDeTri(PageC)
-	
-	# Rustine des créations de 2016
-	if PageTemp.find(u'{{S|nom|fr|flexion}}') != -1:
-		singulier = PageTemp[PageTemp.find(u'{{S|nom|fr|flexion}}'):]
-		if singulier.find(u'{{fr-rég|') != -1:
-			singulier = singulier[singulier.find(u'{{fr-rég|'):]
-			if singulier.find(u'|s=') != -1 and singulier.find(u'|s=') < singulier.find(u'}}'):
-				singulier = singulier[singulier.find(u'|s=')+3:]
-				if singulier.find(u'|') != -1 and singulier.find(u'|') < singulier.find(u'}}'):
-					singulier = singulier[:singulier.find(u'|')]
-				else:
-					singulier = singulier[:singulier.find(u'}}')]
-				PageTemp = PageTemp.replace(u'\n\n'+CleDeTri.CleDeTri(singulier),u'\n\n{{clé de tri|'+CleTri+u'}}')
 	
 	if page.namespace() == 14:
 		if debogage: print u'Catégorie'
