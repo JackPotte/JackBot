@@ -1,9 +1,10 @@
 cookieprefix=None
 frwikibooksUserID=14683
 GeoIP=FR:Saint-denis:48.9333:2.3667:v4
-frwikibooksSession=vc3kaibvj8spasfud5jggr127jolmtl3
-WMF-Last-Access=28-May-2016
+frwikibooksSession=prafv0tgjbhs0ep09macdcu4kl1ssn98
+WMF-Last-Access=16-Jun-2016
 UseDC=master
 frwikibooksUserName=JackBot
+UseCDNCache=false
 frwikibooksforceHTTPS=true
 forceHTTPS=true

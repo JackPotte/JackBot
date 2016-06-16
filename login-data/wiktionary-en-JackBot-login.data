@@ -1,7 +1,9 @@
 enwiktionaryUserName=JackBot
+cookieprefix=None
 GeoIP=FR:Saint-denis:48.9333:2.3667:v4
-WMF-Last-Access=28-May-2016
+WMF-Last-Access=16-Jun-2016
 UseDC=master
 enwiktionaryUserID=393984
-enwiktionarySession=6didgl3k7rdi2pp584lhe8i4ndfdagmf
+UseCDNCache=false
+enwiktionarySession=1e8qes3jgiirludmq4qb1jd9v10sitd9
 forceHTTPS=true

@@ -1,6 +1,8 @@
+UseDC=master
 ruwiktionaryUserID=32085
 GeoIP=FR:Saint-denis:48.9333:2.3667:v4
 forceHTTPS=true
-ruwiktionarySession=n4sku3ju4legqaqcqdsbdsekdblb70i7
+ruwiktionarySession=q2tehvi1111l17f08l6g1nrk8sgl0dld
 ruwiktionaryUserName=JackBot
-WMF-Last-Access=28-May-2016
+WMF-Last-Access=16-Jun-2016
+UseCDNCache=false
