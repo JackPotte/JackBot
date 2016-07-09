@@ -8001,3 +8001,6 @@
 2016-07-09 22:50:52 r-1 (unknown) Python 2.7 fr.n.bas.py "-lang:fr" "-family:wikinews"
 2016-07-09 22:50:55 r-1 (unknown) Python 2.7 fr.wikt.archive.py
 2016-07-09 22:50:57 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py
+2016-07-09 23:00:31 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "monolectique" "debug"
+2016-07-09 23:48:06 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "cat"
+2016-07-09 23:48:25 r-1 (unknown) Python 2.7 fr.wikt.RemiseEnForme.py "cat"

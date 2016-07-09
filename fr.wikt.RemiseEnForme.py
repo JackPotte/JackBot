@@ -33,7 +33,6 @@ family = "wiktionary"
 mynick = "JackBot"
 site = getSite(language,family)
 siteEN = getSite('en',family)
-debogage = False
 debogageLent = False
 TailleAnagramme = 4 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 Modele = [] # Liste des modèles du site à traiter
@@ -825,6 +824,7 @@ Modele.append(u'législation')
 Modele.append(u'légumes')
 Modele.append(u'léporidé')
 Modele.append(u'lézards')
+Modele.append(u'lexicographie')
 Modele.append(u'lianes')
 Modele.append(u'ling')
 Modele.append(u'linguistique')
@@ -5751,9 +5751,13 @@ def sauvegarde(PageCourante, Contenu, summary):
 			return
 
 # Lancement
+debogage = False
 if len(sys.argv) > 1:
 	if len(sys.argv) > 2:
-		DebutScan = sys.argv[2]
+		if sys.argv[2] == u'debug':
+			debogage = True
+		else:
+			DebutScan = sys.argv[2]
 	else:
 		DebutScan = u''
 	if sys.argv[1] == u'test':
@@ -5765,8 +5769,8 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:ex',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Verbes en russe',False,u'')
-		#TraitementCategorie = crawlerCat(u'Termes peu attestés sans langue précisée',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias',False,u'')
+		#TraitementCategorie = crawlerCat(u'Catégorie:Termes peu attestés sans langue précisée',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:vx',u'')
@@ -5808,6 +5812,7 @@ else:
 	TraitementLiens = crawlerLink(u'Modèle:pron-rég',u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français',False,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section',False,u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias',False,u'')
 '''	
 	while 1:
 		TraitementRC = crawlerRC_last_day()
