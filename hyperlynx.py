@@ -23,10 +23,10 @@ mynick = "JackBot"
 site = getSite(language,family)
 
 # Préférences
-debogage = False
 debogageLent = False
 semiauto = False
 retablirNonBrise = False	# Reteste les liens brisés
+languePage = u'en'
 
 # Modèles qui incluent des URL dans leurs pages
 ligne = 4
@@ -332,11 +332,12 @@ Balise[5][1] = u'<source'
 Balise[5][2] = u'</source' + u'>'
 Balise[6][1] = u'\n '
 Balise[6][2] = u'\n'
+'''
 if debogage == False:
 	ligneB = ligneB + 1
 	Balise[ligneB-1][1] = u'<!--'
 	Balise[ligneB-1][2] = u'-->'
-
+'''
 limiteE = 20
 Erreur = []
 Erreur.append("Error 404 (Not Found)")
@@ -488,7 +489,7 @@ TradL[17][1] = u'Arabic'
 TradL[17][2] = u'ar'
 
 # Modification du wiki
-def hyperlynx(PageTemp):
+def hyperlynx(PageTemp, debogage = False):
 	if debogage:
 		print u'------------------------------------'
 		#print time.strftime('%d-%m-%Y %H:%m:%S')
@@ -509,8 +510,8 @@ def hyperlynx(PageTemp):
 			if debogageLent: raw_input(PageTemp[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1:][:100].encode(config.console_encoding, 'replace'))
 			PageEnd = PageEnd + PageTemp[:re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1]
 			PageTemp = PageTemp[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1:]	
-			# Identification du code langue existant
-			codelangue = u'en'
+			# Identification du code langue existant dans le modèle
+			codelangue = u''
 			if PageEnd.rfind(u'{{') != -1:
 				PageDebut = PageEnd[:PageEnd.rfind(u'{{')]
 				if PageDebut.rfind(u'{{') != -1 and PageDebut.rfind(u'}}') != -1 and (PageDebut[len(PageDebut)-2:] == u'}}' or PageDebut[len(PageDebut)-3:] == u'}} '):
@@ -528,23 +529,21 @@ def hyperlynx(PageTemp):
 							PageCode = u''
 						except wikipedia.IsRedirectPage: 
 							PageCode = page2.get(get_redirect=True)
-						if debogage: raw_input(PageCode.encode(config.console_encoding, 'replace'))
-						if PageCode.find(u'Indication de langue') == -1:
-							codelangue = u'en'
-						else:
+						if debogage: print(PageCode.encode(config.console_encoding, 'replace'))
+						if PageCode.find(u'Indication de langue') != -1:
 							if len(codelangue) == 2:	# or len(codelangue) == 3: if codelangue == u'pdf': |format=codelangue, absent de {{lien web}}
 								# Retrait du modèle de langue devenu inutile
 								PageEnd = PageEnd[:PageEnd.rfind(u'{{' + codelangue + u'}}')] + PageEnd[PageEnd.rfind(u'{{' + codelangue + u'}}')+len(u'{{' + codelangue + u'}}'):]
-							else:
-								codelangue = u''
-			if codelangue != u'':
-				# Ajout du code langue dans le modèle
-				if debogage: print(u'Modèle préalable : ' + codelangue.encode(config.console_encoding, 'replace'))
-				if not re.search(u'[^}]*langu[ag]*e *=[^}]*}}', PageTemp):
-					PageTemp = u'|langue=' + codelangue + PageTemp
-				elif re.search(u'[^}]*langu[ag]*e *=[^}]*}}', PageTemp).end() > PageTemp.find(u'}}')+2:
-					PageTemp = u'|langue=' + codelangue + PageTemp
-		
+			if codelangue == u'':
+				if debogage: print u' Code langue à remplacer une fois trouvé sur la page distante...'
+				codelangue = 'JackBot'
+			# Ajout du code langue dans le modèle
+			if debogage: print u'Modèle préalable : ' + codelangue.encode(config.console_encoding, 'replace')
+			if not re.search(u'[^}]*langu[ag]*e *=[^}]*}}', PageTemp):
+				PageTemp = u'|langue=' + codelangue + PageTemp
+			elif re.search(u'[^}]*langu[ag]*e *=[^}]*}}', PageTemp).end() > PageTemp.find(u'}}')+2:
+				PageTemp = u'|langue=' + codelangue + PageTemp
+				
 		PageTemp = PageEnd + PageTemp
 		PageEnd = u''
 			
@@ -744,7 +743,7 @@ def hyperlynx(PageTemp):
 							Media = True
 					if Media == False:
 						if debogage: print(u'Recherche de la page distante')
-						htmlSource = TestURL(url)
+						htmlSource = TestURL(url, debogage)
 						if debogage: print(u'Recherche dans son contenu')
 						LienBrise = TestPage(htmlSource,url)
 				
@@ -983,7 +982,7 @@ def hyperlynx(PageTemp):
 					Param1Encode = PageTemp[0:PageTemp.find(u'|')].replace(u' ',u'_')
 				else:
 					Param1Encode = PageTemp[0:PageTemp.find(u'}}')].replace(u' ',u'_')
-				htmlSource = TestURL(TabModeles[m][2] + Param1Encode)
+				htmlSource = TestURL(TabModeles[m][2] + Param1Encode, debogage)
 				LienBrise = TestPage(htmlSource,url)
 				if LienBrise == True: PageEnd = PageEnd[0:PageEnd.rfind(u'{{' + TabModeles[m][1] + u'|')] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + TabModeles[m][2]
 			PageTemp = PageEnd + PageTemp
@@ -999,13 +998,27 @@ def hyperlynx(PageTemp):
 	PageTemp = re.sub(ur'{{(o|O)uvrage(\||\n[^}]*)\| *lire en ligne *= *([\||}|\n]+)', ur'{{\1uvrage\2\3', PageTemp)
 	# Idem dans {{article}} : "éditeur" vide bloque "périodique", "journal" ou "revue"
 	PageTemp = re.sub(ur'{{(a|A)rticle(\||\n[^}]*)\| *éditeur *= *([\||}|\n]+)', ur'{{\1rticle\2\3', PageTemp)
+			
+	# Recherche de la langue sur le web
+	if htmlSource.find('html lang=') != -1:
+		languePage = htmlSource[htmlSource.find('html lang=')+len('html lang='):]
+		if languePage[:1] == '"':
+			languePage = languePage[1:]
+			languePage = languePage[:languePage.find('"')]
+		elif languePage[:1] == "'":
+			languePage = languePage[1:]
+			languePage = languePage[:languePage.find("'")]
+		else:
+			languePage = u'en'
+	if debogage: print u' Langue de la page distante : ' + languePage
+	PageTemp = PageTemp.replace(u'|langue=JackBot',u'|langue='+languePage)
 	
 	PageEnd = PageEnd + PageTemp
-	if debogage: raw_input(u'Fin hyperlynx.py')
+	if debogage: print(u'Fin hyperlynx.py')
 	#if PageEnd != PageBegin: sauvegarde(page,PageEnd, summary)
 	return PageEnd
 
-def TestURL(url):
+def TestURL(url, debogage = False):
 	# Renvoie la page web d'une URL dès qu'il arrive à la lire.
 	#debogage = False
 	if debogage: print u'--------'
@@ -1393,7 +1406,7 @@ def TestURL(url):
 	if debogage: print Method + u' Fin du test d\'existance du site'
 	return u''
 
-def TestPage(htmlSource,url):
+def TestPage(htmlSource, url, debogage = False):
 	LienBrise = False
 	try:
 		#if debogageLent == True and htmlSource != u'' and htmlSource is not None: raw_input (htmlSource[0:1000])
@@ -1407,7 +1420,7 @@ def TestPage(htmlSource,url):
 			LienBrise = True
 		else:
 			if debogage: print u' Page non vide'
-			#print htmlSource.find(u'texte sur cette page')
+			# Recherche des erreurs
 			for e in range(0,limiteE):
 				if debogageLent: print Erreur[e]
 				if htmlSource.find(Erreur[e]) != -1 and not re.search("\n[^\n]*if[^\n]*" + Erreur[e], htmlSource):
@@ -1451,6 +1464,7 @@ def TestPage(htmlSource,url):
 						LienBrise = True
 						if debogage: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
 						break
+
 	except UnicodeError:
 		if debogage: print u'UnicodeError lors de la lecture'
 		LienBrise = False

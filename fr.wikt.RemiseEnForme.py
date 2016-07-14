@@ -1553,11 +1553,11 @@ def modification(PageC):
 		#PageTemp = re.sub(ur'{{S\|([^}]+)}}', ur'{{S|' + ur'\1'.lower() + ur'}}', PageTemp)
 		for f in re.findall("{{S\|([^}]+)}}", PageTemp):
 			PageTemp = PageTemp.replace(f, f.lower())
-		# Alias peu intuitifs
+		# Alias peu intuitifs des sections avec langue
 		PageTemp = PageTemp.replace(u'{{S|adj|', u'{{S|adjectif|')
 		PageTemp = PageTemp.replace(u'{{S|adjectifs|', u'{{S|adjectif|')
 		PageTemp = PageTemp.replace(u'{{S|adj-num|', u'{{S|adjectif numéral|')
-		PageTemp = PageTemp.replace(u'{{S|adv|', u'{{S|adverbe}}')
+		PageTemp = PageTemp.replace(u'{{S|adv|', u'{{S|adverbe|')
 		PageTemp = PageTemp.replace(u'{{S|interj|', u'{{S|interjection|')
 		PageTemp = PageTemp.replace(u'{{S|locution phrase|', u'{{S|locution-phrase|')
 		PageTemp = PageTemp.replace(u'{{S|nom commun', u'{{S|nom|')
@@ -1566,7 +1566,41 @@ def modification(PageC):
 		PageTemp = PageTemp.replace(u'{{S|phrase|', u'{{S|locution-phrase|')
 		PageTemp = PageTemp.replace(u'{{S|symb|', u'{{S|symbole|')
 		PageTemp = PageTemp.replace(u'{{S|verb|', u'{{S|verbe|')
+		# Alias peu intuitifs des sections sans langue
+		PageTemp = re.sub(ur'{{S\|abr(é|e)v\|?[a-z]*}}', u'{{S|abréviations}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|anagr\|?[a-z]*}}', u'{{S|anagrammes}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|ant\|?[a-z]*}}', u'{{S|antonymes}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|app\|?[a-z]*}}', u'{{S|apparentés}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|apr\|?[a-z]*}}', u'{{S|apparentés}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|compos\|?[a-z]*}}', u'{{S|composés}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|dial\|?[a-z]*}}', u'{{S|variantes dialectales}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|dimin\|?[a-z]*}}', u'{{S|diminutifs}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|d(é|e)riv(é|e)\|?[a-z]*}}', u'{{S|dérivés}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|drv\|?[a-z]*}}', u'{{S|dérivés}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|drv\-int\|?[a-z]*}}', u'{{S|dérivés autres langues}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|(é|e)tym\|?[a-z]*}}', u'{{S|étymologie}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|exp\|?[a-z]*}}', u'{{S|expressions}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|gent\|?[a-z]*}}', u'{{S|gentilés}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|holo\|?[a-z]*}}', u'{{S|holonymes}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|homo\|?[a-z]*}}', u'{{S|homophones}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|hyper\|?[a-z]*}}', u'{{S|hyperonymes}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|hypo\|?[a-z]*}}', u'{{S|hyponymes}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|m(é|e)ro\|?[a-z]*}}', u'{{S|méronymes}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|paro\|?[a-z]*}}', u'{{S|paronymes}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|pron\|?[a-z]*}}', u'{{S|prononciation}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|q\-syn\|?[a-z]*}}', u'{{S|quasi-synonymes}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|quasi(\-| )syn\|?[a-z]*}}', u'{{S|quasi-synonymes}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|r(é|e)f\|?[a-z]*}}', u'{{S|références}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|syn\|?[a-z]*}}', u'{{S|synonymes}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|trad\|?[a-z]*}}', u'{{S|traductions}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|trad\-trier\|?[a-z]*}}', u'{{S|traductions à trier}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|var\|?[a-z]*}}', u'{{S|variantes}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|var(\-| )ortho\|?[a-z]*}}', u'{{S|variantes orthographiques}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|voc\|?[a-z]*}}', u'{{S|vocabulaire}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|voir\|?[a-z]*}}', u'{{S|voir aussi}}', PageTemp)
 		
+		'''
+		raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 		PageTemp = PageTemp.replace(u'{{S|abrév}}', u'{{S|abréviations}}')
 		PageTemp = PageTemp.replace(u'{{S|anagramme}}', u'{{S|anagrammes}}')
 		PageTemp = PageTemp.replace(u'{{S|anagr}}', u'{{S|anagrammes}}')
@@ -1574,10 +1608,16 @@ def modification(PageC):
 		PageTemp = PageTemp.replace(u'{{S|anto}}', u'{{S|antonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|antonyme}}', u'{{S|antonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|app}}', u'{{S|apparentés}}')
+		PageTemp = PageTemp.replace(u'{{S|apparenté}}', u'{{S|apparentés}}')
 		PageTemp = PageTemp.replace(u'{{S|apr}}', u'{{S|apparentés}}')
 		PageTemp = PageTemp.replace(u'{{S|apparentés étymologiques}}', u'{{S|apparentés}}')
 		PageTemp = PageTemp.replace(u'{{S|compos}}', u'{{S|composés}}')
+		PageTemp = PageTemp.replace(u'{{S|composé}}', u'{{S|composés}}')
+		PageTemp = PageTemp.replace(u'{{S|dial}}', u'{{S|variantes dialectales}}')
 		PageTemp = PageTemp.replace(u'{{S|dimin}}', u'{{S|diminutifs}}')
+		PageTemp = PageTemp.replace(u'{{S|diminutif}}', u'{{S|diminutifs}}')
+		PageTemp = PageTemp.replace(u'{{S|dérivé}}', u'{{S|dérivés}}')
+		PageTemp = PageTemp.replace(u'{{S|dérivéés}}', u'{{S|dérivés}}')
 		PageTemp = PageTemp.replace(u'{{S|derives}}', u'{{S|dérivés}}')
 		PageTemp = PageTemp.replace(u'{{S|drv|en}}', u'{{S|dérivés}}')
 		PageTemp = PageTemp.replace(u'{{S|drv}}', u'{{S|dérivés}}')
@@ -1585,21 +1625,30 @@ def modification(PageC):
 		PageTemp = PageTemp.replace(u'{{S|etym}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|étym}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|etymologie}}', u'{{S|étymologie}}')
+		PageTemp = PageTemp.replace(u'{{S|étymologies}}', u'{{S|étymologie}}')
 		PageTemp = PageTemp.replace(u'{{S|exp}}', u'{{S|expressions}}')
 		PageTemp = PageTemp.replace(u'{{S|expr}}', u'{{S|expressions}}')
 		PageTemp = PageTemp.replace(u'{{S|expression}}', u'{{S|expressions}}')
 		PageTemp = PageTemp.replace(u'{{S|gent}}', u'{{S|gentilés}}')
+		PageTemp = PageTemp.replace(u'{{S|gentilé}}', u'{{S|gentilés}}')
 		PageTemp = PageTemp.replace(u'{{S|holo}}', u'{{S|holonymes}}')
+		PageTemp = PageTemp.replace(u'{{S|holonyme}}', u'{{S|holonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|homo}}', u'{{S|homophones}}')
+		PageTemp = PageTemp.replace(u'{{S|homophone}}', u'{{S|homophones}}')
 		PageTemp = PageTemp.replace(u'{{S|homonymes}}', u'{{S|homophones}}')
 		PageTemp = PageTemp.replace(u'{{S|hyper}}', u'{{S|hyperonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|hyperonyme}}', u'{{S|hyperonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|hypo}}', u'{{S|hyponymes}}')
+		PageTemp = PageTemp.replace(u'{{S|hyponyme}}', u'{{S|hyponymes}}')
 		PageTemp = PageTemp.replace(u'{{S|méro}}', u'{{S|méronymes}}')
+		PageTemp = PageTemp.replace(u'{{S|méronyme}}', u'{{S|méronymes}}')
 		PageTemp = PageTemp.replace(u'{{S|paro}}', u'{{S|paronymes}}')
+		PageTemp = PageTemp.replace(u'{{S|paronyme}}', u'{{S|paronymes}}')
 		PageTemp = PageTemp.replace(u'{{S|pron}}', u'{{S|prononciation}}')
 		PageTemp = PageTemp.replace(u'{{S|prononciations}}', u'{{S|prononciation}}')
 		PageTemp = PageTemp.replace(u'{{S|q-syn}}', u'{{S|quasi-synonymes}}')
+		PageTemp = PageTemp.replace(u'{{S|quasi-synonyme}}', u'{{S|quasi-synonymes}}')
+		PageTemp = PageTemp.replace(u'{{S|quasi synonymes}}', u'{{S|quasi-synonymes}}')
 		PageTemp = PageTemp.replace(u'{{S|réf}}', u'{{S|références}}')
 		PageTemp = PageTemp.replace(u'{{S|référence}}', u'{{S|références}}')
 		PageTemp = PageTemp.replace(u'{{S|syn}}', u'{{S|synonymes}}')
@@ -1608,20 +1657,15 @@ def modification(PageC):
 		PageTemp = PageTemp.replace(u'{{S|trad}}', u'{{S|traductions}}')
 		PageTemp = PageTemp.replace(u'{{S|traduction}}', u'{{S|traductions}}')
 		PageTemp = PageTemp.replace(u'{{S|var}}', u'{{S|variantes orthographiques}}')
-		#PageTemp = PageTemp.replace(u'{{S|variantes ortho}}', u'{{S|variantes orthographiques}}')
+		PageTemp = PageTemp.replace(u'{{S|variante}}', u'{{S|variantes orthographiques}}')
+		PageTemp = PageTemp.replace(u'{{S|variantes ortho}}', u'{{S|variantes orthographiques}}')
+		PageTemp = PageTemp.replace(u'{{S|var ortho}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|var-ortho}}', u'{{S|variantes orthographiques}}')
-		PageTemp = PageTemp.replace(u'{{S|var-ortho|fr}}', u'{{S|variantes orthographiques}}')
-		PageTemp = PageTemp.replace(u'{{S|var-ortho|en}}', u'{{S|variantes orthographiques}}')
 		PageTemp = PageTemp.replace(u'{{S|voc}}', u'{{S|vocabulaire}}')
-		PageTemp = PageTemp.replace(u'{{S|voc|en}}', u'{{S|vocabulaire}}')
 		PageTemp = PageTemp.replace(u'{{S|vocabulaire apparenté par le sens}}', u'{{S|vocabulaire}}')
 		PageTemp = PageTemp.replace(u'{{S|voir}}', u'{{S|voir aussi}}')
-		PageTemp = PageTemp.replace(u'{{S|voir|en}}', u'{{S|voir aussi}}')
-		
-		# à faire : redévelopper pour toutes les sections et codes langues, comme avant {{S}}
-		PageTemp = PageTemp.replace(u'{{S|synonymes|fr}}', u'{{S|synonymes}}')
-		PageTemp = PageTemp.replace(u'{{S|dérivés|fr}}', u'{{S|dérivés}}')
-		
+		'''
+
 		# Formatage général des traductions
 		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier}}}}', u'{{trad-trier}}\n{{trad-début}}')
 		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier|fr}}}}', u'{{trad-trier}}\n{{trad-début}}')
@@ -5753,13 +5797,12 @@ def sauvegarde(PageCourante, Contenu, summary):
 # Lancement
 debogage = False
 if len(sys.argv) > 1:
+	DebutScan = u''
 	if len(sys.argv) > 2:
 		if sys.argv[2] == u'debug':
 			debogage = True
 		else:
 			DebutScan = sys.argv[2]
-	else:
-		DebutScan = u''
 	if sys.argv[1] == u'test':
 		TraitementPage = modification(u'User:' + mynick + u'/test')
 	elif sys.argv[1] == u'txt': 
@@ -5775,7 +5818,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:vx',u'')
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'véhicules métis')
+		TraitementPage = modification(u'abzüglich')
 	elif sys.argv[1] == u'trad':
 		TraitementLiens = crawlerLink(u'Modèle:trad-',u'')
 	elif sys.argv[1] == u's':
@@ -5812,6 +5855,7 @@ else:
 	TraitementLiens = crawlerLink(u'Modèle:pron-rég',u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français',False,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section',False,u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections avec titre inconnu',False,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias',False,u'')
 '''	
 	while 1:

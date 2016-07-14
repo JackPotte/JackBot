@@ -47,8 +47,8 @@ def modification(PageHS):
 	
 	# Traitements des URL et leurs modèles
 	if debogage == True: print u'Test des URL'
-	PageTemp = hyperlynx.hyperlynx(PageTemp)
-	if debogage == True: raw_input (u'--------------------------------------------------------------------------------------------')
+	PageTemp = hyperlynx.hyperlynx(PageTemp, debogage)
+	if debogage == True: print (u'--------------------------------------------------------------------------------------------')
 	if PageTemp != PageBegin:
 		summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/11#Identifier les liens brisés (le retour ;-))|Vérification des liens externes]]'
 		summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/12#Remplacer_les_.7B.7BCite_web.7D.7D_par_.7B.7BLien_web.7D.7D|traduction de leurs modèles]]'
@@ -348,7 +348,14 @@ def sauvegarde(PageCourante, Contenu, summary):
 			return
 
 # Lancement
+debogage = False
 if len(sys.argv) > 1:
+	DebutScan = u''
+	if len(sys.argv) > 2:
+		if sys.argv[2] == u'debug':
+			debogage = True
+		else:
+			DebutScan = sys.argv[2]
 	if sys.argv[1] == u'test':
 		TraitementPage = modification(u'Utilisateur:' + mynick + u'/test')
 	elif sys.argv[1] == u'test2':
