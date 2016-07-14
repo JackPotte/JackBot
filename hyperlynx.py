@@ -1000,6 +1000,7 @@ def hyperlynx(PageTemp, debogage = False):
 	PageTemp = re.sub(ur'{{(a|A)rticle(\||\n[^}]*)\| *éditeur *= *([\||}|\n]+)', ur'{{\1rticle\2\3', PageTemp)
 			
 	# Recherche de la langue sur le web
+	languePage = u'en'
 	if htmlSource.find('html lang=') != -1:
 		languePage = htmlSource[htmlSource.find('html lang=')+len('html lang='):]
 		if languePage[:1] == '"':
@@ -1008,8 +1009,6 @@ def hyperlynx(PageTemp, debogage = False):
 		elif languePage[:1] == "'":
 			languePage = languePage[1:]
 			languePage = languePage[:languePage.find("'")]
-		else:
-			languePage = u'en'
 	if debogage: print u' Langue de la page distante : ' + languePage
 	PageTemp = PageTemp.replace(u'|langue=JackBot',u'|langue='+languePage)
 	

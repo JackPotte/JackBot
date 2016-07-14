@@ -8,12 +8,19 @@ import CleDeTri, HTMLUnicode
 from wikipedia import *
 
 # Déclaration
+debogageLent = False
 mynick = "JackBot"
 language = "fr"
 family = "wiktionary"
 site = getSite(language,family)
 Langue = u'fr'
-debogageLent = False
+
+site1 = getSite(language1,family)
+language2 = "en"
+site = getSite(language2,family)
+#template = u'past tense of'
+template = u'en-past of'
+texte = u'Passé de'
 
 # Modification du wiki
 def modification(PageHS):
@@ -265,13 +272,6 @@ def modification(PageHS):
 
 		
 		
-
-site1 = getSite(language1,family)
-language2 = "en"
-site = getSite(language2,family)
-#template = u'past tense of'
-template = u'en-past of'
-texte = u'Passé de'
 
 def modificationAnglais(Page2):
 	page2 = Page(site,Page2)
