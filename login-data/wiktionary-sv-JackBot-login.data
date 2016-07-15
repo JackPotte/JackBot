@@ -1,6 +1,8 @@
-svwiktionarySession=b9oghlaa3u869j52idq86fvcdfe8umk8
+svwiktionarySession=9ksln0jsfa1i6032ics4mt5bvdh3d6tv
 svwiktionaryUserName=JackBot
-WMF-Last-Access=14-Jul-2016
-GeoIP=FR:Saint-denis:48.9333:2.3667:v4
+WMF-Last-Access=15-Jul-2016
+UseDC=master
+UseCDNCache=false
 svwiktionaryUserID=6619
+GeoIP=FR:Saint-denis:48.9333:2.3667:v4
 forceHTTPS=true
