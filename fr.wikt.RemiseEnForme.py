@@ -551,6 +551,7 @@ Modele.append(u'constr')
 Modele.append(u'construction')
 Modele.append(u'contemporain')
 Modele.append(u'copropriété')
+Modele.append(u'cordonnerie')
 Modele.append(u'cosm')
 Modele.append(u'cosmétologie')
 Modele.append(u'couche application')
@@ -1596,6 +1597,7 @@ def modification(PageC):
 		PageTemp = re.sub(ur'{{S\|trad\|?[a-z]*}}', u'{{S|traductions}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|trad\-trier\|?[a-z]*}}', u'{{S|traductions à trier}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|var\|?[a-z]*}}', u'{{S|variantes}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|dial\|?[a-z]*}}', u'{{S|variantes dialectales}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|var[a-z]*(\-| )ortho\|?[a-z]*}}', u'{{S|variantes orthographiques}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|voc\|?[a-z]*}}', u'{{S|vocabulaire}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|voir\|?[a-z]*}}', u'{{S|voir aussi}}', PageTemp)
@@ -5886,4 +5888,5 @@ python interwiki.py -lang:fr -family:wiktionary -wiktionary -autonomous -force -
 python protect.py -lang:fr -family:wiktionary -cat:"Élections de patrouilleurs" -summary:"Vote archivé" -move:sysop -edit:sysop
 
 à faire vite : ajouter les groupes des verbes, les paragraphes {{S|traduction}}, et les {{pron}}/{{prononciation}}
+-debug=2 : plusieurs valid par page
 '''
