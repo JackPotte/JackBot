@@ -1596,7 +1596,7 @@ def modification(PageC):
 		PageTemp = re.sub(ur'{{S\|trad\|?[a-z]*}}', u'{{S|traductions}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|trad\-trier\|?[a-z]*}}', u'{{S|traductions à trier}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|var\|?[a-z]*}}', u'{{S|variantes}}', PageTemp)
-		PageTemp = re.sub(ur'{{S\|var(\-| )ortho\|?[a-z]*}}', u'{{S|variantes orthographiques}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|var[a-z]*(\-| )ortho\|?[a-z]*}}', u'{{S|variantes orthographiques}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|voc\|?[a-z]*}}', u'{{S|vocabulaire}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|voir\|?[a-z]*}}', u'{{S|voir aussi}}', PageTemp)
 		

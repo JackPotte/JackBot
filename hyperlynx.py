@@ -495,6 +495,7 @@ def hyperlynx(PageTemp, debogage = False):
 		#print time.strftime('%d-%m-%Y %H:%m:%S')
 	summary = u'Vérification des URL'
 	PageEnd = u''
+	htmlSource = ''
 	url = u''
 	PageTemp = PageTemp.replace(u'[//https://', u'[https://')
 	PageTemp = PageTemp.replace(u'[//http://', u'[http://')
