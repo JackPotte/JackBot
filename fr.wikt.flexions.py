@@ -1,6 +1,6 @@
 ﻿#!/usr/bin/env python
 # coding: utf-8
-# Ce script crée les flexions à partir des singuliers + d'au moins une URL d'attestation
+# Ce script crée les flexions à partir des modèles présents dans les singuliers, et d'au moins une URL d'attestation
 
 # Importation des modules
 import catlib, pagegenerators, os, codecs, urllib
@@ -8,19 +8,33 @@ import CleDeTri, HTMLUnicode
 from wikipedia import *
 
 # Déclaration
-debogageLent = False
+debogageLent = True
 mynick = "JackBot"
 language = "fr"
 family = "wiktionary"
 site = getSite(language,family)
 Langue = u'fr'
 
-site1 = getSite(language1,family)
-language2 = "en"
-site = getSite(language2,family)
-#template = u'past tense of'
-template = u'en-past of'
-texte = u'Passé de'
+# Français
+Modele = [] # Liste des modèles du site à traiter
+Param = [] # Paramètre du lemme associé
+Modele.append(u'fr-rég-x')
+Param.append(u's')
+Modele.append(u'fr-rég')
+Param.append(u's')
+Modele.append(u'fr-accord-cons')
+Param.append(u'ms')
+# à faire : ajouter Catégorie:Modèles d’accord en français
+#Modele.append(u'fr-accord-en')
+#Modele.append(u'fr-accord-rég')
+
+# Anglais
+Modele.append(u'en-nom-rég')
+Param.append(u'sing')
+Definition.append(u'Pluriel de')
+Modele.append(u'en-conj-rég')
+Param.append(u'sing')
+Definition.append(u'Passé de') # Présent...
 
 # Modification du wiki
 def modification(PageHS):
@@ -34,15 +48,6 @@ def modification(PageHS):
 	else:
 		print u' Page inexistante'
 		return
-	Modele = [] # Liste des modèles du site à traiter
-	Param = [] # Paramètre du lemme associé
-	Modele.append(u'fr-rég-x')
-	Param.append(u's')
-	Modele.append(u'fr-rég')
-	Param.append(u's')
-	Modele.append(u'fr-accord-cons')
-	Param.append(u'ms')
-	# à faire : ajouter Catégorie:Modèles d’accord en français
 
 	try:
 		PageSing = page.get()
@@ -70,14 +75,15 @@ def modification(PageHS):
 		# Parcours de la page pour chaque modèle
 		if debogageLent: print ' début du for ' + str(m)
 		while PageSing.find(Modele[m] + u'|') == -1 and PageSing.find(Modele[m] + u'}') == -1 and m < len(Modele)-1:
-			if debogage: print u' Modèle ' + Modele[m] + u' absent l 58'
+			if debogageLent: print u' Modèle ' + Modele[m] + u' absent l 80'
 			m += 1
 		if m == len(Modele):
 			break
 		else:
 			if debogage: print Modele[m].encode(config.console_encoding, 'replace') #+ u' présent'
 			PageTemp = PageSing
-		
+		#Definition[m]
+		#siteExt = getSite(Modele[:2],family)
 		while PageTemp.find(Modele[m]) != -1:
 			if len(Modele[m]) < 3:
 				if debogage: print u' bug'
@@ -267,153 +273,6 @@ def modification(PageHS):
 			#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 			if debogageLent: print u'Fin du while'
 		if debogageLent: print u'Fin du for'
-
-		
-
-		
-		
-
-def modificationAnglais(Page2):
-	page2 = Page(site,Page2)
-	page1 = Page(site1,Page2)
-	if debogage: print (Page2.encode(config.console_encoding, 'replace'))
-	if page2.exists() and page2.namespace() == 0 and not page1.exists():
-		try: PageTemp = page2.get()
-		except wikipedia.NoPage:
-			print u' No page'
-			return
-		except wikipedia.IsRedirectPage:
-			print " Redirect page"
-			return
-		except wikipedia.InvalidPage:
-			print " Invalid page"
-			return
-		except wikipedia.ServerError:
-			print " Server error"
-			return
-		# Nature grammaticale
-		PageTemp2 = PageTemp[:PageTemp.find(template)]
-		# Code langue
-		PageTemp = PageTemp[PageTemp.find(template)+len(template)+1:len(PageTemp)]
-		if PageTemp.find("lang=") != -1 and PageTemp.find("lang=") < PageTemp.find(u'}}'):
-			PageTemp2 = PageTemp[PageTemp.find("lang=")+5:len(PageTemp)]
-			if PageTemp2.find(u'|') != -1 and PageTemp2.find(u'|') < PageTemp2.find(u'}}'):
-				codelangue = PageTemp2[:PageTemp2.find("|")]
-				PageTemp = PageTemp[:PageTemp.find("lang=")] + PageTemp[PageTemp.find("lang=")+5+PageTemp2.find("|"):len(PageTemp)]
-			else:
-				codelangue = PageTemp2[:PageTemp2.find("}}")]
-				PageTemp = PageTemp[:PageTemp.find("lang=")] + PageTemp[PageTemp.find("lang=")+5+PageTemp2.find("}"):len(PageTemp)]
-			if codelangue == u'': codelangue = u'en'
-			elif codelangue == u'Italian': codelangue = u'it'
-			elif codelangue == u'Irish': codelangue = u'ga'
-			elif codelangue == u'German': codelangue = u'de'
-			elif codelangue == u'Middle English': codelangue = u'enm'
-			elif codelangue == u'Old English': codelangue = u'ang'
-			elif codelangue == u'Dutch': codelangue = u'nl'
-			elif codelangue == u'Romanian': codelangue = u'ro'
-			elif codelangue == u'Spanish': codelangue = u'es'
-			elif codelangue == u'Catalan': codelangue = u'ca'
-			elif codelangue == u'Portuguese': codelangue = u'pt'
-			elif codelangue == u'Russian': codelangue = u'ru'
-			elif codelangue == u'French': codelangue = u'fr'
-			elif codelangue == u'Scots': codelangue = u'sco'
-			elif codelangue == u'Chinese': codelangue = u'zh'
-			elif codelangue == u'Mandarin': codelangue = u'zh'
-			elif codelangue == u'Japanese': codelangue = u'ja'
-		else:
-			codelangue = u'en'
-		if debogage: print u' ' + codelangue
-		
-		while PageTemp[:1] == u' ' or PageTemp[:1] == u'|':
-			PageTemp = PageTemp[1:len(PageTemp)]
-		# Lemme
-		if PageTemp.find(u']]') != -1 and PageTemp.find(u']]') < PageTemp.find(u'}}'): # Si on est dans un lien
-			mot = PageTemp[:PageTemp.find(u']]')+2]
-		elif PageTemp.find(u'|') != -1 and PageTemp.find(u'|') < PageTemp.find(u'}}'):
-			mot = PageTemp[:PageTemp.find(u'|')] # A faire : si dièse on remplace en même temps que les codelangue ci-dessous, à patir d'un tableau des langues
-		else:
-			mot = PageTemp[:PageTemp.find(u'}}')]
-		if mot[:2] != u'[[': mot = u'[[' + mot + u']]'
-		
-		# Demande de Lmaltier : on ne crée que les flexions des lemmes existant
-		page3 = Page(site1,mot[2:len(mot)-2])
-		if page3.exists() == u'False':
-			print 'Page du lemme absente du Wiktionnaire'
-			return
-		try:
-			PageLemme = page3.get()
-		except wikipedia.NoPage:
-			print u' No page'
-			return
-		except wikipedia.IsRedirectPage:
-			print " Redirect page"
-			return
-		except wikipedia.InvalidPage:
-			print " Invalid page"
-			return
-		except wikipedia.ServerError:
-			print " Server error"
-			print 
-		if PageLemme.find(u'{{langue|' + codelangue + u'}}') == -1:
-			print ' Paragraphe du lemme absent du Wiktionnaire'
-			return
-		else:
-			# Prononciation
-			PageLemme = PageLemme[PageLemme.find(u'{{langue|' + codelangue + u'}}'):]
-			#raw_input(PageLemme.encode(config.console_encoding, 'replace'))
-			if PageLemme.rfind(u'{{pron|') != -1:
-				pron = PageLemme[PageLemme.find(u'{{pron|')+len(u'{{pron|'):len(PageLemme)]
-				if pron.find(u'}}') < pron.find(u'|') or pron.find(u'|') == -1:
-					pron = pron[:pron.find(u'}}')]
-				else:
-					pron = pron[:pron.find(u'|')]
-			elif PageLemme.find(u'{{en-conj-rég') != -1:
-				pron = PageLemme[PageLemme.find(u'{{en-conj-rég')+len(u'{{en-conj-rég'):len(PageLemme)]
-				if pron.find(u'|inf.pron=') != -1 and pron.find(u'|inf.pron=') < pron.find(u'}}'):
-					pron = pron[pron.find(u'|inf.pron=')+len(u'|inf.pron='):]
-					if pron.find(u'}}') < pron.find(u'|') or pron.find(u'|') == -1:
-						pron = pron[:pron.find(u'}}')]
-					else:
-						pron = pron[:pron.find(u'|')]
-				else:
-					pron = u''
-			else:
-				pron = u''
-			# Suffixe du -ed
-			l = pron[-1:]
-			if l in (u'f', u'k', u'p', u't', u'θ', u's', u'ʃ'):
-				pron = pron + u't'
-			elif l in (u't', u'd'):
-				pron = pron + u'ɪd' 
-			else:
-				pron = pron + u'd'
-			if debogage: print pron.encode(config.console_encoding, 'replace')
-		
-		if PageTemp2.rfind(u'===') == -1: return
-		else:
-			PageTemp3 = PageTemp2[:PageTemp2.rfind(u'===')]
-			nature = PageTemp3[PageTemp3.rfind(u'===')+3:len(PageTemp3)]
-		if nature == 'Noun':
-			nature = u'S|nom'
-		elif nature == 'Adjective':
-			nature = u'S|adjectif'
-		elif nature == 'Pronoun':
-			nature = u'S|pronom'
-		elif nature == 'Verb':
-			nature = u'S|verbe'
-		else:
-			print ' Nature inconnue'
-			return
-		if debogage: print nature
-
-		# Interwikis
-		interwikiInside = pywikibot.getLanguageLinks(PageTemp, site)
-		interwiki = wikipedia.replaceLanguageLinks(u'', interwikiInside, site)
-		while interwiki.find(u'[[wiktionary:') != -1:
-			interwiki = interwiki[:interwiki.find(u'[[wiktionary:')+2] + interwiki[interwiki.find(u'[[wiktionary:')+len(u'[[wiktionary:'):len(interwiki)]
-		Page1 = u'=={{langue|' + codelangue + u'}}==\n=== {{' + nature + u'|' + codelangue + u'|flexion}} ===\n\'\'\'' + page2.title() + u'\'\'\' {{pron|'+pron+'|' + codelangue + u'}}\n# \'\'Prétérit de\'\' ' + mot + u'.\n# \'\'Participe passé de\'\' ' + mot + u'.\n\n[[en:' + page2.title() + u']]\n' + trim(interwiki)
-		summary = u'Importation depuis [[en:' + page2.title() + u']]'
-		sauvegarde(page1, Page1, summary)
 
 		
 def getParameter(Page, p):				
@@ -644,6 +503,8 @@ if len(sys.argv) > 1:
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:pl-cour',u'')
+		#TraitementLiens = crawlerLink(u'Modèle:fr-accord-cons',u'')
+		#TraitementLiens = crawlerLink(u'Modèle:fr-accord-al',u'')
 	elif sys.argv[1] == u'p':
 		TraitementLiens = modification(u'arrière-arrière-grand-père')
 	elif sys.argv[1] == u'cat':
@@ -653,10 +514,14 @@ if len(sys.argv) > 1:
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
-	#TraitementLiens = crawlerLink(u'Modèle:fr-accord-cons',u'')
-	TraitementLiens = crawlerLink(u'Modèle:fr-accord-al',u'')
-# python touch.py -lang:fr -family:wiktionary -cat:"Pluriels manquants en français"
+	# Traitement quotidien
+	#TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Flexions manquantes',True,u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Pluriels manquants en français',False,u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Participes présents manquants en anglais‎',False,u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Prétérits et participes passés manquants en anglais‎',False,u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Troisièmes personnes du singulier manquantes en anglais‎',False,u'')
+
 # à faire :
-#  if patrolled depuis 24h. puis touch.py
-#  Lancer depuis cat pour traiter tout modèle ?
+#  à chaque fois : python touch.py -lang:fr -family:wiktionary -cat:"Pluriels manquants en français"
+#  if patrolled depuis 24h (fouillez la table du replica).
 #  déterminer la flexion à partir de https://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Pr%C3%A9t%C3%A9rits_et_participes_pass%C3%A9s_manquants_en_anglais

@@ -1051,6 +1051,7 @@ Modele.append(u'propriété')
 Modele.append(u'protéines')
 Modele.append(u'protocoles')
 Modele.append(u'prov')
+Modele.append(u'proverbe')
 Modele.append(u'proverbes')
 Modele.append(u'proverbial')
 Modele.append(u'psych')
@@ -1592,7 +1593,7 @@ def modification(PageC):
 		PageTemp = re.sub(ur'{{S\|pron\|?[a-z]*}}', u'{{S|prononciation}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|q\-syn\|?[a-z]*}}', u'{{S|quasi-synonymes}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|quasi(\-| )syn\|?[a-z]*}}', u'{{S|quasi-synonymes}}', PageTemp)
-		PageTemp = re.sub(ur'{{S\|r(é|e)f\|?[a-zé]*}}', u'{{S|références}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|r(é|e)f[a-zé]*\|?[a-z]*}}', u'{{S|références}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|syn\|?[a-z]*}}', u'{{S|synonymes}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|trad\|?[a-z]*}}', u'{{S|traductions}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|trad\-trier\|?[a-z]*}}', u'{{S|traductions à trier}}', PageTemp)
@@ -5859,6 +5860,7 @@ else:
 	TraitementCategorie = crawlerCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français',False,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section',False,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections avec titre inconnu',False,u'')
+	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus',False,u'')
 	TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias',False,u'')
 '''	
 	while 1:
@@ -5889,4 +5891,5 @@ python protect.py -lang:fr -family:wiktionary -cat:"Élections de patrouilleurs"
 
 à faire vite : ajouter les groupes des verbes, les paragraphes {{S|traduction}}, et les {{pron}}/{{prononciation}}
 -debug=2 : plusieurs valid par page
+lancer les .ogg
 '''
