@@ -1582,7 +1582,7 @@ def modification(PageC):
 		PageTemp = re.sub(ur'{{S\|compos(és)?\|?[a-zé]*}}', u'{{S|composés}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|dial\|?[a-z]*}}', u'{{S|variantes dialectales}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|dimin(inutifs)?\|?[a-z]*}}', u'{{S|diminutifs}}', PageTemp)
-		PageTemp = re.sub(ur'{{S\|d(é|e)riv(é|e)\|?[a-z]*}}', u'{{S|dérivés}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|d(é|e)riv(é|e)s?\|?[a-z]*}}', u'{{S|dérivés}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|drv\|?[a-z]*}}', u'{{S|dérivés}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|dérivés int\|?[a-z]*}}', u'{{S|dérivés autres langues}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|drv\-int\|?[a-z]*}}', u'{{S|dérivés autres langues}}', PageTemp)
@@ -1604,9 +1604,9 @@ def modification(PageC):
 		PageTemp = re.sub(ur'{{S\|trad\-trier\|?[a-z]*}}', u'{{S|traductions à trier}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|var(iantes)?\|?[a-z]*}}', u'{{S|variantes}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|variantes dial\|?[a-z]*}}', u'{{S|variantes dialectales}}', PageTemp)
-		PageTemp = re.sub(ur'{{S\|var[a-z]*(\-| )ortho\|?[a-z]*}}', u'{{S|variantes orthographiques}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|var[a-z]*(\-| )ortho(graphiques)?\|?[a-z]*}}', u'{{S|variantes orthographiques}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\|voc(abulaire)?\|?[a-z]*}}', u'{{S|vocabulaire}}', PageTemp)
-		PageTemp = re.sub(ur'{{S\|voir\|?[a-z]*}}', u'{{S|voir aussi}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\|voir( aussi)?\|?[a-z]*}}', u'{{S|voir aussi}}', PageTemp)
 		
 		'''
 		raw_input(PageTemp.encode(config.console_encoding, 'replace'))
