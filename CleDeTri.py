@@ -109,7 +109,7 @@ def CleDeTri(PageTitre):
 		elif PageTitre[lettre:lettre+1] == u'ź' or PageTitre[lettre:lettre+1] == u'ż' or PageTitre[lettre:lettre+1] == u'ž' or PageTitre[lettre:lettre+1] == u'ƶ' or PageTitre[lettre:lettre+1] == u'ƹ' or PageTitre[lettre:lettre+1] == u'ƺ' or PageTitre[lettre:lettre+1] == u'ǯ' or PageTitre[lettre:lettre+1] == u'ȥ' or PageTitre[lettre:lettre+1] == u'ɀ' or PageTitre[lettre:lettre+1] == u'Ź' or PageTitre[lettre:lettre+1] == u'Ż' or PageTitre[lettre:lettre+1] == u'Ž' or PageTitre[lettre:lettre+1] == u'Ƶ' or PageTitre[lettre:lettre+1] == u'Ʒ' or PageTitre[lettre:lettre+1] == u'Ƹ' or PageTitre[lettre:lettre+1] == u'Ǯ' or PageTitre[lettre:lettre+1] == u'Ȥ':
 			PageT = PageT + "z"
 			Cle = "yes"
-		elif PageTitre[lettre:lettre+1] == u'’' or PageTitre[lettre:lettre+1] == u'ʼ' or PageTitre[lettre:lettre+1] == u'\'':
+		elif PageTitre[lettre:lettre+1] == u'’' or PageTitre[lettre:lettre+1] == u'\'':	# pb en breton pour : or PageTitre[lettre:lettre+1] == u'ʼ'
 			PageT = PageT + ""
 			Cle = "yes"
 		elif PageTitre[lettre:lettre+1] == u'\\' or PageTitre[lettre:lettre+1] == u'/' or PageTitre[lettre:lettre+1] == u'×' or PageTitre[lettre:lettre+1] == u'·' or PageTitre[lettre:lettre+1] == u'...' or PageTitre[lettre:lettre+1] == u'-' or PageTitre[lettre:lettre+1] == u'\'' or PageTitre[lettre:lettre+1] == u'.' or PageTitre[lettre:lettre+1] == u',' or PageTitre[lettre:lettre+1] == u'(' or PageTitre[lettre:lettre+1] == u')':

@@ -369,6 +369,11 @@ Modele.append(u'plus rare')
 limit3 = len(Modele)
 Modele.append(u'pron')
 Modele.append(u'écouter')
+Modele.append(u'référence nécessaire')
+Modele.append(u'réf?')
+Modele.append(u'réf ?')
+Modele.append(u'source?')
+Modele.append(u'réfnéc')
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_domaine_d'utilisation
 Modele.append(u'1ergroupe')
 Modele.append(u'2egroupe')
@@ -963,6 +968,7 @@ Modele.append(u'paléographie')
 Modele.append(u'paléontol')
 Modele.append(u'paléontologie')
 Modele.append(u'palindrome')
+Modele.append(u'palmiers')
 Modele.append(u'papeterie')
 Modele.append(u'papèterie')
 Modele.append(u'papillons')
@@ -1575,6 +1581,7 @@ def modification(PageC):
 		# Alias peu intuitifs des sections sans langue
 		PageTemp = re.sub(ur'{{S\| ?abr(é|e)v(iations)?\|?[a-z ]*}}', u'{{S|abréviations}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?anagr(ammes)?\|?[a-z ]*}}', u'{{S|anagrammes}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\| ?anciennes orthographes?\|?[a-z ]*}}', u'{{S|anciennes orthographes}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?ant(onymes)?\|?[a-z ]*}}', u'{{S|antonymes}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?app(arentés)?\|?[a-zé]*}}', u'{{S|apparentés}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?apr\|?[a-zé]*}}', u'{{S|apparentés}}', PageTemp)
@@ -1608,7 +1615,12 @@ def modification(PageC):
 		PageTemp = re.sub(ur'{{S\| ?variantes dial\|?[a-z ]*}}', u'{{S|variantes dialectales}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?var[a-z]*(\-| )ortho(graphiques)?\|?[a-z ]*}}', u'{{S|variantes orthographiques}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?voc(abulaire)?\|?[a-z ]*}}', u'{{S|vocabulaire}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\| ?vocabulaire apparenté\|?[a-z ]*}}', u'{{S|vocabulaire}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?voir( aussi)?\|?[a-z ]*}}', u'{{S|voir aussi}}', PageTemp)
+		
+		# Lua à revoir pour interjections
+		'''if PageC.find(u' ') != -1:
+			PageTemp = PageTemp.replace(u'|locution=oui}}', u'}}')'''
 
 		# Formatage général des traductions
 		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier}}}}', u'{{trad-trier}}\n{{trad-début}}')
@@ -3035,6 +3047,16 @@ def modification(PageC):
 								
 					#elif Modele[p] == u'fr-rég' or Modele[p] == u'fr-inv': synchro de la pronociation avec {{pron|
 					
+					elif Modele[p] == u'référence nécessaire' or Modele[p] == u'réf?' or Modele[p] == u'réf ?' or Modele[p] == u'source?' or Modele[p] == u'réfnéc':
+						PageTemp2 = PageTemp[position+1:len(PageTemp)]
+						if PageTemp2.find("lang=") == -1 or PageTemp2.find("lang=") > PageTemp2.find("}}"):
+							PageEnd = PageEnd + PageTemp[:position] + u'|lang=' + codelangue + PageTemp[position:PageTemp.find("}}")+2]
+							PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
+							break
+						PageEnd = PageEnd + PageTemp[:PageTemp.find("}}")+2]
+						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
+						break
+
 					elif Modele[p] == u'm' or Modele[p] == u'f':
 						if trad == u'true' or (codelangue != u'en' and codelangue != u'zh' and codelangue != u'ja' and codelangue != u'ko'):
 							PageEnd = PageEnd + PageTemp[0:PageTemp.find("}}")+2]
@@ -5084,7 +5106,11 @@ def modification(PageC):
 							if debogageLent: print u'  ' + str(Section.index(TitreSection))
 							if debogageLent: print PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace')
 							TitreTemp = PageC
-							if codelangue == u'es':
+							if codelangue == u'br':
+								if TitreTemp.find(u'cʼh') !=-1: TitreTemp = TitreTemp.replace(u'cʼh',u'c€h')
+								if TitreTemp.find(u'cʼh'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'cʼh'.upper(),u'c€h')
+								
+							elif codelangue == u'es':
 								if TitreTemp.find(u'ñ') !=-1: TitreTemp = TitreTemp.replace(u'ñ',u'n€')
 								if TitreTemp.find(u'ñ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ñ'.upper(),u'n€')
 							
@@ -5756,13 +5782,14 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:ex',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus',False,u'')
+		#TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections de type avec locution forcée',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Termes peu attestés sans langue précisée',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:vx',u'')
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'gastéropode')
+		TraitementPage = modification(u'moualcʼh')
 	elif sys.argv[1] == u'trad':
 		TraitementLiens = crawlerLink(u'Modèle:trad-',u'')
 	elif sys.argv[1] == u's':
