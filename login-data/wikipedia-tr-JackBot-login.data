@@ -1,7 +1,8 @@
 trwikiUserID=310639
 trwikiUserName=JackBot
 GeoIP=FR:Stains:48.9500:2.3833:v4
-trwikiSession=688o35vo6pd96pd6m1sts67m55vcsjln
-WMF-Last-Access=28-Jul-2016
+trwikiSession=dq0t2lqvtf583v2t8aich7u134ru8k2p
+WMF-Last-Access=14-Aug-2016
 UseDC=master
+UseCDNCache=false
 forceHTTPS=true

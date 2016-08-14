@@ -1,10 +1,10 @@
 cookieprefix=None
-frwikisourceToken=deleted
 GeoIP=FR:Saint-denis:48.9333:2.3667:v4
-frwikisourceUserID=15519
-WMF-Last-Access=18-Jul-2016
+frwikisourceToken=deleted
+WMF-Last-Access=14-Aug-2016
 frwikisourceUserName=JackBot
 UseDC=master
 UseCDNCache=false
-frwikisourceSession=laied8u7mg6o537mr653t0ufkuaclmb6
+frwikisourceUserID=15519
+frwikisourceSession=dupn8p5guqen0anhe0hpbtfah6jumguf
 forceHTTPS=true

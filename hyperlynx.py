@@ -271,12 +271,12 @@ ParamEN.append(u'publicació')
 ParamFR.append(u'éditeur')
 ParamEN.append(u'editorial')
 ParamFR.append(u'journal')
-ParamEN.append(u'archivedate')
-ParamFR.append(u'en ligne le')
 ParamEN.append(u'series')
 ParamFR.append(u'collection')
 ParamEN.append(u'agency')
 ParamFR.append(u'auteur institutionnel')
+#ParamEN.append(u'archivedate')
+#ParamFR.append(u'en ligne le')	# remplace la date=
 
 limiteP = len(ParamEN)
 if limiteP != len(ParamFR):

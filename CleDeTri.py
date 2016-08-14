@@ -200,3 +200,4 @@ def CleDeTri(PageTitre):
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
 	
+# à faire : tsolyáni, {{clé de tri|dhu'onikh}}<!-- exception à la règle de la clé de tri car "'" est une lettre à part entière en tsolyáni -->
