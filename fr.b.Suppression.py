@@ -166,3 +166,4 @@ python imagecopy.py -lang:en -family:wikibooks -transcludes:GFDL -always
 python delete.py -lang:fr -family:wikibooks -cat:"Image présente sur Commons" -summary:"Transféré sur Commons"
 python replace.py -lang:commons -family:commons -cat:"Étude sur l'enseignement et l'apprentissage" "{{No license since|month=August|day=2|year=2014}}" "{{PD-self}}"
 '''
+#à faire : suppression auto si plus de page liée

@@ -1,8 +1,8 @@
 tawikiUserName=JackBot
 GeoIP=FR:Stains:48.9500:2.3833:v4
-WMF-Last-Access=14-Aug-2016
+WMF-Last-Access=28-Aug-2016
 UseDC=master
-forceHTTPS=true
+tawikiSession=3l5bldg5vpkcjv4ah7pp7bdb8e9enp39
 UseCDNCache=false
 tawikiUserID=22417
-tawikiSession=s408f3dbcs81kcfar3kgfukfe0mip1f4
+forceHTTPS=true

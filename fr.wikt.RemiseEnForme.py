@@ -372,6 +372,8 @@ Modele.append(u'écouter')
 Modele.append(u'référence nécessaire')
 Modele.append(u'réf?')
 Modele.append(u'réf ?')
+Modele.append(u'refnec')
+Modele.append(u'réfnéc')
 Modele.append(u'source?')
 Modele.append(u'réfnéc')
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_domaine_d'utilisation
@@ -1613,10 +1615,12 @@ def modification(PageC):
 		PageTemp = re.sub(ur'{{S\| ?traductions à trier\|?[a-z ]*}}', u'{{S|traductions à trier}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?var(iantes)?\|?[a-z]*}}', u'{{S|variantes}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?variantes dial\|?[a-z ]*}}', u'{{S|variantes dialectales}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\| ?variantes dialectales\|?[a-z ]*}}', u'{{S|variantes dialectales}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?var[a-z]*(\-| )ortho(graphiques)?\|?[a-z ]*}}', u'{{S|variantes orthographiques}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?voc(abulaire)?\|?[a-z ]*}}', u'{{S|vocabulaire}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?vocabulaire apparenté\|?[a-z ]*}}', u'{{S|vocabulaire}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?voir( aussi)?\|?[a-z ]*}}', u'{{S|voir aussi}}', PageTemp)
+		PageTemp = PageTemp.replace(u'==== {{S|phrases|fr}} ====', u'==== {{S|phrases}} ====')
 		
 		# Lua à revoir pour interjections
 		'''if PageC.find(u' ') != -1:
@@ -2115,6 +2119,8 @@ def modification(PageC):
 		PageTemp = PageTemp.replace(u'{{f}} {{fsing}}', u'{{f}}')
 		PageTemp = PageTemp.replace(u'{{m}} {{msing}}', u'{{m}}')
 		PageTemp = PageTemp.replace(u'{{vx|', u'{{vieilli|')
+		PageTemp = PageTemp.replace(u'{{Citation needed}}', u'{{réf ?}}')
+		PageTemp = PageTemp.replace(u'{{Référence nécessaire}}', u'{{référence nécessaire}}')
 		
 		# Modèle en doublon
 		regex = ur"(\{\{départements\|[^}]*\}\}) ?\{\{géographie\|[^}]*\}\}"
@@ -3047,7 +3053,7 @@ def modification(PageC):
 								
 					#elif Modele[p] == u'fr-rég' or Modele[p] == u'fr-inv': synchro de la pronociation avec {{pron|
 					
-					elif Modele[p] == u'référence nécessaire' or Modele[p] == u'réf?' or Modele[p] == u'réf ?' or Modele[p] == u'source?' or Modele[p] == u'réfnéc':
+					elif Modele[p] == u'référence nécessaire' or Modele[p] == u'réf?' or Modele[p] == u'réf ?' or Modele[p] == u'refnec' or Modele[p] == u'réfnéc' or Modele[p] == u'source?' or Modele[p] == u'réfnéc':
 						PageTemp2 = PageTemp[position+1:len(PageTemp)]
 						if PageTemp2.find("lang=") == -1 or PageTemp2.find("lang=") > PageTemp2.find("}}"):
 							PageEnd = PageEnd + PageTemp[:position] + u'|lang=' + codelangue + PageTemp[position:PageTemp.find("}}")+2]

@@ -16,8 +16,9 @@ site = getSite(language,family)
 Langue = u'fr'
 
 # Français
-Modele = [] # Liste des modèles du site à traiter
-Param = [] # Paramètre du lemme associé
+Modele = [] 	# Liste des modèles du site à traiter
+Param = [] 		# Paramètre du lemme associé
+Definition = []	# Ligne de définition déduite du modèle
 Modele.append(u'fr-rég-x')
 Param.append(u's')
 Modele.append(u'fr-rég')
@@ -38,6 +39,7 @@ Definition.append(u'Passé de') # Présent...
 
 # Modification du wiki
 def modification(PageHS):
+	if debogageLent: debogage = True
 	if debogage: print u'------------------------------------'
 	print(PageHS.encode(config.console_encoding, 'replace'))
 	page = Page(site,PageHS)
@@ -109,7 +111,7 @@ def modification(PageHS):
 				
 			PageTemp = PageTemp[PageTemp.find(Modele[m])+len(Modele[m]):]
 			suffixe = getParameter(PageTemp, u'inv')
-			singulier = getParameter(PageTemp, u's')
+			singulier = getParameter(PageTemp, Param[m])
 			pluriel = u''
 			if suffixe != u'':
 				if singulier == u'':
@@ -183,94 +185,99 @@ def modification(PageHS):
 				except UnicodeEncodeError:
 					print u' Prononciation à encoder'
 			
-			# h aspiré
-			H = u''
-			if PageTemp.find(u'|prefpron={{h aspiré') != -1 and PageTemp.find(u'|prefpron={{h aspiré') < PageTemp.find(u'}}'): H = u'|prefpron={{h aspiré}}'
-			if PageTemp.find(u'|préfpron={{h aspiré') != -1 and PageTemp.find(u'|préfpron={{h aspiré') < PageTemp.find(u'}}'): H = u'|préfpron={{h aspiré}}'
-			# genre
-			genre = u''
-			PageTemp2 = PageTemp[PageTemp.find(u'\n')+1:len(PageTemp)]
-			while PageTemp2[:1] == u'[' or PageTemp2[:1] == u'\n' and len(PageTemp2) > 1: PageTemp2 = PageTemp2[PageTemp2.find(u'\n')+1:len(PageTemp2)]
-			if PageTemp2.find(u'{{m}}') != -1 and PageTemp2.find(u'{{m}}') < PageTemp2.find(u'\n'): genre = u' {{m}}'	
-			if PageTemp2.find(u'{{f}}') != -1 and PageTemp2.find(u'{{f}}') < PageTemp2.find(u'\n'): genre = u' {{f}}'
-			MF = u''
-			if PageTemp2.find(u'{{mf}}') != -1 and PageTemp2.find(u'{{mf}}') < PageTemp2.find(u'\n'):
-				genre = u' {{mf}}'
-				MF = u'|mf=oui'
-				if PageSing.find(u'|mf=') == -1:
-					PageSing = PageSing[:PageSing.find(Modele[m])+len(Modele[m])] + u'|mf=oui' + PageSing[PageSing.find(Modele[m])+len(Modele[m]):len(PageSing)]
-					sauvegarde(page, PageSing, u'|mf=oui')
-			if PageTemp.find(u'|mf=') != -1 and PageTemp.find(u'|mf=') < PageTemp.find(u'}}'): MF = u'|mf=oui' 
-			# Pluriel
-			summary = u'Création du pluriel de [[' + PageHS + u']]'
-			if pluriel == u'':
-				if (PageTemp.find(u'|p=') != -1 and PageTemp.find(u'|p=') < PageTemp.find(u'}}')):
-					pluriel = PageTemp[PageTemp.find(u'|p=')+3:PageTemp.find(u'}}')]
-					if pluriel.find(u'|') != -1: pluriel = pluriel[:pluriel.find(u'|')]
-				if not pluriel:
-					if Modele[m][-1:] == u'x':
-						pluriel = PageHS + u'x'
-					else:
-						pluriel = PageHS + u's'
-				if (pluriel[-2:] == u'ss' or pluriel.find(u'{') != -1) and suffixe == u'':
-					print u' pluriel en -ss'
-					return
-				if debogageLent:
-					print ' Paramètre du modèle du lemme : ' + PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace')
-			
-			page2 = Page(site,pluriel)
-			if page2.exists():
-				try:
-					PagePluriel = page2.get()
-				except wikipedia.NoPage:
-					print u' NoPage l 120'
-					return
-				except wikipedia.IsRedirectPage:
-					print u' IsRedirectPage l 123'
-					return
-				except wikipedia.BadTitle:
-					print u' BadTitle l 126'
-					return
-				except wikipedia.InvalidPage:
-					print u' InvalidPage l 129'
-					return
-				except wikipedia.ServerError:
-					print u' ServerError l 132'
-					return
-				if PagePluriel.find(u'{{langue|' + Langue + u'}}') != -1:
-					if debogage:
-						print u' Pluriel existant l 135'
-						print pluriel.encode(config.console_encoding, 'replace')
-					else:
-						break
-			else:
-				if debogage: print u' Pluriel introuvable l 138'
-				PagePluriel = u''
-			
-			# **************** Pluriel 1 ****************
-			if debogage: print u' Pluriel 1'
-			Modele = u'{{' + Modele[m] + pronM + H + MF + '|' + Param[m] + u'=' + PageHS
-			if pluriel != PageHS + u's' and pluriel != PageHS + u'x':
-				Modele += u'|p={{subst:PAGENAME}}'
-			Modele += u'}}'
-			PageEnd = u'== {{langue|fr}} ==\n=== {{S|' + nature + u'|fr|flexion}} ===\n' + Modele + u'\n\'\'\'' + pluriel + u'\'\'\' {{pron' + pronM + '|fr}}' + genre + u'\n# \'\'Pluriel de\'\' [[' + PageHS +']].\n'
-			while PageEnd.find(u'{{pron|fr}}') != -1:
-				PageEnd = PageEnd[:PageEnd.find(u'{{pron|fr}}')+7] + u'|' + PageEnd[PageEnd.find(u'{{pron|fr}}')+7:len(PageEnd)]
+			if Modele[m][:3] == u'fr-':
+				# h aspiré
+				H = u''
+				if PageTemp.find(u'|prefpron={{h aspiré') != -1 and PageTemp.find(u'|prefpron={{h aspiré') < PageTemp.find(u'}}'): H = u'|prefpron={{h aspiré}}'
+				if PageTemp.find(u'|préfpron={{h aspiré') != -1 and PageTemp.find(u'|préfpron={{h aspiré') < PageTemp.find(u'}}'): H = u'|préfpron={{h aspiré}}'
+				# genre
+				genre = u''
+				PageTemp2 = PageTemp[PageTemp.find(u'\n')+1:len(PageTemp)]
+				while PageTemp2[:1] == u'[' or PageTemp2[:1] == u'\n' and len(PageTemp2) > 1: PageTemp2 = PageTemp2[PageTemp2.find(u'\n')+1:len(PageTemp2)]
+				if PageTemp2.find(u'{{m}}') != -1 and PageTemp2.find(u'{{m}}') < PageTemp2.find(u'\n'): genre = u' {{m}}'	
+				if PageTemp2.find(u'{{f}}') != -1 and PageTemp2.find(u'{{f}}') < PageTemp2.find(u'\n'): genre = u' {{f}}'
+				MF = u''
+				if PageTemp2.find(u'{{mf}}') != -1 and PageTemp2.find(u'{{mf}}') < PageTemp2.find(u'\n'):
+					genre = u' {{mf}}'
+					MF = u'|mf=oui'
+					if PageSing.find(u'|mf=') == -1:
+						PageSing = PageSing[:PageSing.find(Modele[m])+len(Modele[m])] + u'|mf=oui' + PageSing[PageSing.find(Modele[m])+len(Modele[m]):len(PageSing)]
+						sauvegarde(page, PageSing, u'|mf=oui')
+				if PageTemp.find(u'|mf=') != -1 and PageTemp.find(u'|mf=') < PageTemp.find(u'}}'): MF = u'|mf=oui' 
+				# Pluriel
+				summary = u'Création du pluriel de [[' + PageHS + u']]'
+				if pluriel == u'':
+					if (PageTemp.find(u'|p=') != -1 and PageTemp.find(u'|p=') < PageTemp.find(u'}}')):
+						pluriel = PageTemp[PageTemp.find(u'|p=')+3:PageTemp.find(u'}}')]
+						if pluriel.find(u'|') != -1: pluriel = pluriel[:pluriel.find(u'|')]
+					if not pluriel:
+						if Modele[m][-1:] == u'x':
+							pluriel = PageHS + u'x'
+						else:
+							pluriel = PageHS + u's'
+					if (pluriel[-2:] == u'ss' or pluriel.find(u'{') != -1) and suffixe == u'':
+						print u' pluriel en -ss'
+						return
+					if debogageLent:
+						print ' Paramètre du modèle du lemme : ' + PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace')
+				
+				page2 = Page(site,pluriel)
+				if page2.exists():
+					try:
+						PagePluriel = page2.get()
+					except wikipedia.NoPage:
+						print u' NoPage l 120'
+						return
+					except wikipedia.IsRedirectPage:
+						print u' IsRedirectPage l 123'
+						return
+					except wikipedia.BadTitle:
+						print u' BadTitle l 126'
+						return
+					except wikipedia.InvalidPage:
+						print u' InvalidPage l 129'
+						return
+					except wikipedia.ServerError:
+						print u' ServerError l 132'
+						return
+					if PagePluriel.find(u'{{langue|' + Langue + u'}}') != -1:
+						if debogage:
+							print u' Pluriel existant l 135'
+							print pluriel.encode(config.console_encoding, 'replace')
+						else:
+							break
+				else:
+					if debogage: print u' Pluriel introuvable l 138'
+					PagePluriel = u''
+				
+				# **************** Pluriel 1 ****************
+				if debogage: print u' Pluriel 1'
+				Modele = u'{{' + Modele[m] + pronM + H + MF + '|' + Param[m] + u'=' + PageHS
+				if pluriel != PageHS + u's' and pluriel != PageHS + u'x':
+					Modele += u'|p={{subst:PAGENAME}}'
+				Modele += u'}}'
+				PageEnd = u'== {{langue|fr}} ==\n=== {{S|' + nature + u'|fr|flexion}} ===\n' + Modele + u'\n\'\'\'' + pluriel + u'\'\'\' {{pron' + pronM + '|fr}}' + genre + u'\n# \'\'Pluriel de\'\' [[' + PageHS +']].\n'
+				while PageEnd.find(u'{{pron|fr}}') != -1:
+					PageEnd = PageEnd[:PageEnd.find(u'{{pron|fr}}')+7] + u'|' + PageEnd[PageEnd.find(u'{{pron|fr}}')+7:len(PageEnd)]
 
-			if pluriel[len(pluriel)-2:len(pluriel)] == u'ss':
-				PageSing = PageSing[:PageSing.find(Modele[m])+len(Modele[m])] + u'|' + Param[m] + u'=' + pluriel[:len(pluriel)-2] + PageSing[PageSing.find(Modele[m])+len(Modele[m]):len(PageSing)]
-				sauvegarde(page, PageSing, u'{{' + Modele[m] + u'|s=...}}')
-			elif pluriel[len(pluriel)-2:len(pluriel)] == u'xs':
-				print u' Pluriel en xs'
-				return
-			else:
-				PageEnd = PageEnd + u'\n' + PagePluriel
-				CleTri = CleDeTri.CleDeTri(pluriel)
-				if PageEnd.find(u'{{clé de tri') == -1 and CleTri != u'' and CleTri.lower() != pluriel.lower():
-					PageEnd = PageEnd +  u'\n{{clé de tri|' + CleTri + u'}}\n'
-				PageEnd = HTMLUnicode.HTMLUnicode(PageEnd)
-				sauvegarde(page2, PageEnd, summary)
-			#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
+				if pluriel[len(pluriel)-2:len(pluriel)] == u'ss':
+					PageSing = PageSing[:PageSing.find(Modele[m])+len(Modele[m])] + u'|' + Param[m] + u'=' + pluriel[:len(pluriel)-2] + PageSing[PageSing.find(Modele[m])+len(Modele[m]):len(PageSing)]
+					sauvegarde(page, PageSing, u'{{' + Modele[m] + u'|s=...}}')
+				elif pluriel[len(pluriel)-2:len(pluriel)] == u'xs':
+					print u' Pluriel en xs'
+					return
+				else:
+					PageEnd = PageEnd + u'\n' + PagePluriel
+					CleTri = CleDeTri.CleDeTri(pluriel)
+					if PageEnd.find(u'{{clé de tri') == -1 and CleTri != u'' and CleTri.lower() != pluriel.lower():
+						PageEnd = PageEnd +  u'\n{{clé de tri|' + CleTri + u'}}\n'
+					PageEnd = HTMLUnicode.HTMLUnicode(PageEnd)
+					sauvegarde(page2, PageEnd, summary)
+				#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
+				
+			elif Modele[m][:3] == u'en-':
+				if debogage: print 'anglais'
+				
 			if debogageLent: print u'Fin du while'
 		if debogageLent: print u'Fin du for'
 

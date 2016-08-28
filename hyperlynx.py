@@ -1011,7 +1011,11 @@ def hyperlynx(PageTemp, debogage = False):
 			languePage = languePage[1:]
 			languePage = languePage[:languePage.find("'")]
 	if debogage: print u' Langue de la page distante : ' + languePage
-	PageTemp = PageTemp.replace(u'|langue=JackBot',u'|langue='+languePage)
+	try:
+		PageTemp = PageTemp.replace(u'|langue=JackBot',u'|langue='+languePage)
+	except UnicodeDecodeError:
+		if debogage: print Method + u' : UnicodeEncodeError'
+		PageTemp = PageTemp.replace(u'|langue=JackBot',u'|langue=en')
 	
 	PageEnd = PageEnd + PageTemp
 	if debogage: print(u'Fin hyperlynx.py')
