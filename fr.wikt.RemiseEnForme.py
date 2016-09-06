@@ -2977,17 +2977,18 @@ def modification(PageC):
 
 					if Modele[p] == u'term' or Modele[p] == u'terme' or Modele[p] == u'term_lien' or Modele[p] == u'régio' or Modele[p] == u'région':
 						ModeleT = PageTemp[PageTemp.find("|")+1:PageTemp.find("}}")]
-						for p2 in range(1,limit6):
-							if Modele[p2] == ModeleT or Modele[p2] == ModeleT[:1].lower() + ModeleT[1:] or u'génie ' + Modele[p2] == ModeleT or u'Génie ' + Modele[p2] == ModeleT:
-								if p2 >= limit25 and p2 < limit3:
-									PageEnd = PageEnd + Modele[p2] + "}}"
-								elif p2 >= limit3:
-									if EstCodeLangue == "false":
-										PageEnd = PageEnd + Modele[p2] + "|nocat=1}}"
-									else:
-										PageEnd = PageEnd + Modele[p2] + "|" + codelangue + "}}"
-								PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
-								break							
+						if ModeleT != u'non standard':
+							for p2 in range(1,limit6):
+								if Modele[p2] == ModeleT or Modele[p2] == ModeleT[:1].lower() + ModeleT[1:] or u'génie ' + Modele[p2] == ModeleT or u'Génie ' + Modele[p2] == ModeleT:
+									if p2 >= limit25 and p2 < limit3:
+										PageEnd = PageEnd + Modele[p2] + "}}"
+									elif p2 >= limit3:
+										if EstCodeLangue == "false":
+											PageEnd = PageEnd + Modele[p2] + "|nocat=1}}"
+										else:
+											PageEnd = PageEnd + Modele[p2] + "|" + codelangue + "}}"
+									PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
+									break							
 						break
 					elif Modele[p] == u'pron' or Modele[p] == u'phon' or Modele[p] == u'dénominal de' or Modele[p] == u'déverbal de' or Modele[p] == u'déverbal' or Modele[p] == u'superlatif de' or Modele[p] == u'comparatif de' or Modele[p] == u'déverbal sans suffixe' or Modele[p] == u'abréviation de':
 						if codelangue != u'conv':

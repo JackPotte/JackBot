@@ -39,6 +39,13 @@ def modification(PageHS):
 		summary += ', retrait des palettes'
 		PageTemp = re.sub(regex, ur'', PageTemp)
 	PageTemp = PageTemp.replace(u'{{PDC}}', u'profondeur de champ')
+	PageTemp = PageTemp.replace(u'[[Catégorie:{{PAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
+	PageTemp = PageTemp.replace(u'[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
+	PageTemp = PageTemp.replace(u'{{BookCat}}', u'{{AutoCat}}')
+	PageTemp = PageTemp.replace(u'{{reflist}}', u'{{Références}}')
+	PageTemp = PageTemp.replace(u'{{Reflist}}', u'{{Références}}')
+	PageTemp = PageTemp.replace(u'<references/>', u'{{Références}}')
+	PageTemp = PageTemp.replace(u'<references />', u'{{Références}}')
 	
 	# Traitement des hyperliens
 	PageTemp = hyperlynx.hyperlynx(PageTemp)
@@ -48,12 +55,14 @@ def modification(PageHS):
 		PageEnd = PageEnd + PageTemp[:PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')]
 		PageTemp = PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'):PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie')] + PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}'):]
 	
+	''' Ne convient pas pour les biographies https://fr.wikibooks.org/w/index.php?title=Photographie/Personnalit%C3%A9s/B/Pierre_Berdoy&diff=prev&oldid=526479
 	regex = ur'()\n{{DEFAULTSORT[^}]*}}'
 	if re.search(regex, PageTemp):
 		PageTemp = re.sub(regex, ur'\1', PageTemp)
 	regex = ur'()\n{{defaultsort[^}]*}}'
 	if re.search(regex, PageTemp):
 		PageTemp = re.sub(regex, ur'\1', PageTemp)
+	'''
 	PageEnd = PageEnd + PageTemp
 	if PageEnd != PageBegin: sauvegarde(page,PageEnd,summary)
 
@@ -233,7 +242,8 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'cat':
 		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
 	elif sys.argv[1] == u'lien':
-		TraitementLiens = crawlerLink(u'Modèle:cite books',u'')
+		TraitementLiens = crawlerLink(u'Modèle:Reflist',u'')
+		TraitementLiens = crawlerLink(u'Modèle:BookCat',u'')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:

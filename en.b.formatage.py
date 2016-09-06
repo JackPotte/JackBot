@@ -30,10 +30,12 @@ def modification(PageHS):
 	PageEnd = u''
 	
 	# Traitement des modèles
-	# BookCat ?
-	
-	# Traitement des hyperliens EN ANGLAIS
-	PageTemp = hyperlynx.hyperlynx(PageTemp)
+	PageTemp = PageTemp.replace(u'[[Category:{{PAGENAME}}|{{SUBPAGENAME}}]]', u'{{BookCat}}')
+	PageTemp = PageTemp.replace(u'[[Category:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', u'{{BookCat}}')
+	PageTemp = PageTemp.replace(u'{{AutoCat}}', u'{{BookCat}}')
+
+	# Traitement des hyperliens (à faire : EN ANGLAIS)
+	#PageTemp = hyperlynx.hyperlynx(PageTemp)
 
 	PageEnd = PageEnd + PageTemp
 	if PageEnd != PageBegin: sauvegarde(page,PageEnd,summary)
