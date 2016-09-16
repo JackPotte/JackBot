@@ -1496,7 +1496,7 @@ def modification(PageC):
 			sauvegarde(page, u'#REDIRECT[[' + PageC + ']]', u'Redirection pour apostrophe')
 	page = Page(site,PageC)
 	if page.exists():
-		if page.namespace() !=0 and page.namespace() != 100 and page.namespace() != 12 and page.namespace() != 14 and PageC.find(u'Utilisateur:JackBot/') == -1:
+		if page.namespace() !=0 and page.namespace() != 100 and page.namespace() != 12 and page.namespace() != 14 and PageC.find(u'Utilisateur:JackBot') == -1 and PageC.find(u'Utilisateur:JackPotte') == -1:
 			print u'Page non traitée l 1374'
 			return
 		else:
@@ -1528,7 +1528,7 @@ def modification(PageC):
 		#	PageTemp = PageTemp + u'\n[[Catégorie:Lexiques en français|' + CleDeTri.CleDeTri(trim(PageC[PageC.rfind(' '):])) + u']]\n'
 		PageEnd = PageBegin
 		
-	elif page.namespace() == 0 or PageC.find(u'Utilisateur:JackBot/') != -1:
+	elif page.namespace() == 0 or PageC.find(u'Utilisateur:JackBot') != -1 or PageC.find(u'Utilisateur:JackPotte') != -1:
 		regex = ur'{{=([a-z\-]+)=}}'
 		if re.search(regex, PageTemp):
 			PageTemp = re.sub(regex, ur'{{langue|\1}}', PageTemp)
@@ -2834,6 +2834,7 @@ def modification(PageC):
 					PageEnd = u'{{formater|Code langue inexistant : ' + codelangue + u'}}\n' + PageBegin
 					summary = u'Page à formater manuellement'
 					sauvegarde(page, PageEnd, summary)
+					if debogageLent: print u'Page à formater manuellement'
 					return
 				NouvelleLangue = True
 					
@@ -2973,6 +2974,7 @@ def modification(PageC):
 						PageEnd = u'{{formater|Section de langue manquante avant le modèle ' + Modele[p] + u' (au niveau du ' + str(len(PageEnd)) + u'-ème caractère)}}\n' + PageBegin
 						summary = u'Page à formater manuellement'
 						sauvegarde(page, PageEnd, summary)
+						if debogageLent: print u'Page à formater manuellement'
 						return
 
 					if Modele[p] == u'term' or Modele[p] == u'terme' or Modele[p] == u'term_lien' or Modele[p] == u'régio' or Modele[p] == u'région':
@@ -4699,27 +4701,40 @@ def modification(PageC):
 							try:
 								pageExt = Page(SiteExt,PageExterne)
 							except wikipedia.NoPage:
-								PageEnd = PageEnd + PageTemp[0:4] + "-"
-								PageTemp = PageTemp[position:len(PageTemp)]
-								if debogageLent: print u'  NoPage'
+								if PageExterne.find(u'\'') != -1:
+									PageExterne = PageExterne.replace(u'\'', u'’')
+								elif PageExterne.find(u'’') != -1:
+									PageExterne = PageExterne.replace(u'’', u'\'')
+								else:
+									PageEnd = PageEnd + PageTemp[:4] + "-"
+									PageTemp = PageTemp[position:len(PageTemp)]
+									if debogageLent: print u'  NoPage'
+									break
+								try:
+									pageExt = Page(SiteExt,PageExterne)
+								except wikipedia.NoPage:
+									PageEnd = PageEnd + PageTemp[:4] + "-"
+									PageTemp = PageTemp[position:len(PageTemp)]
+									if debogageLent: print u'  NoPage'
+									break
 								break
 							except wikipedia.BadTitle:
-								PageEnd = PageEnd + PageTemp[0:4] + "-"
+								PageEnd = PageEnd + PageTemp[:4] + "-"
 								PageTemp = PageTemp[position:len(PageTemp)]
 								if debogageLent: print u'  BadTitle'
 								break
 							except wikipedia.InvalidTitle:
-								PageEnd = PageEnd + PageTemp[0:4] + "-"
+								PageEnd = PageEnd + PageTemp[:4] + "-"
 								PageTemp = PageTemp[position:len(PageTemp)]
 								if debogageLent: print u'  InvalidTitle'
 								break
 							if pageExt.exists():
-								PageEnd = PageEnd + PageTemp[0:4] + "+"
+								PageEnd = PageEnd + PageTemp[:4] + "+"
 								PageTemp = PageTemp[position:len(PageTemp)]
 								if debogageLent: print u'  exists'
 								break
 							else:
-								PageEnd = PageEnd + PageTemp[0:4] + "-"
+								PageEnd = PageEnd + PageTemp[:4] + "-"
 								PageTemp = PageTemp[position:len(PageTemp)]
 								if debogageLent: print u'  not exists'
 								break
@@ -5796,7 +5811,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:vx',u'')
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'moualcʼh')
+		TraitementPage = modification(u'Utilisateur:JackPotte/test2')
 	elif sys.argv[1] == u'trad':
 		TraitementLiens = crawlerLink(u'Modèle:trad-',u'')
 	elif sys.argv[1] == u's':
