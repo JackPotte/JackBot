@@ -1,10 +1,11 @@
 cookieprefix=None
 UseDC=master
 frwiktionaryUserName=JackBot
+WMF-Last-Access=25-Sep-2016
 GeoIP=FR:Pierrefitte-sur-seine:48.9669:2.3610:v4
 frwiktionaryUserID=12968
-WMF-Last-Access=16-Sep-2016
 frwiktionaryforceHTTPS=true
 UseCDNCache=false
-frwiktionarySession=khv8mve9l9radgifadub5gplnrboko94
+cpPosTime=1474807965.2179
+frwiktionarySession=ea18ja538jhtlt18jhd5mauqh7f93gpd
 forceHTTPS=true

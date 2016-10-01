@@ -1496,7 +1496,7 @@ def modification(PageC):
 			sauvegarde(page, u'#REDIRECT[[' + PageC + ']]', u'Redirection pour apostrophe')
 	page = Page(site,PageC)
 	if page.exists():
-		if page.namespace() !=0 and page.namespace() != 100 and page.namespace() != 12 and page.namespace() != 14 and PageC.find(u'Utilisateur:JackBot') == -1 and PageC.find(u'Utilisateur:JackPotte') == -1:
+		if page.namespace() !=0 and page.namespace() != 100 and page.namespace() != 12 and page.namespace() != 14 and (page.namespace() == 2 and (PageC.find(u':JackBot/') == -1 and PageC.find(u':JackPotte/') == -1)):
 			print u'Page non traitée l 1374'
 			return
 		else:
@@ -1528,7 +1528,7 @@ def modification(PageC):
 		#	PageTemp = PageTemp + u'\n[[Catégorie:Lexiques en français|' + CleDeTri.CleDeTri(trim(PageC[PageC.rfind(' '):])) + u']]\n'
 		PageEnd = PageBegin
 		
-	elif page.namespace() == 0 or PageC.find(u'Utilisateur:JackBot') != -1 or PageC.find(u'Utilisateur:JackPotte') != -1:
+	elif page.namespace() == 0 or page.namespace() == 2 and (PageC.find(u':JackBot/') == -1 or PageC.find(u':JackPotte/') == -1):
 		regex = ur'{{=([a-z\-]+)=}}'
 		if re.search(regex, PageTemp):
 			PageTemp = re.sub(regex, ur'{{langue|\1}}', PageTemp)
@@ -1776,9 +1776,11 @@ def modification(PageC):
 							if PageTempMod.find(u'!') == -1:
 								if PageTempMod.find(PageC) == -1: PageTempMod = PageTempMod[0:PageTempMod.find(u'}}')] + u'|' + PageC + PageTempMod[PageTempMod.find(u'}}'):len(PageTempMod)]
 								if PageTempMod.find(PageVoir) == -1: PageTempMod = PageTempMod[0:PageTempMod.find(u'}}')] + u'|' + PageVoir + PageTempMod[PageTempMod.find(u'}}'):len(PageTempMod)]
-							if PageTempMod != PageTempModBegin: sauvegarde(pageMod,PageTempMod, summary)
+							if debogage:
+								print u'PagesCleRestant vide'
+							else:
+								if PageTempMod != PageTempModBegin: sauvegarde(pageMod,PageTempMod, summary)
 							PagesCleRestant = u''
-							if debogage: print u'PagesCleRestant vide'
 							break
 
 				if debogage: print u' Filtre des doublons...'
@@ -1829,8 +1831,10 @@ def modification(PageC):
 									if PageCourante == PageC:
 										PageTemp = PageTempCle
 									else:
-										if debogage: print u'Première sauvegarde dédiée à {{voir}}'
-										sauvegarde(PageCle,PageTempCle, summary)
+										if debogage:
+											print u' Première sauvegarde dédiée à {{voir}}'
+										else:
+											sauvegarde(PageCle,PageTempCle, summary)
 							else:
 								if PagesCleTotal.find(u'|' + PageCourante) != -1:
 									PageTempCle = u'{{voir|' + PagesCleTotal[0:PagesCleTotal.find(u'|' + PageCourante)] + PagesCleTotal[PagesCleTotal.find(u'|' + PageCourante)+len(u'|' + PageCourante):len(PagesCleTotal)] + u'}}\n' + PageTempCle
@@ -1839,7 +1843,10 @@ def modification(PageC):
 								if PageCourante == PageC:
 									PageTemp = PageTempCle
 								else:							
-									sauvegarde(PageCle,PageTempCle, summary)
+									if debogage:
+										print u' Deuxième sauvegarde dédiée à {{voir}}'
+									else:
+										sauvegarde(PageCle,PageTempCle, summary)
 					
 			elif PageTemp.find(u'{{voir|') != -1:
 				if debogage: print u'  Identique à la page courante'
@@ -3053,8 +3060,6 @@ def modification(PageC):
 						PageEnd = PageEnd + PageTemp[:PageTemp.find("}}")+2]
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
-								
-					#elif Modele[p] == u'fr-rég' or Modele[p] == u'fr-inv': synchro de la pronociation avec {{pron|
 					
 					elif Modele[p] == u'référence nécessaire' or Modele[p] == u'réf?' or Modele[p] == u'réf ?' or Modele[p] == u'refnec' or Modele[p] == u'réfnéc' or Modele[p] == u'source?' or Modele[p] == u'réfnéc':
 						PageTemp2 = PageTemp[position+1:len(PageTemp)]
@@ -3266,7 +3271,13 @@ def modification(PageC):
 						PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						break
-					
+						
+					elif Modele[p] == u'pays':	# ex : https://fr.wiktionary.org/w/index.php?title=Guyana&diff=prev&oldid=21651742
+						# X paramètres possibles
+						PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
+						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
+						break
+						
 					elif Modele[p] == u'mythologie' or Modele[p] == u'mythol' or Modele[p] == u'myth' or Modele[p] == u'fantastique' or Modele[p] == u'fanta':	# Modèle à deux paramètres
 						param = u''
 						if (PageTemp.find(u'myt=') != -1 and PageTemp.find(u'myt=') < PageTemp.find("}}")):
@@ -3778,6 +3789,14 @@ def modification(PageC):
 	) or (PageTemp.find(u'Catégorie:Animaux'
 	) != -1 and (PageTemp.find(u':Catégorie:Animaux') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
 	) and (PageTemp.find(u':Catégorie:Animaux') + 1 != PageTemp.rfind(u'Catégorie:Animaux'))
+
+	) or (PageTemp.find(u'Catégorie:Caprins'
+	) != -1 and (PageTemp.find(u':Catégorie:Caprins') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Caprins') + 1 != PageTemp.rfind(u'Catégorie:Caprins'))
+
+	) or (PageTemp.find(u'Catégorie:Chèvres'
+	) != -1 and (PageTemp.find(u':Catégorie:Chèvres') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
+	) and (PageTemp.find(u':Catégorie:Chèvres') + 1 != PageTemp.rfind(u'Catégorie:Chèvres'))
 
 	) or (PageTemp.find(u'Catégorie:Crapauds'
 	) != -1 and (PageTemp.find(u':Catégorie:Crapauds') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
@@ -5020,7 +5039,7 @@ def modification(PageC):
 											PageTemp = PageTemp[:PageTemp.find(u'\n\'\'\'' + PageC + u'\'\'\'')+len(u'\n\'\'\'' + PageC + u'\'\'\'')+PageTemp2.find(u'\n')] + u' {{genre|' + codelangue + u'}}' + PageTemp[PageTemp.find(u'\n\'\'\'' + PageC + u'\'\'\'')+len(u'\n\'\'\'' + PageC + u'\'\'\'')+PageTemp2.find(u'\n'):]
 											if summary.find(u'genre') == -1: summary = summary + u', genre manquant'
 								
-								# Remplacement post-recherche
+								# Remplacements post-recherche
 								for n in range(0,2):
 									G = [[0] * (2+1) for _ in range(3+1)]
 									G[0][0] = u'Masculin'
@@ -5435,7 +5454,25 @@ def modification(PageC):
 					genre = u'{{f}}'
 				if genre != u'':
 					PageEnd = PageEnd.replace(u'{{genre|fr}}', genre)
-			
+		
+		if debogage: print u' Synchro des prononciations'
+		# à faire : prononciations post-paramètres (à déplacer ?) + tous les modèles, fr-accord-rég... https://fr.wiktionary.org/wiki/Utilisateur:JackBot/test_court
+		regex = ur"({{fr\-inv\|)([^{}\|]+)([^{}]*}}\n\'\'\'" + deregex(PageC).replace(u'User:',u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
+		if re.search(regex, PageEnd): PageEnd = re.sub(regex, ur'\1\2\3 {{pron|\2|fr}}\4\n', PageEnd)
+		regex = ur"({{fr\-rég\|)([^{}\|]+)([^{}]*}}\n'\'\'" + deregex(PageC).replace(u'User:',u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
+		if re.search(regex, PageEnd): PageEnd = re.sub(regex, ur'\1\2\3 {{pron|\2|fr}}\4\n', PageEnd)
+		# pb des {{fr-rég|p=...|pron}} = {{pron|p|fr}}
+		regex = ur"{{pron\|([^}]+)\|fr}}"
+		Prononciations = re.findall(regex,PageEnd)
+		if debogageLent: print " " + " ".join(Prononciations).encode(config.console_encoding, 'replace')
+		for pron in Prononciations:
+			pronInitiale = deregex(pron)	# Pour retrouver la chaine à susbtituer
+			while pron.find(u'=') != -1:
+				if debogage: print u'  = trouvé'
+				pron = pron[:pron.find(u'=')]
+				pron = pron[:pron.rfind(u'|')]
+				PageEnd = re.sub(ur'{{pron\|'+pronInitiale+ur'\|fr}}', ur'{{pron|'+pron+ur'|fr}}', PageEnd)
+		
 		# Liens vers les annexes de conjugaisons
 		LanguesC = [ (u'es',u'ar',u'arsi',u'er',u'ersi',u'ir',u'irsi'),
 					 (u'pt',u'ar',u'ar-se',u'er',u'er-se',u'ir',u'ir-se'),
@@ -5582,6 +5619,17 @@ def addCat(PageTemp, lang, cat):
 					PageTemp = PageTemp + u'\n' + cat
 	return PageTemp
 
+def deregex(Mot):
+	if Mot != u'':
+		Mot = Mot.replace(u'+', '\+')
+		Mot = Mot.replace(u'-', '\-')
+		Mot = Mot.replace(u'*', '\*')
+		Mot = Mot.replace(u'.', '\.')
+		Mot = Mot.replace(u'?', '\?')
+		Mot = Mot.replace(u'^', '\^')
+		Mot = Mot.replace(u'$', '\$')
+	return Mot
+	
 def rec_anagram(counter):
 	# Copyright http://www.siteduzero.com/forum-83-541573-p2-exercice-generer-tous-les-anagrammes.html
     if sum(counter.values()) == 0:
@@ -5797,6 +5845,8 @@ if len(sys.argv) > 1:
 			DebutScan = sys.argv[2]
 	if sys.argv[1] == u'test':
 		TraitementPage = modification(u'User:' + mynick + u'/test')
+	if sys.argv[1] == u't':
+		TraitementPage = modification(u'User:' + mynick + u'/test court')
 	elif sys.argv[1] == u'txt': 
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
 	elif sys.argv[1] == u'txt2':
@@ -5817,7 +5867,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u's':
 		TraitementRecherche = crawlerSearch(u'"source à préciser"')
 	elif sys.argv[1] == u'u':
-		crawlerUser(u'Utilisateur:Nicasser', 1000,u'')
+		crawlerUser(u'Utilisateur:JackPotte', 1000,u'')
 	else:
 		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
@@ -5864,7 +5914,7 @@ TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects:pron
 # Modèles
 TraitementPage = modification(u'Modèle:terme')
 TraitementLiens = crawlerLink(u'Modèle:terme',u'')
-TraitementFichier = crawlerFile(u'articles_WTin.txt')
+TraitementFichier = crawlerFile(u'articles_fr_wiktionary.txt')
 TraitementLiensCategorie = crawlerCatLink(u'Modèles de code langue',u'')
 TraitementCategorie = crawlerCat(u'Catégorie:Appels de modèles incorrects',True,u'')
 TraitementUtilisateur = crawlerUser(u'Utilisateur:JackBot', 800)
@@ -5872,8 +5922,8 @@ TraitementRedirections = crawlerRedirects()
 TraitementTout = crawlerAll(u'')
 
 python replace.py -lang:commons -family:commons -file:articles_commons.txt "[[Category:PDF Wikibooks]]" "[[Category:English Wikibooks PDF]]"
-python delete.py -lang:fr -family:wiktionary -file:articles_WTin.txt
-python movepages.py -lang:fr -family:wiktionary -pairs:"articles_WTin.txt" -noredirect -pairs
+python delete.py -lang:fr -family:wiktionary -file:articles_fr_wiktionary.txt
+python movepages.py -lang:fr -family:wiktionary -pairs:"articles_fr_wiktionary.txt" -noredirect -pairs
 python interwiki.py -lang:fr -family:wiktionary -page:"Wiktionnaire:Accueil communautaire"
 python interwiki.py -lang:fr -family:wiktionary -wiktionary -autonomous -force -usercontribs:Otourly
 python protect.py -lang:fr -family:wiktionary -cat:"Élections de patrouilleurs" -summary:"Vote archivé" -move:sysop -edit:sysop
@@ -5881,4 +5931,5 @@ python protect.py -lang:fr -family:wiktionary -cat:"Élections de patrouilleurs"
 à faire vite : ajouter les groupes des verbes, les paragraphes {{S|traduction}}, et les {{pron}}/{{prononciation}}
 -debug=2 : plusieurs valid par page
 lancer les .ogg
+parseur d'extraction des pron commun avec créer-flexion ? (ex : split(|)). Synchro des pron existant
 '''

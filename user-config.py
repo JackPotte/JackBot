@@ -16,6 +16,12 @@ transliteration_target = None
 # The dictionary usernames should contain a username for each site where you
 # have a bot account.
 # taskschd.msc
+
+sysopnames['wiktionary']['fr'] = u'JackBot'
+sysopnames['wikibooks']['fr'] = u'JackBot'
+sysopnames['wikiversity']['fr'] = u'JackBot'
+sysopnames['wikibooks']['en']='JackPotte'
+
 usernames['meta']['meta'] = u'JackBot'
 usernames['species']['species'] = u'JackBot'
 usernames['commons']['commons'] = u'JackBot'
@@ -2979,10 +2985,6 @@ usernames['wikivoyage']['zh-sg'] = u'JackBot'
 usernames['wikivoyage']['zh-tw'] = u'JackBot'
 usernames['wikivoyage']['zh-yue'] = u'JackBot'
 usernames['wikivoyage']['zu'] = u'JackBot'
-
-sysopnames['wiktionary']['fr'] = u'JackBot'
-sysopnames['wikibooks']['fr'] = u'JackBot'
-sysopnames['wikiversity']['fr'] = u'JackBot'
 
 ############## LOGFILE SETTINGS ##############
 

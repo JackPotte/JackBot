@@ -372,7 +372,7 @@ if len(sys.argv) > 1:
 		else:
 			TraitementRecherche = crawlerSearch(u'chinois')
 	elif sys.argv[1] == u'mod':
-		modification(u'Modèle:Commandes et livraisons A380')
+		modification(u'Modèle:Cladogramme Paraves')
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:périodique',u'')
 	elif sys.argv[1] == u'cat':
