@@ -275,6 +275,8 @@ ParamEN.append(u'series')
 ParamFR.append(u'collection')
 ParamEN.append(u'agency')
 ParamFR.append(u'auteur institutionnel')
+ParamEN.append(u'magazine')
+ParamFR.append(u'périodique')
 #ParamEN.append(u'archivedate')
 #ParamFR.append(u'en ligne le')	# remplace la date=
 
@@ -555,7 +557,7 @@ def hyperlynx(PageTemp, debogage = False):
 		# Suppression des modèles vides
 		regex = u'{{ *[' + ModeleFR[m][0:1] + ur'|' + ModeleFR[m][0:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *}}'
 		while re.search(regex, PageTemp):
-			if debogageLent: print(u' while1')
+			if debogageLent: print(u' while1' + regex)
 			PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + PageTemp[re.search(regex, PageTemp).end():]
 		# Traduction des paramètres de chaque modèle de la page
 		regex = u'{{ *[' + ModeleFR[m][0:1] + ur'|' + ModeleFR[m][0:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *[\||\n]'
