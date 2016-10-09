@@ -1,9 +1,10 @@
 cookieprefix=None
 enwikiquoteUserName=JackBot
 GeoIP=FR:Saint-denis:48.9333:2.3667:v4
-enwikiquoteSession=38v58bvjin8anb2ols8rruomrsfetb1e
-WMF-Last-Access=25-Sep-2016
+enwikiquoteSession=86duqq13rr0olr6mnifabbgh0lq6hnn3
+WMF-Last-Access=08-Oct-2016
 UseDC=master
 UseCDNCache=false
 enwikiquoteUserID=274681
+cpPosTime=1475951223.4507
 forceHTTPS=true

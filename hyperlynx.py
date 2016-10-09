@@ -644,10 +644,10 @@ def hyperlynx(PageTemp, debogage = False):
 			print TradL[l][1]
 		PageTemp = re.sub(ur'(\| *langue *= *)' + TradL[l][1] + ur'( *[<|\||\n\t|}])', ur'\1' +  TradL[l][2] + ur'\2', PageTemp)
 	
-	# Rustine suite à un imprévu censé être réglé ci-dessus, mais qui touche presque 10 % des pages.
-	PageTemp = re.sub(ur'{{en}}[ \n]*({{[Aa]rticle\|langue=en\|)', ur'\1', PageTemp)
-	PageTemp = re.sub(ur'{{en}}[ \n]*({{[Ll]ien web\|langue=en\|)', ur'\1', PageTemp)
-	PageTemp = re.sub(ur'{{en}}[ \n]*({{[Oo]uvrage\|langue=en\|)', ur'\1', PageTemp)
+		# Rustine suite à un imprévu censé être réglé ci-dessus, mais qui touche presque 10 % des pages.
+		PageTemp = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Aa]rticle\|langue=' + TradL[l][2] + ur'\|)', ur'\1', PageTemp)
+		PageTemp = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Ll]ien web\|langue=' + TradL[l][2] + ur'\|)', ur'\1', PageTemp)
+		PageTemp = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Oo]uvrage\|langue=' + TradL[l][2] + ur'\|)', ur'\1', PageTemp)
 	
 	# Suppression des paramètres vides en doublon
 	# à faire...
