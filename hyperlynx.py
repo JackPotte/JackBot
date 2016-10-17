@@ -1512,6 +1512,7 @@ def log(source):
 	txtfile.close()
 
 # à faire : 
+#	i18n
 #	sauter les longs PDF comme dans [[w:Apollo 11]]
 #	spécifier le remplacement “citation” s'il a les paramètres du modèle anglais
 # 	remplacer "éditeur" par "périodique" dans "article"

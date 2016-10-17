@@ -1482,6 +1482,52 @@ Genre.append(u'n')
 Genre.append(u'nplur')
 Genre.append(u'nsing')
 
+Sections = []
+Niveau = []
+Sections.append(u'étymologie')
+Niveau.append(u'===')
+Sections.append(u'nom')
+Niveau.append(u'===')
+Sections.append(u'variantes orthographiques')
+Niveau.append(u'====')
+Sections.append(u'synonymes')
+Niveau.append(u'====')
+Sections.append(u'antonymes')
+Niveau.append(u'====')
+Sections.append(u'dérivés')
+Niveau.append(u'====')
+Sections.append(u'apparentés')
+Niveau.append(u'====')
+Sections.append(u'vocabulaire')
+Niveau.append(u'====')
+Sections.append(u'hyperonymes')
+Niveau.append(u'====')
+Sections.append(u'hyponymes')
+Niveau.append(u'====')
+Sections.append(u'méronymes')
+Niveau.append(u'====')
+Sections.append(u'holonymes')
+Niveau.append(u'====')
+Sections.append(u'traductions')
+Niveau.append(u'====')
+Sections.append(u'prononciation')
+Niveau.append(u'===')
+Sections.append(u'homophones')
+Niveau.append(u'====')
+Sections.append(u'paronymes')
+Niveau.append(u'====')
+Sections.append(u'anagrammes')
+Niveau.append(u'===')
+Sections.append(u'voir aussi')
+Niveau.append(u'===')
+Sections.append(u'références')
+Niveau.append(u'===')
+Sections.append(u'catégorie')
+Niveau.append(u'')
+Sections.append(u'clé de tri')
+Niveau.append(u'')
+
+
 # Modification du wiki
 def modification(PageC):
 	#PageC = u'Catégorie:'+PageC[:1].upper()+PageC[1:]
@@ -5593,7 +5639,8 @@ def modification(PageC):
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
 
-def addCat(PageTemp, lang, cat):
+	
+def addCat(PageTemp, lang, cat):	# à remplacer par celle ci-dessous
 	if lang != u'':
 		if PageTemp.find(cat) == -1 and PageTemp.find(u'{{langue|' + lang + u'}}') != -1:
 			if cat.find(u'[[Catégorie:') == -1: cat = u'[[Catégorie:' + cat + u']]'
@@ -5619,6 +5666,85 @@ def addCat(PageTemp, lang, cat):
 					PageTemp = PageTemp + u'\n' + cat
 	return PageTemp
 
+
+def addLine(Page, CodeLangue, Section, Contenu):
+	if Page != '' and CodeLangue != '' and Section != '' and Contenu != '':
+		if Page.find(Contenu) == -1 and Page.find(u'{{langue|' + CodeLangue + u'}}') != -1:
+			if Section == u'catégorie' and Contenu.find(u'[[Catégorie:') == -1: Contenu = u'[[Catégorie:' + Contenu + u']]'
+			if Section == u'clé de tri' and Contenu.find(u'{{clé de tri|') == -1: Contenu = u'{{clé de tri|' + Contenu + u'}}'
+			
+			# Recherche de l'ordre théorique de la section à ajouter
+			NumSection = NumeroSection(Section)
+			if NumSection == len(Sections):
+				if debogage:
+					print u''
+					print u' ajout de '
+					print Section.encode(config.console_encoding, 'replace')
+					print u' dans une section inconnue'
+					print u' (car ' + len(Sections) + u' = ' + str(NumSection) + u')'
+					print u''
+				return Page
+			if debogageLent: print u' position S : ' + s
+			
+			# Recherche de l'ordre réel de la section à ajouter
+			PageTemp2 = Page[Page.find(u'{{langue|' + CodeLangue + u'}}')+len(u'{{langue|' + CodeLangue + u'}}'):]
+			#SectionPage = re.findall("{{S\|([^}]+)}}", PageTemp2) # Mais il faut trouver le {{langue}} de la limite de fin
+			SectionPage = re.findall(ur"\n=+ *{{S?\|?([^}/|]+)([^}]*)}}", PageTemp2)
+			if debogageLent:
+				o = 0
+				while o < len(SectionPage):
+					 print str(SectionPage[o]).encode(config.console_encoding, 'replace')
+					 o = o + 1
+				if o == len(SectionPage): o = o - 1
+				raw_input()
+				
+			o = 0
+			#raw_input(str(SectionPage[0][0].encode(config.console_encoding, 'replace')))
+			# pb encodage : étymologie non fusionnée + catégorie = 1 au lieu de 20 !?
+			while o < len(SectionPage) and str(SectionPage[o][0].encode(config.console_encoding, 'replace')) != 'langue' and NumeroSection(SectionPage[o][0]) <= NumSection:
+				if debogage:
+					print SectionPage[o][0]
+					print NumeroSection(SectionPage[o][0])
+				o = o + 1
+			SectionLimite = str(SectionPage[o][0].encode(config.console_encoding, 'replace'))
+			o = o - 1
+			if debogageLent: print u' position O : ' + o
+			if debogage:
+				print u''
+				print u'Ajout de '
+				print Section.encode(config.console_encoding, 'replace')
+				print u' avant '
+				print SectionLimite
+				print u' (car ' + str(NumeroSection(SectionLimite)) + u' > ' + str(NumSection) + u')'
+				print u''
+			
+			# Ajout après la section trouvée
+			if PageTemp2.find(u'{{S|' + SectionPage[o][0]) == -1:
+				print 'Erreur d\'encodage'
+				return
+			
+			PageTemp3 = PageTemp2[PageTemp2.find(u'{{S|' + SectionPage[o][0]):]
+			if SectionPage[o][0] != Section and Section != u'catégorie' and Section != u'clé de tri':
+				if debogageLent: print u' ajout de la section'
+				Contenu = u'\n' + Niveau[NumSection] + u' {{S|' + Section + u'}} ' + Niveau[NumSection] + u'\n' + Contenu
+				
+			# Ajout à la ligne
+			if PageTemp3.find(u'\n\n') == -1:
+				regex = ur'\n\[\[\w?\w?\w?:'
+				if re.compile(regex).search(Page):
+					if debogage: print u' ajout avant les interwikis'
+					try:
+						Page = Page[:re.search(regex,Page).start()] + u'\n' + Contenu + u'\n' + Page[re.search(regex,Page).start():]
+					except:
+						print u' pb regex interwiki'
+				else:
+					if debogage: print u' ajout en fin de page'
+					Page = Page + u'\n' + Contenu
+			else:
+				Page = Page[:-len(PageTemp2)] + PageTemp2[:-len(PageTemp3)] + PageTemp3[:PageTemp3.find(u'\n\n')] + u'\n' + Contenu + u'\n' + PageTemp3[PageTemp3.find(u'\n\n'):]
+	return Page
+	
+	
 def deregex(Mot):
 	if Mot != u'':
 		Mot = Mot.replace(u'+', '\+')
@@ -5845,8 +5971,11 @@ if len(sys.argv) > 1:
 			DebutScan = sys.argv[2]
 	if sys.argv[1] == u'test':
 		TraitementPage = modification(u'User:' + mynick + u'/test')
-	if sys.argv[1] == u't':
+	elif sys.argv[1] == u't':
 		TraitementPage = modification(u'User:' + mynick + u'/test court')
+	elif sys.argv[1] == u'tu':
+		# Test unitaire
+		TraitementPage = addLine(u"== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n{{fr-rég|}}\n\'\'\'{{subst:PAGENAME}}\'\'\' {{pron||fr}} {{genre ?}}\n#\n#* ''''\n==== {{S|variantes orthographiques}} ====\n==== {{S|synonymes}} ====\n==== {{S|antonymes}} ====\n==== {{S|dérivés}} ====\n==== {{S|apparentés}} ====\n==== {{S|vocabulaire}} ====\n==== {{S|hyperonymes}} ====\n==== {{S|hyponymes}} ====\n==== {{S|méronymes}} ====\n==== {{S|holonymes}} ====\n==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n=== {{S|prononciation}} ===\n* {{pron||fr}}\n* {{écouter|<!--  précisez svp la ville ou la région -->||audio=|lang=}}\n==== {{S|homophones}} ====\n==== {{S|paronymes}} ====\n=== {{S|anagrammes}} ===\n=== {{S|voir aussi}} ===\n* {{WP}}\n=== {{S|références}} ===\n{{clé de tri}}", u'fr', u'prononciation', u'* {{pron|boum|fr}}')
 	elif sys.argv[1] == u'txt': 
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
 	elif sys.argv[1] == u'txt2':
