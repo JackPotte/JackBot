@@ -498,7 +498,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'cat':
 		TraitementCategory = crawlerCat2(u'Category:Pronunciation‎', True, u'')
 else:
-	TraitementCategory = crawlerCat1(u'Category:Pronunciation‎', True, u'')		
+	TraitementCategory = crawlerCat(u'Category:Pronunciation‎', True, u'')		
 ''' à faire :
 	pb avec crawlercat non récursif Commons (l 333)
 	ignorer [[Category:Ogg sound files of spoken French]] ou Wikinews, Wikipedia
