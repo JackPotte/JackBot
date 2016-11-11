@@ -5529,18 +5529,19 @@ def modification(PageC):
 		if not PageC in [u'ça va', u'ché', u'estoufaresse', u'estoufarès', u'reco'] and PageEnd.find(u'{{voir-conj') == -1 and PageEnd.find(u'[[Image:') == -1:	# Sinon bugs (ex : https://fr.wiktionary.org/w/index.php?title=d%C3%A9finir&diff=10128404&oldid=10127687, https://fr.wiktionary.org/w/index.php?title=%C3%A7a_va&diff=next&oldid=21742913)
 			if debogage: print u'Ajout de {{conj}}'
 			for l in LanguesC:
-				if re.compile(ur'{{S\|verbe\|'+l[0]+u'}}').search(PageEnd) and not re.compile(ur'{{S\|verbe\|'+l[0]+u'}}.*\n*.*{{conj[a-z1-3\| ]*').search(PageEnd):
-					if debogage: print u' {{conj|'+l[0]+u'}} manquant'
-					if re.compile(ur'{{S\|verbe\|'+l[0]+u'}}[^\n]*\n*[^\n]*\n*[^\{]*{{pron\|[^\}]*}}').search(PageEnd):
-						if debogage: print u' ajout de {{conj|'+l[0]+u'}} après {{pron|...}}'
-						try:
-							i1 = re.search(ur'{{S\|verbe\|'+l[0]+u'}}[^\n]*\n*[^\n]*\n*[^\{]*{{pron\|[^\}]*}}',PageEnd).end()
-							PageEnd = PageEnd[:i1] + u' {{conjugaison|'+l[0]+u'}}' + PageEnd[i1:]
-						except:
-							if debogage: print u' Erreur l 5390'
-					else:
-						if debogage: print u' pas de prononciation pour ajouter {{conj}}'
-						
+				if not (l[0] == u'fr' and PageC[-3:] == u'ave'):
+					if re.compile(ur'{{S\|verbe\|'+l[0]+u'}}').search(PageEnd) and not re.compile(ur'{{S\|verbe\|'+l[0]+u'}}.*\n*.*{{conj[a-z1-3\| ]*').search(PageEnd):
+						if debogage: print u' {{conj|'+l[0]+u'}} manquant'
+						if re.compile(ur'{{S\|verbe\|'+l[0]+u'}}[^\n]*\n*[^\n]*\n*[^\{]*{{pron\|[^\}]*}}').search(PageEnd):
+							if debogage: print u' ajout de {{conj|'+l[0]+u'}} après {{pron|...}}'
+							try:
+								i1 = re.search(ur'{{S\|verbe\|'+l[0]+u'}}[^\n]*\n*[^\n]*\n*[^\{]*{{pron\|[^\}]*}}',PageEnd).end()
+								PageEnd = PageEnd[:i1] + u' {{conjugaison|'+l[0]+u'}}' + PageEnd[i1:]
+							except:
+								if debogage: print u' Erreur l 5390'
+						else:
+							if debogage: print u' pas de prononciation pour ajouter {{conj}}'
+							
 		if PageEnd.find(u'{{conj') != -1:
 			if debogage: print u' Ajout des groupes dans {{conj}}'
 			'''for (langue,premier,ppron,deuxieme,dpron,troisieme,tpron) in LanguesC:
