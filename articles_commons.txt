@@ -1,0 +1,407 @@
+python movepages.py -lang:commons -family:commons -pairs:"articles_commons.txt" => PWB
+KeyError: 'lgtoken'
+
+File:Fr-Ambiance-fr-Paris.ogg
+File:Fr-Paris--Ambiance.oga
+File:Fr-Ari&#232;ge-fr FR-Paris.ogg
+File:Fr-Paris--Ari&#232;ge.oga
+File:Fr-Ari&#232;geois-fr FR-Paris.ogg
+File:Fr-Paris--Ari&#232;geois.oga
+File:Fr-Aveyron-fr FR-Paris.ogg
+File:Fr-Paris--Aveyron.oga
+File:Fr-B-fr-Paris.ogg
+File:Fr-Paris--B.oga
+File:Fr-Bisou-fr-Paris.ogg
+File:Fr-Paris--Bisou.oga
+File:Fr-Brouhaha-fr-Paris.ogg
+File:Fr-Paris--Brouhaha.oga
+File:Fr-C-fr-Paris.ogg
+File:Fr-Paris--C.oga
+File:Fr-Chance-fr-Paris.ogg
+File:Fr-Paris--Chance.oga
+File:Fr-C&#244;te-d'Ivoire-fr-Paris.ogg
+File:Fr-Paris--C&#244;te-d'Ivoire.oga
+File:Fr-D-fr-Paris.ogg
+File:Fr-Paris--D.oga
+File:Fr-E-fr-Paris.ogg
+File:Fr-Paris--E.oga
+File:Fr-F-fr-Paris.ogg
+File:Fr-Paris--F.oga
+File:Fr-G-fr-Paris.ogg
+File:Fr-Paris--G.oga
+File:Fr-Gauche-fr-Paris.ogg
+File:Fr-Paris--Gauche.oga
+File:Fr-Gers-fr FR-Paris.ogg
+File:Fr-Paris--Gers.oga
+File:Fr-H-fr-Paris.ogg
+File:Fr-Paris--H.oga
+File:Fr-Haut-fr-Paris.ogg
+File:Fr-Paris--Haut.oga
+File:Fr-Haute-Garonne-fr FR-Paris.ogg
+File:Fr-Paris--Haute-Garonne.oga
+File:Fr-Hautes-Pyr&#233;n&#233;es-fr FR-Paris.ogg
+File:Fr-Paris--Hautes-Pyr&#233;n&#233;es.oga
+File:Fr-H&#233;lium-fr-Paris.ogg
+File:Fr-Paris--H&#233;lium.oga
+File:Fr-I-fr-Paris.ogg
+File:Fr-Paris--I.oga
+File:Fr-J-fr-Paris.ogg
+File:Fr-Paris--J.oga
+File:Fr-K-fr-Paris.ogg
+File:Fr-Paris--K.oga
+File:Fr-L-fr-Paris.ogg
+File:Fr-Paris--L.oga
+File:Fr-Libert&#233;-FR Paris.ogg
+File:Fr-Paris--Libert&#233;.oga
+File:Fr-Lot-fr FR-Paris.ogg
+File:Fr-Paris--Lot.oga
+File:Fr-M-fr-Paris.ogg
+File:Fr-Paris--M.oga
+File:Fr-Magn&#233;sium-fr-Paris.ogg
+File:Fr-Paris--Magn&#233;sium.oga
+File:Fr-Manteau-fr-Paris.ogg
+File:Fr-Paris--Manteau.oga
+File:Fr-Mural-fr-Paris.ogg
+File:Fr-Paris--Mural.oga
+File:Fr-M&#232;tre-fr-Paris.ogg
+File:Fr-Paris--M&#232;tre.oga
+File:Fr-M&#233;canique-fr-Paris.ogg
+File:Fr-Paris--M&#233;canique.oga
+File:Fr-N-fr-Paris.ogg
+File:Fr-Paris--N.oga
+File:Fr-Naif-fr-Paris.ogg
+File:Fr-Paris--Naif.oga
+File:Fr-Naive-fr-Paris.ogg
+File:Fr-Paris--Naive.oga
+File:Fr-Naivet&#233;-fr-Paris.ogg
+File:Fr-Paris--Naivet&#233;.oga
+File:Fr-Neuf-fr-Paris.ogg
+File:Fr-Paris--Neuf.oga
+File:Fr-O-fr-Paris.ogg
+File:Fr-Paris--O.oga
+File:Fr-ORL-fr FR-Paris.ogg
+File:Fr-Paris--ORL.oga
+File:Fr-Occitan-fr-Paris.ogg
+File:Fr-Paris--Occitan.oga
+File:Fr-Oeil-fr-Paris.ogg
+File:Fr-Paris--Oeil.oga
+File:Fr-Oiseau-fr-Paris.ogg
+File:Fr-Paris--Oiseau.oga
+File:Fr-Os-fr-Paris.ogg
+File:Fr-Paris--Os.oga
+File:Fr-Oxyg&#232;ne-fr-Paris.ogg
+File:Fr-Paris--Oxyg&#232;ne.oga
+File:Fr-P-fr-Paris.ogg
+File:Fr-Paris--P.oga
+File:Fr-Pain-fr-Paris.ogg
+File:Fr-Paris--Pain.oga
+File:Fr-Paris.oga
+File:Fr-Paris--Paris.oga
+File:Fr-Paris.ogg
+File:Fr-Paris--Paris.ogg
+File:Fr-P&#234;che-fr-Paris.ogg
+File:Fr-Paris--P&#234;che.oga
+File:Fr-Q-fr-Paris.ogg
+File:Fr-Paris--Q.oga
+File:Fr-R-fr-Paris.ogg
+File:Fr-Paris--R.oga
+File:Fr-Rare-fr-Paris.ogg
+File:Fr-Paris--Rare.oga
+File:Fr-Respect-fr-Paris.ogg
+File:Fr-Paris--Respect.oga
+File:Fr-Rhodanien-fr FR-Paris.ogg
+File:Fr-Paris--Rhodanien.oga
+File:Fr-Rhodanienne-fr FR-Paris.ogg
+File:Fr-Paris--Rhodanienne.oga
+File:Fr-Rh&#244;ne-fr FR-Paris.ogg
+File:Fr-Paris--Rh&#244;ne.oga
+File:Fr-Rire-fr-Paris.ogg
+File:Fr-Paris--Rire.oga
+File:Fr-Rodez-fr FR-Paris.ogg
+File:Fr-Paris--Rodez.oga
+File:Fr-Route-fr-Paris.ogg
+File:Fr-Paris--Route.oga
+File:Fr-R&#233;seau-fr-Paris.ogg
+File:Fr-Paris--R&#233;seau.oga
+File:Fr-S-fr-Paris.ogg
+File:Fr-Paris--S.oga
+File:Fr-Six-fr-Paris.ogg
+File:Fr-Paris--Six.oga
+File:Fr-Soufre-fr-Paris.ogg
+File:Fr-Paris--Soufre.oga
+File:Fr-Sourire-fr-Paris.ogg
+File:Fr-Paris--Sourire.oga
+File:Fr-Sucre-fr-Paris.ogg
+File:Fr-Paris--Sucre.oga
+File:Fr-T-fr-Paris.ogg
+File:Fr-Paris--T.oga
+File:Fr-Tarbais-fr FR-Paris.ogg
+File:Fr-Paris--Tarbais.oga
+File:Fr-Tarbaise-fr FR-Paris.ogg
+File:Fr-Paris--Tarbaise.oga
+File:Fr-Trois-fr-Paris.ogg
+File:Fr-Paris--Trois.oga
+File:Fr-Tsunami-fr-Paris.ogg
+File:Fr-Paris--Tsunami.oga
+File:Fr-T&#233;l&#233;charger-fr-Paris.ogg
+File:Fr-Paris--T&#233;l&#233;charger.oga
+File:Fr-T&#234;te-&#224;-t&#234;te-fr-Paris.oga
+File:Fr-Paris--T&#234;te-&#224;-t&#234;te.oga
+File:Fr-U-fr-Paris.ogg
+File:Fr-Paris--U.oga
+File:Fr-Un montage-fr FR-Paris.ogg
+File:Fr-Paris--Un montage.oga
+File:Fr-Un-fr FR-Paris.ogg
+File:Fr-Paris--Un.oga
+File:Fr-Un-fr-Paris.ogg
+File:Fr-Paris--Un.oga
+File:Fr-V-fr-Paris.ogg
+File:Fr-Paris--V.oga
+File:Fr-W-fr-Paris.ogg
+File:Fr-Paris--W.oga
+File:Fr-X-fr-Paris.ogg
+File:Fr-Paris--X.oga
+File:Fr-Y-fr-Paris.ogg
+File:Fr-Paris--Y.oga
+File:Fr-Z-fr-Paris.ogg
+File:Fr-Paris--Z.oga
+File:Fr-aileron-fr-Paris.ogg
+File:Fr-Paris--aileron.oga
+File:Fr-allemand-fr FR-Paris.ogg
+File:Fr-Paris--allemand.oga
+File:Fr-arbre-fr-Paris.ogg
+File:Fr-Paris--arbre.oga
+File:Fr-ath&#233;e-fr-Paris.ogg
+File:Fr-Paris--ath&#233;e.oga
+File:Fr-ath&#233;iste-fr-Paris.ogg
+File:Fr-Paris--ath&#233;iste.oga
+File:Fr-au-fait-fr-Paris.ogg
+File:Fr-Paris--au-fait.oga
+File:Fr-cigarettes-fr FR-Paris.ogg
+File:Fr-Paris--cigarettes.oga
+File:Fr-comme un &#233;l&#233;phant dans un magazin de porcelaine-fr FR-Paris.ogg
+File:Fr-Paris--comme un &#233;l&#233;phant dans un magazin de porcelaine.oga
+File:Fr-concise-fr FR-Paris.ogg
+File:Fr-Paris--concise.oga
+File:Fr-constitutif-fr FR-Paris.ogg
+File:Fr-Paris--constitutif.oga
+File:Fr-constitutionnellement-fr FR-Paris.ogg
+File:Fr-Paris--constitutionnellement.oga
+File:Fr-coup de gr&#226;ce-fr-Paris.oga
+File:Fr-Paris--coup de gr&#226;ce.oga
+File:Fr-dangereuse-fr-Paris.ogg
+File:Fr-Paris--dangereuse.oga
+File:Fr-de rien-fr-Paris.ogg
+File:Fr-Paris--de rien.oga
+File:Fr-di&#232;se-fr-Paris.ogg
+File:Fr-Paris--di&#232;se.oga
+File:Fr-d&#233;coupage-fr-Paris.ogg
+File:Fr-Paris--d&#233;coupage.oga
+File:Fr-d&#233;nombrable-fr FR-Paris.ogg
+File:Fr-Paris--d&#233;nombrable.oga
+File:Fr-d&#233;nombrer-fr FR-Paris.ogg
+File:Fr-Paris--d&#233;nombrer.oga
+File:Fr-d&#233;pressif-fr FR-Paris.ogg
+File:Fr-Paris--d&#233;pressif.oga
+File:Fr-d&#233;pressive-fr FR-Paris.ogg
+File:Fr-Paris--d&#233;pressive.oga
+File:Fr-enclave-fr-Paris.ogg
+File:Fr-Paris--enclave.oga
+File:Fr-encloquer-fr FR-Paris.ogg
+File:Fr-Paris--encloquer.oga
+File:Fr-enculeur de mouches-fr FR-Paris.ogg
+File:Fr-Paris--enculeur de mouches.oga
+File:Fr-enculeuse de mouches-fr FR-Paris.ogg
+File:Fr-Paris--enculeuse de mouches.oga
+File:Fr-engrosser-fr FR-Paris.ogg
+File:Fr-Paris--engrosser.oga
+File:Fr-fennec-fr FR-Paris.ogg
+File:Fr-Paris--fennec.oga
+File:Fr-fleur de lis-fr-Paris.ogg
+File:Fr-Paris--fleur de lis.oga
+File:Fr-fleur des pois-fr FR-Paris.ogg
+File:Fr-Paris--fleur des pois.oga
+File:Fr-fuselage-fr-Paris.ogg
+File:Fr-Paris--fuselage.oga
+File:Fr-gale-fr FR-Paris.ogg
+File:Fr-Paris--gale.oga
+File:Fr-gaulliste-fr FR-Paris.ogg
+File:Fr-Paris--gaulliste.oga
+File:Fr-genre-fr-Paris.ogg
+File:Fr-Paris--genre.oga
+File:Fr-girafeau-fr FR-Paris.ogg
+File:Fr-Paris--girafeau.oga
+File:Fr-girafon-fr FR-Paris.ogg
+File:Fr-Paris--girafon.oga
+File:Fr-giscardien FR-Paris.ogg
+File:Fr-Paris--giscardien FR-Paris.ogg
+File:Fr-giscardienne-fr FR-Paris.ogg
+File:Fr-Paris--giscardienne.oga
+File:Fr-glouton-fr-FR-Paris.ogg
+File:Fr-Paris--glouton-fr.oga
+File:Fr-g&#233;od&#233;sie-fr FR-Paris.ogg
+File:Fr-Paris--g&#233;od&#233;sie.oga
+File:Fr-g&#233;od&#233;sique-fr FR-Paris.ogg
+File:Fr-Paris--g&#233;od&#233;sique.oga
+File:Fr-g&#233;ophysicienne-fr FR-Paris.ogg
+File:Fr-Paris--g&#233;ophysicienne.oga
+File:Fr-haut,haute-fr FR-Paris.ogg
+File:Fr-Paris--haut,haute.oga
+File:Fr-hiver-fr FR-Paris.ogg
+File:Fr-Paris--hiver.oga
+File:Fr-hors d oeuvre-fr-Paris.ogg
+File:Fr-Paris--hors d oeuvre.oga
+File:Fr-hydrog&#232;ne-FR Paris.ogg
+File:Fr-Paris--hydrog&#232;ne.oga
+File:Fr-h&#233;lium-fr FR-Paris.ogg
+File:Fr-Paris--h&#233;lium.oga
+File:Fr-ind&#233;nombrable-fr FR-Paris.ogg
+File:Fr-Paris--ind&#233;nombrable.oga
+File:Fr-inositol-fr FR-Paris.ogg
+File:Fr-Paris--inositol.oga
+File:Fr-insole-fr FR-Paris.ogg
+File:Fr-Paris--insole.oga
+File:Fr-insolence-fr FR-Paris.ogg
+File:Fr-Paris--insolence.oga
+File:Fr-insolente-fr FR-Paris.ogg
+File:Fr-Paris--insolente.oga
+File:Fr-insuline-fr FR-Paris.ogg
+File:Fr-Paris--insuline.oga
+File:Fr-insulinod&#233;pendant-fr FR-Paris.ogg
+File:Fr-Paris--insulinod&#233;pendant.oga
+File:Fr-insulinod&#233;pendante-fr FR-Paris.ogg
+File:Fr-Paris--insulinod&#233;pendante.oga
+File:Fr-jaguar-fr-Paris.ogg
+File:Fr-Paris--jaguar.oga
+File:Fr-juri-fr-Paris.ogg
+File:Fr-Paris--juri.oga
+File:Fr-la goutte d'eau qui fait d&#233;border le vase-fr FR-Paris.ogg
+File:Fr-Paris--la goutte d'eau qui fait d&#233;border le vase.oga
+File:Fr-laconique-fr FR-Paris.ogg
+File:Fr-Paris--laconique.oga
+File:Fr-liaison-fr-Paris.ogg
+File:Fr-Paris--liaison.oga
+File:Fr-lieutenant-fr-Paris.ogg
+File:Fr-Paris--lieutenant.oga
+File:Fr-lithium-FR Paris.ogg
+File:Fr-Paris--lithium.oga
+File:Fr-loisir-fr-Paris.ogg
+File:Fr-Paris--loisir.oga
+File:Fr-lot-fr FR-Paris.ogg
+File:Fr-Paris--lot.oga
+File:Fr-lots-fr FR-Paris.ogg
+File:Fr-Paris--lots.oga
+File:Fr-l&#233;gumineuse-fr FR-Paris.ogg
+File:Fr-Paris--l&#233;gumineuse.oga
+File:Fr-l&#233;gumineux-fr FR-Paris.ogg
+File:Fr-Paris--l&#233;gumineux.oga
+File:Fr-manger-fr-FR-Paris.ogg
+File:Fr-Paris--manger-fr.oga
+File:Fr-maths-fr FR-Paris.ogg
+File:Fr-Paris--maths.oga
+File:Fr-merci-fr-Paris.ogg
+File:Fr-Paris--merci.oga
+File:Fr-mets-fr FR-Paris.ogg
+File:Fr-Paris--mets.oga
+File:Fr-multiplication-fr FR-Paris.ogg
+File:Fr-Paris--multiplication.oga
+File:Fr-m&#233;lange-fr-Paris.ogg
+File:Fr-Paris--m&#233;lange.oga
+File:Fr-m&#234;l&#233;e-fr-Paris.ogg
+File:Fr-Paris--m&#234;l&#233;e.oga
+File:Fr-napolitain-fr-Paris.ogg
+File:Fr-Paris--napolitain.oga
+File:Fr-nicotinamide-fr FR-Paris.ogg
+File:Fr-Paris--nicotinamide.oga
+File:Fr-olive-fr-Paris.ogg
+File:Fr-Paris--olive.oga
+File:Fr-ontologique-fr FR-Paris.ogg
+File:Fr-Paris--ontologique.oga
+File:Fr-ontologiste-fr FR-Paris.ogg
+File:Fr-Paris--ontologiste.oga
+File:Fr-pas mal-fr FR-Paris.ogg
+File:Fr-Paris--pas mal.oga
+File:Fr-pass&#233;-fr-Paris.ogg
+File:Fr-Paris--pass&#233;.oga
+File:Fr-photosynth&#232;se-fr FR-Paris.ogg
+File:Fr-Paris--photosynth&#232;se.oga
+File:Fr-photosynth&#233;tique-fr FR-Paris.ogg
+File:Fr-Paris--photosynth&#233;tique.oga
+File:Fr-pique-fr-Paris.ogg
+File:Fr-Paris--pique.oga
+File:Fr-pomme cajou-fr FR-Paris.ogg
+File:Fr-Paris--pomme cajou.oga
+File:Fr-pomme de cajou-fr FR-Paris.ogg
+File:Fr-Paris--pomme de cajou.oga
+File:Fr-pomme de terre en robe des champs-fr FR-Paris.ogg
+File:Fr-Paris--pomme de terre en robe des champs.oga
+File:Fr-pommier de cajou-fr FR-Paris.ogg
+File:Fr-Paris--pommier de cajou.oga
+File:Fr-pommier d&#8217;acajou-fr FR-Paris.ogg
+File:Fr-Paris--pommier d&#8217;acajou.oga
+File:Fr-pourboire-fr-Paris.ogg
+File:Fr-Paris--pourboire.oga
+File:Fr-rendez-vous-fr-Paris.ogg
+File:Fr-Paris--rendez-vous.oga
+File:Fr-rural-fr-Paris.ogg
+File:Fr-Paris--rural.oga
+File:Fr-r&#233;gion fran&#231;aise-fr FR-Paris.ogg
+File:Fr-Paris--r&#233;gion fran&#231;aise.oga
+File:Fr-savoir-faire-fr-Paris.ogg
+File:Fr-Paris--savoir-faire.oga
+File:Fr-soliloquer-fr FR-Paris.ogg
+File:Fr-Paris--soliloquer.oga
+File:Fr-sur-fr-Paris.ogg
+File:Fr-Paris--sur.oga
+File:Fr-s&#233;ismologie-fr FR-Paris.ogg
+File:Fr-Paris--s&#233;ismologie.oga
+File:Fr-thiamine-fr FR-Paris.ogg
+File:Fr-Paris--thiamine.oga
+File:Fr-urbain-fr-Paris.ogg
+File:Fr-Paris--urbain.oga
+File:Fr-vague-fr-Paris.ogg
+File:Fr-Paris--vague.oga
+File:Fr-vitamine A-fr FR-Paris.ogg
+File:Fr-Paris--vitamine A.oga
+File:Fr-vitamine B-fr FR-Paris.ogg
+File:Fr-Paris--vitamine B.oga
+File:Fr-vitamine B1-fr FR-Paris.ogg
+File:Fr-Paris--vitamine B1.oga
+File:Fr-vitamine B12-fr FR-Paris.ogg
+File:Fr-Paris--vitamine B12.oga
+File:Fr-vitamine B2-fr FR-Paris.ogg
+File:Fr-Paris--vitamine B2.oga
+File:Fr-vitamine B3-fr FR-Paris.ogg
+File:Fr-Paris--vitamine B3.oga
+File:Fr-vitamine B5-fr FR-Paris.ogg
+File:Fr-Paris--vitamine B5.oga
+File:Fr-vitamine B6-fr FR-Paris.ogg
+File:Fr-Paris--vitamine B6.oga
+File:Fr-vitamine B8-fr FR-Paris.ogg
+File:Fr-Paris--vitamine B8.oga
+File:Fr-vitamine B9-fr FR-Paris.ogg
+File:Fr-Paris--vitamine B9.oga
+File:Fr-vitamine H-fr FR-Paris.ogg
+File:Fr-Paris--vitamine H.oga
+File:Fr-vitamine PP-fr FR-Paris.ogg
+File:Fr-Paris--vitamine PP.oga
+File:Fr-vitamine-fr FR-Paris.ogg
+File:Fr-Paris--vitamine.oga
+File:Fr-vitamin&#233;-fr FR-Paris.ogg
+File:Fr-Paris--vitamin&#233;.oga
+File:Fr-vol&#233;e-fr-Paris.ogg
+File:Fr-Paris--vol&#233;e.oga
+File:Fr-&#192; qui mieux mieux-fr FR-Paris.ogg
+File:Fr-Paris--&#192; qui mieux mieux.oga
+File:Fr-&#201;tat-Major-fr FR-Paris.ogg
+File:Fr-Paris--&#201;tat-Major.oga
+File:Fr-&#201;tats-Unis-fr-Paris.oga
+File:Fr-Paris--&#201;tats-Unis.oga
+File:Fr-&#233;galitaire-fr FR-Paris.ogg
+File:Fr-Paris--&#233;galitaire.oga
+File:Fr-&#233;galitarisme-fr FR-Paris.ogg
+File:Fr-Paris--&#233;galitarisme.oga
+File:Fr-&#339;il, un &#339;il,des yeux-fr FR-Paris.ogg
+File:Fr-Paris--&#339;il, un &#339;il,des yeux.oga
+File:Fr-&#339;sophagite-fr FR-Paris.ogg
+File:Fr-Paris--&#339;sophagite.oga

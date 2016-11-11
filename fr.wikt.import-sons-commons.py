@@ -61,7 +61,7 @@ Niveau.append(u'')
 # Modification du wiki
 def modification(PageHS):
 	print(PageHS.encode(config.console_encoding, 'replace'))
-	if PageHS[len(PageHS)-len(u'.ogg'):] != u'.ogg': return
+	if PageHS[len(PageHS)-len(u'.ogg'):] != u'.ogg' and PageHS[len(PageHS)-len(u'.ogg'):] != u'.oga': return
 
 	mot = PageHS[len(u'File:'):len(PageHS)-len(u'.ogg')]
 	if mot.find(u'-') == -1:
@@ -82,10 +82,11 @@ def modification(PageHS):
 	except wikipedia.NoPage:
 		# Retrait d'un éventuel article ou une région dans le nom du fichier
 		mot1 = mot
-		if codelangue == u'fr':
-			if mot[0:3] == u'le ' or mot[0:3] == u'la ' or mot[0:4] == u'les ' or mot[0:3] == u'un ' or mot[0:3] == u'une ' or mot[0:4] == u'des ':
+				
+		if codelangue == u'de':
+			if mot[0:4] == u'der ' or mot[0:4] == u'die ' or mot[0:4] == u'das ' or mot[0:4] == u'den ':
 				mot = mot[mot.find(u' ')+1:]
-			if mot[0:3] == u'ca ' or mot[0:3] == u'be ':
+			if mot[0:3] == u'at ':
 				region = u'{{' + mot[0:2].upper() + u'|nocat=1}}'
 				mot = mot[mot.find(u' ')+1:]
 				
@@ -95,14 +96,7 @@ def modification(PageHS):
 			if mot[0:3] == u'us ' or mot[0:3] == u'uk ' or mot[0:3] == u'ca ' or mot[0:3] == u'au ':
 				region = u'{{' + mot[0:2].upper() + u'|nocat=1}}'
 				mot = mot[mot.find(u' ')+1:]
-				
-		elif codelangue == u'de':
-			if mot[0:4] == u'der ' or mot[0:4] == u'die ' or mot[0:4] == u'das ' or mot[0:4] == u'den ':
-				mot = mot[mot.find(u' ')+1:]
-			if mot[0:3] == u'at ':
-				region = u'{{' + mot[0:2].upper() + u'|nocat=1}}'
-				mot = mot[mot.find(u' ')+1:]
-				
+			
 		elif codelangue == u'es':
 			if mot[0:3] == u'el ' or mot[0:3] == u'lo ' or mot[0:3] == u'la ' or mot[0:3] == u'un ' or mot[0:4] == u'uno ' or mot[0:4] == u'una ' or mot[0:5] == u'unos ' or mot[0:5] == u'unas ' or mot[0:4] == u'los ':
 				mot = mot[mot.find(u' ')+1:]
@@ -114,20 +108,30 @@ def modification(PageHS):
 				mot = mot[mot.find(u' ')+1:]
 				mot = mot[mot.find(u' ')+1:]
 				
+		elif codelangue == u'fr':
+			if mot[:3] == u'le ' or mot[:3] == u'la ' or mot[:4] == u'les ' or mot[:3] == u'un ' or mot[:3] == u'une ' or mot[:4] == u'des ':
+				mot = mot[mot.find(u' ')+1:]
+			if mot[:3] == u'ca ' or mot[:3] == u'be ':
+				region = u'{{' + mot[:2].upper() + u'|nocat=1}}'
+				mot = mot[mot.find(u' ')+1:]
+			if mot[:6] == u'Paris ':
+				region = u'Paris (France)'
+				mot = mot[mot.find(u' ')+1:]
+				
 		elif codelangue == u'it':
 			if mot[0:3] == u'lo ' or mot[0:3] == u'la ' or mot[0:3] == u'le ' or mot[0:4] == u'gli ' or mot[0:3] == u'un ' or mot[0:4] == u'uno ' or mot[0:4] == u'una ':
 				mot = mot[mot.find(u' ')+1:]
-			
+		
+		elif codelangue == u'nl':
+			if mot[0:3] == u'de ' or mot[0:4] == u'een ' or mot[0:4] == u'het ':
+				mot = mot[mot.find(u' ')+1:]
+							
 		elif codelangue == u'pt':
 			if mot[0:2] == u'a ' or mot[0:2] == u'o ' or mot[0:3] == u'as ' or mot[0:3] == u'os ':
 				mot = mot[mot.find(u' ')+1:]
 			if mot[0:3] == u'br ' or mot[0:3] == u'pt ':
 				region = u'{{' + mot[0:2].upper() + u'|nocat=1}}'
-		
-		elif codelangue == u'nl':
-			if mot[0:3] == u'de ' or mot[0:4] == u'een ' or mot[0:4] == u'het ':
-				mot = mot[mot.find(u' ')+1:]
-				
+
 		elif codelangue == u'sv':
 			if mot[0:3] == u'en ' or mot[0:4] == u'ett ':
 				mot = mot[mot.find(u' ')+1:]				
@@ -149,7 +153,7 @@ def modification(PageHS):
 	except wikipedia.IsRedirectPage:
 		PageBegin = page1.get(get_redirect=True)
 	
-	regex = ur'{{pron\|[^\|]*\|' + codelangue + u'}}'
+	regex = ur'{{pron\|[^\}|]*\|' + codelangue + u'}}'
 	if re.compile(regex).search(PageBegin):
 		prononciation = PageBegin[re.search(regex,PageBegin).start()+len(u'{{pron|'):re.search(regex,PageBegin).end()-len(u'|'+codelangue+u'}}')]
 	else:
@@ -378,7 +382,7 @@ def crawlerCatLink(pagename,apres):
 				
 # Traitement d'une recherche
 def crawlerSearch(pagename):
-	gen = pagegenerators.SearchPageGenerator(pagename, namespaces = "0")
+	gen = pagegenerators.SearchPageGenerator(pagename, site=site, namespaces=6)
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		modification(Page.title())
 
@@ -408,20 +412,20 @@ def crawlerAll(start):
 
 # Permet à tout le monde de stopper le bot en lui écrivant
 def ArretDUrgence():
-		page = Page(site,u'User talk:' + mynick)
-		if page.exists():
-			PageTemp = u''
-			try:
-				PageTemp = page.get()
-			except wikipedia.NoPage: return
-			except wikipedia.IsRedirectPage: return
-			except wikipedia.LockedPage: return
-			except wikipedia.ServerError: return
-			except wikipedia.BadTitle: return
-			except pywikibot.EditConflict: return
-			if PageTemp != u"{{/Stop}}":
-				pywikibot.output (u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
-				exit(0)
+	page = Page(site,u'User talk:' + mynick)
+	if page.exists():
+		PageTemp = u''
+		try:
+			PageTemp = page.get()
+		except wikipedia.NoPage: return
+		except wikipedia.IsRedirectPage: return
+		except wikipedia.LockedPage: return
+		except wikipedia.ServerError: return
+		except wikipedia.BadTitle: return
+		except pywikibot.EditConflict: return
+		if PageTemp != u"{{/Stop}}":
+			pywikibot.output (u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
+			exit(0)
 
 def sauvegarde(PageCourante, Contenu, summary):
 	result = "ok"
@@ -497,10 +501,23 @@ if len(sys.argv) > 1:
 		TraitementPage = modification(u'File:En-us-gill.ogg')
 	elif sys.argv[1] == u'cat':
 		TraitementCategory = crawlerCat2(u'Category:Pronunciation‎', True, u'')
+	elif sys.argv[1] == u'lien':
+		TraitementLiens = crawlerLink(u'Modèle:vx',u'')
+	elif sys.argv[1] == u'page':
+		TraitementPage = modification(u'Utilisateur:JackPotte/test2')
+	elif sys.argv[1] == u'trad':
+		TraitementLiens = crawlerLink(u'Modèle:trad-',u'')
+	elif sys.argv[1] == u's':
+		TraitementRecherche = crawlerSearch(u'File:fr-Paris--')	# à faire : renommer les "File:Fr-œsophagienne-fr FR-Paris.ogg" avec "{{rename|Fr-Paris--œsophagienne.ogg|4|Pronunciation norm for Wiktionaries sync}}"
+	elif sys.argv[1] == u'u':
+		crawlerUser(u'Utilisateur:JackPotte', 1000,u'')
 else:
 	TraitementCategory = crawlerCat(u'Category:Pronunciation‎', True, u'')		
 ''' à faire :
-	pb avec crawlercat non récursif Commons (l 333)
+	Insérer avant les clés de tri : https://fr.wiktionary.org/w/index.php?title=Orthop%C3%A4de&diff=prev&oldid=21702612
+	pb avec crawlercat non récursif Commons (test l 333). Ex : ne traite que les "a*" de [[Catégorie:French pronunciations]]
+	try save except service unavailable, wait
+	niveau de récursivité limite
 	ignorer [[Category:Ogg sound files of spoken French]] ou Wikinews, Wikipedia
 '''
 # python fr.wikt.import-sons-commons.py p d

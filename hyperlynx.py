@@ -1516,3 +1516,10 @@ def log(source):
 #	sauter les longs PDF comme dans [[w:Apollo 11]]
 #	spécifier le remplacement “citation” s'il a les paramètres du modèle anglais
 # 	remplacer "éditeur" par "périodique" dans "article"
+
+'''
+[[w:9M133 Kornet]]
+File "C:\Users\hbossot\Documents\GitHub\JackBot\hyperlynx.py", line 1037, in TestURL
+    res = urllib2.urlopen(req)
+ssl.CertificateError: hostname 'en.rian.ru' doesn't match either of '*.sputniknews.com', 'sputniknews.com'
+'''

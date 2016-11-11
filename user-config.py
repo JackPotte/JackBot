@@ -24,7 +24,8 @@ sysopnames['wikibooks']['en']='JackPotte'
 
 usernames['meta']['meta'] = u'JackBot'
 usernames['species']['species'] = u'JackBot'
-usernames['commons']['commons'] = u'JackBot'
+#usernames['commons']['commons'] = u'JackBot'
+usernames['commons']['commons'] = u'JackPotte'
 
 usernames['wikipedia']['aa'] = u'JackBot'
 usernames['wikipedia']['ab'] = u'JackBot'

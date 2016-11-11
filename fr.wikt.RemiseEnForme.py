@@ -5526,7 +5526,7 @@ def modification(PageC):
 					 (u'fr',u'er',u'er',u'ir',u'ir',u're',u'ar'),
 					 (u'ru',u'',u'',u'',u'',u'',u'')
 				   ]
-		if PageEnd.find(u'{{voir-conj') == -1 and PageEnd.find(u'[[Image:') == -1:	# Bug (ex : https://fr.wiktionary.org/w/index.php?title=d%C3%A9finir&diff=10128404&oldid=10127687)	{{lang/span\|[a-z\-]*\|([^}]*)}}
+		if not PageC in [u'ça va', u'ché', u'estoufaresse', u'estoufarès', u'reco'] and PageEnd.find(u'{{voir-conj') == -1 and PageEnd.find(u'[[Image:') == -1:	# Sinon bugs (ex : https://fr.wiktionary.org/w/index.php?title=d%C3%A9finir&diff=10128404&oldid=10127687, https://fr.wiktionary.org/w/index.php?title=%C3%A7a_va&diff=next&oldid=21742913)
 			if debogage: print u'Ajout de {{conj}}'
 			for l in LanguesC:
 				if re.compile(ur'{{S\|verbe\|'+l[0]+u'}}').search(PageEnd) and not re.compile(ur'{{S\|verbe\|'+l[0]+u'}}.*\n*.*{{conj[a-z1-3\| ]*').search(PageEnd):
