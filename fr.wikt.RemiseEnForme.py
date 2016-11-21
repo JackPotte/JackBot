@@ -954,6 +954,7 @@ Modele.append(u'nutrition')
 Modele.append(u'obsolète')
 Modele.append(u'oenol')
 Modele.append(u'oenologie')
+Modele.append(u'œnologie')
 Modele.append(u'oiseaux')
 Modele.append(u'opti')
 Modele.append(u'optique')
@@ -1052,6 +1053,7 @@ Modele.append(u'ppart')
 Modele.append(u'préhistoire')
 Modele.append(u'prépositionnel')
 Modele.append(u'presse')
+Modele.append(u'prestidigitation')
 Modele.append(u'prnl')
 Modele.append(u'probabilités')
 Modele.append(u'prog')
@@ -5526,7 +5528,7 @@ def modification(PageC):
 					 (u'fr',u'er',u'er',u'ir',u'ir',u're',u'ar'),
 					 (u'ru',u'',u'',u'',u'',u'',u'')
 				   ]
-		if not PageC in [u'ça va', u'ché', u'estoufaresse', u'estoufarès', u'reco'] and PageEnd.find(u'{{voir-conj') == -1 and PageEnd.find(u'[[Image:') == -1:	# Sinon bugs (ex : https://fr.wiktionary.org/w/index.php?title=d%C3%A9finir&diff=10128404&oldid=10127687, https://fr.wiktionary.org/w/index.php?title=%C3%A7a_va&diff=next&oldid=21742913)
+		if not PageC in [u'ça va', u'ché', u'estoufaresse', u'estoufarès', u'reco', u'rpz'] and PageEnd.find(u'{{voir-conj') == -1 and PageEnd.find(u'[[Image:') == -1:	# Sinon bugs (ex : https://fr.wiktionary.org/w/index.php?title=d%C3%A9finir&diff=10128404&oldid=10127687, https://fr.wiktionary.org/w/index.php?title=%C3%A7a_va&diff=next&oldid=21742913)
 			if debogage: print u'Ajout de {{conj}}'
 			for l in LanguesC:
 				if not (l[0] == u'fr' and PageC[-3:] == u'ave'):
