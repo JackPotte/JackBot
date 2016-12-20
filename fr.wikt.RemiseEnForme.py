@@ -1638,7 +1638,7 @@ def modification(PageC):
 		PageTemp = re.sub(ur'{{S\| ?compos(és)?\|?[a-zé]*}}', u'{{S|composés}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?dial\|?[a-z ]*}}', u'{{S|variantes dialectales}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?dimin(inutifs)?\|?[a-z ]*}}', u'{{S|diminutifs}}', PageTemp)
-		PageTemp = re.sub(ur'{{S\| ?d(é|e)riv(é|e)s?\|?[a-z ]*}}', u'{{S|dérivés}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\| ?d(é|e)riv(é|e)s?(\|[a-z ]*}}|}})', u'{{S|dérivés}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?drv\|?[a-z ]*}}', u'{{S|dérivés}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?dérivés int\|?[a-z ]*}}', u'{{S|dérivés autres langues}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?drv\-int\|?[a-z ]*}}', u'{{S|dérivés autres langues}}', PageTemp)
