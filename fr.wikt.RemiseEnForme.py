@@ -492,6 +492,7 @@ Modele.append(u'biol')
 Modele.append(u'biologie')
 Modele.append(u'biologie cellulaire')
 Modele.append(u'biophysique')
+Modele.append(u'bivalves')
 Modele.append(u'boissons')
 Modele.append(u'botan')
 Modele.append(u'botanique')
@@ -6059,9 +6060,4 @@ python movepages.py -lang:fr -family:wiktionary -pairs:"articles_fr_wiktionary.t
 python interwiki.py -lang:fr -family:wiktionary -page:"Wiktionnaire:Accueil communautaire"
 python interwiki.py -lang:fr -family:wiktionary -wiktionary -autonomous -force -usercontribs:Otourly
 python protect.py -lang:fr -family:wiktionary -cat:"Élections de patrouilleurs" -summary:"Vote archivé" -move:sysop -edit:sysop
-
-à faire vite : ajouter les groupes des verbes, les paragraphes {{S|traduction}}, et les {{pron}}/{{prononciation}}
--debug=2 : plusieurs valid par page
-lancer les .ogg
-parseur d'extraction des pron commun avec créer-flexion ? (ex : split(|)). Synchro des pron existant
 '''
