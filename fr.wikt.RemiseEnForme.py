@@ -30,9 +30,9 @@ print str(frameinfo.lineno)
 # Déclaration
 language = "fr"
 family = "wiktionary"
-mynick = "JackBot"
 site = getSite(language,family)
 siteEN = getSite('en',family)
+username = config.usernames[site.family.name][site.lang]
 debogageLent = False
 TailleAnagramme = 4 # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 Modele = [] # Liste des modèles du site à traiter
@@ -678,6 +678,7 @@ Modele.append(u'fantastique')
 Modele.append(u'fauconnerie')
 Modele.append(u'félins')
 Modele.append(u'ferro')
+Modele.append(u'ferroviaire')
 Modele.append(u'fig.')
 Modele.append(u'figure')
 Modele.append(u'figuré')
@@ -1533,7 +1534,6 @@ Niveau.append(u'')
 
 # Modification du wiki
 def modification(PageC):
-	#PageC = u'Catégorie:'+PageC[:1].upper()+PageC[1:]
 	summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
 	if debogage: print u'------------------------------------'
 	print(PageC.encode(config.console_encoding, 'replace'))
@@ -1623,6 +1623,7 @@ def modification(PageC):
 		PageTemp = PageTemp.replace(u'{{S|adj-num|', u'{{S|adjectif numéral|')
 		PageTemp = PageTemp.replace(u'{{S|adv|', u'{{S|adverbe|')
 		PageTemp = PageTemp.replace(u'{{S|interj|', u'{{S|interjection|')
+		PageTemp = PageTemp.replace(u'{{S|locution adverbiale', u'{{S|adverbe')
 		PageTemp = PageTemp.replace(u'{{S|locution phrase|', u'{{S|locution-phrase|')
 		PageTemp = PageTemp.replace(u'{{S|nom commun', u'{{S|nom|')
 		PageTemp = PageTemp.replace(u'{{S|nom-fam|', u'{{S|nom de famille|')
@@ -5913,7 +5914,7 @@ def crawlerAll(start):
 	
 # Permet à tout le monde de stopper le bot en lui écrivant
 def ArretDUrgence():
-		page = Page(site,u'User talk:' + mynick)
+		page = Page(site,u'User talk:' + username)
 		if page.exists():
 			PageTemp = u''
 			try:
@@ -5974,9 +5975,9 @@ if len(sys.argv) > 1:
 		else:
 			DebutScan = sys.argv[2]
 	if sys.argv[1] == u'test':
-		TraitementPage = modification(u'User:' + mynick + u'/test')
+		TraitementPage = modification(u'User:' + username + u'/test')
 	elif sys.argv[1] == u't':
-		TraitementPage = modification(u'User:' + mynick + u'/test court')
+		TraitementPage = modification(u'User:' + username + u'/test court')
 	elif sys.argv[1] == u'tu':
 		# Test unitaire
 		TraitementPage = addLine(u"== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n{{fr-rég|}}\n\'\'\'{{subst:PAGENAME}}\'\'\' {{pron||fr}} {{genre ?}}\n#\n#* ''''\n==== {{S|variantes orthographiques}} ====\n==== {{S|synonymes}} ====\n==== {{S|antonymes}} ====\n==== {{S|dérivés}} ====\n==== {{S|apparentés}} ====\n==== {{S|vocabulaire}} ====\n==== {{S|hyperonymes}} ====\n==== {{S|hyponymes}} ====\n==== {{S|méronymes}} ====\n==== {{S|holonymes}} ====\n==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n=== {{S|prononciation}} ===\n* {{pron||fr}}\n* {{écouter|<!--  précisez svp la ville ou la région -->||audio=|lang=}}\n==== {{S|homophones}} ====\n==== {{S|paronymes}} ====\n=== {{S|anagrammes}} ===\n=== {{S|voir aussi}} ===\n* {{WP}}\n=== {{S|références}} ===\n{{clé de tri}}", u'fr', u'prononciation', u'* {{pron|boum|fr}}')
