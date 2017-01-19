@@ -5540,7 +5540,7 @@ def modification(PageC):
 			if debogage: print u'Ajout de {{conj}}'
 			for l in LanguesC:
 				if not (l[0] == u'fr' and PageC[-3:] == u'ave'):
-					if re.compile(ur'{{S\|verbe\|'+l[0]+u'}}').search(PageEnd) and not re.compile(ur'{{S\|verbe\|'+l[0]+u'}}.*\n*.*{{conj[a-z1-3\| ]*').search(PageEnd):
+					if re.compile(ur'{{S\|verbe\|'+l[0]+u'}}').search(PageEnd) and not re.compile(ur'{{S\|verbe\|'+l[0]+u'}}[= ]+\n+[^\n]*\n*[^\n]*\n*{{conj[a-z1-3\| ]*').search(PageEnd):
 						if debogage: print u' {{conj|'+l[0]+u'}} manquant'
 						if re.compile(ur'{{S\|verbe\|'+l[0]+u'}}[^\n]*\n*[^\n]*\n*[^\{]*{{pron\|[^\}]*}}').search(PageEnd):
 							if debogage: print u' ajout de {{conj|'+l[0]+u'}} après {{pron|...}}'
