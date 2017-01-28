@@ -13,8 +13,7 @@ build
 dist
 i18n/
 login-data/*
-logs/*
-logs*
+logs/*.*
 pywikibot/families/
 pywikibot/throttle.ctrl
 pywikibot.egg-info/
