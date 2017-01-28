@@ -2,6 +2,7 @@
 /.tox
 /data*
 *.bak
+*.log
 *.pyc
 *.pyo
 *.py~
@@ -20,3 +21,6 @@ pywikibot.egg-info/
 pywikibot.lwp
 throttle.ctrl
 user-*.py
+/nbproject/project.properties
+/nbproject/project.xml
+/nbproject/private/

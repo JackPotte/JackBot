@@ -12,12 +12,14 @@ family = "wikibooks"
 site = getSite(language,family)
 debogage = False
 debogageLent = False
+allNS = True
 
 # Modification du wiki
 def modification(PageHS):
 	summary = u'Formatage'
 	page = Page(site,PageHS)
-	if page.namespace() != 0: return
+	if not allNS:
+		if page.namespace() != 0: return
 	try:
 		PageBegin = page.get()
 	except wikipedia.NoPage:
@@ -26,44 +28,53 @@ def modification(PageHS):
 	except wikipedia.IsRedirectPage:
 		print "Redirect page"
 		return
-	PageTemp = PageBegin
-	PageEnd = u''
-	
-	# Traitement des modèles
-	regex = ur'\{\{[P|p]ortail([^\}]*)\}\}'
-	if re.search(regex, PageTemp):
-		summary += ', retrait des portails'
-		PageTemp = re.sub(regex, ur'', PageTemp)
-	regex = ur'\{\{[P|p]alette([^\}]*)\}\}'
-	if re.search(regex, PageTemp):
-		summary += ', retrait des palettes'
-		PageTemp = re.sub(regex, ur'', PageTemp)
-	PageTemp = PageTemp.replace(u'{{PDC}}', u'profondeur de champ')
-	PageTemp = PageTemp.replace(u'[[Catégorie:{{PAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
-	PageTemp = PageTemp.replace(u'[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
-	PageTemp = PageTemp.replace(u'{{BookCat}}', u'{{AutoCat}}')
-	PageTemp = PageTemp.replace(u'{{reflist}}', u'{{Références}}')
-	PageTemp = PageTemp.replace(u'{{Reflist}}', u'{{Références}}')
-	PageTemp = PageTemp.replace(u'<references/>', u'{{Références}}')
-	PageTemp = PageTemp.replace(u'<references />', u'{{Références}}')
-	
-	# Traitement des hyperliens
-	PageTemp = hyperlynx.hyperlynx(PageTemp)
-	
-	# Clés de tri pour les noms propres
-	if PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') != -1:
-		PageEnd = PageEnd + PageTemp[:PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')]
-		PageTemp = PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'):PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie')] + PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}'):]
-	
-	''' Ne convient pas pour les biographies https://fr.wikibooks.org/w/index.php?title=Photographie/Personnalit%C3%A9s/B/Pierre_Berdoy&diff=prev&oldid=526479
-	regex = ur'()\n{{DEFAULTSORT[^}]*}}'
-	if re.search(regex, PageTemp):
-		PageTemp = re.sub(regex, ur'\1', PageTemp)
-	regex = ur'()\n{{defaultsort[^}]*}}'
-	if re.search(regex, PageTemp):
-		PageTemp = re.sub(regex, ur'\1', PageTemp)
-	'''
-	PageEnd = PageEnd + PageTemp
+	PageEnd = PageBegin
+
+	if page.namespace() == 0:
+		PageEnd = u''
+		PageTemp = PageBegin
+
+		# Traitement des modèles
+		regex = ur'\{\{[P|p]ortail([^\}]*)\}\}'
+		if re.search(regex, PageTemp):
+			summary += ', retrait des portails'
+			PageTemp = re.sub(regex, ur'', PageTemp)
+		regex = ur'\{\{[P|p]alette([^\}]*)\}\}'
+		if re.search(regex, PageTemp):
+			summary += ', retrait des palettes'
+			PageTemp = re.sub(regex, ur'', PageTemp)
+		PageTemp = PageTemp.replace(u'{{PDC}}', u'profondeur de champ')
+		PageTemp = PageTemp.replace(u'[[Catégorie:{{PAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
+		PageTemp = PageTemp.replace(u'[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
+		PageTemp = PageTemp.replace(u'{{BookCat}}', u'{{AutoCat}}')
+		PageTemp = PageTemp.replace(u'{{reflist}}', u'{{Références}}')
+		PageTemp = PageTemp.replace(u'{{Reflist}}', u'{{Références}}')
+		PageTemp = PageTemp.replace(u'<references/>', u'{{Références}}')
+		PageTemp = PageTemp.replace(u'<references />', u'{{Références}}')
+
+		# Traitement des hyperliens
+		PageTemp = hyperlynx.hyperlynx(PageTemp)
+
+		# Clés de tri pour les noms propres
+		if PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') != -1:
+			PageEnd = PageEnd + PageTemp[:PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')]
+			PageTemp = PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'):PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie')] + PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}'):]
+
+		''' Ne convient pas pour les biographies https://fr.wikibooks.org/w/index.php?title=Photographie/Personnalit%C3%A9s/B/Pierre_Berdoy&diff=prev&oldid=526479
+		regex = ur'()\n{{DEFAULTSORT[^}]*}}'
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'\1', PageTemp)
+		regex = ur'()\n{{defaultsort[^}]*}}'
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'\1', PageTemp)
+		'''
+		PageEnd = PageEnd + PageTemp
+
+	elif page.namespace() == 10:
+		summary = summary + u', catégories'
+		PageEnd = PageEnd.replace(u'Category', u'Catégorie')
+		PageEnd = PageEnd.replace(u'Catégorie:Utilisateur ', u'Catégorie:Utilisateurs ')
+
 	if PageEnd != PageBegin: sauvegarde(page,PageEnd,summary)
 
 
@@ -240,7 +251,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'txt':
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Pages using duplicate arguments in template calls',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Modèles Boîte Babel',True,u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:Reflist',u'')
 		TraitementLiens = crawlerLink(u'Modèle:BookCat',u'')
