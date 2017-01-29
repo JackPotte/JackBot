@@ -689,7 +689,7 @@ Modele.append(u'figuré')
 Modele.append(u'figures')
 Modele.append(u'finan')
 Modele.append(u'finance')
-Modele.append(u'fiscalité')'
+Modele.append(u'fiscalité')
 Modele.append(u'fleurs')
 Modele.append(u'fonderie')
 Modele.append(u'fontainerie')
@@ -2316,9 +2316,17 @@ def modification(PageC):
 		while PageTemp.find(u'|notat=1') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'|notat=1')] + u'|nocat=1' + PageTemp[PageTemp.find(u'|notat=1')+len(u'|notat=1'):len(PageTemp)]
 
-		regex = ur'\{\{ISBN\|([^\}\n]*)\}\}'
-		if re.search(regex, PageTemp):
-			PageTemp = re.sub(regex, ur'ISBN \1', PageTemp)
+		regex = ur'\(*ISBN +([0-9\-]+)\)*'
+		if re.search(regex, PageTemp): PageTemp = re.sub(regex, ur'{{ISBN|\1}}', PageTemp)
+
+		if PageTemp.find(u'{{avant 1835}}') and (PageC[-1:] == u's' or PageC[-1:] == u't') and PageTemp.find(u'=== {{S|adjectif|fr|flexion}} ===\n{{fr-rég|') != -1:
+			if debogage: print u'Modèle avant 1835'
+			PageTemp2 = PageTemp[PageTemp.find(u'=== {{S|adjectif|fr|flexion}} ===\n{{fr-rég|')+len(u'=== {{S|adjectif|fr|flexion}} ===\n{{fr-rég|'):]
+			pron = u''
+			if PageTemp2.find(u'|') != -1 and PageTemp2.find(u'|') < PageTemp2.find(u'=') and PageTemp2.find(u'|') < PageTemp2.find(u'}}'):
+				pron = PageTemp2[:PageTemp2.find(u'|')]
+			PageTemp2 = PageTemp2[PageTemp2.find(u'\n'):]
+			PageTemp = PageTemp[:PageTemp.find(u'=== {{S|adjectif|fr|flexion}} ===\n')] + u'=== {{S|adjectif|fr|flexion}} ===\n{{fr-accord-t-avant1835|' + PageC[:-1] + u'|' + pron + u'}}' + PageTemp2
 
 		# Modèles à déplacer
 		if PageTemp.find(u'{{ru-conj') != -1:
@@ -6000,7 +6008,9 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:ex',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:français moderne d’avant 1835',False,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Pages utilisant des liens magiques ISBN',False,u'')
+		#TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections de type avec locution forcée',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Termes peu attestés sans langue précisée',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Genres manquants en français',False,u'')
