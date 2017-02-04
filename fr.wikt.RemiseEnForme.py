@@ -1659,6 +1659,7 @@ def modification(PageC):
 		PageTemp = re.sub(ur'{{S\| ?(é|e)tym(ologie)?\|?[a-z ]*}}', u'{{S|étymologie}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?exp(ressions)?\|?[a-z ]*}}', u'{{S|expressions}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?gent(ilés)?\|?[a-zé]*}}', u'{{S|gentilés}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\| ?faux\-amis?\|?[a-zé]*}}', u'{{S|faux-amis}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?holo(nymes)?\|?[a-z ]*}}', u'{{S|holonymes}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?homo(phones)?\|?[a-z ]*}}', u'{{S|homophones}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?hyper(onymes)?\|?[a-z ]*}}', u'{{S|hyperonymes}}', PageTemp)
@@ -1667,6 +1668,7 @@ def modification(PageC):
 		PageTemp = re.sub(ur'{{S\| ?note\|?[a-z ]*}}', u'{{S|note}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?notes\|?[a-z ]*}}', u'{{S|notes}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?paro(nymes)?\|?[a-z ]*}}', u'{{S|paronymes}}', PageTemp)
+		PageTemp = re.sub(ur'{{S\| ?phrases?\|?[a-z ]*}}', u'{{S|phrases}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?pron(onciation)?\|?[a-z ]*}}', u'{{S|prononciation}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?q\-syn\|?[a-z ]*}}', u'{{S|quasi-synonymes}}', PageTemp)
 		PageTemp = re.sub(ur'{{S\| ?quasi(\-| )syn(onymes)?\|?[a-z ]*}}', u'{{S|quasi-synonymes}}', PageTemp)
@@ -5817,7 +5819,7 @@ def crawlerCat(category,recursif,apres):
 	modifier = u'False'
 	cat = catlib.Category(site, category)
 	pages = cat.articlesList(False)
-	gen =  pagegenerators.NamespaceFilterPageGenerator(pages, [0])
+	gen = pagegenerators.NamespaceFilterPageGenerator(pages, [0])
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		if not apres or apres == u'' or modifier == u'True':
 			modification(Page.title()) #crawlerLink(Page.title())
@@ -5836,7 +5838,7 @@ def crawlerLink(pagename,apres):
 	#pagename = unicode(arg[len('-links:'):], 'utf-8')
 	page = wikipedia.Page(site, pagename)
 	gen = pagegenerators.ReferringPageGenerator(page)
-	gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])
+	gen = pagegenerators.NamespaceFilterPageGenerator(gen, [0])
 	for Page in pagegenerators.PreloadingGenerator(gen,100):
 		#print(Page.title().encode(config.console_encoding, 'replace'))
 		if not apres or apres == u'' or modifier == u'True':
@@ -6008,7 +6010,6 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:ex',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:français moderne d’avant 1835',False,u'')
 		TraitementCategorie = crawlerCat(u'Catégorie:Pages utilisant des liens magiques ISBN',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections de type avec locution forcée',False,u'')

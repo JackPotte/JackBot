@@ -261,8 +261,9 @@ else:
 	TraitementPage = modification(u'Diaspora : Le guide du parfait débutant/Icônes des réseaux sociaux sur le profil')
 
 '''
-TraitementLiens = crawlerLink(u'Modèle:Palette',u'')
 TraitementCategory = crawlerCat(u'Catégorie:Personnalités de la photographie')
 while 1:
 	TraitementRC = crawlerRC()
+	
+à faire : [[Spécial:Pages_non_catégorisées]] auto
 '''
