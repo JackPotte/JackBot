@@ -2568,7 +2568,19 @@ def modification(PageC):
 				regex = ur'(\n\'\'\'' + PageC + u'\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + ModeleGent[l][1] + ur'\|' + PageC[:-1] + ur')}}'
 				if re.search(regex, PageTemp):
 					PageTemp = re.sub(regex, ur'\n\4|\2}}\1\2\3', PageTemp)
-					
+
+		if PageC[-1:] == 's' and PageC[-2:] != 'ss' and PageC[-3:] != 'ies' and PageC[-3:] != 'ses' and PageC[-3:] != 'ves':
+			if debogage: print u'Ajout des modèles de forme'
+			regex = ur"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + PageC + ur"''' {{pron\|)([^\|}]*)([s|z]\|en}}\n# *'*'*Pluriel de'*'* \[\[)([^#\|\]]+)"
+			if re.search(regex, PageTemp):
+				PageTemp = re.sub(regex, ur'\1{{en-nom-rég|sing=\5|\3}}\n\2\3\4\5', PageTemp)
+				summary = summary + u', ajout de {{en-nom-rég}}'
+
+			regex = ur"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + PageC + ur"'''\n# *'*'*Pluriel de'*'* \[\[)([^#\|\]]+)"
+			if re.search(regex, PageTemp):
+				PageTemp = re.sub(regex, ur'\1{{en-nom-rég|sing=\3|}}\n\2\3', PageTemp)
+				summary = summary + u', ajout de {{en-nom-rég}}'
+
 		# URL de références : elles ne contiennent pas les diacritiques des {{PAGENAME}}
 		if debogage: print u'Références'
 		while PageTemp.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=') != -1:
@@ -5993,6 +6005,12 @@ if len(sys.argv) > 1:
 		TraitementPage = modification(u'User:' + username + u'/test')
 	elif sys.argv[1] == u't':
 		TraitementPage = modification(u'User:' + username + u'/test court')
+	elif sys.argv[1] == u'ts':
+		TraitementPage = modification(u'70s')
+		TraitementPage = modification(u'abaci')
+		TraitementPage = modification(u'aardwolves')
+		TraitementPage = modification(u'abacuses')
+		TraitementPage = modification(u'abatises')
 	elif sys.argv[1] == u'tu':
 		# Test unitaire
 		TraitementPage = addLine(u"== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n{{fr-rég|}}\n\'\'\'{{subst:PAGENAME}}\'\'\' {{pron||fr}} {{genre ?}}\n#\n#* ''''\n==== {{S|variantes orthographiques}} ====\n==== {{S|synonymes}} ====\n==== {{S|antonymes}} ====\n==== {{S|dérivés}} ====\n==== {{S|apparentés}} ====\n==== {{S|vocabulaire}} ====\n==== {{S|hyperonymes}} ====\n==== {{S|hyponymes}} ====\n==== {{S|méronymes}} ====\n==== {{S|holonymes}} ====\n==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n=== {{S|prononciation}} ===\n* {{pron||fr}}\n* {{écouter|<!--  précisez svp la ville ou la région -->||audio=|lang=}}\n==== {{S|homophones}} ====\n==== {{S|paronymes}} ====\n=== {{S|anagrammes}} ===\n=== {{S|voir aussi}} ===\n* {{WP}}\n=== {{S|références}} ===\n{{clé de tri}}", u'fr', u'prononciation', u'* {{pron|boum|fr}}')
@@ -6003,7 +6021,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'm':
 		TraitementLiens = crawlerLink(u'Modèle:ex',u'')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Singuliers manquants en français',False,u'')
+		TraitementCategorie = crawlerCat(u'Formes de noms communs en anglais',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Wiktionnaire:Sections de type avec locution forcée',False,u'')
 		#TraitementCategorie = crawlerCat(u'Catégorie:Termes peu attestés sans langue précisée',False,u'')
