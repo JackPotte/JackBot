@@ -2268,6 +2268,8 @@ def modification(PageC):
 		PageTemp = PageTemp.replace(u'{{typo|', u'{{typographie|')
 		PageTemp = PageTemp.replace(u'{{vêtement|', u'{{vêtements|')
 		
+		PageTemp = PageTemp.replace(u'{{en-nom-rég-double|', u'{{en-nom-rég|')
+		
 		while PageTemp.find(u'[[Annexe:Couleurs en français]]') != -1:
 			PageTemp = PageTemp[0:PageTemp.find(u'[[Annexe:Couleurs en français]]')] + u'{{Thésaurus|fr|couleur}}' + PageTemp[PageTemp.find(u'[[Annexe:Couleurs en français]]')+len(u'[[Annexe:Couleurs en français]]'):len(PageTemp)]
 		while PageTemp.find(u'{{Annexe|Couleurs en français}}') != -1:
