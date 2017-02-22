@@ -8,34 +8,13 @@ import CleDeTri, HTMLUnicode
 from wikipedia import *
 
 # Déclaration
+debogage = True
 debogageLent = True
 mynick = "JackBot"
 language = "fr"
 family = "wiktionary"
 site = getSite(language,family)
 Langue = u'fr'
-
-# Français
-Modele = [] 	# Liste des modèles du site à traiter
-Param = [] 		# Paramètre du lemme associé
-Definition = []	# Ligne de définition déduite du modèle
-Modele.append(u'fr-rég-x')
-Param.append(u's')
-Modele.append(u'fr-rég')
-Param.append(u's')
-Modele.append(u'fr-accord-cons')
-Param.append(u'ms')
-# à faire : ajouter Catégorie:Modèles d’accord en français
-#Modele.append(u'fr-accord-en')
-#Modele.append(u'fr-accord-rég')
-
-# Anglais
-Modele.append(u'en-nom-rég')
-Param.append(u'sing')
-Definition.append(u'Pluriel de')
-Modele.append(u'en-conj-rég')
-Param.append(u'sing')
-Definition.append(u'Passé de') # Présent...
 
 # Modification du wiki
 def modification(PageHS):
@@ -68,7 +47,29 @@ def modification(PageHS):
 	except wikipedia.ServerError:
 		print u' ServerError l 52'
 		return
-		
+
+	# Français
+	Modele = [] 	# Liste des modèles du site à traiter
+	Param = [] 		# Paramètre du lemme associé
+	Definition = []	# Ligne de définition déduite du modèle
+	Modele.append(u'fr-rég-x')
+	Param.append(u's')
+	Modele.append(u'fr-rég')
+	Param.append(u's')
+	Modele.append(u'fr-accord-cons')
+	Param.append(u'ms')
+	# à faire : ajouter Catégorie:Modèles d’accord en français
+	#Modele.append(u'fr-accord-en')
+	#Modele.append(u'fr-accord-rég')
+
+	# Anglais
+	Modele.append(u'en-nom-rég')
+	Param.append(u'sing')
+	Definition.append(u'Pluriel de')
+	Modele.append(u'en-conj-rég')
+	Param.append(u'sing')
+	Definition.append(u'Passé de') # Présent...
+
 	if PageSing.find(u'{{formater') != -1 or PageSing.find(u'{{SI|') != -1 or PageSing.find(u'{{SI}}') != -1 or PageSing.find(u'{{supp|') != -1 or PageSing.find(u'{{supp}}') != -1 or PageSing.find(u'{{supprimer|') != -1 or PageSing.find(u'{{supprimer') != -1 or PageSing.find(u'{{PàS') != -1 or PageSing.find(u'{{S|faute') != -1 or PageSing.find(u'{{S|erreur') != -1:
 		if debogage: print u'Page en travaux : non traitée l 60'
 		return

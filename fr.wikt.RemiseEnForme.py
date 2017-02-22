@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # coding: utf-8
 '''
 Ce script formate les pages du Wiktionnaire, tous les jours après minuit depuis le labs Wikimedia :
@@ -18,8 +18,8 @@ Testé ici : http://fr.wiktionary.org/w/index.php?title=Utilisateur%3AJackBot%2F
 '''
 
 # Importation des modules
-import catlib, pagegenerators, os, codecs, urllib, re, collections, socket, langues
-import hyperlynx, CleDeTri, HTMLUnicode		# Faits maison
+import catlib, pagegenerators, os, codecs, urllib, re, collections, socket
+import hyperlynx, CleDeTri, HTMLUnicode, langues		# Faits maison
 from wikipedia import *
 ''' Bug des n° de lignes auto
 from inspect import currentframe, getframeinfo
@@ -1188,7 +1188,7 @@ Modele.append(u'tennis de table')
 Modele.append(u'term')
 Modele.append(u'terme')
 Modele.append(u'terme non standard')
-Modele.append(u'text')
+Modele.append(u'territoires')
 Modele.append(u'text')
 Modele.append(u'textile')
 Modele.append(u'théât')
@@ -2571,7 +2571,7 @@ def modification(PageC):
 				if re.search(regex, PageTemp):
 					PageTemp = re.sub(regex, ur'\n\4|\2}}\1\2\3', PageTemp)
 
-		if PageC[-1:] == 's' and PageC[-2:] != 'ss' and PageC[-3:] != 'ies' and PageC[-3:] != 'ses' and PageC[-3:] != 'ves':
+		if PageC[-1:] == 's' and PageC[-2:] != 'ss' and PageC[-3:] != 'hes' and PageC[-3:] != 'ies' and PageC[-3:] != 'ses' and PageC[-3:] != 'ves':
 			if debogage: print u'Ajout des modèles de forme'
 			regex = ur"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + PageC + ur"''' {{pron\|)([^\|}]*)([s|z]\|en}}\n# *'*'*Pluriel de'*'* \[\[)([^#\|\]]+)"
 			if re.search(regex, PageTemp):
@@ -6100,4 +6100,5 @@ python interwiki.py -lang:fr -family:wiktionary -wiktionary -autonomous -force -
 python protect.py -lang:fr -family:wiktionary -cat:"Élections de patrouilleurs" -summary:"Vote archivé" -move:sysop -edit:sysop
 
 python pwb.py delete -lang:fr -family:wikiversity -file:"scripts/JackBot/articles_fr_wiktionary.txt"
+python pwb.py JackBot/fr.wiktionary.format
 '''
