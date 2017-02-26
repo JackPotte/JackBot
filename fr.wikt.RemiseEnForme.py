@@ -1695,7 +1695,12 @@ def modification(PageC):
 
 
 		if debogage: print u'Formatage des flexions'
-		if PageC[-1:] == 's':
+		regex = ur"(=== {{S\|nom\|fr)\|flexion(}} ===\n'''" + PageC + ur"''' [^\n]*{{fsing}})"
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'\1\2', PageTemp)
+			summary = summary + u', un nom féminin n\'est pas une flexion en français'
+
+		if PageC.find(u'*') == -1 and PageC[-1:] == 's':
 			natures = [u'nom', u'adjectif', u'suffixe']
 			# Français
 			for nature in natures:
@@ -1704,18 +1709,18 @@ def modification(PageC):
 					PageTemp = re.sub(regex, ur'\1', PageTemp)
 					summary = summary + u', retrait de |num='
 
-				regex = ur"(=== {{S\|" + nature + ur"\|fr)(\}} ===\n[^\n]*\n*'''" + PageC + ur"'''[^\n]*\n# *'*'*(Masculin)*(Féminin)* *[P|p]luriel de *'*'* *\[\[)"
+				regex = ur"(=== {{S\|" + nature + ur"\|fr)(\}} ===\n[^\n]*\n*'''" + PageC + ur"'''[^\n]*\n# *'*'*(Masculin)*(Féminin)* *[P|p]luriel de?'?’? *'*'* *\[\[)"
 				if re.search(regex, PageTemp):
 					PageTemp = re.sub(regex, ur'\1|flexion\2', PageTemp)
 					summary = summary + u', ajout de |flexion'
 
 				if PageC[-2:] != 'ss':
-					regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"''' {{pron\|)([^\|}]*)(\|fr}}\n# *'*'*(Masculin)*(Féminin)* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
+					regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"''' {{pron\|)([^\|}]*)(\|fr}}\n# *'*'*(Masculin)*(Féminin)* *[P|p]luriel de?'?’? *'*'* *\[\[)([^#\|\]]+)"
 					if re.search(regex, PageTemp):
 						PageTemp = re.sub(regex, ur'\1{{fr-rég|s=\7|\3}}\n\2\3\4\7', PageTemp)
 						summary = summary + u', ajout de {{fr-rég}}'
 
-					regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"'''\n# *'*'*(Masculin)*(Féminin)* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
+					regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"'''\n# *'*'*(Masculin)*(Féminin)* *[P|p]luriel de?'?’? *'*'* *\[\[)([^#\|\]]+)"
 					if re.search(regex, PageTemp):
 						PageTemp = re.sub(regex, ur'\1{{fr-rég|s=\5|}}\n\2\5', PageTemp)
 						summary = summary + u', ajout de {{fr-rég}}'
