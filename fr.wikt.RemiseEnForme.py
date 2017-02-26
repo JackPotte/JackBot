@@ -473,6 +473,7 @@ Modele.append(u'auxiliaire')
 Modele.append(u'aviat')
 Modele.append(u'aviation')
 Modele.append(u'avions')
+Modele.append(u'bactéries')
 Modele.append(u'bactério')
 Modele.append(u'bactériologie')
 Modele.append(u'badminton')
@@ -1692,6 +1693,46 @@ def modification(PageC):
 		'''if PageC.find(u' ') != -1:
 			PageTemp = PageTemp.replace(u'|locution=oui}}', u'}}')'''
 
+
+		if debogage: print u'Formatage des flexions'
+		if PageC[-1:] == 's':
+			natures = [u'nom', u'adjectif', u'suffixe']
+			# Français
+			for nature in natures:
+				regex = ur"(== {{langue|fr}} ==\n=== {{S\|" + nature + ur"\|fr)\|num=2"
+				if re.search(regex, PageTemp):
+					PageTemp = re.sub(regex, ur'\1', PageTemp)
+					summary = summary + u', retrait de |num='
+
+				regex = ur"(=== {{S\|" + nature + ur"\|fr)(\}} ===\n[^\n]*\n*'''" + PageC + ur"'''[^\n]*\n# *'*'*(Masculin)*(Féminin)* *[P|p]luriel de *'*'* *\[\[)"
+				if re.search(regex, PageTemp):
+					PageTemp = re.sub(regex, ur'\1|flexion\2', PageTemp)
+					summary = summary + u', ajout de |flexion'
+
+				if PageC[-2:] != 'ss':
+					regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"''' {{pron\|)([^\|}]*)(\|fr}}\n# *'*'*(Masculin)*(Féminin)* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
+					if re.search(regex, PageTemp):
+						PageTemp = re.sub(regex, ur'\1{{fr-rég|s=\7|\3}}\n\2\3\4\7', PageTemp)
+						summary = summary + u', ajout de {{fr-rég}}'
+
+					regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"'''\n# *'*'*(Masculin)*(Féminin)* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
+					if re.search(regex, PageTemp):
+						PageTemp = re.sub(regex, ur'\1{{fr-rég|s=\5|}}\n\2\5', PageTemp)
+						summary = summary + u', ajout de {{fr-rég}}'
+
+			# Anglais
+			if PageC[-2:] != 'ss' and PageC[-3:] != 'hes' and PageC[-3:] != 'ies' and PageC[-3:] != 'ses' and PageC[-3:] != 'ves':
+				regex = ur"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + PageC + ur"''' {{pron\|)([^\|}]*)([s|z]\|en}}\n# *'*'*Pluriel de *'*'* *\[\[)([^#\|\]]+)"
+				if re.search(regex, PageTemp):
+					PageTemp = re.sub(regex, ur'\1{{en-nom-rég|sing=\5|\3}}\n\2\3\4\5', PageTemp)
+					summary = summary + u', ajout de {{en-nom-rég}}'
+
+				regex = ur"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + PageC + ur"'''\n# *'*'*Pluriel de *'*'* *\[\[)([^#\|\]]+)"
+				if re.search(regex, PageTemp):
+					PageTemp = re.sub(regex, ur'\1{{en-nom-rég|sing=\3|}}\n\2\3', PageTemp)
+					summary = summary + u', ajout de {{en-nom-rég}}'
+
+
 		# Formatage général des traductions
 		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier}}}}', u'{{trad-trier}}\n{{trad-début}}')
 		PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier|fr}}}}', u'{{trad-trier}}\n{{trad-début}}')
@@ -2570,18 +2611,6 @@ def modification(PageC):
 				regex = ur'(\n\'\'\'' + PageC + u'\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + ModeleGent[l][1] + ur'\|' + PageC[:-1] + ur')}}'
 				if re.search(regex, PageTemp):
 					PageTemp = re.sub(regex, ur'\n\4|\2}}\1\2\3', PageTemp)
-
-		if PageC[-1:] == 's' and PageC[-2:] != 'ss' and PageC[-3:] != 'hes' and PageC[-3:] != 'ies' and PageC[-3:] != 'ses' and PageC[-3:] != 'ves':
-			if debogage: print u'Ajout des modèles de forme'
-			regex = ur"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + PageC + ur"''' {{pron\|)([^\|}]*)([s|z]\|en}}\n# *'*'*Pluriel de'*'* \[\[)([^#\|\]]+)"
-			if re.search(regex, PageTemp):
-				PageTemp = re.sub(regex, ur'\1{{en-nom-rég|sing=\5|\3}}\n\2\3\4\5', PageTemp)
-				summary = summary + u', ajout de {{en-nom-rég}}'
-
-			regex = ur"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + PageC + ur"'''\n# *'*'*Pluriel de'*'* \[\[)([^#\|\]]+)"
-			if re.search(regex, PageTemp):
-				PageTemp = re.sub(regex, ur'\1{{en-nom-rég|sing=\3|}}\n\2\3', PageTemp)
-				summary = summary + u', ajout de {{en-nom-rég}}'
 
 		# URL de références : elles ne contiennent pas les diacritiques des {{PAGENAME}}
 		if debogage: print u'Références'
@@ -6008,11 +6037,8 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u't':
 		TraitementPage = modification(u'User:' + username + u'/test court')
 	elif sys.argv[1] == u'ts':
-		TraitementPage = modification(u'70s')
-		TraitementPage = modification(u'abaci')
-		TraitementPage = modification(u'aardwolves')
-		TraitementPage = modification(u'abacuses')
-		TraitementPage = modification(u'abatises')
+		TraitementPage = modification(u'Abénakies')
+		TraitementPage = modification(u'abadis')
 	elif sys.argv[1] == u'tu':
 		# Test unitaire
 		TraitementPage = addLine(u"== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n{{fr-rég|}}\n\'\'\'{{subst:PAGENAME}}\'\'\' {{pron||fr}} {{genre ?}}\n#\n#* ''''\n==== {{S|variantes orthographiques}} ====\n==== {{S|synonymes}} ====\n==== {{S|antonymes}} ====\n==== {{S|dérivés}} ====\n==== {{S|apparentés}} ====\n==== {{S|vocabulaire}} ====\n==== {{S|hyperonymes}} ====\n==== {{S|hyponymes}} ====\n==== {{S|méronymes}} ====\n==== {{S|holonymes}} ====\n==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n=== {{S|prononciation}} ===\n* {{pron||fr}}\n* {{écouter|<!--  précisez svp la ville ou la région -->||audio=|lang=}}\n==== {{S|homophones}} ====\n==== {{S|paronymes}} ====\n=== {{S|anagrammes}} ===\n=== {{S|voir aussi}} ===\n* {{WP}}\n=== {{S|références}} ===\n{{clé de tri}}", u'fr', u'prononciation', u'* {{pron|boum|fr}}')
