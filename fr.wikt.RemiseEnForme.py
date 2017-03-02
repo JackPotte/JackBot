@@ -1693,8 +1693,12 @@ def modification(PageC):
 		'''if PageC.find(u' ') != -1:
 			PageTemp = PageTemp.replace(u'|locution=oui}}', u'}}')'''
 
+		PageTemp = PageTemp.replace(u' \n', u'\n')
+
 
 		if debogage: print u'Formatage des flexions'
+		PageTemp = PageTemp.replace(u'{{fr-rég|||', u'{{fr-rég||')
+
 		regex = ur"(=== {{S\|nom\|fr)\|flexion(}} ===\n'''" + PageC + ur"''' [^\n]*{{fsing}})"
 		if re.search(regex, PageTemp):
 			PageTemp = re.sub(regex, ur'\1\2', PageTemp)
@@ -1709,30 +1713,30 @@ def modification(PageC):
 					PageTemp = re.sub(regex, ur'\1', PageTemp)
 					summary = summary + u', retrait de |num='
 
-				regex = ur"(=== {{S\|" + nature + ur"\|fr)(\}} ===\n[^\n]*\n*'''" + PageC + ur"'''[^\n]*\n# *'*'*(Masculin)*(Féminin)* *[P|p]luriel de?'?’? *'*'* *\[\[)"
+				regex = ur"(=== {{S\|" + nature + ur"\|fr)(\}} ===\n[^\n]*\n*'''" + PageC + ur"'''[^\n]*\n# *'* *(Masculin)*(Féminin)* *'* *[P|p]luriel de?'?’? *'* *\[\[)"
 				if re.search(regex, PageTemp):
 					PageTemp = re.sub(regex, ur'\1|flexion\2', PageTemp)
 					summary = summary + u', ajout de |flexion'
 
 				if PageC[-2:] != 'ss':
-					regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"''' {{pron\|)([^\|}]*)(\|fr}}\n# *'*'*(Masculin)*(Féminin)* *[P|p]luriel de?'?’? *'*'* *\[\[)([^#\|\]]+)"
+					regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"''' *{{pron\|([^\|]*)\|fr}} *({{[mf]\|?[^}]*}})*\n# *'*(Masculin)*(Féminin)* *[P|p]luriel de?'?’? *'* *\[\[)([^#\|\]]+)"
 					if re.search(regex, PageTemp):
-						PageTemp = re.sub(regex, ur'\1{{fr-rég|s=\7|\3}}\n\2\3\4\7', PageTemp)
+						PageTemp = re.sub(regex, ur'\1{{fr-rég|s=\7|\3}}\n\2\7', PageTemp)
 						summary = summary + u', ajout de {{fr-rég}}'
 
-					regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"'''\n# *'*'*(Masculin)*(Féminin)* *[P|p]luriel de?'?’? *'*'* *\[\[)([^#\|\]]+)"
+					regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"''' *({{[mf]\|?[^}]*}})*\n# *'*(Masculin)*(Féminin)* *[P|p]luriel de?'?’? *'* *\[\[)([^#\|\]]+)"
 					if re.search(regex, PageTemp):
-						PageTemp = re.sub(regex, ur'\1{{fr-rég|s=\5|}}\n\2\5', PageTemp)
+						PageTemp = re.sub(regex, ur'\1{{fr-rég|s=\6|}}\n\2\6', PageTemp)
 						summary = summary + u', ajout de {{fr-rég}}'
 
 			# Anglais
 			if PageC[-2:] != 'ss' and PageC[-3:] != 'hes' and PageC[-3:] != 'ies' and PageC[-3:] != 'ses' and PageC[-3:] != 'ves':
-				regex = ur"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + PageC + ur"''' {{pron\|)([^\|}]*)([s|z]\|en}}\n# *'*'*Pluriel de *'*'* *\[\[)([^#\|\]]+)"
+				regex = ur"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + PageC + ur"''' {{pron\|)([^\|}]*)([s|z]\|en}}\n# *'*Pluriel de *'* *\[\[)([^#\|\]]+)"
 				if re.search(regex, PageTemp):
 					PageTemp = re.sub(regex, ur'\1{{en-nom-rég|sing=\5|\3}}\n\2\3\4\5', PageTemp)
 					summary = summary + u', ajout de {{en-nom-rég}}'
 
-				regex = ur"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + PageC + ur"'''\n# *'*'*Pluriel de *'*'* *\[\[)([^#\|\]]+)"
+				regex = ur"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + PageC + ur"'''\n# *'*Pluriel de *'* *\[\[)([^#\|\]]+)"
 				if re.search(regex, PageTemp):
 					PageTemp = re.sub(regex, ur'\1{{en-nom-rég|sing=\3|}}\n\2\3', PageTemp)
 					summary = summary + u', ajout de {{en-nom-rég}}'
@@ -1800,12 +1804,17 @@ def modification(PageC):
 		regex = ur'}}{{trad\-fin}}'
 		if re.search(regex, PageTemp):
 			PageTemp = re.sub(regex, u'}}\n{{trad-fin}}', PageTemp)
-		
-		''' Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
+
+
+		if debogage: print u'Ajout de sections'
+		if debogage: print u' traductions'
+		''' Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant. if not flex, faute, variante...
 		if PageTemp.find(u'{{langue|fr}}') != -1 and PageTemp.find(u'{{S|traductions}}') == -1 and PageTemp.find(u'Variante d') == -1 and PageTemp.find(u'Synonyme d') == -1:
 			PageTemp = addCat(PageTemp, u'fr', u'\n==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n')
 			summary = summary + u', ajout de {{S|traductions}}'
 		'''
+		if debogage: print u' voir aussi' # ou vocabulaire
+		# thésaurus et annexe. Puis création des participes passés anglais rouges
 		
 		if page.namespace() != 12:
 			if debogage: print u'Ajout des {{voir}}'
@@ -5229,7 +5238,7 @@ def modification(PageC):
 											PageTemp = re.sub(regex, ur'\1', PageTemp)
 							'''	
 							#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
-							regex = ur'{{pluriel \?\|' + codelangue + u'}}(\n# ?\'*Pluriel)'
+							regex = ur"{{pluriel \?\|" + codelangue + ur"}}(\n# *'* *Pluriel )"
 							if re.search(regex, PageTemp):
 								PageTemp = re.sub(regex, ur'\1', PageTemp)
 							
@@ -5694,11 +5703,12 @@ def modification(PageC):
 	if debogage: print u'Test des URL'
 	#PageEnd = hyperlynx.hyperlynx(PageEnd)
 	if debogage: print (u'--------------------------------------------------------------------------------------------')
-	if PageEnd != PageBegin:
+	if PageEnd != PageBegin and PageEnd != PageBegin.replace(u' \n', u'\n'):
 		# Modifications mineures, ne justifiant pas une édition à elles seules
 		PageEnd = PageEnd.replace(u'  ', u' ')
 		PageEnd = PageEnd.replace(u'\n\n\n\n', u'\n\n\n')
 		PageEnd = PageEnd.replace(u'.\n=', u'.\n\n=')
+		PageEnd = PageEnd.replace(u' \n', u'\n')
 		sauvegarde(page,PageEnd, summary)
 	elif debogage:
 		print "Aucun changement"
