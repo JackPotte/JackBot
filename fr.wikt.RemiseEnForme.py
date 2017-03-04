@@ -5973,6 +5973,7 @@ def crawlerContentCatLink(pagename,apres):
 						PageBegin = getPage(pageObject)
 						if PageBegin != u'':
 							PageEnd = PageBegin.replace(u'{{thésaurus|', u'{{voir thésaurus|')
+							PageEnd = PageBegin.replace(u'\n{{voir thésaurus|', u'\n* {{voir thésaurus|')
 							PageEnd = addLine(PageEnd, thesaurus[1], u'vocabulaire', u'* {{voir thésaurus|' + thesaurus[1] + u'|' + thesaurus[0] + u'}}')
 
 							if PageEnd != PageBegin and PageEnd != PageBegin.replace(u' \n', u'\n'):
