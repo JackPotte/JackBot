@@ -5995,7 +5995,7 @@ def crawlerContentCatLink(pagename,apres):
 								PageEnd = PageEnd + PageTemp[:PageTemp.find(u'{{S|vocabulaire}} ====\n')+len(u'{{S|vocabulaire}} ====\n')]
 								PageTemp = PageTemp[PageTemp.find(u'{{S|vocabulaire}} ====\n')+len(u'{{S|vocabulaire}} ====\n'):]
 								regex = ur'\n==== {{S\|vocabulaire}} ====\n[^=]+\n='
-								while re.search(regex, PageTemp):
+								if re.search(regex, PageTemp):
 									regex2 = ur'\n===? '
 									if re.search(regex2, PageTemp):
 										if (re.search(regex, PageTemp).start() > re.search(regex2, PageTemp).start()): break
