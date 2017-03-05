@@ -5754,7 +5754,7 @@ def addLine(Page, CodeLangue, Section, Contenu):
 		if Page.find(Contenu) == -1 and Page.find(u'{{langue|' + CodeLangue + u'}}') != -1:
 			if Section == u'catégorie' and Contenu.find(u'[[Catégorie:') == -1: Contenu = u'[[Catégorie:' + Contenu + u']]'
 			if Section == u'clé de tri' and Contenu.find(u'{{clé de tri|') == -1: Contenu = u'{{clé de tri|' + Contenu + u'}}'
-			
+
 			# Recherche de l'ordre théorique de la section à ajouter
 			NumSection = NumeroSection(Section)
 			if NumSection == len(Sections):
@@ -5974,7 +5974,29 @@ def crawlerContentCatLink(pagename,apres):
 						if PageBegin != u'':
 							PageEnd = PageBegin.replace(u'{{thésaurus|', u'{{voir thésaurus|')
 							PageEnd = PageBegin.replace(u'\n{{voir thésaurus|', u'\n* {{voir thésaurus|')
-							PageEnd = addLine(PageEnd, thesaurus[1], u'vocabulaire', u'* {{voir thésaurus|' + thesaurus[1] + u'|' + thesaurus[0] + u'}}')
+							PageEnd = addLine(PageEnd, thesaurus[1], u'vocabulaire', u'* {{voir thésaurus|' +
+								thesaurus[1] + u'|' + thesaurus[0] + u'}}')
+
+							# Fusion des {{voir thésaurus}}
+							regex = ur'{{voir thésaurus\|([^\n}]+)}}\n\* {{voir thésaurus\|[a-z]+\|([^\n}]+)}}'
+							while re.search(regex, PageEnd):
+								PageEnd = re.sub(regex, ur'{{voir thésaurus|\1|\2}}', PageEnd)
+							
+							# Doubles in alphabetical order
+							PageTemp = PageEnd
+							PageEnd = u''
+							while PageTemp.find(u'{{voir thésaurus|') != -1:
+								PageEnd = PageEnd + PageTemp[:PageTemp.find(u'{{voir thésaurus|')+len(u'{{voir thésaurus|')]
+								PageTemp = PageTemp[PageTemp.find(u'{{voir thésaurus|')+len(u'{{voir thésaurus|'):]
+								codelangue = PageTemp[:PageTemp.find(u'|')]
+								params = PageTemp[len(codelangue)+1:PageTemp.find(u'}}')]
+								params = params.split(u'|')
+								params = list(set(params))
+								params.sort(key=lambda v: v.upper())
+								params = u'|'.join(params)
+								PageEnd = PageEnd + codelangue + u'|' + params
+								PageTemp = PageTemp[PageTemp.find(u'}}'):]
+							PageEnd = PageEnd + PageTemp
 
 							if PageEnd != PageBegin and PageEnd != PageBegin.replace(u' \n', u'\n'):
 								# Modifications mineures, ne justifiant pas une édition à elles seules
