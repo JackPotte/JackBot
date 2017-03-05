@@ -5973,7 +5973,7 @@ def crawlerContentCatLink(pagename,apres):
 					if debug > 1: print liensPages
 					
 					for lienPage in liensPages:
-						pageObject = wikipedia.Page(site, u'plante')
+						pageObject = wikipedia.Page(site, lienPage)
 						PageBegin = getPage(pageObject)
 						if PageBegin != u'':
 							PageEnd = PageBegin.replace(u'{{thésaurus|', u'{{voir thésaurus|')
@@ -6218,7 +6218,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'u':
 		crawlerUser(u'Utilisateur:JackPotte', 1000,u'')
 	elif sys.argv[1] == u'thesaurus':
-		crawlerContentCatLink(u'Thésaurus en français', u'Thésaurus:astuce/français')
+		crawlerContentCatLink(u'Thésaurus en français', u'')
 	else:
 		modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
