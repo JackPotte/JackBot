@@ -5974,8 +5974,11 @@ def crawlerContentCatLink(pagename,apres):
 						if PageBegin != u'':
 							PageEnd = PageBegin.replace(u'{{thésaurus|', u'{{voir thésaurus|')
 							PageEnd = PageBegin.replace(u'\n{{voir thésaurus|', u'\n* {{voir thésaurus|')
-							PageEnd = addLine(PageEnd, thesaurus[1], u'vocabulaire', u'* {{voir thésaurus|' +
-								thesaurus[1] + u'|' + thesaurus[0] + u'}}')
+
+							regex = ur'{{voir thésaurus\|[^}]*' + thesaurus[0] + ur'[^}]*}}'
+							if not re.search(regex, PageEnd):
+								PageEnd = addLine(PageEnd, thesaurus[1], u'vocabulaire', u'* {{voir thésaurus|' +
+									thesaurus[1] + u'|' + thesaurus[0] + u'}}')
 
 							# Fusion des {{voir thésaurus}}
 							regex = ur'{{voir thésaurus\|([^\n}]+)}}\n\* {{voir thésaurus\|[a-z]+\|([^\n}]+)}}'
