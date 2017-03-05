@@ -5973,7 +5973,11 @@ def crawlerContentCatLink(pagename,apres):
 					if debug > 1: print liensPages
 					
 					for lienPage in liensPages:
-						pageObject = wikipedia.Page(site, lienPage)
+						try:
+							pageObject = wikipedia.Page(site, lienPage)
+						except pywikibot.exceptions.Invalidtitle:
+							print ' invalidtitle dans ' + thesaurus[0]
+							print lienPage
 						PageBegin = getPage(pageObject)
 						if PageBegin != u'':
 							PageEnd = PageBegin.replace(u'{{thésaurus|', u'{{voir thésaurus|')
