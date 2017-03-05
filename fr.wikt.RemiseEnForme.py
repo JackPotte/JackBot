@@ -5955,14 +5955,18 @@ def crawlerContentCatLink(pagename,apres):
 	cat = catlib.Category(site, pagename)
 	pages = cat.articlesList(False)
 	for Page in pagegenerators.PreloadingGenerator(pages,100):
-		if debug > 0: print(Page.title().encode(config.console_encoding, 'replace'))
-		page = wikipedia.Page(site, Page.title())
+		title = Page.title()
+		if debug > 0: print(title.encode(config.console_encoding, 'replace'))
+		page = wikipedia.Page(site, title)
 		if not apres or apres == u'' or modifier == u'True':
 			pageThesaurus = getPage(page)
 			if pageThesaurus != u'':
-				if pageThesaurus.find(u'{{en-tête thésaurus|') != -1:
-					thesaurus = pageThesaurus[pageThesaurus.find(u'{{en-tête thésaurus|')+len(u'{{en-tête thésaurus|'):]
+				if pageThesaurus.find(u'{{en-tête thésaurus') != -1:
+					thesaurus = pageThesaurus[pageThesaurus.find(u'{{en-tête thésaurus')+len(u'{{en-tête thésaurus'):]
 					thesaurus = thesaurus[:thesaurus.find(u'}}')].split(u'|')
+					if len(thesaurus) == 0: thesaurus.append(title[len(u'Thésaurus:'):title.find(u'/')])
+					if thesaurus[0] == u'': thesaurus[0] = title[len(u'Thésaurus:'):title.find(u'/')]
+					if len(thesaurus) == 1: thesaurus.append('fr')
 					if debug > 1: print u'Code langue = ' + thesaurus[1]
 					if debug > 1: print u'Thésaurus = ' + thesaurus[0]
 					liensPages = re.findall(ur".*\[\[([^\]:]+)\]\].*", pageThesaurus)
@@ -6013,7 +6017,7 @@ def crawlerContentCatLink(pagename,apres):
 								PageEnd = PageEnd.replace(u' \n', u'\n')
 								sauvegarde(pageObject, PageEnd, u'Ajout de thésaurus')
 
-		elif Page.title() == apres:
+		elif title == apres:
 			modifier = u'True'	
 
 # Traitement d'une recherche
@@ -6196,7 +6200,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'u':
 		crawlerUser(u'Utilisateur:JackPotte', 1000,u'')
 	elif sys.argv[1] == u'thesaurus':
-		crawlerContentCatLink(u'Thésaurus en français', u'')
+		crawlerContentCatLink(u'Thésaurus en français', u'Thésaurus:bâton/français')
 	else:
 		modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
