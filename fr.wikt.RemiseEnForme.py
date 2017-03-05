@@ -5988,12 +5988,27 @@ def crawlerContentCatLink(pagename,apres):
 								PageEnd = addLine(PageEnd, thesaurus[1], u'vocabulaire', u'* {{voir thésaurus|' +
 									thesaurus[1] + u'|' + thesaurus[0] + u'}}')
 
-							# Fusion des {{voir thésaurus}}
+							# Double sections
+							PageTemp = PageEnd
+							PageEnd = u''
+							while PageTemp.find(u'{{S|vocabulaire}} ====\n') != -1:
+								PageEnd = PageEnd + PageTemp[:PageTemp.find(u'{{S|vocabulaire}} ====\n')+len(u'{{S|vocabulaire}} ====\n')]
+								PageTemp = PageTemp[PageTemp.find(u'{{S|vocabulaire}} ====\n')+len(u'{{S|vocabulaire}} ====\n'):]
+								regex = ur'(?!\n=== ).+\n==== {{S\|vocabulaire}} ====\n[^=]+\n='
+								while re.search(regex, PageTemp):
+									if debug > 0: print ' Doublon de section trouvé'
+									section2 = PageTemp[re.search(regex, PageTemp).start()+len(u'\n==== {{S|vocabulaire}} ====\n'):re.search(regex, PageTemp).end()-1]
+									if debug > 0: print section2.encode(config.console_encoding, 'replace')
+									PageEnd = PageEnd + section2
+									PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + u'\n=' + PageTemp[re.search(regex, PageTemp).end():]
+							PageEnd = PageEnd + PageTemp
+
+							# Double templates {{voir thésaurus}}
 							regex = ur'{{voir thésaurus\|([^\n}]+)}}\n\* {{voir thésaurus\|[a-z]+\|([^\n}]+)}}'
 							while re.search(regex, PageEnd):
 								PageEnd = re.sub(regex, ur'{{voir thésaurus|\1|\2}}', PageEnd)
-							
-							# Doubles in alphabetical order
+
+							# Double parameters in alphabetical order
 							PageTemp = PageEnd
 							PageEnd = u''
 							while PageTemp.find(u'{{voir thésaurus|') != -1:
@@ -6112,12 +6127,12 @@ def getPage(page):
 		try:
 			PageBegin = page.get()
 		except wikipedia.NoPage:
-			print u' NoPage l 6081'
+			if debug > 0: print u' NoPage l 6081' + page.title()
 			return u''
 		except wikipedia.IsRedirectPage: 
 			PageBegin = page.get(get_redirect=True)
 	else:
-		print u' NoPage l 6086'
+		if debug > 0: print u' NoPage l 6086 ' + page.title()
 		return u''
 	return PageBegin
 
@@ -6200,7 +6215,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'u':
 		crawlerUser(u'Utilisateur:JackPotte', 1000,u'')
 	elif sys.argv[1] == u'thesaurus':
-		crawlerContentCatLink(u'Thésaurus en français', u'Thésaurus:bâton/français')
+		crawlerContentCatLink(u'Thésaurus en français', u'') #Thésaurus:bâton/français
 	else:
 		modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
