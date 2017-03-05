@@ -5969,15 +5969,24 @@ def crawlerContentCatLink(pagename,apres):
 					if len(thesaurus) == 1: thesaurus.append('fr')
 					if debug > 1: print u'Code langue = ' + thesaurus[1]
 					if debug > 1: print u'Thésaurus = ' + thesaurus[0]
-					liensPages = re.findall(ur".*\[\[([^\]:]+)\]\].*", pageThesaurus)
+					liensPages = re.findall(ur".*\[\[([^\]:\#\|]+)\]\].*", pageThesaurus)
 					if debug > 1: print liensPages
 					
 					for lienPage in liensPages:
 						try:
 							pageObject = wikipedia.Page(site, lienPage)
-						except pywikibot.exceptions.Invalidtitle:
-							print ' invalidtitle dans ' + thesaurus[0]
+						except wikipedia.NoPage:
+							print ' no page dans ' + thesaurus[0]
 							print lienPage
+							break
+						except wikipedia.BadTitle:
+							print ' bad title dans ' + thesaurus[0]
+							print lienPage
+							break
+						except wikipedia.InvalidTitle:
+							print ' invalid title dans ' + thesaurus[0]
+							print lienPage
+							break
 						PageBegin = getPage(pageObject)
 						if PageBegin != u'':
 							PageEnd = PageBegin.replace(u'{{thésaurus|', u'{{voir thésaurus|')
@@ -6222,7 +6231,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'u':
 		crawlerUser(u'Utilisateur:JackPotte', 1000,u'')
 	elif sys.argv[1] == u'thesaurus':
-		crawlerContentCatLink(u'Thésaurus en français', u'')
+		crawlerContentCatLink(u'Thésaurus en français', u'Thésaurus:coude/français')
 	else:
 		modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
