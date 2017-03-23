@@ -7,7 +7,6 @@ Ce script vérifie toutes les URL des articles :
 	3) il traduit les noms et paramètres de ces modèles en français (ex : {{cite web|title=}} par {{lien web|titre=}})
 	4) il ajoute ou retire {{lien brisé}} le cas échéant
 '''
-# {{Date|3|M->mai|2012}}
 
 # Déclaration
 import sys, os, catlib, pagegenerators, codecs, urllib, urllib2, httplib, json, pprint, urlparse, datetime, re, webbrowser, cookielib, socket #, ssl
@@ -69,7 +68,17 @@ ModeleFR.append(u'ouvrage')
 limiteL = len(ModeleFR)	# Limite de la liste des modèles traduis de l'anglais (langue=en)
 
 # Modèle avec alias français
+ModeleEN.append(u'deadlink')
+ModeleFR.append(u'lien brisé')
+ModeleEN.append(u'lien brise')
+ModeleFR.append(u'lien brisé')
+ModeleEN.append(u'lien cassé')
+ModeleFR.append(u'lien brisé')
 ModeleEN.append(u'lien mort')
+ModeleFR.append(u'lien brisé')
+ModeleEN.append(u'lien web brisé')
+ModeleFR.append(u'lien brisé')
+ModeleEN.append(u'webarchive')
 ModeleFR.append(u'lien brisé')
 ModeleEN.append(u'cita web')
 ModeleFR.append(u'lien web')

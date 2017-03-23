@@ -357,49 +357,54 @@ if len(sys.argv) > 1:
 		else:
 			DebutScan = sys.argv[2]
 	if sys.argv[1] == u'test':
-		TraitementPage = modification(u'Utilisateur:' + mynick + u'/test')
+		modification(u'Utilisateur:' + mynick + u'/test')
 	elif sys.argv[1] == u'test2':
-		TraitementPage = modification(u'Utilisateur:' + mynick + u'/test2')
+		modification(u'Utilisateur:' + mynick + u'/test2')
 	elif sys.argv[1] == u'txt':
-		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
+		crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
 	elif sys.argv[1] == u'txt2':
-		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'2.txt')
+		crawlerFile(u'articles_' + language + u'_' + family + u'2.txt')
 	elif sys.argv[1] == u'u':
-		TraitementUtilisateur = crawlerUser(u'Utilisateur:JackBot')
+		crawlerUser(u'Utilisateur:JackBot')
 	elif sys.argv[1] == u'r':
 		if len(sys.argv) > 2:
-			TraitementRecherche = crawlerSearch(sys.argv[2])
+			crawlerSearch(sys.argv[2])
 		else:
-			TraitementRecherche = crawlerSearch(u'chinois')
+			crawlerSearch(u'chinois')
 	elif sys.argv[1] == u'mod':
 		modification(u'Modèle:Cladogramme Paraves')
 	elif sys.argv[1] == u'm':
-		TraitementLiens = crawlerLink(u'Modèle:périodique',u'')
+		crawlerLink(u'Modèle:périodique',u'')
 	elif sys.argv[1] == u'cat':
-		#TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec un paramètre obsolète',False,u'')
-		TraitementCategory = crawlerCat(u'Page du modèle Article comportant une erreur',False,u'')
-		#TraitementCategory = crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
+		#crawlerCat(u'Catégorie:Page utilisant un modèle avec un paramètre obsolète',False,u'')
+		crawlerCat(u'Page du modèle Article comportant une erreur',False,u'')
+		#crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')	# En test
 	elif sys.argv[1] == u'page':
-		TraitementPage = modification(u'Utilisateur:JackBot/test unitaire')
+		modification(u'Utilisateur:JackBot/test unitaire')
 	else:
-		TraitementPage = modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
+		modification(sys.argv[1])	# Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
 	# Quotidiennement :
 	TraitementCatPMID = crawlerCatPMID(u'Catégorie:Modèle de source')
-	TraitementLiens = crawlerLink(u'Modèle:Cite web',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cite journal',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cite news',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cite press release',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cite episode',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cite video',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cite conference',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cite arXiv',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Lien news',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Lien mort',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Docu',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cita web',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cita noticia',u'')
-	TraitementLiens = crawlerLink(u'Modèle:Cite book',u'')
+	crawlerLink(u'Modèle:Cite web',u'')
+	crawlerLink(u'Modèle:Cite journal',u'')
+	crawlerLink(u'Modèle:Cite news',u'')
+	crawlerLink(u'Modèle:Cite press release',u'')
+	crawlerLink(u'Modèle:Cite episode',u'')
+	crawlerLink(u'Modèle:Cite video',u'')
+	crawlerLink(u'Modèle:Cite conference',u'')
+	crawlerLink(u'Modèle:Cite arXiv',u'')
+	crawlerLink(u'Modèle:Lien news',u'')
+	crawlerLink(u'Modèle:deadlink',u'')
+	crawlerLink(u'Modèle:lien brise',u'')
+	crawlerLink(u'Modèle:lien cassé',u'')
+	crawlerLink(u'Modèle:lien mort',u'')
+	crawlerLink(u'Modèle:lien web brisé',u'')
+	crawlerLink(u'Modèle:webarchive',u'')
+	crawlerLink(u'Modèle:Docu',u'')
+	crawlerLink(u'Modèle:Cita web',u'')
+	crawlerLink(u'Modèle:Cita noticia',u'')
+	crawlerLink(u'Modèle:Cite book',u'')
 '''
 while 1:
 	TraitementRC = crawlerRC()
