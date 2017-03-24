@@ -1811,6 +1811,7 @@ def modification(PageC):
 		'''
 
 		if page.namespace() != 12:
+			PageTemp = PageTemp.replace(u'{{voir aussi|', u'{{voir|')
 			if debug > 0: print u'Ajout des {{voir}}'
 			if PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}') != -1:
 				PageTemp = PageTemp[0:PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|')] + PageC[0:1].lower() + PageC[1:] + PageTemp[PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|{{lc:{{PAGENAME}}}}'):len(PageTemp)]
