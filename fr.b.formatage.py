@@ -51,6 +51,9 @@ def modification(PageHS):
 		PageTemp = PageTemp.replace(u'{{Reflist}}', u'{{Références}}')
 		PageTemp = PageTemp.replace(u'<references/>', u'{{Références}}')
 		PageTemp = PageTemp.replace(u'<references />', u'{{Références}}')
+		
+		regex = ur'\(*ISBN +([0-9\-]+)\)*'
+		if re.search(regex, PageTemp): PageTemp = re.sub(regex, ur'{{ISBN|\1}}', PageTemp)
 
 		# Traitement des hyperliens
 		PageTemp = hyperlynx.hyperlynx(PageTemp)
@@ -251,7 +254,7 @@ if len(sys.argv) > 1:
 	elif sys.argv[1] == u'txt':
 		TraitementFichier = crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
 	elif sys.argv[1] == u'cat':
-		TraitementCategorie = crawlerCat(u'Catégorie:Modèles Boîte Babel',True,u'')
+		TraitementCategorie = crawlerCat(u'Catégorie:Pages utilisant des liens magiques ISBN', False, u'')
 	elif sys.argv[1] == u'lien':
 		TraitementLiens = crawlerLink(u'Modèle:Reflist',u'')
 		TraitementLiens = crawlerLink(u'Modèle:BookCat',u'')
