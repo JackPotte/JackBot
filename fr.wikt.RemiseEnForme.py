@@ -2244,7 +2244,8 @@ def modification(PageC):
 		PageTemp = PageTemp.replace(u'{{vx|', u'{{vieilli|')
 		PageTemp = PageTemp.replace(u'{{Citation needed}}', u'{{réf ?}}')
 		PageTemp = PageTemp.replace(u'{{Référence nécessaire}}', u'{{référence nécessaire}}')
-		
+		PageTemp = PageTemp.replace(u'{{escrim|', u'{{escrime|')
+
 		# Modèle en doublon
 		regex = ur"(\{\{départements\|[^}]*\}\}) ?\{\{géographie\|[^}]*\}\}"
 		pattern = re.compile(regex)
@@ -3089,7 +3090,7 @@ def modification(PageC):
 						if debug > 0:
 							print u'Modèle inclu dans '
 							print PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace')
-						PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'}}')+2]
+						PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
 						PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
 						#raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 						# Fin du nom du modèle
