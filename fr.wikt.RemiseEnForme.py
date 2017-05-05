@@ -1635,7 +1635,7 @@ def modification(PageC):
 		PageTemp = PageTemp.replace(u'{{S|interj|', u'{{S|interjection|')
 		PageTemp = PageTemp.replace(u'{{S|locution adverbiale', u'{{S|adverbe')
 		PageTemp = PageTemp.replace(u'{{S|locution phrase|', u'{{S|locution-phrase|')
-		PageTemp = PageTemp.replace(u'{{S|nom commun', u'{{S|nom|')
+		PageTemp = PageTemp.replace(u'{{S|nom commun|', u'{{S|nom|')
 		PageTemp = PageTemp.replace(u'{{S|nom-fam|', u'{{S|nom de famille|')
 		PageTemp = PageTemp.replace(u'{{S|nom-pr|', u'{{S|nom propre|')
 		PageTemp = PageTemp.replace(u'{{S|symb|', u'{{S|symbole|')
