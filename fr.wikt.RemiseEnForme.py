@@ -5702,21 +5702,6 @@ def modification(PageC):
 								except:
 									print PageC.encode(config.console_encoding, 'replace') + u' ' + langue.encode(config.console_encoding, 'replace') + u' sans {{pron}}'
 			'''
-		# Interwikis
-		if PageEnd.find(u'{{langue|en}}') != -1 and PageEnd.find(u'[[en:') == -1:
-			pageEN = Page(siteEN,PageC)
-			if pageEN.exists():
-				try:
-					PageEN = pageEN.get()
-				except wikipedia.NoPage:
-					print " NoPage l 4698"
-					return
-				except wikipedia.IsRedirectPage: 
-					print " IsRedirect l 4701"
-					return
-				if PageEN.find(u'==English==') != -1:
-					PageEnd = PageEnd + u'\n[[en:' + PageC + u']]'
-					summary = summary + u', ajout d\'interwiki'
 					
 	else:
 		PageEnd = PageTemp
