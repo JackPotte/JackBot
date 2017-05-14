@@ -987,8 +987,6 @@ def hyperlynx(PageTemp, debugLevel = 0):
 			if debugLevel > 0: print u'Saut après ' + CharFinURL
 			PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'//')+2+FinPageURL.find(CharFinURL)]
 			PageTemp = PageTemp[PageTemp.find(u'//')+2+FinPageURL.find(CharFinURL):len(PageTemp)]
-		elif FinModele == 0:
-			raw_input(u'Imprévu ligne 993')
 		else:
 			# Saut du reste du modèle courant (contenant parfois d'autres URL à laisser)
 			if debugLevel > 0: print u'Saut après }}'
