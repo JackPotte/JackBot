@@ -976,7 +976,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
 				if debugLevel > 0: print u'Aucun changement sur l\'URL non http'	
 		else:
 			if debugLevel > 1: print u'URL entre balises sautée'
-		
+
 		# Lien suivant, en sautant les URL incluses dans l'actuelle, et celles avec d'autres protocoles que http(s)
 		if FinModele == 0 and LienBrise == False:
 			FinPageURL = PageTemp[PageTemp.find(u'//')+2:len(PageTemp)]
@@ -987,13 +987,15 @@ def hyperlynx(PageTemp, debugLevel = 0):
 			if debugLevel > 0: print u'Saut après ' + CharFinURL
 			PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'//')+2+FinPageURL.find(CharFinURL)]
 			PageTemp = PageTemp[PageTemp.find(u'//')+2+FinPageURL.find(CharFinURL):len(PageTemp)]
+		elif FinModele == 0:
+			raw_input(u'Imprévu ligne 993')
 		else:
 			# Saut du reste du modèle courant (contenant parfois d'autres URL à laisser)
 			if debugLevel > 0: print u'Saut après }}'
 			PageEnd = PageEnd + PageTemp[0:FinModele]
 			PageTemp = PageTemp[FinModele:]
 		#raw_input(PageEnd.encode(config.console_encoding, 'replace'))
-		
+
 	PageTemp = PageEnd + PageTemp
 	PageEnd	= u''	
 	if debugLevel > 0: print ("Fin des tests URL")
@@ -1558,7 +1560,7 @@ def TestPage(htmlSource, url, debugLevel = 0):
 		LienBrise = False
 	else:
 		if debugLevel > 1: print u'Fin du test du contenu'
-		return LienBrise
+	return LienBrise
 
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
