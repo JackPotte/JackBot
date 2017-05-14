@@ -365,20 +365,21 @@ if debugLevel == 0:
 '''
 limiteE = 20
 Erreur = []
-Erreur.append("Error 404 (Not Found)")
+Erreur.append("403 Forbidden")
+Erreur.append("404 – File not found")
 Erreur.append("404 error")
 Erreur.append("404 Not Found")
-Erreur.append("404 – File not found")
+Erreur.append("404. That’s an error.")
 Erreur.append("Error 404 - Not found")
+Erreur.append("Error 404 (Not Found)")
 Erreur.append("Error 503 (Server Error)")
 Erreur.append("Page not found")	# bug avec http://www.ifpi.org/content/section_news/plat2000.html et http://www.edinburgh.gov.uk/trams/include/uploads/story_so_far/Tram_Factsheets_2.pdf
+Erreur.append("Runtime Error")
+Erreur.append("server timedout")
+Erreur.append("Sorry, no matching records for query")
 Erreur.append("The page you requested cannot be found")
 Erreur.append("this page can't be found")
 Erreur.append("The service you requested is not available at this time")
-Erreur.append("Sorry, no matching records for query")
-Erreur.append("Runtime Error")
-Erreur.append("server timedout")
-Erreur.append("404. That’s an error.")
 Erreur.append("There is currently no text in this page.") # wiki
 # En français
 Erreur.append("Cette forme est introuvable !")
