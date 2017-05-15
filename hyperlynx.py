@@ -30,16 +30,18 @@ languePage = u'en'
 brokenDomain = []
 brokenDomain.append('marianne2.fr')	# Site remplacé par marianne.net en mai 2017
 
-authorizedDomain = []
-authorizedDomain.append(u'bbc.co.uk')
-authorizedDomain.append(u'biodiversitylibrary.org')
-authorizedDomain.append(u'charts.fi')
-authorizedDomain.append(u'cia.gov')
-authorizedDomain.append(u'finnishcharts.com')
-authorizedDomain.append(u'history.navy.mil') # IP Free bloquée en lecture
-authorizedDomain.append(u'itunes.apple.com')
-authorizedDomain.append(u'nytimes.com')
-authorizedDomain.append(u'twitter.com')
+blockedDomains = [] # à cause des popovers ou node.js ?
+blockedDomains.append(u'bbc.co.uk')
+blockedDomains.append(u'biodiversitylibrary.org')
+blockedDomains.append(u'charts.fi')
+blockedDomains.append(u'cia.gov')
+blockedDomains.append(u'finnishcharts.com')
+blockedDomains.append(u'history.navy.mil') # IP Free bloquée en lecture
+blockedDomains.append(u'itunes.apple.com')
+blockedDomains.append(u'nytimes.com')
+blockedDomains.append(u'rottentomatoes.com')
+blockedDomains.append(u'soundcloud.com')
+blockedDomains.append(u'twitter.com')
 #top40.nl ?
 
 # Modèles qui incluent des URL dans leurs pages
@@ -1062,7 +1064,7 @@ def TestURL(url, debugLevel = 0):
 		if url.find(blacklisted) != -1:
 			if debugLevel > 0: print(u' broken domain')
 			return 'ko'
-	for whitelisted in authorizedDomain:
+	for whitelisted in blockedDomains:
 		if url.find(whitelisted) != -1:
 			if debugLevel > 0: print(u' authorized domain')
 			return 'ok'
