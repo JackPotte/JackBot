@@ -1033,14 +1033,12 @@ def hyperlynx(PageTemp, debugLevel = 0):
 	# Recherche de la langue sur le web
 	languePage = u'en'
 	try:
-		if htmlSource.find(u'html lang=') != -1:
-			languePage = htmlSource[htmlSource.find(u'html lang=')+len(u'html lang='):]
-			if languePage[:1] == u'"':
-				languePage = languePage[1:]
-				languePage = languePage[:languePage.find(u'"')]
-			elif languePage[:1] == u"'":
-				languePage = languePage[1:]
-				languePage = languePage[:languePage.find(u"'")]
+		regex = u'<html [^>]*lang *= *"?\'?([a-zA-Z\-]+)'
+		result = re.search(regex, htmlSource)
+		if result:
+			languePage = result.group(1)
+			if debugLevel > 0: print u' Langue trouvée sur le site'
+			if (len(languePage)) > 6: languePage = u'en'
 	except UnicodeDecodeError:
 		if debugLevel > 0: print u'UnicodeEncodeError l 1032'
 
