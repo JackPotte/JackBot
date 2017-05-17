@@ -696,7 +696,12 @@ def hyperlynx(PageTemp, debugLevel = 0):
 		FinModele = 0
 		LienBrise = False
 		# Avant l'URL
-		PageDebut = PageTemp[0:PageTemp.find(u'//')]
+		PageDebut = PageTemp[:PageTemp.find(u'//')]
+		while PageTemp.find(u'//') > PageTemp.find(u'}}') and PageTemp.find(u'}}') != -1:
+			if debugLevel > 0: print u'URL après un modèle'
+			PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
+			PageTemp = PageTemp[PageTemp.find(u'}}')+2:]
+
 		# Balises interdisant la modification de l'URL
 		ignoredLink = False
 		for b in range(1,ligneB):
