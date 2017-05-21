@@ -1627,7 +1627,11 @@ def modification(PageC):
 		if PageTemp.find(u'|===') != -1 or PageTemp.find(u'{===') != -1:
 			if debug > 0: print u' *==='
 			return
-		
+
+		regex = ur'([^\n=])(===?=? *{{S\|)'
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'\1\n\n\2', PageTemp)
+
 		# Titres en minuscules
 		#PageTemp = re.sub(ur'{{S\|([^}]+)}}', ur'{{S|' + ur'\1'.lower() + ur'}}', PageTemp)
 		for f in re.findall("{{S\|([^}]+)}}", PageTemp):
@@ -2401,7 +2405,11 @@ def modification(PageC):
 			else:
 				AnnexeExistante = u''
 			sauvegarde(pageAnnexe,AnnexeExistante+u'\n\n'+Annexe,u'Création à partir de l\'article')
-		
+
+		regex = ur'(\[\[(Image|Fichier|File):[^\]]+)\| *(\||\])'
+		if re.search(regex, PageTemp):
+			PageTemp = re.sub(regex, ur'\1\3', PageTemp)
+
 		# Modèles de son. Ex : {{écoutez | {{audio | | {{sound -> {{écouter
 		PageTemp = PageTemp.replace(u'{{pron-rég|', u'{{écouter|')
 		regex = ur'\* ?{{sound}} ?: \[\[Media:([^\|\]]*)\|[^\|\]]*\]\]'
