@@ -2406,7 +2406,7 @@ def modification(PageC):
 				AnnexeExistante = u''
 			sauvegarde(pageAnnexe,AnnexeExistante+u'\n\n'+Annexe,u'Création à partir de l\'article')
 
-		regex = ur'(\[\[(Image|Fichier|File):[^\]]+)\| *(\||\])'
+		regex = ur'(\[\[(Image|Fichier|File):[^\]]+)\|\|? *(\||\])'
 		if re.search(regex, PageTemp):
 			PageTemp = re.sub(regex, ur'\1\3', PageTemp)
 
