@@ -1606,7 +1606,7 @@ def modification(PageC):
 		PageTemp = PageTemp.replace(u'{{-car-}}', u'{{caractère}}')
 		PageTemp = PageTemp.replace(u'{{-note-|s=s}}', u'{{-notes-}}')
 		PageTemp = PageTemp.replace(u'{{-etym-}}', u'{{-étym-}}')
-		PageTemp = PageTemp.replace(u'-pronom-personnel-', u'-pronom-pers-')
+		PageTemp = PageTemp.replace(u'{{-pronom-personnel-', u'{{-pronom-pers-')
 		
 		if debug > 0: print u'Conversion vers {{S}}'
 		EgalSection = u'==='
@@ -1723,15 +1723,27 @@ def modification(PageC):
 					summary = summary + u', ajout de |flexion'
 
 				if PageC[-2:] != 'ss':
-					regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"''' *{{pron\|([^\|]*)\|fr}} *({{[mf]\|?[^}]*}})*\n# *'*(Masculin)*(Féminin)* *[P|p]luriel de?'?’? *'* *\[\[)([^#\|\]]+)"
+					regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"''' {{pron\|)([^\|}]*)(\|fr}}\n# *'*'* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
 					if re.search(regex, PageTemp):
-						PageTemp = re.sub(regex, ur'\1{{fr-rég|s=\7|\3}}\n\2\7', PageTemp)
+						PageTemp = re.sub(regex, ur'\1{{fr-rég|s=\7|\3}}\n\2\3\4\7', PageTemp)
 						summary = summary + u', ajout de {{fr-rég}}'
 
-					regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"''' *({{[mf]\|?[^}]*}})*\n# *'*(Masculin)*(Féminin)* *[P|p]luriel de?'?’? *'* *\[\[)([^#\|\]]+)"
+					regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"'''\n# *'*'* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
 					if re.search(regex, PageTemp):
-						PageTemp = re.sub(regex, ur'\1{{fr-rég|s=\6|}}\n\2\6', PageTemp)
+						PageTemp = re.sub(regex, ur'\1{{fr-rég|s=\5|}}\n\2\5', PageTemp)
 						summary = summary + u', ajout de {{fr-rég}}'
+
+					''' TODO : recherche du modèle de flexion dans le lemme
+                                        regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"''' {{pron\|)([^\|}]*)(\|fr}}\n# *'*'*(Masculin)*(Féminin)* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
+					if re.search(regex, PageTemp):
+						PageTemp = re.sub(regex, ur'\1{{fr-accord-rég|s=\7|\3}}\n\2\3\4\7', PageTemp)
+						summary = summary + u', ajout de {{fr-accord-rég}}'
+
+					regex = ur"(=== {{S\|" + nature + ur"\|fr\|flexion}} ===\n)('''" + PageC + ur"'''\n# *'*'*(Masculin)*(Féminin)* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
+					if re.search(regex, PageTemp):
+						PageTemp = re.sub(regex, ur'\1{{fr-accord-rég|s=\5|}}\n\2\5', PageTemp)
+						summary = summary + u', ajout de {{fr-accord-rég}}'
+                                        '''
 
 			# Anglais
 			if PageC[-2:] != 'ss' and PageC[-3:] != 'hes' and PageC[-3:] != 'ies' and PageC[-3:] != 'ses' and PageC[-3:] != 'ves':
@@ -5915,6 +5927,23 @@ def crawlerFile(source):
 			# Conversion ASCII => Unicode (pour les .txt)
 			modification(HTMLUnicode.HTMLUnicode(PageC))
 		PagesHS.close()
+	
+# Lecture du dump
+def crawlerXML(source):
+    if source:
+        from pywikibot import xmlreader
+        dump = xmlreader.XmlDump(source)
+        parser = dump.parse()
+
+        for entry in parser:
+            if debugLevel > 1: print entry.title
+            regex = ur"=== {{S\|adjectif\|fr[^}]+}} ===\n[^\n]*\n*{{fr\-rég\|[^\n]+\n*'''" + re.escape(entry.title) + ur"'''[^\n]*\n# *'*'*(Masculin|Féminin)+ *[P|p]luriel de *'*'* *\[\["
+
+            PageTemp = entry.text
+            if re.search(regex, PageTemp):
+                if debugLevel > 0: print entry.title
+                #PageTemp = re.sub(regex, ur'\1|flexion\2', PageTemp)
+                #modification(HTMLUnicode.HTMLUnicode(entry.title))
 
 # Traitement d'une catégorie
 def crawlerCat(category,recursif,apres):
@@ -6225,9 +6254,9 @@ if len(sys.argv) > 1:
 		# Test unitaire
 		addLine(u"== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n{{fr-rég|}}\n\'\'\'{{subst:PAGENAME}}\'\'\' {{pron||fr}} {{genre ?}}\n#\n#* ''''\n==== {{S|variantes orthographiques}} ====\n==== {{S|synonymes}} ====\n==== {{S|antonymes}} ====\n==== {{S|dérivés}} ====\n==== {{S|apparentés}} ====\n==== {{S|vocabulaire}} ====\n==== {{S|hyperonymes}} ====\n==== {{S|hyponymes}} ====\n==== {{S|méronymes}} ====\n==== {{S|holonymes}} ====\n==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n=== {{S|prononciation}} ===\n* {{pron||fr}}\n* {{écouter|<!--  précisez svp la ville ou la région -->||audio=|lang=}}\n==== {{S|homophones|fr}} ====\n==== {{S|paronymes}} ====\n=== {{S|anagrammes}} ===\n=== {{S|voir aussi}} ===\n* {{WP}}\n=== {{S|références}} ===\n{{clé de tri}}", u'fr', u'prononciation', u'* {{pron|boum|fr}}')
 	elif sys.argv[1] == u'txt': 
-		crawlerFile(u'articles_' + language + u'_' + family + u'.txt')
-	elif sys.argv[1] == u'txt2':
-		crawlerFile(u'articles_' + language + u'_' + family + u'2.txt')
+		crawlerFile(u'scripts/JackBot/articles_' + language + u'_' + family + u'.txt')
+	elif sys.argv[1] == u'xml':
+		crawlerXML(u'scripts/JackBot/frwiktionary-20150702-pages-meta-current.xml')
 	elif sys.argv[1] == u'm':
 		crawlerLink(u'Modèle:ex',u'')
 	elif sys.argv[1] == u'cat':
