@@ -24,7 +24,7 @@ not take the origin wiki into account.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: d6e9ba21483108d2cf378dd25dcce1788c2d0a93 $'
 #
 
 import sys

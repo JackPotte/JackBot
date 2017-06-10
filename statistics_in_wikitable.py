@@ -12,7 +12,7 @@ The following parameters are supported:
         If not existing yet, it is created.
         If existing, it is updated.
 """
-__version__ = '$Id$'
+__version__ = '$Id: 2855b5c1a3489557079481a4286d41275c8f53ba $'
 #
 import time
 import wikipedia as pywikibot

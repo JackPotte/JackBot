@@ -13,7 +13,7 @@ Permission has been asked to run this on the toolserver.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 70f608793708012061f424e42e34ce8c016c714a $'
 #
 
 import cgi

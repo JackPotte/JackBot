@@ -1,4 +1,4 @@
-__version__ = '$Id$'
+__version__ = '$Id: 8dd5178c81aaec9efe3da52f9cbcf5314e3c1153 $'
 
 class SkipPages(object):
     hook = 'before_save'

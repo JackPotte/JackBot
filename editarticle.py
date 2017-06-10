@@ -8,7 +8,7 @@ Edit a Wikipedia article with your favourite editor.
 # (C) Gerrit Holl 2004
 # (C) Pywikipedia team, 2004-2011
 #
-__version__ = "$Id$"
+__version__ = "$Id: da7379755ae2441eb23c792d7e96c8282152d081 $"
 #
 # Distributed under the terms of the MIT license.
 #

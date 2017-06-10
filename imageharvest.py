@@ -16,7 +16,7 @@ Other options:
 -justshown  Choose _only_ images shown on the page, not those linked
 """
 
-__version__='$Id$'
+__version__='$Id: 1c81bc2bcd01a06a091448a62df38aafd651e23a $'
 
 import re, sys, os
 import wikipedia as pywikibot

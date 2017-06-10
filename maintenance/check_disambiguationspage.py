@@ -10,7 +10,7 @@ with Family.disambiguationTemplates dictionary
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: b788c44efc5317d2b38e26313f07b10b4b41ad3b $'
 #
 
 import sys

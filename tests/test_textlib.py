@@ -2,7 +2,7 @@
 # -*- coding: utf-8  -*-
 
 """Unit tests for pywikibot/textlib.py"""
-__version__ = '$Id$'
+__version__ = '$Id: cadd8620e9dba64e3c2f3082e6f03f4551fd7641 $'
 
 import unittest
 from tests.test_pywiki import PyWikiTestCase

@@ -84,7 +84,7 @@ To complete a move of a page, one can use:
 # (C) WikiWichtel, 2004
 # (C) Pywikipedia team, 2003-2012
 #
-__version__='$Id$'
+__version__='$Id: 8fe8cd6ad90f88b6858f33e79af2e1fce295a001 $'
 #
 # Distributed under the terms of the MIT license.
 #

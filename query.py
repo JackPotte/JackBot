@@ -22,7 +22,7 @@ This module allow you to use the API in a simple and easy way.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: ced5323fa475a1bef8f4a223591508a65db855d1 $'
 #
 
 import time

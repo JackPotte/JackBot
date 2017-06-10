@@ -25,7 +25,7 @@ Warning: experimental software, use at your own risk
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 1bdfa9fc61d89e5bc529079e868c43197c696373 $'
 #
 
 import threading

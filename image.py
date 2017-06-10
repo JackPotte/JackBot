@@ -34,7 +34,7 @@ The image "Flag.svg" has been uploaded, making the old "Flag.jpg" obselete:
     python image.py Flag.jpg Flag.svg
 
 """
-__version__ = '$Id$'
+__version__ = '$Id: 2e2949769b47c18a91bbe2396a3d6460e817074a $'
 #
 # Distributed under the terms of the MIT license.
 #

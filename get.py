@@ -13,7 +13,7 @@ Example: python get.py Wikipedia | grep MediaWiki > results.txt
 #
 # Distributed under the terms of the MIT license.
 
-__version__='$Id$'
+__version__='$Id: 82343c61855359e2e942977fd5874a2d78cf3ac8 $'
 
 import wikipedia as pywikibot
 

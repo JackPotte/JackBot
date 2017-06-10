@@ -6,7 +6,7 @@
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 3cbc5a104013a722c57b09378acf958ce0c5c1e9 $'
 #
 
 import sys, re, socket

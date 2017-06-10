@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 import family
 
-__version__ = '$Id$'
+__version__ = '$Id: 2ca9d9a464d9ff27c192252db9c521ef5bf95cc8 $'
 
 # The Wikimedia family that is known as Wikiversity
 

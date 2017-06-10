@@ -40,7 +40,7 @@ NOTE: Only use either -sql or -file or -page, but don't mix them.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: fec9af190d95ae6729bc74789c47a81f3094c8c7 $'
 #
 # 2005-07-15: Find name of section containing citations: doFindRefSection().
 #             (SEWilco)

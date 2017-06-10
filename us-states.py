@@ -20,7 +20,7 @@ Specific arguments:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 0418c79b15ab3b4b05636f9e2ab2d10e8ca8ae78 $'
 #
 
 import re, sys

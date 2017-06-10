@@ -9,7 +9,7 @@ against the language lists
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 439108f3d92f7d5058b7194874a62cfdb52766f5 $'
 #
 
 import sys

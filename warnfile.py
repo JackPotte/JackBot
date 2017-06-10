@@ -17,7 +17,7 @@ Example:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 4418f92d4be319aab54f7c2464616e119f3a43ba $'
 #
 import sys, os, re
 import wikipedia as pywikibot

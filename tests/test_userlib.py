@@ -2,7 +2,7 @@
 # -*- coding: utf-8  -*-
 
 """Unit tests for userlib.py"""
-__version__ = '$Id$'
+__version__ = '$Id: 18d0ac00e9f07b4ebeae7f1fec075ddce2427169 $'
 
 import unittest
 import test_utils

@@ -36,7 +36,7 @@ L(ist) - show current list of pages to include or to check
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: efeaa0e366b96ba904333272b1b4469f43ce5164 $'
 #
 
 import sys, codecs, re

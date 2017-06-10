@@ -16,7 +16,7 @@ Externals modules automatic setup checker and installer for various OS.
 # Copyright (C) 2006-2010 University of Utah. All rights reserved.
 # GNU General Public License version 2.0 by the Free Software Foundation
 #
-__version__ = '$Id$'
+__version__ = '$Id: a910e52ebb3dab144e34e46cf0afc655494562af $'
 #
 
 

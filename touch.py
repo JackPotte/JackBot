@@ -20,7 +20,7 @@ will only touch a single page.
 #
 # (C) Pywikipedia team
 #
-__version__='$Id$'
+__version__='$Id: b5a42db3d11f9483407074f3c428a29b7ecddf12 $'
 #
 # Distributed under the terms of the MIT license.
 #

@@ -2,7 +2,7 @@
 # -*- coding: utf-8  -*-
 
 """Unit test framework for ip_regexp"""
-__version__ = '$Id$'
+__version__ = '$Id: 1c7cacc63863a570f2fc1c46f670453ff196df86 $'
 
 import unittest
 import test_utils

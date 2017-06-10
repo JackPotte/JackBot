@@ -103,7 +103,7 @@ pages:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: 677890fbff97047f639fea9606273a17289f0bf2 $'
 #
 import re
 import sys

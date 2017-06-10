@@ -55,7 +55,7 @@ Command-line options:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 5bb524c6e969b7b4a2dde1daeadb26b9b8e7b338 $'
 #
 
 import re, sys

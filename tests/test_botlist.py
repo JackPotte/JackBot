@@ -10,7 +10,7 @@
 # You should not change code here except you want to add a new test case
 # for a function, mechanism or else.
 
-__version__ = '$Id$'
+__version__ = '$Id: f6864c01ebf13c85f347dd352a6262846ff5eb79 $'
 
 import unittest
 import test_pywiki

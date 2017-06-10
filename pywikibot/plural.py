@@ -5,7 +5,7 @@
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 883565152e1affc0df318543c109fbedf2f89576 $'
 #
 
 plural_rules = {

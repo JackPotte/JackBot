@@ -178,7 +178,7 @@ badword at all but can be used for some bad-nickname.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 8beb8fc2217a16888d8af839429ca936b04f9d84 $'
 #
 
 import time, re, urllib, locale

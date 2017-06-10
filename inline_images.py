@@ -22,7 +22,7 @@ All other parameters will be regarded as a page title; in this case, the bot
 will only touch a single page.
 """
 
-__version__='$Id$'
+__version__='$Id: c40ff4877b06f30eda48ab35c53af76ee5cd6777 $'
 
 import sys, re
 import wikipedia as pywikibot

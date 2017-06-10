@@ -2,7 +2,7 @@
 # -*- coding: utf-8  -*-
 
 """Unit test framework for pywiki"""
-__version__ = '$Id$'
+__version__ = '$Id: d810f81e2d8a41cc45a8f6e2e9aa2502277c7735 $'
 
 import unittest
 import test_utils

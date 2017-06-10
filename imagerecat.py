@@ -24,7 +24,7 @@ The following command line parameters are supported:
                 wps : Work on all wikipedia's
 
 """
-__version__ = '$Id$'
+__version__ = '$Id: ee28f788e5b1087b854f02daa4d388f74e9dfc60 $'
 #
 #  (C) Multichill 2008-2011
 #  (C) Pywikipedia bot team, 2008-2011

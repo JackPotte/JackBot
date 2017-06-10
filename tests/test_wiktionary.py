@@ -2,7 +2,7 @@
 # -*- coding: utf-8  -*-
 
 """Unit tests for Wiktionary.py"""
-__version__ = '$Id$'
+__version__ = '$Id: 6e6e32944e140a9656d9b64bf3d3b200e6aadc6e $'
 
 import unittest
 import test_utils

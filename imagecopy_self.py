@@ -50,7 +50,7 @@ Todo:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: 26765c762ee0ee9339f3c7e2ac1e266c83b7e239 $'
 #
 
 from Tkinter import *

@@ -21,7 +21,7 @@ Command line options:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: 8c2a9ccebdc540264529b5df56e3e1fd49eee95c $'
 #
 
 import wikipedia as pywikibot

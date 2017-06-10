@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 import family
 
-__version__ = '$Id$'
+__version__ = '$Id: d0b4d815115647f6b64bab1b2a8e1ed42f029c2c $'
 
 # The Wikimedia family that is known as Wikinews
 

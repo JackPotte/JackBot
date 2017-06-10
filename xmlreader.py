@@ -20,7 +20,7 @@ to the older method using regular expressions.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: 344ddf54c0697593ef0410870c1ba39f6233a4be $'
 #
 
 import threading

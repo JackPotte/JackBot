@@ -17,7 +17,7 @@ Parameters:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 5cb087fa28ff285a593f970cf417cd33774bc80a $'
 #
 
 import wikipedia as pywikibot

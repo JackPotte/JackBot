@@ -19,7 +19,7 @@ Arguments:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: 6f5e7d1c3c66d50b81be7a2b8a789401a7ad4352 $'
 #
 import sys,re
 import codecs

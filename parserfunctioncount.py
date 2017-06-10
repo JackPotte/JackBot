@@ -39,7 +39,7 @@ functions will be listed.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: 230c30605bf8a624ea1c5667e792f3c688e9fb40 $'
 '''
 Todo:
 * Using xml and xmlstart

@@ -59,7 +59,7 @@ and arguments can be:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 1f87d5997152ad63712e0efaa9dbfbb4531631d8 $'
 #
 import re
 import datetime

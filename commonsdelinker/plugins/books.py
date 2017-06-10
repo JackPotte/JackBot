@@ -1,4 +1,4 @@
-__version__ = '$Id$'
+__version__ = '$Id: 1f27d006d69479ccab5b8ef74b7520b21f0eb82b $'
 
 import re
 

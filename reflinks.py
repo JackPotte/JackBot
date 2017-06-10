@@ -36,7 +36,7 @@ See [[:en:User:DumZiBoT/refLinks]] for more information on the bot.
 #
 # Distributed under the terms of the GPL
 #
-__version__ = '$Id$'
+__version__ = '$Id: e05d92e922182b9f0b4d123c59e9ea6914f98f6a $'
 #
 
 import sys, re, urllib2, httplib, socket, codecs, ftplib

@@ -2,7 +2,7 @@
 # -*- coding: utf-8  -*-
 
 """Unit tests for query.py"""
-__version__ = '$Id$'
+__version__ = '$Id: 88bfe6241db5d0f00509d7f7cd811a9660a55b76 $'
 
 import unittest
 import tests.test_pywiki

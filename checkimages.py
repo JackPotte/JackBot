@@ -87,7 +87,7 @@ right parameter.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 4f483821ed984107729fbe06e56c1e6156ba05e3 $'
 #
 
 import re

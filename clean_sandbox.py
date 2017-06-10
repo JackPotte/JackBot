@@ -40,7 +40,7 @@ This script understands the following command-line arguments:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: fad662a943b505475fc3afe49dc61cf2fc0db913 $'
 #
 
 import time

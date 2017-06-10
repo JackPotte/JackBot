@@ -15,7 +15,7 @@ The following parameters are supported:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 6ac605aac389e89f7cd639478ee86ab3db6e4b50 $'
 import wikipedia as pywikibot
 import pagegenerators
 import mwlib.uparser  # used to parse the whitelist

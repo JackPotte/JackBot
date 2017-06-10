@@ -19,7 +19,7 @@ python harvest_template.py -lang:nl -cat:Sisoridae -template:"Taxobox straalvinn
 #
 # Distributed under the terms of MIT License.
 #
-__version__ = '$Id$'
+__version__ = '$Id: fe199c087a8b0176c8466d65365779343628b352 $'
 #
 
 import re

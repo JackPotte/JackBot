@@ -9,7 +9,7 @@ each link that goes to a redirect page whether it should be replaced.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: d2ea6bcaabd7d207128532e76b385e4bffd4ce4c $'
 #
 import wikipedia as pywikibot
 import pagegenerators

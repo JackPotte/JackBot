@@ -24,7 +24,7 @@ and the bot will only work on that single page.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 526518c4583bdb30d8cfb08039e76939580efa3e $'
 import wikipedia as pywikibot
 from pywikibot import i18n
 import os, sys

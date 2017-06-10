@@ -13,7 +13,7 @@ Parameters:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: d9b2161828d85fb9918db55238e6a6bd1dfb1eb3 $'
 #
 
 import os, sys

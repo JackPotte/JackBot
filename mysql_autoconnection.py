@@ -9,7 +9,7 @@ reconnect them.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 23d13ff92f750520e9468860dc437451f8fad886 $'
 
 import MySQLdb, MySQLdb.cursors
 import time

@@ -34,7 +34,7 @@ Examples:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: a04749170c3eb5af3faebc987d534fab94425b98 $'
 #
 
 import sys

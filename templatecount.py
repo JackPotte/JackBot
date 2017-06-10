@@ -35,7 +35,7 @@ Lists all the category pages that transclude {{cfd}} and {{cfdu}}.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: ce740b08a15371bc290a0c78737c18f52a18094f $'
 
 import datetime
 import wikipedia as pywikibot

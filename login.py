@@ -53,7 +53,7 @@ subdirectory.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: 49befc86f4b9e76e6c5d37e0bcdfa6647e8296f8 $'
 
 import re, os, query
 import urllib2

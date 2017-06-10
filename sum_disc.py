@@ -69,7 +69,7 @@ Syntax example:
 #  Distributed under the terms of the MIT license.
 #  @see http://de.wikipedia.org/wiki/MIT-Lizenz
 #
-__version__ = '$Id$'
+__version__ = '$Id: a23930038e3d632fa60d5c87146339f418c7d237 $'
 #
 
 

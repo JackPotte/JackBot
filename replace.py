@@ -162,7 +162,7 @@ Please type "replace.py -help | more" if you can't read the top of the help.
 #
 # (C) Daniel Herding & the Pywikipedia team, 2004-2012
 #
-__version__='$Id$'
+__version__='$Id: b34706272abee2ae4dd73ac2f8bfa0fafd9cf5f9 $'
 #
 # Distributed under the terms of the MIT license.
 #

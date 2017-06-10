@@ -27,7 +27,7 @@ Features, not bugs:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: eb2b3fc3f4f966fa14d3022e65b99a93942ad684 $'
 
 import httplib, StringIO, re, sys, md5, os, string
 import wikipedia as pywikibot

@@ -53,7 +53,7 @@ Please fix these if you are capable and motivated:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: fe54bad1f78b2c8936a72c0c4f548e25e2af9e3b $'
 #
 
 import sys, re, webbrowser, urllib

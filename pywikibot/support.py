@@ -7,7 +7,7 @@ The initialization file for the Pywikibot framework.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: e6db56b3789998202b6b3aafaeec9ab745e0576b $'
 
 import datetime
 import difflib

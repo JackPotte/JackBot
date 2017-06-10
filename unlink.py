@@ -22,7 +22,7 @@ python unlink.py Foo bar -namespace:0 -namespace:6
     Removes links to the page [[Foo bar]] in articles and image descriptions.
 """
 
-__version__='$Id$'
+__version__='$Id: 844847987c8944c57dc767345e42ee607bf96b78 $'
 
 import re
 import wikipedia as pywikibot

@@ -5,7 +5,7 @@
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: eb28219deaabc36f9820197fc1aed69073fcd4e5 $'
 #
 
 import sys

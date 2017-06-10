@@ -7,7 +7,7 @@ File containing all standard fixes
 #
 # (C) Pywikipedia team, 2008-2013
 #
-__version__ = '$Id$'
+__version__ = '$Id: 4923410aa6535446cc4296278dd0ef41f859b952 $'
 #
 # Distributed under the terms of the MIT license.
 #

@@ -8,7 +8,7 @@ preferences .
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 2865458ba65a932445e1141bbf69f03cad961157 $'
 #
 
 import sys

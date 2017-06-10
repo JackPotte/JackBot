@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 """ Script to create user files (user-config.py, user-fixes.py) """
-__version__ = '$Id$'
+__version__ = '$Id: d709614c2573ebcaa8f21a710d8939fe258b466d $'
 
 import codecs, os, re, sys
 

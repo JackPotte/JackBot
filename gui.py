@@ -11,7 +11,7 @@ the contents of an article
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: 7d52883bf12873569ea08862881504b99c3992dd $'
 
 from Tkinter import *
 from ScrolledText import ScrolledText

@@ -9,7 +9,7 @@ Please refer to delinker.txt for full documentation.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: dec7c08dafb86d4f9b059c5eed9fcee5ba54ae62 $'
 import config, wikipedia
 import json
 import re, time

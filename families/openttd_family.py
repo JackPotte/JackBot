@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 
-__version__ = '$Id$'
+__version__ = '$Id: 3ab7755923a7e21d2e0e50a1f76ad7bb0b3a669b $'
 
 import family
 

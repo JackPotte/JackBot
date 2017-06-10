@@ -6,7 +6,7 @@ Should not be run manually/directly, but automatically by maintainer.py
 Warning: experimental software, use at your own risk
 """
 
-__version__ = '$Id$'
+__version__ = '$Id: 5d0754a9ab519b85e41034e8d4463d583acdbbc4 $'
 
 # Author: Balasyum
 # http://hu.wikipedia.org/wiki/User:Balasyum

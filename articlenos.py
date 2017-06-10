@@ -12,7 +12,7 @@ http://python-irclib.sourceforge.net/
 # Author: Balasyum
 # http://hu.wikipedia.org/wiki/User:Balasyum
 # License : LGPL
-__version__ = '$Id$'
+__version__ = '$Id: 2f3bda66e7dbb983f6c69dbb6829c3ed63bebe2b $'
 
 import re
 

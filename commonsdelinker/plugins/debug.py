@@ -1,5 +1,5 @@
 import difflib
-__version__ = '$Id$'
+__version__ = '$Id: a2c5ef404015e2fbd773c31c05cf08d182484b8d $'
 
 class Diff(object):
     hook = 'before_save'

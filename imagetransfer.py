@@ -30,7 +30,7 @@ used on a page reachable via interwiki links.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: f4c9ee7c1811b3875f8313d6858d71e593a23219 $'
 
 import re, sys
 import wikipedia as pywikibot

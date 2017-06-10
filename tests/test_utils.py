@@ -1,7 +1,7 @@
 """
 Support module for PyWikipediaBot regression tests.
 """
-__version__ = '$Id$'
+__version__ = '$Id: 7895f03ac2688d7155e5e94da60e51af65ee9b11 $'
 
 import sys
 

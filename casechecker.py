@@ -8,7 +8,7 @@ with mixed latin and cyrilic alphabets.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 094f5ab6bdb16fa5ccde87e37e7bdef31a8011f8 $'
 
 #
 # Permutations code was taken from http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/190465

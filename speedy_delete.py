@@ -25,7 +25,7 @@ NOTE: This script currently only works for the Wikipedia project.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: ae86a1c040f3e409c3d88dbe943c2729789379c7 $'
 #
 
 import wikipedia as pywikibot

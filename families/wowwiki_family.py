@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 
-__version__ = '$Id$'
+__version__ = '$Id: 513cf2e54e33be26984a68037447b6b07f050fbe $'
 
 import config, family, urllib
 

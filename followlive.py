@@ -13,7 +13,7 @@ it is doing !
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: a8987a29b3fd3f4da36a4dae0da5b342adbaa689 $'
 
 import sys
 import datetime, time

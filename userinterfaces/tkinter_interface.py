@@ -1,4 +1,4 @@
-__version__ = '$Id$'
+__version__ = '$Id: 8ccfa66f390a4623c1af4775526c48e5993f59f7 $'
 
 import re
 import sys

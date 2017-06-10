@@ -11,7 +11,7 @@ That might be a very good strategy when the parent category is very full, but la
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 83ddbac0e56f820948de5b230a466080ff4543ee $'
 #
 
 import sys, pywikibot, catlib, pagegenerators

@@ -44,7 +44,7 @@ Known parameters:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: 61759eaea7b10fcc2e07de954482d73b36013d8a $'
 
 import codecs, re
 import wikipedia as pywikibot

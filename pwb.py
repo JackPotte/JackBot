@@ -35,7 +35,7 @@ It will also catch all output to stdout and stderr and report those incidents.
 #  @li Run any bot on server (according to rewrite/pwb.py):
 #  @verbatim python pwb.py <name_of_script> <options> @endverbatim
 #
-__version__ = '$Id$'
+__version__ = '$Id: f3e538a5190167b579d66d8329d387757933a109 $'
 #
 
 

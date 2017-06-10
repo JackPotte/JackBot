@@ -57,7 +57,7 @@ your user-config.py:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 777d424ca4af09ba697eea5999c66c66c61d18a7 $'
 #
 import sys
 import re

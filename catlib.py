@@ -13,7 +13,7 @@ Library to work with category pages on Wikipedia
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 50f7a94b854dadcd2e9d97c44664b3c7dc591929 $'
 #
 import re
 import time

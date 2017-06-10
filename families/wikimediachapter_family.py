@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__version__ = '$Id$'
+__version__ = '$Id: cdf859e6eacdf94b5272bcf9f1b588c182572d6d $'
 
 # The wikis of Chapters of the Wikimedia Foundation living at a xy.wikimedia.org url
 

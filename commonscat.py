@@ -50,7 +50,7 @@ TODO:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 6de1b960715c9776953eec9a7c8254217f79ff40 $'
 #
 
 import wikipedia as pywikibot

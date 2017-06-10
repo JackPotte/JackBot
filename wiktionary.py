@@ -21,7 +21,7 @@ todo list is to harvest the content of this matrix dictionary from the various
 Wiktionary projects. GerardM put them all in templates already.
 '''
 
-__version__='$Id$'
+__version__='$Id: 23effb48c678bb497e704e66a44d422a805a31ca $'
 
 #from editarticle import EditArticle
 #import wikipedia

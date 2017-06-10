@@ -1,5 +1,5 @@
 # -*- coding: utf-8  -*-
-__version__ = '$Id$'
+__version__ = '$Id: 10a0278afa948e4008e2ee956e5a714307d8ec1a $'
 
 
 class transliterator(object):

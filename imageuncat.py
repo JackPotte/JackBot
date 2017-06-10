@@ -4,7 +4,7 @@ Program to add uncat template to images without categories at commons.
 See imagerecat.py (still working on that one) to add these images to categories.
 
 """
-__version__ = '$Id$'
+__version__ = '$Id: 43147356d651bf3b58cd5aa4b1cd4ccebde0b823 $'
 #
 # (C) Multichill 2008-2011
 # (C) Pywikipedia bot team, 2008-2012

@@ -12,7 +12,7 @@ The following parameter is supported:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 30cd137c39b3bd4efeb89ae0f5af09e80564af37 $'
 #
 
 import wikipedia as pywikibot

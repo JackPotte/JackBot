@@ -15,7 +15,7 @@ Expect the code to change a lot!
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: c621a4e4be309efc57611da4cdc0d9cd5d46f0af $'
 
 import sys, math, StringIO
 import wikipedia, config

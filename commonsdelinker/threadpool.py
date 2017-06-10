@@ -22,7 +22,7 @@ may cause thread unsafety!
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 167d71a1d625b72daa7519e2b63933b1aba92b76 $'
 #
 
 import sys, threading, os

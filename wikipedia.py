@@ -130,7 +130,7 @@ stopme(): Put this on a bot when it is not or not communicating with the Wiki
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 4a63956957e8d89ed8a53999e700ac18fd9942df $'
 
 import os, sys
 import httplib, socket, urllib, urllib2, cookielib

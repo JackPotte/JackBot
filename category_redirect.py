@@ -16,7 +16,7 @@ are taken into account.
 #
 # (C) Pywikipedia team, 2008-2013
 #
-__version__ = '$Id$'
+__version__ = '$Id: ad0ea67a0b30ef60c99581f8d32392d13cb04ed6 $'
 #
 # Distributed under the terms of the MIT license.
 #

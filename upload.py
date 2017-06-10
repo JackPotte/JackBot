@@ -23,7 +23,7 @@ and for a description.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: 60bf087824e56b4a22c96dd2e7d50e1f91ae02e9 $'
 #
 
 import os, sys, time

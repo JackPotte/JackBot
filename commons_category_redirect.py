@@ -13,7 +13,7 @@ Moves all images, pages and categories in redirect categories to the target cate
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 534bd13503d3c1d7b4d6beb6461993bff958b1b0 $'
 
 import wikipedia as pywikibot
 import config, catlib

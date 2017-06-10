@@ -1,4 +1,4 @@
-__version__ = '$Id$'
+__version__ = '$Id: 7af8cb7ef9e983a4ceb6a5f34442d232d7d18a10 $'
 import os, sys
 
 def create_user_config_file(base_dir):

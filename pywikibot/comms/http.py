@@ -16,7 +16,7 @@ This module is responsible for
 # Distributed under the terms of the MIT license.
 #
 
-__version__ = '$Id$'
+__version__ = '$Id: 2f11b4bfa667d7033071d361d5516874f4e6dc46 $'
 
 import urllib2
 

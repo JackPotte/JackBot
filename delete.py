@@ -25,7 +25,7 @@ Delete everything in the category "To delete" without prompting.
 
     python delete.py -cat:"To delete" -always
 """
-__version__ = '$Id$'
+__version__ = '$Id: 00d851fdee856e2269191297a7ec2e14fbff2df7 $'
 #
 # Distributed under the terms of the MIT license.
 #

@@ -27,7 +27,7 @@ TODO:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 5f00d02d0637ab00ed32a67d186f8a5d82022705 $'
 
 import datetime, re
 import wikipedia as pywikibot

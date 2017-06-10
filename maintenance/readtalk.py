@@ -14,7 +14,7 @@ TODO:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 9a75352b9b9004a5aadc3abdddeead26d765c2ee $'
 #
 
 import sys, re

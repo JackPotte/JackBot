@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 """
 """
-__version__ = '$Id$'
+__version__ = '$Id: 7e997b1d4929c5490ff92eb723b40d5b33916879 $'
 
 #
 # (C) Francesco Cosoleto, 2006

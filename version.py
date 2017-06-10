@@ -7,7 +7,7 @@
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 338fac58355df3b52869ad1533ac6fc166e3a8d0 $'
 
 import sys
 from pywikibot.version import *

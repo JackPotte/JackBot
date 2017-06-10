@@ -22,7 +22,7 @@ Script very similar to the one given in
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: aff980f4acd862978df033b10797226aecc3d4f2 $'
 #
 
 import sys, os, time

@@ -4,7 +4,7 @@
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 286b346431be8fc3a79e739f3b3f10d30ec2878c $'
 import threading
 pydotfound = True
 try:

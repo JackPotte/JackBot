@@ -15,7 +15,7 @@ data.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: a71252621d3fc9836134cc749733262b3a6efbd5 $'
 #
 
 import re, sys, pickle

@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 import family, config
 
-__version__ = '$Id$'
+__version__ = '$Id: 579c494e3cc39489541be740d22d1e0d9cf55713 $'
 
 # The wikitravel family
 

@@ -25,7 +25,7 @@ http://python-irclib.sourceforge.net/
 #
 #  Distributed under the terms of the LGPL license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 859177f1f9ebdc7b29c3ec0965ddac52c070a5f1 $'
 #
 
 import wikipedia as pywikibot

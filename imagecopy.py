@@ -80,7 +80,7 @@ Known issues/FIXMEs (no critical issues known):
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id: 73e4657315ee3049c17275b875f0ba80d4c52f02 $'
+__version__='$Id: e109ef4d61163acaf872bb2dab313ec797a9b1d3 $'
 #
 
 from Tkinter import *

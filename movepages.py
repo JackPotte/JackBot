@@ -37,7 +37,7 @@ Furthermore, the following command line parameters are supported:
 # Distributed under the terms of the MIT license.
 #
 
-__version__='$Id$'
+__version__='$Id: af29f7b88891e42fbfe0428aba0b88312be626aa $'
 
 import sys, re
 import wikipedia as pywikibot

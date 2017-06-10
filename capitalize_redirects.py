@@ -23,7 +23,7 @@ Example: "python capitalize_redirects.py -start:B -always"
 #
 # Class licensed under terms of the MIT license
 #
-__version__ = '$Id$'
+__version__ = '$Id: 06b256389d4a10b41504f768a43fca4f6388414f $'
 #
 
 import time, sys, re

@@ -86,7 +86,7 @@ import re, codecs, os, time, urllib, urllib2, httplib
 import wikipedia as pywikibot
 import pagegenerators, config
 
-__version__='$Id$'
+__version__='$Id: 7a8bcff5e730f5a5c9cc9da20ea3d81b56748456 $'
 
 # Search keywords added to all the queries.
 no_result_with_those_words = '-Wikipedia'

@@ -22,7 +22,7 @@ Please refer to delinker.txt for full documentation.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 18d09ddfc28c539e7ed4d331a7af803188f2e4cf $'
 # This script requires MySQLdb and json. Tested with:
 # * Python 2.4.4, MySQLdb 1.2.1_p, simplejson 1.3
 # * Python 2.5, MySQLdb 1.2.2, simplejson 1.5 (recommended)

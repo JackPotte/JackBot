@@ -44,7 +44,7 @@ Unprotect all pages listed in text file "unprotect.txt" without prompting.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 120b896eba7b158e180bb89c77d78a65ad2ab0b2 $'
 #
 
 import wikipedia as pywikibot

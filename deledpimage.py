@@ -15,7 +15,7 @@ Way:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: a78d36405a599d6bf21427ff555a9a7011e72a3b $'
 #
 
 """

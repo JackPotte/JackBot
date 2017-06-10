@@ -7,7 +7,7 @@ Library to work with users, their pages and talk pages.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 21e7c749487d7a843b0d254f6ca3b87b29bf83e7 $'
 
 import re
 import wikipedia as pywikibot

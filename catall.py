@@ -13,7 +13,7 @@ Options:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 41141bfd70adad2f0bd72fd526eace6a4648aeef $'
 #
 
 import sys

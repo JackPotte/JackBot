@@ -36,7 +36,7 @@ supported.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 90c0ca2d667c5c05322606137927c0060cfe5c9e $'
 #
 
 import os

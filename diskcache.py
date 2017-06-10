@@ -1,6 +1,6 @@
 # -*- coding: utf-8  -*-
 
-__version__ = '$Id$'
+__version__ = '$Id: 8dcfb75c3d6b4ce9c678abe98f2f94fa339729ab $'
 
 import random
 import config

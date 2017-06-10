@@ -340,7 +340,7 @@ that you have to break it off, use "-continue" next time.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: d8460a7402c1e25da9f3db84b0add4be88ceb5a4 $'
 #
 
 import sys

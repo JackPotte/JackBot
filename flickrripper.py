@@ -30,7 +30,7 @@ Todo:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 24d676e40690c280a1394325d53c138af37bd2f8 $'
 
 import sys, urllib, re,  StringIO, hashlib, base64, time
 import wikipedia as pywikibot

@@ -6,7 +6,7 @@
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 38f575c2b3a7e5f78ef4b346f5c5ad2ff2704e46 $'
 #
 
 import getpass

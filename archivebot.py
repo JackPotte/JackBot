@@ -74,7 +74,7 @@ Options (may be omitted):
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: d6483a58a24b696782a730062dce4d1c9a9cbd47 $'
 #
 import wikipedia as pywikibot
 from pywikibot import i18n

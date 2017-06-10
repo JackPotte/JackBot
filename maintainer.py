@@ -7,7 +7,7 @@ This script requires the Python IRC library http://python-irclib.sourceforge.net
 
 Warning: experimental software, use at your own risk
 """
-__version__ = '$Id$'
+__version__ = '$Id: 55d29d9f38fc751e8f84d9b459641cdd02b25d25 $'
 
 # Author: Balasyum
 # http://hu.wikipedia.org/wiki/User:Balasyum

@@ -1,7 +1,7 @@
 # -*- coding: utf-8  -*-
 import config, family, urllib
 
-__version__ = '$Id$'
+__version__ = '$Id: a05597273de6c628947bee7151c25ac02ab57bff $'
 
 #
 # The Uncyclomedia family, assorted encyclopedi.as from the Uncyclopedia series.

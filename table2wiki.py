@@ -52,7 +52,7 @@ Please check every article you change.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: fa4b233b607e538c3e4dba9fd08ef752a5957816 $'
 #
 
 import re, sys, time

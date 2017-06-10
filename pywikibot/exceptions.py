@@ -7,7 +7,7 @@ Exception classes used throughout the framework.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 9f2eb10c50ec43d917bd9b4af68f85dd9afdb0c9 $'
 
 
 # Application specific imports

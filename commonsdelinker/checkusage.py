@@ -35,7 +35,7 @@ Returns the time in seconds since the latest known edit of dbname.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 9fa32d468d6f1d322165b6ef1e485267d79d5f1c $'
 #
 
 import httplib, urlparse, socket, time

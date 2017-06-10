@@ -18,7 +18,7 @@ Calling this class from Visual Basic:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 150ec64651516e00afedcb500e8f2fd8c1edc0a1 $'
 
 
 #

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import family
 
-__version__ = '$Id$'
+__version__ = '$Id: 7c8c02d2d87df69915fe9ad1be20b556b3ddf2a1 $'
 
 #Family file for the original wikivoyage
 

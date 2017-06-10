@@ -92,7 +92,7 @@ Syntax examples:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: 389a967d6356b119eee1f0dc58ddebc3fb9dbe69 $'
 
 import sys, re
 import codecs, pickle

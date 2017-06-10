@@ -34,7 +34,7 @@ bandwidth. Instead, use the -xml parameter, or use another way to generate
 a list of affected articles
 """
 
-__version__='$Id$'
+__version__='$Id: aec02ef12168444968712598c4c71fb85825c230 $'
 
 import re, sys
 import pywikibot

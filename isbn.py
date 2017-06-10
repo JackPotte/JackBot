@@ -36,7 +36,7 @@ Furthermore, the following command line parameters are supported:
 
 """
 
-__version__='$Id$'
+__version__='$Id: dee38e479ed92f637b324c4cea25f23272ca3c2a $'
 
 import sys, re
 import wikipedia as pywikibot

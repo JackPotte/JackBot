@@ -4,7 +4,7 @@
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 3090e46b031b249061c7357e1ea5a2455e79d068 $'
 
 import config
 import terminal_interface_base

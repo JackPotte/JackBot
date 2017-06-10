@@ -30,7 +30,7 @@ and the bot will only work on that single page.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: 0bb684eaef051842fdee1d74de405a422bbf2683 $'
 #
 
 import re, sys

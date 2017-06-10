@@ -91,7 +91,7 @@ This will move all pages in the category US to the category United States.
 # (C) xqt, 2009-2012
 # (C) Pywikipedia team, 2008-2012
 #
-__version__ = '$Id$'
+__version__ = '$Id: e1bb0ad9d0a5d8667bd7ea739ee9aabeeceb54c0 $'
 #
 # Distributed under the terms of the MIT license.
 #

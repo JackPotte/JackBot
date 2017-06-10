@@ -14,7 +14,7 @@ lists which are required by some other programs.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: dea31e2c57712c22c448dc3bbce8d72fc7318d4f $'
 
 # used for date recognition
 import types

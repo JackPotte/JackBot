@@ -21,7 +21,7 @@ and the bot will only work on that single page.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 49dbc5b7199c98153744be7e2e73fab7ec075e7a $'
 #
 
 import re

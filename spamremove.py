@@ -28,7 +28,7 @@ Command line options:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 337a533806fe4a769c77b906b09a171f0dd08f9b $'
 
 #
 

@@ -70,7 +70,7 @@ or you need some help regarding this script, you can find us here:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 6930d68765133c879a1ad74230bdab9c3a623353 $'
 #
 
 import re, urllib2, urllib

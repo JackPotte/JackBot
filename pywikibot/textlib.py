@@ -11,7 +11,7 @@ and return a unicode string.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: d0e69c48e58f16b83882dae3fce827f72813c1ce $'
 
 
 import wikipedia as pywikibot

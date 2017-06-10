@@ -32,7 +32,7 @@ and option can be one of these:
 # Distributed under the terms of the MIT license.
 #
 
-__version__='$Id$'
+__version__='$Id: 26933ae5ed5867c7f975dcdfddc8fe04b6cab4be $'
 
 import re
 import wikipedia as pywikibot

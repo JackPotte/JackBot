@@ -9,7 +9,7 @@ Bot tag tag files available at Commons with the Nowcommons template.
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: f32574e51f5e3692fc9d18494394d94432e762a6 $'
 #
 
 import sys, re, urllib

@@ -46,7 +46,7 @@ If the page to be uploaded already exists:
 #
 # Distributed under the terms of the MIT license.
 #
-__version__='$Id$'
+__version__='$Id: 31c34fe89b806d42392e1659e778c9dbccee2c33 $'
 #
 
 import re, codecs

@@ -9,7 +9,7 @@ Tool to copy a Panoramio set to Commons
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 33549fde10d029bde72cf4b133a7f2c7c7275ef4 $'
 
 import sys, urllib, re,  StringIO, hashlib, base64, time
 

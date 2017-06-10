@@ -2,7 +2,7 @@
 
 import family
 
-__version__ = '$Id$'
+__version__ = '$Id: e9b4340d18604e625415768ad7d2cdec3636f0f9 $'
 
 # An inofficial Gentoo wiki project.
 # Ask for permission at http://gentoo-wiki.com/Help:Bots before running a bot.
