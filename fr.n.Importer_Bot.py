@@ -4,7 +4,8 @@
 import os, sys, re, traceback
 #sys.path.append(os.environ['HOME'] + '/pywikipedia')
  
-import wikipedia, simplejson
+import wikipedia
+import json as simplejson
 from xml.dom.minidom import parseString as minidom_parseString
 from xml.dom import Node
 mynick = "JackBot"
