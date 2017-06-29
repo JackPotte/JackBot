@@ -1,0 +1,10 @@
+
+=== {{S|nom de famille|fr}} ===
+{{fr-inv||inv_titre=Nom de  famille}}
+'''{{subst:PAGENAME}}''' {{pron||fr}}
+# Nom de famille.
+
+==== {{S|traductions}} ====
+{{trad-d&#233;but}}
+{{&#233;bauche-trad}}
+{{trad-fin}}
