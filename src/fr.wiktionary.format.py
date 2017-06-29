@@ -6114,6 +6114,7 @@ def crawlerCat(category, recursif, apres):
     if recursif == True:
         subcat = cat.subcategories(recurse = True)
         for subcategory in subcat:
+            print subcategory.title()
             pages = subcategory.articlesList(False)
             for Page in pagegenerators.PreloadingGenerator(pages,100):
                 modification(Page.title())
@@ -6147,16 +6148,16 @@ def crawlerCatLink(pageName, apres):
     cat = catlib.Category(site, pageName)
     pages = cat.articlesList(False)
     for Page in pagegenerators.PreloadingGenerator(pages,100):
+        print Page.title()
         page = pywikibot.Page(site, Page.title())
         gen = pagegenerators.ReferringPageGenerator(page)
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])
         for PageLiee in pagegenerators.PreloadingGenerator(gen,100):
-            #print(Page.title().encode(config.console_encoding, 'replace'))
             if not apres or apres == u'' or modifier == u'True':
                 modification(PageLiee.title()) #crawlerLink(Page.title())
             elif PageLiee.title() == apres:
                 modifier = u'True'
-                
+       
 # Traitement d'une recherche
 def crawlerSearch(pageName):
     gen = pagegenerators.SearchPageGenerator(pageName, site = site, namespaces = "0")
@@ -6167,13 +6168,13 @@ def crawlerSearch(pageName):
 def crawlerRC_last_day(site = site, nobots=True, namespace='0'):
     # Génère les modifications récentes de la dernière journée
     ecart_last_edit = 30 # minutes
-    
+
     date_now = datetime.datetime.utcnow()
     # Date de la plus récente modification à récupérer
     date_start = date_now - datetime.timedelta(minutes=ecart_last_edit)
     # Date d'un jour plus tôt
     date_end = date_start - datetime.timedelta(1)
-    
+
     start_timestamp = date_start.strftime('%Y%m%d%H%M%S')
     end_timestamp = date_end.strftime('%Y%m%d%H%M%S')
 
@@ -6182,7 +6183,7 @@ def crawlerRC_last_day(site = site, nobots=True, namespace='0'):
                     includeredirects=True, repeat=False, user=None,
                     returndict=False, nobots=nobots):
         yield item[0]
-        
+
 def crawlerRC():
     gen = pagegenerators.RecentchangesPageGenerator(site = site)
     ecart_minimal_requis = 30 # min
@@ -6200,10 +6201,10 @@ def ecart_last_edit(page):
         int(match_time.group(4)), int(match_time.group(5)), int(match_time.group(6)))
     datetime_now = datetime.datetime.utcnow()
     diff_last_edit_time = datetime_now - datetime_last_edit
- 
+
     # Ecart en minutes entre l'horodotage actuelle et l'horodotage de la dernière version
     return diff_last_edit_time.seconds/60 + diff_last_edit_time.days*24*60
-    
+
 # Traitement des modifications d'un compte
 def crawlerUser(username,jusqua,apres):
     modifier = u'False'
@@ -6221,7 +6222,7 @@ def crawlerUser(username,jusqua,apres):
 def crawlerRedirects():
     for Page in site.allpages(start=u'', namespace=0, includeredirects='only'):
         modification(Page.title())    
-                                        
+
 # Traitement de toutes les pages du site
 def crawlerAll(start):
     gen = pagegenerators.AllpagesPageGenerator(start,namespace=0,includeredirects=False, site = site)
