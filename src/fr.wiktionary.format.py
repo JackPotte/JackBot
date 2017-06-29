@@ -36,8 +36,8 @@ if debugLevel > 1: print siteLanguage
 siteFamily = fileName[3:]
 siteFamily = siteFamily[:siteFamily.find('.')]
 if debugLevel > 1: print siteFamily
-username = u'JackBot'
 site = pywikibot.Site(siteLanguage, siteFamily)
+username = config.usernames[siteFamily][siteLanguage]
 
 Sections = []
 Niveau = []
@@ -3396,7 +3396,7 @@ def modification(pageName):
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
-                    # TODO : nested set
+                    # TODO : factoriser en nested set
                     elif Modele[p] == u'mythologie' or Modele[p] == u'mythol' or Modele[p] == u'myth' or Modele[p] == u'fantastique' or Modele[p] == u'fanta':    # Modèle à deux paramètres
                         param = u''
                         if (PageTemp.find(u'myt=') != -1 and PageTemp.find(u'myt=') < PageTemp.find("}}")):
@@ -6206,7 +6206,7 @@ def ecart_last_edit(page):
     return diff_last_edit_time.seconds/60 + diff_last_edit_time.days*24*60
 
 # Traitement des modifications d'un compte
-def crawlerUser(username,jusqua,apres):
+def crawlerUser(username, jusqua, apres):
     modifier = u'False'
     compteur = 0
     gen = pagegenerators.UserContributionsGenerator(username, site = site)
@@ -6303,16 +6303,3 @@ def main(*args):
 
 if __name__ == "__main__":
     main()
-
-'''
-python core/pwb.py touch        -lang:fr -family:wiktionary -cat:"Singuliers manquants en anglais"
-python core/pwb.py delete       -lang:fr -family:wiktionary -file:articles_fr_wiktionary.txt
-python core/pwb.py movepages    -lang:fr -family:wiktionary -pairs:"articles_fr_wiktionary.txt" -noredirect -pairs
-python core/pwb.py interwiki    -lang:fr -family:wiktionary -page:"Wiktionnaire:Accueil communautaire"
-python core/pwb.py interwiki    -lang:fr -family:wiktionary -wiktionary -autonomous -force -usercontribs:Otourly
-python core/pwb.py protect      -lang:fr -family:wiktionary -cat:"Élections de patrouilleurs" -summary:"Vote archivé" -move:sysop -edit:sysop
-python core/pwb.py replace      -lang:commons -family:commons -file:articles_commons.txt "[[Category:PDF Wikibooks]]" "[[Category:English Wikibooks PDF]]"
-
-python pwb.py delete -lang:fr -family:wikiversity -file:"scripts/JackBot/articles_fr_wiktionary.txt"
-python pwb.py JackBot/fr.wiktionary.format cat
-'''
