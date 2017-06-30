@@ -7,3 +7,6 @@
 
 # Homemade
 python core/pwb.py src/fr.wiktionary.format
+#python core/pwb.py src/fr.wikipedia.format
+#python core/pwb.py src/fr.wikinews.2wikipedia
+#python core/pwb.py src/fr.wikiquote.count-quotes
