@@ -353,39 +353,45 @@ def crawlerCatPMID(category):
 
 # Lancement
 if len(sys.argv) > 1:
+    arg1 = sys.argv[1].decode('utf-8')
     DebutScan = u''
     if len(sys.argv) > 2:
         if sys.argv[2] == u'debug' or sys.argv[2] == u'd':
-            debugLevel = 1
+            if len(sys.argv) > 3:
+                debugLevel = sys.argv[3]
+            else:
+                debugLevel = 1
         else:
             DebutScan = sys.argv[2]
-    if sys.argv[1] == u'test':
+    if arg1 == 'test':
         modification(u'Utilisateur:' + username + u'/test')
-    elif sys.argv[1] == u'txt':
+    if arg1 == 'test2':
+        modification(u'Utilisateur:' + username + u'/test2')
+    elif arg1 == 'txt':
         crawlerFile(u'scripts/JackBot/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
-    elif sys.argv[1] == u'u':
+    elif arg1 == 'u':
         crawlerUser(u'Utilisateur:JackBot')
-    elif sys.argv[1] == u'r':
+    elif arg1 == 'r':
         if len(sys.argv) > 2:
             crawlerSearch(sys.argv[2])
         else:
             crawlerSearch(u'marianne2.fr')
-    elif sys.argv[1] == u'm':
+    elif arg1 == 'm':
         crawlerLink(u'Modèle:Cite journal',u'')
-    elif sys.argv[1] == u'cat':
+    elif arg1 == 'cat':
         crawlerCat(u'Catégorie:Modèle Cladogramme',False,u'')
         #crawlerCat(u'Catégorie:Page utilisant un modèle avec un paramètre obsolète',False,u'')
         #crawlerCat(u'Page du modèle Article comportant une erreur',False,u'')
         #crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')    # En test
-    elif sys.argv[1] == u'page':
+    elif arg1 == 'page':
         modification(u'Utilisateur:JackBot/test unitaire')
-    elif sys.argv[1] == u'p':
+    elif arg1 == 'p':
         modification(u'Utilisateur:Cantons-de-l\'Est/Voie lactée')
-    elif sys.argv[1] == u'RC':
+    elif arg1 == 'RC':
         while 1:
             crawlerRC()
     else:
-        modification(sys.argv[1])    # Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
+        modification(arg1)    # Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
     # Quotidiennement :
     crawlerCatPMID(u'Catégorie:Modèle de source')

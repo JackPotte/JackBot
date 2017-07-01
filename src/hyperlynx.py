@@ -13,10 +13,9 @@ from __future__ import absolute_import, unicode_literals
 import os.path
 import pywikibot
 from pywikibot import *
-import re
-import hyperlynx, html2Unicode
 import codecs, urllib, urllib2, httplib, json, pprint, urlparse, datetime, re, webbrowser, cookielib, socket, time, ssl
 import requests
+import hyperlynx, html2Unicode
 
 language = "fr"
 family = "wiktionary"
@@ -30,7 +29,7 @@ retablirNonBrise = False    # Reteste les liens brisés
 languePage = u'en'
 
 brokenDomains = []
-brokenDomains.append('marianne2.fr')    # Site remplacé par marianne.net en mai 2017
+#brokenDomains.append('marianne2.fr')    # Site remplacé par marianne.net en mai 2017
 
 blockedDomains = [] # à cause des popovers ou node.js ?
 blockedDomains.append(u'bbc.co.uk')
@@ -44,6 +43,7 @@ blockedDomains.append(u'nytimes.com')
 blockedDomains.append(u'rottentomatoes.com')
 blockedDomains.append(u'soundcloud.com')
 blockedDomains.append(u'twitter.com')
+blockedDomains.append(u'w-siberia.ru')
 
 authorizedFiles = []
 authorizedFiles.append(u'.pdf')
@@ -545,7 +545,9 @@ def hyperlynx(PageTemp, debugLevel = 0):
         PageTemp = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]) + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
         # Traitement de chaque modèle à traduire
         while re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]+', PageTemp):
-            if debugLevel > 1: raw_input(PageTemp[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1:][:100].encode(config.console_encoding, 'replace'))
+            if debugLevel > 1:
+                print(u'Modèle n°' + str(m))
+                print(PageTemp[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1:][:100].encode(config.console_encoding, 'replace'))
             PageEnd = PageEnd + PageTemp[:re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1]
             PageTemp = PageTemp[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1:]    
             # Identification du code langue existant dans le modèle
@@ -610,7 +612,9 @@ def hyperlynx(PageTemp, debugLevel = 0):
             FinModele = FinModele + FinPageURL.find(u'}}')+2
             
             ModeleCourant = PageTemp[:FinModele]
-            if debugLevel > 1: raw_input(ModeleCourant.encode(config.console_encoding, 'replace'))
+            if debugLevel > 1:
+                print(u'Modèle courant : ')
+                print(ModeleCourant.encode(config.console_encoding, 'replace'))
             for p in range(0, limiteP):
                 # Faux-amis variables selon les modèles
                 if debugLevel > 1: print ParamEN[p].encode(config.console_encoding, 'replace')
@@ -795,7 +799,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
                                 print u'Média détecté (memory error potentielle)'
                             Media = True
                     if Media == False:
-                        if debugLevel > 0: print(u'Recherche de la page distante')
+                        if debugLevel > 0: print(u'Recherche de la page distante : ' + url)
                         htmlSource = TestURL(url, debugLevel)
                         if debugLevel > 0: print(u'Recherche dans son contenu')
                         LienBrise = TestPage(htmlSource, url)
