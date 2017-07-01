@@ -304,7 +304,11 @@ def workon(page):
         nquotes += 1
         start = m.start() - offset
 
-        [endtext, qlen] = parse_quote(text[start:])
+        try:
+            [endtext, qlen] = parse_quote(text[start:])
+        except TypeError:
+            raw_input(u'Unclosed template!')
+            return
 
         offset += (len(text[start:]) - len(endtext))
 
