@@ -1102,7 +1102,8 @@ def TestURL(url, debugLevel = 0):
     connectionMethod = u'Request'
     try:
         req = urllib2.Request(url)
-        res = urllib2.urlopen(req)  # TODO : ssl.CertificateError: hostname 'www.mediarodzina.com.pl' doesn't match either of 'mediarodzina.pl', 'www.mediarodzina.pl'
+        res = urllib2.urlopen(req) # If blocked here for hours, just whitelist the domain
+        # TODO : ssl.CertificateError: hostname 'www.mediarodzina.com.pl' doesn't match either of 'mediarodzina.pl', 'www.mediarodzina.pl'
         htmlSource = res.read()
         if debugLevel > 0: print str(len(htmlSource))
         if htmlSource != u'': return htmlSource
