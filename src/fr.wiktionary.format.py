@@ -25,7 +25,7 @@ from pywikibot import *
 from pywikibot import pagegenerators
 
 # Global variables
-debugLevel= 0
+debugLevel = 0
 if len(sys.argv) > 2:
     if sys.argv[2] == u'debug' or sys.argv[2] == u'd':
         debugLevel= 1

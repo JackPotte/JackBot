@@ -5,9 +5,24 @@
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
 import defaultSort, html2Unicode, hyperlynx, langues, creation as c, getPages as g
+import pywikibot
+from pywikibot import *
 
-siteLanguage = u'fr'
-siteFamily = u'wiktionary'
+# Global variables
+debugLevel = 0
+if len(sys.argv) > 2:
+    if sys.argv[2] == u'debug' or sys.argv[2] == u'd':
+        debugLevel= 1
+fileName = __file__
+if debugLevel > 0: print fileName
+if fileName.rfind('/') != -1: fileName = fileName[fileName.rfind('/')+1:]
+siteLanguage = fileName[:2]
+if debugLevel > 1: print siteLanguage
+siteFamily = fileName[3:]
+siteFamily = siteFamily[:siteFamily.find('.')]
+if debugLevel > 1: print siteFamily
+site = pywikibot.Site(siteLanguage, siteFamily)
+username = config.usernames[siteFamily][siteLanguage]
 
 if len(sys.argv) > 1:
     DebutScan = u''
