@@ -48,6 +48,7 @@ from pywikibot import *
 from pywikibot import pagegenerators
 import sys, re, string, time, locale, operator
 
+site = pywikibot.Site('fr', 'wikiquote')
 msg = {
     'fr': (u'<h1 style="border-bottom:none;margin-top:0;margin-bottom:0.8em;text-align:center;"> %d citations dans %d articles ',
            u'<small>(Le nombre d\'articles n\'inclut que les articles qui possèdent au moins une citation. Les citations en plusieurs exemplaires ne sont comptées qu\'une fois.)',
@@ -283,7 +284,7 @@ def workon(page):
 
     text = prepare_text(text)
 
-    if not pywikibot.getSite().nocapitalize:
+    if not site.nocapitalize:
         pattern = '[' + re.escape(globalvar.quote_template[0].upper()) + re.escape(globalvar.quote_template[0].lower()) + ']' + re.escape(globalvar.quote_template[1:])
     else:
         pattern = re.escape(globalvar.quote_template)
@@ -536,15 +537,15 @@ class Main(object):
             pagegen = pagegenerators.NewpagesPageGenerator(number = self.__number)
                 
         elif self.__refpagetitle:
-            refpage = pywikibot.Page(pywikibot.getSite(), self.__refpagetitle)
+            refpage = pywikibot.Page(site, self.__refpagetitle)
             pagegen = pagegenerators.ReferringPageGenerator(refpage)
 
         elif self.__linkpagetitle:
-            linkpage = pywikibot.Page(pywikibot.getSite(), self.__linkpagetitle)
+            linkpage = pywikibot.Page(site, self.__linkpagetitle)
             pagegen = pagegenerators.LinkedPageGenerator(linkpage)
 
         elif self.__catname:
-            cat = catlib.Category(pywikibot.getSite(), 'Category:%s' % self.__catname)
+            cat = catlib.Category(site, 'Category:%s' % self.__catname)
 
             if self.__start:
                 pagegen = pagegenerators.CategorizedPageGenerator(cat, recurse = self.__catrecurse, start = self.__start)
@@ -557,19 +558,15 @@ class Main(object):
         else:
             if not self.__start:
                 self.__start = '!'
-            namespace = pywikibot.Page(pywikibot.getSite(), self.__start).namespace()
-            start = pywikibot.Page(pywikibot.getSite(), self.__start).title(withNamespace=False)
-      
-            pagegen = pagegenerators.AllpagesPageGenerator(start, namespace, includeredirects=False)
-
+            namespace = pywikibot.Page(site, self.__start).namespace()
+            start = pywikibot.Page(site, self.__start).title(withNamespace=False)
+            pagegen = pagegenerators.AllpagesPageGenerator(start, namespace, includeredirects=False, site = site)
         return pagegen
 
 
     def main(self):
         # Parse command line options
         self.parse()
-        
-        site = pywikibot.getSite()
 
         # ensure that we don't try to change main page
         globalvar.mainpagename = pywikibot.Page(pywikibot.Link("Main Page", site)).title(withNamespace=False)
@@ -586,7 +583,7 @@ class Main(object):
             pages = []
             for p in self.__pagetitles:
                 try:
-                    pages.append(pywikibot.Page(pywikibot.getSite(), p))
+                    pages.append(pywikibot.Page(site, p))
                 except pywikibot.NoPage: pass
             generator = pagegenerators.PreloadingGenerator(iter(pages))
         else:
