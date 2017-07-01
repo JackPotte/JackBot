@@ -25,12 +25,10 @@ from pywikibot import *
 from pywikibot import pagegenerators
 
 # Global variables
+debugLevel= 0
 if len(sys.argv) > 2:
     if sys.argv[2] == u'debug' or sys.argv[2] == u'd':
         debugLevel= 1
-    else:
-        debugLevel= 0
-correctImages = True
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 fileName = __file__
 if debugLevel > 0: print fileName
@@ -1616,21 +1614,20 @@ def modification(pageName):
     CleTri = defaultSort.defaultSort(pageName)
     rePageName = re.escape(pageName)
 
-    if correctImages:
-        #https://fr.wiktionary.org/wiki/Sp%C3%A9cial:LintErrors/bogus-image-options
-        badFileParameters = []
-        badFileParameters.append(u'')
-        for badFileParameter in badFileParameters:
-            regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *' + badFileParameter + ur' *(\||\])'
-            PageTemp = re.sub(regex, ur'\1\3', PageTemp)
-        regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *thumb *\||\])'
+    #https://fr.wiktionary.org/wiki/Sp%C3%A9cial:LintErrors/bogus-image-options
+    badFileParameters = []
+    badFileParameters.append(u'')
+    for badFileParameter in badFileParameters:
+        regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *' + badFileParameter + ur' *(\||\])'
         PageTemp = re.sub(regex, ur'\1\3', PageTemp)
-        regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *vignette *\||\])'
-        PageTemp = re.sub(regex, ur'\1\3', PageTemp)
-        regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *vignette *\||\])'
-        PageTemp = re.sub(regex, ur'\1\3', PageTemp)
-        regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *thumb *\||\])'
-        PageTemp = re.sub(regex, ur'\1\3', PageTemp)
+    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *thumb *\||\])'
+    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
+    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *vignette *\||\])'
+    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
+    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *vignette *\||\])'
+    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
+    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *thumb *\||\])'
+    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
         
     if page.namespace() == 14:
         if debugLevel > 0: print u'Catégorie'

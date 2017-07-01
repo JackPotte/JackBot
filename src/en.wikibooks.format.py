@@ -51,14 +51,13 @@ def modification(PageHS):
 	PageTemp = PageBegin
 	PageEnd = u''
 	
-        badFileParameters = []
-        badFileParameters.append(u'')
-        badFileParameters.append(u'thumbs')
-        badFileParameters.append(u'align="center"')
-        badFileParameters.append(u'noicon')
-        
-        for badFileParameter in badFileParameters:
-            regex = ur'(\[\[(Image|Fichier|File):[^\]]+)\| *' + badFileParameter + ur' *(\||\])'
+    badFileParameters = []
+    badFileParameters.append(u'')
+    badFileParameters.append(u'thumbs')
+    badFileParameters.append(u'align="center"')
+    badFileParameters.append(u'noicon')
+    for badFileParameter in badFileParameters:
+        regex = ur'(\[\[(Image|Fichier|File):[^\]]+)\| *' + badFileParameter + ur' *(\||\])'
 
 	# Traitement des modèles
 	PageTemp = PageTemp.replace(u'[[Category:{{PAGENAME}}|{{SUBPAGENAME}}]]', u'{{BookCat}}')
