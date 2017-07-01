@@ -15,6 +15,7 @@ python core/pwb.py clean_sandbox -lang:fr -family:wikivoyage  -always
 
 # Homemade
 #python core/pwb.py src/fr.wiktionary.format
+#python core/pwb.py src/fr.wikt.import-from-commons
 #python core/pwb.py src/fr.wikipedia.format
 #python core/pwb.py src/fr.wikinews.2wikipedia
 #python core/pwb.py src/fr.wikiquote.count-quotes -family:wikiquote -output:"User:JackBot/statistiques" -outputarticles:"Template:NUMBEROFQARTICLES" -outputquotes:"Template:NUMBEROFQUOTES"
