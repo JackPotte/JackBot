@@ -354,7 +354,7 @@ def generate_output(quotes):
         # Unique quotes.
         uquotes = {}
         [operator.setitem(uquotes, i[0], []) for i in quotes[h][1] if not uquotes.has_key(i[0])]
-        outputq(u'uquotes : %s' % uquotes)
+        #outputq(u'uquotes : %s' % uquotes)
 
         # Get associated pages.
         for q in quotes[h][1]:
