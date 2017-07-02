@@ -189,7 +189,7 @@ def crawlerAll(start):
     
 # Permet à tout le monde de stopper le bot en lui écrivant
 def ArretDUrgence():
-        page = Page(site,u'User talk:' + mynick)
+        page = Page(site,u'User talk:' + username)
         if page.exists():
             PageTemp = u''
             try:
@@ -251,9 +251,9 @@ if len(sys.argv) > 1:
         else:
             DebutScan = sys.argv[2]
     if sys.argv[1] == u'test':
-        modification(u'Utilisateur:' + mynick + u'/test')
+        modification(u'Utilisateur:' + username + u'/test')
     elif sys.argv[1] == u'test2':
-        modification(u'Utilisateur:' + mynick + u'/test2')
+        modification(u'Utilisateur:' + username + u'/test2')
     elif sys.argv[1] == u'p':
         modification(u'Catégorie:Python')
     elif sys.argv[1] == u'file' or sys.argv[1] == u'txt' or sys.argv[1] == u't':
