@@ -33,7 +33,7 @@ def modification(pageName):
     print(pageName.encode(config.console_encoding, 'replace'))
     summary = u'Formatting'
     page = Page(site, pageName)
-    if page.namespace() != 0: return
+    if page.namespace() != 0 or pageName.find(u'/Print version') != -1: return
     try:
         PageBegin = page.get()
     except pywikibot.exception.NoPage:
