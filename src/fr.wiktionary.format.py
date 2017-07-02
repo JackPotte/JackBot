@@ -19,7 +19,7 @@ Testé ici : http://fr.wiktionary.org/w/index.php?title=Utilisateur%3AJackBot%2F
 
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, os, re, socket, sys, time, urllib
-import hyperlynx, defaultSort, html2Unicode, langues
+import hyperlynx, defaultSort, html2Unicode, languages
 import pywikibot
 from pywikibot import *
 from pywikibot import pagegenerators
@@ -2700,7 +2700,7 @@ def modification(pageName):
                     langue = langue1
                 else:
                     try:
-                        langue = defaultSort.defaultSort(langues.langues[langue1].decode("utf8"))
+                        langue = defaultSort.defaultSort(languages.languages[langue1].decode("utf8"))
                     except KeyError:
                         if debugLevel > 0: print "KeyError l 2111"
                         break
@@ -2722,7 +2722,7 @@ def modification(pageName):
                         langue = langue2
                     else:
                         try:
-                            langue2 = defaultSort.defaultSort(langues.langues[langue2].decode("utf8"))
+                            langue2 = defaultSort.defaultSort(languages.languages[langue2].decode("utf8"))
                         except KeyError:
                             if debugLevel > 0: print "KeyError l 2160"
                             break

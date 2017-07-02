@@ -4,7 +4,7 @@
 
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
-import defaultSort, html2Unicode, hyperlynx, langues
+import defaultSort, html2Unicode, hyperlynx, languages
 import pywikibot
 from pywikibot import *
 
