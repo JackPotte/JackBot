@@ -1696,6 +1696,7 @@ def modification(pageName):
         PageTemp = PageTemp.replace(u'{{S|nom-pr|', u'{{S|nom propre|')
         PageTemp = PageTemp.replace(u'{{S|symb|', u'{{S|symbole|')
         PageTemp = PageTemp.replace(u'{{S|verb|', u'{{S|verbe|')
+        PageTemp = PageTemp.replace(u'{{S|apparentés étymologiques', u'{{S|apparentés')
         # Alias peu intuitifs des sections sans langue
         PageTemp = re.sub(ur'{{S\| ?abr(é|e)v(iations)?\|?[a-z ]*}}', u'{{S|abréviations}}', PageTemp)
         PageTemp = re.sub(ur'{{S\| ?anagr(ammes)?\|?[a-z ]*}}', u'{{S|anagrammes}}', PageTemp)
@@ -6123,24 +6124,25 @@ def crawlerXML(source, regex = u''):
                 
 
 # Traitement d'une catégorie
-def crawlerCat(category, recursif, apres):
+def crawlerCat(category, recursif, apres, ns = 0):
+    print category
     modifier = u'False'
     cat = pywikibot.Category(site, category)
-    #pages = cat.articlesList(False)
-    #gen =  pagegenerators.NamespaceFilterPageGenerator(pages, [0]) # HS sur Commons
-    gen =  pagegenerators.CategorizedPageGenerator(cat)
-    for Page in pagegenerators.PreloadingGenerator(gen,100):
+    pages = cat.articlesList(False)
+    gen =  pagegenerators.NamespaceFilterPageGenerator(pages, [ns]) # HS sur Commons
+    #gen =  pagegenerators.CategorizedPageGenerator(cat)
+    for Page in pagegenerators.PreloadingGenerator(gen, 100):
         if not apres or apres == u'' or modifier == u'True':
             modification(Page.title()) #crawlerLink(Page.title())
         elif Page.title() == apres:
             modifier = u'True'
-    if recursif == True:
-        subcat = cat.subcategories(recurse = True)
-        for subcategory in subcat:
-            print subcategory.title()
-            pages = subcategory.articlesList(False)
-            for Page in pagegenerators.PreloadingGenerator(pages,100):
-                modification(Page.title())
+        if recursif == True:
+            subcat = cat.subcategories(recurse = True)
+            for subcategory in subcat:
+                print subcategory.title()
+                pages = subcategory.articlesList(False)
+                for Page in pagegenerators.PreloadingGenerator(pages,100):
+                    modification(Page.title())
 
 def crawlerCat2(category, recursif, apres):
     import pywikibot
@@ -6313,7 +6315,7 @@ def main(*args):
         crawlerLink(u'Modèle:vx',u'')
         crawlerLink(u'Modèle:pron-rég',u'')
         crawlerCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français',False,u'')
-        crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section',False,u'')
+        crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section',False,u'') # TODO: ns
         crawlerCat(u'Catégorie:Wiktionnaire:Sections avec titre inconnu',False,u'')
         crawlerCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus',False,u'')
         crawlerCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias',False,u'')
