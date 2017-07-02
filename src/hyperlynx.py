@@ -561,13 +561,13 @@ def hyperlynx(PageTemp, debugLevel = 0):
                         page2 = Page(site,u'Modèle:' + codelangue)
                         try:
                             PageCode = page2.get()
-                        except wikipedia.NoPage:
+                        except pywikibot.exceptions.NoPage:
                             print "NoPage l 425"
                             PageCode = u''
-                        except wikipedia.LockedPage: 
+                        except pywikibot.exceptions.LockedPage: 
                             print "Locked l 428"
                             PageCode = u''
-                        except wikipedia.IsRedirectPage: 
+                        except pywikibot.exceptions.IsRedirectPage: 
                             PageCode = page2.get(get_redirect=True)
                         if debugLevel > 0: print(PageCode.encode(config.console_encoding, 'replace'))
                         if PageCode.find(u'Indication de langue') != -1:
