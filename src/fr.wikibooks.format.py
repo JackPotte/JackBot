@@ -5,65 +5,44 @@
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
 import defaultSort, html2Unicode, hyperlynx
+import pywikibot
+from pywikibot import *
+from pywikibot import pagegenerators
 
-debugLevel= 0
+# Global variables
+debugLevel = 0
+if len(sys.argv) > 2:
+    if sys.argv[2] == u'debug' or sys.argv[2] == u'd':
+        debugLevel= 1
 fileName = __file__
 if debugLevel > 0: print fileName
-checkURL = False
-mynick = u'JackBot'
-siteLanguage = u'fr'
-siteFamily = u'wikibooks'
+if fileName.rfind('/') != -1: fileName = fileName[fileName.rfind('/')+1:]
+siteLanguage = fileName[:2]
 if debugLevel > 1: print siteLanguage
+siteFamily = fileName[3:]
+siteFamily = siteFamily[:siteFamily.find('.')]
 if debugLevel > 1: print siteFamily
-PWB = os.getcwd().find(u'Pywikibot') != -1
-if PWB:
-    import pywikibot
-    from pywikibot import *
-    from pywikibot import pagegenerators #pywikibot.flow
-    username = u'JackBot'    #KeyError: 'fr'
-else:
-    from wikipedia import *
-    username = config.usernames[site.family.name][site.lang]
+site = pywikibot.Site(siteLanguage, siteFamily)
+username = config.usernames[siteFamily][siteLanguage]
 
-def getWiki(language = 'fr', family = 'wiktionary'):
-    if debugLevel > 1: print u'get ' + language + u'.' + family
-    if PWB:
-        return pywikibot.Site(language, family)
-    else:
-        return getSite(language, family)
-
-site = getWiki(siteLanguage, siteFamily)
+checkURL = False
 
 
-# Modification du wiki
 def modification(PageHS):
     summary = u'Formatage'
     page = Page(site, PageHS)
     print(PageHS.encode(config.console_encoding, 'replace'))
-    if PWB:
-        try:
-            PageBegin = page.get()
-        except pywikibot.exceptions.NoPage:
-            print "NoPage"
-            return
-        except pywikibot.exceptions.IsRedirectPage:
-            print "Redirect page"
-            return
-        except pywikibot.exceptions.LockedPage:
-            print "Locked/protected page"
-            return
-    else:
-        try:
-            PageBegin = page.get()
-        except wikipedia.NoPage:
-            print "NoPage"
-            return
-        except wikipedia.IsRedirectPage:
-            print "Redirect page"
-            return
-        except wikipedia.LockedPage:
-            print "Locked/protected page"
-            return
+    try:
+        PageBegin = page.get()
+    except pywikibot.exceptions.NoPage:
+        print "NoPage"
+        return
+    except pywikibot.exceptions.IsRedirectPage:
+        print "Redirect page"
+        return
+    except pywikibot.exceptions.LockedPage:
+        print "Locked/protected page"
+        return
     if PageBegin.find(u'{{en travaux') != -1 or PageBegin.find(u'{{En travaux') != -1:
         print u'Page en travaux'
         return
@@ -71,6 +50,10 @@ def modification(PageHS):
     PageEnd = u''
 
     PageTemp = PageTemp.replace(u'<source lang="html4strict">', u'<source lang="html">')
+
+    # Templates
+    oldTemplates = []
+    oldTemplates.append(u'lienDePage') # TODO
 
     regex = ur'({{[a|A]utres projets[^}]*)\|noclear *= *1'
     if re.search(regex, PageTemp):
@@ -125,6 +108,10 @@ def modification(PageHS):
 
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
+
+def getWiki(language = 'fr', family = 'wiktionary'):
+    if debugLevel > 1: print u'get ' + language + u'.' + family
+    return pywikibot.Site(language, family)
 
 # Lecture du fichier articles_list.txt (au même format que pour replace.py)
 def crawlerFile(source):
