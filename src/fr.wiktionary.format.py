@@ -6125,7 +6125,7 @@ def crawlerXML(source, regex = u''):
 
 # Traitement d'une catégorie
 def crawlerCat(category, recursif, apres, ns = 0):
-    print category
+    print category.encode(config.console_encoding, 'replace')
     modifier = u'False'
     cat = pywikibot.Category(site, category)
     pages = cat.articlesList(False)
@@ -6139,7 +6139,7 @@ def crawlerCat(category, recursif, apres, ns = 0):
     if recursif:
         subcat = cat.subcategories(recurse = True)
         for subcategory in subcat:
-            print subcategory.title()
+            print subcategory.title().encode(config.console_encoding, 'replace')
             pages = subcategory.articlesList(False)
             for Page in pagegenerators.PreloadingGenerator(pages,100):
                 modification(Page.title())
@@ -6161,7 +6161,7 @@ def crawlerLink(pageName, apres):
     gen = pagegenerators.ReferringPageGenerator(page)
     gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])
     for Page in pagegenerators.PreloadingGenerator(gen,100):
-        #print(Page.title().encode(config.console_encoding, 'replace'))
+        print(Page.title().encode(config.console_encoding, 'replace'))
         if not apres or apres == u'' or modifier == u'True':
             modification(Page.title()) #crawlerLink(Page.title())
         elif Page.title() == apres:
@@ -6173,7 +6173,7 @@ def crawlerCatLink(pageName, apres):
     cat = catlib.Category(site, pageName)
     pages = cat.articlesList(False)
     for Page in pagegenerators.PreloadingGenerator(pages,100):
-        print Page.title()
+        print Page.title().encode(config.console_encoding, 'replace')
         page = pywikibot.Page(site, Page.title())
         gen = pagegenerators.ReferringPageGenerator(page)
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])
@@ -6252,7 +6252,6 @@ def crawlerRedirects():
 def crawlerAll(start):
     gen = pagegenerators.AllpagesPageGenerator(start,namespace=0,includeredirects=False, site = site)
     for Page in pagegenerators.PreloadingGenerator(gen,100):
-        #print (Page.title().encode(config.console_encoding, 'replace'))
         modification(Page.title())
 
 def main(*args):
