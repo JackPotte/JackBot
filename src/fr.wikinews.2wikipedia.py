@@ -9,21 +9,30 @@ from xml.dom.minidom import parseString as minidom_parseString
 from xml.dom import Node
 import pywikibot
 from pywikibot import *
-mynick = "JackBot"
-debug = True
- 
+
+# Global variables
+debugLevel = 0
+if len(sys.argv) > 2:
+    if sys.argv[2] == u'debug' or sys.argv[2] == u'd':
+        debugLevel= 1
+fileName = __file__
+if debugLevel > 0: print fileName
+if fileName.rfind('/') != -1: fileName = fileName[fileName.rfind('/')+1:]
+siteLanguage = fileName[:2]
+if debugLevel > 1: print siteLanguage
+siteFamily = fileName[3:]
+siteFamily = siteFamily[:siteFamily.find('.')]
+if debugLevel > 1: print siteFamily
+site = pywikibot.Site(siteLanguage, siteFamily)
+username = config.usernames[siteFamily][siteLanguage]
+
 MONTHS = [u'January',u'February',u'March',u'April',u'May',u'June',u'July',u'August',u'September',u'October',u'November',u'December',
     u'Janvier',u'Février',u'Mars',u'Avril',u'Mai',u'Juin',u'Juillet',u'Août',u'Septembre',u'Octobre',u'Novembre',u'Décembre'] #TODO: srsly...
 date_rx = re.compile(r'(\d+) (%s) (\d\d\d\d)' % ('|'.join(MONTHS),), re.IGNORECASE)
- 
- 
-def parseNews(page):
+
+def getNewsOld(page):
     pywikibot.output(page.aslink())
-    try:
-        site = page.site()
-    except TypeError:
-        print 'TypeError'
-        site = pywikibot.Site(code = lang, fam = 'wikipedia')
+    site = page.site()
     '''try:
         response, data = site.postForm('/w/api.php', {'action':'parse','format':'json','page':page.title()})
     except ValueError: #too many values to unpack
@@ -34,39 +43,31 @@ def parseNews(page):
        'page': page.title().encode('utf-8')
     }
     data = site.postForm(site.apipath(), predata) # WARNING: Http response status 405
-    if debug == True: raw_input(data)
+    if debugLevel > 0: raw_input(data)
     text = simplejson.loads(data)['parse']['text']['*'] # ValueError: No JSON object could be decode
-    if debug == True: raw_input(text)
+    if debugLevel > 0: raw_input(text)
+    return parseNews(text)
  
+def parseNews(text):
     #doc = minidom_parseString(u'<html><body>' + text.encode('utf-8') + u'</body></html>')
     doc = minidom_parseString((u'<html><body>' + text + u'</body></html>').encode('utf-8'))
- 
     ul = doc.getElementsByTagName('ul')
     if ul:
         for li in ul[0].getElementsByTagName('li'):
             if li.firstChild.nodeType == Node.TEXT_NODE:
                 prefix = li.firstChild.nodeValue
-                if site.lang == 'en':
-                    prefix = date_rx.sub(r'[[\2 \1]]',prefix)
-                elif site.lang == 'fr':
-                    prefix = date_rx.sub(r'{{date|\1|\2|\3}}',prefix)
+                #if site.lang == 'en':
+                #    prefix = date_rx.sub(r'[[\2 \1]]',prefix)
+                #elif site.lang == 'fr':
+                prefix = date_rx.sub(r'{{date|\1|\2|\3}}',prefix)
             else:
                 prefix = ''
             yield prefix, Page(site, li.getElementsByTagName('a')[0].getAttribute('title'))
 
-def parseNews2(page):
-    if debug == True: page.title()
-    try:
-        pageContent = page.get()
-    except pywikibot.exceptions.NoPage:
-        print u'NoPage l 1383'
-        return
-    except pywikibot.exceptions.IsRedirectPage: 
-        #PageBegin = page.get(get_redirect=True)
-        print u'IsRedirect l 1393'
-        return
-    if debug == True: raw_input(pageContent.encode(config.console_encoding, 'replace'))
-    return pageContent.split("\n")
+def getNews(page):
+    text = page._get_parsed_page()  # TODO : APIError missing title
+    #raw_input(parsed_text.encode(config.console_encoding, 'replace'))
+    return parseNews(text)
 
 def doOnePage(tpl, page, site_src):
     pywikibot.output(page.aslink())
@@ -90,7 +91,7 @@ def doOnePage(tpl, page, site_src):
         pywikibot.output(u'No target page specified!')
 
     newsPage = Page(site_src, config['page'][0])    # ex : Page:Canada/Wikipedia
-    if debug == True: print newsPage                # ex : <DynamicPageList>
+    if debugLevel > 0: print newsPage                # ex : <DynamicPageList>
     text = u'\n'.join(
         [u'%(indent)s %(prefix)s[[wikinews:%(lang)s:%(article_page)s|%(article_title)s]]' % {
                 'article_page' : re.sub(r'[\s\xa0]', ' ', news.title()),
@@ -100,10 +101,12 @@ def doOnePage(tpl, page, site_src):
                 'lang' : site_src.lang
             }
             #for prefix, news in parseNews(newsPage)]
-            for prefix, news in parseNews2(newsPage)
+            for prefix, news in getNews(newsPage)
         ]
     )
-    if debug == True: raw_input(text.encode(config.console_encoding, 'replace'))
+    #if debugLevel > 0: raw_input(text)
+    #UnicodeEncodeError: 'ascii' codec can't encode character u'\xa0' in position 22: ordinal not in range(128)
+    #AttributeError: 'dict' object has no attribute 'console_encoding'
 
     #Check for old content
     oldtext = page.get()
@@ -122,21 +125,16 @@ def doOnePage(tpl, page, site_src):
                 }
         #pywikibot.output(text)
         result = 'ok'
-        if debug == True:
+        if debugLevel > 0:
 			print text #.encode(config.console_encoding, 'replace')
 			result = raw_input("Sauvegarder ? (o/n) ")
         if result != "n" and result != "no" and result != "non":
 			page.put(text, comment=u'Updating from [[n:%s|%s]]' % (newsPage.title(),newsPage.title(),))
 
-    try:
-        site = page.site()
-    except TypeError:
-        print 'TypeError'
-        site = pywikibot.Site(code = lang, fam = 'wikipedia')
-
+    WPsite = pywikibot.Site(code = lang, fam = 'wikipedia')
     return {
         'src' : newsPage.title(),
-        'ns'  : site.namespace(page.namespace()),
+        'ns'  : WPsite.namespace(page.namespace()),
         'dst' : page.title(),
         }
  
@@ -165,19 +163,19 @@ def main(lang):
         audit_txt += '\n'.join('# [[%(dst)s]] &larr; [[n:%(src)s|%(src)s]]' % item for item in items)
     audit_txt = audit_txt.strip()
  
-    audit_page = Page(site_dest,'User:' + mynick + u'/List')
+    audit_page = Page(site_dest,'User:' + username + u'/List')
     oldtext = audit_page.get()
     rx = re.compile('^.*?(?=\n== )', re.DOTALL)
     oldtext = rx.sub('', oldtext).strip()
     #pywikibot.showDiff(oldtext, audit_txt)
     if oldtext != audit_txt:
         result = 'ok'
-        if debug == True:
+        if debugLevel > 0:
 			print audit_page #.encode(config.console_encoding, 'replace')
 			result = raw_input("Sauvegarder ? (o/n) ")
         if result != "n" and result != "no" and result != "non":
 			audit_page.put(
-            u'List of pages maintained by {{user|' + mynick + u'}} by namespace. Last updated: ~~~~~\n\n' + audit_txt,
+            u'List of pages maintained by {{user|' + username + u'}} by namespace. Last updated: ~~~~~\n\n' + audit_txt,
             comment='Updating list of maintained pages (%d items).' % sum(len(i) for i in pages_maintained.values()),
             )
  
