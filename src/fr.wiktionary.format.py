@@ -6136,13 +6136,13 @@ def crawlerCat(category, recursif, apres, ns = 0):
             modification(Page.title()) #crawlerLink(Page.title())
         elif Page.title() == apres:
             modifier = u'True'
-        if recursif == True:
-            subcat = cat.subcategories(recurse = True)
-            for subcategory in subcat:
-                print subcategory.title()
-                pages = subcategory.articlesList(False)
-                for Page in pagegenerators.PreloadingGenerator(pages,100):
-                    modification(Page.title())
+    if recursif:
+        subcat = cat.subcategories(recurse = True)
+        for subcategory in subcat:
+            print subcategory.title()
+            pages = subcategory.articlesList(False)
+            for Page in pagegenerators.PreloadingGenerator(pages,100):
+                modification(Page.title())
 
 def crawlerCat2(category, recursif, apres):
     import pywikibot
@@ -6290,7 +6290,7 @@ def main(*args):
             modification(sys.argv[1])
     else:
         # Quotidiennement :
-        crawlerCat(u'Catégorie:Wiktionnaire:Terminologie sans langue précisée',True,u'')
+        crawlerCat(u'Catégorie:Wiktionnaire:Terminologie sans langue précisée', True, u'')
         crawlerCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée',False,u'')
         crawlerCat(u'Catégorie:Wiktionnaire:Flexions à vérifier',True,u'')
         crawlerCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet',False,u'')
