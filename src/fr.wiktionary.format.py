@@ -19,7 +19,7 @@ Testé ici : http://fr.wiktionary.org/w/index.php?title=Utilisateur%3AJackBot%2F
 
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, os, re, socket, sys, time, urllib
-import hyperlynx, defaultSort, html2Unicode, languages
+from lib import *
 import pywikibot
 from pywikibot import *
 from pywikibot import pagegenerators
@@ -1495,7 +1495,8 @@ Modele.append(u'IE')
 Modele.append(u'fr-verbe-flexion')
 limit6 = len(Modele) # Somme des modèles traités
 '''
-# Non traités
+# TODO : non traités
+
 arbres : 3 paramètres
 
     # Sans code langue
@@ -1614,7 +1615,7 @@ def modification(pageName):
         print u'NoPage l 1396'
         return
     PageTemp = PageBegin
-    CleTri = defaultSort.defaultSort(pageName)
+    CleTri = defaultSort(pageName)
     rePageName = re.escape(pageName)
 
     #https://fr.wiktionary.org/wiki/Sp%C3%A9cial:LintErrors/bogus-image-options
@@ -1636,7 +1637,7 @@ def modification(pageName):
         if debugLevel > 0: print u'Catégorie'
         # Catégorie
         #if pageName.find(u'Catégorie:Lexique en français d') != -1 and PageTemp.find(u'[[Catégorie:Lexiques en français|') == -1:
-        #    PageTemp = PageTemp + u'\n[[Cat�����gorie:Lexiques en français|' + defaultSort.defaultSort(trim(pageName[pageName.rfind(' '):])) + u']]\n'
+        #    PageTemp = PageTemp + u'\n[[Cat�����gorie:Lexiques en français|' + defaultSort(trim(pageName[pageName.rfind(' '):])) + u']]\n'
         PageEnd = PageBegin
         
     elif page.namespace() == 0 or page.namespace() == 2 and (pageName.find(u':JackBot/') == -1 or pageName.find(u':JackPotte/') == -1):
@@ -1981,7 +1982,7 @@ def modification(pageName):
             if debugLevel > 0: print u' Nettoyage des {{voir}}...'
             if PageTemp.find(u'{{voir}}\n') != -1: PageTemp = PageTemp[0:PageTemp.find(u'{{voir}}\n')] + PageTemp[PageTemp.find(u'{{voir}}\n')+len(u'{{voir}}\n'):len(PageTemp)]
             if PageTemp.find(u'{{voir}}') != -1: PageTemp = PageTemp[0:PageTemp.find(u'{{voir}}')] + PageTemp[PageTemp.find(u'{{voir}}')+len(u'{{voir}}'):len(PageTemp)]
-            PageTemp = html2Unicode.html2Unicode(PageTemp)
+            PageTemp = html2Unicode(PageTemp)
             PageTemp = PageTemp.replace(u'}}&#32;[[', u'}} [[')
             PageTemp = PageTemp.replace(u']]&#32;[[', u']] [[')
             regex = ur'\[\[([^\]]*)\|\1\]\]'
@@ -2550,7 +2551,7 @@ def modification(pageName):
                         pageName2 = u'se ' + pageName
                     page2 = Page(site, pageName2)
                     if not page2.exists():
-                        if debugLevel > 0: print u'Création de ' + defaultSort.defaultSort(pageName2)
+                        if debugLevel > 0: print u'Création de ' + defaultSort(pageName2)
                         summary2 = u'Création d\'une redirection provisoire catégorisante du pronominal'
                         savePage(page2, u'#REDIRECT[[' + pageName + u']]\n<!-- Redirection temporaire avant de créer le verbe pronominal -->\n[[Catégorie:Wiktionnaire:Verbes pronominaux à créer en français]]', summary2)
                     
@@ -2700,7 +2701,7 @@ def modification(pageName):
                     langue = langue1
                 else:
                     try:
-                        langue = defaultSort.defaultSort(languages.languages[langue1].decode("utf8"))
+                        langue = defaultSort(languages[langue1].decode("utf8"))
                     except KeyError:
                         if debugLevel > 0: print "KeyError l 2111"
                         break
@@ -2722,7 +2723,7 @@ def modification(pageName):
                         langue = langue2
                     else:
                         try:
-                            langue2 = defaultSort.defaultSort(languages.languages[langue2].decode("utf8"))
+                            langue2 = defaultSort(languages[langue2].decode("utf8"))
                         except KeyError:
                             if debugLevel > 0: print "KeyError l 2160"
                             break
@@ -2780,7 +2781,7 @@ def modification(pageName):
                         print "BadTitle l 1530 : " + langue1
                         return
                     if PageTemp2.find(u'<noinclude>') != -1:
-                        langue = defaultSort.defaultSort(PageTemp2[0:PageTemp2.find(u'<noinclude>')])
+                        langue = defaultSort(PageTemp2[0:PageTemp2.find(u'<noinclude>')])
                         langue2 = u'zzz'
                         if PageTemp.find(u'\n== {{langue|') != -1:
                             ParagCourant = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + PageTemp[0:PageTemp.find(u'\n== {{langue|')]
@@ -2814,7 +2815,7 @@ def modification(pageName):
                                 print u'BadTitle l 1616 : ' + langue2
                                 return
                             if PageTemp3.find(u'<noinclude>') != -1:
-                                langue2 = defaultSort.defaultSort(PageTemp3[0:PageTemp3.find(u'<noinclude>')])
+                                langue2 = defaultSort(PageTemp3[0:PageTemp3.find(u'<noinclude>')])
                                 print langue2 # espagnol catalan
                                 if langue2 > langue:
                                     summary = summary + ', section ' + langue2 + u' > ' + langue
@@ -5433,7 +5434,7 @@ def modification(pageName):
                                 if TitreTemp.find(u'ữ'.upper()) !=-1: TitreTemp = TitreTemp.replace(u'ữ'.upper(),u'u€')
                                 
                             if TitreTemp != pageName:
-                                TitreTemp = defaultSort.defaultSort(TitreTemp)
+                                TitreTemp = defaultSort(TitreTemp)
                                 PageTemp = PageTemp[0:PageTemp.find(u'}}')] + u'|clé=' + TitreTemp + PageTemp[PageTemp.find(u'}}'):len(PageTemp)]
                         elif codelangue == u'ru':
                             while PageTemp.find(u'е€') < PageTemp.find(u'}}') and PageTemp.find(u'е€') != -1:
@@ -5769,14 +5770,14 @@ def modification(pageName):
         PageEnd = PageTemp
 
     if debugLevel > 0: print u'Test des URL'
-    #PageEnd = hyperlynx.hyperlynx(PageEnd)
+    #PageEnd = hyperlynx(PageEnd) # TODO: unit tests
     if debugLevel > 0: print (u'--------------------------------------------------------------------------------------------')
     if PageEnd != PageBegin:
         # Modifications mineures, ne justifiant pas une édition à elles seules
         PageEnd = PageEnd.replace(u'  ', u' ')
         PageEnd = PageEnd.replace(u'\n\n\n\n', u'\n\n\n')
         PageEnd = PageEnd.replace(u'.\n=', u'.\n\n=')
-        savePage(page,PageEnd, summary)
+        savePage(page, PageEnd, summary)
     elif debugLevel > 0:
         print "Aucun changement"
 
@@ -6093,7 +6094,7 @@ def crawlerFile(source):
             if pageName.find(u']]') != -1:
                 pageName = pageName[0:pageName.find(u']]')]
             # Conversion ASCII => Unicode (pour les .txt)
-            modification(html2Unicode.html2Unicode(pageName))
+            modification(html2Unicode(pageName))
         PagesHS.close()
     
 # Lecture du dump
@@ -6114,7 +6115,7 @@ def crawlerXML(source, regex = u''):
                     if re.search(regex, PageTemp):
                         if debugLevel > 0: print entry.title
                         #PageTemp = re.sub(regex, ur'\1|flexion\2', PageTemp)
-                        #modification(html2Unicode.html2Unicode(entry.title))
+                        #modification(html2Unicode(entry.title))
             '''
             if debugLevel > 1: print u' Ajout de la boite de flexion'
             if entry.title[-1:] == u's':

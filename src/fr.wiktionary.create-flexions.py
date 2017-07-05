@@ -4,7 +4,7 @@
 
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
-import defaultSort, html2Unicode, hyperlynx, languages
+from lib import *
 import pywikibot
 from pywikibot import *
 
@@ -180,7 +180,7 @@ def crawlerFile(source):
             if PageHS.find(u']]') != -1:
                 PageHS = PageHS[0:PageHS.find(u']]')]
             # Conversion ASCII => Unicode (pour les .txt)
-            modification(html2Unicode.html2Unicode(PageHS))
+            modification(html2Unicode(PageHS))
         PagesHS.close()
 
 # Traitement d'une catégorie

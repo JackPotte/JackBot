@@ -4,7 +4,7 @@
 
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
-import defaultSort, html2Unicode, hyperlynx
+from lib import *
 import pywikibot
 from pywikibot import *
 from pywikibot import pagegenerators
@@ -79,7 +79,7 @@ def modification(PageHS):
             summary += ', ajout de {{ISBN}}'
 
         # Traitement des hyperliens
-        if checkURL: PageTemp = hyperlynx.hyperlynx(PageTemp)
+        if checkURL: PageTemp = hyperlynx(PageTemp)
 
         # Clés de tri pour les noms propres
         if PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') != -1:

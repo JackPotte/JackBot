@@ -11,10 +11,10 @@
 
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
-import defaultSort, html2Unicode, hyperlynx
+from lib import hyperlynx
 import pywikibot
 from pywikibot import *
-from pywikibot import pagegenerators #pywikibot.flow
+from pywikibot import pagegenerators
 
 # Global variables
 debugLevel = 0
@@ -61,7 +61,7 @@ def modification(PageHS):
 
     # Traitements des URL et leurs modèles
     if debugLevel > 0: print u'Test des URL'
-    PageTemp = hyperlynx.hyperlynx(PageTemp, debugLevel)
+    PageTemp = hyperlynx(PageTemp, debugLevel)
     if debugLevel > 0: print (u'--------------------------------------------------------------------------------------------')
     if PageTemp != PageBegin:
         summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/11#Identifier les liens brisés (le retour ;-))|Vérification des liens externes]]'

@@ -15,7 +15,6 @@ import pywikibot
 from pywikibot import *
 import codecs, urllib, urllib2, httplib, json, pprint, urlparse, datetime, re, webbrowser, cookielib, socket, time, ssl
 import requests
-import hyperlynx, html2Unicode
 
 language = "fr"
 family = "wiktionary"
@@ -827,7 +826,6 @@ def hyperlynx(PageTemp, debugLevel = 0):
                         print u'*URL : ' + url.encode(config.console_encoding, 'replace')
                         print u'*Titre : ' + titre.encode(config.console_encoding, 'replace')
                         print u'*HS : ' + str(LienBrise)
-                        print type(htmlSource)
                     except UnicodeDecodeError:
                         print u'*HS : ' + str(LienBrise)
                         print "UnicodeDecodeError l 466"
@@ -1015,8 +1013,8 @@ def hyperlynx(PageTemp, debugLevel = 0):
                 if FinPageURL.find(FinDURL[l]) != -1 and FinPageURL.find(FinDURL[l]) < FinPageURL.find(CharFinURL):
                     CharFinURL = FinDURL[l]
             if debugLevel > 0: print u'Saut après ' + CharFinURL
-            PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'//')+2+FinPageURL.find(CharFinURL)]
-            PageTemp = PageTemp[PageTemp.find(u'//')+2+FinPageURL.find(CharFinURL):len(PageTemp)]
+            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'//')+2+FinPageURL.find(CharFinURL)]
+            PageTemp = PageTemp[PageTemp.find(u'//')+2+FinPageURL.find(CharFinURL):]
         else:
             # Saut du reste du modèle courant (contenant parfois d'autres URL à laisser)
             if debugLevel > 0: print u'Saut après }}'
@@ -1025,7 +1023,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
         if debugLevel > 1: raw_input(PageEnd.encode(config.console_encoding, 'replace'))
 
     PageTemp = PageEnd + PageTemp
-    PageEnd    = u''    
+    PageEnd = u''    
     if debugLevel > 0: print ("Fin des tests URL")
     
     # Recherche de chaque hyperlien de modèles ------------------------------------------------------------------------------------------------------------------------------------
@@ -1104,9 +1102,10 @@ def TestURL(url, debugLevel = 0):
         req = urllib2.Request(url)
         res = urllib2.urlopen(req) # If blocked here for hours, just whitelist the domain
         # TODO : ssl.CertificateError: hostname 'www.mediarodzina.com.pl' doesn't match either of 'mediarodzina.pl', 'www.mediarodzina.pl'
+        # UnicodeWarning: Unicode unequal comparison failed to convert both arguments to Unicode
         htmlSource = res.read()
         if debugLevel > 0: print str(len(htmlSource))
-        if htmlSource != '': return htmlSource
+        if htmlSource != str(''): return htmlSource
     except UnicodeEncodeError:
         if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
     except UnicodeDecodeError:
@@ -1131,7 +1130,7 @@ def TestURL(url, debugLevel = 0):
             response = opener.open(url)
             htmlSource = response.read()
             if debugLevel > 0: print str(len(htmlSource))
-            if htmlSource != '': return htmlSource
+            if htmlSource != str(''): return htmlSource
         except UnicodeEncodeError:
             if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
         except UnicodeDecodeError:
@@ -1175,7 +1174,7 @@ def TestURL(url, debugLevel = 0):
             response = opener.open(url)
             htmlSource = response.read()
             if debugLevel > 0: print str(len(htmlSource))
-            if htmlSource != '': return htmlSource
+            if htmlSource != str(''): return htmlSource
         except UnicodeEncodeError:
             if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
         except UnicodeDecodeError:
@@ -1207,7 +1206,7 @@ def TestURL(url, debugLevel = 0):
     try:
         htmlSource = urllib2.urlopen(url.encode('utf8')).read()
         if debugLevel > 0: print str(len(htmlSource))
-        if htmlSource != '': return htmlSource
+        if htmlSource != str(''): return htmlSource
     except UnicodeEncodeError:
         if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
     except UnicodeDecodeError:
@@ -1232,7 +1231,7 @@ def TestURL(url, debugLevel = 0):
             response = opener.open(url)
             htmlSource = response.read()
             if debugLevel > 0: print str(len(htmlSource))
-            if htmlSource != '': return htmlSource
+            if htmlSource != str(''): return htmlSource
         except UnicodeEncodeError:
             if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
         except UnicodeDecodeError:
@@ -1279,7 +1278,7 @@ def TestURL(url, debugLevel = 0):
         res = urllib2.urlopen(req)
         htmlSource = res.read()
         if debugLevel > 0: print connectionMethod + u' : text/html ' + str(len(htmlSource))
-        if htmlSource != '': return htmlSource
+        if htmlSource != str(''): return htmlSource
     except UnicodeEncodeError:
         if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
     except UnicodeDecodeError:
@@ -1303,7 +1302,7 @@ def TestURL(url, debugLevel = 0):
             res = urllib2.urlopen(req)
             htmlSource = res.read()
             if debugLevel > 0: print str(len(htmlSource))
-            if htmlSource != '': return htmlSource
+            if htmlSource != str(''): return htmlSource
         except UnicodeEncodeError:
             if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
         except UnicodeDecodeError:
@@ -1352,7 +1351,7 @@ def TestURL(url, debugLevel = 0):
         res = urllib2.urlopen(req)
         htmlSource = res.read()
         if debugLevel > 0: print connectionMethod + u' : ' + agent + u' : ' + str(len(htmlSource))
-        if htmlSource != '': return htmlSource
+        if htmlSource != str(''): return htmlSource
     except UnicodeEncodeError:
         if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
     except UnicodeDecodeError:
@@ -1378,7 +1377,7 @@ def TestURL(url, debugLevel = 0):
                 res = urllib2.urlopen(req)
                 htmlSource = res.read()
                 if debugLevel > 0: print str(len(htmlSource))
-                if htmlSource != '': return htmlSource
+                if htmlSource != str(''): return htmlSource
             except UnicodeEncodeError:
                 if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
             except UnicodeDecodeError:
@@ -1391,7 +1390,7 @@ def TestURL(url, debugLevel = 0):
                     htmlSource = sock.read()
                     sock.close()
                     if debugLevel > 0: print str(len(htmlSource))
-                    if htmlSource != '': return htmlSource
+                    if htmlSource != str(''): return htmlSource
                 except UnicodeError:
                     if debugLevel > 0: print connectionMethod + u' : UnicodeError'
                 except UnicodeEncodeError:
@@ -1476,7 +1475,7 @@ def TestURL(url, debugLevel = 0):
         res = urllib2.urlopen(req)
         htmlSource = res.read()
         if debugLevel > 0: print str(len(htmlSource))
-        if htmlSource != '': return htmlSource
+        if htmlSource != str(''): return htmlSource
     except UnicodeEncodeError:
         if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
     except UnicodeDecodeError:
@@ -1501,7 +1500,7 @@ def TestURL(url, debugLevel = 0):
             res = urllib2.urlopen(req)
             htmlSource = res.read()
             if debugLevel > 0: print str(len(htmlSource))
-            if htmlSource != '': return htmlSource
+            if htmlSource != str(''): return htmlSource
         except UnicodeEncodeError:
             if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
         except UnicodeDecodeError:
@@ -1546,7 +1545,7 @@ def TestURL(url, debugLevel = 0):
         res = urllib2.urlopen(url)
         htmlSource = res.read()
         if debugLevel > 0: print str(len(htmlSource))
-        if htmlSource != '': return htmlSource
+        if htmlSource != str(''): return htmlSource
     except UnicodeEncodeError:
         if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
     except UnicodeDecodeError:
@@ -1583,7 +1582,7 @@ def TestURL(url, debugLevel = 0):
         htmlSource = sock.read()
         sock.close()
         if debugLevel > 0: print str(len(htmlSource))
-        if htmlSource != '': return htmlSource
+        if htmlSource != str(''): return htmlSource
     except httplib.BadStatusLine:
         if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
     except httplib.HTTPException:
@@ -1618,7 +1617,7 @@ def TestURL(url, debugLevel = 0):
             htmlSource = sock.read()
             sock.close()
             if debugLevel > 0: print str(len(htmlSource))
-            if htmlSource != '': return htmlSource
+            if htmlSource != str(''): return htmlSource
         except UnicodeError:
             if debugLevel > 0: print connectionMethod + u' : UnicodeError'
         except UnicodeEncodeError:
@@ -1651,13 +1650,13 @@ def TestURL(url, debugLevel = 0):
 def TestPage(htmlSource, url, debugLevel = 0):
     LienBrise = False
     try:
-        #if debugLevel > 1 and htmlSource != '' and htmlSource is not None: raw_input (htmlSource[0:1000])
+        #if debugLevel > 1 and htmlSource != str('') and htmlSource is not None: raw_input (htmlSource[0:1000])
         if htmlSource is None:
             if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " none type"
             return True
-        elif htmlSource == u'ok' or (htmlSource == u'' and (url.find(u'à') != -1 or url.find(u'é') != -1 or url.find(u'è') != -1 or url.find(u'ê') != -1 or url.find(u'ù') != -1)): # bug http://fr.wikipedia.org/w/index.php?title=Acad%C3%A9mie_fran%C3%A7aise&diff=prev&oldid=92572792
+        elif htmlSource == str('ok') or (htmlSource == str('') and (url.find(u'à') != -1 or url.find(u'é') != -1 or url.find(u'è') != -1 or url.find(u'ê') != -1 or url.find(u'ù') != -1)): # bug http://fr.wikipedia.org/w/index.php?title=Acad%C3%A9mie_fran%C3%A7aise&diff=prev&oldid=92572792
             return False
-        elif htmlSource == u'ko' or htmlSource == u'':
+        elif htmlSource == str('ko') or htmlSource == str(''):
             if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " page vide"
             return True
         else:

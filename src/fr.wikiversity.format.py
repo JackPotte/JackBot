@@ -10,7 +10,7 @@
 
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
-import defaultSort, html2Unicode, hyperlynx
+from lib import *
 import pywikibot
 from pywikibot import *
 from pywikibot import pagegenerators
@@ -435,7 +435,7 @@ def modification(PageHS):
 
     # Test des URL
     if debugLevel > 0: print u'Test des URL'
-    PageEnd = hyperlynx.hyperlynx(PageEnd)
+    PageEnd = hyperlynx(PageEnd)
     if debugLevel > 1: raw_input (u'--------------------------------------------------------------------------------------------')
 
     if PageBegin != PageEnd: sauvegarde(page, PageEnd, summary)

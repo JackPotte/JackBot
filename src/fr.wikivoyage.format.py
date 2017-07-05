@@ -4,7 +4,7 @@
 
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
-import defaultSort, html2Unicode, hyperlynx
+from lib import *
 import pywikibot
 from pywikibot import *
 from pywikibot import pagegenerators
@@ -54,7 +54,7 @@ def modification(PageHS):
     if checkURL:
         # Traitements des URL et leurs modèles
         if debugLevel > 0: print u'Test des URL'
-        PageTemp = hyperlynx.hyperlynx(PageTemp, debugLevel)
+        PageTemp = hyperlynx(PageTemp, debugLevel)
         if debugLevel > 0: print (u'--------------------------------------------------------------------------------------------')
         if PageTemp != PageBegin:
             summary = summary + u', vérification des liens externes et traduction de leurs modèles'
