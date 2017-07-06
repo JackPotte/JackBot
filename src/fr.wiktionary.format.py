@@ -3083,7 +3083,8 @@ def modification(pageName):
                         PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')] + u'|' + codelangue + u'}}'
                         PageTemp = PageTemp[PageTemp.find(u'}}')+2:]
 
-            for p in range(0,limit6):
+            for p in range(0, limit6):
+                # Templates with language code at first
                 if Modele[p] == PageTemp[:position]:
                     if debugLevel > 0: print (Modele[p].encode(config.console_encoding, 'replace'))
                     # Modèles imbriqués (à sauter)
@@ -6104,7 +6105,8 @@ def crawlerXML(source, regex = u''):
         from pywikibot import xmlreader
         dump = xmlreader.XmlDump(source)
         parser = dump.parse()
-
+        outPutFile = open('src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', 'a')
+                    
         for entry in parser:
             PageTemp = entry.text
             '''if regex == u'':
@@ -6120,9 +6122,11 @@ def crawlerXML(source, regex = u''):
             if debugLevel > 1: print u' Ajout de la boite de flexion'
             if entry.title[-1:] == u's':
                 if (PageTemp.find(u'{{S|adjectif|fr|flexion}}') != -1 or PageTemp.find(u'{{S|nom|fr|flexion}}') != -1) and PageTemp.find(u'{{fr-') == -1:
+                    #print entry.title # limite de 8191 lignes dans le terminal.
                     #modification(entry.title)
-                    print entry.title # limite de 8191 lignes dans le terminal. TODO : write articles_fr_wiktionary.txt, encodés
-                
+                    outPutFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+        outPutFile.close()
+
 
 # Traitement d'une catégorie
 def crawlerCat(category, recursif, apres, ns = 0):
@@ -6267,7 +6271,7 @@ def main(*args):
         elif sys.argv[1] == u'file' or sys.argv[1] == u'txt': 
             crawlerFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'xml':
-            crawlerXML(u'dumps/frwiktionary-20170520-pages-meta-current.xml')
+            crawlerXML(u'dumps/frwiktionary-20170701-pages-meta-current.xml')
         elif sys.argv[1] == u'link' or sys.argv[1] == u'm':
             crawlerLink(site, u'Modèle:ex',u'')
         elif sys.argv[1] == u'cat':
