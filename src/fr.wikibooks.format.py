@@ -50,6 +50,7 @@ def modification(PageHS):
     PageEnd = u''
 
     PageTemp = PageTemp.replace(u'<source lang="html4strict">', u'<source lang="html">')
+    PageTemp = PageTemp.replace(u'{{Oracle}}\n', u'<noinclude>{{Oracle}}</noinclude>\n')
 
     # Templates
     oldTemplates = []
@@ -306,7 +307,7 @@ if len(sys.argv) > 1:
     elif sys.argv[1] == u'm':
         crawlerLink(u'Modèle:autres projets',u'')
     elif sys.argv[1] == u'cat':
-        crawlerCat(u'Catégorie:Programmation PHP (livre)', False, u'')
+        crawlerCat(u'Catégorie:Oracle Database (livre)', False, u'')
     elif sys.argv[1] == u'page':
         modification(u'Utilisateur:JackBot/test unitaire')
     elif sys.argv[1] == u'p':
