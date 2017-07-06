@@ -5816,7 +5816,7 @@ def getLemmaFromPlural(PageTemp):
     if debugLevel > 0: print u'\ngetLemmaFromPlural'
     pageLemma = u''
 
-    regex = ur"(=== {{S\|(nom|adjectif)\|fr\|flexion}} ===\n({{fr\-[^}]*}}\n)*'''[^\n]+\n# *'* *(Masculin|Féminin)* *'* *[P|p]luriel de *'* *(\[\[|{{li?e?n?\|))([^#\|\]}]+)"
+    regex = ur"(=== {{S\|(nom|adjectif)\|fr\|flexion}} ===\n({{fr\-[^}]*}}\n)*'''[^\n]+\n# *'* *(Masculin|Féminin)* *'* *'*[P|p]luriel de'* *'* *(\[\[|{{li?e?n?\|))([^#\|\]}]+)"
     s = re.search(regex, PageTemp)
     if s:
         if debugLevel > 1: 
@@ -6086,7 +6086,7 @@ def crawlerFile(source):
     if source:
         PagesHS = open(source, 'r')
         while 1:
-            pageName = PagesHS.readline()
+            pageName = PagesHS.readline().decode(config.console_encoding, 'replace')
             fin = pageName.find("\t")
             pageName = pageName[0:fin]
             if pageName == '': break
