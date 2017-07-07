@@ -29,6 +29,8 @@ username = config.usernames[siteFamily][siteLanguage]
 if debugLevel > 1: print siteLanguage
 if debugLevel > 1: print siteFamily
 site = pywikibot.Site(siteLanguage, siteFamily)
+
+checkURL = True
 output = u'scripts/JackBot/articles_WPout.txt'
 
 def getWiki(language = 'fr', family = 'wikipedia'):
@@ -60,8 +62,9 @@ def modification(PageHS):
 
 
     # Traitements des URL et leurs modèles
-    if debugLevel > 0: print u'Test des URL'
-    PageTemp = hyperlynx(PageTemp, debugLevel)
+    if checkURL:
+        if debugLevel > 0: print u'Test des URL'
+        PageTemp = hyperlynx(PageTemp, debugLevel)
     if debugLevel > 0: print (u'--------------------------------------------------------------------------------------------')
     if PageTemp != PageBegin:
         summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/11#Identifier les liens brisés (le retour ;-))|Vérification des liens externes]]'

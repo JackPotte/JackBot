@@ -25,7 +25,7 @@ site = pywikibot.Site(language,family)
 debugLevel = 0
 semiauto = False
 retablirNonBrise = False    # Reteste les liens brisés
-languePage = u'en'
+checkURL = True
 
 brokenDomains = []
 #brokenDomains.append('marianne2.fr')    # Site remplacé par marianne.net en mai 2017
@@ -88,6 +88,8 @@ ModeleFR.append(u'lien conférence')
 ModeleEN.append(u'docu')
 ModeleFR.append(u'lien vidéo')
 ModeleEN.append(u'cite book')
+ModeleFR.append(u'ouvrage')
+ModeleEN.append(u'cite')
 ModeleFR.append(u'ouvrage')
 # it
 ModeleEN.append(u'cita pubblicazione')
@@ -1085,6 +1087,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
 
 def TestURL(url, debugLevel = 0):
     # Renvoie la page web d'une URL dès qu'il arrive à la lire.
+    if checkURL == False: return 'ok'
     if debugLevel > 0: print u'--------'
 
     for blacklisted in brokenDomains:
