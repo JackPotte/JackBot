@@ -65,9 +65,13 @@ ModeleEN = []
 ModeleFR = []
 ModeleEN.append(u'cite web')
 ModeleFR.append(u'lien web')
+ModeleEN.append(u'citeweb')
+ModeleFR.append(u'lien web')
 ModeleEN.append(u'cite news')
 ModeleFR.append(u'article')
 ModeleEN.append(u'cite journal')
+ModeleFR.append(u'article')
+ModeleEN.append(u'cite magazine')
 ModeleFR.append(u'article')
 ModeleEN.append(u'lien news')
 ModeleFR.append(u'article')

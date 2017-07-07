@@ -414,3 +414,6 @@ else:
     crawlerLink(u'Modèle:Cita web',u'')
     crawlerLink(u'Modèle:Cita noticia',u'')
     crawlerLink(u'Modèle:Cite book',u'')
+    crawlerLink(u'Modèle:Citeweb',u'')
+    crawlerLink(u'Modèle:Cite magazine',u'')
+    #TODO: Modèle:Cite
