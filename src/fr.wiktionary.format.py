@@ -5816,14 +5816,14 @@ def getLemmaFromPlural(PageTemp):
     if debugLevel > 0: print u'\ngetLemmaFromPlural'
     pageLemma = u''
 
-    regex = ur"(=== {{S\|(nom|adjectif)\|fr\|flexion}} ===\n({{fr\-[^}]*}}\n)*'''[^\n]+\n# *'* *(Masculin|Féminin)* *'* *'*[P|p]luriel de'* *'* *(\[\[|{{li?e?n?\|))([^#\|\]}]+)"
+    regex = ur"(=== {{S\|(nom|adjectif)\|fr\|flexion}} ===\n({{fr\-[^}]*}}\n)*'''[^\n]+\n# *'* *(Masculin|Féminin)* *'* *'*[P|p]luriel *'* *de'* *'* *(\[\[|{{li?e?n?\|))([^#\|\]}]+)"
     s = re.search(regex, PageTemp)
     if s:
         if debugLevel > 1: 
             print(s.group(1).encode(config.console_encoding, 'replace')) # 2 = adjectif, 3 = fr-rég, 4 = Féminin, 5 = {{lien|, 6 = lemme
             raw_input(s.group(6).encode(config.console_encoding, 'replace'))
         pageLemma = s.group(6)
-    if debugLevel > 0: print u' pageLemma trouvée : ' + pageLemma
+    if debugLevel > 0: print u' pageLemma found: ' + pageLemma
 
     return pageLemma
 
@@ -5837,7 +5837,7 @@ def getLemmaFromConjugation(PageTemp):
             print(s.group(1).encode(config.console_encoding, 'replace')) # 2 fr-verbe-flexion, 3 = {{lien|, 4 = lemme
             raw_input(s.group(4).encode(config.console_encoding, 'replace'))
         pageLemma = s.group(4)
-    if debugLevel > 0: print u' pageLemma trouvée : ' + pageLemma
+    if debugLevel > 0: print u' pageLemma found: ' + pageLemma
 
     return pageLemma
 
@@ -5853,7 +5853,7 @@ def getFlexionTemplate(pageName, language, nature):
             if not s.group(1) is None: print u' ' + s.group(1)
             if not s.group(2) is None: print u' ' + s.group(2)
         FlexionTemplate = s.group(2)
-    if debugLevel > 0: print u' FlexionTemplate trouvé : ' + FlexionTemplate
+    if debugLevel > 0: print u' FlexionTemplate found: ' + FlexionTemplate
     # TODO
     if FlexionTemplate.find(u'{{') != -1: FlexionTemplate = u''
     if FlexionTemplate.find(u'-inv') != -1: FlexionTemplate = u''
@@ -5872,7 +5872,7 @@ def getFlexionTemplateFromLemma(pageName, language, nature):
             if not s.group(1) is None: print u' ' + s.group(1)
             if not s.group(2) is None: print u' ' + s.group(2)
         FlexionTemplate = s.group(2)
-    if debugLevel > 0: print u' FlexionTemplate trouvé : ' + FlexionTemplate
+    if debugLevel > 0: print u' FlexionTemplate found: ' + FlexionTemplate
     # TODO
     if FlexionTemplate.find(u'{{') != -1: FlexionTemplate = u''
     if FlexionTemplate.find(u'-inv') != -1: FlexionTemplate = u''
