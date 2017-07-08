@@ -2144,6 +2144,14 @@ def modification(pageName):
             if debugLevel > 0: print u'Ajout du mot vedette'
             PageTemp = re.sub(ur'([^d\-]+\-\|[a-z]+\}\}\n\{\{[^\n]*\n)\# *', ur"\1'''" + pageName + ur"''' {{pron}}\n# ", PageTemp)
         PageTemp = PageTemp.replace(u'num=1|num=', u'num=1')
+        PageTemp = PageTemp.replace(u'&nbsp;', u' ')
+        PageTemp = PageTemp.replace(u'\n #*', u'\n#*')
+        PageTemp = PageTemp.replace(u'\n #:', u'\n#:')
+        PageTemp = PageTemp.replace(u' }}', u'}}')
+        PageTemp = PageTemp.replace(u'|pinv= ', u'|pinv=')
+        PageTemp = PageTemp.replace(u'|pinv=. ', u'|pinv=.')
+        PageTemp = re.sub(ur'«([^ ])', ur'« \1', PageTemp)
+        PageTemp = re.sub(ur'([^ ])»', ur'\1 »', PageTemp)
 
         if debugLevel > 1: print u'Formatage des modèles'
         PageTemp = PageTemp.replace(u'\n {{', u'\n{{')
@@ -2241,13 +2249,47 @@ def modification(pageName):
         pattern = re.compile(regex)
         PageTemp = pattern.sub(ur'\1 \2', PageTemp)
 
+        # URL de références : elles ne contiennent pas les diacritiques des {{PAGENAME}}
+        if debugLevel > 0: print u'Références'
+        while PageTemp.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=') != -1:
+            PageTemp2 = PageTemp[PageTemp.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=')+len(u'[http://www.sil.org/iso639-3/documentation.asp?id='):]
+            PageTemp = PageTemp[:PageTemp.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=')] + u'{{R:SIL|' + PageTemp2[:PageTemp2.find(u' ')] + u'}}' + PageTemp2[PageTemp2.find(u']')+1:]
+            summary = summary + u', ajout de {{R:SIL}}'
+        while PageTemp.find(u'[http://www.cnrtl.fr/definition/') != -1:
+            PageTemp2 = PageTemp[PageTemp.find(u'[http://www.cnrtl.fr/definition/')+len(u'[http://www.cnrtl.fr/definition/'):len(PageTemp)]
+            PageTemp = PageTemp[0:PageTemp.find(u'[http://www.cnrtl.fr/definition/')] + u'{{R:TLFi|' + PageTemp2[0:PageTemp2.find(u' ')] + u'}}' + PageTemp2[PageTemp2.find(u']')+1:len(PageTemp2)]
+            summary = summary + u', ajout de {{R:TLFi}}'
+        while PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/') != -1:
+            PageTemp2 = PageTemp[PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/')+len(u'[http://www.mediadico.com/dictionnaire/definition/'):len(PageTemp)]
+            PageTemp = PageTemp[0:PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/')] + u'{{R:Mediadico|' + PageTemp2[0:PageTemp2.find(u'/1')] + u'}}' + PageTemp2[PageTemp2.find(u']')+1:len(PageTemp2)]
+            summary = summary + u', ajout de {{R:Mediadico}}'
+        while PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}') != -1:
+            PageTemp = PageTemp[0:PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}')+len(u'{{R:DAF8}}\n'):len(PageTemp)]
+            summary = summary + u', doublon {{R:DAF8}}'
+        while PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}') != -1:
+            PageTemp = PageTemp[0:PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}')+len(u'{{R:DAF8}}\n\n'):len(PageTemp)]
+            summary = summary + u', doublon {{R:DAF8}}'
+        while PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}') != -1:
+            PageTemp = PageTemp[0:PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}')+len(u'{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}')+len(u'{{Import:DAF8}}\n{{R:DAF8}}'):len(PageTemp)]
+            summary = summary + u', doublon {{R:DAF8}}'
+        while PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}') != -1:
+            PageTemp = PageTemp[0:PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}')] + PageTemp[PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}')+len(u'{{R:Littré}}\n'):len(PageTemp)]
+            summary = summary + u', doublon {{R:Littré}}'
+        while PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}') != -1:
+            PageTemp = PageTemp[0:PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}')] + PageTemp[PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}\n{{R:Littré}}'):len(PageTemp)]
+            summary = summary + u', doublon {{R:Littré}}'
+        while PageTemp.find(u'\n{{R:') != -1:
+            PageTemp = PageTemp[0:PageTemp.find(u'\n{{R:')+1] + u'*' + PageTemp[PageTemp.find(u'\n{{R:')+1:len(PageTemp)]
+        while PageTemp.find(u'\n{{Import:') != -1:
+            PageTemp = PageTemp[0:PageTemp.find(u'\n{{Import:')+1] + u'*' + PageTemp[PageTemp.find(u'\n{{Import:')+1:len(PageTemp)]
+
         if PageTemp.find(u'[[Catégorie:Villes') != -1 and PageTemp.find(u'{{localités|') != -1:
             summary = summary + u', {{villes}} -> {{localités}}'
             PageTemp = re.sub(ur'\n\[\[Catégorie:Villes[^\]]*\]\]', ur'', PageTemp)
 
         if PageTemp.find(u'\n[[Catégorie:Noms scientifiques]]') != -1 and PageTemp.find(u'{{S|nom scientifique|conv}}') != -1:
             PageTemp = PageTemp.replace(u'\n[[Catégorie:Noms scientifiques]]', u'')
-        
+
         # Modèles trop courts pour être clairs
         if debugLevel > 0: print u'Modèles courts'
         PageTemp = PageTemp.replace(u'{{fp}}', u'{{fplur}}')
@@ -2297,35 +2339,9 @@ def modification(pageName):
         PageTemp = PageTemp.replace(u'{{vêtement|', u'{{vêtements|')
         PageTemp = PageTemp.replace(u'{{en-nom-rég-double|', u'{{en-nom-rég|')
         PageTemp = PageTemp.replace(u'{{Valence|ca}}', u'{{valencien}}')
-
-        while PageTemp.find(u'|type=du nom') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'|type=du nom')] + PageTemp[PageTemp.find(u'|type=du nom')+len(u'|type=du nom'):len(PageTemp)]
-        while PageTemp.find(u'{{boîte début') != -1:
-            if PageTemp.find(u'{{boîte début|titre=') != -1:
-                PageTemp = PageTemp[0:PageTemp.find(u'{{boîte début|titre=')+2] + u'(' + PageTemp[PageTemp.find(u'{{boîte début|titre=')+len(u'{{boîte début|titre='):len(PageTemp)]
-            else:
-                PageTemp = PageTemp[0:PageTemp.find(u'{{boîte début')+2] + u'(' + PageTemp[PageTemp.find(u'{{boîte début')+len(u'{{boîte début'):len(PageTemp)]
-        while PageTemp.find(u'{{boîte milieu') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{boîte milieu')+2] + u'-' + PageTemp[PageTemp.find(u'{{boîte milieu')+len(u'{{boîte milieu'):len(PageTemp)]
-        while PageTemp.find(u'{{boîte fin') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{boîte fin')+2] + u')' + PageTemp[PageTemp.find(u'{{boîte fin')+len(u'{{boîte fin'):len(PageTemp)]
-        while PageTemp.find(u'{{boite début') != -1:
-            if PageTemp.find(u'{{boite début|titre=') != -1:
-                PageTemp = PageTemp[0:PageTemp.find(u'{{boite début|titre=')+2] + u'(' + PageTemp[PageTemp.find(u'{{boite début|titre=')+len(u'{{boite début|titre='):len(PageTemp)]
-            else:
-                PageTemp = PageTemp[0:PageTemp.find(u'{{boite début')+2] + u'(' + PageTemp[PageTemp.find(u'{{boite début')+len(u'{{boite début'):len(PageTemp)]
-        while PageTemp.find(u'{{boite milieu') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{boite milieu')+2] + u'-' + PageTemp[PageTemp.find(u'{{boite milieu')+len(u'{{boite milieu'):len(PageTemp)]
-        while PageTemp.find(u'{{boite fin') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{boite fin')+2] + u')' + PageTemp[PageTemp.find(u'{{boite fin')+len(u'{{boite fin'):len(PageTemp)]
-        while PageTemp.find(u'\n{{-}}') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'\n{{-}}')] + PageTemp[PageTemp.find(u'\n{{-}}')+len(u'\n{{-}}'):len(PageTemp)]
-        while PageTemp.find(u'{{-}}') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{-}}')] + PageTemp[PageTemp.find(u'{{-}}')+len(u'{{-}}'):len(PageTemp)]
-        while PageTemp.find(u'\n{{trad-milieu}}') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'\n{{trad-milieu}}')] + PageTemp[PageTemp.find(u'\n{{trad-milieu}}')+len(u'\n{{trad-milieu}}'):len(PageTemp)]
-        while PageTemp.find(u'|notat=1') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'|notat=1')] + u'|nocat=1' + PageTemp[PageTemp.find(u'|notat=1')+len(u'|notat=1'):len(PageTemp)]
+        PageTemp = PageTemp.replace(u'{{boîte début', u'{{(')
+        PageTemp = PageTemp.replace(u'{{boîte fin', u'{{)')
+        PageTemp = PageTemp.replace(u'\n{{-}}', u'')
 
         regex = ur'\(*ISBN +([0-9\-]+)\)*'
         if re.search(regex, PageTemp): PageTemp = re.sub(regex, ur'{{ISBN|\1}}', PageTemp)
@@ -2440,24 +2456,7 @@ def modification(pageName):
             while PageTemp.find(u'}}1=') != -1:
                 PageTemp = PageTemp[0:PageTemp.find(u'}}1=')] + PageTemp[PageTemp.find(u'}}1=')+len(u'}}1='):len(PageTemp)]
 
-        while PageTemp.find(u'\n #*') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'\n #*')+1] + PageTemp[PageTemp.find(u'\n #*')+2:len(PageTemp)]
-        while PageTemp.find(u'\n #:') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'\n #:')+1] + PageTemp[PageTemp.find(u'\n #:')+2:len(PageTemp)]
-        while PageTemp.find(u' }}') < PageTemp.find(u'}}') and PageTemp.find(u' }}') != -1:
-                PageTemp = PageTemp[0:PageTemp.find(u' }}')] + PageTemp[PageTemp.find(u' }}')+1:len(PageTemp)]
-
-        PageEnd = u''
-        while PageTemp.find(u'&nbsp;') != -1:
-            if debugLevel > 0: print u'Espace insécable'
-            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'&nbsp;')]
-            PageTemp = PageTemp[PageTemp.find(u'&nbsp;'):]
-            if PageEnd.rfind(u'{{') == -1 or PageEnd.rfind(u'{{') < PageEnd.rfind(u'}}'):
-                PageTemp = u' ' + PageTemp[len(u'&nbsp;'):]
-            else:
-                PageEnd = PageEnd + PageTemp[:len(u'&nbsp;')]
-                PageTemp = PageTemp[len(u'&nbsp;'):]
-        PageTemp = PageEnd + PageTemp    
+        # #* or #:
         PageEnd = u''
         while PageTemp.find(u'\n#:') != -1:
             PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'\n#:')+2]
@@ -2467,23 +2466,6 @@ def modification(pageName):
                 PageTemp = u':' + PageTemp[PageTemp.find(u'\n#:')+len(u'\n#:'):len(PageTemp)]
         PageTemp = PageEnd + PageTemp
         PageEnd = u''
-        '''while PageTemp.find(u'#*') != -1 and PageTemp.find(u'#*') != PageTemp.find(u'#*\'\'') and PageTemp.find(u'#*') != PageTemp.find(u'#* \'\''):
-            PageTemp = PageTemp[0:PageTemp.find(u'#*')+2] + u'\'\'' + PageTemp[PageTemp.find(u'#*')+2:len(PageTemp)]'''
-        while PageTemp.find(u'\n# [[' + pageName + u'|') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'\n# [[' + pageName + u'|')+len(u'\n# [[')] + u'#fr' + PageTemp[PageTemp.find(u'\n# [[' + pageName + u'|')+len(u'\n# [[' + pageName):len(PageTemp)]
-
-        # Adverbes Daahbot
-        if pageName[-4:] == 'ment':
-            pageName2 = pageName[:-4]
-            PageTemp = PageTemp.replace(u"''[["+pageName2+u"]]'', par son féminin ''[["+pageName2+u"]]'',", u"''[["+pageName2+u"]]'',")
-
-        # Retrait des espaces intégrés au modèle
-        while PageTemp.find(u'|pinv= ') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'|pinv= ')+len(u'|pinv=')] + PageTemp[PageTemp.find(u'|pinv= ')+len(u'|pinv= '):len(PageTemp)]
-        while PageTemp.find(u'|pinv=. ') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'|pinv=. ')+len(u'|pinv=.')] + PageTemp[PageTemp.find(u'|pinv=. ')+len(u'|pinv=. '):len(PageTemp)]
-        #while PageTemp.find(u'|pinv=&nbsp;') != -1:
-        #    PageTemp = PageTemp[0:PageTemp.find(u'|pinv=&nbsp;')+len(u'|pinv=')] + PageTemp[PageTemp.find(u'|pinv=&nbsp;')+len(u'|pinv=&nbsp;'):len(PageTemp)]
 
         # Faux homophones : lemme et sa flexion
         if debugLevel > 0: print u'Faux homophones'
@@ -2581,40 +2563,6 @@ def modification(pageName):
                 if re.search(regex, PageTemp):
                     PageTemp = re.sub(regex, ur'\n\4|\2}}\1\2\3', PageTemp)
 
-        # URL de références : elles ne contiennent pas les diacritiques des {{PAGENAME}}
-        if debugLevel > 0: print u'Références'
-        while PageTemp.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=') != -1:
-            PageTemp2 = PageTemp[PageTemp.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=')+len(u'[http://www.sil.org/iso639-3/documentation.asp?id='):len(PageTemp)]
-            PageTemp = PageTemp[0:PageTemp.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=')] + u'{{R:SIL|' + PageTemp2[0:PageTemp2.find(u' ')] + u'}}' + PageTemp2[PageTemp2.find(u']')+1:len(PageTemp2)]
-            summary = summary + u', ajout de {{R:SIL}}'
-        while PageTemp.find(u'[http://www.cnrtl.fr/definition/') != -1:
-            PageTemp2 = PageTemp[PageTemp.find(u'[http://www.cnrtl.fr/definition/')+len(u'[http://www.cnrtl.fr/definition/'):len(PageTemp)]
-            PageTemp = PageTemp[0:PageTemp.find(u'[http://www.cnrtl.fr/definition/')] + u'{{R:TLFi|' + PageTemp2[0:PageTemp2.find(u' ')] + u'}}' + PageTemp2[PageTemp2.find(u']')+1:len(PageTemp2)]
-            summary = summary + u', ajout de {{R:TLFi}}'
-        while PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/') != -1:
-            PageTemp2 = PageTemp[PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/')+len(u'[http://www.mediadico.com/dictionnaire/definition/'):len(PageTemp)]
-            PageTemp = PageTemp[0:PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/')] + u'{{R:Mediadico|' + PageTemp2[0:PageTemp2.find(u'/1')] + u'}}' + PageTemp2[PageTemp2.find(u']')+1:len(PageTemp2)]
-            summary = summary + u', ajout de {{R:Mediadico}}'
-        while PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}')+len(u'{{R:DAF8}}\n'):len(PageTemp)]
-            summary = summary + u', doublon {{R:DAF8}}'
-        while PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}')+len(u'{{R:DAF8}}\n\n'):len(PageTemp)]
-            summary = summary + u', doublon {{R:DAF8}}'
-        while PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}')+len(u'{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}')+len(u'{{Import:DAF8}}\n{{R:DAF8}}'):len(PageTemp)]
-            summary = summary + u', doublon {{R:DAF8}}'
-        while PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}')] + PageTemp[PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}')+len(u'{{R:Littré}}\n'):len(PageTemp)]
-            summary = summary + u', doublon {{R:Littré}}'
-        while PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}')] + PageTemp[PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}\n{{R:Littré}}'):len(PageTemp)]
-            summary = summary + u', doublon {{R:Littré}}'
-        while PageTemp.find(u'\n{{R:') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'\n{{R:')+1] + u'*' + PageTemp[PageTemp.find(u'\n{{R:')+1:len(PageTemp)]
-        while PageTemp.find(u'\n{{Import:') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'\n{{Import:')+1] + u'*' + PageTemp[PageTemp.find(u'\n{{Import:')+1:len(PageTemp)]
-
         # Détection d'une première traduction aux normes
         regex = u'\* ?{{[a-z][a-z][a-z]?\-?[a-z]?[a-z]?[a-z]?}} :'
         PageEnd = u''
@@ -2710,7 +2658,7 @@ def modification(pageName):
         PageTemp = PageEnd + PageTemp
         PageEnd = u''
 
-        # Classement des sections modifiables
+        # TODO: Classement des sections modifiables
         """PageEnd = u''
         while PageTemp.find(u'{{langue|') != -1:
             PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'{{langue|')+len(u'{{langue|')]
@@ -2863,26 +2811,7 @@ def modification(pageName):
                     print u'Boucle langue'
                 else:
                     print u'Boucle langue : ' + codelangue
-    
-            ''' Eliminer les {{e}}...
-            while PageTemp.find(u'}}') != -1 and PageTemp.find(u'}}') != PageTemp.find(u'}} ') and PageTemp.find(u'}}') != PageTemp.find(u'}}\n') and PageTemp.find(u'}}') != PageTemp.find(u'}}.'):
-                PageTemp = PageTemp[0:PageTemp.find(u'}}')+2] + u' ' + PageTemp[PageTemp.find(u'}}')+2:len(PageTemp)]
-            while PageTemp.find(u'{{') != -1 and PageTemp.find(u'{{')-1 != PageTemp.find(u' {{') and PageTemp.find(u'{{')-1 != PageTemp.find(u'\n{{'):
-                PageTemp = PageTemp[0:PageTemp.find(u'{{')] + u' ' + PageTemp[PageTemp.find(u'{{'):len(PageTemp)]
-            # Fonctionne au clavier mais pas en .find ni avec &#171; &#187;, ni test = u'« ', ni &laquo;, ni test.encode : 
-            #hexa /u... ?
-            print (str(PageTemp.find(u'«')) + u' = ' + str(PageTemp.find(u'« ')))
-            print (str(PageTemp.find(u'»')) + u' = ' + str(PageTemp.find(u' »')+1))
-            #raw_input ("alors")
-            if pageName != u'«' and PageTemp.find(u'«') != -1 and PageTemp.find(u'«') != PageTemp.find(u'« '):
-                PageTemp = PageTemp[0:PageTemp.find(u'«')+1] + u' ' + PageTemp[PageTemp.find(u'«')+1:len(PageTemp)]
-            if pageName != u'»' and PageTemp.find(u'»') != -1 and PageTemp.find(u'»')-1 != PageTemp.find(u' »'):
-                PageTemp = PageTemp[0:PageTemp.find(u'»')] + u' ' + PageTemp[PageTemp.find(u'»'):len(PageTemp)]
-            if PageTemp[PageTemp.find(u'«'):PageTemp.find(u'«')+1] != u' ':
-                PageTemp = PageTemp[0:PageTemp.find(u'«')+1] + u' ' + PageTemp[PageTemp.find(u'«')+1:len(PageTemp)]
-            if PageTemp[PageTemp.find(u'»')-1:PageTemp.find(u'»')] != u' ':
-                PageTemp = PageTemp[0:PageTemp.find(u'»')] + u' ' + PageTemp[PageTemp.find(u'»'):len(PageTemp)]'''
-    
+
             # Recherche de chaque modèle
             position = PageTemp.find(u'{{')
             if position < 0: break
