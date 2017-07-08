@@ -40,6 +40,10 @@ mylang = 'fr'
 # The dictionary usernames should contain a username for each site where you
 # have a bot account. If you have a unique username for all languages of a
 # family , you can use '*'
+sysopnames['wikiversity']['fr'] = u'JackBot'
+sysopnames['wikibooks']['fr'] = u'JackBot'
+sysopnames['wiktionary']['fr'] = u'JackBot'
+
 usernames['commons']['commons'] = u'JackBot'
 usernames['wikidata']['wikidata'] = u'JackBot'
 usernames['meta']['meta'] = u'JackBot'
@@ -63,9 +67,22 @@ usernames['wikiversity']['en'] = u'JackBot'
 usernames['wikivoyage']['en'] = u'JackBot'
 usernames['wiktionary']['en'] = u'JackBot'
 
-sysopnames['wikiversity']['fr'] = u'JackBot'
-sysopnames['wikibooks']['fr'] = u'JackBot'
-sysopnames['wiktionary']['fr'] = u'JackBot'
+usernames['wikipedia']['pl'] = u'JackBot'
+usernames['wikipedia']['se'] = u'JackBot'
+usernames['wikipedia']['tr'] = u'JackBot'
+usernames['wikipedia']['ta'] = u'JackBot'
+
+usernames['wiktionary']['de'] = u'JackBot'
+usernames['wiktionary']['es'] = u'JackBot'
+usernames['wiktionary']['it'] = u'JackBot'
+usernames['wiktionary']['my'] = u'JackBot'
+usernames['wiktionary']['pt'] = u'JackBot'
+usernames['wiktionary']['ru'] = u'JackBot'
+usernames['wiktionary']['sv'] = u'JackBot'
+usernames['wiktionary']['zh'] = u'JackBot'
+
+usernames['wikibooks']['es'] = u'JackBot'
+usernames['wikivoyage']['de'] = u'JackBot'
 
 # ############# LOGFILE SETTINGS ##############
 
