@@ -31,6 +31,7 @@ if debugLevel > 1: print siteFamily
 site = pywikibot.Site(siteLanguage, siteFamily)
 
 checkURL = True
+allNamespaces = False
 output = u'scripts/JackBot/articles_WPout.txt'
 
 def getWiki(language = 'fr', family = 'wikipedia'):
@@ -43,7 +44,7 @@ def modification(PageHS):
     page = Page(site,PageHS)
     print(PageHS.encode(config.console_encoding, 'replace'))
     if not page.exists(): return
-    if page.namespace() != 0 and PageHS.find(u'Utilisateur:JackBot/test') == -1 and PageHS.find(u'Modèle:Cite pmid/') == -1: return
+    if not allNamespaces and page.namespace() != 0 and PageHS.find(u'Utilisateur:JackBot/test') == -1 and PageHS.find(u'Modèle:Cite pmid/') == -1: return
     try:
         PageBegin = page.get()
     except pywikibot.exceptions.NoPage:
