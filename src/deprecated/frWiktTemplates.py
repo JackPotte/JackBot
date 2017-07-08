@@ -1,19 +1,32 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-#TODO : pb du nested set model (via JSON API) qui nécessiterait un nb indéfini de compteurs (left, right) non ordonnés par l'ordre alphabétique
-#if template in Modele, Modele.index(template)
-
 def frWiktTemplates():
-    return #Template, Section, limit, cat, n° set
+    return #Template, Section, limit, cats
 
 # Template / category association
 frWiktTemplates = {}
-frWiktTemplates['template'] = 'category'
+frWiktTemplates[u'template'] = 'category'
+
+#TODO : pb du nested set model (via JSON API) qui nécessiterait un nb indéfini de compteurs (left, right) non ordonnés par l'ordre alphabétique
+frWiktCategories[u'Mythologie'] = [u'mythologie', 1, 4]
+frWiktCategories[u'Plantes imaginaires'] = [u'plantes imaginaires', 2, 3]
+
+# Chaine avec la parente
+frWiktCategories[u'Mythologie'] = [u'Lexiques']
+frWiktCategories[u'Divinités‎'] = [u'Mythologie']
+
+# Liste exclusions par modèle
+frWiktTemplates[u'mythologie'] = ['Animaux imaginaires', 'Plantes imaginaires', 'Créatures', 'Divinité']
+frWiktTemplates[u'mythol'] = frWiktTemplates[u'mythologie']
+frWiktTemplates[u'myth'] = frWiktTemplates[u'mythologie']
+frWiktTemplates[u'fantastique'] = frWiktTemplates[u'mythologie']
+frWiktTemplates[u'fanta'] = frWiktTemplates[u'mythologie']
 templateLimit = len(frWiktTemplates)
 
 SParameters = {}
 SParameters['-adj-dem-'] = 'adjectif démonstratif'
+#if template in Modele, Modele.index(template)...
 
 
 # Paragraphes autorisant les modèles catégorisants par langue ({{voir| et {{voir/ sont gérés individuellement)
