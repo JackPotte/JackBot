@@ -18,8 +18,8 @@ import requests
 
 language = "fr"
 family = "wiktionary"
-mynick = "JackBot"
-site = pywikibot.Site(language,family)
+username = "JackBot"
+site = pywikibot.Site(language, family)
 
 # Préférences
 debugLevel = 0
@@ -543,6 +543,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
     PageTemp = PageTemp.replace(u'https://https://', u'https://')
     
     # Paramètre langue= si traduction
+    PageTemp = re.sub(u'[C|c]ita(tion)? *(\|[^}]*title *=)', ur'ouvrage\2', PageTemp)
     for m in range(0, limiteL):
         # Formatage des anciens modèles
         PageTemp = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'_') + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
@@ -1751,8 +1752,7 @@ def log(source):
     txtfile.write(u'\n' + source + u'\n')
     txtfile.close()
 
-# à faire : 
+# TODO:
 #    i18n
 #    sauter les longs PDF comme dans [[w:Apollo 11]]
-#    spécifier le remplacement “citation” s'il a les paramètres du modèle anglais
-#     remplacer "éditeur" par "périodique" dans "article"
+#    remplacer "éditeur" par "périodique" dans "article" ?

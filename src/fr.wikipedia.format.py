@@ -32,19 +32,19 @@ site = pywikibot.Site(siteLanguage, siteFamily)
 
 checkURL = True
 allNamespaces = False
-output = u'scripts/JackBot/articles_WPout.txt'
+output = u'dumps/articles_WPout.txt'
 
 def getWiki(language = 'fr', family = 'wikipedia'):
     if debugLevel > 1: print u'get ' + language + u'.' + family
     return pywikibot.Site(language, family)
 
 # Modification du wiki
-def modification(PageHS):
+def modification(pageName):
     summary = u'Formatage'
-    page = Page(site,PageHS)
-    print(PageHS.encode(config.console_encoding, 'replace'))
+    page = Page(site,pageName)
+    print(pageName.encode(config.console_encoding, 'replace'))
     if not page.exists(): return
-    if not allNamespaces and page.namespace() != 0 and PageHS.find(u'Utilisateur:JackBot/test') == -1 and PageHS.find(u'Modèle:Cite pmid/') == -1: return
+    if not allNamespaces and page.namespace() != 0 and pageName.find(u'Utilisateur:JackBot/test') == -1 and pageName.find(u'Modèle:Cite pmid/') == -1: return
     try:
         PageBegin = page.get()
     except pywikibot.exceptions.NoPage:
@@ -132,10 +132,10 @@ def modification(PageHS):
 
     # Analyse des crochets et accolades (à faire : hors LaTex)
     if PageTemp.count('{') - PageTemp.count('}') != 0:
-        if PageHS.find(u'Utilisateur:JackBot/') == -1: log(u'*[[' + PageHS + u']] : accolade cassée')
+        if pageName.find(u'Utilisateur:JackBot/') == -1: log(u'*[[' + pageName + u']] : accolade cassée')
         #if debugLevel > 1: raise Exception(u'Accolade cassée')
     if PageTemp.count('[') - PageTemp.count(']') != 0:
-        if PageHS.find(u'Utilisateur:JackBot/') == -1: log(u'*[[' + PageHS + u']] : crochet cassé')
+        if pageName.find(u'Utilisateur:JackBot/') == -1: log(u'*[[' + pageName + u']] : crochet cassé')
         #if debugLevel > 1: raise Exception(u'Crochet cassé')
     if PageBegin.count('[[') - PageBegin.count(']]') != PageTemp.count('[[') - PageTemp.count(']]'):
         txtfile = codecs.open(output, 'a', 'utf-8')
@@ -151,7 +151,7 @@ def modification(PageHS):
         if safeMode: return
 
     # Catégories
-    if PageHS.find(u'Modèle:Cite pmid/') != -1:
+    if pageName.find(u'Modèle:Cite pmid/') != -1:
         PageTemp = PageTemp.replace(u'Catégorie:Modèle de source‎', u'Catégorie:Modèle pmid')
         PageTemp = PageTemp.replace(u'[[Catégorie:Modèle pmid]]', u'[[Catégorie:Modèle pmid‎|{{SUBPAGENAME}}]]')
 
@@ -185,15 +185,15 @@ def crawlerFile(source):
     if source:
         PagesHS = open(source, 'r')
         while 1:
-            PageHS = PagesHS.readline()
-            fin = PageHS.find("\t")
-            PageHS = PageHS[0:fin]
-            if PageHS == '': break
-            if PageHS.find(u'[[') != -1:
-                PageHS = PageHS[PageHS.find(u'[[')+2:len(PageHS)]
-            if PageHS.find(u']]') != -1:
-                PageHS = PageHS[0:PageHS.find(u']]')]
-            modification(PageHS)
+            pageName = PagesHS.readline().decode(config.console_encoding, 'replace')
+            fin = pageName.find("\t")
+            pageName = pageName[0:fin]
+            if pageName == '': break
+            if pageName.find(u'[[') != -1:
+                pageName = pageName[pageName.find(u'[[')+2:len(pageName)]
+            if pageName.find(u']]') != -1:
+                pageName = pageName[0:pageName.find(u']]')]
+            modification(pageName)
         PagesHS.close()
 
 # Traitement d'une catégorie
@@ -372,7 +372,7 @@ if len(sys.argv) > 1:
     if arg1 == 'test2':
         modification(u'Utilisateur:' + username + u'/test2')
     elif arg1 == 'txt':
-        crawlerFile(u'scripts/JackBot/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
+        crawlerFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
     elif arg1 == 'u':
         crawlerUser(u'Utilisateur:JackBot')
     elif arg1 == 'r':
@@ -383,7 +383,7 @@ if len(sys.argv) > 1:
     elif arg1 == 'm':
         crawlerLink(u'Modèle:Cite journal',u'')
     elif arg1 == 'cat':
-        crawlerCat(u'Catégorie:Modèle Cladogramme',False,u'')
+        crawlerCat(u'Catégorie:Modèle élément chimique',False,u'')
         #crawlerCat(u'Catégorie:Page utilisant un modèle avec un paramètre obsolète',False,u'')
         #crawlerCat(u'Page du modèle Article comportant une erreur',False,u'')
         #crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')    # En test
@@ -417,7 +417,7 @@ else:
     crawlerLink(u'Modèle:Docu',u'')
     crawlerLink(u'Modèle:Cita web',u'')
     crawlerLink(u'Modèle:Cita noticia',u'')
-    crawlerLink(u'Modèle:Cite book',u'')
     crawlerLink(u'Modèle:Citeweb',u'')
     crawlerLink(u'Modèle:Cite magazine',u'')
-    #TODO: Modèle:Cite
+    crawlerLink(u'Modèle:Cite',u'')
+    crawlerLink(u'Modèle:Cite book',u'')
