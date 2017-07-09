@@ -2458,6 +2458,7 @@ def modification(pageName):
         if PageTemp.find(u'{{langue|fr}}') != -1:
             ligne = 6
             colonne = 4
+            # TODO : fusionner avec le tableau des modèles de flexion
             ModeleGent = [[0] * (colonne+1) for _ in range(ligne+1)]
             ModeleGent[1][1] = ur'fr-accord-mixte'
             ModeleGent[1][2] = ur's'
@@ -2484,20 +2485,31 @@ def modification(pageName):
             ModeleGent[6][3] = ur''
             ModeleGent[6][4] = ur's'
 
-            for l in range(1,ligne+1):
+            for l in range(1, ligne + 1):
+                # Depuis un masculin
                 regex = ur'\({{p}} : [\[\']*' + rePageName + ModeleGent[l][2] + ur'[\]\']*, {{f}} : [\[\']*' + rePageName + ModeleGent[l][3] + ur'[\]\']*, {{fplur}} : [\[\']*' + rePageName + ModeleGent[l][4] + ur'[\]\']*\)'
                 if re.search(regex, PageTemp):
                     PageTemp = re.sub(regex, u'{{' + ModeleGent[l][1] + u'|pron=}}', PageTemp)
                     summary = summary + u', conversion des liens flexions en modèle boite'
+                # Depuis un féminin
+                if ModeleGent[l][1] == ur'fr-accord-s' and rePageName[-1:] == u'e' and rePageName[-2:-1] == u's':
+                    regex = ur'\({{p}} : [\[\']*' + rePageName + ur's[\]\']*, {{m}} : [\[\']*' + rePageName[:-1] + ur'[\]\']*\)'
+                    if re.search(regex, PageTemp):
+                        PageTemp = re.sub(regex, u'{{' + ModeleGent[l][1] + u'|ms=' + rePageName[:-1] + u'}}', PageTemp)
+                        summary = summary + u', conversion des liens flexions en modèle boite'
                 regex = ur'\({{f}} : [\[\']*' + rePageName + ModeleGent[l][3] + ur'[\]\']*, {{mplur}} : [\[\']*' + rePageName + ModeleGent[l][2] + ur'[\]\']*, {{fplur}} : [\[\']*' + rePageName + ModeleGent[l][4] + ur'[\]\']*\)'
                 if re.search(regex, PageTemp):
                     PageTemp = re.sub(regex, u'{{' + ModeleGent[l][1] + u'|pron=}}', PageTemp)
                     summary = summary + u', conversion des liens flexions en modèle boite'
-                # Son
-                if debugLevel > 1: print u' son'
+                if debugLevel > 1: print u' avec son'
                 regex = ur'(\n\'\'\'' + rePageName + u'\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + ModeleGent[l][1] + ur'\|[pron\=]*)}}'
                 if re.search(regex, PageTemp):
                     PageTemp = re.sub(regex, ur'\n\4\2}}\1\2\3', PageTemp)
+
+                regex = ur'( ===\n)(\'\'\'[^\n]+)({{' + ModeleGent[l][1] + ur'\|[^}]*}})'
+                if re.search(regex, PageTemp):
+                    PageTemp = re.sub(regex, ur'\1\3\n\2', PageTemp)
+                    summary = summary + u', déplacement des modèles de flexions'
 
         elif PageTemp.find(u'{{langue|es}}') != -1:
             ligne = 1
@@ -2524,6 +2536,7 @@ def modification(pageName):
                 regex = ur'(\n\'\'\'' + rePageName + u'\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + ModeleGent[l][1] + ur'\|' + rePageRadicalName + ur')}}'
                 if re.search(regex, PageTemp):
                     PageTemp = re.sub(regex, ur'\n\4|\2}}\1\2\3', PageTemp)
+
 
         # Détection d'une première traduction aux normes
         regex = u'\* ?{{[a-z][a-z][a-z]?\-?[a-z]?[a-z]?[a-z]?}} :'
@@ -5592,40 +5605,6 @@ def modification(pageName):
         print "Aucun changement"
 
 
-def getContentFromPageName(pageName, allowedNamespaces = None):
-    page = Page(site, pageName)
-    return getContentFromPage(page, allowedNamespaces)
-
-def getContentFromPage(page, allowedNamespaces = None):
-    PageBegin = u''
-    if page.exists():
-        if allowedNamespaces is None:
-            allowedNamespaces = [0, 100, 12, 14]
-        if page.namespace() in allowedNamespaces or page.title().find(username + u'/') != -1:
-            try:
-                PageBegin = page.get()
-            except pywikibot.exceptions.BadTitle:
-                print u'IsRedirect l 5658'
-                return 'KO'
-            except pywikibot.exceptions.IsRedirectPage:
-                #PageBegin = page.get(get_redirect=True)
-                print u'IsRedirect l 5662'
-                return 'KO'
-            except pywikibot.exceptions.NoPage:
-                print u'NoPage l 5665'
-                return 'KO'
-            except pywikibot.exceptions.ServerError:
-                print u'NoPage l 5668'
-                return 'KO'
-        else:
-            print u'Page non traitée l 5671'
-            return 'KO'
-    else:
-        print u'NoPage l 5674'
-        return 'KO'
-
-    return PageBegin
-
 def getLemmaFromLocution(pageName):
     if debugLevel > 0: print u'\ngetLemmaFromLocution'
     pageLemma = getContentFromPageName(pageName[:pageName.find(u' ')])
@@ -5697,11 +5676,6 @@ def getFlexionTemplateFromLemma(pageName, language, nature):
     if FlexionTemplate.find(u'-inv') != -1: FlexionTemplate = u''
 
     return FlexionTemplate
-
-
-def trim(s):
-    return s.strip(" \t\n\r\0\x0B")
-
 
 def addCat(PageTemp, lang, cat):    # à remplacer par celle ci-dessous
     if lang != u'':
@@ -5821,22 +5795,6 @@ def addLine(Page, CodeLangue, Section, pageContent):
                 Page = Page[:-len(PageTemp2)] + PageTemp2[:-len(PageTemp3)] + PageTemp3[:PageTemp3.find(u'\n\n')] + u'\n' + pageContent + u'\n' + PageTemp3[PageTemp3.find(u'\n\n'):]
     return Page
 
-
-def getWiki(language, family):
-    if family is None:
-        return site
-    else:
-        wiki = u'KO'
-        try:
-            wiki = pywikibot.Site(language, family)
-        except pywikibot.exceptions.ServerError:
-            if debugLevel > 1: print u'  ServerError l 5843'
-        except pywikibot.exceptions.NoSuchSite:
-            if debugLevel > 1: print u'  NoSuchSite l 5845'
-        except UnicodeEncodeError:
-            if debugLevel > 1: print u'  UnicodeEncodeError l 5847'
-    return wiki
-
 def rec_anagram(counter):
     # Copyright http://www.siteduzero.com/forum-83-541573-p2-exercice-generer-tous-les-anagrammes.html
     if sum(counter.values()) == 0:
@@ -5851,20 +5809,65 @@ def rec_anagram(counter):
 def anagram(word):
     return rec_anagram(collections.Counter(word))
 
+def trim(s):
+    return s.strip(" \t\n\r\0\x0B")
+
+def getContentFromPageName(pageName, allowedNamespaces = None):
+    page = Page(site, pageName)
+    return getContentFromPage(page, allowedNamespaces)
+
+def getContentFromPage(page, allowedNamespaces = None):
+    PageBegin = u''
+    if page.exists():
+        if allowedNamespaces is None:
+            allowedNamespaces = [0, 100, 12, 14]
+        if page.namespace() in allowedNamespaces or page.title().find(username) != -1:
+            try:
+                PageBegin = page.get()
+            except pywikibot.exceptions.BadTitle:
+                print u'IsRedirect l 5658'
+                return 'KO'
+            except pywikibot.exceptions.IsRedirectPage:
+                #PageBegin = page.get(get_redirect=True)
+                print u'IsRedirect l 5662'
+                return 'KO'
+            except pywikibot.exceptions.NoPage:
+                print u'NoPage l 5665'
+                return 'KO'
+            except pywikibot.exceptions.ServerError:
+                print u'NoPage l 5668'
+                return 'KO'
+        else:
+            print u'Page non traitée l 5671'
+            return 'KO'
+    else:
+        print u'NoPage l 5674'
+        return 'KO'
+
+    return PageBegin
+
+def getWiki(language, family):
+    if family is None:
+        return site
+    else:
+        wiki = u'KO'
+        try:
+            wiki = pywikibot.Site(language, family)
+        except pywikibot.exceptions.ServerError:
+            if debugLevel > 1: print u'  ServerError in getWiki'
+        except pywikibot.exceptions.NoSuchSite:
+            if debugLevel > 1: print u'  NoSuchSite in getWiki'
+        except UnicodeEncodeError:
+            if debugLevel > 1: print u'  UnicodeEncodeError in getWiki'
+    return wiki
+
 # Permet à tout le monde de stopper le bot en lui écrivant
 def ArretDUrgence():
-        page = pywikibot.Page(site,u'User talk:' + username)
-        if page.exists():
-            PageTemp = u''
-            try:
-                PageTemp = page.get()
-            except pywikibot.exceptions.NoPage: return
-            except pywikibot.exceptions.IsRedirectPage: return
-            except pywikibot.exceptions.ServerError: return
-            except pywikibot.exceptions.BadTitle: return
-            if PageTemp != u"{{/Stop}}":
-                pywikibot.output (u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
-                exit(0)
+    PageTemp = getContentFromPageName(u'User talk:' + username)
+    if PageTemp == 'KO': return
+    if PageTemp != u"{{/Stop}}":
+        pywikibot.output (u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
+        exit(0)
 
 def savePage(currentPage, pageContent, summary):
     result = "ok"
@@ -5883,22 +5886,22 @@ def savePage(currentPage, pageContent, summary):
         try:
             currentPage.put(pageContent, summary)
         except pywikibot.exceptions.NoPage:
-            print "NoPage en savePage"
+            print "NoPage in savePage"
             return
         except pywikibot.exceptions.IsRedirectPage:
-            print "IsRedirectPage en savePage"
+            print "IsRedirectPage in savePage"
             return
         except pywikibot.exceptions.LockedPage:
-            print "LockedPage en savePage"
+            print "LockedPage in savePage"
             return
         except pywikibot.EditConflict:
-            print "EditConflict en savePage"
+            print "EditConflict in savePage"
             return
         except pywikibot.exceptions.ServerError:
-            print "ServerError en savePage"
+            print "ServerError in savePage"
             return
         except pywikibot.exceptions.BadTitle:
-            print "BadTitle en savePage"
+            print "BadTitle in savePage"
             return
         except pywikibot.exceptions.OtherPageSaveError:
             print "OtherPageSaveError"
@@ -5906,7 +5909,7 @@ def savePage(currentPage, pageContent, summary):
             savePage(currentPage, pageContent, summary)
             return
         except AttributeError:
-            print "AttributeError en savePage"
+            print "AttributeError in savePage"
             return
 
 # Lecture du fichier articles_list.txt (au même format que pour replace.py)
