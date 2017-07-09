@@ -5412,6 +5412,8 @@ def modification(pageName):
         if pageName.find(u'*') == -1 and pageName[-1:] == 's':
             natures = [u'nom', u'adjectif', u'suffixe']
             language = u'fr'
+            pageLemma = getLemmaFromPlural(PageEnd) # TODO language, nature, & n°
+            if pageLemma != u'': modification(pageLemma) # Formatage des boites de flexion à récupérer
             for nature in natures:
                 regex = ur"(== {{langue|" + language + ur"}} ==\n=== {{S\|" + nature + ur"\|" + language + ur")\|num=2"
                 if re.search(regex, PageEnd):
@@ -5424,12 +5426,10 @@ def modification(pageName):
                     summary = summary + u', ajout de |flexion'
 
                 if pageName[-2:] != 'ss':
-                    pageLemma = getLemmaFromPlural(PageEnd) # TODO language, nature, & n°
-
-                    flexionFlexionTemplate = getFlexionTemplate(pageName, language, nature)
-                    if flexionFlexionTemplate == u'':
-                        if debugLevel > 0: print u'Ajout d\'une boite dans une flexion'
-                        if pageLemma != u'':
+                    if pageLemma != u'':
+                        flexionFlexionTemplate = getFlexionTemplate(pageName, language, nature)
+                        if flexionFlexionTemplate == u'':
+                            if debugLevel > 0: print u' Ajout d\'une boite dans une flexion'
                             lemmaFlexionTemplate = getFlexionTemplateFromLemma(pageLemma, language, nature)
                             for flexionTemplateWithMs in flexionTemplatesWithMs:
                                 if lemmaFlexionTemplate.find(flexionTemplateWithMs) != -1:
