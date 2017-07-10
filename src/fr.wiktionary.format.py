@@ -1621,7 +1621,7 @@ def modification(pageName):
     deprecatedTags = {}
     deprecatedTags['big'] = 'strong'
     deprecatedTags['center'] = 'div style="text-align: center;"'
-    deprecatedTags['font color='] = 'span style="color:'
+    deprecatedTags['font color *= *"?'] = 'span style="color:'
     deprecatedTags['strike'] = 's'
     deprecatedTags['tt'] = 'code'
     for oldTag, newTag in deprecatedTags.items():
