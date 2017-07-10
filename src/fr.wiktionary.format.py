@@ -1597,7 +1597,7 @@ def modification(pageName):
             savePage(page, u'#REDIRECT[[' + pageName + ']]', u'Redirection pour apostrophe')
 
     page = Page(site, pageName)
-    PageBegin = getContentFromPage(page)
+    PageBegin = getContentFromPage(page, 'All')
     if PageBegin == 'KO': return
     PageTemp = PageBegin
     CleTri = defaultSort(pageName)
@@ -1618,14 +1618,33 @@ def modification(pageName):
     regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *thumb *\||\])'
     PageTemp = re.sub(regex, ur'\1\3', PageTemp)
 
+    deprecatedTags = {}
+    deprecatedTags['big'] = 'strong'
+    deprecatedTags['center'] = 'div style="text-align: center;"'
+    deprecatedTags['font color='] = 'span style="color:'
+    deprecatedTags['strike'] = 's'
+    deprecatedTags['tt'] = 'code'
+    for oldTag, newTag in deprecatedTags.items():
+        if debugLevel > 1: print "Clé : %s, valeur : %s." % (oldTag, newTag)
+        if oldTag.find(u' ') == -1:
+            closingOldTag = oldTag
+        else:
+            closingOldTag = oldTag[:oldTag.find(u' ')]
+        if newTag.find(u' ') == -1:
+            closingNewTag = newTag
+        else:
+            closingNewTag = newTag[:newTag.find(u' ')]
+        regex = ur'<' + oldTag + ur'([^>]*)>([^\n]*)</' + closingOldTag + '>'
+        PageTemp = re.sub(regex, ur'<' + newTag + ur'\1>\2</' +  closingNewTag + '>', PageTemp)
+
     if page.namespace() == 14:
         if debugLevel > 0: print u'Catégorie'
         # Catégorie
         #if pageName.find(u'Catégorie:Lexique en français d') != -1 and PageTemp.find(u'[[Catégorie:Lexiques en français|') == -1:
-        #    PageTemp = PageTemp + u'\n[[Cat�����gorie:Lexiques en français|' + defaultSort(trim(pageName[pageName.rfind(' '):])) + u']]\n'
+        #    PageTemp = PageTemp + u'\n[[Catégorie:Lexiques en français|' + defaultSort(trim(pageName[pageName.rfind(' '):])) + u']]\n'
         PageEnd = PageBegin
 
-    elif page.namespace() == 0 or page.namespace() == 2 and (pageName.find(u':JackBot/') == -1 or pageName.find(u':JackPotte/') == -1):
+    elif page.namespace() == 0 or username in page.namespace():
         regex = ur'{{=([a-z\-]+)=}}'
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, ur'{{langue|\1}}', PageTemp)
@@ -5820,8 +5839,12 @@ def getContentFromPage(page, allowedNamespaces = None):
     PageBegin = u''
     if page.exists():
         if allowedNamespaces is None:
-            allowedNamespaces = [0, 100, 12, 14]
-        if page.namespace() in allowedNamespaces or page.title().find(username) != -1:
+            condition = page.namespace() in [0, 12, 14, 100] or page.title().find(username) != -1
+        elif type(allowedNamespaces) == 'list':
+            condition = page.namespace() in allowedNamespaces
+        elif allowedNamespaces == 'All':
+            condition = True
+        if condition:
             try:
                 PageBegin = page.get()
             except pywikibot.exceptions.BadTitle:
