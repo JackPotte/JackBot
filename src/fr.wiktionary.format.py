@@ -42,6 +42,13 @@ username = config.usernames[siteFamily][siteLanguage]
 
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
+deprecatedTags = {}
+deprecatedTags['big'] = 'strong'
+deprecatedTags['center'] = 'div style="text-align: center;"'
+deprecatedTags['font color *= *"?'] = 'span style="color:'
+deprecatedTags['strike'] = 's'
+deprecatedTags['tt'] = 'code'
+
 Sections = []
 Niveau = []
 Sections.append(u'étymologie')
@@ -1618,12 +1625,6 @@ def modification(pageName):
     regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *thumb *\||\])'
     PageTemp = re.sub(regex, ur'\1\3', PageTemp)
 
-    deprecatedTags = {}
-    deprecatedTags['big'] = 'strong'
-    deprecatedTags['center'] = 'div style="text-align: center;"'
-    deprecatedTags['font color *= *"?'] = 'span style="color:'
-    deprecatedTags['strike'] = 's'
-    deprecatedTags['tt'] = 'code'
     for oldTag, newTag in deprecatedTags.items():
         if debugLevel > 1: print "Clé : %s, valeur : %s." % (oldTag, newTag)
         if oldTag.find(u' ') == -1:
@@ -5962,9 +5963,10 @@ def crawlerXML(source, regex = u''):
         outPutFile = open('src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', 'a')
 
         for entry in parser:
-            PageTemp = entry.text
-            '''if regex == u'':
-                if debugLevel > 1: print u' Generic treatment'
+            if regex == u'':
+                PageTemp = entry.text
+                '''
+                if debugLevel > 1: print u' Pluriels non flexion'
                 if entry.title[-2:] == u'es':
                     if debugLevel > 1: print entry.title
                     regex = ur"=== {{S\|adjectif\|fr[^}]+}} ===\n[^\n]*\n*{{fr\-rég\|[^\n]+\n*'''" + re.escape(entry.title) + ur"'''[^\n]*\n# *'*'*(Masculin|Féminin)+ *[P|p]luriel de *'*'* *\[\["
@@ -5972,13 +5974,19 @@ def crawlerXML(source, regex = u''):
                         if debugLevel > 0: print entry.title
                         #PageTemp = re.sub(regex, ur'\1|flexion\2', PageTemp)
                         #modification(html2Unicode(entry.title))
-            '''
-            if debugLevel > 1: print u' Ajout de la boite de flexion'
-            if entry.title[-1:] == u's':
-                if (PageTemp.find(u'{{S|adjectif|fr|flexion}}') != -1 or PageTemp.find(u'{{S|nom|fr|flexion}}') != -1) and PageTemp.find(u'{{fr-') == -1:
-                    #print entry.title # limite de 8191 lignes dans le terminal.
-                    #modification(entry.title)
-                    outPutFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+
+                if debugLevel > 1: print u' Ajout de la boite de flexion'
+                if entry.title[-1:] == u's':
+                    if (PageTemp.find(u'{{S|adjectif|fr|flexion}}') != -1 or PageTemp.find(u'{{S|nom|fr|flexion}}') != -1) and PageTemp.find(u'{{fr-') == -1:
+                        #print entry.title # limite de 8191 lignes dans le terminal.
+                        #modification(entry.title)
+                        outPutFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                '''
+                if debugLevel > 1: print u' balises HTML désuètes'
+                for deprecatedTag in deprecatedTags.keys():
+                    if PageTemp.find(u'<' + deprecatedTag) != -1:
+                        outPutFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+
         outPutFile.close()
 
 
