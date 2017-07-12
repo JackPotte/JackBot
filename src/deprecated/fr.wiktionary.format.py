@@ -41,6 +41,14 @@ site = pywikibot.Site(siteLanguage, siteFamily)
 username = config.usernames[siteFamily][siteLanguage]
 
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
+addDefaultSort = False
+
+deprecatedTags = {}
+deprecatedTags['big'] = 'strong'
+deprecatedTags['center'] = 'div style="text-align: center;"'
+deprecatedTags['font color *= *"?'] = 'span style="color:'
+deprecatedTags['strike'] = 's'
+deprecatedTags['tt'] = 'code'
 
 Sections = []
 Niveau = []
@@ -1597,23 +1605,8 @@ def modification(pageName):
             savePage(page, u'#REDIRECT[[' + pageName + ']]', u'Redirection pour apostrophe')
 
     page = Page(site, pageName)
-    if page.exists():
-        if page.namespace() !=0 and page.namespace() != 100 and page.namespace() != 12 and page.namespace() != 14 and (page.namespace() == 2 and (pageName.find(u':JackBot/') == -1 and pageName.find(u':JackPotte/') == -1)):
-            print u'Page non traitée l 1374'
-            return
-        else:
-            try:
-                PageBegin = page.get()
-            except pywikibot.exceptions.NoPage:
-                print u'NoPage l 1383'
-                return
-            except pywikibot.exceptions.IsRedirectPage:
-                #PageBegin = page.get(get_redirect=True)
-                print u'IsRedirect l 1393'
-                return
-    else:
-        print u'NoPage l 1396'
-        return
+    PageBegin = getContentFromPage(page, 'All')
+    if PageBegin == 'KO': return
     PageTemp = PageBegin
     CleTri = defaultSort(pageName)
     rePageName = re.escape(pageName)
@@ -1633,20 +1626,37 @@ def modification(pageName):
     regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *thumb *\||\])'
     PageTemp = re.sub(regex, ur'\1\3', PageTemp)
 
+    if debugLevel > 0: print u'Remplacements des balises'
+    PageTemp = PageTemp.replace(u'</br>', u'<br/>')
+    for oldTag, newTag in deprecatedTags.items():
+        if debugLevel > 1: print "Clé : %s, valeur : %s." % (oldTag, newTag)
+        if oldTag.find(u' ') == -1:
+            closingOldTag = oldTag
+        else:
+            closingOldTag = oldTag[:oldTag.find(u' ')]
+        if newTag.find(u' ') == -1:
+            closingNewTag = newTag
+        else:
+            closingNewTag = newTag[:newTag.find(u' ')]
+        regex = ur'<' + oldTag + ur'([^>]*)>([^\n]*)</' + closingOldTag + '>'
+        PageTemp = re.sub(regex, ur'<' + newTag + ur'\1>\2</' +  closingNewTag + '>', PageTemp)
+
+    PageTemp = PageTemp.replace(u'[[Category:', u'[[Catégorie:')
+
     if page.namespace() == 14:
         if debugLevel > 0: print u'Catégorie'
         # Catégorie
         #if pageName.find(u'Catégorie:Lexique en français d') != -1 and PageTemp.find(u'[[Catégorie:Lexiques en français|') == -1:
-        #    PageTemp = PageTemp + u'\n[[Cat�����gorie:Lexiques en français|' + defaultSort(trim(pageName[pageName.rfind(' '):])) + u']]\n'
+        #    PageTemp = PageTemp + u'\n[[Catégorie:Lexiques en français|' + defaultSort(trim(pageName[pageName.rfind(' '):])) + u']]\n'
         PageEnd = PageBegin
 
-    elif page.namespace() == 0 or page.namespace() == 2 and (pageName.find(u':JackBot/') == -1 or pageName.find(u':JackPotte/') == -1):
+    elif page.namespace() == 0 or username in page.namespace():
         regex = ur'{{=([a-z\-]+)=}}'
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, ur'{{langue|\1}}', PageTemp)
 
         while PageTemp.find(u'{{ ') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{ ')+2] + PageTemp[PageTemp.find(u'{{ ')+3:len(PageTemp)]
+            PageTemp = PageTemp[:PageTemp.find(u'{{ ')+2] + PageTemp[PageTemp.find(u'{{ ')+3:len(PageTemp)]
         if PageTemp.find(u'{{formater') != -1 or PageTemp.find(u'{{SI|') != -1 or PageTemp.find(u'{{SI}}') != -1 or PageTemp.find(u'{{supp|') != -1 or PageTemp.find(u'{{supp}}') != -1 or PageTemp.find(u'{{supprimer|') != -1 or PageTemp.find(u'{{supprimer') != -1 or PageTemp.find(u'{{PàS') != -1 or PageTemp.find(u'{{S|faute') != -1 or PageTemp.find(u'{{S|erreur') != -1:
             if debugLevel > 0: print u'Page en travaux : non traitée l 1409'
             return
@@ -1811,19 +1821,19 @@ def modification(pageName):
             summary = summary + u', ajout de {{S|traductions}}'
         '''
 
-        if page.namespace() != 12:
+        if page.namespace() == 0:
             if debugLevel > 0: print u'Ajout des {{voir}}'
             if PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}') != -1:
-                PageTemp = PageTemp[0:PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[0:1].lower() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|{{lc:{{PAGENAME}}}}'):len(PageTemp)]
+                PageTemp = PageTemp[:PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[0:1].lower() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|{{lc:{{PAGENAME}}}}'):len(PageTemp)]
                 summary = summary + u', subst de {{lc:{{PAGENAME}}}}'
             if PageTemp.find(u'{{voir|{{ucfirst:{{PAGENAME}}}}}}') != -1:
-                PageTemp = PageTemp[0:PageTemp.find(u'{{voir|{{ucfirst:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[0:1].upper() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{ucfirst:{{PAGENAME}}}}}}')+len(u'{{voir|{{ucfirst:{{PAGENAME}}}}'):len(PageTemp)]
+                PageTemp = PageTemp[:PageTemp.find(u'{{voir|{{ucfirst:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[0:1].upper() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{ucfirst:{{PAGENAME}}}}}}')+len(u'{{voir|{{ucfirst:{{PAGENAME}}}}'):len(PageTemp)]
                 summary = summary + u', subst de {{ucfirst:{{PAGENAME}}}}'
             if PageTemp.find(u'{{voir|{{LC:{{PAGENAME}}}}}}') != -1:
-                PageTemp = PageTemp[0:PageTemp.find(u'{{voir|{{LC:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[0:1].lower() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{LC:{{PAGENAME}}}}}}')+len(u'{{voir|{{LC:{{PAGENAME}}}}'):len(PageTemp)]
+                PageTemp = PageTemp[:PageTemp.find(u'{{voir|{{LC:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[0:1].lower() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{LC:{{PAGENAME}}}}}}')+len(u'{{voir|{{LC:{{PAGENAME}}}}'):len(PageTemp)]
                 summary = summary + u', subst de {{LC:{{PAGENAME}}}}'
             if PageTemp.find(u'{{voir|{{UCFIRST:{{PAGENAME}}}}}}') != -1:
-                PageTemp = PageTemp[0:PageTemp.find(u'{{voir|{{UCFIRST:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[0:1].upper() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{UCFIRST:{{PAGENAME}}}}}}')+len(u'{{voir|{{UCFIRST:{{PAGENAME}}}}'):len(PageTemp)]
+                PageTemp = PageTemp[:PageTemp.find(u'{{voir|{{UCFIRST:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[0:1].upper() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{UCFIRST:{{PAGENAME}}}}}}')+len(u'{{voir|{{UCFIRST:{{PAGENAME}}}}'):len(PageTemp)]
                 summary = summary + u', subst de {{UCFIRST:{{PAGENAME}}}}'
             if PageTemp.find(u'{{voir|') == -1 and PageTemp.find(u'{{voir/') == -1:
                 PageVoir = u''
@@ -1859,19 +1869,11 @@ def modification(pageName):
                 if debugLevel > 0: print u' Recherche des clés...'
                 while PagesCleRestant != u'':
                     if debugLevel > 1: print PagesCleRestant.encode(config.console_encoding, 'replace')
-                    HS = u'False'
                     currentPage = PagesCleRestant[0:PagesCleRestant.find(u'|')]
                     PagesCleRestant = PagesCleRestant[PagesCleRestant.find(u'|')+1:len(PagesCleRestant)]
-                    pageNamele = Page(site,currentPage)
-                    try:
-                        PageTempCle = pageNamele.get()
-                    except pywikibot.exceptions.NoPage:
-                        HS = u'True'
-                    except pywikibot.exceptions.IsRedirectPage:
-                        HS = u'True'
-                    except pywikibot.exceptions.BadTitle:
-                        HS = u'True'
-                    if HS == u'False':
+                    pageCle = Page(site, currentPage)
+                    PageTempCle = getContentFromPage(pageCle)
+                    if PageTempCle != u'KO':
                         if PagesCleTotal.find(currentPage) == -1: PagesCleTotal = PagesCleTotal + u'|' + currentPage
                         if PageTempCle.find(u'{{voir|') != -1:
                             PageTempCle2 = PageTempCle[PageTempCle.find(u'{{voir|')+len(u'{{voir|'):len(PageTempCle)]
@@ -1880,14 +1882,8 @@ def modification(pageName):
                             PageTempCle2 = PageTempCle[PageTempCle.find(u'{{voir/')+len(u'{{voir/'):len(PageTempCle)]
                             PageTemp = u'{{voir/' + PageTempCle2[0:PageTempCle2.find(u'}}')+3] + PageTemp
                             pageMod = Page(site,u'Modèle:voir/' + PageTempCle2[0:PageTempCle2.find(u'}}')])
-                            try:
-                                PageTempModBegin = pageMod.get()
-                            except pywikibot.exceptions.NoPage:
-                                if debugLevel > 0: print u'no page'
-                                break
-                            except pywikibot.exceptions.IsRedirectPage:
-                                if debugLevel > 0: print "Redirect page"
-                                break
+                            PageTempModBegin = getContentFromPage(pageMod)
+                            if PageTempModBegin == 'KO': break
                             PageTempMod = PageTempModBegin
                             if PageTempMod.find(u'!') == -1:
                                 if PageTempMod.find(pageName) == -1: PageTempMod = PageTempMod[0:PageTempMod.find(u'}}')] + u'|' + pageName + PageTempMod[PageTempMod.find(u'}}'):len(PageTempMod)]
@@ -1914,23 +1910,17 @@ def modification(pageName):
                     if debugLevel > 0: print u'  Différent de la page courante'
                     PagesCleRestant = PagesCleTotal + u'|'
                     while PagesCleRestant.find(u'|') != -1:
-                        HS = u'False'
                         currentPage = PagesCleRestant[0:PagesCleRestant.find(u'|')]
                         if currentPage == u'':
                             if debugLevel > 0: print u'currentPage vide'
                             break
                         PagesCleRestant = PagesCleRestant[PagesCleRestant.find(u'|')+1:len(PagesCleRestant)]
                         if currentPage != pageName:
-                            pageNamele = Page(site,currentPage)
-                            try:
-                                PageTempCleBegin = pageNamele.get()
-                            except pywikibot.exceptions.NoPage:
-                                HS = u'True'
-                            except pywikibot.exceptions.IsRedirectPage:
-                                HS = u'True'
+                            pageCle = Page(site, currentPage)
+                            PageTempCleBegin = getContentFromPage(pageCle)
                         else:
                             PageTempCleBegin = PageTemp
-                        if HS == u'False':
+                        if PageTempCleBegin != u'KO':
                             PageTempCle = PageTempCleBegin
                             if PageTempCle.find(u'{{voir/') != -1:
                                 if debugLevel > 0: print u' {{voir/ trouvé'
@@ -1950,7 +1940,7 @@ def modification(pageName):
                                         if debugLevel > 0:
                                             print u' Première savePage dédiée à {{voir}}'
                                         else:
-                                            savePage(pageNamele,PageTempCle, summary)
+                                            savePage(pageCle, PageTempCle, summary)
                             else:
                                 if PagesCleTotal.find(u'|' + currentPage) != -1:
                                     PageTempCle = u'{{voir|' + PagesCleTotal[0:PagesCleTotal.find(u'|' + currentPage)] + PagesCleTotal[PagesCleTotal.find(u'|' + currentPage)+len(u'|' + currentPage):len(PagesCleTotal)] + u'}}\n' + PageTempCle
@@ -1962,7 +1952,7 @@ def modification(pageName):
                                     if debugLevel > 0:
                                         print u' Deuxième savePage dédiée à {{voir}}'
                                     else:
-                                        savePage(pageNamele,PageTempCle, summary)
+                                        savePage(pageCle, PageTempCle, summary)
 
             elif PageTemp.find(u'{{voir|') != -1:
                 if debugLevel > 0: print u'  Identique à la page courante'
@@ -1980,8 +1970,8 @@ def modification(pageName):
             '''
 
             if debugLevel > 0: print u' Nettoyage des {{voir}}...'
-            if PageTemp.find(u'{{voir}}\n') != -1: PageTemp = PageTemp[0:PageTemp.find(u'{{voir}}\n')] + PageTemp[PageTemp.find(u'{{voir}}\n')+len(u'{{voir}}\n'):len(PageTemp)]
-            if PageTemp.find(u'{{voir}}') != -1: PageTemp = PageTemp[0:PageTemp.find(u'{{voir}}')] + PageTemp[PageTemp.find(u'{{voir}}')+len(u'{{voir}}'):len(PageTemp)]
+            if PageTemp.find(u'{{voir}}\n') != -1: PageTemp = PageTemp[:PageTemp.find(u'{{voir}}\n')] + PageTemp[PageTemp.find(u'{{voir}}\n')+len(u'{{voir}}\n'):len(PageTemp)]
+            if PageTemp.find(u'{{voir}}') != -1: PageTemp = PageTemp[:PageTemp.find(u'{{voir}}')] + PageTemp[PageTemp.find(u'{{voir}}')+len(u'{{voir}}'):len(PageTemp)]
             PageTemp = html2Unicode(PageTemp)
             PageTemp = PageTemp.replace(u'}}&#32;[[', u'}} [[')
             PageTemp = PageTemp.replace(u']]&#32;[[', u']] [[')
@@ -2001,77 +1991,9 @@ def modification(pageName):
                     PageTemp = PageTemp.replace(u'{{vérifier création automatique}}', u'{{vérifier création automatique' + LanguesV + u'}}')
                 #raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 
-            # Clés de tri
-            if debugLevel > 0: print u'Clés de tri'
-            PageTemp = PageTemp.replace(u'{{DEFAULTSORT:', u'{{clé de tri|')
-            PageTemp = PageTemp.replace(u'{{defaultSort:', u'{{clé de tri|')
-            PageTemp = PageTemp.replace(u'{{clef de tri|', u'{{clé de tri|')
-            while PageTemp.find(u'\n{clé de tri') != -1:
-                PageTemp = PageTemp[0:PageTemp.find(u'\n{clé de tri')+1] + u'{' + PageTemp[PageTemp.find(u'\n{clé de tri'):len(PageTemp)]
-
-            ClePage = CleTri
-            if PageTemp.find(u'{{clé de tri') == -1 and ClePage != u'' and ClePage.lower() != pageName.lower():
-                    summary = summary + u', {{clé de tri}} ajoutée'
-                    if PageTemp.rfind(u'\n\n[[') != -1:
-                        PageTemp2 = PageTemp[PageTemp.rfind(u'\n\n[['):len(PageTemp)]
-                        if PageTemp2[4:5] == u':' or PageTemp2[5:6] == u':':
-                            PageTemp = PageTemp[0:PageTemp.rfind(u'\n\n[[')] + u'\n\n{{clé de tri|' + ClePage + u'}}' + PageTemp[PageTemp.rfind(u'\n\n[['):len(PageTemp)]
-                        else:
-                            PageTemp = PageTemp + u'\n\n{{clé de tri|' + ClePage + u'}}\n'
-                    else:
-                        PageTemp = PageTemp + u'\n\n{{clé de tri|' + ClePage + u'}}\n'
-        
-            elif PageTemp.find(u'{{clé de tri|') != -1 and (PageTemp.find(u'{{langue|fr}}') != -1 or PageTemp.find(u'{{langue|eo}}') != -1 or PageTemp.find(u'{{langue|en}}') != -1 or PageTemp.find(u'{{langue|es}}') != -1 or PageTemp.find(u'{{langue|de}}') != -1 or PageTemp.find(u'{{langue|pt}}') != -1 or PageTemp.find(u'{{langue|it}}') != -1):
-                if debugLevel > 0: print u' vérification de clé existante pour alphabets connus'
-                PageTemp2 = PageTemp[PageTemp.find(u'{{clé de tri|')+len(u'{{clé de tri|'):len(PageTemp)]
-                ClePage = PageTemp2[0:PageTemp2.find(u'}}')]
-                '''if CleTri.lower() != ClePage.lower():
-                    summary = summary + u', {{clé de tri}} corrigée'
-                    PageTemp = PageTemp[0:PageTemp.find(u'{{clé de tri|')+len(u'{{clé de tri|')] + CleTri + PageTemp[PageTemp.find(u'{{clé de tri|')+len(u'{{clé de tri|')+PageTemp2.find(u'}}'):len(PageTemp)]'''
-                '''pb ʻokina
-                    if CleTri.lower() == pageName.lower():
-                    summary = summary + u', {{clé de tri}} supprimée'
-                    PageTemp = PageTemp[0:PageTemp.find(u'{{clé de tri|')] + PageTemp[PageTemp.find(u'{{clé de tri|')+len(u'{{clé de tri|')+PageTemp2.find(u'}}')+2:len(PageTemp)]'''
-            if debugLevel > 1: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
-
-            baratin = u'{{clé de tri|}}<!-- supprimer si le mot ne contient pas de caractères accentués ni de caractères typographiques (par ex. trait d’union ou apostrophe) ; sinon suivez les instructions à [[Modèle:clé de tri]] -->'
-            if PageTemp.find(baratin) != -1:
-                PageTemp = PageTemp[0:PageTemp.find(baratin)] + PageTemp[PageTemp.find(baratin)+len(baratin):len(PageTemp)]
-                summary = summary + u', {{clé de tri|}} supprimée'
-            baratin = u'{{clé de tri|}}<!-- Veuillez mettre juste après « {{clé de tri| » le titre de la page en y enlevant tous les accents et éventuels apostrophes, et en changeant les éventuels traits d’union et autres caractères spéciaux par une espace ; s’il n’y a rien à changer, merci d’effacer ces lignes. -->'
-            '''Inhibé depuis migration Lua :
-            if PageTemp.find(baratin) != -1:
-                PageTemp = PageTemp[0:PageTemp.find(baratin)] + PageTemp[PageTemp.find(baratin)+len(baratin):len(PageTemp)]
-                summary = summary + u', {{clé de tri|}} supprimée'
-            if PageTemp.find(u'{{clé de tri|}}') != -1:
-                PageTemp = PageTemp[0:PageTemp.find(u'{{clé de tri|}}')] + PageTemp[PageTemp.find(u'{{clé de tri|}}')+len(u'{{clé de tri|}}'):len(PageTemp)]
-                summary = summary + u', {{clé de tri|}} supprimée'
-            if PageTemp.find(u'{{clé de tri}}') != -1:
-                PageTemp = PageTemp[0:PageTemp.find(u'{{clé de tri}}')] + PageTemp[PageTemp.find(u'{{clé de tri}}')+len(u'{{clé de tri}}'):len(PageTemp)]
-                summary = summary + u', {{clé de tri}} supprimée'
-            if PageTemp.find(u'{{clé de tri|' + pageName.lower() + u'}}') != -1 and PageTemp.find(u'{{S|verb pronominal|fr}}') == -1:
-                PageTemp = PageTemp[0:PageTemp.find(u'{{clé de tri|' + pageName.lower() + u'}}')] + PageTemp[PageTemp.find(u'{{clé de tri|' + pageName.lower() + u'}}')+len(u'{{clé de tri|' + pageName.lower() + u'}}'):len(PageTemp)]
-                summary = summary + u', {{clé de tri}} supprimée'''
-            while PageTemp.find(u'{{S|verbe pronominal|') != -1:
-                # Remplacement de modèle suite à vote
-                PageTemp2 = PageTemp[PageTemp.find(u'{{S|verbe pronominal|'):]
-                if PageTemp2.find(u'{{conj') != -1 and PageTemp2.find(u'{{pronominal|') == -1 and PageTemp2.find(u'{{pronl|') == -1 and PageTemp2.find(u'{{prnl|') == -1 and PageTemp2.find(u'{{réflexif|') == -1 and PageTemp2.find(u'{{réfléchi|') == -1 and PageTemp2.find(u'{{réfl|') == -1:
-                    PageTemp3 = PageTemp2[PageTemp2.find(u'{{conj'):]
-                    if PageTemp3.find(u'|prnl=') == -1 or PageTemp3.find(u'|prnl=') > PageTemp3.find(u'}}'):
-                        PageTemp = PageTemp[:PageTemp.find(u'{{S|verbe pronominal|')] + PageTemp2[:PageTemp2.find(u'{{conj')] + PageTemp3[:PageTemp3.find(u'}}')] + u'|prnl=1' + PageTemp3[PageTemp3.find(u'}}'):]
-                PageTemp = PageTemp[:PageTemp.find(u'{{S|verbe pronominal|')] + u'{{S|verbe|' + PageTemp[PageTemp.find(u'{{S|verbe pronominal|')+len(u'{{S|verbe pronominal|'):]
-            while PageTemp.find(u'\'\'(pronominal)\'\'') != -1:
-                PageTemp2 = PageTemp[PageTemp.find(u'\'\'(pronominal)\'\''):]
-                if PageTemp2.find(u'|prnl=1') != -1 and PageTemp2.find(u'|prnl=1') < PageTemp2.find(u'\n'):
-                    PageTemp = PageTemp[:PageTemp.find(u'\'\'(pronominal)\'\'')] + PageTemp[PageTemp.find(u'\'\'(pronominal)\'\'')+ len(u'\'\'(pronominal)\'\''):]
-                else:
-                    PageTemp = PageTemp[:PageTemp.find(u'\'\'(pronominal)\'\'')] + u'{{prnl}}' + PageTemp[PageTemp.find(u'\'\'(pronominal)\'\'')+ len(u'\'\'(pronominal)\'\''):]
-            if debugLevel > 0: print u'Remplacements des balises'
-            PageTemp = re.sub(ur'\[\[Category:', ur'[[Catégorie:', PageTemp)
-            while PageTemp.find(u'</br>') != -1:
-                PageTemp = PageTemp[0:PageTemp.find(u'</br>')] + u'<br/>' + PageTemp[PageTemp.find(u'</br>')+len(u'</br>'):len(PageTemp)]
-            while PageTemp.find(u'<sup/>') != -1:
-                PageTemp = PageTemp[0:PageTemp.find(u'<sup/>')] + u'</sup>' + PageTemp[PageTemp.find(u'<sup/>')+len(u'<sup/>'):len(PageTemp)]
+            if addDefaultSort:
+                if debugLevel > 0: print u'Clés de tri'
+                PageTemp = addDefaultSort(PageTemp)
 
             if debugLevel > 0: print u'Catégories de prononciation'
             if pageName[-2:] == u'um' and PageTemp.find(u'ɔm|fr}}') != -1:
@@ -2257,31 +2179,31 @@ def modification(pageName):
             summary = summary + u', ajout de {{R:SIL}}'
         while PageTemp.find(u'[http://www.cnrtl.fr/definition/') != -1:
             PageTemp2 = PageTemp[PageTemp.find(u'[http://www.cnrtl.fr/definition/')+len(u'[http://www.cnrtl.fr/definition/'):len(PageTemp)]
-            PageTemp = PageTemp[0:PageTemp.find(u'[http://www.cnrtl.fr/definition/')] + u'{{R:TLFi|' + PageTemp2[0:PageTemp2.find(u' ')] + u'}}' + PageTemp2[PageTemp2.find(u']')+1:len(PageTemp2)]
+            PageTemp = PageTemp[:PageTemp.find(u'[http://www.cnrtl.fr/definition/')] + u'{{R:TLFi|' + PageTemp2[0:PageTemp2.find(u' ')] + u'}}' + PageTemp2[PageTemp2.find(u']')+1:len(PageTemp2)]
             summary = summary + u', ajout de {{R:TLFi}}'
         while PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/') != -1:
             PageTemp2 = PageTemp[PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/')+len(u'[http://www.mediadico.com/dictionnaire/definition/'):len(PageTemp)]
-            PageTemp = PageTemp[0:PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/')] + u'{{R:Mediadico|' + PageTemp2[0:PageTemp2.find(u'/1')] + u'}}' + PageTemp2[PageTemp2.find(u']')+1:len(PageTemp2)]
+            PageTemp = PageTemp[:PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/')] + u'{{R:Mediadico|' + PageTemp2[0:PageTemp2.find(u'/1')] + u'}}' + PageTemp2[PageTemp2.find(u']')+1:len(PageTemp2)]
             summary = summary + u', ajout de {{R:Mediadico}}'
         while PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}')+len(u'{{R:DAF8}}\n'):len(PageTemp)]
+            PageTemp = PageTemp[:PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}')+len(u'{{R:DAF8}}\n'):len(PageTemp)]
             summary = summary + u', doublon {{R:DAF8}}'
         while PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}')+len(u'{{R:DAF8}}\n\n'):len(PageTemp)]
+            PageTemp = PageTemp[:PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}')+len(u'{{R:DAF8}}\n\n'):len(PageTemp)]
             summary = summary + u', doublon {{R:DAF8}}'
         while PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}')+len(u'{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}')+len(u'{{Import:DAF8}}\n{{R:DAF8}}'):len(PageTemp)]
+            PageTemp = PageTemp[:PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}')+len(u'{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}')+len(u'{{Import:DAF8}}\n{{R:DAF8}}'):len(PageTemp)]
             summary = summary + u', doublon {{R:DAF8}}'
         while PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}')] + PageTemp[PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}')+len(u'{{R:Littré}}\n'):len(PageTemp)]
+            PageTemp = PageTemp[:PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}')] + PageTemp[PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}')+len(u'{{R:Littré}}\n'):len(PageTemp)]
             summary = summary + u', doublon {{R:Littré}}'
         while PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}')] + PageTemp[PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}\n{{R:Littré}}'):len(PageTemp)]
+            PageTemp = PageTemp[:PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}')] + PageTemp[PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}\n{{R:Littré}}'):len(PageTemp)]
             summary = summary + u', doublon {{R:Littré}}'
         while PageTemp.find(u'\n{{R:') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'\n{{R:')+1] + u'*' + PageTemp[PageTemp.find(u'\n{{R:')+1:len(PageTemp)]
+            PageTemp = PageTemp[:PageTemp.find(u'\n{{R:')+1] + u'*' + PageTemp[PageTemp.find(u'\n{{R:')+1:len(PageTemp)]
         while PageTemp.find(u'\n{{Import:') != -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'\n{{Import:')+1] + u'*' + PageTemp[PageTemp.find(u'\n{{Import:')+1:len(PageTemp)]
+            PageTemp = PageTemp[:PageTemp.find(u'\n{{Import:')+1] + u'*' + PageTemp[PageTemp.find(u'\n{{Import:')+1:len(PageTemp)]
 
         if PageTemp.find(u'[[Catégorie:Villes') != -1 and PageTemp.find(u'{{localités|') != -1:
             summary = summary + u', {{villes}} -> {{localités}}'
@@ -2357,18 +2279,12 @@ def modification(pageName):
             PageTemp = PageEnd + PageTemp[PageTemp.find(u'\n')+1:]
             PageEnd = u''
             pageAnnexe = Page(site, u'Annexe:Conjugaison en russe/' + pageName)
+            AnnexeExistante = getContentFromPage(pageAnnexe)
             if pageAnnexe.exists():
-                try:
-                    AnnexeExistante = pageAnnexe.get()
-                except pywikibot.exceptions.NoPage:
-                    print "NoPage l 2230"
-                    return
-                except pywikibot.exceptions.IsRedirectPage:
-                    print "IsRedirect l 2233"
-                    return
+                if AnnexeExistante == 'KO': return
             else:
                 AnnexeExistante = u''
-            savePage(pageAnnexe,AnnexeExistante+u'\n\n'+Annexe,u'Création à partir de l\'article')
+            savePage(pageAnnexe, AnnexeExistante + u'\n\n'+Annexe, u'Création à partir de l\'article')
 
         regex = ur'(\[\[(Image|Fichier|File):[^\]]+)\|\|? *(\||\])'
         if re.search(regex, PageTemp):
@@ -2406,16 +2322,16 @@ def modification(pageName):
                 PageTemp = PageTemp[:PageTemp.find(u'{{écouter|' + ModRegion[m] + u'|')+len('{{écouter|')-1] + u'{{' + ModRegion[m] + u'|nocat=1}}' + PageTemp[PageTemp.find(u'{{écouter|' + ModRegion[m] + u'|')+len(u'{{écouter|' + ModRegion[m]):]
 
         while PageTemp.find(u'\n{{colonnes|') != -1:
-            PageTemp2 = PageTemp[0:PageTemp.find(u'\n{{colonnes|')]
+            PageTemp2 = PageTemp[:PageTemp.find(u'\n{{colonnes|')]
             if PageTemp2.rfind(u'{{') != -1 and PageTemp2.rfind(u'{{') == PageTemp2.rfind(u'{{trad-début'):    # modèles impriqués dans trad
                 PageTemp2 = PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
                 if PageTemp2.find(u'\n}}\n') != -1:
                     if PageTemp2[0:len(u'titre=')] == u'titre=':
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + u'\n{{trad-fin}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')] + u'\n{{trad-début|' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|titre='):PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')] + u'}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')+1:len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + u'\n{{trad-fin}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')] + u'\n{{trad-début|' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|titre='):PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')] + u'}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')+1:len(PageTemp)]
                     else:
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')] + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')] + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
                 else:
                     if debugLevel > 0: print u'pb {{colonnes}} 1'
                     break
@@ -2423,11 +2339,11 @@ def modification(pageName):
                 PageTemp2 = PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
                 if PageTemp2.find(u'\n}}\n') != -1:
                     if PageTemp2[0:len(u'titre=')] == u'titre=':
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + u'\n{{)}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')] + u'\n{{(|' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|titre='):PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')] + u'}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')+1:len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + u'\n{{)}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')] + u'\n{{(|' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|titre='):PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')] + u'}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')+1:len(PageTemp)]
                     else:
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')] + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')] + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
                 else:
                     if debugLevel > 0: print u'pb {{colonnes}} 2'
                     break
@@ -2436,11 +2352,11 @@ def modification(pageName):
                 PageTemp2 = PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
                 if PageTemp2.find(u'\n}}\n') != -1:
                     if PageTemp2[0:len(u'titre=')] == u'titre=':
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + u'\n{{trad-fin}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')] + u'\n{{trad-début|' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|titre='):PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')] + u'}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')+1:len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + u'\n{{trad-fin}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')] + u'\n{{trad-début|' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|titre='):PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')] + u'}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')+1:len(PageTemp)]
                     else:
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + u'\n{{trad-fin}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')] + u'\n{{trad-début}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + u'\n{{trad-fin}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')] + u'\n{{trad-début}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
                 else:
                     if debugLevel > 0: print u'pb {{colonnes}} 3'
                     break
@@ -2448,21 +2364,21 @@ def modification(pageName):
                 PageTemp2 = PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
                 if PageTemp2.find(u'\n}}\n') != -1:
                     if PageTemp2[0:len(u'titre=')] == u'titre=':
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + u'\n{{)}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')] + u'\n{{(|' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|titre='):PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')] + u'}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')+1:len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + u'\n{{)}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')] + u'\n{{(|' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|titre='):PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')] + u'}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'|')+1:len(PageTemp)]
                     else:
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + u'\n{{)}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
-                        PageTemp = PageTemp[0:PageTemp.find(u'\n{{colonnes|')] + u'\n{{(}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')] + u'\n{{)}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+PageTemp2.find(u'\n}}\n')+len(u'\n}}'):len(PageTemp)]
+                        PageTemp = PageTemp[:PageTemp.find(u'\n{{colonnes|')] + u'\n{{(}}' + PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
                 else:
                     if debugLevel > 0: print u'pb {{colonnes}} 4'
                     break
             while PageTemp.find(u'}}1=') != -1:
-                PageTemp = PageTemp[0:PageTemp.find(u'}}1=')] + PageTemp[PageTemp.find(u'}}1=')+len(u'}}1='):len(PageTemp)]
+                PageTemp = PageTemp[:PageTemp.find(u'}}1=')] + PageTemp[PageTemp.find(u'}}1=')+len(u'}}1='):len(PageTemp)]
 
         # #* or #:
         PageEnd = u''
         while PageTemp.find(u'\n#:') != -1:
-            PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'\n#:')+2]
+            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'\n#:')+2]
             if PageEnd.rfind(u'{{langue|') == PageEnd.rfind(u'{{langue|fr}}'):
                 PageTemp = u'*' + PageTemp[PageTemp.find(u'\n#:')+len(u'\n#:'):len(PageTemp)]
             else:
@@ -2473,9 +2389,9 @@ def modification(pageName):
         # Faux homophones : lemme et sa flexion
         if debugLevel > 0: print u'Faux homophones'
         if PageTemp.find(u'|flexion}}') != -1 and pageName[len(pageName)-1:] == u's' and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[0:len(pageName)-1] + u']]\n*') == -1 and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[0:len(pageName)-1] + u']]') != -1 and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[0:len(pageName)-1] + u']] ') == -1 and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[0:len(pageName)-1] + u']],') == -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[0:len(pageName)-1] + u']]')] + PageTemp[PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[0:len(pageName)-1] + u']]')+len(u'{{S|homophones}}\n*[[' + pageName[0:len(pageName)-1] + u']]')+1:len(PageTemp)]
+            PageTemp = PageTemp[:PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[0:len(pageName)-1] + u']]')] + PageTemp[PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[0:len(pageName)-1] + u']]')+len(u'{{S|homophones}}\n*[[' + pageName[0:len(pageName)-1] + u']]')+1:len(PageTemp)]
         elif PageTemp.find(u'|flexion}}') != -1 and pageName[len(pageName)-1:] == u's' and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[0:len(pageName)-1] + u']]\n*') == -1 and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[0:len(pageName)-1] + u']]') != -1 and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[0:len(pageName)-1] + u']] ') == -1 and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[0:len(pageName)-1] + u']],') == -1:
-            PageTemp = PageTemp[0:PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[0:len(pageName)-1] + u']]')] + PageTemp[PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[0:len(pageName)-1] + u']]')+len(u'{{S|homophones}}\n* [[' + pageName[0:len(pageName)-1] + u']]')+1:len(PageTemp)]
+            PageTemp = PageTemp[:PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[0:len(pageName)-1] + u']]')] + PageTemp[PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[0:len(pageName)-1] + u']]')+len(u'{{S|homophones}}\n* [[' + pageName[0:len(pageName)-1] + u']]')+1:len(PageTemp)]
 
         # Ajout des redirections des pronominaux
         if PageTemp.find(u'{{S|verbe|fr}}') != -1 and pageName[:3] != u'se' and pageName[:2] != u's’':
@@ -2499,6 +2415,7 @@ def modification(pageName):
         if PageTemp.find(u'{{langue|fr}}') != -1:
             ligne = 6
             colonne = 4
+            # TODO : fusionner avec le tableau des modèles de flexion
             ModeleGent = [[0] * (colonne+1) for _ in range(ligne+1)]
             ModeleGent[1][1] = ur'fr-accord-mixte'
             ModeleGent[1][2] = ur's'
@@ -2525,20 +2442,31 @@ def modification(pageName):
             ModeleGent[6][3] = ur''
             ModeleGent[6][4] = ur's'
 
-            for l in range(1,ligne+1):
+            for l in range(1, ligne + 1):
+                # Depuis un masculin
                 regex = ur'\({{p}} : [\[\']*' + rePageName + ModeleGent[l][2] + ur'[\]\']*, {{f}} : [\[\']*' + rePageName + ModeleGent[l][3] + ur'[\]\']*, {{fplur}} : [\[\']*' + rePageName + ModeleGent[l][4] + ur'[\]\']*\)'
                 if re.search(regex, PageTemp):
                     PageTemp = re.sub(regex, u'{{' + ModeleGent[l][1] + u'|pron=}}', PageTemp)
                     summary = summary + u', conversion des liens flexions en modèle boite'
+                # Depuis un féminin
+                if ModeleGent[l][1] == ur'fr-accord-s' and rePageName[-1:] == u'e' and rePageName[-2:-1] == u's':
+                    regex = ur'\({{p}} : [\[\']*' + rePageName + ur's[\]\']*, {{m}} : [\[\']*' + rePageName[:-1] + ur'[\]\']*\)'
+                    if re.search(regex, PageTemp):
+                        PageTemp = re.sub(regex, u'{{' + ModeleGent[l][1] + u'|ms=' + rePageName[:-1] + u'}}', PageTemp)
+                        summary = summary + u', conversion des liens flexions en modèle boite'
                 regex = ur'\({{f}} : [\[\']*' + rePageName + ModeleGent[l][3] + ur'[\]\']*, {{mplur}} : [\[\']*' + rePageName + ModeleGent[l][2] + ur'[\]\']*, {{fplur}} : [\[\']*' + rePageName + ModeleGent[l][4] + ur'[\]\']*\)'
                 if re.search(regex, PageTemp):
                     PageTemp = re.sub(regex, u'{{' + ModeleGent[l][1] + u'|pron=}}', PageTemp)
                     summary = summary + u', conversion des liens flexions en modèle boite'
-                # Son
-                if debugLevel > 1: print u' son'
+                if debugLevel > 1: print u' avec son'
                 regex = ur'(\n\'\'\'' + rePageName + u'\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + ModeleGent[l][1] + ur'\|[pron\=]*)}}'
                 if re.search(regex, PageTemp):
                     PageTemp = re.sub(regex, ur'\n\4\2}}\1\2\3', PageTemp)
+
+                regex = ur'( ===\n)(\'\'\'[^\n]+)({{' + ModeleGent[l][1] + ur'\|[^}]*}})'
+                if re.search(regex, PageTemp):
+                    PageTemp = re.sub(regex, ur'\1\3\n\2', PageTemp)
+                    summary = summary + u', déplacement des modèles de flexions'
 
         elif PageTemp.find(u'{{langue|es}}') != -1:
             ligne = 1
@@ -2565,6 +2493,7 @@ def modification(pageName):
                 regex = ur'(\n\'\'\'' + rePageName + u'\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + ModeleGent[l][1] + ur'\|' + rePageRadicalName + ur')}}'
                 if re.search(regex, PageTemp):
                     PageTemp = re.sub(regex, ur'\n\4|\2}}\1\2\3', PageTemp)
+
 
         # Détection d'une première traduction aux normes
         regex = u'\* ?{{[a-z][a-z][a-z]?\-?[a-z]?[a-z]?[a-z]?}} :'
@@ -2613,7 +2542,7 @@ def modification(pageName):
                         break
                 langue2 = u'zzz'
                 if PageEnd.rfind(u'\n') == -1 or PageTemp.find(u'\n') == -1: break
-                TradCourante = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + PageTemp[0:PageTemp.find(u'\n')]
+                TradCourante = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + PageTemp[:PageTemp.find(u'\n')]
                 TradSuivantes = u''
                 PageEnd = PageEnd[0:PageEnd.rfind(u'\n')]
                 PageTemp = PageTemp[PageTemp.find(u'\n'):len(PageTemp)]
@@ -2652,7 +2581,7 @@ def modification(pageName):
                 PageEnd = PageEnd + PageTemp
                 PageTemp = u''
             if debugLevel > 1: print u'Ligne : ' + PageTemp[:PageTemp.find(u'\n')+1].encode(config.console_encoding, 'replace')
-            PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'\n')+1]
+            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'\n')+1]
             PageTemp = PageTemp[PageTemp.find(u'\n')+1:len(PageTemp)]
             #print(PageEnd.encode(config.console_encoding, 'replace'))
             #print(PageTemp.encode(config.console_encoding, 'replace'))'''
@@ -2662,11 +2591,11 @@ def modification(pageName):
         # TODO: Classement des sections modifiables
         """PageEnd = u''
         while PageTemp.find(u'{{langue|') != -1:
-            PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'{{langue|')+len(u'{{langue|')]
+            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'{{langue|')+len(u'{{langue|')]
             PageTemp = PageTemp[PageTemp.find(u'{{langue|')+len(u'{{langue|'):len(PageTemp)]
             if PageTemp.find(u'{{langue|') != -1:
                 # Rangement des paragraphes par ordre alphabétique de langue dans PageEnd
-                langue1 = PageTemp[0:PageTemp.find(u'}')]
+                langue1 = PageTemp[:PageTemp.find(u'}')]
                 if langue1.find(u'|') != -1: langue1 = langue1[0:langue1.find(u'|')]
                 if langue1 != u'':
                     #print(langue1) # ca pt
@@ -2687,10 +2616,10 @@ def modification(pageName):
                         langue = defaultSort(PageTemp2[0:PageTemp2.find(u'<noinclude>')])
                         langue2 = u'zzz'
                         if PageTemp.find(u'\n== {{langue|') != -1:
-                            ParagCourant = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + PageTemp[0:PageTemp.find(u'\n== {{langue|')]
+                            ParagCourant = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + PageTemp[:PageTemp.find(u'\n== {{langue|')]
                             PageTemp = PageTemp[PageTemp.find(u'\n== {{langue|'):len(PageTemp)]
                         elif PageTemp.find(u'\n=={{langue|') != -1:
-                            ParagCourant = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + PageTemp[0:PageTemp.find(u'\n=={{langue|')]
+                            ParagCourant = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + PageTemp[:PageTemp.find(u'\n=={{langue|')]
                             PageTemp = PageTemp[PageTemp.find(u'\n=={{langue|'):len(PageTemp)]
                         else:
                             ParagCourant = PageEnd[PageEnd.rfind(u'\n'):len(PageEnd)] + PageTemp
@@ -2740,7 +2669,7 @@ def modification(pageName):
                 else:
                     print u'l 1634'
                     return
-                PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'{{langue|')]
+                PageEnd = PageEnd + PageTemp[:PageTemp.find(u'{{langue|')]
                 PageTemp = PageTemp[PageTemp.find(u'{{langue|'):len(PageTemp)]
                 #raw_input (PageTemp.encode(config.console_encoding, 'replace'))
             else:
@@ -2812,7 +2741,7 @@ def modification(pageName):
                 if debugLevel > 0: print " EstCodeLangue = " + EstCodeLangue
             elif position == PageTemp.find(u'{{langue|'):
                 #print (PageEnd.encode(config.console_encoding, 'replace')[0:1000])
-                #raw_input (PageTemp[0:position].encode(config.console_encoding, 'replace'))
+                #raw_input (PageTemp[:position].encode(config.console_encoding, 'replace'))
                 if debugLevel > 0: print u'Nouveau code langue'
                 PageTemp2 = PageTemp[position+len(u'{{langue|'):]
                 if PageTemp2.find("}}") < PageTemp2.find("|") or PageTemp2.find("|") == -1:
@@ -2846,16 +2775,16 @@ def modification(pageName):
                 # Recherche d'un codelangue à préciser
                 PageTemp2 = PageTemp[PageTemp.find(u'}}')+2:len(PageTemp)]
                 PageTemp2 = PageTemp[PageTemp.find(u'{{')+2:len(PageTemp)]
-                PageTemp2 = PageTemp[0:PageTemp.find(u'}}')]
+                PageTemp2 = PageTemp[:PageTemp.find(u'}}')]
                 if PageTemp2.find("|") != -1:
                     codelangue = PageTemp2[PageTemp2.find("|")+1:len(PageTemp2)]
                     EstCodeLangue = u'true'
                     if debugLevel > 0: print " EstCodeLangue = " + EstCodeLangue
-                    PageTemp = PageTemp[0:PageTemp.find(u'{{langue}}')] + u'{{langue|' + codelangue + u'}}' + PageTemp[PageTemp.find(u'{{langue}}')+len(u'{{langue}}'):len(PageTemp)]
+                    PageTemp = PageTemp[:PageTemp.find(u'{{langue}}')] + u'{{langue|' + codelangue + u'}}' + PageTemp[PageTemp.find(u'{{langue}}')+len(u'{{langue}}'):len(PageTemp)]
                     position = PageTemp.find("{{")
 
             position = position + 2
-            PageEnd = PageEnd + PageTemp[0:position]        # Transfert vers la page finale de l'article jusqu'au modèle en traitement exclu
+            PageEnd = PageEnd + PageTemp[:position]        # Transfert vers la page finale de l'article jusqu'au modèle en traitement exclu
             PageTemp = PageTemp[position:len(PageTemp)]
 
             # Fin du nom du modèle
@@ -2894,10 +2823,8 @@ def modification(pageName):
                                 if pageAnagr.namespace() !=0 and anagramme != u'Utilisateur:JackBot/test':
                                     break
                                 else:
-                                    try:
-                                        PageTempAnagr = pageAnagr.get()
-                                    except pywikibot.exceptions.NoPage: break
-                                    except pywikibot.exceptions.IsRedirectPage: break
+                                    PageTempAnagr = getContentFromPage(pageAnagr)
+                                    if PageTempAnagr == 'KO': break
                                 if PageTempAnagr.find(u'{{langue|' + codelangue + u'}}') != -1:
                                     ListeAnagrammes = ListeAnagrammes + u'* {{lien|' + anagramme + u'|' + codelangue + u'}}\n'
                                     if debugLevel > 0: print u' trouvé'
@@ -2906,17 +2833,17 @@ def modification(pageName):
                         positionAnagr = PageTemp.find(u'{{langue|' + codelangue + u'}}')+len(u'{{langue|' + codelangue + u'}}')
                         PageTemp2 = PageTemp[positionAnagr:len(PageTemp)]
                         if PageTemp2.find(u'\n=== {{S|voir') != -1 and ((PageTemp2.find(u'{{langue|') != -1 and PageTemp2.find(u'{{S|voir') < PageTemp2.find(u'{{langue|')) or PageTemp2.find(u'{{langue|') == -1):
-                            PageTemp = PageTemp[0:positionAnagr+PageTemp2.find(u'\n=== {{S|voir')] + u'\n=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'\n=== {{S|voir'):len(PageTemp)]
+                            PageTemp = PageTemp[:positionAnagr+PageTemp2.find(u'\n=== {{S|voir')] + u'\n=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'\n=== {{S|voir'):len(PageTemp)]
                         elif PageTemp2.find(u'\n=== {{S|références}}') != -1 and ((PageTemp2.find(u'{{langue|') != -1 and PageTemp2.find(u'\n=== {{S|références}}') < PageTemp2.find(u'{{langue|')) or PageTemp2.find(u'{{langue|') == -1):
-                            PageTemp = PageTemp[0:positionAnagr+PageTemp2.find(u'\n=== {{S|références}}')] +  u'\n=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'\n=== {{S|références}}'):len(PageTemp)]
+                            PageTemp = PageTemp[:positionAnagr+PageTemp2.find(u'\n=== {{S|références}}')] +  u'\n=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'\n=== {{S|références}}'):len(PageTemp)]
                         elif PageTemp2.find(u'== {{langue|') != -1 and ((PageTemp2.find(u'[[Catégorie:') != -1 and PageTemp2.find(u'== {{langue|') < PageTemp2.find(u'[[Catégorie:')) or PageTemp2.find(u'[[Catégorie:') == -1):
-                            PageTemp = PageTemp[0:positionAnagr+PageTemp2.find(u'== {{langue|')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'== {{langue|'):len(PageTemp)]
+                            PageTemp = PageTemp[:positionAnagr+PageTemp2.find(u'== {{langue|')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'== {{langue|'):len(PageTemp)]
                         elif PageTemp2.find(u'=={{langue|') != -1 and ((PageTemp2.find(u'[[Catégorie:') != -1 and PageTemp2.find(u'=={{langue|') < PageTemp2.find(u'[[Catégorie:')) or PageTemp2.find(u'[[Catégorie:') == -1):
-                            PageTemp = PageTemp[0:positionAnagr+PageTemp2.find(u'=={{langue|')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'=={{langue|'):len(PageTemp)]        
+                            PageTemp = PageTemp[:positionAnagr+PageTemp2.find(u'=={{langue|')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'=={{langue|'):len(PageTemp)]        
                         elif PageTemp2.find(u'{{clé de tri') != -1:
-                            PageTemp = PageTemp[0:positionAnagr+PageTemp2.find(u'{{clé de tri')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'{{clé de tri'):len(PageTemp)]
+                            PageTemp = PageTemp[:positionAnagr+PageTemp2.find(u'{{clé de tri')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'{{clé de tri'):len(PageTemp)]
                         elif PageTemp2.find(u'[[Catégorie:') != -1:
-                            PageTemp = PageTemp[0:positionAnagr+PageTemp2.find(u'[[Catégorie:')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'[[Catégorie:'):len(PageTemp)]
+                            PageTemp = PageTemp[:positionAnagr+PageTemp2.find(u'[[Catégorie:')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + PageTemp[positionAnagr+PageTemp2.find(u'[[Catégorie:'):len(PageTemp)]
                         else:
                             if debugLevel > 0: print " Ajout avant les interwikis"
                             regex = ur'\n\[\[\w?\w?\w?:'
@@ -2938,13 +2865,13 @@ def modification(pageName):
 
             # Nettoyage des doublons (tester avec ophtalmologie dans adelphe)
             '''PageTemp2 = PageTemp[position+1:len(PageTemp)]
-            if codelangue and PageTemp2.find(PageTemp[0:position]) != -1 and PageTemp2.find(u'\n') != -1 and PageTemp2.find(u' {{' + PageTemp[0:position] + u'|' + codelangue + u'}}') < PageTemp2.find(u'\n'):
-                PageTemp = PageTemp[0:position+1+PageTemp2.find(u' {{' + PageTemp[0:position] + u'|' + codelangue + u'}}')] + PageTemp[position+1+PageTemp2.find(u' {{' + PageTemp[0:position] + u'|' + codelangue + u'}}')+len(u' {{' + PageTemp[0:position] + u'|' + codelangue + u'}}'):len(PageTemp)]
-            elif PageTemp2.find(PageTemp[0:position]) != -1 and PageTemp2.find(u'\n') != -1 and PageTemp2.find(u' {{' + PageTemp[0:position] + u'}}') < PageTemp2.find(u'\n'):
-                PageTemp = PageTemp[0:position+1+PageTemp2.find(u' {{' + PageTemp[0:position] + u'}}')] + PageTemp[0:position+1+PageTemp2.find(u' {{' + PageTemp[0:position] + u'}}')+len(u' {{' + PageTemp[0:position] + u'}}'):len(PageTemp)]
+            if codelangue and PageTemp2.find(PageTemp[:position]) != -1 and PageTemp2.find(u'\n') != -1 and PageTemp2.find(u' {{' + PageTemp[:position] + u'|' + codelangue + u'}}') < PageTemp2.find(u'\n'):
+                PageTemp = PageTemp[:position+1+PageTemp2.find(u' {{' + PageTemp[:position] + u'|' + codelangue + u'}}')] + PageTemp[position+1+PageTemp2.find(u' {{' + PageTemp[:position] + u'|' + codelangue + u'}}')+len(u' {{' + PageTemp[:position] + u'|' + codelangue + u'}}'):len(PageTemp)]
+            elif PageTemp2.find(PageTemp[:position]) != -1 and PageTemp2.find(u'\n') != -1 and PageTemp2.find(u' {{' + PageTemp[:position] + u'}}') < PageTemp2.find(u'\n'):
+                PageTemp = PageTemp[:position+1+PageTemp2.find(u' {{' + PageTemp[:position] + u'}}')] + PageTemp[:position+1+PageTemp2.find(u' {{' + PageTemp[:position] + u'}}')+len(u' {{' + PageTemp[:position] + u'}}'):len(PageTemp)]
             '''
             #print (PageEnd.encode(config.console_encoding, 'replace')[0:1000])
-            #print (PageTemp[0:position].encode(config.console_encoding, 'replace'))
+            #print (PageTemp[:position].encode(config.console_encoding, 'replace'))
 
             # Comparaison avec chaque modèle connu dans Modele[p], pour identifier le traitement à effectuer
             if PageTemp[:position] == u'S':
@@ -2966,7 +2893,7 @@ def modification(pageName):
                         if debugLevel > 0:
                             print u'Modèle inclu dans '
                             print PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace')
-                        PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'}}')+2]
+                        PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         #raw_input(PageTemp.encode(config.console_encoding, 'replace'))
                         # Fin du nom du modèle
@@ -2977,7 +2904,7 @@ def modification(pageName):
                         if position == -1:
                             if debugLevel > 0: print u'Erreur ligne 2271 : modèle brisé'
                             return
-                    PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'}}')+2]
+                    PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
                     PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                     #break    # pb https://fr.wiktionary.org/w/index.php?title=ordre&curid=343&diff=14727763&oldid=14725107'''
 
@@ -3011,44 +2938,44 @@ def modification(pageName):
                             # Tri des lettres de l'API
                             if Modele[p] == u'pron':
                                 PageTemp2 = PageTemp[position+1:PageTemp.find("}}")]
-                                while PageTemp2.find(u'\'') != -1 and PageTemp2.find(u'\'') < PageTemp2.find(u'}}') and (PageTemp2.find(u'\'') < PageTemp2.find(u'|') or PageTemp2.find(u'|') == -1): PageTemp = PageTemp[0:PageTemp.find(u'\'')] + u'ˈ' + PageTemp[PageTemp.find(u'\'')+1:len(PageTemp)]
-                                while PageTemp2.find(u'ˈˈˈ') != -1 and PageTemp2.find(u'ˈˈˈ') < PageTemp2.find(u'}}') and (PageTemp2.find(u'ˈˈˈ') < PageTemp2.find(u'|') or PageTemp2.find(u'|') == -1): PageTemp = PageTemp[0:PageTemp.find(u'ˈˈˈ')] + u'\'\'\'' + PageTemp[PageTemp.find(u'ˈˈˈ')+3:len(PageTemp)]
-                                while PageTemp2.find(u'ε') != -1 and PageTemp2.find(u'ε') < PageTemp2.find(u'}}') and (PageTemp2.find(u'ε') < PageTemp2.find(u'|') or PageTemp2.find(u'|') == -1): PageTemp = PageTemp[0:PageTemp.find(u'ε')] + u'ɛ' + PageTemp[PageTemp.find(u'ε')+1:len(PageTemp)]
-                                while PageTemp2.find(u'ε̃') != -1 and PageTemp2.find(u'ε̃') < PageTemp2.find(u'}}') and (PageTemp2.find(u'ε̃') < PageTemp2.find(u'|') or PageTemp2.find(u'|') == -1): PageTemp = PageTemp[0:PageTemp.find(u'ε̃')] + u'ɛ̃' + PageTemp[PageTemp.find(u'ε̃')+1:len(PageTemp)]
-                                while PageTemp2.find(u':') != -1 and PageTemp2.find(u':') < PageTemp2.find(u'}}') and (PageTemp2.find(u':') < PageTemp2.find(u'|') or PageTemp2.find(u'|') == -1): PageTemp = PageTemp[0:PageTemp.find(u':')] + u'ː' + PageTemp[PageTemp.find(u':')+1:len(PageTemp)]
-                                while PageTemp2.find(u'g') != -1 and PageTemp2.find(u'g') < PageTemp2.find(u'}}') and (PageTemp2.find(u'g') < PageTemp2.find(u'|') or PageTemp2.find(u'|') == -1): PageTemp = PageTemp[0:PageTemp.find(u'g')] + u'ɡ' + PageTemp[PageTemp.find(u'g')+1:len(PageTemp)]
+                                while PageTemp2.find(u'\'') != -1 and PageTemp2.find(u'\'') < PageTemp2.find(u'}}') and (PageTemp2.find(u'\'') < PageTemp2.find(u'|') or PageTemp2.find(u'|') == -1): PageTemp = PageTemp[:PageTemp.find(u'\'')] + u'ˈ' + PageTemp[PageTemp.find(u'\'')+1:len(PageTemp)]
+                                while PageTemp2.find(u'ˈˈˈ') != -1 and PageTemp2.find(u'ˈˈˈ') < PageTemp2.find(u'}}') and (PageTemp2.find(u'ˈˈˈ') < PageTemp2.find(u'|') or PageTemp2.find(u'|') == -1): PageTemp = PageTemp[:PageTemp.find(u'ˈˈˈ')] + u'\'\'\'' + PageTemp[PageTemp.find(u'ˈˈˈ')+3:len(PageTemp)]
+                                while PageTemp2.find(u'ε') != -1 and PageTemp2.find(u'ε') < PageTemp2.find(u'}}') and (PageTemp2.find(u'ε') < PageTemp2.find(u'|') or PageTemp2.find(u'|') == -1): PageTemp = PageTemp[:PageTemp.find(u'ε')] + u'ɛ' + PageTemp[PageTemp.find(u'ε')+1:len(PageTemp)]
+                                while PageTemp2.find(u'ε̃') != -1 and PageTemp2.find(u'ε̃') < PageTemp2.find(u'}}') and (PageTemp2.find(u'ε̃') < PageTemp2.find(u'|') or PageTemp2.find(u'|') == -1): PageTemp = PageTemp[:PageTemp.find(u'ε̃')] + u'ɛ̃' + PageTemp[PageTemp.find(u'ε̃')+1:len(PageTemp)]
+                                while PageTemp2.find(u':') != -1 and PageTemp2.find(u':') < PageTemp2.find(u'}}') and (PageTemp2.find(u':') < PageTemp2.find(u'|') or PageTemp2.find(u'|') == -1): PageTemp = PageTemp[:PageTemp.find(u':')] + u'ː' + PageTemp[PageTemp.find(u':')+1:len(PageTemp)]
+                                while PageTemp2.find(u'g') != -1 and PageTemp2.find(u'g') < PageTemp2.find(u'}}') and (PageTemp2.find(u'g') < PageTemp2.find(u'|') or PageTemp2.find(u'|') == -1): PageTemp = PageTemp[:PageTemp.find(u'g')] + u'ɡ' + PageTemp[PageTemp.find(u'g')+1:len(PageTemp)]
                                 #if codelangue == u'es': β/, /ð/ et /ɣ/ au lieu de de /b/, /d/ et /ɡ/
-                            if PageTemp[0:8] == u'pron||}}':
-                                PageEnd = PageEnd + PageTemp[0:PageTemp.find("}}")] + codelangue + "}}"
+                            if PageTemp[:8] == u'pron||}}':
+                                PageEnd = PageEnd + PageTemp[:PageTemp.find("}}")] + codelangue + "}}"
                                 PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                 break
                             elif PageTemp[position:position+3] == u'|}}' or PageTemp[position:position+4] == u'| }}':
-                                PageEnd = PageEnd + PageTemp[0:position] + "||" + codelangue + "}}"
+                                PageEnd = PageEnd + PageTemp[:position] + "||" + codelangue + "}}"
                                 PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                 break
                             elif (PageTemp.find("lang=") != -1 and PageTemp.find("lang=") < PageTemp.find("}}")):
-                                PageEnd = PageEnd + PageTemp[0:PageTemp.find("}}")+2]
+                                PageEnd = PageEnd + PageTemp[:PageTemp.find("}}")+2]
                                 PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                 break
                             elif position == PageTemp.find(u'|'):
                                 PageTemp2 = PageTemp[position+1:PageTemp.find("}}")]
                                 if PageTemp2.find(u'|') == -1:
-                                    PageEnd = PageEnd + PageTemp[0:PageTemp.find("}}")] + "|" + codelangue + "}}"
+                                    PageEnd = PageEnd + PageTemp[:PageTemp.find("}}")] + "|" + codelangue + "}}"
                                     PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                 else:
-                                    PageEnd = PageEnd + PageTemp[0:PageTemp.find("}}")+2]
+                                    PageEnd = PageEnd + PageTemp[:PageTemp.find("}}")+2]
                                     PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                 break
                             elif position == PageTemp.find("}}"):
-                                PageEnd = PageEnd + PageTemp[0:position] + "||" + codelangue + "}}"
+                                PageEnd = PageEnd + PageTemp[:position] + "||" + codelangue + "}}"
                                 PageTemp = PageTemp[position+2:len(PageTemp)]
                                 break
                             else:
-                                PageEnd = PageEnd + PageTemp[0:PageTemp.find("}}")] + "|" + codelangue + "}}"
+                                PageEnd = PageEnd + PageTemp[:PageTemp.find("}}")] + "|" + codelangue + "}}"
                                 PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                 break
                         else:
-                            PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'}}')+2]
+                            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
                             PageTemp = PageTemp[PageTemp.find(u'}}')+2:len(PageTemp)]
                             break
 
@@ -3080,14 +3007,14 @@ def modification(pageName):
 
                     elif Modele[p] == u'm' or Modele[p] == u'f':
                         if trad == u'true' or (codelangue != u'en' and codelangue != u'zh' and codelangue != u'ja' and codelangue != u'ko'):
-                            PageEnd = PageEnd + PageTemp[0:PageTemp.find("}}")+2]
+                            PageEnd = PageEnd + PageTemp[:PageTemp.find("}}")+2]
                         else:
                             PageEnd = PageEnd[0:len(PageEnd)-2]
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
                     elif Modele[p] == u'mf' or Modele[p] == u'mf?':
                         if trad == u'true' or (codelangue != u'en' and codelangue != u'zh' and codelangue != u'ja' and codelangue != u'ko'):
-                            PageEnd = PageEnd + PageTemp[0:PageTemp.find("}}")+2]
+                            PageEnd = PageEnd + PageTemp[:PageTemp.find("}}")+2]
                         else:
                             PageEnd = PageEnd[0:len(PageEnd)-2]
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
@@ -3104,7 +3031,7 @@ def modification(pageName):
                         Modele[p] == u'méton') or Modele[p] == u'antonomase':
                         if (EstCodeLangue == u'false') and PageEnd.rfind(u'{{S|') != PageEnd.rfind(u'{{S|étymologie}}'):
                             # Les modèles d'étymologie sont les seuls à devoir contenir des codes langues dans ce paragraphe
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                             PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                             break
                         if position == PageTemp.find("|"): # S'il y a déjà un paramètre
@@ -3112,15 +3039,15 @@ def modification(pageName):
                             if (PageTemp2.find("m=") > PageTemp2.find("|")) and (PageTemp2.find("m=") < PageTemp2.find("}}")): # Si PageTemp2 = ...|m=1...}}...
                                 PageEnd = PageEnd + Modele[p] + u'|' + codelangue + u'|m=1}}'
                             elif (PageTemp2.find("m=") >= 0) and (PageTemp2.find("m=") < PageTemp2.find("}}")): # Si PageTemp2 = m=1...}}...
-                                PageEnd = PageEnd + PageTemp[0:position] + u'|m=1|' + codelangue + u'}}'
+                                PageEnd = PageEnd + PageTemp[:position] + u'|m=1|' + codelangue + u'}}'
                             elif (PageTemp2.find(u'déf=') > PageTemp2.find("|")) and (PageTemp2.find(u'déf=') < PageTemp2.find("}}")):
                                 PageEnd = PageEnd + Modele[p] + u'|' + codelangue + u'|déf=oui}}'
                             elif (PageTemp2.find(u'déf=') >= 0) and (PageTemp2.find(u'déf=') < PageTemp2.find("}}")):
-                                PageEnd = PageEnd + PageTemp[0:position] + u'|déf=oui|' + codelangue + u'}}'
+                                PageEnd = PageEnd + PageTemp[:position] + u'|déf=oui|' + codelangue + u'}}'
                             else:
                                 PageEnd = PageEnd + Modele[p] + u'|' + codelangue + u'}}'
                         else:
-                            PageEnd = PageEnd + PageTemp[0:PageTemp.find("}}")] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:PageTemp.find("}}")] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
                     elif Modele[p] == u'conjugaison' or Modele[p] == u'conj' or Modele[p] == u'1ergroupe' or Modele[p] == u'2egroupe' or Modele[p] == u'3egroupe':    # Modèle à deux paramètres
@@ -3144,40 +3071,40 @@ def modification(pageName):
                             if pageName[len(pageName)-2:] == u'ar' or pageName[len(pageName)-4:] == u'arsi':
                                 if (PageTemp.find(u'grp=') != -1 and PageTemp.find(u'grp=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=}') or PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'1' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'1' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'1' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'1' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
                                 elif (PageTemp.find(u'groupe=') != -1 and PageTemp.find(u'groupe=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=}') or PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'1' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'1' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'1' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'1' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
                                 else:
                                     PageTemp = u'|groupe=1' + PageTemp
                             elif pageName[len(pageName)-2:] == u'er' or pageName[len(pageName)-4:] == u'ersi':
                                 if (PageTemp.find(u'grp=') != -1 and PageTemp.find(u'grp=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=}') or PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'2' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'2' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'2' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'2' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
                                 elif (PageTemp.find(u'groupe=') != -1 and PageTemp.find(u'groupe=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=}') or PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'2' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'2' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'2' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'2' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
                                 else:
                                     PageTemp = u'|groupe=2' + PageTemp
                             elif pageName[len(pageName)-2:] == u'ir' or pageName[len(pageName)-4:] == u'irsi':
                                 if (PageTemp.find(u'grp=') != -1 and PageTemp.find(u'grp=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=}') or PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'3' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'3' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'3' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'3' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
                                 elif (PageTemp.find(u'groupe=') != -1 and PageTemp.find(u'groupe=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=}') or PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'3' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'3' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'3' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'3' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
                                 else:
                                     PageTemp = u'|groupe=3' + PageTemp
 
@@ -3185,40 +3112,40 @@ def modification(pageName):
                             if pageName[len(pageName)-2:] == u'ar' or pageName[len(pageName)-4:] == u'ar-se':
                                 if (PageTemp.find(u'grp=') != -1 and PageTemp.find(u'grp=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=}') or PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'1' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'1' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'1' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'1' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
                                 elif (PageTemp.find(u'groupe=') != -1 and PageTemp.find(u'groupe=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=}') or PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'1' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'1' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'1' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'1' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
                                 else:
                                     PageTemp = u'|groupe=1' + PageTemp
                             elif pageName[len(pageName)-2:] == u'er' or pageName[len(pageName)-4:] == u'er-se':
                                 if (PageTemp.find(u'grp=') != -1 and PageTemp.find(u'grp=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=}') or PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'2' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'2' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'2' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'2' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
                                 elif (PageTemp.find(u'groupe=') != -1 and PageTemp.find(u'groupe=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=}') or PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'2' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'2' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'2' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'2' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
                                 else:
                                     PageTemp = u'|groupe=2' + PageTemp
                             elif pageName[len(pageName)-2:] == u'ir' or pageName[len(pageName)-4:] == u'ir-se':
                                 if (PageTemp.find(u'grp=') != -1 and PageTemp.find(u'grp=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=}') or PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'3' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'3' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'3' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'3' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
                                 elif (PageTemp.find(u'groupe=') != -1 and PageTemp.find(u'groupe=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=}') or PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'3' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'3' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'3' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'3' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
                                 else:
                                     PageTemp = u'|groupe=3' + PageTemp
 
@@ -3226,49 +3153,49 @@ def modification(pageName):
                             if pageName[len(pageName)-3:] == u'are' or pageName[len(pageName)-4:] == u'arsi':
                                 if (PageTemp.find(u'grp=') != -1 and PageTemp.find(u'grp=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=}') or PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'1' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'1' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'1' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'1' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
                                 elif (PageTemp.find(u'groupe=') != -1 and PageTemp.find(u'groupe=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=}') or PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'1' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'1' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'1' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'1' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
                                 else:
                                     PageTemp = u'|groupe=1' + PageTemp
                             elif pageName[len(pageName)-3:] == u'ere' or pageName[len(pageName)-4:] == u'ersi':
                                 if (PageTemp.find(u'grp=') != -1 and PageTemp.find(u'grp=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=}') or PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'2' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'2' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'2' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'2' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
                                 elif (PageTemp.find(u'groupe=') != -1 and PageTemp.find(u'groupe=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=}') or PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'2' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'2' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'2' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'2' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
                                 else:
                                     PageTemp = u'|groupe=2' + PageTemp
                             elif pageName[len(pageName)-3:] == u'ire' or pageName[len(pageName)-4:] == u'irsi':
                                 if (PageTemp.find(u'grp=') != -1 and PageTemp.find(u'grp=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=}') or PageTemp.find(u'|grp=') == PageTemp.find(u'|grp=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'3' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'3' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'3' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|grp=')+len(u'|grp=')] + u'3' + PageTemp[PageTemp.find(u'|grp=')+len(u'|grp=')+1:len(PageTemp)]
                                 elif (PageTemp.find(u'groupe=') != -1 and PageTemp.find(u'groupe=') < PageTemp.find("}}")):
                                     if PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=}') or PageTemp.find(u'|groupe=') == PageTemp.find(u'|groupe=|'):
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'3' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'3' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe='):len(PageTemp)]
                                     else:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'3' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'|groupe=')+len(u'|groupe=')] + u'3' + PageTemp[PageTemp.find(u'|groupe=')+len(u'|groupe=')+1:len(PageTemp)]
                                 else:
                                     PageTemp = u'|groupe=3' + PageTemp
 
                         if (PageTemp.find(codelangue) != -1 and PageTemp.find(codelangue) < PageTemp.find("}}")) or codelangue == u'fr':
-                            PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'}}')+2]
+                            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
                             PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         else:
                             if PageTemp.find(u'|nocat=1') != -1:
-                                PageTemp = PageTemp[0:PageTemp.find(u'|nocat=1')] + PageTemp[PageTemp.find(u'|nocat=1')+len(u'|nocat=1'):len(PageTemp)]
+                                PageTemp = PageTemp[:PageTemp.find(u'|nocat=1')] + PageTemp[PageTemp.find(u'|nocat=1')+len(u'|nocat=1'):len(PageTemp)]
                             PageTemp = u'|' + codelangue + PageTemp
                         break
 
@@ -3296,7 +3223,7 @@ def modification(pageName):
                             PageTemp2 = PageTemp[PageTemp.find(u'|')+1:]
                             if (PageTemp2.find(u'|') != -1 and PageTemp2.find(u'|') < PageTemp2.find("}}")):
                                 # Présence d'un {{{2}}}, à ne pas retirer
-                                PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'}}')+2]
+                                PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
                                 PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                 break
                         if param != u'':
@@ -3344,7 +3271,7 @@ def modification(pageName):
                                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                         break
                                 else: # Pas de code langue
-                                    PageEnd = PageEnd + PageTemp[0:position+1+PageTemp2.find(u'}}')] + u'|' + codelangue + u'}}'
+                                    PageEnd = PageEnd + PageTemp[:position+1+PageTemp2.find(u'}}')] + u'|' + codelangue + u'}}'
                                     PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                     break
                         if (EstCodeLangue == "false"
@@ -3359,10 +3286,10 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Divinités'
     ) != -1 and (PageTemp.find(u':Catégorie:Divinités') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Divinités') + 1 != PageTemp.rfind(u'Catégorie:Divinités'))): # Pas de myt= ni de langue
-                            PageEnd = PageEnd + PageTemp[0:position] + u'|nocat=1}}'
+                            PageEnd = PageEnd + PageTemp[:position] + u'|nocat=1}}'
                             PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                             PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -3376,7 +3303,7 @@ def modification(pageName):
                             PageTemp2 = PageTemp[PageTemp.find(u'|')+1:]
                             if (PageTemp2.find(u'|') != -1 and PageTemp2.find(u'|') < PageTemp2.find("}}")):
                                 # Présence d'un {{{2}}}, à ne pas retirer
-                                PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'}}')+2]
+                                PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
                                 PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                 break
                         if param != u'':
@@ -3424,10 +3351,10 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Divinités'
     ) != -1 and (PageTemp.find(u':Catégorie:Divinités') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Divinités') + 1 != PageTemp.rfind(u'Catégorie:Divinités'))): # Pas de rel= ni de langue
-                            PageEnd = PageEnd + PageTemp[0:position] + u'|nocat=1}}'
+                            PageEnd = PageEnd + PageTemp[:position] + u'|nocat=1}}'
                             PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                             PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -3461,21 +3388,21 @@ def modification(pageName):
                                         if PageTemp2.find(u'|') > PageTemp2.find(u'}}'):
                                             PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'}}')+1] + u'|' + codelangue + u'}}'
                                         else:
-                                            PageEnd = PageEnd + PageTemp[0:position+PageTemp2.find(u'|')+2] + codelangue + u'}}'
+                                            PageEnd = PageEnd + PageTemp[:position+PageTemp2.find(u'|')+2] + codelangue + u'}}'
                                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                         break
                                 else: # Pas de code langue
-                                    PageEnd = PageEnd + PageTemp[0:position+1+PageTemp2.find(u'}}')] + u'|' + codelangue + u'}}'
+                                    PageEnd = PageEnd + PageTemp[:position+1+PageTemp2.find(u'}}')] + u'|' + codelangue + u'}}'
                                     PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                     break
                         if (EstCodeLangue == "false"
     ) or (PageTemp.find(u'Catégorie:Sports'
     ) != -1 and (PageTemp.find(u':Catégorie:Sports') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Sports') + 1 != PageTemp.rfind(u'Catégorie:Sports'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + u'|nocat=1}}'
+                            PageEnd = PageEnd + PageTemp[:position] + u'|nocat=1}}'
                             PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                             PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -3516,17 +3443,17 @@ def modification(pageName):
                                         break
                                 else:
                                     if debugLevel > 0: print u' pas de code langue'
-                                    PageEnd = PageEnd + PageTemp[0:position+1+PageTemp2.find(u'}}')] + u'|' + codelangue + u'}}'
+                                    PageEnd = PageEnd + PageTemp[:position+1+PageTemp2.find(u'}}')] + u'|' + codelangue + u'}}'
                                     PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                     break
                         if (EstCodeLangue == "false"
     ) or (PageTemp.find(u'Catégorie:Provinces romaines‎'
     ) != -1 and (PageTemp.find(u':Catégorie:Provinces romaines‎') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Provinces romaines‎') + 1 != PageTemp.rfind(u'Catégorie:Provinces romaines‎'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + u'|nocat=1}}'
+                            PageEnd = PageEnd + PageTemp[:position] + u'|nocat=1}}'
                             PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                             PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
             
@@ -3564,17 +3491,17 @@ def modification(pageName):
                                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                         break
                                 else: # Pas de code langue
-                                    PageEnd = PageEnd + PageTemp[0:position+1+PageTemp2.find(u'}}')] + u'|' + codelangue + u'}}'
+                                    PageEnd = PageEnd + PageTemp[:position+1+PageTemp2.find(u'}}')] + u'|' + codelangue + u'}}'
                                     PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                     break
                         if (EstCodeLangue == "false"
     ) or (PageTemp.find(u'Catégorie:Plantes'
     ) != -1 and (PageTemp.find(u':Catégorie:Plantes') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Plantes') + 1 != PageTemp.rfind(u'Catégorie:Plantes'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + u'|nocat=1}}'
+                            PageEnd = PageEnd + PageTemp[:position] + u'|nocat=1}}'
                             PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                             PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -3583,9 +3510,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Sports'
     ) != -1 and (PageTemp.find(u':Catégorie:Sports') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Sports') + 1 != PageTemp.rfind(u'Catégorie:Sports'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -3594,9 +3521,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Danses'
     ) != -1 and (PageTemp.find(u':Catégorie:Danses') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Danses') + 1 != PageTemp.rfind(u'Catégorie:Danses'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -3605,9 +3532,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Jeux'
     ) != -1 and (PageTemp.find(u':Catégorie:Jeux') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Jeux') + 1 != PageTemp.rfind(u'Catégorie:Jeux'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -3616,9 +3543,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Édifices'
     ) != -1 and (PageTemp.find(u':Catégorie:Édifices') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Édifices') + 1 != PageTemp.rfind(u'Catégorie:Édifices'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -3627,9 +3554,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Protocoles réseau'
     ) != -1 and (PageTemp.find(u':Catégorie:Protocoles réseau') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Protocoles réseau') + 1 != PageTemp.rfind(u'Catégorie:Protocoles réseau'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -3778,9 +3705,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Capitales'
     ) != -1 and (PageTemp.find(u':Catégorie:Capitales') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Capitales') + 1 != PageTemp.rfind(u'Catégorie:Capitales'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4121,9 +4048,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Léporidés'
     ) != -1 and (PageTemp.find(u':Catégorie:Léporidés') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Léporidés') + 1 != PageTemp.rfind(u'Catégorie:Léporidés'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4208,9 +4135,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Fabacées'
     ) != -1 and (PageTemp.find(u':Catégorie:Fabacées') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Fabacées') + 1 != PageTemp.rfind(u'Catégorie:Fabacées'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4251,9 +4178,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Médicaments'
     ) != -1 and (PageTemp.find(u':Catégorie:Médicaments') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Médicaments') + 1 != PageTemp.rfind(u'Catégorie:Médicaments'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4262,9 +4189,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Unités de mesure'
     ) != -1 and (PageTemp.find(u':Catégorie:Unités de mesure') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Unités de mesure') + 1 != PageTemp.rfind(u'Catégorie:Unités de mesure'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4273,9 +4200,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Figures de style'
     ) != -1 and (PageTemp.find(u'Catégorie:Figures de style') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Figures de style') + 1 != PageTemp.rfind(u'Catégorie:Figures de style'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4296,9 +4223,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Dialectes'
     ) != -1 and (PageTemp.find(u'Catégorie:Dialectes') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Dialectes') + 1 != PageTemp.rfind(u'Catégorie:Dialectes'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4307,9 +4234,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Ponctuations'
     ) != -1 and (PageTemp.find(u'Catégorie:Ponctuations') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Ponctuations') + 1 != PageTemp.rfind(u'Catégorie:Ponctuations'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4318,9 +4245,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Noms de sciences'
     ) != -1 and (PageTemp.find(u'Catégorie:Noms de sciences') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Noms de sciences') + 1 != PageTemp.rfind(u'Catégorie:Noms de sciences'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4341,9 +4268,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Satellites'
     ) != -1 and (PageTemp.find(u'Catégorie:Satellites') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Satellites') + 1 != PageTemp.rfind(u'Catégorie:Satellites'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4352,9 +4279,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Zodiaques'
     ) != -1 and (PageTemp.find(u'Catégorie:Zodiaques') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Zodiaques') + 1 != PageTemp.rfind(u'Catégorie:Zodiaques'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4363,9 +4290,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Champignons'
     ) != -1 and (PageTemp.find(u'Catégorie:Champignons') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Champignons') + 1 != PageTemp.rfind(u'Catégorie:Champignons'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4374,9 +4301,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Positions sexuelles'
     ) != -1 and (PageTemp.find(u'Catégorie:Positions sexuelles') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Positions sexuelles') + 1 != PageTemp.rfind(u'Catégorie:Positions sexuelles'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4385,9 +4312,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Temps géologiques'
     ) != -1 and (PageTemp.find(u'Catégorie:Temps géologiques') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Temps géologiques') + 1 != PageTemp.rfind(u'Catégorie:Temps géologiques'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4425,9 +4352,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Alliages'
     ) != -1 and (PageTemp.find(u'Catégorie:Alliages') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Alliages') + 1 != PageTemp.rfind(u'Catégorie:Alliages'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4496,9 +4423,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Pâtes'
     ) != -1 and (PageTemp.find(u'Catégorie:Pâtes') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Pâtes') + 1 != PageTemp.rfind(u'Catégorie:Pâtes'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4511,9 +4438,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Cépages'
     ) != -1 and (PageTemp.find(u'Catégorie:Cépages') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Cépages') + 1 != PageTemp.rfind(u'Catégorie:Cépages'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4526,9 +4453,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Grades militaires'
     ) != -1 and (PageTemp.find(u'Catégorie:Grades militaires') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Grades militaires') + 1 != PageTemp.rfind(u'Catégorie:Grades militaires'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4537,9 +4464,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Armes'
     ) != -1 and (PageTemp.find(u'Catégorie:Armes') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Armes') + 1 != PageTemp.rfind(u'Catégorie:Armes'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4548,9 +4475,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Instruments'
     ) != -1 and (PageTemp.find(u'Catégorie:Instruments') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Instruments') + 1 != PageTemp.rfind(u'Catégorie:Instruments'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4559,9 +4486,9 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Édifices'
     ) != -1 and (PageTemp.find(u'Catégorie:Édifices') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Édifices') + 1 != PageTemp.rfind(u'Catégorie:Édifices'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4570,32 +4497,32 @@ def modification(pageName):
     ) or (PageTemp.find(u'Catégorie:Composants électriques'
     ) != -1 and (PageTemp.find(u'Catégorie:Composants électriques') < PageTemp.find(u'{{langue|') and PageTemp.find(u'{{langue|') != -1 or PageTemp.find(u'{{langue|') == -1
     ) and (PageTemp.find(u':Catégorie:Composants électriques') + 1 != PageTemp.rfind(u'Catégorie:Composants électriques'))):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
                     # Ce modèle par contre remplace la catégorie
                     elif Modele[p] == u'injurieux' or Modele[p] == u'injur':
                         if (EstCodeLangue == "false"):
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                             if PageTemp.find(u'[[Catégorie:Insultes en français]]') != -1 and codelangue == u'fr':
-                                PageTemp = PageTemp[0:PageTemp.find(u'[[Catégorie:Insultes en français]]')] + PageTemp[PageTemp.find(u'[[Catégorie:Insultes en français]]')+len(u'[[Catégorie:Insultes en français]]'):len(PageTemp)]
+                                PageTemp = PageTemp[:PageTemp.find(u'[[Catégorie:Insultes en français]]')] + PageTemp[PageTemp.find(u'[[Catégorie:Insultes en français]]')+len(u'[[Catégorie:Insultes en français]]'):len(PageTemp)]
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
                     elif Modele[p] == u'préciser' or Modele[p] == u'?' or Modele[p] == u'doute' or Modele[p] == u'vérifier':
                         if codelangue != "" and codelangue is not None:
                             if PageTemp[position:position+2] == u'}}' or PageTemp[position:position+4] == u'fr}}':
-                                PageEnd = PageEnd + PageTemp[0:position] + "||" + codelangue + "}}"
+                                PageEnd = PageEnd + PageTemp[:position] + "||" + codelangue + "}}"
                                 PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                 break
                             else:
                                 while PageTemp.find(u'{{') < PageTemp.find(u'}}') and PageTemp.find(u'{{') != -1:
                                     # On saute les différents modèles inclus
-                                    PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'}}')+2]
+                                    PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
                                     PageTemp = PageTemp[PageTemp.find(u'}}')+2:len(PageTemp)]
                                 if PageTemp.find("|") > PageTemp.find(u'}}') or PageTemp.find(u'|') == -1:
                                     position = PageTemp.find("}}")
@@ -4606,10 +4533,10 @@ def modification(pageName):
                                         # Code langue déjà renseigné
                                         break
                                     elif PageTemp.find(u'|') != -1 and PageTemp.find(u'|') < PageTemp.find(u'}}'):
-                                        PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'}}')] + u'|' + codelangue + "}}"
+                                        PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')] + u'|' + codelangue + "}}"
                                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                     else:
-                                        PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'}}')] + u'||' + codelangue + "}}"
+                                        PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')] + u'||' + codelangue + "}}"
                                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                                 #raw_input(PageTemp.encode(config.console_encoding, 'replace'))
                                 break
@@ -4617,9 +4544,9 @@ def modification(pageName):
                             break
                     elif Modele[p] == u'perfectif' or Modele[p] == u'perf' or Modele[p] == u'imperfectif' or Modele[p] == u'imperf' or Modele[p] == u'déterminé' or Modele[p] == u'dét' or Modele[p] == u'indéterminé' or Modele[p] == u'indét':
                         if (EstCodeLangue == "false") or PageEnd.rfind(u'(') > PageEnd.rfind(u')'): # Si on est dans des parenthèses
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         PageTemp = PageTemp[PageTemp.find("}}")+2:len(PageTemp)]
                         break
 
@@ -4632,49 +4559,49 @@ def modification(pageName):
                         PageTemp2 = PageTemp[position+1:len(PageTemp)]
                         if PageTemp2[0:PageTemp2.find(u'|')] == u'ro' or PageTemp2[0:PageTemp2.find(u'|')] == u'mo':
                             while PageTemp.find(u'ş') != -1 and PageTemp.find(u'ş') < PageTemp.find(u'\n'):
-                                PageTemp = PageTemp[0:PageTemp.find(u'ş')] + u'ș' + PageTemp[PageTemp.find(u'ş')+1:len(PageTemp)]
+                                PageTemp = PageTemp[:PageTemp.find(u'ş')] + u'ș' + PageTemp[PageTemp.find(u'ş')+1:len(PageTemp)]
                             while PageTemp.find(u'Ş') != -1 and PageTemp.find(u'Ş') < PageTemp.find(u'\n'):
-                                PageTemp = PageTemp[0:PageTemp.find(u'Ş')] + u'Ș' + PageTemp[PageTemp.find(u'Ş')+1:len(PageTemp)]
+                                PageTemp = PageTemp[:PageTemp.find(u'Ş')] + u'Ș' + PageTemp[PageTemp.find(u'Ş')+1:len(PageTemp)]
                             while PageTemp.find(u'ţ') != -1 and PageTemp.find(u'ţ') < PageTemp.find(u'\n'):
-                                PageTemp = PageTemp[0:PageTemp.find(u'ţ')] + u'ț' + PageTemp[PageTemp.find(u'ţ')+1:len(PageTemp)]
+                                PageTemp = PageTemp[:PageTemp.find(u'ţ')] + u'ț' + PageTemp[PageTemp.find(u'ţ')+1:len(PageTemp)]
                             while PageTemp.find(u'Ţ') != -1 and PageTemp.find(u'Ţ') < PageTemp.find(u'\n'):
-                                PageTemp = PageTemp[0:PageTemp.find(u'Ţ')] + u'Ț' + PageTemp[PageTemp.find(u'Ţ')+1:len(PageTemp)]
+                                PageTemp = PageTemp[:PageTemp.find(u'Ţ')] + u'Ț' + PageTemp[PageTemp.find(u'Ţ')+1:len(PageTemp)]
                         elif PageTemp2[0:PageTemp2.find(u'|')] == u'az' or PageTemp2[0:PageTemp2.find(u'|')] == u'ku' or PageTemp2[0:PageTemp2.find(u'|')] == u'sq' or PageTemp2[0:PageTemp2.find(u'|')] == u'tk' or PageTemp2[0:PageTemp2.find(u'|')] == u'tr' or PageTemp2[0:PageTemp2.find(u'|')] == u'tt':
                             while PageTemp.find(u'ș') != -1 and PageTemp.find(u'ș') < PageTemp.find(u'\n'):
-                                PageTemp = PageTemp[0:PageTemp.find(u'ș')] + u'ş' + PageTemp[PageTemp.find(u'ș')+1:len(PageTemp)]
+                                PageTemp = PageTemp[:PageTemp.find(u'ș')] + u'ş' + PageTemp[PageTemp.find(u'ș')+1:len(PageTemp)]
                             while PageTemp.find(u'Ș') != -1 and PageTemp.find(u'Ș') < PageTemp.find(u'\n'):
-                                PageTemp = PageTemp[0:PageTemp.find(u'Ș')] + u'Ş' + PageTemp[PageTemp.find(u'Ș')+1:len(PageTemp)]
+                                PageTemp = PageTemp[:PageTemp.find(u'Ș')] + u'Ş' + PageTemp[PageTemp.find(u'Ș')+1:len(PageTemp)]
                             while PageTemp.find(u'ț') != -1 and PageTemp.find(u'ț') < PageTemp.find(u'\n'):
-                                PageTemp = PageTemp[0:PageTemp.find(u'ț')] + u'ţ' + PageTemp[PageTemp.find(u'ț')+1:len(PageTemp)]
+                                PageTemp = PageTemp[:PageTemp.find(u'ț')] + u'ţ' + PageTemp[PageTemp.find(u'ț')+1:len(PageTemp)]
                             while PageTemp.find(u'Ț') != -1 and PageTemp.find(u'Ț') < PageTemp.find(u'\n'):
-                                PageTemp = PageTemp[0:PageTemp.find(u'Ț')] + u'Ţ' + PageTemp[PageTemp.find(u'Ț')+1:len(PageTemp)]
+                                PageTemp = PageTemp[:PageTemp.find(u'Ț')] + u'Ţ' + PageTemp[PageTemp.find(u'Ț')+1:len(PageTemp)]
                         elif PageTemp2[0:PageTemp2.find(u'|')] == u'fon':
                             while PageTemp.find(u'ε') != -1 and PageTemp.find(u'ε') < PageTemp.find(u'\n'):
-                                PageTemp = PageTemp[0:PageTemp.find(u'ε')] + u'ɛ' + PageTemp[PageTemp.find(u'ε')+1:len(PageTemp)]
+                                PageTemp = PageTemp[:PageTemp.find(u'ε')] + u'ɛ' + PageTemp[PageTemp.find(u'ε')+1:len(PageTemp)]
                         # http://fr.wiktionary.org/wiki/Mod%C3%A8le:code_interwiki
                         elif PageTemp2[0:PageTemp2.find(u'|')] == u'cmn':
-                            PageTemp = PageTemp[0:PageTemp.find(u'cmn')] + u'zh' + PageTemp[PageTemp.find(u'cmn')+len(u'cmn'):len(PageTemp)]
+                            PageTemp = PageTemp[:PageTemp.find(u'cmn')] + u'zh' + PageTemp[PageTemp.find(u'cmn')+len(u'cmn'):len(PageTemp)]
                         elif PageTemp2[0:PageTemp2.find(u'|')] == u'nn':
-                            PageTemp = PageTemp[0:PageTemp.find(u'nn')] + u'no' + PageTemp[PageTemp.find(u'nn')+len(u'nn'):len(PageTemp)]
+                            PageTemp = PageTemp[:PageTemp.find(u'nn')] + u'no' + PageTemp[PageTemp.find(u'nn')+len(u'nn'):len(PageTemp)]
                         elif PageTemp2[0:PageTemp2.find(u'|')] == u'per':
-                            PageTemp = PageTemp[0:PageTemp.find(u'per')] + u'fa' + PageTemp[PageTemp.find(u'per')+len(u'per'):len(PageTemp)]
+                            PageTemp = PageTemp[:PageTemp.find(u'per')] + u'fa' + PageTemp[PageTemp.find(u'per')+len(u'per'):len(PageTemp)]
                         elif PageTemp2[0:PageTemp2.find(u'|')] == u'wel':
-                            PageTemp = PageTemp[0:PageTemp.find(u'wel')] + u'cy' + PageTemp[PageTemp.find(u'wel')+len(u'wel'):len(PageTemp)]
+                            PageTemp = PageTemp[:PageTemp.find(u'wel')] + u'cy' + PageTemp[PageTemp.find(u'wel')+len(u'wel'):len(PageTemp)]
                         elif PageTemp2[0:PageTemp2.find(u'|')] == u'zh-classical':
-                            PageTemp = PageTemp[0:PageTemp.find(u'zh-classical')] + u'lzh' + PageTemp[PageTemp.find(u'zh-classical')+len(u'zh-classical'):len(PageTemp)]
+                            PageTemp = PageTemp[:PageTemp.find(u'zh-classical')] + u'lzh' + PageTemp[PageTemp.find(u'zh-classical')+len(u'zh-classical'):len(PageTemp)]
                         elif PageTemp2[0:PageTemp2.find(u'|')] == u'ko-Hani':
-                            PageTemp = PageTemp[0:PageTemp.find(u'ko-Hani')] + u'ko' + PageTemp[PageTemp.find(u'ko-Hani')+len(u'ko-Hani'):len(PageTemp)]
+                            PageTemp = PageTemp[:PageTemp.find(u'ko-Hani')] + u'ko' + PageTemp[PageTemp.find(u'ko-Hani')+len(u'ko-Hani'):len(PageTemp)]
                         elif PageTemp2[0:PageTemp2.find(u'|')] == u'ko-hanja':
-                            PageTemp = PageTemp[0:PageTemp.find(u'ko-hanja')] + u'ko' + PageTemp[PageTemp.find(u'ko-hanja')+len(u'ko-hanja'):len(PageTemp)]
+                            PageTemp = PageTemp[:PageTemp.find(u'ko-hanja')] + u'ko' + PageTemp[PageTemp.find(u'ko-hanja')+len(u'ko-hanja'):len(PageTemp)]
                         elif PageTemp2[0:PageTemp2.find(u'|')] == u'zh-min-nan':
-                            PageTemp = PageTemp[0:PageTemp.find(u'zh-min-nan')] + u'nan' + PageTemp[PageTemp.find(u'zh-min-nan')+len(u'zh-min-nan'):len(PageTemp)]
+                            PageTemp = PageTemp[:PageTemp.find(u'zh-min-nan')] + u'nan' + PageTemp[PageTemp.find(u'zh-min-nan')+len(u'zh-min-nan'):len(PageTemp)]
                         elif PageTemp2[0:PageTemp2.find(u'|')] == u'roa-rup':
-                            PageTemp = PageTemp[0:PageTemp.find(u'roa-rup')] + u'rup' + PageTemp[PageTemp.find(u'roa-rup')+len(u'roa-rup'):len(PageTemp)]
+                            PageTemp = PageTemp[:PageTemp.find(u'roa-rup')] + u'rup' + PageTemp[PageTemp.find(u'roa-rup')+len(u'roa-rup'):len(PageTemp)]
                         elif PageTemp2[0:PageTemp2.find(u'|')] == u'zh-yue':
-                            PageTemp = PageTemp[0:PageTemp.find(u'zh-yue')] + u'yue' + PageTemp[PageTemp.find(u'zh-yue')+len(u'zh-yue'):len(PageTemp)]
+                            PageTemp = PageTemp[:PageTemp.find(u'zh-yue')] + u'yue' + PageTemp[PageTemp.find(u'zh-yue')+len(u'zh-yue'):len(PageTemp)]
                         '''
                         elif PageTemp2[0:PageTemp2.find(u'|')] == u'gsw':
-                            PageTemp = PageTemp[0:PageTemp.find(u'gsw')] + u'als' + PageTemp[PageTemp.find(u'gsw')+len(u'gsw'):len(PageTemp)]
+                            PageTemp = PageTemp[:PageTemp.find(u'gsw')] + u'als' + PageTemp[PageTemp.find(u'gsw')+len(u'gsw'):len(PageTemp)]
                         '''
 
                         # Bug du site fermé, ex : [[chat]]
@@ -4695,27 +4622,15 @@ def modification(pageName):
                                 PageEnd = PageEnd[:-2]
                                 PageTemp = PageTemp[PageTemp.find(u'}}')+2:]
                             break
-                        elif PageTemp2[0:PageTemp2.find(u'|')] == u'conv':
-                            SiteExt = getWiki('species', 'species') # Bug species depuis début 2011
+                        elif PageTemp2[:PageTemp2.find(u'|')] == u'conv':
+                            SiteExt = getWiki('species', 'species')
                         else:
-                            try:
-                                SiteExt = getWiki(PageTemp2[:PageTemp2.find(u'|')], siteFamily)
-                            except pywikibot.exceptions.ServerError:
-                                PageEnd = PageEnd + PageTemp[0:4] + "--"
-                                PageTemp = PageTemp[position:len(PageTemp)]
-                                if debugLevel > 1: print u'  ServerError'
-                                break
-                            except pywikibot.exceptions.NoSuchSite:
-                                PageEnd = PageEnd + PageTemp[0:4] + "--"
-                                PageTemp = PageTemp[position:len(PageTemp)]
-                                if debugLevel > 1: print u'  NoSuchSite'
-                                break
-                            except UnicodeEncodeError:
-                                PageEnd = PageEnd + PageTemp[0:4] + "--"
-                                PageTemp = PageTemp[position:len(PageTemp)]
-                                if debugLevel > 1: print u'  UnicodeEncodeError'
-                                break
-                        if SiteExt != u'':
+                            SiteExt = getWiki(PageTemp2[:PageTemp2.find(u'|')], siteFamily)
+                        if SiteExt == 'KO':
+                            PageEnd = PageEnd + PageTemp[:4] + "--"
+                            PageTemp = PageTemp[position:len(PageTemp)]
+                            break
+                        elif SiteExt != u'':
                             if PageTemp3.find(u'|') != -1 and PageTemp3.find(u'|') < PageTemp3.find(u'}}'):
                                 PageExterne = PageTemp3[0:PageTemp3.find(u'|')]
                             else:
@@ -4731,7 +4646,7 @@ def modification(pageName):
                         # Connexions aux Wiktionnaires pour vérifier la présence de la page (sous-entendu dans sa langue maternelle)
                         if SiteExt != u'' and PageExterne != u'':
                             try:
-                                pageExt = Page(SiteExt,PageExterne)
+                                pageExt = Page(SiteExt, PageExterne)
                             except pywikibot.exceptions.NoPage:
                                 if PageExterne.find(u'\'') != -1:
                                     PageExterne = PageExterne.replace(u'\'', u'’')
@@ -4812,184 +4727,174 @@ def modification(pageName):
                         if debugLevel > 0: print u'Flexion de verbe'
                         infinitive = getLemmaFromConjugation(PageBegin)
                         if infinitive != u'':
-                            try:
-                                page2 = Page(site, infinitive)
-                                Page2 = page2.get()
-                            except pywikibot.exceptions.NoPage:
-                                if debugLevel > 0: print "NoPage flex-verb : " + infinitive.encode(config.console_encoding, 'replace')
-                                break
-                            except pywikibot.exceptions.SectionError:
-                                if debugLevel > 0: print "SectionError flex-verb : " + infinitive.encode(config.console_encoding, 'replace')
-                                break
-                            except pywikibot.exceptions.IsRedirectPage:
-                                if debugLevel > 0: print "Redirect page flex-verb : " + infinitive.encode(config.console_encoding, 'replace')
-                                break
+                            infinitivePage = getContentFromPageName(infinitive)
+                            if infinitivePage == 'KO': break
                             # http://fr.wiktionary.org/w/index.php?title=Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet
                             PageTemp2 = PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                             if PageTemp2.find(u'flexion=') != -1 and PageTemp2.find(u'flexion=') < PageTemp2.find(u'}}'):
                                 PageTemp3 = PageTemp2[PageTemp2.find(u'flexion='):len(PageTemp2)]
                                 if PageTemp3.find(u'|') != -1 and PageTemp3.find(u'|') < PageTemp3.find(u'}'):
-                                    PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')+PageTemp2.find(u'flexion=')+PageTemp3.find(u'|'):len(PageTemp)]
+                                    PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')+PageTemp2.find(u'flexion=')+PageTemp3.find(u'|'):len(PageTemp)]
                             PageTemp2 = PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                             if PageTemp2.find(infinitive) == -1 or PageTemp2.find(infinitive) > PageTemp2.find(u'}}'):
-                                PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|' + infinitive + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|' + infinitive + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                 if PageTemp.find(u'|' + infinitive + u'\n') != -1:    # Bug de l'hyperlien vers l'annexe
-                                    PageTemp = PageTemp[0:PageTemp.find(u'|' + infinitive + u'\n')+len(u'|' + infinitive)] + PageTemp[PageTemp.find(u'|' + infinitive + u'\n')+len(u'|' + infinitive + u'\n'):len(PageTemp)]
+                                    PageTemp = PageTemp[:PageTemp.find(u'|' + infinitive + u'\n')+len(u'|' + infinitive)] + PageTemp[PageTemp.find(u'|' + infinitive + u'\n')+len(u'|' + infinitive + u'\n'):len(PageTemp)]
                             # Analyse du modèle en cours
                             PageTemp2 = PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                             PageTemp2 = PageTemp2[0:PageTemp2.find(u'}}')+2]
                             if PageTemp2.find(u'impers=oui') == -1:
                                 # http://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:fr-verbe-flexion&action=edit
-                                if Page2.find(u'{{impers') != -1 and infinitive != u'être':
-                                    PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|impers=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
-                                elif (Page2.find(u'|groupe=1') != -1 or Page2.find(u'|grp=1') != -1) and Page2.find(u'|groupe2=') == -1:
+                                if infinitivePage.find(u'{{impers') != -1 and infinitive != u'être':
+                                    PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|impers=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                elif (infinitivePage.find(u'|groupe=1') != -1 or infinitivePage.find(u'|grp=1') != -1) and infinitivePage.find(u'|groupe2=') == -1:
                                     # je
                                     if PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.3s=oui') != -1 and PageTemp2.find(u'sub.p.1s=oui') != -1 and PageTemp2.find(u'sub.p.3s=oui') != -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
                                         break
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.3s=oui') != -1 and PageTemp2.find(u'sub.p.1s=oui') != -1 and PageTemp2.find(u'sub.p.3s=oui') != -1 and PageTemp2.find(u'imp.p.2s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui')] + u'|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui')] + u'|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.3s=oui') != -1 and PageTemp2.find(u'sub.p.1s=oui') != -1 and PageTemp2.find(u'sub.p.3s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui')] + u'|sub.p.3s=oui' + PageTemp[PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui')] + u'|sub.p.3s=oui' + PageTemp[PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.3s=oui') != -1 and PageTemp2.find(u'sub.p.1s=oui') == -1 and PageTemp2.find(u'sub.p.3s=oui') != -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui')] + u'|sub.p.1s=oui' + PageTemp[PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui')] + u'|sub.p.1s=oui' + PageTemp[PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.3s=oui') == -1 and PageTemp2.find(u'sub.p.1s=oui') != -1 and PageTemp2.find(u'sub.p.3s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui')] + u'|ind.p.3s=oui' + PageTemp[PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui')] + u'|ind.p.3s=oui' + PageTemp[PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') == -1 and PageTemp2.find(u'ind.p.3s=oui') != -1 and PageTemp2.find(u'sub.p.1s=oui') == -1 and PageTemp2.find(u'sub.p.3s=oui') != -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.3s=oui') == -1 and PageTemp2.find(u'sub.p.1s=oui') != -1 and PageTemp2.find(u'sub.p.3s=oui') != -1 and PageTemp2.find(u'imp.p.2s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui')] + u'|ind.p.3s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui')] + u'|ind.p.3s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') == -1 and PageTemp2.find(u'ind.p.3s=oui') != -1 and PageTemp2.find(u'sub.p.1s=oui') != -1 and PageTemp2.find(u'sub.p.3s=oui') != -1 and PageTemp2.find(u'imp.p.2s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|imp.p.2s=oui|ind.p.1s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|imp.p.2s=oui|ind.p.1s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') == -1 and PageTemp2.find(u'ind.p.3s=oui') == -1 and PageTemp2.find(u'sub.p.1s=oui') != -1 and PageTemp2.find(u'sub.p.3s=oui') != -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui|ind.p.3s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui|ind.p.3s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.3s=oui') != -1 and PageTemp2.find(u'sub.p.1s=oui') == -1 and PageTemp2.find(u'sub.p.3s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui')] + u'|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui')] + u'|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.3s=oui') != -1 and PageTemp2.find(u'sub.p.1s=oui') == -1 and PageTemp2.find(u'sub.p.3s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui')] + u'|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui')] + u'|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.3s=oui') == -1 and PageTemp2.find(u'sub.p.1s=oui') == -1 and PageTemp2.find(u'sub.p.3s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.3s=oui|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.3s=oui|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') == -1 and PageTemp2.find(u'ind.p.3s=oui') != -1 and PageTemp2.find(u'sub.p.1s=oui') == -1 and PageTemp2.find(u'sub.p.3s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') == -1 and PageTemp2.find(u'ind.p.3s=oui') != -1 and PageTemp2.find(u'sub.p.1s=oui') == -1 and PageTemp2.find(u'sub.p.3s=oui') != -1 and PageTemp2.find(u'imp.p.2s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui|sub.p.1s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui|sub.p.1s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') == -1 and PageTemp2.find(u'ind.p.3s=oui') != -1 and PageTemp2.find(u'sub.p.1s=oui') == -1 and PageTemp2.find(u'sub.p.3s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui|sub.p.1s=oui|ind.p.3s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui|sub.p.1s=oui|ind.p.3s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') == -1 and PageTemp2.find(u'ind.p.3s=oui') == -1 and PageTemp2.find(u'sub.p.1s=oui') == -1 and PageTemp2.find(u'sub.p.3s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui|ind.p.3s=oui|sub.p.1s=oui|ind.p.3s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui|ind.p.3s=oui|sub.p.1s=oui|ind.p.3s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     # tu
                                     if PageTemp2.find(u'ind.p.2s=oui') != -1 and PageTemp2.find(u'sub.p.2s=oui') != -1:
                                         break
                                     elif PageTemp2.find(u'ind.p.2s=oui') != -1 and PageTemp2.find(u'sub.p.2s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui')] + u'|sub.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui')] + u'|sub.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.2s=oui') == -1 and PageTemp2.find(u'sub.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.2s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.2s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     # nous
                                     if PageTemp2.find(u'ind.i.1p=oui') != -1 and PageTemp2.find(u'sub.p.1p=oui') != -1:
                                         break
                                     if PageTemp2.find(u'ind.i.1p=oui') != -1 and PageTemp2.find(u'sub.p.1p=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.i.1p=oui')+len(u'ind.i.1p=oui')] + u'|sub.p.1p=oui' + PageTemp[PageTemp.find(u'ind.i.1p=oui')+len(u'ind.i.1p=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.i.1p=oui')+len(u'ind.i.1p=oui')] + u'|sub.p.1p=oui' + PageTemp[PageTemp.find(u'ind.i.1p=oui')+len(u'ind.i.1p=oui'):len(PageTemp)]
                                     if PageTemp2.find(u'ind.i.1p=oui') == -1 and PageTemp2.find(u'sub.p.1p=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.i.1p=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.i.1p=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     # vous
                                     if PageTemp2.find(u'ind.i.2p=oui') != -1 and PageTemp2.find(u'sub.p.2p=oui') != -1:
                                         break
                                     if PageTemp2.find(u'ind.i.2p=oui') != -1 and PageTemp2.find(u'sub.p.2p=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.i.2p=oui')+len(u'ind.i.2p=oui')] + u'|sub.p.2p=oui' + PageTemp[PageTemp.find(u'ind.i.2p=oui')+len(u'ind.i.2p=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.i.2p=oui')+len(u'ind.i.2p=oui')] + u'|sub.p.2p=oui' + PageTemp[PageTemp.find(u'ind.i.2p=oui')+len(u'ind.i.2p=oui'):len(PageTemp)]
                                     if PageTemp2.find(u'ind.i.2p=oui') == -1 and PageTemp2.find(u'sub.p.2p=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.i.2p=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.i.2p=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     # ils
                                     if PageTemp2.find(u'ind.p.3p=oui') != -1 and PageTemp2.find(u'sub.p.3p=oui') != -1:
                                         break
                                     if PageTemp2.find(u'ind.p.3p=oui') != -1 and PageTemp2.find(u'sub.p.3p=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.3p=oui')+len(u'ind.p.3p=oui')] + u'|sub.p.3p=oui' + PageTemp[PageTemp.find(u'ind.p.3p=oui')+len(u'ind.p.3p=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.3p=oui')+len(u'ind.p.3p=oui')] + u'|sub.p.3p=oui' + PageTemp[PageTemp.find(u'ind.p.3p=oui')+len(u'ind.p.3p=oui'):len(PageTemp)]
                                     if PageTemp2.find(u'ind.p.3p=oui') == -1 and PageTemp2.find(u'sub.p.3p=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.3p=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.3p=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                 # Certains -ir sont du 3ème
-                                elif (Page2.find(u'|groupe=2') != -1 or Page2.find(u'|grp=2') != -1) and Page2.find(u'{{impers') == -1 and Page2.find(u'|groupe2=') == -1:
+                                elif (infinitivePage.find(u'|groupe=2') != -1 or infinitivePage.find(u'|grp=2') != -1) and infinitivePage.find(u'{{impers') == -1 and infinitivePage.find(u'|groupe2=') == -1:
                                     # je
                                     if PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.2s=oui') != -1 and PageTemp2.find(u'ind.ps.1s=oui') != -1 and PageTemp2.find(u'ind.ps.2s=oui') != -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
                                         break
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.2s=oui') != -1 and PageTemp2.find(u'ind.ps.1s=oui') != -1 and PageTemp2.find(u'ind.ps.2s=oui') != -1 and PageTemp2.find(u'imp.p.2s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.ps.2s=oui')+len(u'ind.ps.2s=oui')] + u'|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.ps.2s=oui')+len(u'ind.ps.2s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.ps.2s=oui')+len(u'ind.ps.2s=oui')] + u'|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.ps.2s=oui')+len(u'ind.ps.2s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.2s=oui') != -1 and PageTemp2.find(u'ind.ps.1s=oui') != -1 and PageTemp2.find(u'ind.ps.2s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.ps.1s=oui')+len(u'ind.ps.1s=oui')] + u'|ind.ps.2s=oui' + PageTemp[PageTemp.find(u'ind.ps.1s=oui')+len(u'ind.ps.1s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.ps.1s=oui')+len(u'ind.ps.1s=oui')] + u'|ind.ps.2s=oui' + PageTemp[PageTemp.find(u'ind.ps.1s=oui')+len(u'ind.ps.1s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.2s=oui') != -1 and PageTemp2.find(u'ind.ps.1s=oui') == -1 and PageTemp2.find(u'ind.ps.2s=oui') != -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui')] + u'|ind.ps.1s=oui' + PageTemp[PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui')] + u'|ind.ps.1s=oui' + PageTemp[PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.2s=oui') == -1 and PageTemp2.find(u'ind.ps.1s=oui') != -1 and PageTemp2.find(u'ind.ps.2s=oui') != -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui')] + u'|ind.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui')] + u'|ind.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') == -1 and PageTemp2.find(u'ind.p.2s=oui') != -1 and PageTemp2.find(u'ind.ps.1s=oui') != -1 and PageTemp2.find(u'ind.ps.2s=oui') != -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.2s=oui') != -1 and PageTemp2.find(u'ind.ps.1s=oui') != -1 and PageTemp2.find(u'ind.ps.2s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.ps.1s=oui')+len(u'ind.ps.1s=oui')] + u'|ind.ps.2s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.ps.1s=oui')+len(u'ind.ps.1s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.ps.1s=oui')+len(u'ind.ps.1s=oui')] + u'|ind.ps.2s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.ps.1s=oui')+len(u'ind.ps.1s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.2s=oui') != -1 and PageTemp2.find(u'ind.ps.1s=oui') == -1 and PageTemp2.find(u'ind.ps.2s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui')] + u'|ind.ps.1s=oui|ind.ps.2s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui')] + u'|ind.ps.1s=oui|ind.ps.2s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.2s=oui') == -1 and PageTemp2.find(u'ind.ps.1s=oui') == -1 and PageTemp2.find(u'ind.ps.2s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui')] + u'|ind.p.2s=oui|ind.ps.1s=oui|ind.ps.2s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui')] + u'|ind.p.2s=oui|ind.ps.1s=oui|ind.ps.2s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') == -1 and PageTemp2.find(u'ind.p.2s=oui') == -1 and PageTemp2.find(u'ind.ps.1s=oui') == -1 and PageTemp2.find(u'ind.ps.2s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui|ind.p.2s=oui|ind.ps.1s=oui|ind.ps.2s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.1s=oui|ind.p.2s=oui|ind.ps.1s=oui|ind.ps.2s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
 
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.2s=oui') != -1 and PageTemp2.find(u'ind.ps.1s=oui') == -1 and PageTemp2.find(u'ind.ps.2s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui')] + u'|ind.ps.1s=oui|ind.ps.2s=oui' + PageTemp[PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui')] + u'|ind.ps.1s=oui|ind.ps.2s=oui' + PageTemp[PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') != -1 and PageTemp2.find(u'ind.p.2s=oui') == -1 and PageTemp2.find(u'ind.ps.1s=oui') == -1 and PageTemp2.find(u'ind.ps.2s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui')] + u'|ind.p.2s=oui|ind.ps.1s=oui|ind.ps.2s=oui' + PageTemp[PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui')] + u'|ind.p.2s=oui|ind.ps.1s=oui|ind.ps.2s=oui' + PageTemp[PageTemp.find(u'ind.p.1s=oui')+len(u'ind.p.1s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'ind.p.1s=oui') == -1 and PageTemp2.find(u'ind.p.2s=oui') != -1 and PageTemp2.find(u'ind.ps.1s=oui') == -1 and PageTemp2.find(u'ind.ps.2s=oui') == -1 and PageTemp2.find(u'imp.p.2s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui')] + u'|ind.p.1s=oui|ind.ps.1s=oui|ind.ps.2s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui')] + u'|ind.p.1s=oui|ind.ps.1s=oui|ind.ps.2s=oui|imp.p.2s=oui' + PageTemp[PageTemp.find(u'ind.p.2s=oui')+len(u'ind.p.2s=oui'):len(PageTemp)]
 
                                     #...
                                     if PageTemp2.find(u'sub.p.1s=oui') != -1 and PageTemp2.find(u'sub.p.3s=oui') != -1 and PageTemp2.find(u'sub.i.1s=oui') != -1:
                                         break
                                     elif PageTemp2.find(u'sub.p.1s=oui') != -1 and PageTemp2.find(u'sub.p.3s=oui') != -1 and PageTemp2.find(u'sub.i.1s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'sub.p.3s=oui')+len(u'sub.p.3s=oui')] + u'|sub.i.1s=oui' + PageTemp[PageTemp.find(u'sub.p.3s=oui')+len(u'sub.p.3s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'sub.p.3s=oui')+len(u'sub.p.3s=oui')] + u'|sub.i.1s=oui' + PageTemp[PageTemp.find(u'sub.p.3s=oui')+len(u'sub.p.3s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'sub.p.1s=oui') != -1 and PageTemp2.find(u'sub.p.3s=oui') == -1 and PageTemp2.find(u'sub.i.1s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'sub.p.1s=oui')+len(u'sub.p.1s=oui')] + u'|sub.p.3s=oui' + PageTemp[PageTemp.find(u'sub.p.1s=oui')+len(u'sub.p.1s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'sub.p.1s=oui')+len(u'sub.p.1s=oui')] + u'|sub.p.3s=oui' + PageTemp[PageTemp.find(u'sub.p.1s=oui')+len(u'sub.p.1s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'sub.p.1s=oui') == -1 and PageTemp2.find(u'sub.p.3s=oui') != -1 and PageTemp2.find(u'sub.i.1s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|sub.p.1s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|sub.p.1s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     elif PageTemp2.find(u'sub.p.1s=oui') != -1 and PageTemp2.find(u'sub.p.3s=oui') == -1 and PageTemp2.find(u'sub.i.1s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'sub.p.1s=oui')+len(u'sub.p.1s=oui')] + u'|sub.p.3s=oui|sub.i.1s=oui' + PageTemp[PageTemp.find(u'sub.p.1s=oui')+len(u'sub.p.1s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'sub.p.1s=oui')+len(u'sub.p.1s=oui')] + u'|sub.p.3s=oui|sub.i.1s=oui' + PageTemp[PageTemp.find(u'sub.p.1s=oui')+len(u'sub.p.1s=oui'):len(PageTemp)]
                                     elif PageTemp2.find(u'sub.p.1s=oui') == -1 and PageTemp2.find(u'sub.p.3s=oui') == -1 and PageTemp2.find(u'sub.i.1s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|sub.p.1s=oui|sub.p.3s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|sub.p.1s=oui|sub.p.3s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     elif PageTemp2.find(u'sub.p.1s=oui') == -1 and PageTemp2.find(u'sub.p.3s=oui') != -1 and PageTemp2.find(u'sub.i.1s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|sub.p.1s=oui|sub.i.1s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|sub.p.1s=oui|sub.i.1s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     # tu
                                     if PageTemp2.find(u'sub.p.2s=oui') != -1 and PageTemp2.find(u'sub.i.2s=oui') != -1:
                                         break
                                     if PageTemp2.find(u'sub.p.2s=oui') != -1 and PageTemp2.find(u'sub.i.2s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'sub.p.2s=oui')+len(u'sub.p.2s=oui')] + u'|sub.i.2s=oui' + PageTemp[PageTemp.find(u'sub.p.2s=oui')+len(u'sub.p.2s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'sub.p.2s=oui')+len(u'sub.p.2s=oui')] + u'|sub.i.2s=oui' + PageTemp[PageTemp.find(u'sub.p.2s=oui')+len(u'sub.p.2s=oui'):len(PageTemp)]
                                     if PageTemp2.find(u'sub.p.2s=oui') == -1 and PageTemp2.find(u'sub.i.2s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|sub.p.2s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|sub.p.2s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     # il
                                     if PageTemp2.find(u'ind.p.3s=oui') != -1 and PageTemp2.find(u'ind.ps.3s=oui') != -1:
                                         break
                                     if PageTemp2.find(u'ind.p.3s=oui') != -1 and PageTemp2.find(u'ind.ps.3s=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui')] + u'|ind.ps.3s=oui' + PageTemp[PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui')] + u'|ind.ps.3s=oui' + PageTemp[PageTemp.find(u'ind.p.3s=oui')+len(u'ind.p.3s=oui'):len(PageTemp)]
                                     if PageTemp2.find(u'ind.p.3s=oui') == -1 and PageTemp2.find(u'ind.ps.3s=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.3s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.3s=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     # nous
                                     if PageTemp2.find(u'ind.i.1p=oui') != -1 and PageTemp2.find(u'sub.p.1p=oui') != -1:
                                         break
                                     if PageTemp2.find(u'ind.i.1p=oui') != -1 and PageTemp2.find(u'sub.p.1p=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.i.1p=oui')+len(u'ind.i.1p=oui')] + u'|sub.p.1p=oui' + PageTemp[PageTemp.find(u'ind.i.1p=oui')+len(u'ind.i.1p=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.i.1p=oui')+len(u'ind.i.1p=oui')] + u'|sub.p.1p=oui' + PageTemp[PageTemp.find(u'ind.i.1p=oui')+len(u'ind.i.1p=oui'):len(PageTemp)]
                                     if PageTemp2.find(u'ind.i.1p=oui') == -1 and PageTemp2.find(u'sub.p.1p=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.i.1p=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.i.1p=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     # vous
                                     if PageTemp2.find(u'ind.i.2p=oui') != -1 and PageTemp2.find(u'sub.p.2p=oui') != -1:
                                         break
                                     if PageTemp2.find(u'ind.i.2p=oui') != -1 and PageTemp2.find(u'sub.p.2p=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.i.2p=oui')+len(u'ind.i.2p=oui')] + u'|sub.p.2p=oui' + PageTemp[PageTemp.find(u'ind.i.2p=oui')+len(u'ind.i.2p=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.i.2p=oui')+len(u'ind.i.2p=oui')] + u'|sub.p.2p=oui' + PageTemp[PageTemp.find(u'ind.i.2p=oui')+len(u'ind.i.2p=oui'):len(PageTemp)]
                                     if PageTemp2.find(u'ind.i.2p=oui') == -1 and PageTemp2.find(u'sub.p.2p=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.i.2p=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.i.2p=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
                                     # ils
                                     if PageTemp2.find(u'ind.p.3p=oui') != -1 and PageTemp2.find(u'sub.p.3p=oui') != -1:
                                         break
                                     if PageTemp2.find(u'ind.p.3p=oui') != -1 and PageTemp2.find(u'sub.p.3p=oui') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'ind.p.3p=oui')+len(u'ind.p.3p=oui')] + u'|sub.p.3p=oui' + PageTemp[PageTemp.find(u'ind.p.3p=oui')+len(u'ind.p.3p=oui'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'ind.p.3p=oui')+len(u'ind.p.3p=oui')] + u'|sub.p.3p=oui' + PageTemp[PageTemp.find(u'ind.p.3p=oui')+len(u'ind.p.3p=oui'):len(PageTemp)]
                                     if PageTemp2.find(u'ind.p.3p=oui') == -1 and PageTemp2.find(u'sub.p.3p=oui') != -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.3p=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
-                                elif (Page2.find(u'|groupe=3') != -1 or Page2.find(u'|grp=3') != -1) and Page2.find(u'|groupe2=') == -1:
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|ind.p.3p=oui' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                elif (infinitivePage.find(u'|groupe=3') != -1 or infinitivePage.find(u'|grp=3') != -1) and infinitivePage.find(u'|groupe2=') == -1:
                                     if PageTemp2.find(u'grp=3') == -1:
-                                        PageTemp = PageTemp[0:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|grp=3' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(PageTemp)]
+                                        PageTemp = PageTemp[:PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|grp=3' + PageTemp[PageTemp.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):]
 
-                        PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'\n')+1]
+                        PageEnd = PageEnd + PageTemp[:PageTemp.find(u'\n')+1]
                         PageTemp = PageTemp[PageTemp.find(u'\n')+1:len(PageTemp)]
                         break
 
@@ -5310,7 +5215,7 @@ def modification(pageName):
         
                             if TitreTemp != pageName:
                                 TitreTemp = defaultSort(TitreTemp)
-                                PageTemp = PageTemp[0:PageTemp.find(u'}}')] + u'|clé=' + TitreTemp + PageTemp[PageTemp.find(u'}}'):len(PageTemp)]
+                                PageTemp = PageTemp[:PageTemp.find(u'}}')] + u'|clé=' + TitreTemp + PageTemp[PageTemp.find(u'}}'):len(PageTemp)]
                         elif codelangue == u'ru':
                             while PageTemp.find(u'е€') < PageTemp.find(u'}}') and PageTemp.find(u'е€') != -1:
                                 PageTemp = PageTemp[:PageTemp.find(u'е€')+1] + PageTemp[PageTemp.find(u'е€')+2:]
@@ -5330,14 +5235,14 @@ def modification(pageName):
                         #trad = u'false'
                         if PageTemp.find(u'}}') > PageTemp.find(u'{{') and PageTemp.find(u'{{') != -1:
                             PageTemp2 = PageTemp[PageTemp.find(u'}}')+2:len(PageTemp)]
-                            PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'}}')+2+PageTemp2.find(u'}}')+2]
+                            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2+PageTemp2.find(u'}}')+2]
                             PageTemp = PageTemp[PageTemp.find(u'}}')+2+PageTemp2.find(u'}}')+2:len(PageTemp)]
                             break
                         else:
-                            PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'}}')+2]
+                            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
                     elif p < limit3:
                         if debugLevel > 0: print u' limit3 : modèle sans paramètre'
-                        PageEnd = PageEnd + PageTemp[0:position] + "}}"
+                        PageEnd = PageEnd + PageTemp[:position] + "}}"
                     elif p < limit4:
                         if debugLevel > 0: print u' limit4 : paragraphe potentiellement avec code langue, voire |spéc='
                         if PageTemp[:PageTemp.find(u'}}')].find(u'spéc') == -1:
@@ -5353,14 +5258,14 @@ def modification(pageName):
                     elif p < limit5:
                         if debugLevel > 0: print u' limit5 : catégorisée quel que soit EstCodeLangue (ex : ébauches)'
                         if codelangue:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                         elif Modele[p] == u'ébauche' and PageTemp.find(u'== {{langue') !=-1:
                             PageTemp2 = PageTemp[PageTemp.find(u'== {{langue'):]
                             PageTemp = PageTemp[PageTemp.find(u'}}')+2:PageTemp.find(u'== {{langue')+PageTemp2.find(u'\n')+1] + u'{{ébauche}}\n' + PageTemp[PageTemp.find(u'== {{langue')+PageTemp2.find(u'\n')+1:]
                             PageEnd = PageEnd[:-2]
                             break
                         else:
-                            PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                            PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                     else:
                         if debugLevel > 0: print u'Paragraphe régional : non catégorisé dans la prononciation'
                         if debugLevel > 1:
@@ -5369,9 +5274,9 @@ def modification(pageName):
                         if PageEnd.rfind(u'{{') != -1:
                             PageEnd2 = PageEnd[0:PageEnd.rfind(u'{{')]
                             if EstCodeLangue == "true" and ((PageEnd2.rfind(u'{{') != PageEnd2.rfind(u'{{pron|') and PageEnd2.rfind(u'{{') != PageEnd2.rfind(u'{{US|') and PageEnd2.rfind(u'{{') != PageEnd2.rfind(u'{{UK|')) or PageEnd.rfind(u'{{pron|') < PageEnd.rfind(u'\n') or PageEnd2.rfind(u'{{pron|') == -1) and ((PageTemp.find(u'{{') != PageTemp.find(u'{{pron|') or PageTemp.find(u'{{pron|') > PageTemp.find(u'\n')) or PageTemp.find(u'{{pron|') == -1):
-                                PageEnd = PageEnd + PageTemp[0:position] + "|" + codelangue + "}}"
+                                PageEnd = PageEnd + PageTemp[:position] + "|" + codelangue + "}}"
                             else:
-                                PageEnd = PageEnd + PageTemp[0:position] + "|nocat=1}}"
+                                PageEnd = PageEnd + PageTemp[:position] + "|nocat=1}}"
                     if position == PageTemp.find("|"):
                         position = PageTemp.find("}}")
                     PageTemp = PageTemp[position+2:]
@@ -5464,6 +5369,8 @@ def modification(pageName):
         if pageName.find(u'*') == -1 and pageName[-1:] == 's':
             natures = [u'nom', u'adjectif', u'suffixe']
             language = u'fr'
+            pageLemma = getLemmaFromPlural(PageEnd) # TODO language, nature, & n°
+            if pageLemma != u'': modification(pageLemma) # Formatage des boites de flexion à récupérer
             for nature in natures:
                 regex = ur"(== {{langue|" + language + ur"}} ==\n=== {{S\|" + nature + ur"\|" + language + ur")\|num=2"
                 if re.search(regex, PageEnd):
@@ -5476,12 +5383,10 @@ def modification(pageName):
                     summary = summary + u', ajout de |flexion'
 
                 if pageName[-2:] != 'ss':
-                    pageLemma = getLemmaFromPlural(PageEnd) # TODO language, nature, & n°
-
-                    flexionFlexionTemplate = getFlexionTemplate(pageName, language, nature)
-                    if flexionFlexionTemplate == u'':
-                        if debugLevel > 0: print u'Ajout d\'une boite dans une flexion'
-                        if pageLemma != u'':
+                    if pageLemma != u'':
+                        flexionFlexionTemplate = getFlexionTemplate(pageName, language, nature)
+                        if flexionFlexionTemplate == u'':
+                            if debugLevel > 0: print u' Ajout d\'une boite dans une flexion'
                             lemmaFlexionTemplate = getFlexionTemplateFromLemma(pageLemma, language, nature)
                             for flexionTemplateWithMs in flexionTemplatesWithMs:
                                 if lemmaFlexionTemplate.find(flexionTemplateWithMs) != -1:
@@ -5657,33 +5562,9 @@ def modification(pageName):
         print "Aucun changement"
 
 
-def getPageContent(pageName, ns = None):
-    PageBegin = u''
-    page = Page(site, pageName)
-    if page.exists():
-        if page.namespace() != 0 and page.namespace() != 100 and page.namespace() != 12 and page.namespace() != 14 and (page.namespace() == 2 and (pageName.find(u':JackBot/') == -1 and pageName.find(u':JackPotte/') == -1)):
-            print u'Page non traitée l 1374'
-            return
-        else:
-            try:
-                PageBegin = page.get()
-            except pywikibot.exceptions.BadTitle:
-                print u'IsRedirect l 4216'
-            except pywikibot.exceptions.IsRedirectPage:
-                #PageBegin = page.get(get_redirect=True)
-                print u'IsRedirect l 4219'
-            except pywikibot.exceptions.NoPage:
-                print u'NoPage l 4221'
-            except pywikibot.exceptions.ServerError:
-                print u'NoPage l 4223'
-    else:
-        print u'NoPage l 1396'
-
-    return PageBegin
-
 def getLemmaFromLocution(pageName):
     if debugLevel > 0: print u'\ngetLemmaFromLocution'
-    pageLemma = getPageContent(pageName[:pageName.find(u' ')])
+    pageLemma = getContentFromPageName(pageName[:pageName.find(u' ')])
     return pageLemma
 
 def getLemmaFromPlural(PageTemp):
@@ -5718,7 +5599,7 @@ def getLemmaFromConjugation(PageTemp):
 def getFlexionTemplate(pageName, language, nature):
     if debugLevel > 0: print u'\ngetFlexionTemplate'
     FlexionTemplate = u''
-    PageTemp = getPageContent(pageName)
+    PageTemp = getContentFromPageName(pageName)
     regex = ur"=== {{S\|" + nature + ur"\|" + language + ur"\|flexion(\|num=[0-9])?}} ===\n{{(" + language + ur"\-[^}]+)}}"
     if debugLevel > 1: print u' ' + regex
     s = re.search(regex, PageTemp)
@@ -5737,7 +5618,7 @@ def getFlexionTemplate(pageName, language, nature):
 def getFlexionTemplateFromLemma(pageName, language, nature):
     if debugLevel > 0: print u'\ngetFlexionTemplateFromLemma'
     FlexionTemplate = u''
-    PageTemp = getPageContent(pageName)
+    PageTemp = getContentFromPageName(pageName)
     regex = ur"=== {{S\|" + nature + ur"\|" + language + ur"(\|num=[0-9])?}} ===\n{{(" + language + ur"\-[^}]+)}}"
     if debugLevel > 1: print u' ' + regex
     s = re.search(regex, PageTemp)
@@ -5752,11 +5633,6 @@ def getFlexionTemplateFromLemma(pageName, language, nature):
     if FlexionTemplate.find(u'-inv') != -1: FlexionTemplate = u''
 
     return FlexionTemplate
-
-
-def trim(s):
-    return s.strip(" \t\n\r\0\x0B")
-
 
 def addCat(PageTemp, lang, cat):    # à remplacer par celle ci-dessous
     if lang != u'':
@@ -5876,13 +5752,6 @@ def addLine(Page, CodeLangue, Section, pageContent):
                 Page = Page[:-len(PageTemp2)] + PageTemp2[:-len(PageTemp3)] + PageTemp3[:PageTemp3.find(u'\n\n')] + u'\n' + pageContent + u'\n' + PageTemp3[PageTemp3.find(u'\n\n'):]
     return Page
 
-
-def getWiki(language, family):
-    if family is None:
-        return site
-    else:
-        return pywikibot.Site(language, family)
-
 def rec_anagram(counter):
     # Copyright http://www.siteduzero.com/forum-83-541573-p2-exercice-generer-tous-les-anagrammes.html
     if sum(counter.values()) == 0:
@@ -5897,20 +5766,69 @@ def rec_anagram(counter):
 def anagram(word):
     return rec_anagram(collections.Counter(word))
 
+def trim(s):
+    return s.strip(" \t\n\r\0\x0B")
+
+def getContentFromPageName(pageName, allowedNamespaces = None):
+    page = Page(site, pageName)
+    return getContentFromPage(page, allowedNamespaces)
+
+def getContentFromPage(page, allowedNamespaces = None):
+    PageBegin = u''
+    if page.exists():
+        if allowedNamespaces is None:
+            condition = page.namespace() in [0, 12, 14, 100] or page.title().find(username) != -1
+        elif type(allowedNamespaces) == 'list':
+            condition = page.namespace() in allowedNamespaces
+        elif allowedNamespaces == 'All':
+            condition = True
+        if condition:
+            try:
+                PageBegin = page.get()
+            except pywikibot.exceptions.BadTitle:
+                if debugLevel > 0: print u'IsRedirect l 5658'
+                return 'KO'
+            except pywikibot.exceptions.IsRedirectPage:
+                #PageBegin = page.get(get_redirect=True)
+                if debugLevel > 0: print u'IsRedirect l 5662'
+                return 'KO'
+            except pywikibot.exceptions.NoPage:
+                if debugLevel > 0: print u'NoPage l 5665'
+                return 'KO'
+            except pywikibot.exceptions.ServerError:
+                if debugLevel > 0: print u'NoPage l 5668'
+                return 'KO'
+        else:
+            if debugLevel > 0: print u'Page non traitée l 5671'
+            return 'KO'
+    else:
+        if debugLevel > 0: print u'NoPage l 5674'
+        return 'KO'
+
+    return PageBegin
+
+def getWiki(language, family):
+    if family is None:
+        return site
+    else:
+        wiki = u'KO'
+        try:
+            wiki = pywikibot.Site(language, family)
+        except pywikibot.exceptions.ServerError:
+            if debugLevel > 1: print u'  ServerError in getWiki'
+        except pywikibot.exceptions.NoSuchSite:
+            if debugLevel > 1: print u'  NoSuchSite in getWiki'
+        except UnicodeEncodeError:
+            if debugLevel > 1: print u'  UnicodeEncodeError in getWiki'
+    return wiki
+
 # Permet à tout le monde de stopper le bot en lui écrivant
 def ArretDUrgence():
-        page = pywikibot.Page(site,u'User talk:' + username)
-        if page.exists():
-            PageTemp = u''
-            try:
-                PageTemp = page.get()
-            except pywikibot.exceptions.NoPage: return
-            except pywikibot.exceptions.IsRedirectPage: return
-            except pywikibot.exceptions.ServerError: return
-            except pywikibot.exceptions.BadTitle: return
-            if PageTemp != u"{{/Stop}}":
-                pywikibot.output (u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
-                exit(0)
+    PageTemp = getContentFromPageName(u'User talk:' + username)
+    if PageTemp == 'KO': return
+    if PageTemp != u"{{/Stop}}":
+        pywikibot.output (u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
+        exit(0)
 
 def savePage(currentPage, pageContent, summary):
     result = "ok"
@@ -5929,22 +5847,22 @@ def savePage(currentPage, pageContent, summary):
         try:
             currentPage.put(pageContent, summary)
         except pywikibot.exceptions.NoPage:
-            print "NoPage en savePage"
+            print "NoPage in savePage"
             return
         except pywikibot.exceptions.IsRedirectPage:
-            print "IsRedirectPage en savePage"
+            print "IsRedirectPage in savePage"
             return
         except pywikibot.exceptions.LockedPage:
-            print "LockedPage en savePage"
+            print "LockedPage in savePage"
             return
         except pywikibot.EditConflict:
-            print "EditConflict en savePage"
+            print "EditConflict in savePage"
             return
         except pywikibot.exceptions.ServerError:
-            print "ServerError en savePage"
+            print "ServerError in savePage"
             return
         except pywikibot.exceptions.BadTitle:
-            print "BadTitle en savePage"
+            print "BadTitle in savePage"
             return
         except pywikibot.exceptions.OtherPageSaveError:
             print "OtherPageSaveError"
@@ -5952,7 +5870,7 @@ def savePage(currentPage, pageContent, summary):
             savePage(currentPage, pageContent, summary)
             return
         except AttributeError:
-            print "AttributeError en savePage"
+            print "AttributeError in savePage"
             return
 
 # Lecture du fichier articles_list.txt (au même format que pour replace.py)
@@ -5982,9 +5900,10 @@ def crawlerXML(source, regex = u''):
         outPutFile = open('src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', 'a')
 
         for entry in parser:
-            PageTemp = entry.text
-            '''if regex == u'':
-                if debugLevel > 1: print u' Generic treatment'
+            if regex == u'':
+                PageTemp = entry.text
+                '''
+                if debugLevel > 1: print u' Pluriels non flexion'
                 if entry.title[-2:] == u'es':
                     if debugLevel > 1: print entry.title
                     regex = ur"=== {{S\|adjectif\|fr[^}]+}} ===\n[^\n]*\n*{{fr\-rég\|[^\n]+\n*'''" + re.escape(entry.title) + ur"'''[^\n]*\n# *'*'*(Masculin|Féminin)+ *[P|p]luriel de *'*'* *\[\["
@@ -5992,13 +5911,19 @@ def crawlerXML(source, regex = u''):
                         if debugLevel > 0: print entry.title
                         #PageTemp = re.sub(regex, ur'\1|flexion\2', PageTemp)
                         #modification(html2Unicode(entry.title))
-            '''
-            if debugLevel > 1: print u' Ajout de la boite de flexion'
-            if entry.title[-1:] == u's':
-                if (PageTemp.find(u'{{S|adjectif|fr|flexion}}') != -1 or PageTemp.find(u'{{S|nom|fr|flexion}}') != -1) and PageTemp.find(u'{{fr-') == -1:
-                    #print entry.title # limite de 8191 lignes dans le terminal.
-                    #modification(entry.title)
-                    outPutFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+
+                if debugLevel > 1: print u' Ajout de la boite de flexion'
+                if entry.title[-1:] == u's':
+                    if (PageTemp.find(u'{{S|adjectif|fr|flexion}}') != -1 or PageTemp.find(u'{{S|nom|fr|flexion}}') != -1) and PageTemp.find(u'{{fr-') == -1:
+                        #print entry.title # limite de 8191 lignes dans le terminal.
+                        #modification(entry.title)
+                        outPutFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                '''
+                if debugLevel > 1: print u' balises HTML désuètes'
+                for deprecatedTag in deprecatedTags.keys():
+                    if PageTemp.find(u'<' + deprecatedTag) != -1:
+                        outPutFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+
         outPutFile.close()
 
 
@@ -6069,13 +5994,13 @@ def crawlerSearch(pageName):
         modification(Page.title())
 
 # Traitement des modifications récentes
-def crawlerRC_last_day(site = site, nobots=True, namespace='0'):
+def crawlerRCLastDay(site = site, nobots=True, namespace='0'):
     # Génère les modifications récentes de la dernière journée
-    ecart_last_edit = 30 # minutes
+    timeAfterLastEdition = 30 # minutes
 
     date_now = datetime.datetime.utcnow()
     # Date de la plus récente modification à récupérer
-    date_start = date_now - datetime.timedelta(minutes=ecart_last_edit)
+    date_start = date_now - datetime.timedelta(minutes=timeAfterLastEdition)
     # Date d'un jour plus tôt
     date_end = date_start - datetime.timedelta(1)
 
@@ -6092,11 +6017,11 @@ def crawlerRC():
     gen = pagegenerators.RecentchangesPageGenerator(site = site)
     ecart_minimal_requis = 30 # min
     for Page in pagegenerators.PreloadingGenerator(gen,100):
-        #print str(ecart_last_edit(Page)) + ' =? ' + str(ecart_minimal_requis)
-        if ecart_last_edit(Page) > ecart_minimal_requis:
+        #print str(timeAfterLastEdition(Page)) + ' =? ' + str(ecart_minimal_requis)
+        if timeAfterLastEdition(Page) > ecart_minimal_requis:
             modification(Page.title())
 
-def ecart_last_edit(page):
+def timeAfterLastEdition(page):
     # Timestamp au format MediaWiki de la dernière version
     time_last_edit = page.getVersionHistory()[0][1]
     match_time = re.match(r'(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})', time_last_edit)
@@ -6139,9 +6064,10 @@ def main(*args):
             modification(u'User:' + username + u'/test')
         elif sys.argv[1] == u't':
             modification(u'User:' + username + u'/test court')
-        elif sys.argv[1] == u'tu':
-            # Test unitaire
-            addLine(u"== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n{{fr-rég|}}\n\'\'\'{{subst:PAGENAME}}\'\'\' {{pron||fr}} {{genre ?}}\n#\n#* ''''\n==== {{S|variantes orthographiques}} ====\n==== {{S|synonymes}} ====\n==== {{S|antonymes}} ====\n==== {{S|dérivés}} ====\n==== {{S|apparentés}} ====\n==== {{S|vocabulaire}} ====\n==== {{S|hyperonymes}} ====\n==== {{S|hyponymes}} ====\n==== {{S|méronymes}} ====\n==== {{S|holonymes}} ====\n==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n=== {{S|prononciation}} ===\n* {{pron||fr}}\n* {{écouter|<!--  précisez svp la ville ou la région -->||audio=|lang=}}\n==== {{S|homophones}} ====\n==== {{S|paronymes}} ====\n=== {{S|anagrammes}} ===\n=== {{S|voir aussi}} ===\n* {{WP}}\n=== {{S|références}} ===\n{{clé de tri}}", u'fr', u'prononciation', u'* {{pron|boum|fr}}')
+        elif sys.argv[1] == u'unit tests' or sys.argv[1] == u'tu':
+            addLine(u"== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n{{fr-rég|}}\n\'\'\'{{subst:PAGENAME}}\'\'\' {{pron||fr}} {{genre ?}}\n#\n#* ''''\n==== {{S|variantes orthographiques}} ====\n==== {{S|synonymes}} ====\n==== {{S|antonymes}} ====\n==== {{S|dérivés}} ====\n==== {{S|apparentés}} ====\n==== {{S|vocabulaire}} ====\n==== {{S|hyperonymes}} ====\n==== {{S|hyponymes}} ====\n==== {{S|méronymes}} ====\n==== {{S|holonymes}} ====\n==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n=== {{S|prononciation}} ===\n* {{pron||fr}}\n* {{écouter|<!--  précisez svp la ville ou la région -->||audio=|lang=}}\n==== {{S|homophones}} ====\n==== {{S|paronymes}} ====\n=== {{S|anagrammes}} ===\n=== {{S|voir aussi}} ===\n* {{WP}}\n=== {{S|références}} ===\n", u'fr', u'prononciation', u'* {{pron|boum|fr}}')
+        elif sys.argv[1] == u'page':
+            modification(u'télétransporter')
         elif sys.argv[1] == u'file' or sys.argv[1] == u'txt':
             crawlerFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'xml':
@@ -6149,31 +6075,32 @@ def main(*args):
         elif sys.argv[1] == u'link' or sys.argv[1] == u'm':
             crawlerLink(site, u'Modèle:ex',u'')
         elif sys.argv[1] == u'cat':
-            crawlerCat(u'Noms scientifiques', False, u'')
+            crawlerCat(u'suédois', False, u'')
+            crawlerCat(u'Gentilés en français', False, u'')
             #crawlerCat(u'Pluriels manquants en français', False, u'')
-            #crawlerCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus', False, u'')
             #crawlerCat(u'Catégorie:Wiktionnaire:Sections de type avec locution forcée', False, u'')
-            #crawlerCat(u'Catégorie:Termes peu attestés sans langue précisée', False, u'')
             #crawlerCat(u'Catégorie:Genres manquants en français', False, u'')
-        elif sys.argv[1] == u'page':
-            modification(u'télétransporter')
         elif sys.argv[1] == u's':
             crawlerSearch(u'"source à préciser"')
         elif sys.argv[1] == u'u':
-            crawlerUser(u'Utilisateur:JackPotte', 1000,u'')
+            crawlerUser(u'Utilisateur:JackPotte', 1000, u'')
+        elif sys.argv[1] == u'redirects':
+            crawlerRedirects()
+        elif sys.argv[1] == u'all':
+           crawlerAll()
         elif sys.argv[1] == u'RC':
             while 1:
-                crawlerRC_last_day()
+                crawlerRCLastDay()
         else:
-            # Au format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
+            # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
             modification(sys.argv[1])
     else:
-        # Quotidiennement :
+        # Daily:
         crawlerCat(u'Catégorie:Wiktionnaire:Terminologie sans langue précisée', True, u'')
-        crawlerCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée',False,u'')
+        crawlerCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée', False, u'')
         crawlerCat(u'Catégorie:Wiktionnaire:Flexions à vérifier',True,u'')
-        crawlerCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet',False,u'')
-        crawlerCat(u'Catégorie:Wiktionnaire:Ébauches à compléter',False,u'')
+        crawlerCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet', False, u'')
+        crawlerCat(u'Catégorie:Wiktionnaire:Ébauches à compléter', False, u'')
         crawlerLink(u'Modèle:trad',u'')
         crawlerLink(u'Modèle:1ergroupe',u'')
         crawlerLink(u'Modèle:2egroupe',u'')
@@ -6193,11 +6120,12 @@ def main(*args):
         crawlerLink(u'Modèle:fp',u'')
         crawlerLink(u'Modèle:vx',u'')
         crawlerLink(u'Modèle:pron-rég',u'')
-        crawlerCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français',False,u'')
-        crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section',False,u'') # TODO: ns
-        crawlerCat(u'Catégorie:Wiktionnaire:Sections avec titre inconnu',False,u'')
-        crawlerCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus',False,u'')
-        crawlerCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias',False,u'')
+        crawlerCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français', False, u'')
+        crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section', False, u'') # TODO: ns
+        crawlerCat(u'Catégorie:Wiktionnaire:Sections avec titre inconnu', False, u'')
+        crawlerCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus', False, u'')
+        crawlerCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias', False, u'')
+        crawlerCat(u'Catégorie:Wiktionnaire:Sections de type avec locution forcée', False, u'')
 
 if __name__ == "__main__":
     main(sys.argv)
