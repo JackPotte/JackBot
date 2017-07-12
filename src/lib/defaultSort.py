@@ -197,7 +197,74 @@ def defaultSort(PageTitre):
 		#raw_input(PageTitre.encode(config.console_encoding, 'replace'))
 		return PageTitre
 
+
+def addDefaultSort(PageTemp):
+    PageTemp = PageTemp.replace(u'{{DEFAULTSORT:', u'{{clé de tri|')
+    PageTemp = PageTemp.replace(u'{{defaultSort:', u'{{clé de tri|')
+    PageTemp = PageTemp.replace(u'{{clef de tri|', u'{{clé de tri|')
+    while PageTemp.find(u'\n{clé de tri') != -1:
+        PageTemp = PageTemp[:PageTemp.find(u'\n{clé de tri')+1] + u'{' + PageTemp[PageTemp.find(u'\n{clé de tri'):len(PageTemp)]
+
+    ClePage = CleTri
+    if PageTemp.find(u'{{clé de tri') == -1 and ClePage != u'' and ClePage.lower() != pageName.lower():
+            summary = summary + u', {{clé de tri}} ajoutée'
+            if PageTemp.rfind(u'\n\n[[') != -1:
+                PageTemp2 = PageTemp[PageTemp.rfind(u'\n\n[['):len(PageTemp)]
+                if PageTemp2[4:5] == u':' or PageTemp2[5:6] == u':':
+                    PageTemp = PageTemp[:PageTemp.rfind(u'\n\n[[')] + u'\n\n{{clé de tri|' + ClePage + u'}}' + PageTemp[PageTemp.rfind(u'\n\n[['):len(PageTemp)]
+                else:
+                    PageTemp = PageTemp + u'\n\n{{clé de tri|' + ClePage + u'}}\n'
+            else:
+                PageTemp = PageTemp + u'\n\n{{clé de tri|' + ClePage + u'}}\n'
+
+    elif PageTemp.find(u'{{clé de tri|') != -1 and (PageTemp.find(u'{{langue|fr}}') != -1 or PageTemp.find(u'{{langue|eo}}') != -1 or PageTemp.find(u'{{langue|en}}') != -1 or PageTemp.find(u'{{langue|es}}') != -1 or PageTemp.find(u'{{langue|de}}') != -1 or PageTemp.find(u'{{langue|pt}}') != -1 or PageTemp.find(u'{{langue|it}}') != -1):
+        if debugLevel > 0: print u' vérification de clé existante pour alphabets connus'
+        PageTemp2 = PageTemp[PageTemp.find(u'{{clé de tri|')+len(u'{{clé de tri|'):len(PageTemp)]
+        ClePage = PageTemp2[0:PageTemp2.find(u'}}')]
+        '''if CleTri.lower() != ClePage.lower():
+            summary = summary + u', {{clé de tri}} corrigée'
+            PageTemp = PageTemp[:PageTemp.find(u'{{clé de tri|')+len(u'{{clé de tri|')] + CleTri + PageTemp[PageTemp.find(u'{{clé de tri|')+len(u'{{clé de tri|')+PageTemp2.find(u'}}'):len(PageTemp)]'''
+        '''pb ʻokina
+            if CleTri.lower() == pageName.lower():
+            summary = summary + u', {{clé de tri}} supprimée'
+            PageTemp = PageTemp[:PageTemp.find(u'{{clé de tri|')] + PageTemp[PageTemp.find(u'{{clé de tri|')+len(u'{{clé de tri|')+PageTemp2.find(u'}}')+2:len(PageTemp)]'''
+    if debugLevel > 1: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
+
+    baratin = u'{{clé de tri|}}<!-- supprimer si le mot ne contient pas de caractères accentués ni de caractères typographiques (par ex. trait d’union ou apostrophe) ; sinon suivez les instructions à [[Modèle:clé de tri]] -->'
+    if PageTemp.find(baratin) != -1:
+        PageTemp = PageTemp[:PageTemp.find(baratin)] + PageTemp[PageTemp.find(baratin)+len(baratin):len(PageTemp)]
+        summary = summary + u', {{clé de tri|}} supprimée'
+    baratin = u'{{clé de tri|}}<!-- Veuillez mettre juste après « {{clé de tri| » le titre de la page en y enlevant tous les accents et éventuels apostrophes, et en changeant les éventuels traits d’union et autres caractères spéciaux par une espace ; s’il n’y a rien à changer, merci d’effacer ces lignes. -->'
+    '''Inhibé depuis migration Lua :
+    if PageTemp.find(baratin) != -1:
+        PageTemp = PageTemp[:PageTemp.find(baratin)] + PageTemp[PageTemp.find(baratin)+len(baratin):len(PageTemp)]
+        summary = summary + u', {{clé de tri|}} supprimée'
+    if PageTemp.find(u'{{clé de tri|}}') != -1:
+        PageTemp = PageTemp[:PageTemp.find(u'{{clé de tri|}}')] + PageTemp[PageTemp.find(u'{{clé de tri|}}')+len(u'{{clé de tri|}}'):len(PageTemp)]
+        summary = summary + u', {{clé de tri|}} supprimée'
+    if PageTemp.find(u'{{clé de tri}}') != -1:
+        PageTemp = PageTemp[:PageTemp.find(u'{{clé de tri}}')] + PageTemp[PageTemp.find(u'{{clé de tri}}')+len(u'{{clé de tri}}'):len(PageTemp)]
+        summary = summary + u', {{clé de tri}} supprimée'
+    if PageTemp.find(u'{{clé de tri|' + pageName.lower() + u'}}') != -1 and PageTemp.find(u'{{S|verb pronominal|fr}}') == -1:
+        PageTemp = PageTemp[:PageTemp.find(u'{{clé de tri|' + pageName.lower() + u'}}')] + PageTemp[PageTemp.find(u'{{clé de tri|' + pageName.lower() + u'}}')+len(u'{{clé de tri|' + pageName.lower() + u'}}'):len(PageTemp)]
+        summary = summary + u', {{clé de tri}} supprimée'''
+    while PageTemp.find(u'{{S|verbe pronominal|') != -1:
+        # Remplacement de modèle suite à vote
+        PageTemp2 = PageTemp[PageTemp.find(u'{{S|verbe pronominal|'):]
+        if PageTemp2.find(u'{{conj') != -1 and PageTemp2.find(u'{{pronominal|') == -1 and PageTemp2.find(u'{{pronl|') == -1 and PageTemp2.find(u'{{prnl|') == -1 and PageTemp2.find(u'{{réflexif|') == -1 and PageTemp2.find(u'{{réfléchi|') == -1 and PageTemp2.find(u'{{réfl|') == -1:
+            PageTemp3 = PageTemp2[PageTemp2.find(u'{{conj'):]
+            if PageTemp3.find(u'|prnl=') == -1 or PageTemp3.find(u'|prnl=') > PageTemp3.find(u'}}'):
+                PageTemp = PageTemp[:PageTemp.find(u'{{S|verbe pronominal|')] + PageTemp2[:PageTemp2.find(u'{{conj')] + PageTemp3[:PageTemp3.find(u'}}')] + u'|prnl=1' + PageTemp3[PageTemp3.find(u'}}'):]
+        PageTemp = PageTemp[:PageTemp.find(u'{{S|verbe pronominal|')] + u'{{S|verbe|' + PageTemp[PageTemp.find(u'{{S|verbe pronominal|')+len(u'{{S|verbe pronominal|'):]
+    while PageTemp.find(u'\'\'(pronominal)\'\'') != -1:
+        PageTemp2 = PageTemp[PageTemp.find(u'\'\'(pronominal)\'\''):]
+        if PageTemp2.find(u'|prnl=1') != -1 and PageTemp2.find(u'|prnl=1') < PageTemp2.find(u'\n'):
+            PageTemp = PageTemp[:PageTemp.find(u'\'\'(pronominal)\'\'')] + PageTemp[PageTemp.find(u'\'\'(pronominal)\'\'')+ len(u'\'\'(pronominal)\'\''):]
+        else:
+            PageTemp = PageTemp[:PageTemp.find(u'\'\'(pronominal)\'\'')] + u'{{prnl}}' + PageTemp[PageTemp.find(u'\'\'(pronominal)\'\'')+ len(u'\'\'(pronominal)\'\''):]
+
+
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
-	
+
 # TODO : tsolyáni, {{clé de tri|dhu'onikh}}<!-- exception à la règle de la clé de tri car "'" est une lettre à part entière en tsolyáni -->

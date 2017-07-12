@@ -41,6 +41,7 @@ site = pywikibot.Site(siteLanguage, siteFamily)
 username = config.usernames[siteFamily][siteLanguage]
 
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
+addDefaultSort = False
 
 deprecatedTags = {}
 deprecatedTags['big'] = 'strong'
@@ -1625,6 +1626,8 @@ def modification(pageName):
     regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *thumb *\||\])'
     PageTemp = re.sub(regex, ur'\1\3', PageTemp)
 
+    if debugLevel > 0: print u'Remplacements des balises'
+    PageTemp = PageTemp.replace(u'</br>', u'<br/>')
     for oldTag, newTag in deprecatedTags.items():
         if debugLevel > 1: print "Clé : %s, valeur : %s." % (oldTag, newTag)
         if oldTag.find(u' ') == -1:
@@ -1637,6 +1640,8 @@ def modification(pageName):
             closingNewTag = newTag[:newTag.find(u' ')]
         regex = ur'<' + oldTag + ur'([^>]*)>([^\n]*)</' + closingOldTag + '>'
         PageTemp = re.sub(regex, ur'<' + newTag + ur'\1>\2</' +  closingNewTag + '>', PageTemp)
+
+    PageTemp = PageTemp.replace(u'[[Category:', u'[[Catégorie:')
 
     if page.namespace() == 14:
         if debugLevel > 0: print u'Catégorie'
@@ -1816,7 +1821,7 @@ def modification(pageName):
             summary = summary + u', ajout de {{S|traductions}}'
         '''
 
-        if page.namespace() != 12:
+        if page.namespace() == 0:
             if debugLevel > 0: print u'Ajout des {{voir}}'
             if PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}') != -1:
                 PageTemp = PageTemp[:PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[0:1].lower() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|{{lc:{{PAGENAME}}}}'):len(PageTemp)]
@@ -1986,77 +1991,9 @@ def modification(pageName):
                     PageTemp = PageTemp.replace(u'{{vérifier création automatique}}', u'{{vérifier création automatique' + LanguesV + u'}}')
                 #raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 
-            # Clés de tri
-            if debugLevel > 0: print u'Clés de tri'
-            PageTemp = PageTemp.replace(u'{{DEFAULTSORT:', u'{{clé de tri|')
-            PageTemp = PageTemp.replace(u'{{defaultSort:', u'{{clé de tri|')
-            PageTemp = PageTemp.replace(u'{{clef de tri|', u'{{clé de tri|')
-            while PageTemp.find(u'\n{clé de tri') != -1:
-                PageTemp = PageTemp[:PageTemp.find(u'\n{clé de tri')+1] + u'{' + PageTemp[PageTemp.find(u'\n{clé de tri'):len(PageTemp)]
-
-            ClePage = CleTri
-            if PageTemp.find(u'{{clé de tri') == -1 and ClePage != u'' and ClePage.lower() != pageName.lower():
-                    summary = summary + u', {{clé de tri}} ajoutée'
-                    if PageTemp.rfind(u'\n\n[[') != -1:
-                        PageTemp2 = PageTemp[PageTemp.rfind(u'\n\n[['):len(PageTemp)]
-                        if PageTemp2[4:5] == u':' or PageTemp2[5:6] == u':':
-                            PageTemp = PageTemp[:PageTemp.rfind(u'\n\n[[')] + u'\n\n{{clé de tri|' + ClePage + u'}}' + PageTemp[PageTemp.rfind(u'\n\n[['):len(PageTemp)]
-                        else:
-                            PageTemp = PageTemp + u'\n\n{{clé de tri|' + ClePage + u'}}\n'
-                    else:
-                        PageTemp = PageTemp + u'\n\n{{clé de tri|' + ClePage + u'}}\n'
-        
-            elif PageTemp.find(u'{{clé de tri|') != -1 and (PageTemp.find(u'{{langue|fr}}') != -1 or PageTemp.find(u'{{langue|eo}}') != -1 or PageTemp.find(u'{{langue|en}}') != -1 or PageTemp.find(u'{{langue|es}}') != -1 or PageTemp.find(u'{{langue|de}}') != -1 or PageTemp.find(u'{{langue|pt}}') != -1 or PageTemp.find(u'{{langue|it}}') != -1):
-                if debugLevel > 0: print u' vérification de clé existante pour alphabets connus'
-                PageTemp2 = PageTemp[PageTemp.find(u'{{clé de tri|')+len(u'{{clé de tri|'):len(PageTemp)]
-                ClePage = PageTemp2[0:PageTemp2.find(u'}}')]
-                '''if CleTri.lower() != ClePage.lower():
-                    summary = summary + u', {{clé de tri}} corrigée'
-                    PageTemp = PageTemp[:PageTemp.find(u'{{clé de tri|')+len(u'{{clé de tri|')] + CleTri + PageTemp[PageTemp.find(u'{{clé de tri|')+len(u'{{clé de tri|')+PageTemp2.find(u'}}'):len(PageTemp)]'''
-                '''pb ʻokina
-                    if CleTri.lower() == pageName.lower():
-                    summary = summary + u', {{clé de tri}} supprimée'
-                    PageTemp = PageTemp[:PageTemp.find(u'{{clé de tri|')] + PageTemp[PageTemp.find(u'{{clé de tri|')+len(u'{{clé de tri|')+PageTemp2.find(u'}}')+2:len(PageTemp)]'''
-            if debugLevel > 1: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
-
-            baratin = u'{{clé de tri|}}<!-- supprimer si le mot ne contient pas de caractères accentués ni de caractères typographiques (par ex. trait d’union ou apostrophe) ; sinon suivez les instructions à [[Modèle:clé de tri]] -->'
-            if PageTemp.find(baratin) != -1:
-                PageTemp = PageTemp[:PageTemp.find(baratin)] + PageTemp[PageTemp.find(baratin)+len(baratin):len(PageTemp)]
-                summary = summary + u', {{clé de tri|}} supprimée'
-            baratin = u'{{clé de tri|}}<!-- Veuillez mettre juste après « {{clé de tri| » le titre de la page en y enlevant tous les accents et éventuels apostrophes, et en changeant les éventuels traits d’union et autres caractères spéciaux par une espace ; s’il n’y a rien à changer, merci d’effacer ces lignes. -->'
-            '''Inhibé depuis migration Lua :
-            if PageTemp.find(baratin) != -1:
-                PageTemp = PageTemp[:PageTemp.find(baratin)] + PageTemp[PageTemp.find(baratin)+len(baratin):len(PageTemp)]
-                summary = summary + u', {{clé de tri|}} supprimée'
-            if PageTemp.find(u'{{clé de tri|}}') != -1:
-                PageTemp = PageTemp[:PageTemp.find(u'{{clé de tri|}}')] + PageTemp[PageTemp.find(u'{{clé de tri|}}')+len(u'{{clé de tri|}}'):len(PageTemp)]
-                summary = summary + u', {{clé de tri|}} supprimée'
-            if PageTemp.find(u'{{clé de tri}}') != -1:
-                PageTemp = PageTemp[:PageTemp.find(u'{{clé de tri}}')] + PageTemp[PageTemp.find(u'{{clé de tri}}')+len(u'{{clé de tri}}'):len(PageTemp)]
-                summary = summary + u', {{clé de tri}} supprimée'
-            if PageTemp.find(u'{{clé de tri|' + pageName.lower() + u'}}') != -1 and PageTemp.find(u'{{S|verb pronominal|fr}}') == -1:
-                PageTemp = PageTemp[:PageTemp.find(u'{{clé de tri|' + pageName.lower() + u'}}')] + PageTemp[PageTemp.find(u'{{clé de tri|' + pageName.lower() + u'}}')+len(u'{{clé de tri|' + pageName.lower() + u'}}'):len(PageTemp)]
-                summary = summary + u', {{clé de tri}} supprimée'''
-            while PageTemp.find(u'{{S|verbe pronominal|') != -1:
-                # Remplacement de modèle suite à vote
-                PageTemp2 = PageTemp[PageTemp.find(u'{{S|verbe pronominal|'):]
-                if PageTemp2.find(u'{{conj') != -1 and PageTemp2.find(u'{{pronominal|') == -1 and PageTemp2.find(u'{{pronl|') == -1 and PageTemp2.find(u'{{prnl|') == -1 and PageTemp2.find(u'{{réflexif|') == -1 and PageTemp2.find(u'{{réfléchi|') == -1 and PageTemp2.find(u'{{réfl|') == -1:
-                    PageTemp3 = PageTemp2[PageTemp2.find(u'{{conj'):]
-                    if PageTemp3.find(u'|prnl=') == -1 or PageTemp3.find(u'|prnl=') > PageTemp3.find(u'}}'):
-                        PageTemp = PageTemp[:PageTemp.find(u'{{S|verbe pronominal|')] + PageTemp2[:PageTemp2.find(u'{{conj')] + PageTemp3[:PageTemp3.find(u'}}')] + u'|prnl=1' + PageTemp3[PageTemp3.find(u'}}'):]
-                PageTemp = PageTemp[:PageTemp.find(u'{{S|verbe pronominal|')] + u'{{S|verbe|' + PageTemp[PageTemp.find(u'{{S|verbe pronominal|')+len(u'{{S|verbe pronominal|'):]
-            while PageTemp.find(u'\'\'(pronominal)\'\'') != -1:
-                PageTemp2 = PageTemp[PageTemp.find(u'\'\'(pronominal)\'\''):]
-                if PageTemp2.find(u'|prnl=1') != -1 and PageTemp2.find(u'|prnl=1') < PageTemp2.find(u'\n'):
-                    PageTemp = PageTemp[:PageTemp.find(u'\'\'(pronominal)\'\'')] + PageTemp[PageTemp.find(u'\'\'(pronominal)\'\'')+ len(u'\'\'(pronominal)\'\''):]
-                else:
-                    PageTemp = PageTemp[:PageTemp.find(u'\'\'(pronominal)\'\'')] + u'{{prnl}}' + PageTemp[PageTemp.find(u'\'\'(pronominal)\'\'')+ len(u'\'\'(pronominal)\'\''):]
-            if debugLevel > 0: print u'Remplacements des balises'
-            PageTemp = re.sub(ur'\[\[Category:', ur'[[Catégorie:', PageTemp)
-            while PageTemp.find(u'</br>') != -1:
-                PageTemp = PageTemp[:PageTemp.find(u'</br>')] + u'<br/>' + PageTemp[PageTemp.find(u'</br>')+len(u'</br>'):len(PageTemp)]
-            while PageTemp.find(u'<sup/>') != -1:
-                PageTemp = PageTemp[:PageTemp.find(u'<sup/>')] + u'</sup>' + PageTemp[PageTemp.find(u'<sup/>')+len(u'<sup/>'):len(PageTemp)]
+            if addDefaultSort:
+                if debugLevel > 0: print u'Clés de tri'
+                PageTemp = addDefaultSort(PageTemp)
 
             if debugLevel > 0: print u'Catégories de prononciation'
             if pageName[-2:] == u'um' and PageTemp.find(u'ɔm|fr}}') != -1:
@@ -5849,23 +5786,23 @@ def getContentFromPage(page, allowedNamespaces = None):
             try:
                 PageBegin = page.get()
             except pywikibot.exceptions.BadTitle:
-                print u'IsRedirect l 5658'
+                if debugLevel > 0: print u'IsRedirect l 5658'
                 return 'KO'
             except pywikibot.exceptions.IsRedirectPage:
                 #PageBegin = page.get(get_redirect=True)
-                print u'IsRedirect l 5662'
+                if debugLevel > 0: print u'IsRedirect l 5662'
                 return 'KO'
             except pywikibot.exceptions.NoPage:
-                print u'NoPage l 5665'
+                if debugLevel > 0: print u'NoPage l 5665'
                 return 'KO'
             except pywikibot.exceptions.ServerError:
-                print u'NoPage l 5668'
+                if debugLevel > 0: print u'NoPage l 5668'
                 return 'KO'
         else:
-            print u'Page non traitée l 5671'
+            if debugLevel > 0: print u'Page non traitée l 5671'
             return 'KO'
     else:
-        print u'NoPage l 5674'
+        if debugLevel > 0: print u'NoPage l 5674'
         return 'KO'
 
     return PageBegin
@@ -6129,7 +6066,7 @@ def main(*args):
             modification(u'User:' + username + u'/test court')
         elif sys.argv[1] == u'tu':
             # Test unitaire
-            addLine(u"== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n{{fr-rég|}}\n\'\'\'{{subst:PAGENAME}}\'\'\' {{pron||fr}} {{genre ?}}\n#\n#* ''''\n==== {{S|variantes orthographiques}} ====\n==== {{S|synonymes}} ====\n==== {{S|antonymes}} ====\n==== {{S|dérivés}} ====\n==== {{S|apparentés}} ====\n==== {{S|vocabulaire}} ====\n==== {{S|hyperonymes}} ====\n==== {{S|hyponymes}} ====\n==== {{S|méronymes}} ====\n==== {{S|holonymes}} ====\n==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n=== {{S|prononciation}} ===\n* {{pron||fr}}\n* {{écouter|<!--  précisez svp la ville ou la région -->||audio=|lang=}}\n==== {{S|homophones}} ====\n==== {{S|paronymes}} ====\n=== {{S|anagrammes}} ===\n=== {{S|voir aussi}} ===\n* {{WP}}\n=== {{S|références}} ===\n{{clé de tri}}", u'fr', u'prononciation', u'* {{pron|boum|fr}}')
+            addLine(u"== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n{{fr-rég|}}\n\'\'\'{{subst:PAGENAME}}\'\'\' {{pron||fr}} {{genre ?}}\n#\n#* ''''\n==== {{S|variantes orthographiques}} ====\n==== {{S|synonymes}} ====\n==== {{S|antonymes}} ====\n==== {{S|dérivés}} ====\n==== {{S|apparentés}} ====\n==== {{S|vocabulaire}} ====\n==== {{S|hyperonymes}} ====\n==== {{S|hyponymes}} ====\n==== {{S|méronymes}} ====\n==== {{S|holonymes}} ====\n==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n=== {{S|prononciation}} ===\n* {{pron||fr}}\n* {{écouter|<!--  précisez svp la ville ou la région -->||audio=|lang=}}\n==== {{S|homophones}} ====\n==== {{S|paronymes}} ====\n=== {{S|anagrammes}} ===\n=== {{S|voir aussi}} ===\n* {{WP}}\n=== {{S|références}} ===\n", u'fr', u'prononciation', u'* {{pron|boum|fr}}')
         elif sys.argv[1] == u'file' or sys.argv[1] == u'txt':
             crawlerFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'xml':
