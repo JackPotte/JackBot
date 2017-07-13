@@ -34,9 +34,6 @@ checkURL = True
 allNamespaces = False
 output = u'dumps/articles_WPout.txt'
 
-def getWiki(language = 'fr', family = 'wikipedia'):
-    if debugLevel > 1: print u'get ' + language + u'.' + family
-    return pywikibot.Site(language, family)
 
 # Modification du wiki
 def modification(pageName):
