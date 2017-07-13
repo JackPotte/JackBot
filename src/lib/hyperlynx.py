@@ -1082,7 +1082,11 @@ def hyperlynx(PageTemp, debugLevel = 0):
         PageTemp = PageTemp.replace(u'|langue=JackBot',u'|langue=en')
     
     PageEnd = PageEnd + PageTemp
-    PageEnd = PageEnd.replace(u'lien mortarchive', u'lien mort archive')
+
+    # Rustines
+    PageEnd = PageEnd.replace(u'{{lien mortarchive|',u'{{lien mort archive|')
+    PageEnd = PageEnd.replace(u'{{citeencyclopedia|',u'{{cite encyclopedia|')
+
     if debugLevel > 0: print(u'Fin hyperlynx.py')
     return PageEnd
 

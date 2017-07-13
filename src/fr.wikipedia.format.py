@@ -120,9 +120,6 @@ def modification(pageName):
     PageTemp = PageEnd + PageTemp
     '''
     
-    # Rustine pour https://fr.wikipedia.org/w/index.php?title=Achille_Varzi&diff=123170171&oldid=122929021
-    PageTemp = PageTemp.replace(u'{{lien mortarchive|',u'{{lien mort archive|')
-    
     # Nombres
     PageTemp = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', PageTemp)
 
@@ -370,7 +367,7 @@ if len(sys.argv) > 1:
     if arg1 == 'test':
         modification(u'Utilisateur:' + username + u'/test')
     if arg1 == 'test2':
-        modification(u'Utilisateur:' + username + u'/test2')
+        modification(u'Utilisateur:' + username + u'/test court')
     elif arg1 == 'txt':
         crawlerFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
     elif arg1 == 'u':
