@@ -49,7 +49,8 @@ addDefaultSort = False
 deprecatedTags = {}
 deprecatedTags['big'] = 'strong'
 deprecatedTags['center'] = 'div style="text-align: center;"'
-deprecatedTags['font color *= *"?'] = 'span style="color:'
+deprecatedTags['font color *= *"?'] = 'span style="font-size:'
+deprecatedTags['font size *= *"?'] = 'span style="text-size:'
 deprecatedTags['strike'] = 's'
 deprecatedTags['tt'] = 'code'
 
@@ -3852,10 +3853,11 @@ def modification(pageName):
     #PageEnd = hyperlynx(PageEnd) # TODO: unit tests
     if debugLevel > 0: pywikibot.output (u"\n\03{red}---------------------------------------------\03{default}")
     if PageEnd != PageBegin:
-        # Modifications mineures, ne justifiant pas une édition à elles seules
-        PageEnd = PageEnd.replace(u'  ', u' ')
-        PageEnd = PageEnd.replace(u'\n\n\n\n', u'\n\n\n')
-        PageEnd = PageEnd.replace(u'.\n=', u'.\n\n=')
+        if page.namespace() == u'':
+            # Modifications mineures, ne justifiant pas une édition à elles seules
+            PageEnd = PageEnd.replace(u'  ', u' ')
+            PageEnd = PageEnd.replace(u'\n\n\n\n', u'\n\n\n')
+            PageEnd = PageEnd.replace(u'.\n=', u'.\n\n=')
         savePage(page, PageEnd, summary)
     elif debugLevel > 0:
         print "Aucun changement"
