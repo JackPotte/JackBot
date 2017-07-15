@@ -2067,8 +2067,8 @@ def modification(pageName):
         PageTemp = PageTemp.replace(u' }}', '}}')
         PageTemp = PageTemp.replace(u'|pinv= ', u'|pinv=')
         PageTemp = PageTemp.replace(u'|pinv=. ', u'|pinv=.')
-        PageTemp = re.sub(ur'«([^ ])', ur'« \1', PageTemp)
-        PageTemp = re.sub(ur'([^ ])»', ur'\1 »', PageTemp)
+        PageTemp = re.sub(ur'«[^  \t]*', ur'« ', PageTemp)
+        PageTemp = re.sub(ur'[^  \t]*»', ur' »', PageTemp)
         PageTemp = PageTemp.replace(u'{|\n|}', u'')
         regex = ur"({{S\|verbe\|en}} *=* *\n'*)to "
         if re.search(regex, PageTemp):
@@ -4085,13 +4085,13 @@ def getContentFromPage(page, allowedNamespaces = None):
     PageBegin = u''
     if page.exists():
         if type(allowedNamespaces) == type([]): #'list'
-            if debugLevel > 0: print u' namespace : ' + str(page.namespace())
+            if debugLevel > 1: print u' namespace : ' + str(page.namespace())
             condition = page.namespace() in allowedNamespaces
         elif allowedNamespaces == 'All':
-            if debugLevel > 0: print u' all namespaces'
+            if debugLevel > 1: print u' all namespaces'
             condition = True
         else:
-            if debugLevel > 0: print u' content namespaces'
+            if debugLevel > 1: print u' content namespaces'
             condition = page.namespace() in [0, 12, 14, 100] or page.title().find(username) != -1
         if condition:
             try:
