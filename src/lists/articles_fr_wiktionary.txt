@@ -1,14 +1,3 @@
-MediaWiki:Abusefilter-warning
-MediaWiki:Abusefilter-warning-section-langue
-MediaWiki:Dberrortext
-MediaWiki:Deletedtext
-MediaWiki:Edittools
-MediaWiki:Expand templates intro
-MediaWiki:Gadget-ChercheDansSousCategories.js
-MediaWiki:Gadget-LiveRC.js
-MediaWiki:Linksearch-text
-MediaWiki:Newarticletext
-MediaWiki:Noarticletext
 Modèle:'/Documentation
 Modèle:(/Documentation
 Modèle:)/Documentation

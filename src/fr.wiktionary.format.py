@@ -1635,8 +1635,12 @@ def modification(pageName):
             closingNewTag = newTag
         else:
             closingNewTag = newTag[:newTag.find(u' ')]
-        regex = ur'<' + oldTag + ur'([^>]*)>([^\n]*)</' + closingOldTag + '>'
-        PageTemp = re.sub(regex, ur'<' + newTag + ur'\1>\2</' +  closingNewTag + '>', PageTemp)
+        #regex = ur'<' + oldTag + ur'([^>]*)>([^\n]*)</' + closingOldTag + '>' # bug https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:-flex-nom-fam-/Documentation&diff=prev&oldid=24027702
+        regex = ur'< *' + oldTag + ur'([^>]*) *>'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur'<' + newTag + ur'\1>', PageTemp)
+        regex = ur'</ *' + closingOldTag + ' *>'
+        PageTemp = re.sub(regex, ur'</' + closingNewTag + '>', PageTemp)
 
     PageTemp = PageTemp.replace(u'[[Category:', u'[[Catégorie:')
 
