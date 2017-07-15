@@ -8,13 +8,14 @@ def frWiktTemplates():
 frWiktTemplates = {}
 frWiktTemplates[u'template'] = 'category'
 
-#TODO : pb du nested set model (via JSON API) qui nécessiterait un nb indéfini de compteurs (left, right) non ordonnés par l'ordre alphabétique
+#TODO : pb du nested set model (via JSON API) qui nécessiterait une indexation
+    #ou un nb indéfini de compteurs (left, right) non ordonnés alphabétiquement
 frWiktCategories[u'Mythologie'] = [u'mythologie', 1, 4]
 frWiktCategories[u'Plantes imaginaires'] = [u'plantes imaginaires', 2, 3]
 
 # Chaine avec la parente
-frWiktCategories[u'Mythologie'] = [u'Lexiques']
-frWiktCategories[u'Divinités‎'] = [u'Mythologie']
+parentCategory[u'Mythologie'] = [u'Lexiques']
+parentCategory[u'Divinités‎'] = [u'Mythologie']
 
 # Liste exclusions par modèle
 frWiktTemplates[u'mythologie'] = ['Animaux imaginaires', 'Plantes imaginaires', 'Créatures', 'Divinité']
@@ -27,6 +28,11 @@ templateLimit = len(frWiktTemplates)
 SParameters = {}
 SParameters['-adj-dem-'] = 'adjectif démonstratif'
 #if template in Modele, Modele.index(template)...
+try:
+    Index = Section.index(SParameters[TitreSection])
+except ValueError:
+    if debugLevel > 0: print u'Section introuvable : ' + SParameters[TitreSection]
+    return
 
 
 # Paragraphes autorisant les modèles catégorisants par langue ({{voir| et {{voir/ sont gérés individuellement)
