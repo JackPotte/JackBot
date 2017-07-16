@@ -1606,6 +1606,7 @@ def modification(pageName):
     PageBegin = getContentFromPage(page, 'All')
     if PageBegin == 'KO': return
     PageTemp = PageBegin
+    PageEnd = u''
     CleTri = defaultSort(pageName)
     rePageName = re.escape(pageName)
 
@@ -1645,14 +1646,9 @@ def modification(pageName):
 
     PageTemp = PageTemp.replace(u'[[Category:', u'[[Catégorie:')
 
-    if page.namespace() == 100:
-        if pageName.find(u'Annexe:Sinogrammes/') != -1 and PageTemp.find('[[Catégorie:Sinogrammes') == -1:
-            PageTemp = PageTemp + u'\n\n' + '[[Catégorie:Sinogrammes]]\n'
-
-    #elif page.namespace() == 14:
+    #if page.namespace() == 14:
         #if pageName.find(u'Catégorie:Lexique en français d') != -1 and PageTemp.find(u'[[Catégorie:Lexiques en français|') == -1:
         #    PageTemp = PageTemp + u'\n[[Catégorie:Lexiques en français|' + defaultSort(trim(pageName[pageName.rfind(' '):])) + u']]\n'
-        #    PageEnd = PageBegin
 
     elif page.namespace() == 0 or username in pageName:
         regex = ur'{{=([a-z\-]+)=}}'
