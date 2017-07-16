@@ -395,6 +395,7 @@ Erreur.append("The page you requested cannot be found")
 Erreur.append("this page can't be found")
 Erreur.append("The service you requested is not available at this time")
 Erreur.append("There is currently no text in this page.") # wiki
+Erreur.append("500 Internal Server Error")
 # En français
 Erreur.append("Cette forme est introuvable !")
 Erreur.append("Soit vous avez mal &#233;crit le titre")
