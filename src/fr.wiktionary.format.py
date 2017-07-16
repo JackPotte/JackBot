@@ -1616,13 +1616,14 @@ def modification(pageName):
     for badFileParameter in badFileParameters:
         regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *' + badFileParameter + ur' *(\||\])'
         PageTemp = re.sub(regex, ur'\1\3', PageTemp)
-    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *thumb *\||\])'
+    # Doublons
+    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *thumb *[\|\]])'
     PageTemp = re.sub(regex, ur'\1\3', PageTemp)
-    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *vignette *\||\])'
+    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *vignette *[\|\]])'
     PageTemp = re.sub(regex, ur'\1\3', PageTemp)
-    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *vignette *\||\])'
+    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *vignette *[\|\]])'
     PageTemp = re.sub(regex, ur'\1\3', PageTemp)
-    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *thumb *\||\])'
+    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *thumb *[\|\]])'
     PageTemp = re.sub(regex, ur'\1\3', PageTemp)
 
     if debugLevel > 0: print u'Remplacements des balises'
