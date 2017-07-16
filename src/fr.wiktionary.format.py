@@ -4372,13 +4372,18 @@ def timeAfterLastEdition(page):
     return diff_last_edit_time.seconds/60 + diff_last_edit_time.days*24*60
 
 # Traitement des modifications d'un compte
-def crawlerUser(username, jusqua, apres):
+def crawlerUser(username, jusqua, apres, regex = None):
     modifier = u'False'
     compteur = 0
     gen = pagegenerators.UserContributionsGenerator(username, site = site)
     for Page in pagegenerators.PreloadingGenerator(gen,100):
         if not apres or apres == u'' or modifier == u'True':
-            modification(Page.title())
+            if regex is None:
+                modification(Page.title())
+            else:
+                PageTemp = getContentFromPageName(Page.title(), allowedNamespaces = 'All')
+                if re.search(regex, PageTemp):
+                    print Page.title()
             compteur = compteur + 1
             if compteur > jusqua: break
         elif Page.title() == apres:
@@ -4421,7 +4426,7 @@ def main(*args):
         elif sys.argv[1] == u's':
             crawlerSearch(u'Annexe:Sinogrammes/')
         elif sys.argv[1] == u'u':
-            crawlerUser(u'Utilisateur:JackPotte', 1000, u'')
+            crawlerUser(u'Utilisateur:JackBot', 10000, u'', u'«')
         elif sys.argv[1] == u'redirects':
             crawlerRedirects()
         elif sys.argv[1] == u'all':
