@@ -939,6 +939,7 @@ Modele.append(u'mahjong')
 Modele.append(u'maintenance')
 Modele.append(u'majong')
 Modele.append(u'maladies de l’œil')
+Modele.append(u'maladie')
 Modele.append(u'maladies')
 Modele.append(u'mammifères')
 Modele.append(u'marbrerie')
@@ -3238,7 +3239,7 @@ def modification(pageName):
                         PageTemp2 = PageTemp[endPosition+1:]
                         currentLanguage = PageTemp2[:PageTemp2.find(u'|')]
 
-                        if currentLanguage != '' and currentLanguage != u'mo': # Bug du site fermé, ex : https://fr.wiktionary.org/w/index.php?title=chat&diff=prev&oldid=9366302
+                        if currentLanguage != '': #TODO: reproduire le bug du site fermé, ex : https://fr.wiktionary.org/w/index.php?title=chat&diff=prev&oldid=9366302
                             # Identification des Wiktionnaires hébergeant les traductions
                             siteExterne = u''
                             pageExterne = u''
@@ -4413,8 +4414,7 @@ def main(*args):
         elif sys.argv[1] == u'link' or sys.argv[1] == u'm':
             crawlerLink(site, u'Modèle:ex',u'')
         elif sys.argv[1] == u'cat':
-            crawlerCat(u'suédois', False, u'')
-            crawlerCat(u'Gentilés en français', False, u'')
+            crawlerCat(u'Traductions en yoruba', False, u'')
             #crawlerCat(u'Pluriels manquants en français', False, u'')
             #crawlerCat(u'Catégorie:Wiktionnaire:Sections de type avec locution forcée', False, u'')
             #crawlerCat(u'Catégorie:Genres manquants en français', False, u'')
