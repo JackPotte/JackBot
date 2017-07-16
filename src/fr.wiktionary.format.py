@@ -2070,8 +2070,8 @@ def modification(pageName):
         PageTemp = PageTemp.replace(u' }}', '}}')
         PageTemp = PageTemp.replace(u'|pinv= ', u'|pinv=')
         PageTemp = PageTemp.replace(u'|pinv=. ', u'|pinv=.')
-        PageTemp = re.sub(ur'«[^  \t]*', ur'« ', PageTemp)
-        PageTemp = re.sub(ur'[^  \t]*»', ur' »', PageTemp)
+        #PageTemp = re.sub(ur'«[  \t]*', ur'« ', PageTemp) # pb &#160;
+        #PageTemp = re.sub(ur'[  \t]*»', ur' »', PageTemp)
         PageTemp = PageTemp.replace(u'{|\n|}', u'')
         regex = ur"({{S\|verbe\|en}} *=* *\n'*)to "
         if re.search(regex, PageTemp):
@@ -3299,6 +3299,9 @@ def modification(pageName):
                                     except AttributeError:
                                         PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '--')
                                         if debugLevel > 1: print u'  removed site'
+                                    except pywikibot.exceptions.InconsistentTitleReceived:
+                                        PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '-')
+                                        if debugLevel > 1: print u'  InconsistentTitleReceived'
                                     if pageExtExists:
                                         PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '+')
                                         if debugLevel > 1: print u'  exists'
