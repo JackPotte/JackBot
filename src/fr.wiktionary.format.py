@@ -1708,11 +1708,17 @@ def modification(pageName):
         summary = summary + u', correction de font-size'
         PageTemp = re.sub(regex, ur'<span style="font-size:' + str(fontSize[int(s.group(1))]) + ur'em">', PageTemp)
 
-    PageTemp = PageTemp.replace(u'<strong><strong>', u'<span style="font-size:20px;">20px</span>')
-    PageTemp = PageTemp.replace(u'<strong><strong><strong>', u'<span style="font-size:25px;">25px</span>')
-    PageTemp = PageTemp.replace(u'<strong><strong><strong><strong>', u'<span style="font-size:40px;">40px</span>')
-    PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong>', u'<span style="font-size:50px;">50px</span>')
-    PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong><strong>', u'<span style="font-size:75px;">75px</span>')
+    # Fix :
+    regex = ur'(<span style="font\-size:[0-9]+px;">)[0-9]+px</span>([^<]*)</strong></strong>'
+    if re.search(regex, PageTemp):
+        PageTemp = re.sub(regex, ur'\1 \2</span>', PageTemp)
+
+    PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong><strong>', u'<span style="font-size:75px;">')
+    PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong>', u'<span style="font-size:50px;">')
+    PageTemp = PageTemp.replace(u'<strong><strong><strong><strong>', u'<span style="font-size:40px;">')
+    PageTemp = PageTemp.replace(u'<strong><strong><strong>', u'<span style="font-size:25px;">')
+    PageTemp = PageTemp.replace(u'<strong><strong>', u'<span style="font-size:20px;">')
+    PageTemp = re.sub(ur'(</strong>)+', ur'</span>', PageTemp)
 
     PageTemp = PageTemp.replace(u'[[Category:', u'[[Catégorie:')
 
