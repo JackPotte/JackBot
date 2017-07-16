@@ -1614,7 +1614,7 @@ def modification(pageName):
     summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
     if debugLevel > 0: print u'------------------------------------'
     print(pageName.encode(config.console_encoding, 'replace'))
-
+    if pageName[-3:] == '.js': return
     if pageName.find(u'’') != -1:
         page = Page(site, pageName.replace(u'’', u'\''))
         if not page.exists():
