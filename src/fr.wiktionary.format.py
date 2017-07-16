@@ -1718,7 +1718,10 @@ def modification(pageName):
     PageTemp = PageTemp.replace(u'<strong><strong><strong><strong>', u'<span style="font-size:40px;">')
     PageTemp = PageTemp.replace(u'<strong><strong><strong>', u'<span style="font-size:25px;">')
     PageTemp = PageTemp.replace(u'<strong><strong>', u'<span style="font-size:20px;">')
-    PageTemp = re.sub(ur'(</strong>)+', ur'</span>', PageTemp)
+    PageTemp = re.sub(ur'</strong></strong>', ur'</span>', PageTemp)
+    regex = ur'<strong>([^<]*)</span>'
+    if re.search(regex, PageTemp):
+        PageTemp = re.sub(regex, ur'<strong>\1</strong>', PageTemp)
 
     PageTemp = PageTemp.replace(u'[[Category:', u'[[Catégorie:')
 
