@@ -49,10 +49,27 @@ addDefaultSort = False
 deprecatedTags = {}
 deprecatedTags['big'] = 'strong'
 deprecatedTags['center'] = 'div style="text-align: center;"'
-deprecatedTags['font color *= *"?'] = 'span style="font-size:'
-deprecatedTags['font size *= *"?'] = 'span style="text-size:'
+deprecatedTags['font color *= *"?'] = 'span style="color:'
+deprecatedTags['font size *= *"?'] = 'span style="font-size:'
 deprecatedTags['strike'] = 's'
 deprecatedTags['tt'] = 'code'
+fontSize = {}
+fontSize[1] = 0.63
+fontSize[2] = 0.82
+fontSize[3] = 1.0
+fontSize[4] = 1.13
+fontSize[5] = 1.5
+fontSize[6] = 2.0
+fontSize[7] = 3.0
+fontColor = []
+fontColor.append('black')
+fontColor.append('blue')
+fontColor.append('green')
+fontColor.append('orange')
+fontColor.append('red')
+fontColor.append('white')
+fontColor.append('yellow')
+fontColor.append('#808080')
 
 Sections = []
 Niveau = []
@@ -1629,6 +1646,14 @@ def modification(pageName):
 
     if debugLevel > 0: print u'Remplacements des balises'
     PageTemp = PageTemp.replace(u'</br>', u'<br/>')
+
+    regex = ur'<font color="?([^>"]*)"?>'
+    pattern = re.compile(regex, re.UNICODE)
+    for match in pattern.finditer(PageTemp):
+        if debugLevel > 1: print u'Remplacement de ' + match.group(0) + u' par <span style="color:' + match.group(1) + u'">'
+        PageTemp = PageTemp.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
+        PageTemp = PageTemp.replace('</font>', u'</span>')
+
     for oldTag, newTag in deprecatedTags.items():
         if debugLevel > 1: print "Clé : %s, valeur : %s." % (oldTag, newTag)
         if oldTag.find(u' ') == -1:
@@ -1642,9 +1667,40 @@ def modification(pageName):
         #regex = ur'<' + oldTag + ur'([^>]*)>([^\n]*)</' + closingOldTag + '>' # bug https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:-flex-nom-fam-/Documentation&diff=prev&oldid=24027702
         regex = ur'< *' + oldTag + ur'([^>]*) *>'
         if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur'<' + newTag + ur'\1>', PageTemp)
+            summary = summary + u', ajout de ' + newTag
+            #PageTemp = re.sub(regex, ur'<' + newTag + ur'\1>', PageTemp)
+            pattern = re.compile(regex, re.UNICODE)
+            for match in pattern.finditer(PageTemp):
+                summary = summary + u', correction de color'
+                if newTag.find(u'font-size') != -1:
+                    openingTag = newTag + str(fontSize[int(match.group(1))]) + ur'em'
+                else:
+                    openingTag = newTag + match.group(1)
+                PageTemp = PageTemp.replace(match.group(0), ur'<' + openingTag + ur'">')
+
         regex = ur'</ *' + closingOldTag + ' *>'
         PageTemp = re.sub(regex, ur'</' + closingNewTag + '>', PageTemp)
+
+    # Fix fontColor
+    PageTemp = PageTemp.replace(u'font-color', u'color')
+    regex = ur'<span style="font\-size:([a-z]+)>'
+    pattern = re.compile(regex, re.UNICODE)
+    for match in pattern.finditer(PageTemp):
+        summary = summary + u', correction de color'
+        PageTemp = PageTemp.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
+        PageTemp = PageTemp.replace('</font>', u'</span>')
+
+    regex = ur'<span style="font\-size:(#[0-9]+)"?>'
+    s = re.search(regex, PageTemp)
+    if s:
+        summary = summary + u', correction de color'
+        PageTemp = re.sub(regex, ur'<span style="color:' + s.group(1) + ur'">', PageTemp)
+
+    regex = ur'<span style="text\-size:([0-9]+)"?>'
+    s = re.search(regex, PageTemp)
+    if s:
+        summary = summary + u', correction de font-size'
+        PageTemp = re.sub(regex, ur'<span style="font-size:' + str(fontSize[int(s.group(1))]) + ur'em">', PageTemp)
 
     PageTemp = PageTemp.replace(u'[[Category:', u'[[Catégorie:')
 
