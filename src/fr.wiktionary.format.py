@@ -3245,7 +3245,7 @@ def modification(pageName):
                             pageExterne = u''
                             PageTemp3 = PageTemp2[PageTemp2.find(u'|')+1:]
                             if debugLevel > 0: print u' langue distante : ' + currentLanguage
-                            elif PageTemp3.find('}}') == "" or not PageTemp3.find('}}'):
+                            if PageTemp3.find('}}') == "" or not PageTemp3.find('}}'):
                                 if debugLevel > 1: print u'  aucun mot distant'
                                 if PageEnd.rfind('<!--') == -1 or PageEnd.rfind('<!--') < PageEnd.rfind('-->'):
                                     # On retire le modèle pour que la page ne soit plus en catégorie de maintenance
@@ -3257,6 +3257,7 @@ def modification(pageName):
                             else:
                                 siteExterne = getWiki(currentLanguage, siteFamily)
                             if siteExterne == 'KO':
+                                if debugLevel > 1: print u'  no site (--)'
                                 PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '--')
                             elif siteExterne != u'':
                                 if PageTemp3.find(u'|') != -1 and PageTemp3.find(u'|') < PageTemp3.find('}}'):
@@ -3275,11 +3276,11 @@ def modification(pageName):
                                 try:
                                     PageExt = Page(siteExterne, pageExterne)
                                 except pywikibot.exceptions.BadTitle:
-                                    if debugLevel > 1: print u'  BadTitle'
+                                    if debugLevel > 1: print u'  BadTitle (-)'
                                     PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '-')
                                     pageFound = False
                                 except pywikibot.exceptions.InvalidTitle:
-                                    if debugLevel > 1: print u'  InvalidTitle'
+                                    if debugLevel > 1: print u'  InvalidTitle (-)'
                                     PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '-')
                                     pageFound = False
                                 except pywikibot.exceptions.NoPage:
@@ -3295,22 +3296,21 @@ def modification(pageName):
                                             PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '-')
                                             pageFound = False
                                 if pageFound:
-                                    pageExtExists = False
+                                    pageExtExists = True
                                     try:
                                         pageExtExists = PageExt.exists()
                                     except AttributeError:
+                                        if debugLevel > 1: print u'  removed site (--)'
                                         PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '--')
-                                        if debugLevel > 1: print u'  removed site'
+                                        pageExtExists = False
                                     except pywikibot.exceptions.InconsistentTitleReceived:
+                                        if debugLevel > 1: print u'  InconsistentTitleReceived (-)'
                                         PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '-')
-                                        if debugLevel > 1: print u'  InconsistentTitleReceived'
+                                        pageExtExists = False
+
                                     if pageExtExists:
                                         PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '+')
-                                        if debugLevel > 1: print u'  exists'
-                                    else:
-                                        PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '-')
-                                        if debugLevel > 1: print u'  not exists'
-                            elif debugLevel > 1: print u'  no site'
+                                        if debugLevel > 1: print u'  exists (+)'
 
                 elif currentTemplate == u'(':
                     if translationSection:
