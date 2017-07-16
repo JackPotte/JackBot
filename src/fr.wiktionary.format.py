@@ -4482,7 +4482,7 @@ def main(*args):
         elif sys.argv[1] == u's':
             crawlerSearch(u'Annexe:Sinogrammes/')
         elif sys.argv[1] == u'u':
-            crawlerUser(u'Utilisateur:JackBot', 10000, u'', u'«')
+            crawlerUser(u'Utilisateur:JackBot', 10000, u'')
         elif sys.argv[1] == u'redirects':
             crawlerRedirects()
         elif sys.argv[1] == u'all':
