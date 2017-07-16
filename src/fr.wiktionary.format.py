@@ -1682,6 +1682,7 @@ def modification(pageName):
         PageTemp = re.sub(regex, ur'</' + closingNewTag + '>', PageTemp)
 
     # Fix fontColor
+    #TODO: <strong>{6} par <span style="font-size:75px;"> (dump)
     PageTemp = PageTemp.replace(u'font-color', u'color')
     regex = ur'<span style="font\-size:([a-z]+)>'
     pattern = re.compile(regex, re.UNICODE)
