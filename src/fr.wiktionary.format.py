@@ -1645,12 +1645,14 @@ def modification(pageName):
 
     PageTemp = PageTemp.replace(u'[[Category:', u'[[Catégorie:')
 
-    if page.namespace() == 14:
-        if debugLevel > 0: print u'Catégorie'
-        # Catégorie
+    if page.namespace() == 100:
+        if pageName.find(u'Annexe:Sinogrammes/') != -1 and PageTemp.find('[[Catégorie:Sinogrammes') == -1:
+            PageTemp = PageTemp + u'\n\n' + '[[Catégorie:Sinogrammes]]\n'
+
+    #elif page.namespace() == 14:
         #if pageName.find(u'Catégorie:Lexique en français d') != -1 and PageTemp.find(u'[[Catégorie:Lexiques en français|') == -1:
         #    PageTemp = PageTemp + u'\n[[Catégorie:Lexiques en français|' + defaultSort(trim(pageName[pageName.rfind(' '):])) + u']]\n'
-        PageEnd = PageBegin
+        #    PageEnd = PageBegin
 
     elif page.namespace() == 0 or username in pageName:
         regex = ur'{{=([a-z\-]+)=}}'
@@ -4417,7 +4419,7 @@ def main(*args):
             #crawlerCat(u'Catégorie:Wiktionnaire:Sections de type avec locution forcée', False, u'')
             #crawlerCat(u'Catégorie:Genres manquants en français', False, u'')
         elif sys.argv[1] == u's':
-            crawlerSearch(u'"source à préciser"')
+            crawlerSearch(u'Annexe:Sinogrammes/')
         elif sys.argv[1] == u'u':
             crawlerUser(u'Utilisateur:JackPotte', 1000, u'')
         elif sys.argv[1] == u'redirects':
