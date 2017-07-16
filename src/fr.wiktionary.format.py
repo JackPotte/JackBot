@@ -1650,7 +1650,7 @@ def modification(pageName):
         #if pageName.find(u'Catégorie:Lexique en français d') != -1 and PageTemp.find(u'[[Catégorie:Lexiques en français|') == -1:
         #    PageTemp = PageTemp + u'\n[[Catégorie:Lexiques en français|' + defaultSort(trim(pageName[pageName.rfind(' '):])) + u']]\n'
 
-    elif page.namespace() == 0 or username in pageName:
+    if page.namespace() == 0 or username in pageName:
         regex = ur'{{=([a-z\-]+)=}}'
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, ur'{{langue|\1}}', PageTemp)
