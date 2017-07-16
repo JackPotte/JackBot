@@ -1682,7 +1682,6 @@ def modification(pageName):
         PageTemp = re.sub(regex, ur'</' + closingNewTag + '>', PageTemp)
 
     # Fix fontColor
-    #TODO: <strong>{6} par <span style="font-size:75px;"> (dump)
     PageTemp = PageTemp.replace(u'font-color', u'color')
     regex = ur'<span style="font\-size:([a-z]+)>'
     pattern = re.compile(regex, re.UNICODE)
@@ -1702,6 +1701,12 @@ def modification(pageName):
     if s:
         summary = summary + u', correction de font-size'
         PageTemp = re.sub(regex, ur'<span style="font-size:' + str(fontSize[int(s.group(1))]) + ur'em">', PageTemp)
+
+    PageTemp = PageTemp.replace(u'<strong><strong>', u'<span style="font-size:20px;">20px</span>')
+    PageTemp = PageTemp.replace(u'<strong><strong><strong>', u'<span style="font-size:25px;">25px</span>')
+    PageTemp = PageTemp.replace(u'<strong><strong><strong><strong>', u'<span style="font-size:40px;">40px</span>')
+    PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong>', u'<span style="font-size:50px;">50px</span>')
+    PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong><strong>', u'<span style="font-size:75px;">75px</span>')
 
     PageTemp = PageTemp.replace(u'[[Category:', u'[[Catégorie:')
 
