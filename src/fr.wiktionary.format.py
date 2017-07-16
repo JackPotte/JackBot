@@ -601,6 +601,7 @@ Modele.append(u'cirque')
 Modele.append(u'cocktails')
 Modele.append(u'coiffure')
 Modele.append(u'coléoptères')
+Modele.append(u'colorimétrie')
 Modele.append(u'combat')
 Modele.append(u'comm')
 Modele.append(u'commerce')
@@ -2146,6 +2147,14 @@ def modification(pageName):
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, ur"\1", PageTemp)
 
+        regex = ur' *{{pluriel \?\|[^}]*}}(\n# ?\'*Pluriel d)'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur'\1', PageTemp)
+
+        regex = ur'(\[\[(Image|Fichier|File):[^\]]+)\|\|? *(\||\])'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur'\1\3', PageTemp)
+
         if debugLevel > 0: print u'Formatage des modèles'
         PageTemp = PageTemp.replace(u'\n {{', u'\n{{')
         if debugLevel > 1: print u' Remplacements des anciens modèles de langue'
@@ -2248,6 +2257,9 @@ def modification(pageName):
         PageTemp = PageTemp.replace(u'#*: {{trad-exe|fr}}', u'')
         PageTemp = PageTemp.replace(u'\n{{WP', u'\n* {{WP')
 
+        regex = ur'\(*ISBN +([0-9\-]+)\)*'
+        if re.search(regex, PageTemp): PageTemp = re.sub(regex, ur'{{ISBN|\1}}', PageTemp)
+
         regex = ur"{{ *dés *([\|}])"
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, ur"{{désuet\1", PageTemp)
@@ -2261,84 +2273,27 @@ def modification(pageName):
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, ur"{{vieilli\1", PageTemp)       
 
-        # Retrait des modèles alias en doublon
-        PageTemp = PageTemp.replace(u'{{figuré|fr}} {{métaphore|fr}}', u'{{figuré|fr}}')
-        PageTemp = PageTemp.replace(u'{{métaphore|fr}} {{figuré|fr}}', u'{{figuré|fr}}')
+        if debugLevel > 1: print u' Modèles alias en doublon'
+        regex = ur"(\{\{figuré\|[^}]*\}\}) ?\{\{métaphore\|[^}]*\}\}"
+        pattern = re.compile(regex)
+        PageTemp = pattern.sub(ur"\1", PageTemp)
+        regex = ur"(\{\{métaphore\|[^}]*\}\}) ?\{\{figuré\|[^}]*\}\}"
+        pattern = re.compile(regex)
+        PageTemp = pattern.sub(ur"\1", PageTemp)
 
         regex = ur"(\{\{départements\|[^}]*\}\}) ?\{\{géographie\|[^}]*\}\}"
         pattern = re.compile(regex)
         PageTemp = pattern.sub(ur"\1", PageTemp)
-        # Espace manquant
-        regex = ur'(\{\{départements\|[^}]*\}\})([^ ]+)'
-        pattern = re.compile(regex)
-        PageTemp = pattern.sub(ur'\1 \2', PageTemp)
 
         regex = ur"(\{\{localités\|[^}]*\}\}) ?\{\{géographie\|[^}]*\}\}"
         pattern = re.compile(regex)
         PageTemp = pattern.sub(ur"\1", PageTemp)
-        # Espace manquant
-        regex = ur'(\{\{localités\|[^}]*\}\})([^ ]+)'
-        pattern = re.compile(regex)
-        PageTemp = pattern.sub(ur'\1 \2', PageTemp)
 
         regex = ur"(\{\{provinces\|[^}]*\}\}) ?\{\{géographie\|[^}]*\}\}"
         pattern = re.compile(regex)
         PageTemp = pattern.sub(ur"\1", PageTemp)
-        # Espace manquant
-        regex = ur'(\{\{provinces\|[^}]*\}\})([^ ]+)'
-        pattern = re.compile(regex)
-        PageTemp = pattern.sub(ur'\1 \2', PageTemp)
 
-        regex = ur' *{{pluriel \?\|[^}]*}}(\n# ?\'*Pluriel d)'
-        if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur'\1', PageTemp)
-
-        # URL de références : elles ne contiennent pas les diacritiques des {{PAGENAME}}
-        if debugLevel > 0: print u'Références'
-        while PageTemp.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=') != -1:
-            PageTemp2 = PageTemp[PageTemp.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=')+len(u'[http://www.sil.org/iso639-3/documentation.asp?id='):]
-            PageTemp = PageTemp[:PageTemp.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=')] + u'{{R:SIL|' + PageTemp2[:PageTemp2.find(u' ')] + '}}' + PageTemp2[PageTemp2.find(u']')+1:]
-            summary = summary + u', ajout de {{R:SIL}}'
-        while PageTemp.find(u'[http://www.cnrtl.fr/definition/') != -1:
-            PageTemp2 = PageTemp[PageTemp.find(u'[http://www.cnrtl.fr/definition/')+len(u'[http://www.cnrtl.fr/definition/'):len(PageTemp)]
-            PageTemp = PageTemp[:PageTemp.find(u'[http://www.cnrtl.fr/definition/')] + u'{{R:TLFi|' + PageTemp2[:PageTemp2.find(u' ')] + '}}' + PageTemp2[PageTemp2.find(u']')+1:len(PageTemp2)]
-            summary = summary + u', ajout de {{R:TLFi}}'
-        while PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/') != -1:
-            PageTemp2 = PageTemp[PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/')+len(u'[http://www.mediadico.com/dictionnaire/definition/'):len(PageTemp)]
-            PageTemp = PageTemp[:PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/')] + u'{{R:Mediadico|' + PageTemp2[:PageTemp2.find(u'/1')] + '}}' + PageTemp2[PageTemp2.find(u']')+1:len(PageTemp2)]
-            summary = summary + u', ajout de {{R:Mediadico}}'
-        while PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}') != -1:
-            PageTemp = PageTemp[:PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}')+len(u'{{R:DAF8}}\n'):len(PageTemp)]
-            summary = summary + u', doublon {{R:DAF8}}'
-        while PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}') != -1:
-            PageTemp = PageTemp[:PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}')+len(u'{{R:DAF8}}\n\n'):len(PageTemp)]
-            summary = summary + u', doublon {{R:DAF8}}'
-        while PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}') != -1:
-            PageTemp = PageTemp[:PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}')+len(u'{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}')+len(u'{{Import:DAF8}}\n{{R:DAF8}}'):len(PageTemp)]
-            summary = summary + u', doublon {{R:DAF8}}'
-        while PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}') != -1:
-            PageTemp = PageTemp[:PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}')] + PageTemp[PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}')+len(u'{{R:Littré}}\n'):len(PageTemp)]
-            summary = summary + u', doublon {{R:Littré}}'
-        while PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}') != -1:
-            PageTemp = PageTemp[:PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}')] + PageTemp[PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}\n{{R:Littré}}'):len(PageTemp)]
-            summary = summary + u', doublon {{R:Littré}}'
-        while PageTemp.find(u'\n{{R:') != -1:
-            PageTemp = PageTemp[:PageTemp.find(u'\n{{R:')+1] + u'*' + PageTemp[PageTemp.find(u'\n{{R:')+1:len(PageTemp)]
-        while PageTemp.find(u'\n{{Import:') != -1:
-            PageTemp = PageTemp[:PageTemp.find(u'\n{{Import:')+1] + u'*' + PageTemp[PageTemp.find(u'\n{{Import:')+1:len(PageTemp)]
-
-        if PageTemp.find(u'[[Catégorie:Villes') != -1 and PageTemp.find(u'{{localités|') != -1:
-            summary = summary + u', {{villes}} -> {{localités}}'
-            PageTemp = re.sub(ur'\n\[\[Catégorie:Villes[^\]]*\]\]', ur'', PageTemp)
-
-        if PageTemp.find(u'\n[[Catégorie:Noms scientifiques]]') != -1 and PageTemp.find(u'{{S|nom scientifique|conv}}') != -1:
-            PageTemp = PageTemp.replace(u'\n[[Catégorie:Noms scientifiques]]', u'')
-
-        if PageTemp.find(u'\n[[Catégorie:Gentilés en français]]') != -1 and PageTemp.find(u'{{note-gentilé|fr}}') != -1:
-            PageTemp = PageTemp.replace(u'\n[[Catégorie:Gentilés en français]]', u'')
-
-        # Modèles trop courts pour être clairs
-        if debugLevel > 0: print u'Modèles courts'
+        if debugLevel > 1: print u' Modèles trop courts'
         PageTemp = PageTemp.replace(u'{{fp}}', u'{{fplur}}')
         PageTemp = PageTemp.replace(u'{{mp}}', u'{{mplur}}')
         PageTemp = PageTemp.replace(u'{{fp|fr}}', u'{{fplur}}')
@@ -2390,10 +2345,51 @@ def modification(pageName):
         PageTemp = PageTemp.replace(u'{{boîte fin', u'{{)')
         PageTemp = PageTemp.replace(u'\n{{-}}', u'')
 
-        regex = ur'\(*ISBN +([0-9\-]+)\)*'
-        if re.search(regex, PageTemp): PageTemp = re.sub(regex, ur'{{ISBN|\1}}', PageTemp)
+        if debugLevel > 1: print u' Ajout des modèles de référence' # les URL ne contiennent pas les diacritiques des {{PAGENAME}}
+        while PageTemp.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=') != -1:
+            PageTemp2 = PageTemp[PageTemp.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=')+len(u'[http://www.sil.org/iso639-3/documentation.asp?id='):]
+            PageTemp = PageTemp[:PageTemp.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=')] + u'{{R:SIL|' + PageTemp2[:PageTemp2.find(u' ')] + '}}' + PageTemp2[PageTemp2.find(u']')+1:]
+            summary = summary + u', ajout de {{R:SIL}}'
+        while PageTemp.find(u'[http://www.cnrtl.fr/definition/') != -1:
+            PageTemp2 = PageTemp[PageTemp.find(u'[http://www.cnrtl.fr/definition/')+len(u'[http://www.cnrtl.fr/definition/'):len(PageTemp)]
+            PageTemp = PageTemp[:PageTemp.find(u'[http://www.cnrtl.fr/definition/')] + u'{{R:TLFi|' + PageTemp2[:PageTemp2.find(u' ')] + '}}' + PageTemp2[PageTemp2.find(u']')+1:len(PageTemp2)]
+            summary = summary + u', ajout de {{R:TLFi}}'
+        while PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/') != -1:
+            PageTemp2 = PageTemp[PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/')+len(u'[http://www.mediadico.com/dictionnaire/definition/'):len(PageTemp)]
+            PageTemp = PageTemp[:PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/')] + u'{{R:Mediadico|' + PageTemp2[:PageTemp2.find(u'/1')] + '}}' + PageTemp2[PageTemp2.find(u']')+1:len(PageTemp2)]
+            summary = summary + u', ajout de {{R:Mediadico}}'
+        while PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}') != -1:
+            PageTemp = PageTemp[:PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}')+len(u'{{R:DAF8}}\n'):len(PageTemp)]
+            summary = summary + u', doublon {{R:DAF8}}'
+        while PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}') != -1:
+            PageTemp = PageTemp[:PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}')+len(u'{{R:DAF8}}\n\n'):len(PageTemp)]
+            summary = summary + u', doublon {{R:DAF8}}'
+        while PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}') != -1:
+            PageTemp = PageTemp[:PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}')+len(u'{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}')+len(u'{{Import:DAF8}}\n{{R:DAF8}}'):len(PageTemp)]
+            summary = summary + u', doublon {{R:DAF8}}'
+        while PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}') != -1:
+            PageTemp = PageTemp[:PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}')] + PageTemp[PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}')+len(u'{{R:Littré}}\n'):len(PageTemp)]
+            summary = summary + u', doublon {{R:Littré}}'
+        while PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}') != -1:
+            PageTemp = PageTemp[:PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}')] + PageTemp[PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}\n{{R:Littré}}'):len(PageTemp)]
+            summary = summary + u', doublon {{R:Littré}}'
+        while PageTemp.find(u'\n{{R:') != -1:
+            PageTemp = PageTemp[:PageTemp.find(u'\n{{R:')+1] + u'*' + PageTemp[PageTemp.find(u'\n{{R:')+1:len(PageTemp)]
+        while PageTemp.find(u'\n{{Import:') != -1:
+            PageTemp = PageTemp[:PageTemp.find(u'\n{{Import:')+1] + u'*' + PageTemp[PageTemp.find(u'\n{{Import:')+1:len(PageTemp)]
 
-        # Modèles à déplacer
+        if debugLevel > 1: print u' Retrait des catégories contenues dans les modèles'
+        if PageTemp.find(u'[[Catégorie:Villes') != -1 and PageTemp.find(u'{{localités|') != -1:
+            summary = summary + u', {{villes}} -> {{localités}}'
+            PageTemp = re.sub(ur'\n\[\[Catégorie:Villes[^\]]*\]\]', ur'', PageTemp)
+
+        if PageTemp.find(u'\n[[Catégorie:Noms scientifiques]]') != -1 and PageTemp.find(u'{{S|nom scientifique|conv}}') != -1:
+            PageTemp = PageTemp.replace(u'\n[[Catégorie:Noms scientifiques]]', u'')
+
+        if PageTemp.find(u'\n[[Catégorie:Gentilés en français]]') != -1 and PageTemp.find(u'{{note-gentilé|fr}}') != -1:
+            PageTemp = PageTemp.replace(u'\n[[Catégorie:Gentilés en français]]', u'')
+
+        if debugLevel > 1: print u' Modèles à déplacer'
         if PageTemp.find(u'{{ru-conj') != -1:
             PageEnd = PageTemp[:PageTemp.find(u'{{ru-conj')]
             PageTemp = PageTemp[PageTemp.find(u'{{ru-conj'):]
@@ -2408,11 +2404,7 @@ def modification(pageName):
                 AnnexeExistante = u''
             savePage(pageAnnexe, AnnexeExistante + u'\n\n'+Annexe, u'Création à partir de l\'article')
 
-        regex = ur'(\[\[(Image|Fichier|File):[^\]]+)\|\|? *(\||\])'
-        if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur'\1\3', PageTemp)
-
-        # Modèles de son. Ex : {{écoutez | {{audio | | {{sound -> {{écouter
+        if debugLevel > 1: print u' Modèles de son' # Ex : {{écoutez | {{audio | | {{sound -> {{écouter
         PageTemp = PageTemp.replace(u'{{pron-rég|', u'{{écouter|')
         regex = ur'\* ?{{sound}} ?: \[\[Media:([^\|\]]*)\|[^\|\]]*\]\]'
         if re.search(regex, PageTemp):
@@ -2443,6 +2435,7 @@ def modification(pageName):
             while PageTemp.find(u'{{écouter|' + ModRegion[m] + u'|') != -1:
                 PageTemp = PageTemp[:PageTemp.find(u'{{écouter|' + ModRegion[m] + u'|')+len('{{écouter|')-1] + '{{' + ModRegion[m] + u'|nocat=1}}' + PageTemp[PageTemp.find(u'{{écouter|' + ModRegion[m] + u'|')+len(u'{{écouter|' + ModRegion[m]):]
 
+        if debugLevel > 1: print u' Modèles bandeaux' 
         while PageTemp.find(u'\n{{colonnes|') != -1:
             if debugLevel > 0: pywikibot.output (u'\nTemplate: \03{blue}colonnes\03{default}')
             PageTemp2 = PageTemp[:PageTemp.find(u'\n{{colonnes|')]
@@ -3002,10 +2995,10 @@ def modification(pageName):
                     PageEnd, PageTemp = nextTemplate(PageEnd, PageTemp)
 
                 elif currentTemplate == u'term':
-                    term = PageTemp[endPosition+1:PageTemp.find('}}')]
-                    term = term.replace('[[', '').replace(']]', '')
+                    rawTerm = PageTemp[endPosition+1:PageTemp.find('}}')]
+                    term = trim(rawTerm.replace('[[', '').replace(']]', ''))
                     if term.find('|') != -1: term = term[:term.find('|')]
-                    if debugLevel > 0: print " terminologie = " + trim(str(term))
+                    if debugLevel > 0: print " terminologie = " + term
                     templatePage = getContentFromPageName(u'Template:' + term, allowedNamespaces = [u'Template:'])
                     if templatePage.find(u'Catégorie:Modèles de domaine') == -1 and term[:1] != term[:1].lower():
                         term = term[:1].lower() + term[1:]
@@ -3013,7 +3006,7 @@ def modification(pageName):
                         templatePage = getContentFromPageName(u'Template:' + term, allowedNamespaces = [u'Template:'])
                     if templatePage.find(u'Catégorie:Modèles de domaine') != -1:
                         if debugLevel > 0: print u'  substitution par le modèle existant'
-                        PageTemp = '{{' + term + PageTemp[endPosition+1+len(term):]
+                        PageTemp = '{{' + term + PageTemp[endPosition+1+len(rawTerm):]
                         PageEnd = PageEnd[:-2]
                         backward = True
                     else:
