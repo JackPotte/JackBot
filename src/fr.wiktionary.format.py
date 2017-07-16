@@ -46,31 +46,6 @@ username = config.usernames[siteFamily][siteLanguage]
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 addDefaultSort = False
 
-deprecatedTags = {}
-deprecatedTags['big'] = 'strong'
-deprecatedTags['center'] = 'div style="text-align: center;"'
-deprecatedTags['font color *= *"?'] = 'span style="color:'
-deprecatedTags['font size *= *"?'] = 'span style="font-size:'
-deprecatedTags['strike'] = 's'
-deprecatedTags['tt'] = 'code'
-fontSize = {}
-fontSize[1] = 0.63
-fontSize[2] = 0.82
-fontSize[3] = 1.0
-fontSize[4] = 1.13
-fontSize[5] = 1.5
-fontSize[6] = 2.0
-fontSize[7] = 3.0
-fontColor = []
-fontColor.append('black')
-fontColor.append('blue')
-fontColor.append('green')
-fontColor.append('orange')
-fontColor.append('red')
-fontColor.append('white')
-fontColor.append('yellow')
-fontColor.append('#808080')
-
 Sections = []
 Niveau = []
 Sections.append(u'étymologie')
@@ -1605,8 +1580,32 @@ flexionTemplatesWithMs.append(u'fr-accord-un')
 flexionTemplatesWithS = []
 flexionTemplatesWithS.append(u'fr-rég')
 flexionTemplatesWithS.append(u'fr-rég-x')
+#TODO: autres = fr-accord-mf-ail, fr-accord-mf-al, fr-accord-comp, fr-accord-comp-mf, fr-accord-eur, fr-accord-eux, fr-accord-f, fr-inv, fr-accord-ind, fr-accord-mf, fr-accord-oux, fr-accord-personne, fr-accord-t-avant1835
 
-# Autres : fr-accord-mf-ail, fr-accord-mf-al, fr-accord-comp, fr-accord-comp-mf, fr-accord-eur, fr-accord-eux, fr-accord-f, fr-inv, fr-accord-ind, fr-accord-mf, fr-accord-oux, fr-accord-personne, fr-accord-t-avant1835
+deprecatedTags = {}
+deprecatedTags['big'] = 'strong'
+deprecatedTags['center'] = 'div style="text-align: center;"'
+deprecatedTags['font color *= *"?'] = 'span style="color:'
+deprecatedTags['font size *= *"?\+?'] = 'span style="font-size:'
+deprecatedTags['strike'] = 's'
+deprecatedTags['tt'] = 'code'
+fontSize = {}
+fontSize[1] = 0.63
+fontSize[2] = 0.82
+fontSize[3] = 1.0
+fontSize[4] = 1.13
+fontSize[5] = 1.5
+fontSize[6] = 2.0
+fontSize[7] = 3.0
+fontColor = []
+fontColor.append('black')
+fontColor.append('blue')
+fontColor.append('green')
+fontColor.append('orange')
+fontColor.append('red')
+fontColor.append('white')
+fontColor.append('yellow')
+fontColor.append('#808080')
 
 
 def modification(pageName):
@@ -1647,6 +1646,7 @@ def modification(pageName):
     if debugLevel > 0: print u'Remplacements des balises'
     PageTemp = PageTemp.replace(u'</br>', u'<br/>')
 
+    PageTemp = PageTemp.replace('<font size="+1" color="red">', ur'<span style="font-size:0.63em; color:red;>')
     regex = ur'<font color="?([^>"]*)"?>'
     pattern = re.compile(regex, re.UNICODE)
     for match in pattern.finditer(PageTemp):
@@ -1671,22 +1671,27 @@ def modification(pageName):
             #PageTemp = re.sub(regex, ur'<' + newTag + ur'\1>', PageTemp)
             pattern = re.compile(regex, re.UNICODE)
             for match in pattern.finditer(PageTemp):
-                summary = summary + u', correction de color'
+                if debugLevel > 0: print match.group(1)
+                #summary = summary + u', correction de color'
                 if newTag.find(u'font-size') != -1:
-                    openingTag = newTag + str(fontSize[int(match.group(1))]) + ur'em'
+                    openingTag = newTag + str(fontSize[int(match.group(1).replace('"', ''))]) + ur'em"'
                 else:
                     openingTag = newTag + match.group(1)
-                PageTemp = PageTemp.replace(match.group(0), ur'<' + openingTag + ur'">')
+                PageTemp = PageTemp.replace(match.group(0), ur'<' + openingTag + ur'>')
 
         regex = ur'</ *' + closingOldTag + ' *>'
         PageTemp = re.sub(regex, ur'</' + closingNewTag + '>', PageTemp)
+    PageTemp = PageTemp.replace('<strong">', ur'<strong>')
+    PageTemp = PageTemp.replace('<s">', ur'<s>')
+    PageTemp = PageTemp.replace('<code">', ur'<code>')
+    PageTemp = PageTemp.replace(';"">', ur';">')
 
     # Fix fontColor
     PageTemp = PageTemp.replace(u'font-color', u'color')
     regex = ur'<span style="font\-size:([a-z]+)>'
     pattern = re.compile(regex, re.UNICODE)
     for match in pattern.finditer(PageTemp):
-        summary = summary + u', correction de color'
+        #summary = summary + u', correction de color'
         PageTemp = PageTemp.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
         PageTemp = PageTemp.replace('</font>', u'</span>')
 
@@ -2998,6 +3003,8 @@ def modification(pageName):
 
                 elif currentTemplate == u'term':
                     term = PageTemp[endPosition+1:PageTemp.find('}}')]
+                    term = term.replace('[[', '').replace(']]', '')
+                    if term.find('|') != -1: term = term[:term.find('|')]
                     if debugLevel > 0: print " terminologie = " + trim(str(term))
                     templatePage = getContentFromPageName(u'Template:' + term, allowedNamespaces = [u'Template:'])
                     if templatePage.find(u'Catégorie:Modèles de domaine') == -1 and term[:1] != term[:1].lower():
