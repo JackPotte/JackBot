@@ -45,6 +45,7 @@ username = config.usernames[siteFamily][siteLanguage]
 
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 addDefaultSort = False
+fixTags = False
 
 Sections = []
 Niveau = []
@@ -1588,9 +1589,15 @@ deprecatedTags = {}
 deprecatedTags['big'] = 'strong'
 deprecatedTags['center'] = 'div style="text-align: center;"'
 deprecatedTags['font color *= *"?'] = 'span style="color:'
-deprecatedTags['font size *= *"?\+?'] = 'span style="font-size:'
+deprecatedTags['font size *= *"?\+?\-?'] = 'span style="font-size:'
 deprecatedTags['strike'] = 's'
 deprecatedTags['tt'] = 'code'
+deprecatedTags['BIG'] = 'strong'
+deprecatedTags['CENTER'] = 'div style="text-align: center;"'
+deprecatedTags['FONT COLOR *= *"?'] = 'span style="color:'
+deprecatedTags['FONT SIZE *= *"?\+?'] = 'span style="font-size:'
+deprecatedTags['STRIKE'] = 's'
+deprecatedTags['TT'] = 'code'
 fontSize = {}
 fontSize[1] = 0.63
 fontSize[2] = 0.82
@@ -1645,94 +1652,98 @@ def modification(pageName):
     regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *thumb *[\|\]])'
     PageTemp = re.sub(regex, ur'\1\3', PageTemp)
 
-    if debugLevel > 0: print u'Remplacements des balises'
-    PageTemp = PageTemp.replace(u'</br>', u'<br/>')
+    if fixTags:
+        if debugLevel > 0: print u'Remplacements des balises'
+        PageTemp = PageTemp.replace(u'</br>', u'<br/>')
 
-    PageTemp = PageTemp.replace('<font size="+1" color="red">', ur'<span style="font-size:0.63em; color:red;>')
-    regex = ur'<font color="?([^>"]*)"?>'
-    pattern = re.compile(regex, re.UNICODE)
-    for match in pattern.finditer(PageTemp):
-        if debugLevel > 1: print u'Remplacement de ' + match.group(0) + u' par <span style="color:' + match.group(1) + u'">'
-        PageTemp = PageTemp.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
+        PageTemp = PageTemp.replace('<font size="+1" color="red">', ur'<span style="font-size:0.63em; color:red;>')
+        regex = ur'<font color="?([^>"]*)"?>'
+        pattern = re.compile(regex, re.UNICODE)
+        for match in pattern.finditer(PageTemp):
+            if debugLevel > 1: print u'Remplacement de ' + match.group(0) + u' par <span style="color:' + match.group(1) + u'">'
+            PageTemp = PageTemp.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
+            PageTemp = PageTemp.replace('</font>', u'</span>')
+
+        for oldTag, newTag in deprecatedTags.items():
+            if debugLevel > 1: print "Clé : %s, valeur : %s." % (oldTag, newTag)
+            if oldTag.find(u' ') == -1:
+                closingOldTag = oldTag
+            else:
+                closingOldTag = oldTag[:oldTag.find(u' ')]
+            if newTag.find(u' ') == -1:
+                closingNewTag = newTag
+            else:
+                closingNewTag = newTag[:newTag.find(u' ')]
+            #regex = ur'<' + oldTag + ur'([^>]*)>([^\n]*)</' + closingOldTag + '>' # bug https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:-flex-nom-fam-/Documentation&diff=prev&oldid=24027702
+            regex = ur'< *' + oldTag + ur'([^>]*) *>'
+            if re.search(regex, PageTemp):
+                summary = summary + u', ajout de ' + newTag
+                #PageTemp = re.sub(regex, ur'<' + newTag + ur'\1>', PageTemp)
+                pattern = re.compile(regex, re.UNICODE)
+                for match in pattern.finditer(PageTemp):
+                    if debugLevel > 0: print match.group(1)
+                    #summary = summary + u', correction de color'
+                    if newTag.find(u'font-size') != -1:
+                        openingTag = newTag + str(fontSize[int(match.group(1).replace('"', ''))]) + ur'em"'
+                    else:
+                        openingTag = newTag + match.group(1)
+                    PageTemp = PageTemp.replace(match.group(0), ur'<' + openingTag + ur'>')
+
+            regex = ur'</ *' + closingOldTag + ' *>'
+            PageTemp = re.sub(regex, ur'</' + closingNewTag + '>', PageTemp)
+        PageTemp = PageTemp.replace('<strong">', ur'<strong>')
+        PageTemp = PageTemp.replace('<s">', ur'<s>')
+        PageTemp = PageTemp.replace('<code">', ur'<code>')
+        PageTemp = PageTemp.replace(';"">', ur';">')
+
+        # Fix
+        regex = ur'<span style="font\-size:([a-z]+)>'
+        pattern = re.compile(regex, re.UNICODE)
+        for match in pattern.finditer(PageTemp):
+            #summary = summary + u', correction de color'
+            PageTemp = PageTemp.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
         PageTemp = PageTemp.replace('</font>', u'</span>')
+        PageTemp = PageTemp.replace('</font>'.upper(), u'</span>')
 
-    for oldTag, newTag in deprecatedTags.items():
-        if debugLevel > 1: print "Clé : %s, valeur : %s." % (oldTag, newTag)
-        if oldTag.find(u' ') == -1:
-            closingOldTag = oldTag
-        else:
-            closingOldTag = oldTag[:oldTag.find(u' ')]
-        if newTag.find(u' ') == -1:
-            closingNewTag = newTag
-        else:
-            closingNewTag = newTag[:newTag.find(u' ')]
-        #regex = ur'<' + oldTag + ur'([^>]*)>([^\n]*)</' + closingOldTag + '>' # bug https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:-flex-nom-fam-/Documentation&diff=prev&oldid=24027702
-        regex = ur'< *' + oldTag + ur'([^>]*) *>'
+        regex = ur'<span style="font\-size:(#[0-9]+)"?>'
+        s = re.search(regex, PageTemp)
+        if s:
+            summary = summary + u', correction de color'
+            PageTemp = re.sub(regex, ur'<span style="color:' + s.group(1) + ur'">', PageTemp)
+
+        regex = ur'<span style="text\-size:([0-9]+)"?>'
+        s = re.search(regex, PageTemp)
+        if s:
+            summary = summary + u', correction de font-size'
+            PageTemp = re.sub(regex, ur'<span style="font-size:' + str(fontSize[int(s.group(1))]) + ur'em">', PageTemp)
+
+        # Fix :
+        regex = ur'(<span style="font\-size:[0-9]+px;">)[0-9]+px</span>([^<]*)</strong></strong>'
         if re.search(regex, PageTemp):
-            summary = summary + u', ajout de ' + newTag
-            #PageTemp = re.sub(regex, ur'<' + newTag + ur'\1>', PageTemp)
-            pattern = re.compile(regex, re.UNICODE)
-            for match in pattern.finditer(PageTemp):
-                if debugLevel > 0: print match.group(1)
-                #summary = summary + u', correction de color'
-                if newTag.find(u'font-size') != -1:
-                    openingTag = newTag + str(fontSize[int(match.group(1).replace('"', ''))]) + ur'em"'
-                else:
-                    openingTag = newTag + match.group(1)
-                PageTemp = PageTemp.replace(match.group(0), ur'<' + openingTag + ur'>')
+            PageTemp = re.sub(regex, ur'\1 \2</span>', PageTemp)
 
-        regex = ur'</ *' + closingOldTag + ' *>'
-        PageTemp = re.sub(regex, ur'</' + closingNewTag + '>', PageTemp)
-    PageTemp = PageTemp.replace('<strong">', ur'<strong>')
-    PageTemp = PageTemp.replace('<s">', ur'<s>')
-    PageTemp = PageTemp.replace('<code">', ur'<code>')
-    PageTemp = PageTemp.replace(';"">', ur';">')
+        PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong><strong>', u'<span style="font-size:75px;">')
+        PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong>', u'<span style="font-size:50px;">')
+        PageTemp = PageTemp.replace(u'<strong><strong><strong><strong>', u'<span style="font-size:40px;">')
+        PageTemp = PageTemp.replace(u'<strong><strong><strong>', u'<span style="font-size:25px;">')
+        PageTemp = PageTemp.replace(u'<strong><strong>', u'<span style="font-size:20px;">')
+        PageTemp = re.sub(ur'</strong></strong></strong></strong></strong></strong>', ur'</span>', PageTemp)
+        PageTemp = re.sub(ur'</strong></strong></strong></strong></strong>', ur'</span>', PageTemp)
+        PageTemp = re.sub(ur'</strong></strong></strong></strong>', ur'</span>', PageTemp)
+        PageTemp = re.sub(ur'</strong></strong></strong>', ur'</span>', PageTemp)
+        PageTemp = re.sub(ur'</strong></strong>', ur'</span>', PageTemp)
+        regex = ur'<strong>([^<]*)</span>'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur'<strong>\1</strong>', PageTemp)
+        regex = ur'<strong><span ([^<]*)</span></span>'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur'<strong><span \1</span></strong>', PageTemp)
+        #PageTemp = re.sub(ur'</span></span>', ur'</span>', PageTemp)
 
-    # Fix fontColor
-    PageTemp = PageTemp.replace(u'font-color', u'color')
-    regex = ur'<span style="font\-size:([a-z]+)>'
-    pattern = re.compile(regex, re.UNICODE)
-    for match in pattern.finditer(PageTemp):
-        #summary = summary + u', correction de color'
-        PageTemp = PageTemp.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
-        PageTemp = PageTemp.replace('</font>', u'</span>')
-
-    regex = ur'<span style="font\-size:(#[0-9]+)"?>'
-    s = re.search(regex, PageTemp)
-    if s:
-        summary = summary + u', correction de color'
-        PageTemp = re.sub(regex, ur'<span style="color:' + s.group(1) + ur'">', PageTemp)
-
-    regex = ur'<span style="text\-size:([0-9]+)"?>'
-    s = re.search(regex, PageTemp)
-    if s:
-        summary = summary + u', correction de font-size'
-        PageTemp = re.sub(regex, ur'<span style="font-size:' + str(fontSize[int(s.group(1))]) + ur'em">', PageTemp)
-
-    # Fix :
-    regex = ur'(<span style="font\-size:[0-9]+px;">)[0-9]+px</span>([^<]*)</strong></strong>'
-    if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'\1 \2</span>', PageTemp)
-
-    PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong><strong>', u'<span style="font-size:75px;">')
-    PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong>', u'<span style="font-size:50px;">')
-    PageTemp = PageTemp.replace(u'<strong><strong><strong><strong>', u'<span style="font-size:40px;">')
-    PageTemp = PageTemp.replace(u'<strong><strong><strong>', u'<span style="font-size:25px;">')
-    PageTemp = PageTemp.replace(u'<strong><strong>', u'<span style="font-size:20px;">')
-    PageTemp = re.sub(ur'</strong></strong></strong></strong></strong></strong>', ur'</span>', PageTemp)
-    PageTemp = re.sub(ur'</strong></strong></strong></strong></strong>', ur'</span>', PageTemp)
-    PageTemp = re.sub(ur'</strong></strong></strong></strong>', ur'</span>', PageTemp)
-    PageTemp = re.sub(ur'</strong></strong></strong>', ur'</span>', PageTemp)
-    PageTemp = re.sub(ur'</strong></strong>', ur'</span>', PageTemp)
-    regex = ur'<strong>([^<]*)</span>'
-    if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'<strong>\1</strong>', PageTemp)
-    regex = ur'<strong><span ([^<]*)</span></span>'
-    if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'<strong><span \1</span></strong>', PageTemp)
-    #PageTemp = re.sub(ur'</span></span>', ur'</span>', PageTemp)
-
-    PageTemp = PageTemp.replace(u'[[Category:', u'[[Catégorie:')
+        regex = ur'(\|(ar|fa)(\|flexion)*}} *===\n)<span style *= *"font\-size:[0-9\.]*em">\'\'\'([^\']*)\'\'\'</span>'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur"\1'''{{Arab|\4}}'''", PageTemp)
+        PageTemp = PageTemp.replace(u'[[Category:', u'[[Catégorie:')
 
     #if page.namespace() == 14:
         #if pageName.find(u'Catégorie:Lexique en français d') != -1 and PageTemp.find(u'[[Catégorie:Lexiques en français|') == -1:
@@ -4499,12 +4510,14 @@ def main(*args):
         elif sys.argv[1] == u'link' or sys.argv[1] == u'm':
             crawlerLink(site, u'Modèle:ex',u'')
         elif sys.argv[1] == u'cat':
-            crawlerCat(u'Traductions en yoruba', False, u'')
+            crawlerCat(u'Caractères en braille', True, u'')
+            #crawlerCat(u'suédois', False, u'')
+            #crawlerCat(u'Gentilés en français', False, u'')
             #crawlerCat(u'Pluriels manquants en français', False, u'')
             #crawlerCat(u'Catégorie:Wiktionnaire:Sections de type avec locution forcée', False, u'')
             #crawlerCat(u'Catégorie:Genres manquants en français', False, u'')
         elif sys.argv[1] == u's':
-            crawlerSearch(u'Annexe:Sinogrammes/')
+            crawlerSearch(u'font color')
         elif sys.argv[1] == u'u':
             crawlerUser(u'Utilisateur:JackBot', 10000, u'')
         elif sys.argv[1] == u'redirects':
