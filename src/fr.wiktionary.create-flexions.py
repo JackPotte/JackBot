@@ -969,7 +969,7 @@ def main(*args):
     else:
         # Daily
         crawlerCat(u'Catégorie:Pluriels manquants en français', False, u'')
-        # TODO: python touch.py -lang:fr -family:wiktionary -cat:"Pluriels manquants en français"
+        # TODO: python core/pwb.py touch -lang:fr -family:wiktionary -cat:"Pluriels manquants en français"
 
 if __name__ == "__main__":
     main(sys.argv)
