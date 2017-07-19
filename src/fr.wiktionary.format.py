@@ -32,6 +32,10 @@ if len(sys.argv) > 2:
             debugLevel= sys.argv[3]
         else:
             debugLevel= 1
+elif len(sys.argv) == 2:
+    if sys.argv[1] == str('debug') or sys.argv[1] ==  str('d'):
+        debugLevel= 1
+
 fileName = __file__
 if debugLevel > 0: print fileName
 if fileName.rfind('/') != -1: fileName = fileName[fileName.rfind('/')+1:]
@@ -4029,6 +4033,90 @@ def getFlexionTemplateFromLemma(pageName, language, nature):
 
     return FlexionTemplate
 
+def getContentFromPageName(pageName, allowedNamespaces = None):
+    page = Page(site, pageName)
+    return getContentFromPage(page, allowedNamespaces)
+
+def getContentFromPage(page, allowedNamespaces = None):
+    PageBegin = u''
+    if page.exists():
+        if type(allowedNamespaces) == type([]): #'list'
+            if debugLevel > 1: print u' namespace : ' + str(page.namespace())
+            condition = page.namespace() in allowedNamespaces
+        elif allowedNamespaces == 'All':
+            if debugLevel > 1: print u' all namespaces'
+            condition = True
+        else:
+            if debugLevel > 1: print u' content namespaces'
+            condition = page.namespace() in [0, 12, 14, 100] or page.title().find(username) != -1
+        if condition:
+            try:
+                PageBegin = page.get()
+            except pywikibot.exceptions.BadTitle:
+                if debugLevel > 0: print u'IsRedirect l 5658'
+                return 'KO'
+            except pywikibot.exceptions.IsRedirectPage:
+                if debugLevel > 0: print u'IsRedirect l 5662'
+                if page.namespace() == 'Template:':
+                    PageBegin = page.get(get_redirect=True)
+                    if PageBegin[:len(u'#REDIRECT')] == u'#REDIRECT':
+                        regex = ur'\[\[([^\]]+)\]\]'
+                        s = re.search(regex, PageBegin)
+                        if s:
+                            PageBegin = getContentFromPageName(s.group(1), allowedNamespaces = allowedNamespaces)
+                        else:
+                            return 'KO'
+                    else:
+                        return 'KO'
+                else:
+                    return 'KO'
+            except pywikibot.exceptions.NoPage:
+                if debugLevel > 0: print u'NoPage l 5665'
+                return 'KO'
+            except pywikibot.exceptions.ServerError:
+                if debugLevel > 0: print u'NoPage l 5668'
+                return 'KO'
+        else:
+            if debugLevel > 0: print u'Forbidden namespace l 5671'
+            return 'KO'
+    else:
+        if debugLevel > 0: print u'No page l 5674'
+        return 'KO'
+
+    return PageBegin
+
+def getWiki(language, family):
+    if family is None:
+        return site
+    else:
+        wiki = u'KO'
+        try:
+            wiki = pywikibot.Site(language, family)
+        except pywikibot.exceptions.ServerError:
+            if debugLevel > 1: print u'  ServerError in getWiki'
+        except pywikibot.exceptions.NoSuchSite:
+            if debugLevel > 1: print u'  NoSuchSite in getWiki'
+        except UnicodeEncodeError:
+            if debugLevel > 1: print u'  UnicodeEncodeError in getWiki'
+        #TODO: WARNING: src/fr.wiktionary.format.py:4145: UserWarning: Site wiktionary:ro instantiated using different code "mo"
+    return wiki
+
+def getParameter(Page, p):				
+	'''
+	print pron.encode(config.console_encoding, 'replace')
+	pattern = ur'.*\|([^}\|]*)}|\|'
+	regex = re.search(pattern, pron)
+	print regex.start()
+	print regex.end()
+	raw_input(pron[regex.start():regex.end()])
+	'''
+	if Page.find(p + u'=') == -1 or Page.find(u'}}') == -1 or Page.find(p + u'=') > Page.find(u'}}'): return u''
+	Page = Page[Page.find(p + u'=')+len(p + u'='):]
+	if Page.find(u'|') != -1 and Page.find(u'|') < Page.find(u'}}'):
+		return trim(Page[:Page.find(u'|')])
+	else:
+		return trim(Page[:Page.find(u'}')])
+
 def nextTemplate(PageEnd, PageTemp, currentTemplate = None, languageCode = None):
     if languageCode is None:
         PageEnd = PageEnd + PageTemp[:PageTemp.find('}}')+2]
@@ -4173,77 +4261,6 @@ def rec_anagram(counter):
                 counter[c] += 1
 def anagram(word):
     return rec_anagram(collections.Counter(word))
-
-def trim(s):
-    return s.strip(" \t\n\r\0\x0B")
-
-def getContentFromPageName(pageName, allowedNamespaces = None):
-    page = Page(site, pageName)
-    return getContentFromPage(page, allowedNamespaces)
-
-def getContentFromPage(page, allowedNamespaces = None):
-    PageBegin = u''
-    if page.exists():
-        if type(allowedNamespaces) == type([]): #'list'
-            if debugLevel > 1: print u' namespace : ' + str(page.namespace())
-            condition = page.namespace() in allowedNamespaces
-        elif allowedNamespaces == 'All':
-            if debugLevel > 1: print u' all namespaces'
-            condition = True
-        else:
-            if debugLevel > 1: print u' content namespaces'
-            condition = page.namespace() in [0, 12, 14, 100] or page.title().find(username) != -1
-        if condition:
-            try:
-                PageBegin = page.get()
-            except pywikibot.exceptions.BadTitle:
-                if debugLevel > 0: print u'IsRedirect l 5658'
-                return 'KO'
-            except pywikibot.exceptions.IsRedirectPage:
-                if debugLevel > 0: print u'IsRedirect l 5662'
-                if page.namespace() == 'Template:':
-                    PageBegin = page.get(get_redirect=True)
-                    if PageBegin[:len(u'#REDIRECT')] == u'#REDIRECT':
-                        regex = ur'\[\[([^\]]+)\]\]'
-                        s = re.search(regex, PageBegin)
-                        if s:
-                            PageBegin = getContentFromPageName(s.group(1), allowedNamespaces = allowedNamespaces)
-                        else:
-                            return 'KO'
-                    else:
-                        return 'KO'
-                else:
-                    return 'KO'
-            except pywikibot.exceptions.NoPage:
-                if debugLevel > 0: print u'NoPage l 5665'
-                return 'KO'
-            except pywikibot.exceptions.ServerError:
-                if debugLevel > 0: print u'NoPage l 5668'
-                return 'KO'
-        else:
-            if debugLevel > 0: print u'Forbidden namespace l 5671'
-            return 'KO'
-    else:
-        if debugLevel > 0: print u'No page l 5674'
-        return 'KO'
-
-    return PageBegin
-
-def getWiki(language, family):
-    if family is None:
-        return site
-    else:
-        wiki = u'KO'
-        try:
-            wiki = pywikibot.Site(language, family)
-        except pywikibot.exceptions.ServerError:
-            if debugLevel > 1: print u'  ServerError in getWiki'
-        except pywikibot.exceptions.NoSuchSite:
-            if debugLevel > 1: print u'  NoSuchSite in getWiki'
-        except UnicodeEncodeError:
-            if debugLevel > 1: print u'  UnicodeEncodeError in getWiki'
-        #TODO: WARNING: src/fr.wiktionary.format.py:4145: UserWarning: Site wiktionary:ro instantiated using different code "mo"
-    return wiki
 
 # Permet à tout le monde de stopper le bot en lui écrivant
 def ArretDUrgence():
@@ -4416,8 +4433,8 @@ def crawlerCatLink(pageName, apres):
                 modifier = u'True'
 
 # Traitement d'une recherche
-def crawlerSearch(pageName):
-    gen = pagegenerators.SearchPageGenerator(pageName, site = site, namespaces = "0")
+def crawlerSearch(pageName, ns = None):
+    gen = pagegenerators.SearchPageGenerator(pageName, site = site, namespaces = ns)
     for Page in pagegenerators.PreloadingGenerator(gen,100):
         modification(Page.title())
 
@@ -4491,6 +4508,7 @@ def crawlerAll(start):
     for Page in pagegenerators.PreloadingGenerator(gen,100):
         modification(Page.title())
 
+
 def main(*args):
     if len(sys.argv) > 1:
         if sys.argv[1] == u'test':
@@ -4517,9 +4535,9 @@ def main(*args):
             #crawlerCat(u'Catégorie:Wiktionnaire:Sections de type avec locution forcée', False, u'')
             #crawlerCat(u'Catégorie:Genres manquants en français', False, u'')
         elif sys.argv[1] == u's':
-            crawlerSearch(u'font color')
+            crawlerSearch(u'insource:/\<strong>\<strong>/')
         elif sys.argv[1] == u'u':
-            crawlerUser(u'Utilisateur:JackBot', 10000, u'')
+            crawlerUser(u'User:JackBot', 10000, u'')
         elif sys.argv[1] == u'redirects':
             crawlerRedirects()
         elif sys.argv[1] == u'all':
