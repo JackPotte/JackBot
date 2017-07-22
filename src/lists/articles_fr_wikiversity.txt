@@ -283,10 +283,7 @@ Definitions de la differenciation
 Dialectes fran&#231;ais d'Am&#233;rique du Nord/Fran&#231;ais cajun
 Dialectes fran&#231;ais d'Europe/Fran&#231;ais de Jersey
 Differenciation-Conseils et exemples pour differencier des exercices en francais
-Discussion MediaWiki:Common.css
-Discussion MediaWiki:Common.js
 Discussion MediaWiki:Edittools
-Discussion MediaWiki:Gadget-Objects.js
 Discussion Projet:Apprentissage de l'allemand
 Discussion Projet:Arts plastiques
 Discussion Projet:Astronomie
@@ -2061,9 +2058,6 @@ Matrice/Transpos&#233;e
 Maximum de vraisemblance
 MediaWiki:Deletedtext
 MediaWiki:Edittools
-MediaWiki:Gadget-AdvancedContribs.js
-MediaWiki:Gadget-AdvancedContribs.js
-MediaWiki:Gadget-LiveRC.js
 MediaWiki:Linksearch-text
 MediaWiki:Newarticletext
 MediaWiki:Noarticletext
@@ -2081,7 +2075,6 @@ Milieu de partie au jeu d'&#233;checs/Majorit&#233; de pions sur l'aile-Dame
 Milieu de partie au jeu d'&#233;checs/Pions faibles
 Miroirs en optique g&#233;om&#233;trique/Miroirs sph&#233;riques
 Module sur un anneau/Module sur un anneau principal
-Module:Fabeleblo
 Mod&#232;le TCP-IP/Le mod&#232;le TCP-IP et les raisons de son succ&#232;s
 Mod&#232;le:(/Documentation
 Mod&#232;le:,/Documentation
@@ -2931,7 +2924,6 @@ Utilisateur:Cherry
 Utilisateur:Christoph
 Utilisateur:Crochet.david.bot/Navigation
 Utilisateur:Crochet.david/Navigation
-Utilisateur:Cynddl/Gadget-&#233;valuation.js
 Utilisateur:Cynddl/Le&#231;on
 Utilisateur:Cynddl/Test le&#231;on
 Utilisateur:Cynddl/checkwiki.pl
@@ -2970,7 +2962,6 @@ Utilisateur:Ilmir/Navigation
 Utilisateur:JEissfeldt (WMF)
 Utilisateur:Jagwar
 Utilisateur:Jef132
-Utilisateur:Jules78120/LiveRCparam.js
 Utilisateur:Julien1311/Bac &#224; sable/D&#233;partement
 Utilisateur:Julien1311/Bac &#224; sable/Facult&#233;
 Utilisateur:Julien1311/Bo&#238;te &#224; outils/Couleurs des facult&#233;s
