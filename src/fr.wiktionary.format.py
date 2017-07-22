@@ -51,6 +51,37 @@ anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 addDefaultSort = False
 fixTags = False
 
+deprecatedTags = {}
+deprecatedTags['big'] = 'strong'
+deprecatedTags['center'] = 'div style="text-align: center;"'
+deprecatedTags['font color *= *"?'] = 'span style="color:'
+deprecatedTags['font size *= *"?\+?\-?'] = 'span style="font-size:'
+deprecatedTags['strike'] = 's'
+deprecatedTags['tt'] = 'code'
+deprecatedTags['BIG'] = 'strong'
+deprecatedTags['CENTER'] = 'div style="text-align: center;"'
+deprecatedTags['FONT COLOR *= *"?'] = 'span style="color:'
+deprecatedTags['FONT SIZE *= *"?\+?'] = 'span style="font-size:'
+deprecatedTags['STRIKE'] = 's'
+deprecatedTags['TT'] = 'code'
+fontSize = {}
+fontSize[1] = 0.63
+fontSize[2] = 0.82
+fontSize[3] = 1.0
+fontSize[4] = 1.13
+fontSize[5] = 1.5
+fontSize[6] = 2.0
+fontSize[7] = 3.0
+fontColor = []
+fontColor.append('black')
+fontColor.append('blue')
+fontColor.append('green')
+fontColor.append('orange')
+fontColor.append('red')
+fontColor.append('white')
+fontColor.append('yellow')
+fontColor.append('#808080')
+
 Sections = []
 Niveau = []
 Sections.append(u'étymologie')
@@ -600,6 +631,7 @@ Modele.append(u'chir')
 Modele.append(u'chiromancie')
 Modele.append(u'chirurgie')
 Modele.append(u'christianisme')
+Modele.append(u'chronologie')
 Modele.append(u'ciné')
 Modele.append(u'cinéma')
 Modele.append(u'cirque')
@@ -1252,6 +1284,7 @@ Modele.append(u'télé')
 Modele.append(u'télécom')
 Modele.append(u'télécommunications')
 Modele.append(u'télévision')
+Modele.append(u'temps')
 Modele.append(u'temps géologiques')
 Modele.append(u'tennis')
 Modele.append(u'tennis de table')
@@ -1588,37 +1621,6 @@ flexionTemplatesWithS = []
 flexionTemplatesWithS.append(u'fr-rég')
 flexionTemplatesWithS.append(u'fr-rég-x')
 #TODO: autres = fr-accord-mf-ail, fr-accord-mf-al, fr-accord-comp, fr-accord-comp-mf, fr-accord-eur, fr-accord-eux, fr-accord-f, fr-inv, fr-accord-ind, fr-accord-mf, fr-accord-oux, fr-accord-personne, fr-accord-t-avant1835
-
-deprecatedTags = {}
-deprecatedTags['big'] = 'strong'
-deprecatedTags['center'] = 'div style="text-align: center;"'
-deprecatedTags['font color *= *"?'] = 'span style="color:'
-deprecatedTags['font size *= *"?\+?\-?'] = 'span style="font-size:'
-deprecatedTags['strike'] = 's'
-deprecatedTags['tt'] = 'code'
-deprecatedTags['BIG'] = 'strong'
-deprecatedTags['CENTER'] = 'div style="text-align: center;"'
-deprecatedTags['FONT COLOR *= *"?'] = 'span style="color:'
-deprecatedTags['FONT SIZE *= *"?\+?'] = 'span style="font-size:'
-deprecatedTags['STRIKE'] = 's'
-deprecatedTags['TT'] = 'code'
-fontSize = {}
-fontSize[1] = 0.63
-fontSize[2] = 0.82
-fontSize[3] = 1.0
-fontSize[4] = 1.13
-fontSize[5] = 1.5
-fontSize[6] = 2.0
-fontSize[7] = 3.0
-fontColor = []
-fontColor.append('black')
-fontColor.append('blue')
-fontColor.append('green')
-fontColor.append('orange')
-fontColor.append('red')
-fontColor.append('white')
-fontColor.append('yellow')
-fontColor.append('#808080')
 
 
 def modification(pageName):
