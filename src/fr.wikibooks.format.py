@@ -390,6 +390,15 @@ def crawlerAll(start):
         #print (Page.title().encode(config.console_encoding, 'replace'))
         modification(Page.title())
 
+def crawlerSpecialLint():
+    #TODO: https://fr.wiktionary.org/wiki/Sp%C3%A9cial:ApiSandbox#action=query&format=rawfm&prop=info&list=linterrors&inprop=url&lntcategories=obsolete-tag&lntlimit=5000&lntnamespace=10
+    modification(Page.title())
+
+def crawlerSpecialNotCategorized():
+    #TODO:
+    modification(Page.title())
+
+
 # Permet à tout le monde de stopper le bot en lui écrivant
 def ArretDUrgence():
     page = Page(site,u'User talk:' + username)
