@@ -27,6 +27,7 @@ username = config.usernames[siteFamily][siteLanguage]
 
 checkURL = False # TODO: translate hyperlynx.py by adding content{} at the top
 fixTags = False
+addCategory = False
 
 deprecatedTags = {}
 deprecatedTags['big'] = 'strong'
@@ -197,12 +198,13 @@ def modification(pageName):
 
     PageTemp = PageTemp.replace(u'<source lang="html4strict">', u'<source lang="html">')
 
-
     if page.namespace() == 0:
         # Templates treatment
         for bookCatTemplate in bookCatTemplates:
             PageTemp = PageTemp.replace(bookCatTemplate, u'{{BookCat}}')
-        if PageTemp.find(u'{{BookCat}}') == -1 and trim(PageTemp) != '': PageTemp = PageTemp + u'\n\n{{BookCat}}'
+        if addCategory:
+            if PageTemp.find(u'{{BookCat}}') == -1 and trim(PageTemp) != '':
+                PageTemp = PageTemp + u'\n\n{{BookCat}}'
 
         regex = ur'\(*ISBN +([0-9\-]+)\)*'
         if re.search(regex, PageTemp):
@@ -384,6 +386,7 @@ def crawlerAll(start):
         modification(Page.title())
 
 def crawlerSpecialNotCategorized():
+    addCategory = True
     for Page in site.uncategorizedpages():
         #print (Page.title().encode(config.console_encoding, 'replace'))
         modification(Page.title())

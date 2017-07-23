@@ -26,7 +26,8 @@ site = pywikibot.Site(siteLanguage, siteFamily)
 username = config.usernames[siteFamily][siteLanguage]
 
 checkURL = False
-fixTags = True
+fixTags = False
+addCategory = False
 
 deprecatedTags = {}
 deprecatedTags['big'] = 'strong'
@@ -216,7 +217,9 @@ def modification(PageHS):
         PageTemp = PageTemp.replace(u'[[Catégorie:{{PAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
         PageTemp = PageTemp.replace(u'[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
         PageTemp = PageTemp.replace(u'{{BookCat}}', u'{{AutoCat}}')
-        if PageTemp.find(u'{{AutoCat}}') == -1 and trim(PageTemp) != '': PageTemp = PageTemp + u'\n\n{{AutoCat}}'
+        if addCategory:
+            if PageTemp.find(u'{{AutoCat}}') == -1 and trim(PageTemp) != '':
+                PageTemp = PageTemp + u'\n\n{{AutoCat}}'
 
         regex = ur'\(*ISBN +([0-9\-]+)\)*'
         if re.search(regex, PageTemp):
@@ -464,6 +467,7 @@ def crawlerSpecialLint2():
     #modification(Page.title())
 
 def crawlerSpecialNotCategorized():
+    addCategory = True
     for Page in site.uncategorizedpages():
         #print (Page.title().encode(config.console_encoding, 'replace'))
         modification(Page.title())
