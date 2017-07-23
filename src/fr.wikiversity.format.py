@@ -582,7 +582,7 @@ def modification(PageHS):
 
     # Test des URL
     if debugLevel > 0: print u'Test des URL'
-    PageEnd = hyperlynx(PageEnd)
+    if checkURL: PageEnd = hyperlynx(PageEnd)
     if debugLevel > 1: raw_input (u'--------------------------------------------------------------------------------------------')
 
     if PageBegin != PageEnd: sauvegarde(page, PageEnd, summary)
