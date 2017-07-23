@@ -210,12 +210,14 @@ def modification(PageHS):
             summary += ', retrait des palettes'
             PageTemp = re.sub(regex, ur'', PageTemp)
         PageTemp = PageTemp.replace(u'{{PDC}}', u'profondeur de champ')
+        PageTemp = PageTemp.replace(u'{{reflist}}', u'{{Références}}')
+        PageTemp = PageTemp.replace(u'{{Reflist}}', u'{{Références}}')
+
         PageTemp = PageTemp.replace(u'[[Catégorie:{{PAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
         PageTemp = PageTemp.replace(u'[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
         PageTemp = PageTemp.replace(u'{{BookCat}}', u'{{AutoCat}}')
-        PageTemp = PageTemp.replace(u'{{reflist}}', u'{{Références}}')
-        PageTemp = PageTemp.replace(u'{{Reflist}}', u'{{Références}}')
-        
+        if PageTemp.find(u'{{AutoCat}}') == -1 and trim(PageTemp) != '': PageTemp = PageTemp + u'\n\n{{AutoCat}}'
+
         regex = ur'\(*ISBN +([0-9\-]+)\)*'
         if re.search(regex, PageTemp):
             if debugLevel > 0: u'ISBN'

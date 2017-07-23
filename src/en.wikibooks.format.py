@@ -198,12 +198,18 @@ def modification(pageName):
     PageTemp = PageTemp.replace(u'<source lang="html4strict">', u'<source lang="html">')
 
 
-    # Templates
-    for bookCatTemplate in bookCatTemplates:
-        PageTemp = PageTemp.replace(bookCatTemplate, u'{{BookCat}}')
-    if PageTemp.find(u'{{BookCat}}') == -1 and trim(PageTemp) != '': PageTemp = PageTemp + u'\n\n{{BookCat}}'
+    if page.namespace() == 0:
+        # Templates treatment
+        for bookCatTemplate in bookCatTemplates:
+            PageTemp = PageTemp.replace(bookCatTemplate, u'{{BookCat}}')
+        if PageTemp.find(u'{{BookCat}}') == -1 and trim(PageTemp) != '': PageTemp = PageTemp + u'\n\n{{BookCat}}'
 
-    # URLs
+        regex = ur'\(*ISBN +([0-9\-]+)\)*'
+        if re.search(regex, PageTemp):
+            if debugLevel > 0: u'ISBN'
+            PageTemp = re.sub(regex, ur'{{ISBN|\1}}', PageTemp)
+            summary += ', ajout de {{ISBN}}'
+
     if checkURL: PageTemp = hyperlynx(PageTemp)
 
     PageEnd = PageEnd + PageTemp
