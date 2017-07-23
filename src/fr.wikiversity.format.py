@@ -156,9 +156,14 @@ def modification(PageHS):
                 pattern = re.compile(regex, re.UNICODE)
                 for match in pattern.finditer(PageTemp):
                     if debugLevel > 0: print match.group(1)
-                    #summary = summary + u', correction de color'
                     if newTag.find(u'font-size') != -1:
-                        openingTag = newTag + str(fontSize[int(match.group(1).replace('"', ''))]) + ur'em"'
+                        size = match.group(1).replace('"', '')
+                        try:
+                            size = int(size)
+                            if size > 7: size = 7
+                        except ValueError:
+                            pass
+                        openingTag = newTag + str(fontSize[size]) + ur'em"'
                     else:
                         openingTag = newTag + match.group(1)
                     PageTemp = PageTemp.replace(match.group(0), ur'<' + openingTag + ur'>')

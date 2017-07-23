@@ -101,6 +101,8 @@ def modification(PageHS):
         if debugLevel > 0: print u'Remplacements des balises'
         PageTemp = PageTemp.replace(u'</br>', u'<br/>')
 
+        #TODO: {{citation}} https://fr.wikiversity.org/w/index.php?title=Matrice%2FD%C3%A9terminant&action=historysubmit&type=revision&diff=669911&oldid=664849
+        #TODO: multiparamètre
         PageTemp = PageTemp.replace('<font size="+1" color="red">', ur'<span style="font-size:0.63em; color:red;>')
         regex = ur'<font color="?([^>"]*)"?>'
         pattern = re.compile(regex, re.UNICODE)
@@ -127,9 +129,14 @@ def modification(PageHS):
                 pattern = re.compile(regex, re.UNICODE)
                 for match in pattern.finditer(PageTemp):
                     if debugLevel > 0: print match.group(1)
-                    #summary = summary + u', correction de color'
                     if newTag.find(u'font-size') != -1:
-                        openingTag = newTag + str(fontSize[int(match.group(1).replace('"', ''))]) + ur'em"'
+                        size = match.group(1).replace('"', '')
+                        try:
+                            size = int(size)
+                            if size > 7: size = 7
+                        except ValueError:
+                            pass
+                        openingTag = newTag + str(fontSize[size]) + ur'em"'
                     else:
                         openingTag = newTag + match.group(1)
                     PageTemp = PageTemp.replace(match.group(0), ur'<' + openingTag + ur'>')
