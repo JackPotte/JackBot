@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Ce script formate les articles de Wikilivres
+# Ce script formate les articles de Wikiquote
 
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
@@ -36,13 +36,13 @@ checkURL = False
 fixTags = False
 
 deprecatedTags = {}
-deprecatedTags['big'] = 'strong'
+#deprecatedTags['big'] = 'strong'
 deprecatedTags['center'] = 'div style="text-align: center;"'
 deprecatedTags['font color *= *"?'] = 'span style="color:'
 deprecatedTags['font size *= *"?\+?\-?'] = 'span style="font-size:'
 deprecatedTags['strike'] = 's'
 deprecatedTags['tt'] = 'code'
-deprecatedTags['BIG'] = 'strong'
+#deprecatedTags['BIG'] = 'strong'
 deprecatedTags['CENTER'] = 'div style="text-align: center;"'
 deprecatedTags['FONT COLOR *= *"?'] = 'span style="color:'
 deprecatedTags['FONT SIZE *= *"?\+?'] = 'span style="font-size:'
