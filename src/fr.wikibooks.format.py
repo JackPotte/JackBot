@@ -394,14 +394,17 @@ def crawlerRedirects():
                                         
 # Traitement de toutes les pages du site
 def crawlerAll(start):
-    gen = pagegenerators.AllpagesPageGenerator(start,namespace=0,includeredirects=False)
+    gen = pagegenerators.AllpagesPageGenerator(start, namespace=0, includeredirects=False)
     for Page in pagegenerators.PreloadingGenerator(gen,100):
         #print (Page.title().encode(config.console_encoding, 'replace'))
         modification(Page.title())
 
 def crawlerSpecialLint():
     #TODO: https://fr.wiktionary.org/wiki/Sp%C3%A9cial:ApiSandbox#action=query&format=rawfm&prop=info&list=linterrors&inprop=url&lntcategories=obsolete-tag&lntlimit=5000&lntnamespace=10
-    modification(Page.title())
+    gen = pywikibot.data.api.QueryGenerator()
+    for Page in pagegenerators.PreloadingGenerator(gen,100):
+        print (Page.title().encode(config.console_encoding, 'replace'))
+        modification(Page.title())
 
 def crawlerSpecialNotCategorized():
     #TODO:
@@ -495,6 +498,10 @@ def main(*args):
         elif sys.argv[1] == u'RC':
             while 1:
                 crawlerRCLastDay()
+        elif sys.argv[1] == u'lint':
+            crawlerSpecialLint()
+        elif sys.argv[1] == u'nocat':
+            crawlerSpecialNotCategorized()
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
             modification(html2Unicode(sys.argv[1]))
