@@ -26,6 +26,40 @@ site = pywikibot.Site(siteLanguage, siteFamily)
 username = config.usernames[siteFamily][siteLanguage]
 
 checkURL = False # TODO: translate hyperlynx.py by adding content{} at the top
+fixTags = False
+
+deprecatedTags = {}
+deprecatedTags['big'] = 'strong'
+deprecatedTags['center'] = 'div style="text-align: center;"'
+deprecatedTags['font color *= *"?'] = 'span style="color:'
+deprecatedTags['font face *= *"?'] = 'span style="font-family:'
+deprecatedTags['font size *= *"?\+?\-?'] = 'span style="font-size:'
+#deprecatedTags['font '] = 'span ' #TODO: ajouter des ";" entre plusieurs param
+deprecatedTags['strike'] = 's'
+deprecatedTags['tt'] = 'code'
+deprecatedTags['BIG'] = 'strong'
+deprecatedTags['CENTER'] = 'div style="text-align: center;"'
+deprecatedTags['FONT COLOR *= *"?'] = 'span style="color:'
+deprecatedTags['FONT SIZE *= *"?\+?'] = 'span style="font-size:'
+deprecatedTags['STRIKE'] = 's'
+deprecatedTags['TT'] = 'code'
+fontSize = {}
+fontSize[1] = 0.63
+fontSize[2] = 0.82
+fontSize[3] = 1.0
+fontSize[4] = 1.13
+fontSize[5] = 1.5
+fontSize[6] = 2.0
+fontSize[7] = 3.0
+fontColor = []
+fontColor.append('black')
+fontColor.append('blue')
+fontColor.append('green')
+fontColor.append('orange')
+fontColor.append('red')
+fontColor.append('white')
+fontColor.append('yellow')
+fontColor.append('#808080')
 
 
 # Modification du wiki
@@ -44,6 +78,126 @@ def modification(pageName):
         return
     PageTemp = PageBegin
     PageEnd = u''
+
+
+    #https://fr.wiktionary.org/wiki/Sp%C3%A9cial:LintErrors/bogus-image-options
+    badFileParameters = []
+    badFileParameters.append(u'')
+    for badFileParameter in badFileParameters:
+        regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *' + badFileParameter + ur' *(\||\])'
+        PageTemp = re.sub(regex, ur'\1\3', PageTemp)
+    # Doublons
+    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *thumb *[\|\]])'
+    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
+    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *vignette *[\|\]])'
+    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
+    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *vignette *[\|\]])'
+    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
+    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *thumb *[\|\]])'
+    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
+
+    if fixTags:
+        if debugLevel > 0: print u'Remplacements des balises'
+        PageTemp = PageTemp.replace(u'</br>', u'<br/>')
+
+        #TODO: {{citation}} https://fr.wikiversity.org/w/index.php?title=Matrice%2FD%C3%A9terminant&action=historysubmit&type=revision&diff=669911&oldid=664849
+        #TODO: multiparamètre
+        PageTemp = PageTemp.replace('<font size="+1" color="red">', ur'<span style="font-size:0.63em; color:red;>')
+        regex = ur'<font color="?([^>"]*)"?>'
+        pattern = re.compile(regex, re.UNICODE)
+        for match in pattern.finditer(PageTemp):
+            if debugLevel > 1: print u'Remplacement de ' + match.group(0) + u' par <span style="color:' + match.group(1) + u'">'
+            PageTemp = PageTemp.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
+            PageTemp = PageTemp.replace('</font>', u'</span>')
+
+        for oldTag, newTag in deprecatedTags.items():
+            if debugLevel > 1: print "Clé : %s, valeur : %s." % (oldTag, newTag)
+            if oldTag.find(u' ') == -1:
+                closingOldTag = oldTag
+            else:
+                closingOldTag = oldTag[:oldTag.find(u' ')]
+            if newTag.find(u' ') == -1:
+                closingNewTag = newTag
+            else:
+                closingNewTag = newTag[:newTag.find(u' ')]
+            #regex = ur'<' + oldTag + ur'([^>]*)>([^\n]*)</' + closingOldTag + '>' # bug https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:-flex-nom-fam-/Documentation&diff=prev&oldid=24027702
+            regex = ur'< *' + oldTag + ur'([^>]*) *>'
+            if re.search(regex, PageTemp):
+                summary = summary + u', ajout de ' + newTag
+                #PageTemp = re.sub(regex, ur'<' + newTag + ur'\1>', PageTemp)
+                pattern = re.compile(regex, re.UNICODE)
+                for match in pattern.finditer(PageTemp):
+                    if debugLevel > 0: print str(match.group(1))
+                    if newTag.find(u'font-size') != -1:
+                        size = match.group(1).replace('"', '')
+                        try:
+                            size = int(size)
+                            if size > 7: size = 7
+                            openingTag = newTag + str(fontSize[size]) + ur'em"'
+                        except ValueError:
+                            openingTag = newTag + size + '"'
+                    else:
+                        openingTag = newTag + match.group(1)
+                    PageTemp = PageTemp.replace(match.group(0), ur'<' + openingTag + ur'>')
+
+            regex = ur'</ *' + closingOldTag + ' *>'
+            PageTemp = re.sub(regex, ur'</' + closingNewTag + '>', PageTemp)
+        PageTemp = PageTemp.replace('<strong">', ur'<strong>')
+        PageTemp = PageTemp.replace('<s">', ur'<s>')
+        PageTemp = PageTemp.replace('<code">', ur'<code>')
+        PageTemp = PageTemp.replace(';"">', ur';">')
+
+        # Fix
+        regex = ur'<span style="font\-size:([a-z]+)>'
+        pattern = re.compile(regex, re.UNICODE)
+        for match in pattern.finditer(PageTemp):
+            #summary = summary + u', correction de color'
+            PageTemp = PageTemp.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
+        PageTemp = PageTemp.replace('</font>', u'</span>')
+        PageTemp = PageTemp.replace('</font>'.upper(), u'</span>')
+
+        regex = ur'<span style="font\-size:(#[0-9]+)"?>'
+        s = re.search(regex, PageTemp)
+        if s:
+            summary = summary + u', correction de color'
+            PageTemp = re.sub(regex, ur'<span style="color:' + s.group(1) + ur'">', PageTemp)
+
+        regex = ur'<span style="text\-size:([0-9]+)"?>'
+        s = re.search(regex, PageTemp)
+        if s:
+            summary = summary + u', correction de font-size'
+            PageTemp = re.sub(regex, ur'<span style="font-size:' + str(fontSize[int(s.group(1))]) + ur'em">', PageTemp)
+
+        # Fix :
+        regex = ur'(<span style="font\-size:[0-9]+px;">)[0-9]+px</span>([^<]*)</strong></strong>'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur'\1 \2</span>', PageTemp)
+
+        PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong><strong>', u'<span style="font-size:75px;">')
+        PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong>', u'<span style="font-size:50px;">')
+        PageTemp = PageTemp.replace(u'<strong><strong><strong><strong>', u'<span style="font-size:40px;">')
+        PageTemp = PageTemp.replace(u'<strong><strong><strong>', u'<span style="font-size:25px;">')
+        PageTemp = PageTemp.replace(u'<strong><strong>', u'<span style="font-size:20px;">')
+        PageTemp = re.sub(ur'</strong></strong></strong></strong></strong></strong>', ur'</span>', PageTemp)
+        PageTemp = re.sub(ur'</strong></strong></strong></strong></strong>', ur'</span>', PageTemp)
+        PageTemp = re.sub(ur'</strong></strong></strong></strong>', ur'</span>', PageTemp)
+        PageTemp = re.sub(ur'</strong></strong></strong>', ur'</span>', PageTemp)
+        PageTemp = re.sub(ur'</strong></strong>', ur'</span>', PageTemp)
+        regex = ur'<strong>([^<]*)</span>'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur'<strong>\1</strong>', PageTemp)
+        regex = ur'<strong><span ([^<]*)</span></span>'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur'<strong><span \1</span></strong>', PageTemp)
+        #PageTemp = re.sub(ur'</span></span>', ur'</span>', PageTemp)
+
+        regex = ur'(\|(ar|fa)(\|flexion)*}} *===\n)<span style *= *"font\-size:[0-9\.]*em">\'\'\'([^\']*)\'\'\'</span>'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur"\1'''{{Arab|\4}}'''", PageTemp)
+        PageTemp = PageTemp.replace(u'[[Category:', u'[[Catégorie:')
+
+    PageTemp = PageTemp.replace(u'<source lang="html4strict">', u'<source lang="html">')
+
 
     # Templates
     bookCatTemplates = []
@@ -179,14 +333,14 @@ def crawlerUser(username):
 def crawlerRedirects():
     for Page in site.allpages(start=u'', namespace=0, includeredirects='only'):
         modification(Page.title())    
-                                        
+
 # Traitement de toutes les pages du site
 def crawlerAll(start):
     gen = pagegenerators.AllpagesPageGenerator(start,namespace=0,includeredirects=False)
     for Page in pagegenerators.PreloadingGenerator(gen,100):
         #print (Page.title().encode(config.console_encoding, 'replace'))
         modification(Page.title())
-    
+
 # Permet à tout le monde de stopper le bot en lui écrivant
 def ArretDUrgence():
         page = Page(site,u'User talk:' + username)
@@ -241,7 +395,7 @@ def sauvegarde(PageCourante, Contenu, summary):
         except AttributeError:
             print "AttributeError en sauvegarde"
             return
-            
+
 # Lancement
 if len(sys.argv) > 1:
     DebutScan = u''

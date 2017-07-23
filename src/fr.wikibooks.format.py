@@ -32,7 +32,9 @@ deprecatedTags = {}
 deprecatedTags['big'] = 'strong'
 deprecatedTags['center'] = 'div style="text-align: center;"'
 deprecatedTags['font color *= *"?'] = 'span style="color:'
+deprecatedTags['font face *= *"?'] = 'span style="font-family:'
 deprecatedTags['font size *= *"?\+?\-?'] = 'span style="font-size:'
+#deprecatedTags['font '] = 'span ' #TODO: ajouter des ";" entre plusieurs param
 deprecatedTags['strike'] = 's'
 deprecatedTags['tt'] = 'code'
 deprecatedTags['BIG'] = 'strong'
