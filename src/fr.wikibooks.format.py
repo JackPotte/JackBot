@@ -63,23 +63,11 @@ fontColor.append('#808080')
 
 
 def modification(PageHS):
+    if debugLevel > 0: print(PageHS.encode(config.console_encoding, 'replace'))
     summary = u'Formatage'
-    page = Page(site, PageHS)
-    print(PageHS.encode(config.console_encoding, 'replace'))
-    try:
-        PageBegin = page.get()
-    except pywikibot.exceptions.NoPage:
-        print "NoPage"
-        return
-    except pywikibot.exceptions.IsRedirectPage:
-        print "Redirect page"
-        return
-    except pywikibot.exceptions.LockedPage:
-        print "Locked/protected page"
-        return
-    if PageBegin.find(u'{{en travaux') != -1 or PageBegin.find(u'{{En travaux') != -1:
-        print u'Page en travaux'
-        return
+    page = Page(site, pageName)
+    PageBegin = getContentFromPage(page, 'All')
+    if PageBegin == 'KO' or PageBegin.find(u'{{en travaux') != -1 or PageBegin.find(u'{{En travaux') != -1: return
     PageTemp = PageBegin
     PageEnd = u''
 
@@ -264,6 +252,58 @@ def getWiki(language = 'fr', family = 'wiktionary'):
     if debugLevel > 1: print u'get ' + language + u'.' + family
     return pywikibot.Site(language, family)
 
+def getContentFromPageName(pageName, allowedNamespaces = None):
+    page = Page(site, pageName)
+    return getContentFromPage(page, allowedNamespaces)
+
+def getContentFromPage(page, allowedNamespaces = None):
+    PageBegin = u''
+    if page.exists():
+        if type(allowedNamespaces) == type([]): #'list'
+            if debugLevel > 1: print u' namespace : ' + str(page.namespace())
+            condition = page.namespace() in allowedNamespaces
+        elif allowedNamespaces == 'All':
+            if debugLevel > 1: print u' all namespaces'
+            condition = True
+        else:
+            if debugLevel > 1: print u' content namespaces'
+            condition = page.namespace() in [0, 12, 14, 100] or page.title().find(username) != -1
+        if condition:
+            try:
+                PageBegin = page.get()
+            except pywikibot.exceptions.BadTitle:
+                if debugLevel > 0: print u'IsRedirect l 5658'
+                return 'KO'
+            except pywikibot.exceptions.IsRedirectPage:
+                if debugLevel > 0: print u'IsRedirect l 5662'
+                if page.namespace() == 'Template:':
+                    PageBegin = page.get(get_redirect=True)
+                    if PageBegin[:len(u'#REDIRECT')] == u'#REDIRECT':
+                        regex = ur'\[\[([^\]]+)\]\]'
+                        s = re.search(regex, PageBegin)
+                        if s:
+                            PageBegin = getContentFromPageName(s.group(1), allowedNamespaces = allowedNamespaces)
+                        else:
+                            return 'KO'
+                    else:
+                        return 'KO'
+                else:
+                    return 'KO'
+            except pywikibot.exceptions.NoPage:
+                if debugLevel > 0: print u'NoPage l 5665'
+                return 'KO'
+            except pywikibot.exceptions.ServerError:
+                if debugLevel > 0: print u'NoPage l 5668'
+                return 'KO'
+        else:
+            if debugLevel > 0: print u'Forbidden namespace l 5671'
+            return 'KO'
+    else:
+        if debugLevel > 0: print u'No page l 5674'
+        return 'KO'
+
+    return PageBegin
+
 # Lecture du fichier articles_list.txt (au même format que pour replace.py)
 def crawlerFile(source):
     if source:
@@ -400,15 +440,31 @@ def crawlerAll(start):
         modification(Page.title())
 
 def crawlerSpecialLint():
-    #TODO: https://fr.wiktionary.org/wiki/Sp%C3%A9cial:ApiSandbox#action=query&format=rawfm&prop=info&list=linterrors&inprop=url&lntcategories=obsolete-tag&lntlimit=5000&lntnamespace=10
-    gen = pywikibot.data.api.QueryGenerator()
-    for Page in pagegenerators.PreloadingGenerator(gen,100):
-        print (Page.title().encode(config.console_encoding, 'replace'))
-        modification(Page.title())
+    page = pywikibot.Page(site, u'Spécial:ApiSandbox')
+    raw_input(page._get_parsed_page())  # WARNING: API error pagecannotexist: Namespace doesn't allow actual pages.
+    #modification(Page.title())
+
+def crawlerSpecialLint2():
+    predata = { # https://fr.wiktionary.org/wiki/Sp%C3%A9cial:ApiSandbox#action=query&format=rawfm&prop=info&list=linterrors&inprop=url&lntcategories=obsolete-tag&lntlimit=5000&lntnamespace=10
+       'action': 'query',
+       'format': 'json',
+       'prop': 'info',
+       'list': 'linterrors',
+       'inprop': 'url',
+       'lntcategories': 'obsolete-tag',
+       'lntlimit': '5000',
+       'lntnamespace': '10'
+    }
+    data = site.postForm(site.apipath(), predata) # WARNING: Http response status 405
+    if debugLevel > 0: raw_input(data)
+    text = simplejson.loads(data)['parse']['text']['*'] # ValueError: No JSON object could be decode
+    if debugLevel > 0: raw_input(text)
+    #modification(Page.title())
 
 def crawlerSpecialNotCategorized():
-    #TODO:
-    modification(Page.title())
+    for Page in site.uncategorizedpages():
+        #print (Page.title().encode(config.console_encoding, 'replace'))
+        modification(Page.title())
 
 
 # Permet à tout le monde de stopper le bot en lui écrivant
@@ -498,10 +554,10 @@ def main(*args):
         elif sys.argv[1] == u'RC':
             while 1:
                 crawlerRCLastDay()
-        elif sys.argv[1] == u'lint':
-            crawlerSpecialLint()
         elif sys.argv[1] == u'nocat':
             crawlerSpecialNotCategorized()
+        elif sys.argv[1] == u'lint':
+            crawlerSpecialLint()
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
             modification(html2Unicode(sys.argv[1]))

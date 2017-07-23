@@ -61,24 +61,23 @@ fontColor.append('white')
 fontColor.append('yellow')
 fontColor.append('#808080')
 
+bookCatTemplates = []
+bookCatTemplates.append(u'{{Auto category}}')
+bookCatTemplates.append(u'{{Book category}}')
+bookCatTemplates.append(u'{{AutoCat}}')
+bookCatTemplates.append(u'{{BOOKCAT}}')
+bookCatTemplates.append(u'[[Category:{{PAGENAME}}|{{SUBPAGENAME}}]]')
+bookCatTemplates.append(u'[[Category:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]')
 
-# Modification du wiki
+
 def modification(pageName):
-    print(pageName.encode(config.console_encoding, 'replace'))
+    if debugLevel > 0: print(pageName.encode(config.console_encoding, 'replace'))
     summary = u'Formatting'
     page = Page(site, pageName)
-    if page.namespace() != 0 or pageName.find(u'/Print version') != -1: return
-    try:
-        PageBegin = page.get()
-    except pywikibot.exception.NoPage:
-        print "NoPage"
-        return
-    except pywikibot.exception.IsRedirectPage:
-        print "Redirect page"
-        return
+    PageBegin = getContentFromPage(page, 'All')
+    if PageBegin == 'KO' or pageName.find(u'/Print version') != -1: return
     PageTemp = PageBegin
     PageEnd = u''
-
 
     #https://fr.wiktionary.org/wiki/Sp%C3%A9cial:LintErrors/bogus-image-options
     badFileParameters = []
@@ -200,21 +199,12 @@ def modification(pageName):
 
 
     # Templates
-    bookCatTemplates = []
-    bookCatTemplates.append(u'{{Auto category}}')
-    bookCatTemplates.append(u'{{Book category}}')
-    bookCatTemplates.append(u'{{AutoCat}}')
-    bookCatTemplates.append(u'{{BOOKCAT}}')
-    bookCatTemplates.append(u'[[Category:{{PAGENAME}}|{{SUBPAGENAME}}]]')
-    bookCatTemplates.append(u'[[Category:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]')
     for bookCatTemplate in bookCatTemplates:
         PageTemp = PageTemp.replace(bookCatTemplate, u'{{BookCat}}')
-    if PageTemp.find(u'{{BookCat}}') == -1:
-        PageTemp = PageTemp + u'\n\n{{BookCat}}'
+    if PageTemp.find(u'{{BookCat}}') == -1 and trim(PageTemp) != '': PageTemp = PageTemp + u'\n\n{{BookCat}}'
 
     # URLs
-    if checkURL:
-        PageTemp = hyperlynx(PageTemp)
+    if checkURL: PageTemp = hyperlynx(PageTemp)
 
     PageEnd = PageEnd + PageTemp
     if PageEnd != PageBegin: sauvegarde(page,PageEnd,summary)
@@ -240,6 +230,58 @@ def anagram(word):
 def getWiki(language = 'fr', family = 'wiktionary'):
   if debugLevel > 1: print u'get ' + language + u'.' + family
   return pywikibot.Site(language, family)
+
+def getContentFromPageName(pageName, allowedNamespaces = None):
+    page = Page(site, pageName)
+    return getContentFromPage(page, allowedNamespaces)
+
+def getContentFromPage(page, allowedNamespaces = None):
+    PageBegin = u''
+    if page.exists():
+        if type(allowedNamespaces) == type([]): #'list'
+            if debugLevel > 1: print u' namespace : ' + str(page.namespace())
+            condition = page.namespace() in allowedNamespaces
+        elif allowedNamespaces == 'All':
+            if debugLevel > 1: print u' all namespaces'
+            condition = True
+        else:
+            if debugLevel > 1: print u' content namespaces'
+            condition = page.namespace() in [0, 12, 14, 100] or page.title().find(username) != -1
+        if condition:
+            try:
+                PageBegin = page.get()
+            except pywikibot.exceptions.BadTitle:
+                if debugLevel > 0: print u'IsRedirect l 5658'
+                return 'KO'
+            except pywikibot.exceptions.IsRedirectPage:
+                if debugLevel > 0: print u'IsRedirect l 5662'
+                if page.namespace() == 'Template:':
+                    PageBegin = page.get(get_redirect=True)
+                    if PageBegin[:len(u'#REDIRECT')] == u'#REDIRECT':
+                        regex = ur'\[\[([^\]]+)\]\]'
+                        s = re.search(regex, PageBegin)
+                        if s:
+                            PageBegin = getContentFromPageName(s.group(1), allowedNamespaces = allowedNamespaces)
+                        else:
+                            return 'KO'
+                    else:
+                        return 'KO'
+                else:
+                    return 'KO'
+            except pywikibot.exceptions.NoPage:
+                if debugLevel > 0: print u'NoPage l 5665'
+                return 'KO'
+            except pywikibot.exceptions.ServerError:
+                if debugLevel > 0: print u'NoPage l 5668'
+                return 'KO'
+        else:
+            if debugLevel > 0: print u'Forbidden namespace l 5671'
+            return 'KO'
+    else:
+        if debugLevel > 0: print u'No page l 5674'
+        return 'KO'
+
+    return PageBegin
 
 # Lecture du fichier articles_list.txt (au même format que pour replace.py)
 def crawlerFile(source):
@@ -305,12 +347,6 @@ def crawlerCatLink(pagename,apres):
             elif PageLiee.title() == apres:
                 modifier = u'True'
 
-# Traitement des entrées d'une page spéciale
-def crawlerSpecial(pagename):
-    gen = pagegenerators.LinksearchPageGenerator(pagename, namespaces=0, total=None, site=site, protocol='http')
-    for Page in pagegenerators.PreloadingGenerator(gen, 100):   # pywikibot.data.api.APIError: badquery: Invalid query.
-        modification(Page.title())
-
 # Traitement d'une recherche
 def crawlerSearch(pagename):
     gen = pagegenerators.SearchPageGenerator(pagename, site = site, namespaces = "0")
@@ -338,6 +374,11 @@ def crawlerRedirects():
 def crawlerAll(start):
     gen = pagegenerators.AllpagesPageGenerator(start,namespace=0,includeredirects=False)
     for Page in pagegenerators.PreloadingGenerator(gen,100):
+        #print (Page.title().encode(config.console_encoding, 'replace'))
+        modification(Page.title())
+
+def crawlerSpecialNotCategorized():
+    for Page in site.uncategorizedpages():
         #print (Page.title().encode(config.console_encoding, 'replace'))
         modification(Page.title())
 
@@ -427,8 +468,8 @@ if len(sys.argv) > 1:
         crawlerCat(u'Catégorie:Python', False, u'')
     elif sys.argv[1] == u'page':
         modification(u'Utilisateur:JackBot/test unitaire')
-    elif sys.argv[1] == u'special':
-        crawlerSpecial(u'Special:UncategorizedPages')
+    elif sys.argv[1] == u'nocat':
+        crawlerSpecialNotCategorized()
     else:
         modification(sys.argv[1])    # Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
 else:
