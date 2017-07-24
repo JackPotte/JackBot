@@ -64,7 +64,7 @@ fontColor.append('#808080')
 
 
 def modification(PageHS):
-    if debugLevel > 0: print(PageHS.encode(config.console_encoding, 'replace'))
+    if debugLevel > -1: print(PageHS.encode(config.console_encoding, 'replace'))
     summary = u'Formatage'
     page = Page(site, pageName)
     PageBegin = getContentFromPage(page, 'All')

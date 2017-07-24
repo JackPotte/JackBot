@@ -8,6 +8,7 @@ from lib import *
 import pywikibot
 from pywikibot import *
 from pywikibot import pagegenerators
+from pywikibot.data import api
 
 # Global variables
 debugLevel = 0
@@ -72,7 +73,7 @@ bookCatTemplates.append(u'[[Category:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]')
 
 
 def modification(pageName):
-    if debugLevel > 0: print(pageName.encode(config.console_encoding, 'replace'))
+    if debugLevel > -1: print(pageName.encode(config.console_encoding, 'replace'))
     summary = u'Formatting'
     page = Page(site, pageName)
     PageBegin = getContentFromPage(page, 'All')
@@ -202,7 +203,7 @@ def modification(pageName):
         # Templates treatment
         for bookCatTemplate in bookCatTemplates:
             PageTemp = PageTemp.replace(bookCatTemplate, u'{{BookCat}}')
-        if addCategory:
+        if addCategory and isPatrolled(page):
             if PageTemp.find(u'{{BookCat}}') == -1 and trim(PageTemp) != '':
                 PageTemp = PageTemp + u'\n\n{{BookCat}}'
 
@@ -234,6 +235,15 @@ def rec_anagram(counter):
                 counter[c] += 1
 def anagram(word):
     return rec_anagram(collections.Counter(word))
+
+def isPatrolled(page):
+    versions = page.getLatestEditors(1)
+    print versions
+    #if version['timestamp'] < x and version['user'].patroller:
+    #print versions[len(versions)-1]
+    #raw_input('Fin')
+
+    return False
 
 def getWiki(language = 'fr', family = 'wiktionary'):
   if debugLevel > 1: print u'get ' + language + u'.' + family
@@ -386,6 +396,7 @@ def crawlerAll(start):
         modification(Page.title())
 
 def crawlerSpecialNotCategorized():
+    global addCategory
     addCategory = True
     for Page in site.uncategorizedpages():
         #print (Page.title().encode(config.console_encoding, 'replace'))
