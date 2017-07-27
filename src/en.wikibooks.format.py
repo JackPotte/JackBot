@@ -203,7 +203,8 @@ def modification(pageName):
         # Templates treatment
         for bookCatTemplate in bookCatTemplates:
             PageTemp = PageTemp.replace(bookCatTemplate, u'{{BookCat}}')
-        if addCategory and isPatrolled(page):
+        version = page.getLatestEditors(1)
+        if addCategory and hasOneHour(version) and isPatrolled(version):
             if PageTemp.find(u'{{BookCat}}') == -1 and trim(PageTemp) != '':
                 PageTemp = PageTemp + u'\n\n{{BookCat}}'
 
@@ -236,22 +237,40 @@ def rec_anagram(counter):
 def anagram(word):
     return rec_anagram(collections.Counter(word))
 
-def isPatrolled(page):
-    version = page.getLatestEditors(1)
+def hasOneHour(version):
+    timeAfterLastEdition = 60 # minutes
+    dateNow = datetime.datetime.utcnow()
+    maxDate = dateNow - datetime.timedelta(minutes=timeAfterLastEdition)
+    if debugLevel > 1:
+        print maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')
+        print version[0]['timestamp']
+        print version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')   
+    if version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ'):
+        return True
+    return False
+
+def isPatrolled(version):
     if debugLevel > 1: print version  #[{u'timestamp': u'2017-07-25T02:26:15Z', u'user': u'27.34.18.159'}]
-    if debugLevel > 0: print version[0]['user']
-    #TODO: now - X in Zulu
-    if version[0]['timestamp'] < u'2018-07-25T02:26:15Z' and isPatroller(version[0]['user']):
+    if debugLevel > 0: print ' user: ' + version[0]['user']
+    if isPatroller(version[0]['user']):
         return True
     return False
 
 def isPatroller(user):
+    if isIP(user): return False
     admins = site.allusers(group='sysop')
     print admins    #<pywikibot.data.api.ListGenerator object at 0x7f6ebc521fd0>
     patrollers = site.allusers(group='patrollers')
     print patrollers
     raw_input('Fin')
     
+def isIP(user):
+    IPv4 = u'^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+    if re.search(IPv4, user): return True
+    IPv6 = u'^((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((b((25[0-5])|(1d{2})|(2[0-4]d)|(d{1,2}))b).){3}(b((25[0-5])|(1d{2})|(2[0-4]d)|(d{1,2}))b))|(([0-9A-Fa-f]{1,4}:){0,5}:((b((25[0-5])|(1d{2})|(2[0-4]d)|(d{1,2}))b).){3}(b((25[0-5])|(1d{2})|(2[0-4]d)|(d{1,2}))b))|(::([0-9A-Fa-f]{1,4}:){0,5}((b((25[0-5])|(1d{2})|(2[0-4]d)|(d{1,2}))b).){3}(b((25[0-5])|(1d{2})|(2[0-4]d)|(d{1,2}))b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))$'
+    if re.search(IPv6, user): return True
+    return False
+
 def getWiki(language = 'fr', family = 'wiktionary'):
   if debugLevel > 1: print u'get ' + language + u'.' + family
   return pywikibot.Site(language, family)
@@ -377,6 +396,26 @@ def crawlerSearch(pagename):
     gen = pagegenerators.SearchPageGenerator(pagename, site = site, namespaces = "0")
     for Page in pagegenerators.PreloadingGenerator(gen,100):
         modification(Page.title())
+
+# Traitement des modifications récentes
+def crawlerRCLastDay(site = site, nobots=True, namespace='0'):
+    # Génère les modifications récentes de la dernière journée
+    timeAfterLastEdition = 30 # minutes
+
+    date_now = datetime.datetime.utcnow()
+    # Date de la plus récente modification à récupérer
+    date_start = date_now - datetime.timedelta(minutes=timeAfterLastEdition)
+    # Date d'un jour plus tôt
+    date_end = date_start - datetime.timedelta(1)
+
+    start_timestamp = date_start.strftime('%Y%m%d%H%M%S')
+    end_timestamp = date_end.strftime('%Y%m%d%H%M%S')
+
+    for item in site.recentchanges(number=5000, rcstart=start_timestamp, rcend=end_timestamp, rcshow=None,
+                    rcdir='older', rctype='edit|new', namespace=namespace,
+                    includeredirects=True, repeat=False, user=None,
+                    returndict=False, nobots=nobots):
+        yield item[0]
 
 # Traitement des modifications récentes
 def crawlerRC():
