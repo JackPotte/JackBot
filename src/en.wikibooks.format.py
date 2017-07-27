@@ -237,14 +237,21 @@ def anagram(word):
     return rec_anagram(collections.Counter(word))
 
 def isPatrolled(page):
-    versions = page.getLatestEditors(1)
-    print versions
-    #if version['timestamp'] < x and version['user'].patroller:
-    #print versions[len(versions)-1]
-    #raw_input('Fin')
-
+    version = page.getLatestEditors(1)
+    if debugLevel > 1: print version  #[{u'timestamp': u'2017-07-25T02:26:15Z', u'user': u'27.34.18.159'}]
+    if debugLevel > 0: print version[0]['user']
+    #TODO: now - X in Zulu
+    if version[0]['timestamp'] < u'2018-07-25T02:26:15Z' and isPatroller(version[0]['user']):
+        return True
     return False
 
+def isPatroller(user):
+    admins = site.allusers(group='sysop')
+    print admins    #<pywikibot.data.api.ListGenerator object at 0x7f6ebc521fd0>
+    patrollers = site.allusers(group='patrollers')
+    print patrollers
+    raw_input('Fin')
+    
 def getWiki(language = 'fr', family = 'wiktionary'):
   if debugLevel > 1: print u'get ' + language + u'.' + family
   return pywikibot.Site(language, family)

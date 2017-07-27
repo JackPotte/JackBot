@@ -547,9 +547,9 @@ def hyperlynx(PageTemp, debugLevel = 0):
     PageTemp = re.sub(u'[C|c]ita(tion)? *\n* *(\|[^}{]*title *=)', ur'ouvrage\2', PageTemp)
     for m in range(0, limiteL):
         # Formatage des anciens modèles
-        PageTemp = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'_') + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
-        PageTemp = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]).replace(u' ', u'  ') + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
-        PageTemp = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])]) + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
+        PageTemp = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:]).replace(u' ', u'_') + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
+        PageTemp = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:]).replace(u' ', u'  ') + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
+        PageTemp = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:]) + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
         # Traitement de chaque modèle à traduire
         while re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]+', PageTemp):
             if debugLevel > 1:
