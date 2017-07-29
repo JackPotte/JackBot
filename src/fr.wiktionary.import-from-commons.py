@@ -213,7 +213,7 @@ def main(*args):
         elif sys.argv[1] == u'p':
             treatPageByName(u'File:De-Dominikanische Republik.ogg')
         elif sys.argv[1] == u'cat':
-            p.pagesByCat2(u'Category:Pronunciation‎', True, u'')
+            p.pagesByCatSound(u'Category:Pronunciation‎', True, u'')
         elif sys.argv[1] == u'lien':
             p.pagesByLink(u'Modèle:vx',u'')
         elif sys.argv[1] == u'page':
@@ -225,26 +225,26 @@ def main(*args):
         elif sys.argv[1] == u'u':
             p.pagesByUser(u'Utilisateur:JackPotte', 1000,u'')
     else:
-        p.pagesByCat2(u'Category:Pronunciation', True, u'')
+        p.pagesByCatSound(u'Category:Pronunciation', True, u'')
 
 '''
-    p.pagesByCat2(u'Category:U.S. English pronunciation‎', True, u'')
-    p.pagesByCat2(u'Category:German pronunciation‎', True, u'')
-    p.pagesByCat2(u'Category:Arabic pronunciation‎', True, u'')
-    p.pagesByCat2(u'Category:Armenian pronunciation‎‎', True, u'')
-    p.pagesByCat2(u'Category:Belarusian pronunciation‎‎‎', True, u'')
-    p.pagesByCat2(u'Category:Chinese pronunciation‎‎‎‎', True, u'')
-    p.pagesByCat2(u'Category:Czech pronunciation‎', True, u'')
-    p.pagesByCat2(u'Category:Hungarian pronunciation‎‎', True, u'')
-    p.pagesByCat2(u'Category:Swedish pronunciation‎‎‎', True, u'')
-    p.pagesByCat2(u'Category:Ukrainian pronunciation‎', True, u'')
-    p.pagesByCat2(u'Category:Russian pronunciation‎', True, u'')
-    p.pagesByCat2(u'Category:Polish pronunciation‎‎', True, u'')
-    p.pagesByCat2(u'Category:Dutch pronunciation‎‎‎‎‎', True, u'')
-    p.pagesByCat2(u'Category:French pronunciation‎', True, u'')
-    p.pagesByCat2(u'Category:Spanish pronunciation‎', True, u'')
-    p.pagesByCat2(u'Category:English pronunciation‎', True, u'')
-    p.pagesByCat2(u'Category:British English pronunciation‎', True, u'')
+    p.pagesByCatSound(u'Category:U.S. English pronunciation‎', True, u'')
+    p.pagesByCatSound(u'Category:German pronunciation‎', True, u'')
+    p.pagesByCatSound(u'Category:Arabic pronunciation‎', True, u'')
+    p.pagesByCatSound(u'Category:Armenian pronunciation‎‎', True, u'')
+    p.pagesByCatSound(u'Category:Belarusian pronunciation‎‎‎', True, u'')
+    p.pagesByCatSound(u'Category:Chinese pronunciation‎‎‎‎', True, u'')
+    p.pagesByCatSound(u'Category:Czech pronunciation‎', True, u'')
+    p.pagesByCatSound(u'Category:Hungarian pronunciation‎‎', True, u'')
+    p.pagesByCatSound(u'Category:Swedish pronunciation‎‎‎', True, u'')
+    p.pagesByCatSound(u'Category:Ukrainian pronunciation‎', True, u'')
+    p.pagesByCatSound(u'Category:Russian pronunciation‎', True, u'')
+    p.pagesByCatSound(u'Category:Polish pronunciation‎‎', True, u'')
+    p.pagesByCatSound(u'Category:Dutch pronunciation‎‎‎‎‎', True, u'')
+    p.pagesByCatSound(u'Category:French pronunciation‎', True, u'')
+    p.pagesByCatSound(u'Category:Spanish pronunciation‎', True, u'')
+    p.pagesByCatSound(u'Category:English pronunciation‎', True, u'')
+    p.pagesByCatSound(u'Category:British English pronunciation‎', True, u'')
 
  TODO :
     Insérer avant les clés de tri : https://fr.wiktionary.org/w/index.php?title=Orthop%C3%A4de&diff=prev&oldid=21702612

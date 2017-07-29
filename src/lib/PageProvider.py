@@ -79,7 +79,7 @@ class PageProvider:
 
 
     # Traitement d'une catégorie
-    def pagesByCat(self, category, recursif, afterPage, ns = 0, site = None):
+    def pagesByCat(self, category, recursive, afterPage, ns = 0, site = None):
         if site is None: site = self.site
         modifier = u'False'
         print category.encode(config.console_encoding, 'replace')
@@ -92,7 +92,7 @@ class PageProvider:
                 self.treatPage(Page.title()) #pagesByLink(Page.title())
             elif Page.title() == afterPage:
                 modifier = u'True'
-        if recursif:
+        if recursive:
             subcat = cat.subcategories(recurse = True)
             for subcategory in subcat:
                 print subcategory.title().encode(config.console_encoding, 'replace')
@@ -100,13 +100,28 @@ class PageProvider:
                 for Page in pagegenerators.PreloadingGenerator(pages,100):
                     self.treatPage(Page.title())
 
-    def pagesByCat2(self, category, recursif, afterPage, site = None):
+    def pagesByCat2(self, category, recursive, afterPage, site = None):
         if site is None: site = self.site
         modifier = u'False'
         cat = pywikibot.Category(site, category)    # 'module' object has no attribute 'Category'
         gen =  pagegenerators.CategorizedPageGenerator(cat)
         for Page in gen:
             self.treatPage(Page.title())
+
+    def pagesByCatSound(self, category, recursive, afterPage, site = None):
+        if site is None: site = self.site
+        modifier = u'False'
+        cat = pywikibot.Category(site, category)    # 'module' object has no attribute 'Category'
+        gen =  pagegenerators.CategorizedPageGenerator(cat)
+        for Page in gen:
+            self.treatPage(Page.title())
+        if recursive == True:
+            subcat = cat.subcategories(recurse = True)
+            for subcategory in subcat:
+                if subcategory.title().find(u'.ogg') == -1 and subcategory.title().find(u'spoken') == -1 and subcategory.title().find(u'Wikipedia') == -1 and subcategory.title().find(u'Wikinews') == -1:
+                    pages = subcategory.articlesList(False)
+                    for Page in pagegenerators.PreloadingGenerator(pages,100):
+                        self.treatPage(Page.title())
 
     # Traitement des pages liées
     def pagesByLink(self, pageName, afterPage, site = None):
