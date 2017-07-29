@@ -11,13 +11,19 @@
 
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
-from lib import hyperlynx
+from lib import *
 import pywikibot
 from pywikibot import *
 from pywikibot import pagegenerators
 
 # Global variables
 debugLevel = 0
+debugAliases = ['debug', 'd', '-d']
+for debugAlias in debugAliases:
+    if debugAlias in sys.argv:
+        debugLevel= 1
+        sys.argv.remove(debugAlias)
+
 fileName = __file__
 if debugLevel > 0: print fileName
 safeMode = True # Count if the braces & brackets are even before saving
@@ -31,35 +37,24 @@ if debugLevel > 1: print siteFamily
 site = pywikibot.Site(siteLanguage, siteFamily)
 
 checkURL = True
+fixTags = False
+fixFiles = True
 allNamespaces = False
 output = u'dumps/articles_WPout.txt'
 
 
-# Modification du wiki
-def modification(pageName):
+def treatPageByName(pageName):
     summary = u'Formatage'
     page = Page(site,pageName)
     print(pageName.encode(config.console_encoding, 'replace'))
     if not page.exists(): return
+    if not hasMoreThanTime(page): return
     if not allNamespaces and page.namespace() != 0 and pageName.find(u'Utilisateur:JackBot/test') == -1 and pageName.find(u'Modèle:Cite pmid/') == -1: return
-    try:
-        PageBegin = page.get()
-    except pywikibot.exceptions.NoPage:
-        print "NoPage"
-        return
-    except pywikibot.exceptions.IsRedirectPage:
-        print "Redirect page"
-        return
-    except pywikibot.exceptions.LockedPage:
-        print "Locked/protected page"
-        return
-    if PageBegin.find(u'{{en travaux') != -1 or PageBegin.find(u'{{En travaux') != -1:
-        print "Page en travaux"
-        return
+    PageBegin = getContentFromPage(page, 'All')
     PageTemp = PageBegin
 
-
-    # Traitements des URL et leurs modèles
+    if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
+    if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
     if checkURL:
         if debugLevel > 0: print u'Test des URL'
         PageTemp = hyperlynx(PageTemp, debugLevel)
@@ -154,264 +149,77 @@ def modification(pageName):
     if PageEnd != PageBegin and PageEnd != PageBegin.replace(u'{{chapitre |', u'{{chapitre|') and PageEnd != PageBegin.replace(u'{{Chapitre |', u'{{Chapitre|'):
         #PageEnd = re.sub(ur'<br>', ur'<br/>', PageEnd)
         PageEnd = PageEnd.replace(ur'</ref><ref>', ur'</ref>{{,}}<ref>')
-        sauvegarde(page,PageEnd,summary)
-        
-def addParameter(PageTemp, parameter, content = None):
-    PageEnd = u''
-    if parameter == u'titre' and content is None:
-        # Détermination du titre d'un site web
-        URL = getParameter(u'url')
-        PageEnd = PageTemp
+        savePage(page,PageEnd,summary)
 
-    else:
-        print 'en travaux'
-    return PageEnd
-        
-def replaceParameterValue(PageTemp, template, parameterKey, oldValue, newValue):
-    regex = ur'({{ *(' + template[:1].lower() + ur'|' + template[:1].upper() + ur')' + template[1:] + ur' *\n* *\|[^}]*' + parameterKey + ur' *= *)' + oldValue
-    if debugLevel > 0: print regex
-    PageTemp = re.sub(regex, ur'\1' + newValue, PageTemp)
 
-    return PageTemp
-
-# Lecture du fichier articles_list.txt (au même format que pour replace.py)
-def crawlerFile(source):
-    if source:
-        PagesHS = open(source, 'r')
-        while 1:
-            pageName = PagesHS.readline().decode(config.console_encoding, 'replace')
-            fin = pageName.find("\t")
-            pageName = pageName[0:fin]
-            if pageName == '': break
-            if pageName.find(u'[[') != -1:
-                pageName = pageName[pageName.find(u'[[')+2:len(pageName)]
-            if pageName.find(u']]') != -1:
-                pageName = pageName[0:pageName.find(u']]')]
-            modification(pageName)
-        PagesHS.close()
-
-# Traitement d'une catégorie
-def crawlerCat(category, recursif, apres):
-    modifier = u'False'
-    cat = catlib.Category(site, category)
-    pages = cat.articlesList(False)
-    #gen =  pagegenerators.NamespaceFilterPageGenerator(pages, [ns]) HS sur Commons
-    for Page in pagegenerators.PreloadingGenerator(pages,100):
-        if not apres or apres == u'' or modifier == u'True':
-            modification(Page.title()) #crawlerLink(Page.title())
-        elif Page.title() == apres:
-            modifier = u'True'
-    if recursif == True:
-        subcat = cat.subcategories(recurse = True)
-        for subcategory in subcat:
-            if subcategory.title().find(u'.ogg') == -1 and subcategory.title().find(u'spoken') == -1 and subcategory.title().find(u'Wikipedia') == -1 and subcategory.title().find(u'Wikinews') == -1:
-                pages = subcategory.articlesList(False)
-                for Page in pagegenerators.PreloadingGenerator(pages,100):
-                    modification(Page.title())
-
-def crawlerCat2(category, recursif, apres):
-    import pywikibot
-    from pywikibot import pagegenerators
-    modifier = u'False'
-    cat = pywikibot.Category(site, category)    # 'module' object has no attribute 'Category'
-    gen =  pagegenerators.CategorizedPageGenerator(cat)
-    for Page in gen:
-        modification(Page.title())
-    if recursif == True:
-        subcat = cat.subcategories(recurse = True)
-        for subcategory in subcat:
-            if subcategory.title().find(u'.ogg') == -1 and subcategory.title().find(u'spoken') == -1 and subcategory.title().find(u'Wikipedia') == -1 and subcategory.title().find(u'Wikinews') == -1:
-                pages = subcategory.articlesList(False)
-                for Page in pagegenerators.PreloadingGenerator(pages,100):
-                    modification(Page.title())
-
-# Traitement des pages liées
-def crawlerLink(pagename, apres):
-    modifier = u'False'
-    #pagename = unicode(arg[len('-links:'):], 'utf-8')
-    page = pywikibot.Page(site, pagename)
-    gen = pagegenerators.ReferringPageGenerator(page)
-    gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])
-    for Page in pagegenerators.PreloadingGenerator(gen,100):
-        #print(Page.title().encode(config.console_encoding, 'replace'))
-        if not apres or apres == u'' or modifier == u'True':
-            modification(Page.title()) #crawlerLink(Page.title())
-        elif Page.title() == apres:
-            modifier = u'True'
-
-# Traitement des pages liées des entrées d'une catégorie
-def crawlerCatLink(pagename,apres):
-    modifier = u'False'
-    cat = catlib.Category(site, pagename)
-    pages = cat.articlesList(False)
-    for Page in pagegenerators.PreloadingGenerator(pages,100):
-        page = pywikibot.Page(site, Page.title())
-        gen = pagegenerators.ReferringPageGenerator(page)
-        gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])
-        for PageLiee in pagegenerators.PreloadingGenerator(gen,100):
-            #print(Page.title().encode(config.console_encoding, 'replace'))
-            if not apres or apres == u'' or modifier == u'True':
-                modification(PageLiee.title()) #crawlerLink(Page.title())
-            elif PageLiee.title() == apres:
-                modifier = u'True'
-                
-# Traitement d'une recherche
-def crawlerSearch(pagename):
-    gen = pagegenerators.SearchPageGenerator(pagename, site=site, namespaces=0)
-    for Page in pagegenerators.PreloadingGenerator(gen,100):
-        modification(Page.title())
-
-# Traitement des modifications récentes
-def crawlerRC():
-    gen = pagegenerators.RecentchangesPageGenerator()
-    for Page in pagegenerators.PreloadingGenerator(gen,100):
-        modification(Page.title())
-
-# Traitement des modifications d'un compte
-def crawlerUser(username):
-    gen = pagegenerators.UserContributionsGenerator(username)
-    for Page in pagegenerators.PreloadingGenerator(gen,100):
-        modification(Page.title())
-
-# Toutes les redirections
-def crawlerRedirects():
-    for Page in site.allpages(start=u'', namespace=0, includeredirects='only'):
-        modification(Page.title())    
-                                        
-# Traitement de toutes les pages du site
-def crawlerAll(start):
-    gen = pagegenerators.AllpagesPageGenerator(start,namespace=0,includeredirects=False)
-    for Page in pagegenerators.PreloadingGenerator(gen,100):
-        #print (Page.title().encode(config.console_encoding, 'replace'))
-        modification(Page.title())
-
-# Permet à tout le monde de stopper le bot en lui écrivant
-def ArretDUrgence():
-    page = Page(site,u'User talk:' + username)
-    if page.exists():
-        PageTemp = u''
-        try:
-            PageTemp = page.get()
-        except pywikibot.exceptions.NoPage: return
-        except pywikibot.exceptions.IsRedirectPage: return
-        except pywikibot.exceptions.LockedPage: return
-        except pywikibot.exceptions.ServerError: return
-        except pywikibot.exceptions.BadTitle: return
-        except pywikibot.EditConflict: return
-        if PageTemp != u"{{/Stop}}":
-            pywikibot.output (u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
-            exit(0)
-
-def sauvegarde(PageCourante, Contenu, summary):
-    result = "ok"
-    if debugLevel > 0:
-        if len(Contenu) < 6000:
-            print(Contenu.encode(config.console_encoding, 'replace'))
-        else:
-            taille = 3000
-            print(Contenu[:taille].encode(config.console_encoding, 'replace'))
-            print u'\n[...]\n'
-            print(Contenu[len(Contenu)-taille:].encode(config.console_encoding, 'replace'))
-        result = raw_input((u'Sauvegarder [['+PageCourante.title()+u']] ? (o/n) ').encode('utf-8'))
-    if result != "n" and result != "no" and result != "non":
-        if PageCourante.title().find(u'Utilisateur:JackBot/') == -1: ArretDUrgence()
-        if not summary: summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
-        try:
-            PageCourante.put(Contenu, summary)
-        except pywikibot.exceptions.NoPage: 
-            print "NoPage en sauvegarde"
-            return
-        except pywikibot.exceptions.IsRedirectPage: 
-            print "IsRedirectPage en sauvegarde"
-            return
-        except pywikibot.exceptions.LockedPage: 
-            print "LockedPage en sauvegarde"
-            return
-        except pywikibot.EditConflict: 
-            print "EditConflict en sauvegarde"
-            return
-        except pywikibot.exceptions.ServerError: 
-            print "ServerError en sauvegarde"
-            return
-        except pywikibot.exceptions.BadTitle: 
-            print "BadTitle en sauvegarde"
-            return
-        except AttributeError:
-            print "AttributeError en sauvegarde"
-            return
-
-def crawlerCatPMID(category):
-    cat = catlib.Category(site, category)
-    pages = cat.articlesList(False)
-    for Page in pagegenerators.PreloadingGenerator(pages,100):
-        main = Page.title()
-        #main = main[11:len(main)]
-        if main.find(u'pmid') != -1:
-            modification(main)
-
-# Lancement
-if len(sys.argv) > 1:
-    arg1 = sys.argv[1].decode('utf-8')
-    DebutScan = u''
-    if len(sys.argv) > 2:
-        if sys.argv[2] == u'debug' or sys.argv[2] == u'd':
-            if len(sys.argv) > 3:
-                debugLevel = sys.argv[3]
-            else:
-                debugLevel = 1
-        else:
-            DebutScan = sys.argv[2]
-    if arg1 == 'test':
-        modification(u'Utilisateur:' + username + u'/test')
-    if arg1 == 'test2':
-        modification(u'Utilisateur:' + username + u'/test court')
-    elif arg1 == 'txt':
-        crawlerFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
-    elif arg1 == 'u':
-        crawlerUser(u'Utilisateur:JackBot')
-    elif arg1 == 'r':
+p = PageProvider(treatPageByName, site, debugLevel)
+setGlobals(debugLevel, site, username)
+def main(*args):
+    if len(sys.argv) > 1:
+        arg1 = sys.argv[1].decode('utf-8')
+        DebutScan = u''
         if len(sys.argv) > 2:
-            crawlerSearch(sys.argv[2])
+            if sys.argv[2] == u'debug' or sys.argv[2] == u'd':
+                if len(sys.argv) > 3:
+                    debugLevel = sys.argv[3]
+                else:
+                    debugLevel = 1
+            else:
+                DebutScan = sys.argv[2]
+        if arg1 == 'test':
+            treatPageByName(u'Utilisateur:' + username + u'/test')
+        if arg1 == 'test2':
+            treatPageByName(u'Utilisateur:' + username + u'/test court')
+        elif arg1 == 'txt':
+            p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
+        elif arg1 == 'u':
+            p.pagesByUser(u'Utilisateur:JackBot')
+        elif arg1 == 'r':
+            if len(sys.argv) > 2:
+                p.pagesBySearch(sys.argv[2])
+            else:
+                p.pagesBySearch(u'marianne2.fr')
+        elif arg1 == 'm':
+            p.pagesByLink(u'Modèle:Cite journal',u'')
+        elif arg1 == 'cat':
+            p.pagesByCat(u'Catégorie:Modèle élément chimique',False,u'')
+            #p.pagesByCat(u'Catégorie:Page utilisant un modèle avec un paramètre obsolète',False,u'')
+            #p.pagesByCat(u'Page du modèle Article comportant une erreur',False,u'')
+            #p.pagesByCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')    # En test
+        elif arg1 == 'page':
+            treatPageByName(u'Utilisateur:JackBot/test unitaire')
+        elif arg1 == 'p':
+            treatPageByName(u'Utilisateur:Cantons-de-l\'Est/Voie lactée')
+        elif arg1 == 'RC':
+            while 1:
+                p.pagesByRC()
         else:
-            crawlerSearch(u'marianne2.fr')
-    elif arg1 == 'm':
-        crawlerLink(u'Modèle:Cite journal',u'')
-    elif arg1 == 'cat':
-        crawlerCat(u'Catégorie:Modèle élément chimique',False,u'')
-        #crawlerCat(u'Catégorie:Page utilisant un modèle avec un paramètre obsolète',False,u'')
-        #crawlerCat(u'Page du modèle Article comportant une erreur',False,u'')
-        #crawlerCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')    # En test
-    elif arg1 == 'page':
-        modification(u'Utilisateur:JackBot/test unitaire')
-    elif arg1 == 'p':
-        modification(u'Utilisateur:Cantons-de-l\'Est/Voie lactée')
-    elif arg1 == 'RC':
-        while 1:
-            crawlerRC()
+            treatPageByName(arg1)    # Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
     else:
-        modification(arg1)    # Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
-else:
-    # Quotidiennement :
-    crawlerCatPMID(u'Catégorie:Modèle de source')
-    crawlerLink(u'Modèle:Cite web',u'')
-    crawlerLink(u'Modèle:Cite journal',u'')
-    crawlerLink(u'Modèle:Cite news',u'')
-    crawlerLink(u'Modèle:Cite press release',u'')
-    crawlerLink(u'Modèle:Cite episode',u'')
-    crawlerLink(u'Modèle:Cite video',u'')
-    crawlerLink(u'Modèle:Cite conference',u'')
-    crawlerLink(u'Modèle:Cite arXiv',u'')
-    crawlerLink(u'Modèle:Lien news',u'')
-    crawlerLink(u'Modèle:deadlink',u'')
-    crawlerLink(u'Modèle:lien brise',u'')
-    crawlerLink(u'Modèle:lien cassé',u'')
-    crawlerLink(u'Modèle:lien mort',u'')
-    crawlerLink(u'Modèle:lien web brisé',u'')
-    crawlerLink(u'Modèle:webarchive',u'')
-    crawlerLink(u'Modèle:Docu',u'')
-    crawlerLink(u'Modèle:Cita web',u'')
-    crawlerLink(u'Modèle:Cita noticia',u'')
-    crawlerLink(u'Modèle:Citeweb',u'')
-    crawlerLink(u'Modèle:Cite magazine',u'')
-    crawlerLink(u'Modèle:Cite',u'')
-    crawlerLink(u'Modèle:Cite book',u'')
+        # Quotidiennement :
+        p.pagesByCatPMID(u'Catégorie:Modèle de source')
+        p.pagesByLink(u'Modèle:Cite web',u'')
+        p.pagesByLink(u'Modèle:Cite journal',u'')
+        p.pagesByLink(u'Modèle:Cite news',u'')
+        p.pagesByLink(u'Modèle:Cite press release',u'')
+        p.pagesByLink(u'Modèle:Cite episode',u'')
+        p.pagesByLink(u'Modèle:Cite video',u'')
+        p.pagesByLink(u'Modèle:Cite conference',u'')
+        p.pagesByLink(u'Modèle:Cite arXiv',u'')
+        p.pagesByLink(u'Modèle:Lien news',u'')
+        p.pagesByLink(u'Modèle:deadlink',u'')
+        p.pagesByLink(u'Modèle:lien brise',u'')
+        p.pagesByLink(u'Modèle:lien cassé',u'')
+        p.pagesByLink(u'Modèle:lien mort',u'')
+        p.pagesByLink(u'Modèle:lien web brisé',u'')
+        p.pagesByLink(u'Modèle:webarchive',u'')
+        p.pagesByLink(u'Modèle:Docu',u'')
+        p.pagesByLink(u'Modèle:Cita web',u'')
+        p.pagesByLink(u'Modèle:Cita noticia',u'')
+        p.pagesByLink(u'Modèle:Citeweb',u'')
+        p.pagesByLink(u'Modèle:Cite magazine',u'')
+        p.pagesByLink(u'Modèle:Cite',u'')
+        p.pagesByLink(u'Modèle:Cite book',u'')
+
+if __name__ == "__main__":
+    main(sys.argv)

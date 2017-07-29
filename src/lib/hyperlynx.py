@@ -15,6 +15,7 @@ import pywikibot
 from pywikibot import *
 import codecs, urllib, urllib2, httplib, json, pprint, urlparse, datetime, re, webbrowser, cookielib, socket, time, ssl
 import requests
+from lib import *
 
 language = "fr"
 family = "wiktionary"
@@ -22,7 +23,6 @@ username = "JackBot"
 site = pywikibot.Site(language, family)
 
 # Préférences
-debugLevel = 0
 semiauto = False
 retablirNonBrise = False    # Reteste les liens brisés
 checkURL = True
@@ -372,7 +372,6 @@ Balise[5][2] = u'</source' + u'>'
 Balise[6][1] = u'\n '
 Balise[6][2] = u'\n'
 '''
-if debugLevel == 0:
     ligneB = ligneB + 1
     Balise[ligneB-1][1] = u'<!--'
     Balise[ligneB-1][2] = u'-->'
@@ -1748,14 +1747,6 @@ def TestPage(htmlSource, url, debugLevel = 0):
     else:
         if debugLevel > 1: print u'Fin du test du contenu'
     return LienBrise
-
-def trim(s):
-    return s.strip(" \t\n\r\0\x0B")
-    
-def log(source):        
-    txtfile = codecs.open(u'_hyperlinx.log', 'a', 'utf-8')
-    txtfile.write(u'\n' + source + u'\n')
-    txtfile.close()
 
 # TODO:
 #    i18n

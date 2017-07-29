@@ -3,7 +3,7 @@
 
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
-from lib import hyperlynx
+from lib import *
 import pywikibot
 from pywikibot import *
 from pywikibot import pagegenerators
@@ -22,6 +22,24 @@ def isPatrolled(version):
     return False
     #admins = site.allusers(group='sysop')  #<pywikibot.data.api.ListGenerator object at 0x7f6ebc521fd0>
     #patrollers = site.allusers(group='patrollers')
+
+def testAdd(PageHS, summary = '', site = site):
+    page1 = Page(site, PageHS)
+    try:
+        PageBegin = page1.get()
+    except pywikibot.exceptions.NoPage:
+        print 'NoPage'
+    PageEnd = PageBegin
+    codelangue = u'fr'
+    
+    PageEnd = addLine(PageEnd, codelangue, u'prononciation', u'* {{écouter|||lang=fr|audio=test.ogg}}')
+    PageEnd = addLine(PageEnd, codelangue, u'prononciation', u'* {{écouter|||lang=fr|audio=test2.ogg}}')
+    PageEnd = addLine(PageEnd, codelangue, u'catégorie', u'Tests en français')
+    PageEnd = addLine(PageEnd, codelangue, u'catégorie', u'[[Catégorie:Tests en français]]')
+    PageEnd = addLine(PageEnd, codelangue, u'clé de tri', u'test')
+    PageEnd = addLine(PageEnd, codelangue, u'étymologie', u':{{étyl|test|fr}}')
+    if debugLevel > 1: raw_input(u'Fin')
+    if PageEnd != PageBegin: savePage(page1, PageEnd, summary)
 
 def replaceDepretacedTags(PageTemp):
     if debugLevel > 0: print u'Remplacements des balises HTML'
@@ -85,7 +103,7 @@ def replaceDepretacedTags(PageTemp):
         #regex = ur'<' + oldTag + ur'([^>]*)>([^\n]*)</' + closingOldTag + '>' # bug https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:-flex-nom-fam-/Documentation&diff=prev&oldid=24027702
         regex = ur'< *' + oldTag + ur'([^>]*) *>'
         if re.search(regex, PageTemp):
-            summary = summary + u', ajout de ' + newTag
+            #summary = summary + u', ajout de ' + newTag
             #PageTemp = re.sub(regex, ur'<' + newTag + ur'\1>', PageTemp)
             pattern = re.compile(regex, re.UNICODE)
             for match in pattern.finditer(PageTemp):
@@ -121,13 +139,13 @@ def replaceDepretacedTags(PageTemp):
     regex = ur'<span style="font\-size:(#[0-9]+)"?>'
     s = re.search(regex, PageTemp)
     if s:
-        summary = summary + u', correction de color'
+        #summary = summary + u', correction de color'
         PageTemp = re.sub(regex, ur'<span style="color:' + s.group(1) + ur'">', PageTemp)
 
     regex = ur'<span style="text\-size:([0-9]+)"?>'
     s = re.search(regex, PageTemp)
     if s:
-        summary = summary + u', correction de font-size'
+        #summary = summary + u', correction de font-size'
         PageTemp = re.sub(regex, ur'<span style="font-size:' + str(fontSize[int(s.group(1))]) + ur'em">', PageTemp)
 
     # Fix :
@@ -155,12 +173,14 @@ def replaceDepretacedTags(PageTemp):
 
     return PageTemp
 
-def fixFiles(PageTemp):
+def replaceFilesErrors(PageTemp):
     #https://fr.wiktionary.org/wiki/Sp%C3%A9cial:LintErrors/bogus-image-options
     badFileParameters = []
     badFileParameters.append(u'')
+    badFileParameters.append(u'cadre')
     for badFileParameter in badFileParameters:
         regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *' + badFileParameter + ur' *(\||\])'
+        if debugLevel > 1: print regex
         PageTemp = re.sub(regex, ur'\1\3', PageTemp)
     # Doublons
     regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *thumb *[\|\]])'
@@ -408,24 +428,6 @@ def numeroSection(Section):
         print u''
     return s
 
-def testAdd(PageHS, site = site):
-    page1 = Page(site, PageHS)
-    try:
-        PageBegin = page1.get()
-    except pywikibot.exceptions.NoPage:
-        print 'NoPage'
-    PageEnd = PageBegin
-    codelangue = u'fr'
-    
-    PageEnd = addLine(PageEnd, codelangue, u'prononciation', u'* {{écouter|||lang=fr|audio=test.ogg}}')
-    PageEnd = addLine(PageEnd, codelangue, u'prononciation', u'* {{écouter|||lang=fr|audio=test2.ogg}}')
-    PageEnd = addLine(PageEnd, codelangue, u'catégorie', u'Tests en français')
-    PageEnd = addLine(PageEnd, codelangue, u'catégorie', u'[[Catégorie:Tests en français]]')
-    PageEnd = addLine(PageEnd, codelangue, u'clé de tri', u'test')
-    PageEnd = addLine(PageEnd, codelangue, u'étymologie', u':{{étyl|test|fr}}')
-    if debugLevel > 1: raw_input(u'Fin')
-    if PageEnd != PageBegin: savePage(page1, PageEnd, summary)
-
 def rec_anagram(counter):
     # Copyright http://www.siteduzero.com/forum-83-541573-p2-exercice-generer-tous-les-anagrammes.html
     if sum(counter.values()) == 0:
@@ -477,6 +479,20 @@ def datePlusMonth(months):
 	if new_month == 2 and day > 28: day = 28
 	return datetime.date(year, new_month, day)
 
+def timeAfterLastEdition(page, site = None):
+    # Timestamp au format Zulu de la dernière version
+    lastEditTime = page.getVersionHistory()[0][1]
+    if debugLevel > 1: print lastEditTime   # 2017-07-29T21:57:34Z
+    matchTime = re.match(r'(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})', str(lastEditTime))
+    # Mise au format "datetime" du timestamp de la dernière version
+    dateLastEditTime = datetime.datetime(int(matchTime.group(1)), int(matchTime.group(2)), int(matchTime.group(3)),
+        int(matchTime.group(4)), int(matchTime.group(5)), int(matchTime.group(6)))
+    datetime_now = datetime.datetime.utcnow()
+    diff_last_edit_time = datetime_now - dateLastEditTime
+
+    # Ecart en minutes entre l'horodotage actuelle et l'horodotage de la dernière version
+    return diff_last_edit_time.seconds/60 + diff_last_edit_time.days*24*60
+
 def hasMoreThanTime(page, timeAfterLastEdition = 60): # minutes
     version = page.getLatestEditors(1)
     dateNow = datetime.datetime.utcnow()
@@ -502,6 +518,14 @@ def isTrustedVersion(page, site = site):
         if debugLevel > 0: print u'Page modifiée par l\'utilisateur autoconfirmed ' + lastEditor
         return True
     return False
+
+def searchDoubles(PageTemp, parameter):
+    if debugLevel > 0: u' Recherche de doublons dans le modèle : ' + parameter[1]
+    PageEnd = u''
+    regex = ur'{{' + parameter[1] + ur'[^\n]*{{' + parameter[1]
+    while re.search(regex, PageTemp):
+        raw_input(PageTemp[re.search(regex, PageTemp).start():re.search(regex, PageTemp).end()].encode(config.console_encoding, 'replace'))
+    return PageEnd + PageTemp
 
 def getContentFromPageName(pageName, allowedNamespaces = None, site = site):
     page = Page(site, pageName)

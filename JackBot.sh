@@ -5,22 +5,30 @@
 #python core/pwb.py protect       -lang:fr -family:wiktionary -cat:"Élections de patrouilleurs" -summary:"Vote archivé" -move:sysop -edit:sysop
 #python core/pwb.py delete        -lang:fr -family:wikiversity -file:"scripts/JackBot/articles_fr_wiktionary.txt"
 
-python core/pwb.py clean_sandbox -lang:fr -family:wiktionary  -always
-python core/pwb.py clean_sandbox -lang:fr -family:wikibooks   -always
-python core/pwb.py clean_sandbox -lang:fr -family:wikinews    -always
-python core/pwb.py clean_sandbox -lang:fr -family:wikiversity -always
-python core/pwb.py clean_sandbox -lang:fr -family:wikisource  -always
-python core/pwb.py clean_sandbox -lang:fr -family:wikiquote   -always
-python core/pwb.py clean_sandbox -lang:fr -family:wikivoyage  -always
-#python core/pwb.py clean_sandbox -lang:fr -family:wikipedia   -always
+#python core/pwb.py clean_sandbox -lang:fr -family:wiktionary  -always
+#python core/pwb.py clean_sandbox -lang:fr -family:wikibooks   -always
+#python core/pwb.py clean_sandbox -lang:fr -family:wikinews    -always
+#python core/pwb.py clean_sandbox -lang:fr -family:wikiversity -always
+#python core/pwb.py clean_sandbox -lang:fr -family:wikisource  -always
+#python core/pwb.py clean_sandbox -lang:fr -family:wikiquote   -always
+#python core/pwb.py clean_sandbox -lang:fr -family:wikivoyage  -always
+##python core/pwb.py clean_sandbox -lang:fr -family:wikipedia   -always
+#python core/pwb.py clean_sandbox -lang:en -family:wikibooks   -always
 
-python core/pwb.py clean_sandbox -lang:en -family:wikibooks   -always
-
-
-#*** Homemade ***
-#python core/pwb.py src/fr.wiktionary.format
-#python core/pwb.py src/fr.wikt.import-from-commons
-#python core/pwb.py src/fr.wikipedia.format
+#*** Maintained ***
 #python core/pwb.py src/fr.wikinews.2wikipedia
 #python core/pwb.py src/fr.wikiquote.count-quotes -family:wikiquote -output:"User:JackBot/statistiques" -outputarticles:"Template:NUMBEROFQARTICLES" -outputquotes:"Template:NUMBEROFQUOTES"
 
+#*** Homemade ***
+python core/pwb.py src/en.wikibooks.format nocat
+python core/pwb.py src/fr.wikibooks.format nocat
+python core/pwb.py src/fr.wikipedia.format
+python core/pwb.py src/fr.wikiquote.format
+python core/pwb.py src/fr.wikiversity.format nocat
+python core/pwb.py src/fr.wikivoyage.format
+python core/pwb.py src/fr.wiktionary.archive
+python core/pwb.py src/fr.wiktionary.create-flexions
+python core/pwb.py src/fr.wiktionary.format
+python core/pwb.py src/fr.wiktionary.import-from-commons
+
+#TODO: unit tests after reset, eg: python core/pwb.py src/fr.wiktionary.format "User:JackBot/test"

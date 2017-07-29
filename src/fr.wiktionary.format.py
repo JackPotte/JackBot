@@ -26,15 +26,11 @@ from pywikibot import pagegenerators
 
 # Global variables
 debugLevel = 0
-if len(sys.argv) > 2:
-    if sys.argv[2] == str('debug') or sys.argv[2] ==  str('d'):
-        if len(sys.argv) > 3:
-            debugLevel= sys.argv[3]
-        else:
-            debugLevel= 1
-elif len(sys.argv) == 2:
-    if sys.argv[1] == str('debug') or sys.argv[1] ==  str('d'):
+debugAliases = ['debug', 'd', '-d']
+for debugAlias in debugAliases:
+    if debugAlias in sys.argv:
         debugLevel= 1
+        sys.argv.remove(debugAlias)
 
 fileName = __file__
 if debugLevel > 0: print fileName
@@ -47,40 +43,12 @@ if debugLevel > 1: print siteFamily
 site = pywikibot.Site(siteLanguage, siteFamily)
 username = config.usernames[siteFamily][siteLanguage]
 
-anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
-addDefaultSort = False
+checkURL = False
 fixTags = False
+fixFiles = True
+addDefaultSort = False
+anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
-deprecatedTags = {}
-deprecatedTags['big'] = 'strong'
-deprecatedTags['center'] = 'div style="text-align: center;"'
-deprecatedTags['font color *= *"?'] = 'span style="color:'
-deprecatedTags['font size *= *"?\+?\-?'] = 'span style="font-size:'
-deprecatedTags['strike'] = 's'
-deprecatedTags['tt'] = 'code'
-deprecatedTags['BIG'] = 'strong'
-deprecatedTags['CENTER'] = 'div style="text-align: center;"'
-deprecatedTags['FONT COLOR *= *"?'] = 'span style="color:'
-deprecatedTags['FONT SIZE *= *"?\+?'] = 'span style="font-size:'
-deprecatedTags['STRIKE'] = 's'
-deprecatedTags['TT'] = 'code'
-fontSize = {}
-fontSize[1] = 0.63
-fontSize[2] = 0.82
-fontSize[3] = 1.0
-fontSize[4] = 1.13
-fontSize[5] = 1.5
-fontSize[6] = 2.0
-fontSize[7] = 3.0
-fontColor = []
-fontColor.append('black')
-fontColor.append('blue')
-fontColor.append('green')
-fontColor.append('orange')
-fontColor.append('red')
-fontColor.append('white')
-fontColor.append('yellow')
-fontColor.append('#808080')
 
 Sections = []
 Niveau = []
@@ -133,7 +101,7 @@ Section = [] # Sections à remplacer
 # Paragraphes autorisant les modèles catégorisants par langue ({{voir| et {{voir/ sont gérés individuellement)
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
 Modele.append(u'-adj-dem-')
-Section.append(u'adjectif démonstratif')
+Section.append(u'adjectif d��monstratif')
 Modele.append(u'-adj-dém-')
 Section.append(u'adjectif démonstratif')
 Modele.append(u'-adj-excl-')
@@ -1623,7 +1591,7 @@ flexionTemplatesWithS.append(u'fr-rég-x')
 #TODO: autres = fr-accord-mf-ail, fr-accord-mf-al, fr-accord-comp, fr-accord-comp-mf, fr-accord-eur, fr-accord-eux, fr-accord-f, fr-inv, fr-accord-ind, fr-accord-mf, fr-accord-oux, fr-accord-personne, fr-accord-t-avant1835
 
 
-def modification(pageName):
+def treatPageByName(pageName):
     summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
     if debugLevel > 0: print u'------------------------------------'
     print(pageName.encode(config.console_encoding, 'replace'))
@@ -1635,6 +1603,7 @@ def modification(pageName):
             savePage(page, u'#REDIRECT[[' + pageName + ']]', u'Redirection pour apostrophe')
 
     page = Page(site, pageName)
+    if not hasMoreThanTime(page): return
     PageBegin = getContentFromPage(page, 'All')
     if PageBegin == 'KO': return
     PageTemp = PageBegin
@@ -1642,119 +1611,9 @@ def modification(pageName):
     CleTri = defaultSort(pageName)
     rePageName = re.escape(pageName)
 
-    #https://fr.wiktionary.org/wiki/Sp%C3%A9cial:LintErrors/bogus-image-options
-    badFileParameters = []
-    badFileParameters.append(u'')
-    for badFileParameter in badFileParameters:
-        regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *' + badFileParameter + ur' *(\||\])'
-        PageTemp = re.sub(regex, ur'\1\3', PageTemp)
-    # Doublons
-    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *thumb *[\|\]])'
-    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
-    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *vignette *[\|\]])'
-    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
-    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *vignette *[\|\]])'
-    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
-    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *thumb *[\|\]])'
-    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
-
-    if fixTags:
-        if debugLevel > 0: print u'Remplacements des balises'
-        PageTemp = PageTemp.replace(u'</br>', u'<br/>')
-
-        PageTemp = PageTemp.replace('<font size="+1" color="red">', ur'<span style="font-size:0.63em; color:red;>')
-        regex = ur'<font color="?([^>"]*)"?>'
-        pattern = re.compile(regex, re.UNICODE)
-        for match in pattern.finditer(PageTemp):
-            if debugLevel > 1: print u'Remplacement de ' + match.group(0) + u' par <span style="color:' + match.group(1) + u'">'
-            PageTemp = PageTemp.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
-            PageTemp = PageTemp.replace('</font>', u'</span>')
-
-        for oldTag, newTag in deprecatedTags.items():
-            if debugLevel > 1: print "Clé : %s, valeur : %s." % (oldTag, newTag)
-            if oldTag.find(u' ') == -1:
-                closingOldTag = oldTag
-            else:
-                closingOldTag = oldTag[:oldTag.find(u' ')]
-            if newTag.find(u' ') == -1:
-                closingNewTag = newTag
-            else:
-                closingNewTag = newTag[:newTag.find(u' ')]
-            #regex = ur'<' + oldTag + ur'([^>]*)>([^\n]*)</' + closingOldTag + '>' # bug https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:-flex-nom-fam-/Documentation&diff=prev&oldid=24027702
-            regex = ur'< *' + oldTag + ur'([^>]*) *>'
-            if re.search(regex, PageTemp):
-                summary = summary + u', ajout de ' + newTag
-                #PageTemp = re.sub(regex, ur'<' + newTag + ur'\1>', PageTemp)
-                pattern = re.compile(regex, re.UNICODE)
-                for match in pattern.finditer(PageTemp):
-                    if debugLevel > 0: print str(match.group(1))
-                    if newTag.find(u'font-size') != -1:
-                        size = match.group(1).replace('"', '')
-                        try:
-                            size = int(size)
-                            if size > 7: size = 7
-                            openingTag = newTag + str(fontSize[size]) + ur'em"'
-                        except ValueError:
-                            openingTag = newTag + size + '"'
-                    else:
-                        openingTag = newTag + match.group(1)
-                    PageTemp = PageTemp.replace(match.group(0), ur'<' + openingTag + ur'>')
-
-            regex = ur'</ *' + closingOldTag + ' *>'
-            PageTemp = re.sub(regex, ur'</' + closingNewTag + '>', PageTemp)
-        PageTemp = PageTemp.replace('<strong">', ur'<strong>')
-        PageTemp = PageTemp.replace('<s">', ur'<s>')
-        PageTemp = PageTemp.replace('<code">', ur'<code>')
-        PageTemp = PageTemp.replace(';"">', ur';">')
-
-        # Fix
-        regex = ur'<span style="font\-size:([a-z]+)>'
-        pattern = re.compile(regex, re.UNICODE)
-        for match in pattern.finditer(PageTemp):
-            #summary = summary + u', correction de color'
-            PageTemp = PageTemp.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
-        PageTemp = PageTemp.replace('</font>', u'</span>')
-        PageTemp = PageTemp.replace('</font>'.upper(), u'</span>')
-
-        regex = ur'<span style="font\-size:(#[0-9]+)"?>'
-        s = re.search(regex, PageTemp)
-        if s:
-            summary = summary + u', correction de color'
-            PageTemp = re.sub(regex, ur'<span style="color:' + s.group(1) + ur'">', PageTemp)
-
-        regex = ur'<span style="text\-size:([0-9]+)"?>'
-        s = re.search(regex, PageTemp)
-        if s:
-            summary = summary + u', correction de font-size'
-            PageTemp = re.sub(regex, ur'<span style="font-size:' + str(fontSize[int(s.group(1))]) + ur'em">', PageTemp)
-
-        # Fix :
-        regex = ur'(<span style="font\-size:[0-9]+px;">)[0-9]+px</span>([^<]*)</strong></strong>'
-        if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur'\1 \2</span>', PageTemp)
-
-        PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong><strong>', u'<span style="font-size:75px;">')
-        PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong>', u'<span style="font-size:50px;">')
-        PageTemp = PageTemp.replace(u'<strong><strong><strong><strong>', u'<span style="font-size:40px;">')
-        PageTemp = PageTemp.replace(u'<strong><strong><strong>', u'<span style="font-size:25px;">')
-        PageTemp = PageTemp.replace(u'<strong><strong>', u'<span style="font-size:20px;">')
-        PageTemp = re.sub(ur'</strong></strong></strong></strong></strong></strong>', ur'</span>', PageTemp)
-        PageTemp = re.sub(ur'</strong></strong></strong></strong></strong>', ur'</span>', PageTemp)
-        PageTemp = re.sub(ur'</strong></strong></strong></strong>', ur'</span>', PageTemp)
-        PageTemp = re.sub(ur'</strong></strong></strong>', ur'</span>', PageTemp)
-        PageTemp = re.sub(ur'</strong></strong>', ur'</span>', PageTemp)
-        regex = ur'<strong>([^<]*)</span>'
-        if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur'<strong>\1</strong>', PageTemp)
-        regex = ur'<strong><span ([^<]*)</span></span>'
-        if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur'<strong><span \1</span></strong>', PageTemp)
-        #PageTemp = re.sub(ur'</span></span>', ur'</span>', PageTemp)
-
-        regex = ur'(\|(ar|fa)(\|flexion)*}} *===\n)<span style *= *"font\-size:[0-9\.]*em">\'\'\'([^\']*)\'\'\'</span>'
-        if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur"\1'''{{Arab|\4}}'''", PageTemp)
-        PageTemp = PageTemp.replace(u'[[Category:', u'[[Catégorie:')
+    if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
+    if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
+    if checkURL: PageTemp = hyperlynx(PageTemp)
 
     #if page.namespace() == 14:
         #if pageName.find(u'Catégorie:Lexique en français d') != -1 and PageTemp.find(u'[[Catégorie:Lexiques en français|') == -1:
@@ -2190,10 +2049,6 @@ def modification(pageName):
         regex = ur' *{{pluriel \?\|[^}]*}}(\n# ?\'*Pluriel d)'
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, ur'\1', PageTemp)
-
-        regex = ur'(\[\[(Image|Fichier|File):[^\]]+)\|\|? *(\||\])'
-        if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur'\1\3', PageTemp)
 
         if debugLevel > 0: print u'Formatage des modèles'
         PageTemp = PageTemp.replace(u'\n {{', u'\n{{')
@@ -3775,7 +3630,7 @@ def modification(pageName):
             natures = [u'nom', u'adjectif', u'suffixe']
             language = u'fr'
             pageLemma = getLemmaFromPlural(PageEnd) # TODO language, nature, & n°
-            if pageLemma != u'': modification(pageLemma) # Formatage des boites de flexion à récupérer
+            if pageLemma != u'': treatPageByName(pageLemma) # Formatage des boites de flexion à récupérer
             for nature in natures:
                 regex = ur"(== {{langue|" + language + ur"}} ==\n=== {{S\|" + nature + ur"\|" + language + ur")\|num=2"
                 if re.search(regex, PageEnd):
@@ -3954,8 +3809,6 @@ def modification(pageName):
     else:
         PageEnd = PageTemp
 
-    if debugLevel > 0: print u'Test des URL'
-    #PageEnd = hyperlynx(PageEnd) # TODO: unit tests
     if debugLevel > 0: pywikibot.output (u"\n\03{red}---------------------------------------------\03{default}")
     if PageEnd != PageBegin:
         if page.namespace() == u'':
@@ -3968,624 +3821,78 @@ def modification(pageName):
         print "Aucun changement"
 
 
-def getLemmaFromLocution(pageName):
-    if debugLevel > 0: print u'\ngetLemmaFromLocution'
-    pageLemma = getContentFromPageName(pageName[:pageName.find(u' ')])
-    return pageLemma
-
-def getLemmaFromPlural(PageTemp):
-    if debugLevel > 0: print u'\ngetLemmaFromPlural'
-    pageLemma = u''
-
-    regex = ur"(=== {{S\|(nom|adjectif)\|fr\|flexion}} ===\n({{fr\-[^}]*}}\n)*'''[^\n]+\n# *'* *(Masculin|Féminin)* *'* *'*[P|p]luriel *'* *de'* *'* *(\[\[|{{li?e?n?\|))([^#\|\]}]+)"
-    s = re.search(regex, PageTemp)
-    if s:
-        if debugLevel > 1:
-            print(s.group(1).encode(config.console_encoding, 'replace')) # 2 = adjectif, 3 = fr-rég, 4 = Féminin, 5 = {{lien|, 6 = lemme
-            raw_input(s.group(6).encode(config.console_encoding, 'replace'))
-        pageLemma = s.group(6)
-    if debugLevel > 0: print u' pageLemma found: ' + pageLemma
-
-    return pageLemma
-
-def getLemmaFromConjugation(PageTemp):
-    if debugLevel > 0: print u'\ngetLemmaFromConjugation'
-    pageLemma = u''
-    regex = ur"(=== {{S\|verbe\|fr\|flexion}} ===\n({{fr\-[^}]*}}\n)*'''[^\n]+\n#[^\n\[{]+(\[\[|{{li?e?n?\|))([^#\|\]}]+)}*\]*'*\."
-    s = re.search(regex, PageTemp)
-    if s:
-        if debugLevel > 1:
-            print(s.group(1).encode(config.console_encoding, 'replace')) # 2 fr-verbe-flexion, 3 = {{lien|, 4 = lemme
-            raw_input(s.group(4).encode(config.console_encoding, 'replace'))
-        pageLemma = s.group(4)
-    if debugLevel > 0: print u' pageLemma found: ' + pageLemma
-
-    return pageLemma
-
-def getFlexionTemplate(pageName, language, nature):
-    if debugLevel > 0: print u'\ngetFlexionTemplate'
-    FlexionTemplate = u''
-    PageTemp = getContentFromPageName(pageName)
-    regex = ur"=== {{S\|" + nature + ur"\|" + language + ur"\|flexion(\|num=[0-9])?}} ===\n{{(" + language + ur"\-[^}]+)}}"
-    if debugLevel > 1: print u' ' + regex
-    s = re.search(regex, PageTemp)
-    if s:
-        if debugLevel > 1:
-            if not s.group(1) is None: print u' ' + s.group(1)
-            if not s.group(2) is None: print u' ' + s.group(2)
-        FlexionTemplate = s.group(2)
-    if debugLevel > 0: print u' FlexionTemplate found: ' + FlexionTemplate
-    # TODO
-    if FlexionTemplate.find('{{') != -1: FlexionTemplate = u''
-    if FlexionTemplate.find(u'-inv') != -1: FlexionTemplate = u''
-
-    return FlexionTemplate
-
-def getFlexionTemplateFromLemma(pageName, language, nature):
-    if debugLevel > 0: print u'\ngetFlexionTemplateFromLemma'
-    FlexionTemplate = u''
-    PageTemp = getContentFromPageName(pageName)
-    regex = ur"=== {{S\|" + nature + ur"\|" + language + ur"(\|num=[0-9])?}} ===\n{{(" + language + ur"\-[^}]+)}}"
-    if debugLevel > 1: print u' ' + regex
-    s = re.search(regex, PageTemp)
-    if s:
-        if debugLevel > 1:
-            if not s.group(1) is None: print u' ' + s.group(1)
-            if not s.group(2) is None: print u' ' + s.group(2)
-        FlexionTemplate = s.group(2)
-    if debugLevel > 0: print u' FlexionTemplate found: ' + FlexionTemplate
-    # TODO
-    if FlexionTemplate.find('{{') != -1: FlexionTemplate = u''
-    if FlexionTemplate.find(u'-inv') != -1: FlexionTemplate = u''
-
-    return FlexionTemplate
-
-def getContentFromPageName(pageName, allowedNamespaces = None):
-    page = Page(site, pageName)
-    return getContentFromPage(page, allowedNamespaces)
-
-def getContentFromPage(page, allowedNamespaces = None):
-    PageBegin = u''
-    if page.exists():
-        if type(allowedNamespaces) == type([]): #'list'
-            if debugLevel > 1: print u' namespace : ' + str(page.namespace())
-            condition = page.namespace() in allowedNamespaces
-        elif allowedNamespaces == 'All':
-            if debugLevel > 1: print u' all namespaces'
-            condition = True
-        else:
-            if debugLevel > 1: print u' content namespaces'
-            condition = page.namespace() in [0, 12, 14, 100] or page.title().find(username) != -1
-        if condition:
-            try:
-                PageBegin = page.get()
-            except pywikibot.exceptions.BadTitle:
-                if debugLevel > 0: print u'IsRedirect l 5658'
-                return 'KO'
-            except pywikibot.exceptions.IsRedirectPage:
-                if debugLevel > 0: print u'IsRedirect l 5662'
-                if page.namespace() == 'Template:':
-                    PageBegin = page.get(get_redirect=True)
-                    if PageBegin[:len(u'#REDIRECT')] == u'#REDIRECT':
-                        regex = ur'\[\[([^\]]+)\]\]'
-                        s = re.search(regex, PageBegin)
-                        if s:
-                            PageBegin = getContentFromPageName(s.group(1), allowedNamespaces = allowedNamespaces)
-                        else:
-                            return 'KO'
-                    else:
-                        return 'KO'
-                else:
-                    return 'KO'
-            except pywikibot.exceptions.NoPage:
-                if debugLevel > 0: print u'NoPage l 5665'
-                return 'KO'
-            except pywikibot.exceptions.ServerError:
-                if debugLevel > 0: print u'NoPage l 5668'
-                return 'KO'
-        else:
-            if debugLevel > 0: print u'Forbidden namespace l 5671'
-            return 'KO'
-    else:
-        if debugLevel > 0: print u'No page l 5674'
-        return 'KO'
-
-    return PageBegin
-
-def getWiki(language, family):
-    if family is None:
-        return site
-    else:
-        wiki = u'KO'
-        try:
-            wiki = pywikibot.Site(language, family)
-        except pywikibot.exceptions.ServerError:
-            if debugLevel > 1: print u'  ServerError in getWiki'
-        except pywikibot.exceptions.NoSuchSite:
-            if debugLevel > 1: print u'  NoSuchSite in getWiki'
-        except UnicodeEncodeError:
-            if debugLevel > 1: print u'  UnicodeEncodeError in getWiki'
-        #TODO: WARNING: src/fr.wiktionary.format.py:4145: UserWarning: Site wiktionary:ro instantiated using different code "mo"
-    return wiki
-
-def getParameter(Page, p):				
-	'''
-	print pron.encode(config.console_encoding, 'replace')
-	pattern = ur'.*\|([^}\|]*)}|\|'
-	regex = re.search(pattern, pron)
-	print regex.start()
-	print regex.end()
-	raw_input(pron[regex.start():regex.end()])
-	'''
-	if Page.find(p + u'=') == -1 or Page.find(u'}}') == -1 or Page.find(p + u'=') > Page.find(u'}}'): return u''
-	Page = Page[Page.find(p + u'=')+len(p + u'='):]
-	if Page.find(u'|') != -1 and Page.find(u'|') < Page.find(u'}}'):
-		return trim(Page[:Page.find(u'|')])
-	else:
-		return trim(Page[:Page.find(u'}')])
-
-def nextTemplate(PageEnd, PageTemp, currentTemplate = None, languageCode = None):
-    if languageCode is None:
-        PageEnd = PageEnd + PageTemp[:PageTemp.find('}}')+2]
-    else:
-        PageEnd = PageEnd + currentTemplate + "|" + languageCode + '}}'
-    PageTemp = PageTemp[PageTemp.find('}}')+2:]
-    return PageEnd, PageTemp
-
-def nextTranslationTemplate(PageEnd, PageTemp, result = u'-'):
-    PageEnd = PageEnd + PageTemp[:len(u'trad')] + result
-    PageTemp = PageTemp[PageTemp.find(u'|'):]
-    return PageEnd, PageTemp
-                      
-def addCat(PageTemp, lang, cat):    # à remplacer par celle ci-dessous
-    if lang != u'':
-        if PageTemp.find(cat) == -1 and PageTemp.find(u'{{langue|' + lang + '}}') != -1:
-            if cat.find(u'[[Catégorie:') == -1: cat = u'[[Catégorie:' + cat + u']]'
-            PageTemp2 = PageTemp[PageTemp.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}'):]
-            if PageTemp2.find(u'{{langue|') != -1:
-                if debugLevel > 0: print u' catégorie ajoutée avant la section suivante'
-                if PageTemp2.find(u'== {{langue|') != -1:
-                    PageTemp = PageTemp[:PageTemp.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+PageTemp2.find(u'== {{langue|')] + cat + u'\n\n' + PageTemp[PageTemp.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+PageTemp2.find(u'== {{langue|'):]
-                elif PageTemp2.find(u'=={{langue|') != -1:
-                    PageTemp = PageTemp[:PageTemp.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+PageTemp2.find(u'=={{langue|')] + cat + u'\n\n' + PageTemp[PageTemp.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+PageTemp2.find(u'=={{langue|'):]
-                else:
-                     print u'Modèle {{langue| mal positionné'
-            else:
-                if debugLevel > 0: print u' catégorie ajoutée avant les interwikis'
-                regex = ur'\n\[\[\w?\w?\w?:'
-                if re.compile(regex).search(PageTemp):
-                    try:
-                        PageTemp = PageTemp[:re.search(regex,PageTemp).start()] + u'\n' + cat + u'\n' + PageTemp[re.search(regex,PageTemp).start():]
-                    except:
-                        print u'pb regex interwiki'
-                else:
-                    if debugLevel > 0: print u' catégorie ajoutée en fin de page'
-                    PageTemp = PageTemp + u'\n' + cat
-    return PageTemp
-
-
-def addLine(Page, CodeLangue, Section, pageContent):
-    if Page != '' and CodeLangue != '' and Section != '' and pageContent != '':
-        if Page.find(pageContent) == -1 and Page.find(u'{{langue|' + CodeLangue + '}}') != -1:
-            if Section == u'catégorie' and pageContent.find(u'[[Catégorie:') == -1: pageContent = u'[[Catégorie:' + pageContent + u']]'
-            if Section == u'clé de tri' and pageContent.find(u'{{clé de tri|') == -1: pageContent = u'{{clé de tri|' + pageContent + '}}'
-
-            # Recherche de l'ordre théorique de la section à ajouter
-            NumSection = NumeroSection(Section)
-            if NumSection == len(Sections):
-                if debugLevel > 0:
-                    print u''
-                    print u' ajout de '
-                    print Section.encode(config.console_encoding, 'replace')
-                    print u' dans une section inconnue'
-                    print u' (car ' + len(Sections) + u' = ' + str(NumSection) + u')'
-                    print u''
-                return Page
-            if debugLevel > 1: print u' position S : ' + s
-
-            # Recherche de l'ordre réel de la section à ajouter
-            PageTemp2 = Page[Page.find(u'{{langue|' + CodeLangue + '}}')+len(u'{{langue|' + CodeLangue + '}}'):]
-            #SectionPage = re.findall("{{S\|([^}]+)}}", PageTemp2) # Mais il faut trouver le {{langue}} de la limite de fin
-            SectionPage = re.findall(ur"\n=+ *{{S?\|?([^}/|]+)([^}]*)}}", PageTemp2)
-            if debugLevel > 1:
-                o = 0
-                while o < len(SectionPage):
-                     print str(SectionPage[o]).encode(config.console_encoding, 'replace')
-                     o = o + 1
-                if o == len(SectionPage): o = o - 1
-                raw_input()
-
-            o = 0
-            #raw_input(str(SectionPage[0][0].encode(config.console_encoding, 'replace')))
-            # pb encodage : étymologie non fusionnée + catégorie = 1 au lieu de 20 !?
-            while o < len(SectionPage) and str(SectionPage[o][0].encode(config.console_encoding, 'replace')) != 'langue' and NumeroSection(SectionPage[o][0]) <= NumSection:
-                if debugLevel > 0:
-                    print SectionPage[o][0]
-                    print NumeroSection(SectionPage[o][0])
-                o = o + 1
-            SectionLimite = str(SectionPage[o][0].encode(config.console_encoding, 'replace'))
-            o = o - 1
-            if debugLevel > 1: print u' position O : ' + o
-            if debugLevel > 0:
-                print u''
-                print u'Ajout de '
-                print Section.encode(config.console_encoding, 'replace')
-                print u' avant '
-                print SectionLimite
-                print u' (car ' + str(NumeroSection(SectionLimite)) + u' > ' + str(NumSection) + u')'
-                print u''
-
-            # Ajout après la section trouvée
-            if PageTemp2.find(u'{{S|' + SectionPage[o][0]) == -1:
-                print 'Erreur d\'encodage'
-                return
-
-            PageTemp3 = PageTemp2[PageTemp2.find(u'{{S|' + SectionPage[o][0]):]
-            if SectionPage[o][0] != Section and Section != u'catégorie' and Section != u'clé de tri':
-                if debugLevel > 1: print u' ajout de la section'
-                pageContent = u'\n' + Niveau[NumSection] + u' {{S|' + Section + u'}} ' + Niveau[NumSection] + u'\n' + pageContent
-
-            # Ajout à la ligne
-            if PageTemp3.find(u'\n==') == -1:
-                regex = ur'\n\[\[\w?\w?\w?:'
-                if re.compile(regex).search(Page):
-                    interwikis = re.search(regex, Page).start()
-                    categories = Page.find(u'\n[[Catégorie:')
-                    defaultSort = Page.find(u'\n{{clé de tri|')
-
-                    if (interwikis < categories or categories == -1) and (interwikis < defaultSort or defaultSort == -1):
-                        if debugLevel > 0: print u' ajout avant les interwikis'
-                        try:
-                            Page = Page[:interwikis] + u'\n' + pageContent + u'\n' + Page[interwikis:]
-                        except:
-                            print u' pb regex interwiki'
-                    elif categories != -1 and (categories < defaultSort or defaultSort == -1):
-                        if debugLevel > 0: print u' ajout avant les catégories'
-                        Page = Page[:Page.find(u'\n[[Catégorie:')] + pageContent + Page[Page.find(u'\n[[Catégorie:'):]
-                    elif defaultSort != -1:
-                        if debugLevel > 0: print u' ajout avant la clé de tri'
-                        Page = Page[:Page.find(u'\n{{clé de tri|')] + pageContent + Page[Page.find(u'\n{{clé de tri|'):]
-                    else:
-                        if debugLevel > 0: print u' ajout en fin de page'
-                        Page = Page + pageContent
-                else:
-                    if debugLevel > 0: print u' ajout en fin de page'
-                    Page = Page + pageContent
-            else:
-                Page = Page[:-len(PageTemp2)] + PageTemp2[:-len(PageTemp3)] + PageTemp3[:PageTemp3.find(u'\n\n')] + u'\n' + pageContent + u'\n' + PageTemp3[PageTemp3.find(u'\n\n'):]
-    return Page
-
-def rec_anagram(counter):
-    # Copyright http://www.siteduzero.com/forum-83-541573-p2-exercice-generer-tous-les-anagrammes.html
-    if sum(counter.values()) == 0:
-        yield ''
-    else:
-        for c in counter:
-            if counter[c] != 0:
-                counter[c] -= 1
-                for _ in rec_anagram(counter):
-                    yield c + _
-                counter[c] += 1
-def anagram(word):
-    return rec_anagram(collections.Counter(word))
-
-# Permet à tout le monde de stopper le bot en lui écrivant
-def ArretDUrgence():
-    PageTemp = getContentFromPageName(u'User talk:' + username)
-    if PageTemp == 'KO': return
-    if PageTemp != u"{{/Stop}}":
-        pywikibot.output (u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
-        exit(0)
-
-def savePage(currentPage, pageContent, summary):
-    result = "ok"
-    if debugLevel > 0:
-        if len(pageContent) < 6000:
-            print(pageContent.encode(config.console_encoding, 'replace'))
-        else:
-            taille = 3000
-            print(pageContent[:taille].encode(config.console_encoding, 'replace'))
-            print u'\n[...]\n'
-            print(pageContent[len(pageContent)-taille:].encode(config.console_encoding, 'replace'))
-        result = raw_input((u'\nSauvegarder [[' + currentPage.title() + u']] ? (o/n) ').encode('utf-8'))
-    if result != "n" and result != "no" and result != "non":
-        if currentPage.title().find(u'Utilisateur:JackBot/') == -1: ArretDUrgence()
-        if not summary: summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
-        try:
-            currentPage.put(pageContent, summary)
-        except pywikibot.exceptions.NoPage:
-            print "NoPage in savePage"
-            return
-        except pywikibot.exceptions.IsRedirectPage:
-            print "IsRedirectPage in savePage"
-            return
-        except pywikibot.exceptions.LockedPage:
-            print "LockedPage in savePage"
-            return
-        except pywikibot.EditConflict:
-            print "EditConflict in savePage"
-            return
-        except pywikibot.exceptions.ServerError:
-            print "ServerError in savePage"
-            return
-        except pywikibot.exceptions.BadTitle:
-            print "BadTitle in savePage"
-            return
-        except pywikibot.exceptions.OtherPageSaveError:
-            print "OtherPageSaveError"
-            time.sleep(10)
-            savePage(currentPage, pageContent, summary)
-            return
-        except AttributeError:
-            print "AttributeError in savePage"
-            return
-
-# Lecture du fichier articles_list.txt (au même format que pour replace.py)
-def crawlerFile(source):
-    if source:
-        PagesHS = open(source, 'r')
-        while 1:
-            pageName = PagesHS.readline().decode(config.console_encoding, 'replace')
-            fin = pageName.find("\t")
-            pageName = pageName[:fin]
-            if pageName == '': break
-            if pageName.find(u'[[') != -1:
-                pageName = pageName[pageName.find(u'[[')+2:]
-            if pageName.find(u']]') != -1:
-                pageName = pageName[:pageName.find(u']]')]
-            # Conversion ASCII => Unicode (pour les .txt)
-            modification(html2Unicode(pageName))
-        PagesHS.close()
-
-# Lecture du dump
-def crawlerXML(source, regex = u''):
-    if debugLevel > 1: print u'crawlerXML'
-    if source:
-        from pywikibot import xmlreader
-        dump = xmlreader.XmlDump(source)
-        parser = dump.parse()
-        outPutFile = open('src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', 'a')
-
-        for entry in parser:
-            PageTemp = entry.text
-
-            if regex != str(''):
-                if re.search(regex, PageTemp):
-                    outPutFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-
-            else:
-                '''
-                if debugLevel > 1: print u' Pluriels non flexion'
-                if entry.title[-2:] == u'es':
-                    if debugLevel > 1: print entry.title
-                    regex = ur"=== {{S\|adjectif\|fr[^}]+}} ===\n[^\n]*\n*{{fr\-rég\|[^\n]+\n*'''" + re.escape(entry.title) + ur"'''[^\n]*\n# *'*'*(Masculin|Féminin)+ *[P|p]luriel de *'*'* *\[\["
-                    if re.search(regex, PageTemp):
-                        if debugLevel > 0: print entry.title
-                        #PageTemp = re.sub(regex, ur'\1|flexion\2', PageTemp)
-                        #modification(html2Unicode(entry.title))
-
-                if debugLevel > 1: print u' Ajout de la boite de flexion'
-                if entry.title[-1:] == u's':
-                    if (PageTemp.find(u'{{S|adjectif|fr|flexion}}') != -1 or PageTemp.find(u'{{S|nom|fr|flexion}}') != -1) and PageTemp.find(u'{{fr-') == -1:
-                        #print entry.title # limite de 8191 lignes dans le terminal.
-                        #modification(entry.title)
-                        outPutFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                '''
-                if debugLevel > 1: print u' balises HTML désuètes'
-                for deprecatedTag in deprecatedTags.keys():
-                    if PageTemp.find(u'<' + deprecatedTag) != -1:
-                        outPutFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-
-        outPutFile.close()
-
-
-# Traitement d'une catégorie
-def crawlerCat(category, recursif, apres, ns = 0):
-    modifier = u'False'
-    print category.encode(config.console_encoding, 'replace')
-    cat = catlib.Category(site, category)
-    pages = cat.articlesList(False)
-    gen =  pagegenerators.NamespaceFilterPageGenerator(pages, [ns]) # HS sur Commons
-    #gen =  pagegenerators.CategorizedPageGenerator(cat)
-    for Page in pagegenerators.PreloadingGenerator(gen, 100):
-        if not apres or apres == u'' or modifier == u'True':
-            modification(Page.title()) #crawlerLink(Page.title())
-        elif Page.title() == apres:
-            modifier = u'True'
-    if recursif:
-        subcat = cat.subcategories(recurse = True)
-        for subcategory in subcat:
-            print subcategory.title().encode(config.console_encoding, 'replace')
-            pages = subcategory.articlesList(False)
-            for Page in pagegenerators.PreloadingGenerator(pages,100):
-                modification(Page.title())
-
-def crawlerCat2(category, recursif, apres):
-    import pywikibot
-    from pywikibot import pagegenerators
-    modifier = u'False'
-    cat = pywikibot.Category(site, category)    # 'module' object has no attribute 'Category'
-    gen =  pagegenerators.CategorizedPageGenerator(cat)
-    for Page in gen:
-        modification(Page.title())
-
-# Traitement des pages liées
-def crawlerLink(pageName, apres):
-    modifier = u'False'
-    #pageName = unicode(arg[len('-links:'):], 'utf-8')
-    page = pywikibot.Page(site, pageName)
-    gen = pagegenerators.ReferringPageGenerator(page)
-    gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])
-    for Page in pagegenerators.PreloadingGenerator(gen,100):
-        print(Page.title().encode(config.console_encoding, 'replace'))
-        if not apres or apres == u'' or modifier == u'True':
-            modification(Page.title()) #crawlerLink(Page.title())
-        elif Page.title() == apres:
-            modifier = u'True'
-
-# Traitement des pages liées des entrées d'une catégorie
-def crawlerCatLink(pageName, apres):
-    modifier = u'False'
-    cat = catlib.Category(site, pageName)
-    pages = cat.articlesList(False)
-    for Page in pagegenerators.PreloadingGenerator(pages,100):
-        print Page.title().encode(config.console_encoding, 'replace')
-        page = pywikibot.Page(site, Page.title())
-        gen = pagegenerators.ReferringPageGenerator(page)
-        gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])
-        for PageLiee in pagegenerators.PreloadingGenerator(gen,100):
-            if not apres or apres == u'' or modifier == u'True':
-                modification(PageLiee.title()) #crawlerLink(Page.title())
-            elif PageLiee.title() == apres:
-                modifier = u'True'
-
-# Traitement d'une recherche
-def crawlerSearch(pageName, ns = None):
-    gen = pagegenerators.SearchPageGenerator(pageName, site = site, namespaces = ns)
-    for Page in pagegenerators.PreloadingGenerator(gen,100):
-        modification(Page.title())
-
-# Traitement des modifications récentes
-def crawlerRCLastDay(site = site, nobots=True, namespace='0'):
-    # Génère les modifications récentes de la dernière journée
-    timeAfterLastEdition = 30 # minutes
-
-    date_now = datetime.datetime.utcnow()
-    # Date de la plus récente modification à récupérer
-    date_start = date_now - datetime.timedelta(minutes=timeAfterLastEdition)
-    # Date d'un jour plus tôt
-    date_end = date_start - datetime.timedelta(1)
-
-    start_timestamp = date_start.strftime('%Y%m%d%H%M%S')
-    end_timestamp = date_end.strftime('%Y%m%d%H%M%S')
-
-    for item in site.recentchanges(number=5000, rcstart=start_timestamp, rcend=end_timestamp, rcshow=None,
-                    rcdir='older', rctype='edit|new', namespace=namespace,
-                    includeredirects=True, repeat=False, user=None,
-                    returndict=False, nobots=nobots):
-        yield item[0]
-
-def crawlerRC():
-    gen = pagegenerators.RecentchangesPageGenerator(site = site)
-    ecart_minimal_requis = 30 # min
-    for Page in pagegenerators.PreloadingGenerator(gen,100):
-        #print str(timeAfterLastEdition(Page)) + ' =? ' + str(ecart_minimal_requis)
-        if timeAfterLastEdition(Page) > ecart_minimal_requis:
-            modification(Page.title())
-
-def timeAfterLastEdition(page):
-    # Timestamp au format MediaWiki de la dernière version
-    time_last_edit = page.getVersionHistory()[0][1]
-    match_time = re.match(r'(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})', time_last_edit)
-    # Mise au format "datetime" du timestamp de la dernière version
-    datetime_last_edit = datetime.datetime(int(match_time.group(1)), int(match_time.group(2)), int(match_time.group(3)),
-        int(match_time.group(4)), int(match_time.group(5)), int(match_time.group(6)))
-    datetime_now = datetime.datetime.utcnow()
-    diff_last_edit_time = datetime_now - datetime_last_edit
-
-    # Ecart en minutes entre l'horodotage actuelle et l'horodotage de la dernière version
-    return diff_last_edit_time.seconds/60 + diff_last_edit_time.days*24*60
-
-# Traitement des modifications d'un compte
-def crawlerUser(username, jusqua, apres, regex = None):
-    modifier = u'False'
-    compteur = 0
-    gen = pagegenerators.UserContributionsGenerator(username, site = site)
-    for Page in pagegenerators.PreloadingGenerator(gen,100):
-        if not apres or apres == u'' or modifier == u'True':
-            if regex is None:
-                modification(Page.title())
-            else:
-                PageTemp = getContentFromPageName(Page.title(), allowedNamespaces = 'All')
-                if re.search(regex, PageTemp):
-                    print Page.title()
-            compteur = compteur + 1
-            if compteur > jusqua: break
-        elif Page.title() == apres:
-            modifier = u'True'
-
-# Toutes les redirections
-def crawlerRedirects():
-    for Page in site.allpages(start=u'', namespace=0, includeredirects='only'):
-        modification(Page.title())
-
-# Traitement de toutes les pages du site
-def crawlerAll(start):
-    gen = pagegenerators.AllpagesPageGenerator(start,namespace=0,includeredirects=False, site = site)
-    for Page in pagegenerators.PreloadingGenerator(gen,100):
-        modification(Page.title())
-
-
+p = PageProvider(treatPageByName, site, debugLevel)
+setGlobals(debugLevel, site, username)
 def main(*args):
     if len(sys.argv) > 1:
         if sys.argv[1] == u'test':
-            modification(u'User:' + username + u'/test')
+            treatPageByName(u'User:' + username + u'/test')
         elif sys.argv[1] == u't':
-            modification(u'User:' + username + u'/test court')
+            treatPageByName(u'User:' + username + u'/test court')
         elif sys.argv[1] == u'unit tests' or sys.argv[1] == u'tu':
             addLine(u"== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n{{fr-rég|}}\n\'\'\'{{subst:PAGENAME}}\'\'\' {{pron||fr}} {{genre ?}}\n#\n#* ''''\n==== {{S|variantes orthographiques}} ====\n==== {{S|synonymes}} ====\n==== {{S|antonymes}} ====\n==== {{S|dérivés}} ====\n==== {{S|apparentés}} ====\n==== {{S|vocabulaire}} ====\n==== {{S|hyperonymes}} ====\n==== {{S|hyponymes}} ====\n==== {{S|méronymes}} ====\n==== {{S|holonymes}} ====\n==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n=== {{S|prononciation}} ===\n* {{pron||fr}}\n* {{écouter|<!--  précisez svp la ville ou la région -->||audio=|lang=}}\n==== {{S|homophones}} ====\n==== {{S|paronymes}} ====\n=== {{S|anagrammes}} ===\n=== {{S|voir aussi}} ===\n* {{WP}}\n=== {{S|références}} ===\n", u'fr', u'prononciation', u'* {{pron|boum|fr}}')
         elif sys.argv[1] == u'page':
-            modification(u'télétransporter')
+            treatPageByName(u'télétransporter')
         elif sys.argv[1] == u'file' or sys.argv[1] == u'txt':
-            crawlerFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
+            p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'xml':
             regex = u''
             if len(sys.argv) > 2: regex = sys.argv[2]
-            crawlerXML(u'dumps/frwiktionary-20170701-pages-meta-current.xml', regex)
+            p.pagesByXML(u'dumps/frwiktionary-20170701-pages-meta-current.xml', regex)
         elif sys.argv[1] == u'link' or sys.argv[1] == u'm':
-            crawlerLink(site, u'Modèle:ex',u'')
+            p.pagesByLink(site, u'Modèle:ex',u'')
         elif sys.argv[1] == u'cat':
-            crawlerCat(u'Caractères en braille', True, u'')
-            #crawlerCat(u'suédois', False, u'')
-            #crawlerCat(u'Gentilés en français', False, u'')
-            #crawlerCat(u'Pluriels manquants en français', False, u'')
-            #crawlerCat(u'Catégorie:Wiktionnaire:Sections de type avec locution forcée', False, u'')
-            #crawlerCat(u'Catégorie:Genres manquants en français', False, u'')
+            p.pagesByCat(u'Caractères en braille', True, u'')
+            #p.pagesByCat(u'suédois', False, u'')
+            #p.pagesByCat(u'Gentilés en français', False, u'')
+            #p.pagesByCat(u'Pluriels manquants en français', False, u'')
+            #p.pagesByCat(u'Catégorie:Wiktionnaire:Sections de type avec locution forcée', False, u'')
+            #p.pagesByCat(u'Catégorie:Genres manquants en français', False, u'')
         elif sys.argv[1] == u's':
-            crawlerSearch(u'insource:/\<strong>\<strong>/')
+            p.pagesBySearch(u'insource:/\<strong>\<strong>/')
         elif sys.argv[1] == u'u':
-            crawlerUser(u'User:JackBot', 10000, u'')
+            p.pagesByUser(u'User:JackBot', 10000, u'')
         elif sys.argv[1] == u'redirects':
-            crawlerRedirects()
+            p.pagesByRedirects()
         elif sys.argv[1] == u'all':
-           crawlerAll()
+           p.pagesByAll()
         elif sys.argv[1] == u'RC':
             while 1:
-                crawlerRCLastDay()
+                p.pagesByRCLastDay()
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
-            modification(html2Unicode(sys.argv[1]))
+            treatPageByName(html2Unicode(sys.argv[1]))
     else:
         # Daily:
-        crawlerCat(u'Catégorie:Wiktionnaire:Terminologie sans langue précisée', True, u'')
-        crawlerCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée', False, u'')
-        crawlerCat(u'Catégorie:Wiktionnaire:Flexions à vérifier',True,u'')
-        crawlerCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet', False, u'')
-        crawlerCat(u'Catégorie:Wiktionnaire:Ébauches à compléter', False, u'')
-        crawlerLink(u'Modèle:trad',u'')
-        crawlerLink(u'Modèle:1ergroupe',u'')
-        crawlerLink(u'Modèle:2egroupe',u'')
-        crawlerLink(u'Modèle:3egroupe',u'')
-        crawlerLink(u'Modèle:-',u'')
-        crawlerLink(u'Modèle:-ortho-alt-',u'')
-        crawlerLink(u'Modèle:mascul',u'')
-        crawlerLink(u'Modèle:fémin',u'')
-        crawlerLink(u'Modèle:femin',u'')
-        crawlerLink(u'Modèle:sing',u'')
-        crawlerLink(u'Modèle:plur',u'')
-        crawlerLink(u'Modèle:pluri',u'')
-        crawlerLink(u'Modèle:=langue=',u'')
-        crawlerLink(u'Modèle:-déf-',u'')
-        crawlerLink(u'Modèle:pron-rég',u'')
-        crawlerLink(u'Modèle:mp',u'')
-        crawlerLink(u'Modèle:fp',u'')
-        crawlerLink(u'Modèle:vx',u'')
-        crawlerLink(u'Modèle:pron-rég',u'')
-        crawlerCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français', False, u'')
-        crawlerCat(u'Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section', False, u'') # TODO: ns
-        crawlerCat(u'Catégorie:Wiktionnaire:Sections avec titre inconnu', False, u'')
-        crawlerCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus', False, u'')
-        crawlerCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias', False, u'')
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Terminologie sans langue précisée', True, u'')
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée', False, u'')
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Flexions à vérifier',True,u'')
+        p.pagesByCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet', False, u'')
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Ébauches à compléter', False, u'')
+        p.pagesByLink(u'Modèle:trad',u'')
+        p.pagesByLink(u'Modèle:1ergroupe',u'')
+        p.pagesByLink(u'Modèle:2egroupe',u'')
+        p.pagesByLink(u'Modèle:3egroupe',u'')
+        p.pagesByLink(u'Modèle:-',u'')
+        p.pagesByLink(u'Modèle:-ortho-alt-',u'')
+        p.pagesByLink(u'Modèle:mascul',u'')
+        p.pagesByLink(u'Modèle:fémin',u'')
+        p.pagesByLink(u'Modèle:femin',u'')
+        p.pagesByLink(u'Modèle:sing',u'')
+        p.pagesByLink(u'Modèle:plur',u'')
+        p.pagesByLink(u'Modèle:pluri',u'')
+        p.pagesByLink(u'Modèle:=langue=',u'')
+        p.pagesByLink(u'Modèle:-déf-',u'')
+        p.pagesByLink(u'Modèle:pron-rég',u'')
+        p.pagesByLink(u'Modèle:mp',u'')
+        p.pagesByLink(u'Modèle:fp',u'')
+        p.pagesByLink(u'Modèle:vx',u'')
+        p.pagesByLink(u'Modèle:pron-rég',u'')
+        p.pagesByCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français', False, u'')
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section', False, u'') # TODO: ns
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec titre inconnu', False, u'')
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus', False, u'')
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias', False, u'')
 
 if __name__ == "__main__":
     main(sys.argv)
