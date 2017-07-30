@@ -100,14 +100,6 @@ class PageProvider:
                 for Page in pagegenerators.PreloadingGenerator(pages,100):
                     self.treatPage(Page.title())
 
-    def pagesByCat2(self, category, recursive, afterPage, site = None):
-        if site is None: site = self.site
-        modifier = u'False'
-        cat = pywikibot.Category(site, category)    # 'module' object has no attribute 'Category'
-        gen =  pagegenerators.CategorizedPageGenerator(cat)
-        for Page in gen:
-            self.treatPage(Page.title())
-
     def pagesByCatSound(self, category, recursive, afterPage, site = None):
         if site is None: site = self.site
         modifier = u'False'

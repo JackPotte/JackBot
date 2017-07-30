@@ -14,6 +14,52 @@ site = pywikibot.Site('fr', 'wiktionary')
 username = 'JackBot'
 
 
+Sections = []
+Niveau = []
+Sections.append(u'étymologie')
+Niveau.append(u'===')
+Sections.append(u'nom')
+Niveau.append(u'===')
+Sections.append(u'variantes orthographiques')
+Niveau.append(u'====')
+Sections.append(u'synonymes')
+Niveau.append(u'====')
+Sections.append(u'antonymes')
+Niveau.append(u'====')
+Sections.append(u'dérivés')
+Niveau.append(u'====')
+Sections.append(u'apparentés')
+Niveau.append(u'====')
+Sections.append(u'vocabulaire')
+Niveau.append(u'====')
+Sections.append(u'hyperonymes')
+Niveau.append(u'====')
+Sections.append(u'hyponymes')
+Niveau.append(u'====')
+Sections.append(u'méronymes')
+Niveau.append(u'====')
+Sections.append(u'holonymes')
+Niveau.append(u'====')
+Sections.append(u'traductions')
+Niveau.append(u'====')
+Sections.append(u'prononciation')
+Niveau.append(u'===')
+Sections.append(u'homophones')
+Niveau.append(u'====')
+Sections.append(u'paronymes')
+Niveau.append(u'====')
+Sections.append(u'anagrammes')
+Niveau.append(u'===')
+Sections.append(u'voir aussi')
+Niveau.append(u'===')
+Sections.append(u'références')
+Niveau.append(u'===')
+Sections.append(u'catégorie')
+Niveau.append(u'')
+Sections.append(u'clé de tri')
+Niveau.append(u'')
+
+
 #*** Test functions ***
 def isPatrolled(version):
     #TODO: extensions Patrolled Edits & Flagged Revisions
@@ -314,7 +360,7 @@ def addLine(Page, CodeLangue, Section, pageContent):
             if Section == u'clé de tri' and pageContent.find(u'{{clé de tri|') == -1: pageContent = u'{{clé de tri|' + pageContent + '}}'
 
             # Recherche de l'ordre théorique de la section à ajouter
-            NumSection = numeroSection(Section)
+            NumSection = sectionNumber(Section)
             if NumSection == len(Sections):
                 if debugLevel > 0:
                     print u''
@@ -341,10 +387,10 @@ def addLine(Page, CodeLangue, Section, pageContent):
             o = 0
             #raw_input(str(SectionPage[0][0].encode(config.console_encoding, 'replace')))
             # pb encodage : étymologie non fusionnée + catégorie = 1 au lieu de 20 !?
-            while o < len(SectionPage) and str(SectionPage[o][0].encode(config.console_encoding, 'replace')) != 'langue' and numeroSection(SectionPage[o][0]) <= NumSection:
+            while o < len(SectionPage) and str(SectionPage[o][0].encode(config.console_encoding, 'replace')) != 'langue' and sectionNumber(SectionPage[o][0]) <= NumSection:
                 if debugLevel > 0:
                     print SectionPage[o][0]
-                    print numeroSection(SectionPage[o][0])
+                    print sectionNumber(SectionPage[o][0])
                 o = o + 1
             SectionLimite = str(SectionPage[o][0].encode(config.console_encoding, 'replace'))
             o = o - 1
@@ -355,7 +401,7 @@ def addLine(Page, CodeLangue, Section, pageContent):
                 print Section.encode(config.console_encoding, 'replace')
                 print u' avant '
                 print SectionLimite
-                print u' (car ' + str(numeroSection(SectionLimite)) + u' > ' + str(NumSection) + u')'
+                print u' (car ' + str(sectionNumber(SectionLimite)) + u' > ' + str(NumSection) + u')'
                 print u''
 
             # Ajout après la section trouvée
@@ -398,8 +444,8 @@ def addLine(Page, CodeLangue, Section, pageContent):
                 Page = Page[:-len(PageTemp2)] + PageTemp2[:-len(PageTemp3)] + PageTemp3[:PageTemp3.find(u'\n\n')] + u'\n' + pageContent + u'\n' + PageTemp3[PageTemp3.find(u'\n\n'):]
     return Page
 
-def numeroSection(Section):
-    if debugLevel > 0: print u'numeroSection()'
+def sectionNumber(Section):
+    if debugLevel > 0: print u'sectionNumber()'
     if debugLevel > 1:
         print u''
         print Section

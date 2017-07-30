@@ -31,59 +31,14 @@ username = config.usernames[siteFamily][siteLanguage]
 site = pywikibot.Site(u'commons', u'commons')
 summary = u'Ajout du son depuis [[commons:Category:Pronunciation]]'
 
-Sections = []
-Niveau = []
-Sections.append(u'étymologie')
-Niveau.append(u'===')
-Sections.append(u'nom')
-Niveau.append(u'===')
-Sections.append(u'variantes orthographiques')
-Niveau.append(u'====')
-Sections.append(u'synonymes')
-Niveau.append(u'====')
-Sections.append(u'antonymes')
-Niveau.append(u'====')
-Sections.append(u'dérivés')
-Niveau.append(u'====')
-Sections.append(u'apparentés')
-Niveau.append(u'====')
-Sections.append(u'vocabulaire')
-Niveau.append(u'====')
-Sections.append(u'hyperonymes')
-Niveau.append(u'====')
-Sections.append(u'hyponymes')
-Niveau.append(u'====')
-Sections.append(u'méronymes')
-Niveau.append(u'====')
-Sections.append(u'holonymes')
-Niveau.append(u'====')
-Sections.append(u'traductions')
-Niveau.append(u'====')
-Sections.append(u'prononciation')
-Niveau.append(u'===')
-Sections.append(u'homophones')
-Niveau.append(u'====')
-Sections.append(u'paronymes')
-Niveau.append(u'====')
-Sections.append(u'anagrammes')
-Niveau.append(u'===')
-Sections.append(u'voir aussi')
-Niveau.append(u'===')
-Sections.append(u'références')
-Niveau.append(u'===')
-Sections.append(u'catégorie')
-Niveau.append(u'')
-Sections.append(u'clé de tri')
-Niveau.append(u'')
 
-# Modification du wiki
 def treatPageByName(pageName):
     print(pageName.encode(config.console_encoding, 'replace'))
     if pageName[-4:] != u'.ogg' and pageName[-4:] != u'.oga' and pageName[-4:] != u'.wav': return
 
     mot = pageName[len(u'File:'):len(pageName)-4]
     if mot.find(u'-') == -1:
-        if debugLevel > 0: print u'Son sans langue'
+        if debugLevel > 0: print u' Son sans langue'
         return
     codelangue = mot[:mot.find(u'-')].lower()
     if debugLevel > 0: u'Mot de code langue : ' + codelangue
@@ -92,7 +47,7 @@ def treatPageByName(pageName):
     mot = mot.replace(u'-',' ')
     mot = mot.replace(u'_',' ')
     mot = mot.replace(u'\'',u'’')
-    if debugLevel > 1: print u'Mot de Commons : ' + mot.encode(config.console_encoding, 'replace')
+    if debugLevel > 1: print u' Mot de Commons : ' + mot.encode(config.console_encoding, 'replace')
     region = u''
     
     page1 = Page(siteDest, mot)
@@ -155,19 +110,19 @@ def treatPageByName(pageName):
             if mot[0:3] == u'en ' or mot[0:4] == u'ett ':
                 mot = mot[mot.find(u' ')+1:]                
         
-        if debugLevel > 1: print u'Mot potentiel : ' + mot.encode(config.console_encoding, 'replace')
+        if debugLevel > 1: print u' Mot potentiel : ' + mot.encode(config.console_encoding, 'replace')
         # Deuxième tentative de recherche sur le Wiktionnaire    
         if mot != mot1:
             page1 = Page(siteDest, mot)
             try:
                 PageBegin = page1.get()
             except pywikibot.exceptions.NoPage:
-                if debugLevel > 0: print u'Page introuvable 1'
+                if debugLevel > 0: print u' Page introuvable 1'
                 return
             except pywikibot.exceptions.IsRedirectPage:
                 PageBegin = page1.get(get_redirect=True)
         else:
-            if debugLevel > 0: print u'Page introuvable 2'
+            if debugLevel > 0: print u' Page introuvable 2'
             return
     except pywikibot.exceptions.IsRedirectPage:
         PageBegin = page1.get(get_redirect=True)
@@ -180,13 +135,13 @@ def treatPageByName(pageName):
         prononciation = u''
     if debugLevel > 1: print prononciation.encode(config.console_encoding, 'replace')
     
-    if debugLevel > 1: print u'Mot du Wiktionnaire : ' + mot.encode(config.console_encoding, 'replace')
+    if debugLevel > 1: print u' Mot du Wiktionnaire : ' + mot.encode(config.console_encoding, 'replace')
     Son = pageName[len(u'File:'):]
     if PageBegin.find(Son) != -1 or PageBegin.find(Son[:1].lower() + Son[1:]) != -1 or PageBegin.find(Son.replace(u' ', u'_')) != -1 or PageBegin.find((Son[:1].lower() + Son[1:]).replace(u' ', u'_')) != -1:
-        if debugLevel > 0: print u'Son déjà présent'
+        if debugLevel > 0: print u' Son déjà présent'
         return
     if PageBegin.find(u'{{langue|' + codelangue) == -1:
-        if debugLevel > 0: print u'Paragraphe absent'
+        if debugLevel > 0: print u' Paragraphe absent'
         return
     PageTemp = PageBegin
 
@@ -200,12 +155,7 @@ p = PageProvider(treatPageByName, site, debugLevel)
 setGlobals(debugLevel, site, username)
 def main(*args):
     if len(sys.argv) > 1:
-        DebutScan = u''
-        if len(sys.argv) > 2:
-            if sys.argv[2] == u'debug' or sys.argv[2] == u'd':
-                debugLevel = 1
-            else:
-                DebutScan = sys.argv[2]
+        if debugLevel > 0: print sys.argv
         if sys.argv[1] == u'test':
             treatPageByName(u'User:' + username + u'/test')
         elif sys.argv[1] == u'ta':
@@ -217,13 +167,15 @@ def main(*args):
         elif sys.argv[1] == u'lien':
             p.pagesByLink(u'Modèle:vx',u'')
         elif sys.argv[1] == u'page':
-            treatPageByName(u'Utilisateur:JackPotte/test2')
+            treatPageByName(u'User:JackPotte/test2')
         elif sys.argv[1] == u'trad':
             p.pagesByLink(u'Modèle:trad-',u'')
         elif sys.argv[1] == u's':
             p.pagesBySearch(u'File:fr-Paris--')    # à faire : renommer les "File:Fr-œsophagienne-fr FR-Paris.ogg" avec "{{rename|Fr-Paris--œsophagienne.ogg|4|Pronunciation norm for Wiktionaries sync}}"
         elif sys.argv[1] == u'u':
             p.pagesByUser(u'Utilisateur:JackPotte', 1000,u'')
+        else:
+            treatPageByName(sys.argv[1])
     else:
         p.pagesByCatSound(u'Category:Pronunciation', True, u'')
 
