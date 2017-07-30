@@ -20,11 +20,11 @@
 #python core/pwb.py src/fr.wikiquote.count-quotes -family:wikiquote -output:"User:JackBot/statistiques" -outputarticles:"Template:NUMBEROFQARTICLES" -outputquotes:"Template:NUMBEROFQUOTES"
 
 #*** Homemade ***
-python core/pwb.py src/en.wikibooks.format nocat
-python core/pwb.py src/fr.wikibooks.format nocat
+python core/pwb.py src/en.wikibooks.format -nocat
+python core/pwb.py src/fr.wikibooks.format -nocat
 python core/pwb.py src/fr.wikipedia.format
 python core/pwb.py src/fr.wikiquote.format
-python core/pwb.py src/fr.wikiversity.format nocat
+python core/pwb.py src/fr.wikiversity.format -nocat
 python core/pwb.py src/fr.wikivoyage.format
 python core/pwb.py src/fr.wiktionary.archive
 python core/pwb.py src/fr.wiktionary.create-flexions

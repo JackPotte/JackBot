@@ -47,7 +47,7 @@ def getNewsOld(page):
     text = simplejson.loads(data)['parse']['text']['*'] # ValueError: No JSON object could be decode
     if debugLevel > 0: raw_input(text)
     return parseNews(text)
- 
+
 def parseNews(text):
     #doc = minidom_parseString(u'<html><body>' + text.encode('utf-8') + u'</body></html>')
     doc = minidom_parseString((u'<html><body>' + text + u'</body></html>').encode('utf-8'))

@@ -11,7 +11,7 @@ from pywikibot import *
 
 # Global variables
 debugLevel = 0
-debugAliases = ['debug', 'd', '-d']
+debugAliases = ['-debug', '-d']
 for debugAlias in debugAliases:
     if debugAlias in sys.argv:
         debugLevel= 1
@@ -155,57 +155,47 @@ p = PageProvider(treatPageByName, site, debugLevel)
 setGlobals(debugLevel, site, username)
 def main(*args):
     if len(sys.argv) > 1:
-        if debugLevel > 0: print sys.argv
-        if sys.argv[1] == u'test':
-            treatPageByName(u'User:' + username + u'/test')
-        elif sys.argv[1] == u'ta':
-            testAdd(u'User:' + username + u'/test')
-        elif sys.argv[1] == u'p':
-            treatPageByName(u'File:De-Dominikanische Republik.ogg')
-        elif sys.argv[1] == u'cat':
-            p.pagesByCatSound(u'Category:Pronunciation‎', True, u'')
-        elif sys.argv[1] == u'lien':
-            p.pagesByLink(u'Modèle:vx',u'')
-        elif sys.argv[1] == u'page':
-            treatPageByName(u'User:JackPotte/test2')
-        elif sys.argv[1] == u'trad':
-            p.pagesByLink(u'Modèle:trad-',u'')
-        elif sys.argv[1] == u's':
-            p.pagesBySearch(u'File:fr-Paris--')    # à faire : renommer les "File:Fr-œsophagienne-fr FR-Paris.ogg" avec "{{rename|Fr-Paris--œsophagienne.ogg|4|Pronunciation norm for Wiktionaries sync}}"
-        elif sys.argv[1] == u'u':
-            p.pagesByUser(u'Utilisateur:JackPotte', 1000,u'')
+        if debugLevel > 1: print sys.argv
+        if sys.argv[1] == u'-test':
+            treatPageByName(u'Utilisateur:' + username + u'/test')
+        elif sys.argv[1] == u'-test2':
+            treatPageByName(u'Utilisateur:' + username + u'/test2')
+        elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
+            treatPageByName(u'Catégorie:Python')
+        elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
+            p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
+        elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
+            regex = u''
+            if len(sys.argv) > 2: regex = sys.argv[2]
+            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex)
+        elif sys.argv[1] == u'-u':
+            p.pagesByUser(u'User:' + username)
+        elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
+            if len(sys.argv) > 2:
+                p.pagesBySearch(sys.argv[2])
+            else:
+                p.pagesBySearch(u'chinois')
+        elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
+            p.pagesByLink(u'Modèle:autres projets')
+        elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
+            afterPage = u''
+            if len(sys.argv) > 2: afterPage = sys.argv[2]
+            p.pagesByCat(u'Catégorie:Python', afterPage = afterPage)
+        elif sys.argv[1] == u'-redirects':
+            p.pagesByRedirects()
+        elif sys.argv[1] == u'-all':
+           p.pagesByAll()
+        elif sys.argv[1] == u'-RC':
+            while 1:
+                p.pagesByRCLastDay()
+        elif sys.argv[1] == u'-nocat':
+            p.pagesBySpecialNotCategorized()
+        elif sys.argv[1] == u'-lint':
+            p.pagesBySpecialLint()
         else:
             treatPageByName(sys.argv[1])
     else:
-        p.pagesByCatSound(u'Category:Pronunciation', True, u'')
-
-'''
-    p.pagesByCatSound(u'Category:U.S. English pronunciation‎', True, u'')
-    p.pagesByCatSound(u'Category:German pronunciation‎', True, u'')
-    p.pagesByCatSound(u'Category:Arabic pronunciation‎', True, u'')
-    p.pagesByCatSound(u'Category:Armenian pronunciation‎‎', True, u'')
-    p.pagesByCatSound(u'Category:Belarusian pronunciation‎‎‎', True, u'')
-    p.pagesByCatSound(u'Category:Chinese pronunciation‎‎‎‎', True, u'')
-    p.pagesByCatSound(u'Category:Czech pronunciation‎', True, u'')
-    p.pagesByCatSound(u'Category:Hungarian pronunciation‎‎', True, u'')
-    p.pagesByCatSound(u'Category:Swedish pronunciation‎‎‎', True, u'')
-    p.pagesByCatSound(u'Category:Ukrainian pronunciation‎', True, u'')
-    p.pagesByCatSound(u'Category:Russian pronunciation‎', True, u'')
-    p.pagesByCatSound(u'Category:Polish pronunciation‎‎', True, u'')
-    p.pagesByCatSound(u'Category:Dutch pronunciation‎‎‎‎‎', True, u'')
-    p.pagesByCatSound(u'Category:French pronunciation‎', True, u'')
-    p.pagesByCatSound(u'Category:Spanish pronunciation‎', True, u'')
-    p.pagesByCatSound(u'Category:English pronunciation‎', True, u'')
-    p.pagesByCatSound(u'Category:British English pronunciation‎', True, u'')
-
- TODO :
-    Insérer avant les clés de tri : https://fr.wiktionary.org/w/index.php?title=Orthop%C3%A4de&diff=prev&oldid=21702612
-    pb avec p.pagesBycat non récursif Commons (test l 333). Ex : ne traite que les "a*" de [[Catégorie:French pronunciations]]
-    try save except service unavailable, wait
-    niveau de récursivité limite
-    ignorer [[Category:Ogg sound files of spoken French]] ou Wikinews, Wikipedia
-
-'''
+        p.pagesByCat(u'Category:Pronunciation', recursive = True, notCatNames = ['spoken ', 'Wikipedia', 'Wikinews'])
 
 if __name__ == "__main__":
     main(sys.argv)

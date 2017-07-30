@@ -18,7 +18,7 @@ from pywikibot import pagegenerators
 
 # Global variables
 debugLevel = 0
-debugAliases = ['debug', 'd', '-d']
+debugAliases = ['-debug', '-d']
 for debugAlias in debugAliases:
     if debugAlias in sys.argv:
         debugLevel= 1
@@ -26,27 +26,29 @@ for debugAlias in debugAliases:
 
 fileName = __file__
 if debugLevel > 0: print fileName
-safeMode = True # Count if the braces & brackets are even before saving
-siteLanguage = u'fr'
-siteFamily = u'wikipedia'
-#site.lang
-#site.family.name
-username = config.usernames[siteFamily][siteLanguage]
+if fileName.rfind('/') != -1: fileName = fileName[fileName.rfind('/')+1:]
+siteLanguage = fileName[:2]
 if debugLevel > 1: print siteLanguage
+siteFamily = fileName[3:]
+siteFamily = siteFamily[:siteFamily.find('.')]
 if debugLevel > 1: print siteFamily
 site = pywikibot.Site(siteLanguage, siteFamily)
+username = config.usernames[siteFamily][siteLanguage]
 
 checkURL = True
 fixTags = False
 fixFiles = True
 allNamespaces = False
+fixArticle = False
+fixMissingTitles = False
+safeMode = True # Count if the braces & brackets are even before saving
 output = u'dumps/articles_WPout.txt'
 
 
 def treatPageByName(pageName):
+    print(pageName.encode(config.console_encoding, 'replace'))
     summary = u'Formatage'
     page = Page(site,pageName)
-    print(pageName.encode(config.console_encoding, 'replace'))
     if not page.exists(): return
     if not hasMoreThanTime(page): return
     if not allNamespaces and page.namespace() != 0 and pageName.find(u'Utilisateur:JackBot/test') == -1 and pageName.find(u'Modèle:Cite pmid/') == -1: return
@@ -58,26 +60,16 @@ def treatPageByName(pageName):
     if checkURL:
         if debugLevel > 0: print u'Test des URL'
         PageTemp = hyperlynx(PageTemp, debugLevel)
-    if debugLevel > 0: print (u'--------------------------------------------------------------------------------------------')
-    if PageTemp != PageBegin:
-        summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/11#Identifier les liens brisés (le retour ;-))|Vérification des liens externes]]'
-        summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/12#Remplacer_les_.7B.7BCite_web.7D.7D_par_.7B.7BLien_web.7D.7D|traduction de leurs modèles]]'
     regex = ur'({{[l|L]ien *\|[^}]*)traducteur( *=)'
     if re.search(regex, PageTemp):
         PageTemp = re.sub(regex, ur'\1trad\2', PageTemp)
     PageTemp = PageTemp.replace(u'http://http://', u'http://')
     PageTemp = PageTemp.replace(u'https://https://', u'https://')
 
-    # Titres manquants (ébauche)
-    '''PageEnd = u''
-    regex = ur'{{[l|L]ien web *\|'
-    if re.search(regex, PageTemp):
-        PageEnd = PageTemp[:re.search(regex, PageTemp).start()]
-        PageTemp = PageTemp[re.search(regex, PageTemp).start():]
-        PageTemp = addParameter(PageTemp, u'titre')
-    PageTemp = PageEnd + PageTemp'''
+    #*** Traitement des modèles ***
+    PageTemp = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', PageTemp)
 
-    # Autres modèles (https://fr.wikipedia.org/wiki/Cat%C3%A9gorie:Page_utilisant_un_mod%C3%A8le_avec_un_param%C3%A8tre_obsol%C3%A8te)
+    #https://fr.wikipedia.org/wiki/Catégorie:Page_utilisant_un_modèle_avec_un_paramètre_obsolète
     PageTemp = PageTemp.replace(u'{{Reflist|2}}', u'{{Références}}')
     PageTemp = PageTemp.replace(u'{{reflist|2}}', u'{{Références}}')
     PageTemp = PageTemp.replace(u'{{Reflist|3}}', u'{{Références}}')
@@ -92,30 +84,42 @@ def treatPageByName(pageName):
     PageTemp = PageTemp.replace(u'{{références|colonnes}}', u'{{Références}}')
     PageTemp = PageTemp.replace(u'{{Références|taille}}', u'{{Références}}')
     
-    # Rustine temporaire pour https://fr.wikipedia.org/wiki/Cat%C3%A9gorie:Page_du_mod%C3%A8le_Article_comportant_une_erreur
-    '''
-    PageEnd = u''
-    while PageTemp.find(u'{{article') != -1:
-        PageEnd = PageEnd + PageTemp[:PageTemp.find(u'{{article')+len(u'{{article')]
-        PageTemp = PageTemp[PageTemp.find(u'{{article')+len(u'{{article'):]
-        if PageTemp.find(u'éditeur=') != -1 and PageTemp.find(u'éditeur=') < PageTemp.find(u'}}') and (PageTemp.find(u'périodique=') == -1 or PageTemp.find(u'périodique=') > PageTemp.find(u'}}')) and (PageTemp.find(u'revue=') == -1 or PageTemp.find(u'revue=') > PageTemp.find(u'}}')) and (PageTemp.find(u'journal=') == -1 or PageTemp.find(u'journal=') > PageTemp.find(u'}}')):
-            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'éditeur=')] + u'périodique='
-            PageTemp = PageTemp[PageTemp.find(u'éditeur=')+len(u'éditeur='):]
-    PageTemp = PageEnd + PageTemp
-    PageEnd = u''
-    while PageTemp.find(u'{{Article') != -1:
-        PageEnd = PageEnd + PageTemp[:PageTemp.find(u'{{Article')+len(u'{{Article')]
-        PageTemp = PageTemp[PageTemp.find(u'{{Article')+len(u'{{Article'):]
-        if PageTemp.find(u'éditeur=') != -1 and PageTemp.find(u'éditeur=') < PageTemp.find(u'}}') and (PageTemp.find(u'périodique=') == -1 or PageTemp.find(u'périodique=') > PageTemp.find(u'}}')) and (PageTemp.find(u'revue=') == -1 or PageTemp.find(u'revue=') > PageTemp.find(u'}}')) and (PageTemp.find(u'journal=') == -1 or PageTemp.find(u'journal=') > PageTemp.find(u'}}')):
-            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'éditeur=')] + u'périodique='
-            PageTemp = PageTemp[PageTemp.find(u'éditeur=')+len(u'éditeur='):]        
-    PageTemp = PageEnd + PageTemp
-    '''
-    
-    # Nombres
-    PageTemp = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', PageTemp)
+    # https://fr.wikipedia.org/wiki/Catégorie:Page_du_modèle_Article_comportant_une_erreur
+    if fixArticle:
+        PageEnd = u''
+        while PageTemp.find(u'{{article') != -1:
+            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'{{article')+len(u'{{article')]
+            PageTemp = PageTemp[PageTemp.find(u'{{article')+len(u'{{article'):]
+            if PageTemp.find(u'éditeur=') != -1 and PageTemp.find(u'éditeur=') < PageTemp.find(u'}}') and (PageTemp.find(u'périodique=') == -1 or PageTemp.find(u'périodique=') > PageTemp.find(u'}}')) and (PageTemp.find(u'revue=') == -1 or PageTemp.find(u'revue=') > PageTemp.find(u'}}')) and (PageTemp.find(u'journal=') == -1 or PageTemp.find(u'journal=') > PageTemp.find(u'}}')):
+                PageEnd = PageEnd + PageTemp[:PageTemp.find(u'éditeur=')] + u'périodique='
+                PageTemp = PageTemp[PageTemp.find(u'éditeur=')+len(u'éditeur='):]
+        PageTemp = PageEnd + PageTemp
+        PageEnd = u''
+        while PageTemp.find(u'{{Article') != -1:
+            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'{{Article')+len(u'{{Article')]
+            PageTemp = PageTemp[PageTemp.find(u'{{Article')+len(u'{{Article'):]
+            if PageTemp.find(u'éditeur=') != -1 and PageTemp.find(u'éditeur=') < PageTemp.find(u'}}') and (PageTemp.find(u'périodique=') == -1 or PageTemp.find(u'périodique=') > PageTemp.find(u'}}')) and (PageTemp.find(u'revue=') == -1 or PageTemp.find(u'revue=') > PageTemp.find(u'}}')) and (PageTemp.find(u'journal=') == -1 or PageTemp.find(u'journal=') > PageTemp.find(u'}}')):
+                PageEnd = PageEnd + PageTemp[:PageTemp.find(u'éditeur=')] + u'périodique='
+                PageTemp = PageTemp[PageTemp.find(u'éditeur=')+len(u'éditeur='):]        
+        PageTemp = PageEnd + PageTemp
 
-    # Textes
+    if fixMissingTitles:
+        # Titres manquants (TODO: en test)
+        PageEnd = u''
+        regex = ur'{{[l|L]ien web *\|'
+        if re.search(regex, PageTemp):
+            PageEnd = PageTemp[:re.search(regex, PageTemp).start()]
+            PageTemp = PageTemp[re.search(regex, PageTemp).start():]
+            PageTemp = addParameter(PageTemp, u'titre')
+        PageTemp = PageEnd + PageTemp
+
+
+    #*** Traitement des Catégories ***
+    if pageName.find(u'Modèle:Cite pmid/') != -1:
+        PageTemp = PageTemp.replace(u'Catégorie:Modèle de source‎', u'Catégorie:Modèle pmid')
+        PageTemp = PageTemp.replace(u'[[Catégorie:Modèle pmid]]', u'[[Catégorie:Modèle pmid‎|{{SUBPAGENAME}}]]')
+
+    #*** Traitement des textes ***
     regex = u'([^\./])[Mm]arianne2.fr'
     PageTemp = re.sub(regex, ur'\1Marianne', PageTemp)
 
@@ -139,65 +143,62 @@ def treatPageByName(pageName):
         if debugLevel > 0: print u'Accolades cassées'    #raise Exception(u'Accolades cassées')
         if safeMode: return
 
-    # Catégories
-    if pageName.find(u'Modèle:Cite pmid/') != -1:
-        PageTemp = PageTemp.replace(u'Catégorie:Modèle de source‎', u'Catégorie:Modèle pmid')
-        PageTemp = PageTemp.replace(u'[[Catégorie:Modèle pmid]]', u'[[Catégorie:Modèle pmid‎|{{SUBPAGENAME}}]]')
-
-    # Sauvegarde
     PageEnd = PageTemp
+    if debugLevel > 0: print (u'--------------------------------------------------------------------------------------------')
     if PageEnd != PageBegin and PageEnd != PageBegin.replace(u'{{chapitre |', u'{{chapitre|') and PageEnd != PageBegin.replace(u'{{Chapitre |', u'{{Chapitre|'):
-        #PageEnd = re.sub(ur'<br>', ur'<br/>', PageEnd)
+        summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/11#Identifier les liens brisés (le retour ;-))|Vérification des liens externes]]'
+        summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/12#Remplacer_les_.7B.7BCite_web.7D.7D_par_.7B.7BLien_web.7D.7D|traduction de leurs modèles]]'
         PageEnd = PageEnd.replace(ur'</ref><ref>', ur'</ref>{{,}}<ref>')
-        savePage(page,PageEnd,summary)
+        savePage(page, PageEnd, summary)
 
 
 p = PageProvider(treatPageByName, site, debugLevel)
 setGlobals(debugLevel, site, username)
 def main(*args):
     if len(sys.argv) > 1:
-        arg1 = sys.argv[1].decode('utf-8')
-        DebutScan = u''
-        if len(sys.argv) > 2:
-            if sys.argv[2] == u'debug' or sys.argv[2] == u'd':
-                if len(sys.argv) > 3:
-                    debugLevel = sys.argv[3]
-                else:
-                    debugLevel = 1
-            else:
-                DebutScan = sys.argv[2]
-        if arg1 == 'test':
+        if debugLevel > 1: print sys.argv
+        if sys.argv[1] == u'-test':
             treatPageByName(u'Utilisateur:' + username + u'/test')
-        if arg1 == 'test2':
-            treatPageByName(u'Utilisateur:' + username + u'/test court')
-        elif arg1 == 'txt':
+        elif sys.argv[1] == u'-test2':
+            treatPageByName(u'Utilisateur:' + username + u'/test2')
+        elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
+            treatPageByName(u'Catégorie:Python')
+        elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
-        elif arg1 == 'u':
-            p.pagesByUser(u'Utilisateur:JackBot')
-        elif arg1 == 'r':
+        elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
+            regex = u''
+            if len(sys.argv) > 2: regex = sys.argv[2]
+            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex)
+        elif sys.argv[1] == u'-u':
+            p.pagesByUser(u'User:' + username)
+        elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'marianne2.fr')
-        elif arg1 == 'm':
-            p.pagesByLink(u'Modèle:Cite journal',u'')
-        elif arg1 == 'cat':
-            p.pagesByCat(u'Catégorie:Modèle élément chimique',False,u'')
-            #p.pagesByCat(u'Catégorie:Page utilisant un modèle avec un paramètre obsolète',False,u'')
-            #p.pagesByCat(u'Page du modèle Article comportant une erreur',False,u'')
-            #p.pagesByCat(u'Catégorie:Page utilisant un modèle avec une syntaxe erronée',True,u'')    # En test
-        elif arg1 == 'page':
-            treatPageByName(u'Utilisateur:JackBot/test unitaire')
-        elif arg1 == 'p':
-            treatPageByName(u'Utilisateur:Cantons-de-l\'Est/Voie lactée')
-        elif arg1 == 'RC':
+                p.pagesBySearch(u'chinois')
+        elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
+            p.pagesByLink(u'Modèle:autres projets')
+        elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
+            afterPage = u''
+            if len(sys.argv) > 2: afterPage = sys.argv[2]
+            p.pagesByCat(u'Catégorie:Python', afterPage = afterPage)
+        elif sys.argv[1] == u'-redirects':
+            p.pagesByRedirects()
+        elif sys.argv[1] == u'-all':
+           p.pagesByAll()
+        elif sys.argv[1] == u'-RC':
             while 1:
-                p.pagesByRC()
+                p.pagesByRCLastDay()
+        elif sys.argv[1] == u'-nocat':
+            p.pagesBySpecialNotCategorized()
+        elif sys.argv[1] == u'-lint':
+            p.pagesBySpecialLint()
         else:
-            treatPageByName(arg1)    # Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
+            # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
+            treatPageByName(html2Unicode(sys.argv[1]))
     else:
-        # Quotidiennement :
-        p.pagesByCatPMID(u'Catégorie:Modèle de source')
+        # Daily:
+        p.pagesByCat(u'Catégorie:Modèle de source', ns = 10, names = ['pmid'])
         p.pagesByLink(u'Modèle:Cite web',u'')
         p.pagesByLink(u'Modèle:Cite journal',u'')
         p.pagesByLink(u'Modèle:Cite news',u'')

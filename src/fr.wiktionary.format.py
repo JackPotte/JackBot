@@ -26,7 +26,7 @@ from pywikibot import pagegenerators
 
 # Global variables
 debugLevel = 0
-debugAliases = ['debug', 'd', '-d']
+debugAliases = ['-debug', '-d']
 for debugAlias in debugAliases:
     if debugAlias in sys.argv:
         debugLevel= 1
@@ -3825,40 +3825,45 @@ p = PageProvider(treatPageByName, site, debugLevel)
 setGlobals(debugLevel, site, username)
 def main(*args):
     if len(sys.argv) > 1:
-        if sys.argv[1] == u'test':
-            treatPageByName(u'User:' + username + u'/test')
-        elif sys.argv[1] == u't':
-            treatPageByName(u'User:' + username + u'/test court')
-        elif sys.argv[1] == u'unit tests' or sys.argv[1] == u'tu':
-            addLine(u"== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n{{fr-rég|}}\n\'\'\'{{subst:PAGENAME}}\'\'\' {{pron||fr}} {{genre ?}}\n#\n#* ''''\n==== {{S|variantes orthographiques}} ====\n==== {{S|synonymes}} ====\n==== {{S|antonymes}} ====\n==== {{S|dérivés}} ====\n==== {{S|apparentés}} ====\n==== {{S|vocabulaire}} ====\n==== {{S|hyperonymes}} ====\n==== {{S|hyponymes}} ====\n==== {{S|méronymes}} ====\n==== {{S|holonymes}} ====\n==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n=== {{S|prononciation}} ===\n* {{pron||fr}}\n* {{écouter|<!--  précisez svp la ville ou la région -->||audio=|lang=}}\n==== {{S|homophones}} ====\n==== {{S|paronymes}} ====\n=== {{S|anagrammes}} ===\n=== {{S|voir aussi}} ===\n* {{WP}}\n=== {{S|références}} ===\n", u'fr', u'prononciation', u'* {{pron|boum|fr}}')
-        elif sys.argv[1] == u'page':
-            treatPageByName(u'télétransporter')
-        elif sys.argv[1] == u'file' or sys.argv[1] == u'txt':
+        if debugLevel > 1: print sys.argv
+        if sys.argv[1] == u'-test':
+            treatPageByName(u'Utilisateur:' + username + u'/test')
+        elif sys.argv[1] == u'-test2':
+            treatPageByName(u'Utilisateur:' + username + u'/test2')
+        elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
+            treatPageByName(u'Catégorie:Python')
+        elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
-        elif sys.argv[1] == u'xml':
+        elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
             regex = u''
             if len(sys.argv) > 2: regex = sys.argv[2]
-            p.pagesByXML(u'dumps/frwiktionary-20170701-pages-meta-current.xml', regex)
-        elif sys.argv[1] == u'link' or sys.argv[1] == u'm':
-            p.pagesByLink(site, u'Modèle:ex',u'')
-        elif sys.argv[1] == u'cat':
-            p.pagesByCat(u'Caractères en braille', True, u'')
-            #p.pagesByCat(u'suédois', False, u'')
-            #p.pagesByCat(u'Gentilés en français', False, u'')
-            #p.pagesByCat(u'Pluriels manquants en français', False, u'')
-            #p.pagesByCat(u'Catégorie:Wiktionnaire:Sections de type avec locution forcée', False, u'')
-            #p.pagesByCat(u'Catégorie:Genres manquants en français', False, u'')
-        elif sys.argv[1] == u's':
-            p.pagesBySearch(u'insource:/\<strong>\<strong>/')
-        elif sys.argv[1] == u'u':
-            p.pagesByUser(u'User:JackBot', 10000, u'')
-        elif sys.argv[1] == u'redirects':
+            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex)
+        elif sys.argv[1] == u'-u':
+            p.pagesByUser(u'User:' + username)
+        elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
+            if len(sys.argv) > 2:
+                p.pagesBySearch(sys.argv[2])
+            else:
+                p.pagesBySearch(u'chinois')
+        elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
+            p.pagesByLink(u'Modèle:autres projets')
+        elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
+            afterPage = u''
+            if len(sys.argv) > 2: afterPage = sys.argv[2]
+            p.pagesByCat(u'Catégorie:Python', afterPage = afterPage)
+        elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
-        elif sys.argv[1] == u'all':
+        elif sys.argv[1] == u'-all':
            p.pagesByAll()
-        elif sys.argv[1] == u'RC':
+        elif sys.argv[1] == u'-RC':
             while 1:
                 p.pagesByRCLastDay()
+        elif sys.argv[1] == u'-nocat':
+            p.pagesBySpecialNotCategorized()
+        elif sys.argv[1] == u'-lint':
+            p.pagesBySpecialLint()
+        elif sys.argv[1] == u'-ut':
+            addLine(u"== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n{{fr-rég|}}\n\'\'\'{{subst:PAGENAME}}\'\'\' {{pron||fr}} {{genre ?}}\n#\n#* ''''\n==== {{S|variantes orthographiques}} ====\n==== {{S|synonymes}} ====\n==== {{S|antonymes}} ====\n==== {{S|dérivés}} ====\n==== {{S|apparentés}} ====\n==== {{S|vocabulaire}} ====\n==== {{S|hyperonymes}} ====\n==== {{S|hyponymes}} ====\n==== {{S|méronymes}} ====\n==== {{S|holonymes}} ====\n==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n=== {{S|prononciation}} ===\n* {{pron||fr}}\n* {{écouter|<!--  précisez svp la ville ou la région -->||audio=|lang=}}\n==== {{S|homophones}} ====\n==== {{S|paronymes}} ====\n=== {{S|anagrammes}} ===\n=== {{S|voir aussi}} ===\n* {{WP}}\n=== {{S|références}} ===\n", u'fr', u'prononciation', u'* {{pron|boum|fr}}')
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
             treatPageByName(html2Unicode(sys.argv[1]))

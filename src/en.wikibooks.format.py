@@ -12,7 +12,7 @@ from pywikibot.data import api
 
 # Global variables
 debugLevel = 0
-debugAliases = ['debug', 'd', '-d']
+debugAliases = ['-debug', '-d']
 for debugAlias in debugAliases:
     if debugAlias in sys.argv:
         debugLevel= 1
@@ -79,39 +79,46 @@ p = PageProvider(treatPageByName, site, debugLevel)
 setGlobals(debugLevel, site, username)
 def main(*args):
     if len(sys.argv) > 1:
-        DebutScan = u''
-        if len(sys.argv) > 2:
-            if sys.argv[2] == u'debug' or sys.argv[2] == u'd':
-                debugLevel = 1
-            else:
-                DebutScan = sys.argv[2]
-        if sys.argv[1] == u'test':
+        if debugLevel > 1: print sys.argv
+        if sys.argv[1] == u'-test':
             treatPageByName(u'Utilisateur:' + username + u'/test')
-        elif sys.argv[1] == u'test2':
+        elif sys.argv[1] == u'-test2':
             treatPageByName(u'Utilisateur:' + username + u'/test2')
-        elif sys.argv[1] == u'p':
+        elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             treatPageByName(u'Catégorie:Python')
-        elif sys.argv[1] == u'file' or sys.argv[1] == u'txt' or sys.argv[1] == u't':
+        elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
-        elif sys.argv[1] == u'u':
-            p.pagesByUser(u'Utilisateur:JackBot')
-        elif sys.argv[1] == u'r':
+        elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
+            regex = u''
+            if len(sys.argv) > 2: regex = sys.argv[2]
+            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex)
+        elif sys.argv[1] == u'-u':
+            p.pagesByUser(u'User:' + username)
+        elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
                 p.pagesBySearch(u'chinois')
-        elif sys.argv[1] == u'l':
-            p.pagesByLink(u'Apprendre à programmer avec Python',u'')
-        elif sys.argv[1] == u'm':
-            p.pagesByLink(u'Modèle:autres projets',u'')
-        elif sys.argv[1] == u'cat':
-            p.pagesByCat(u'Catégorie:Python', False, u'')
-        elif sys.argv[1] == u'page':
-            treatPageByName(u'Utilisateur:JackBot/test unitaire')
-        elif sys.argv[1] == u'nocat':
+        elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
+            p.pagesByLink(u'Modèle:autres projets')
+        elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
+            afterPage = u''
+            if len(sys.argv) > 2: afterPage = sys.argv[2]
+            p.pagesByCat(u'Catégorie:Python', afterPage = afterPage)
+        elif sys.argv[1] == u'-redirects':
+            p.pagesByRedirects()
+        elif sys.argv[1] == u'-all':
+           p.pagesByAll()
+        elif sys.argv[1] == u'-RC':
+            while 1:
+                p.pagesByRCLastDay()
+        elif sys.argv[1] == u'-nocat':
             p.pagesBySpecialNotCategorized()
+        elif sys.argv[1] == u'-lint':
+            p.pagesBySpecialLint()
         else:
-            treatPageByName(sys.argv[1])    # Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
+            # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
+            treatPageByName(html2Unicode(sys.argv[1]))
     else:
         while 1:
             p.pagesByRC()

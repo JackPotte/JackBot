@@ -584,7 +584,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
                 if debugLevel > 0: print u' Code langue à remplacer une fois trouvé sur la page distante...'
                 codelangue = 'JackBot'
             # Ajout du code langue dans le modèle
-            if debugLevel > 0: print u'Modèle préalable : ' + codelangue.encode(config.console_encoding, 'replace')
+            if debugLevel > 0: print u'Modèle préalable : ' + codelangue
             if not re.search(u'[^}]*langu[ag]*e *=[^}]*}}', PageTemp):
                 PageTemp = u'|langue=' + codelangue + PageTemp
             elif re.search(u'[^}]*langu[ag]*e *=[^}]*}}', PageTemp).end() > PageTemp.find(u'}}')+2:

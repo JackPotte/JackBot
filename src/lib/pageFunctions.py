@@ -14,6 +14,40 @@ site = pywikibot.Site('fr', 'wiktionary')
 username = 'JackBot'
 
 
+deprecatedTags = {}
+deprecatedTags['big'] = 'strong'
+deprecatedTags['center'] = 'div style="text-align: center;"'
+deprecatedTags['font color *= *"?'] = 'span style="color:'
+deprecatedTags['font face *= *"?'] = 'span style="font-family:'
+deprecatedTags['font size *= *"?\+?\-?'] = 'span style="font-size:'
+#deprecatedTags['font '] = 'span ' #TODO: ajouter des ";" entre plusieurs param
+deprecatedTags['strike'] = 's'
+deprecatedTags['tt'] = 'code'
+deprecatedTags['BIG'] = 'strong'
+deprecatedTags['CENTER'] = 'div style="text-align: center;"'
+deprecatedTags['FONT COLOR *= *"?'] = 'span style="color:'
+deprecatedTags['FONT SIZE *= *"?\+?'] = 'span style="font-size:'
+deprecatedTags['STRIKE'] = 's'
+deprecatedTags['TT'] = 'code'
+fontSize = {}
+fontSize[1] = 0.63
+fontSize[2] = 0.82
+fontSize[3] = 1.0
+fontSize[4] = 1.13
+fontSize[5] = 1.5
+fontSize[6] = 2.0
+fontSize[7] = 3.0
+fontColor = []
+fontColor.append('black')
+fontColor.append('blue')
+fontColor.append('green')
+fontColor.append('orange')
+fontColor.append('red')
+fontColor.append('white')
+fontColor.append('yellow')
+fontColor.append('#808080')
+
+
 Sections = []
 Niveau = []
 Sections.append(u'étymologie')
@@ -60,7 +94,7 @@ Sections.append(u'clé de tri')
 Niveau.append(u'')
 
 
-#*** Test functions ***
+#*** Tested functions ***
 def isPatrolled(version):
     #TODO: extensions Patrolled Edits & Flagged Revisions
     if debugLevel > 1: print version  #eg: [{u'timestamp': u'2017-07-25T02:26:15Z', u'user': u'27.34.18.159'}]
@@ -92,39 +126,6 @@ def replaceDepretacedTags(PageTemp):
 
     PageTemp = PageTemp.replace(u'</br>', u'<br/>')
     PageTemp = PageTemp.replace(u'<source lang="html4strict">', u'<source lang="html">')
-
-    deprecatedTags = {}
-    deprecatedTags['big'] = 'strong'
-    deprecatedTags['center'] = 'div style="text-align: center;"'
-    deprecatedTags['font color *= *"?'] = 'span style="color:'
-    deprecatedTags['font face *= *"?'] = 'span style="font-family:'
-    deprecatedTags['font size *= *"?\+?\-?'] = 'span style="font-size:'
-    #deprecatedTags['font '] = 'span ' #TODO: ajouter des ";" entre plusieurs param
-    deprecatedTags['strike'] = 's'
-    deprecatedTags['tt'] = 'code'
-    deprecatedTags['BIG'] = 'strong'
-    deprecatedTags['CENTER'] = 'div style="text-align: center;"'
-    deprecatedTags['FONT COLOR *= *"?'] = 'span style="color:'
-    deprecatedTags['FONT SIZE *= *"?\+?'] = 'span style="font-size:'
-    deprecatedTags['STRIKE'] = 's'
-    deprecatedTags['TT'] = 'code'
-    fontSize = {}
-    fontSize[1] = 0.63
-    fontSize[2] = 0.82
-    fontSize[3] = 1.0
-    fontSize[4] = 1.13
-    fontSize[5] = 1.5
-    fontSize[6] = 2.0
-    fontSize[7] = 3.0
-    fontColor = []
-    fontColor.append('black')
-    fontColor.append('blue')
-    fontColor.append('green')
-    fontColor.append('orange')
-    fontColor.append('red')
-    fontColor.append('white')
-    fontColor.append('yellow')
-    fontColor.append('#808080')
 
     #TODO: {{citation}} https://fr.wikiversity.org/w/index.php?title=Matrice%2FD%C3%A9terminant&action=historysubmit&type=revision&diff=669911&oldid=664849
     #TODO: multiparamètre
@@ -223,7 +224,7 @@ def replaceFilesErrors(PageTemp):
     #https://fr.wiktionary.org/wiki/Sp%C3%A9cial:LintErrors/bogus-image-options
     badFileParameters = []
     badFileParameters.append(u'')
-    badFileParameters.append(u'cadre')
+    #badFileParameters.append(u'cadre')
     for badFileParameter in badFileParameters:
         regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *' + badFileParameter + ur' *(\||\])'
         if debugLevel > 1: print regex
@@ -549,6 +550,7 @@ def hasMoreThanTime(page, timeAfterLastEdition = 60): # minutes
         print version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')   
     if version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ'):
         return True
+    if debugLevel > 0: print u' dernière version trop récente ' + version[0]['timestamp']
     return False
 
 def isTrustedVersion(page, site = site):

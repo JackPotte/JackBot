@@ -16,7 +16,7 @@ class PageProvider:
         self.site = site
         self.debugLevel = debugLevel
 
-    # Lecture du fichier articles_list.txt (au même format que pour replace.py)
+    # articles_list.txt may need to be formatted with Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
     def pagesByFile(self, source, site = None):
         from lib import html2Unicode
         if site is None: site = self.site
@@ -35,88 +35,107 @@ class PageProvider:
                 self.treatPage(html2Unicode(pageName))
             pagesList.close()
 
-    # Lecture du dump
-    def pagesByXML(self, source, regex = u'', site = None):
+    def pagesByXML(self, source, regex = u'', site = None, folder = 'dumps'):
         if site is None: site = self.site
         if self.debugLevel > 1: print u'pagesByXML'
-        if source:
-            from pywikibot import xmlreader
-            dump = xmlreader.XmlDump(source)
-            parser = dump.parse()
-            outPutFile = open('src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', 'a')
-
-            for entry in parser:
-                PageTemp = entry.text
-
-                if regex != str(''):
+        if not source:
+            print ' Dump non précisé'
+            return
+        if source.find('*') != -1:
+            fileName = [f for f in os.listdir(folder) if re.match(source, f)]
+        if len(fileName) == 0:
+            print ' Dump introubable : ' + source
+            return
+        fileName = fileName[0]
+        if self.debugLevel > 0:
+            print ' Dump trouvé : ' + fileName
+        from pywikibot import xmlreader
+        dump = xmlreader.XmlDump(folder + '/' + fileName)
+        parser = dump.parse()
+        outputFile = open(u'src/lists/articles_' + str(site.lang) + u'_' + str(site.family) + u'.txt', 'a')
+        for entry in parser:
+            PageTemp = entry.text
+            if regex != str(''):
+                if re.search(regex, PageTemp):
+                    outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+            else:
+                '''
+                if self.debugLevel > 1: print u' Pluriels non flexion'
+                if entry.title[-2:] == u'es':
+                    if self.debugLevel > 1: print entry.title
+                    regex = ur"=== {{S\|adjectif\|fr[^}]+}} ===\n[^\n]*\n*{{fr\-rég\|[^\n]+\n*'''" + re.escape(entry.title) + ur"'''[^\n]*\n# *'*'*(Masculin|Féminin)+ *[P|p]luriel de *'*'* *\[\["
                     if re.search(regex, PageTemp):
-                        outPutFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                        if self.debugLevel > 0: print entry.title
+                        #PageTemp = re.sub(regex, ur'\1|flexion\2', PageTemp)
+                        #self.treatPage(html2Unicode(entry.title))
 
-                else:
-                    '''
-                    if self.debugLevel > 1: print u' Pluriels non flexion'
-                    if entry.title[-2:] == u'es':
-                        if self.debugLevel > 1: print entry.title
-                        regex = ur"=== {{S\|adjectif\|fr[^}]+}} ===\n[^\n]*\n*{{fr\-rég\|[^\n]+\n*'''" + re.escape(entry.title) + ur"'''[^\n]*\n# *'*'*(Masculin|Féminin)+ *[P|p]luriel de *'*'* *\[\["
-                        if re.search(regex, PageTemp):
-                            if self.debugLevel > 0: print entry.title
-                            #PageTemp = re.sub(regex, ur'\1|flexion\2', PageTemp)
-                            #self.treatPage(html2Unicode(entry.title))
+                if self.debugLevel > 1: print u' Ajout de la boite de flexion'
+                if entry.title[-1:] == u's':
+                    if (PageTemp.find(u'{{S|adjectif|fr|flexion}}') != -1 or PageTemp.find(u'{{S|nom|fr|flexion}}') != -1) and PageTemp.find(u'{{fr-') == -1:
+                        #print entry.title # limite de 8191 lignes dans le terminal.
+                        #self.treatPage(entry.title)
+                        outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                
+                if self.debugLevel > 1: print u' balises HTML désuètes'
+                from lib import *
+                for deprecatedTag in deprecatedTags.keys():
+                    if PageTemp.find(u'<' + deprecatedTag) != -1:
+                        outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                '''
+        outputFile.close()
 
-                    if self.debugLevel > 1: print u' Ajout de la boite de flexion'
-                    if entry.title[-1:] == u's':
-                        if (PageTemp.find(u'{{S|adjectif|fr|flexion}}') != -1 or PageTemp.find(u'{{S|nom|fr|flexion}}') != -1) and PageTemp.find(u'{{fr-') == -1:
-                            #print entry.title # limite de 8191 lignes dans le terminal.
-                            #self.treatPage(entry.title)
-                            outPutFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                    '''
-                    if self.debugLevel > 1: print u' balises HTML désuètes'
-                    for deprecatedTag in deprecatedTags.keys():
-                        if PageTemp.find(u'<' + deprecatedTag) != -1:
-                            outPutFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-
-            outPutFile.close()
-
-
-    # Traitement d'une catégorie
-    def pagesByCat(self, category, recursive, afterPage, ns = 0, site = None):
+    # Traitement des pages d'une catégorie
+    def pagesByCat(self, category, recursive = False, afterPage = None, ns = 0, names = None, notNames = None, notCatNames = None, site = None):
         if site is None: site = self.site
-        modifier = u'False'
         print category.encode(config.console_encoding, 'replace')
         cat = catlib.Category(self.site, category)
         pages = cat.articlesList(False)
         gen =  pagegenerators.NamespaceFilterPageGenerator(pages, [ns]) # HS sur Commons
         #gen =  pagegenerators.CategorizedPageGenerator(cat)
+        modify = u'False'
         for Page in pagegenerators.PreloadingGenerator(gen, 100):
-            if not afterPage or afterPage == u'' or modifier == u'True':
-                self.treatPage(Page.title()) #pagesByLink(Page.title())
-            elif Page.title() == afterPage:
-                modifier = u'True'
+            if Page.title() == afterPage:
+                modify = u'True'
+            elif afterPage is None or afterPage == u'' or modify == u'True':
+                self.treatPageIfName(Page.title(), names, notNames)
         if recursive:
             subcat = cat.subcategories(recurse = True)
             for subcategory in subcat:
-                print subcategory.title().encode(config.console_encoding, 'replace')
-                pages = subcategory.articlesList(False)
-                for Page in pagegenerators.PreloadingGenerator(pages,100):
-                    self.treatPage(Page.title())
-
-    def pagesByCatSound(self, category, recursive, afterPage, site = None):
-        if site is None: site = self.site
-        modifier = u'False'
-        cat = pywikibot.Category(site, category)    # 'module' object has no attribute 'Category'
-        gen =  pagegenerators.CategorizedPageGenerator(cat)
-        for Page in gen:
-            self.treatPage(Page.title())
-        if recursive == True:
-            subcat = cat.subcategories(recurse = True)
-            for subcategory in subcat:
-                if subcategory.title().find(u'.ogg') == -1 and subcategory.title().find(u'spoken') == -1 and subcategory.title().find(u'Wikipedia') == -1 and subcategory.title().find(u'Wikinews') == -1:
+                print u' ' + subcategory.title()
+                modify = u'True'
+                for notCatName in notCatNames:
+                    if subcategory.title().find(notCatName) != -1:
+                        if self.debugLevel > 0: print u' ' + notCatName + u' ignoré'
+                        modify = u'False'
+                if modify:
                     pages = subcategory.articlesList(False)
                     for Page in pagegenerators.PreloadingGenerator(pages,100):
-                        self.treatPage(Page.title())
+                        self.treatPageIfName(Page.title(), names, notNames)
 
-    # Traitement des pages liées
-    def pagesByLink(self, pageName, afterPage, site = None):
+    def treatPageIfName(self, pageName, names = None, notNames = None):
+        if names is None and notNames is None:
+            self.treatPage(pageName)
+        elif names is not None:
+            for name in names:
+                if self.debugLevel > 1: print u' ' + name + u' trouvé'
+                if pageName.find(name) != -1:
+                    self.treatPage(pageName)
+                    return
+        elif notNames is not None:
+            for notName in notNames:
+                if self.debugLevel > 1: print u' ' + notName + u' ignoré'
+                if pageName.find(notName) == -1:
+                    self.treatPage(pageName)
+                    return
+        else:
+            for name in names:
+                for notName in notNames:
+                    if pageName.find(name) != -1 and pageName.find(notName) == -1:
+                        self.treatPage(pageName)
+                        return
+
+    # [[Special:WhatLinksHere]]
+    def pagesByLink(self, pageName, afterPage = None, site = None):
         if site is None: site = self.site
         modifier = u'False'
         #pageName = unicode(arg[len('-links:'):], 'utf-8')
@@ -124,14 +143,13 @@ class PageProvider:
         gen = pagegenerators.ReferringPageGenerator(page)
         gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])
         for Page in pagegenerators.PreloadingGenerator(gen,100):
-            print(Page.title().encode(config.console_encoding, 'replace'))
             if not afterPage or afterPage == u'' or modifier == u'True':
-                self.treatPage(Page.title()) #pagesByLink(Page.title())
+                self.treatPage(Page.title())
             elif Page.title() == afterPage:
                 modifier = u'True'
 
-    # Traitement des pages liées des entrées d'une catégorie
-    def pagesByCatLink(self, pageName, afterPage, site = None):
+    # Traitement des pages liées aux entrées d'une catégorie
+    def pagesByCatLink(self, pageName, afterPage = None, site = None):
         if site is None: site = self.site
         modifier = u'False'
         cat = catlib.Category(site, pageName)
@@ -147,25 +165,26 @@ class PageProvider:
                 elif PageLiee.title() == afterPage:
                     modifier = u'True'
 
-    def pagesByCatPMID(self, category, site = None):
-        if site is None: site = self.site
-        cat = catlib.Category(site, category)
-        pages = cat.articlesList(False)
-        for Page in pagegenerators.PreloadingGenerator(pages,100):
-            main = Page.title()
-            #main = main[11:len(main)]
-            if main.find(u'pmid') != -1:
-                self.treatPage(main)
-
-    # Traitement d'une recherche
+    # [[Special:Search]]
     def pagesBySearch(self, pageName, ns = None, site = None):
         if site is None: site = self.site
         gen = pagegenerators.SearchPageGenerator(pageName, site = site, namespaces = ns)
         for Page in pagegenerators.PreloadingGenerator(gen,100):
             self.treatPage(Page.title())
 
-    # Traitement des self.treatPages récentes
-    def pagesByRCLastDay(self, nobots = True, namespace = '0', site = None):
+    # [[Special:RecentChanges]]
+    def pagesByRC(self, site = None):
+        if site is None: site = self.site
+        from lib import timeAfterLastEdition
+        minimumTime = 30 # min
+        gen = pagegenerators.RecentchangesPageGenerator(site = site)
+        for Page in pagegenerators.PreloadingGenerator(gen,100):
+            if self.debugLevel > 1: print str(timeAfterLastEdition(Page)) + ' =? ' + str(minimumTime)
+            if timeAfterLastEdition(Page) > minimumTime:
+                self.treatPage(Page.title())
+
+    # [[Special:RecentChanges]]
+    def pagesByRCLastDay(self, nobots = True, ns = '0', site = None):
         if site is None: site = self.site
         # Génère les self.treatPages récentes de la dernière journée
         timeAfterLastEdition = 30 # minutes
@@ -180,26 +199,16 @@ class PageProvider:
         end_timestamp = date_end.strftime('%Y%m%d%H%M%S')
 
         for item in site.recentchanges(number=5000, rcstart=start_timestamp, rcend=end_timestamp, rcshow=None,
-                        rcdir='older', rctype='edit|new', namespace=namespace,
+                        rcdir='older', rctype='edit|new', namespace = ns,
                         includeredirects=True, repeat=False, user=None,
                         returndict=False, nobots=nobots):
             yield item[0]
 
-    def pagesByRC(self, site = None):
-        from lib import timeAfterLastEdition
-        if site is None: site = self.site
-        gen = pagegenerators.RecentchangesPageGenerator(site = site)
-        ecart_minimal_requis = 30 # min
-        for Page in pagegenerators.PreloadingGenerator(gen,100):
-            #print str(timeAfterLastEdition(Page)) + ' =? ' + str(ecart_minimal_requis)
-            if timeAfterLastEdition(Page) > ecart_minimal_requis:
-                self.treatPage(Page.title())
-
-    # Traitement des self.treatPages d'un compte
-    def pagesByUser(self, username, untilPage, afterPage, regex = None, site = None):
+    # [[Special:Contributions]]: the last pages touched by a user
+    def pagesByUser(self, username, numberOfPagesToTreat = None, afterPage = None, regex = None, site = None):
         if site is None: site = self.site
         modifier = u'False'
-        compteur = 0
+        numberOfPagesTreated = 0
         gen = pagegenerators.UserContributionsGenerator(username, site = site)
         for Page in pagegenerators.PreloadingGenerator(gen,100):
             if not afterPage or afterPage == u'' or modifier == u'True':
@@ -208,25 +217,26 @@ class PageProvider:
                 else:
                     PageTemp = getContentFromPageName(Page.title(), allowedNamespaces = 'All')
                     if re.search(regex, PageTemp):
-                        print Page.title()
-                compteur = compteur + 1
-                if compteur > untilPage: break
+                        self.treatPage(Page.title())
+                numberOfPagesTreated = numberOfPagesTreated + 1
+                if numberOfPagesToTreat is not None and numberOfPagesTreated > numberOfPagesToTreat: break
             elif Page.title() == afterPage:
                 modifier = u'True'
 
-    # Toutes les redirections
-    def pagesByRedirects(self, site = None):
+    # [[Special:AllPages]]
+    def pagesByAll(self, start = u'', ns = 0, site = None):
         if site is None: site = self.site
-        for Page in site.allpages(start=u'', namespace=0, includeredirects='only'):
+        gen = pagegenerators.AllpagesPageGenerator(start, namespace = ns, includeredirects = False, site = site)
+        for Page in pagegenerators.PreloadingGenerator(gen, 100):
             self.treatPage(Page.title())
 
-    # Traitement de toutes les pages du site
-    def pagesByAll(self, start, site = None):
+    # [[Special:ListRedirects]]
+    def pagesByRedirects(self, start = u'', site = None):
         if site is None: site = self.site
-        gen = pagegenerators.AllpagesPageGenerator(start,namespace=0,includeredirects=False, site = site)
-        for Page in pagegenerators.PreloadingGenerator(gen,100):
+        for Page in site.allpages(start, namespace = 0, includeredirects = 'only'):
             self.treatPage(Page.title())
 
+    # [[Special:UncategorizedPages]]
     def pagesBySpecialNotCategorized(self, site = None):
         if site is None: site = self.site
         global addCategory
@@ -235,7 +245,8 @@ class PageProvider:
             self.treatPage(Page.title())
 
 
-    #*** Test methods ***
+    #*** Tested methods ***
+    # [[Special:LintErrors]]
     def pagesBySpecialLint(self, site = None):
         if site is None: site = self.site
         #TODO
