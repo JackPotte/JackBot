@@ -59,11 +59,12 @@ def treatPageByName(pageName):
     regex = ur'([^\./])[Mm]arianne2.fr'
     PageTemp = re.sub(regex, ur'\1Marianne', PageTemp)
 
-    regex = ur'\[http://www\.dmoz\.org/([^ \]]*)([^\]]*)\]'
-    PageTemp = re.sub(regex, ur'[[dmoz:\1|\2]]', PageTemp)
+    if PageTemp.find('http://www.dmoz.org/search?') == -1:
+        regex = ur'\[http://www\.dmoz\.org/([^ \]]*)([^\]]*)\]'
+        PageTemp = re.sub(regex, ur'[[dmoz:\1|\2]]', PageTemp)
 
-    regex = ur'http://www\.dmoz\.org/([^ \]]*)'
-    PageTemp = re.sub(regex, ur'[[dmoz:\1]]', PageTemp)
+        regex = ur'http://www\.dmoz\.org/([^ \]]*)'
+        PageTemp = re.sub(regex, ur'[[dmoz:\1]]', PageTemp)
 
     if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
@@ -200,6 +201,8 @@ def main(*args):
             p.pagesBySpecialNotCategorized()
         elif sys.argv[1] == u'-lint':
             p.pagesBySpecialLint()
+        elif sys.argv[1] == u'-extlinks':
+            p. pagesBySpecialLinkSearch('www.dmoz.org')
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
             treatPageByName(html2Unicode(sys.argv[1]))
