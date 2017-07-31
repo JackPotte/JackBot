@@ -1752,3 +1752,4 @@ def TestPage(htmlSource, url, debugLevel = 0):
 #    i18n
 #    sauter les longs PDF comme dans [[w:Apollo 11]]
 #    remplacer "éditeur" par "périodique" dans "article" ?
+# Hyperlinks.py : “Request Mozilla/5.0” et “Request &_r=4&” prend 3 plombes + certains sites ne se lisent pas (comme Twitter)

@@ -103,6 +103,12 @@ def isPatrolled(version):
     #admins = site.allusers(group='sysop')  #<pywikibot.data.api.ListGenerator object at 0x7f6ebc521fd0>
     #patrollers = site.allusers(group='patrollers')
 
+def getLineNumber():
+    # Bug des n° de lignes auto
+    from inspect import currentframe, getframeinfo
+    frameinfo = getframeinfo(currentframe())
+    return str(frameinfo.lineno)
+
 def testAdd(PageHS, summary = '', site = site):
     page1 = Page(site, PageHS)
     try:
