@@ -245,6 +245,12 @@ class PageProvider:
         for Page in site.uncategorizedpages():
             self.treatPage(Page.title())
 
+    # [[Special:LinkSearch]]
+    def pagesBySpecialLinkSearch(self, url, namespaces = [0], site = None):
+        if site is None: site = self.site
+        for Page in site.exturlusage(url = url, namespaces = namespaces):
+            self.treatPage(Page.title())
+
 
     #*** Tested methods ***
     # [[Special:LintErrors]]
