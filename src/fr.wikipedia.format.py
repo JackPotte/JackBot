@@ -60,10 +60,9 @@ def treatPageByName(pageName):
     PageTemp = re.sub(regex, ur'\1Marianne', PageTemp)
 
     if PageTemp.find('http://www.dmoz.org/search?') == -1:
-        regex = ur'\[http://www\.dmoz\.org/([^ \]]*)([^\]<]*)\]'
+        regex = ur'\[http://www\.dmoz\.org/([^ \]<}{]*)([^\]]*)\]'
         PageTemp = re.sub(regex, ur'[[dmoz:\1|\2]]', PageTemp)
-
-        regex = ur'http://www\.dmoz\.org/([^ \]<]*)'
+        regex =   ur'http://www\.dmoz\.org/([^ \]<}{]*)'
         PageTemp = re.sub(regex, ur'[[dmoz:\1]]', PageTemp)
 
     if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
