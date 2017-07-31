@@ -87,7 +87,7 @@ class PageProvider:
     # Traitement des pages d'une catégorie
     def pagesByCat(self, category, recursive = False, afterPage = None, ns = 0, names = None, notNames = None, notCatNames = None, site = None):
         if site is None: site = self.site
-        print category.encode(config.console_encoding, 'replace')
+        if self.debugLevel > 0: print category.encode(config.console_encoding, 'replace')
         cat = catlib.Category(self.site, category)
         pages = cat.articlesList(False)
         gen =  pagegenerators.NamespaceFilterPageGenerator(pages, [ns]) # HS sur Commons
@@ -101,12 +101,13 @@ class PageProvider:
         if recursive:
             subcat = cat.subcategories(recurse = True)
             for subcategory in subcat:
-                print u' ' + subcategory.title()
+                if self.debugLevel > 0: print u' ' + subcategory.title()
                 modify = u'True'
-                for notCatName in notCatNames:
-                    if subcategory.title().find(notCatName) != -1:
-                        if self.debugLevel > 0: print u' ' + notCatName + u' ignoré'
-                        modify = u'False'
+                if notCatNames is not None:
+                    for notCatName in notCatNames:
+                        if subcategory.title().find(notCatName) != -1:
+                            if self.debugLevel > 0: print u' ' + notCatName + u' ignoré'
+                            modify = u'False'
                 if modify:
                     pages = subcategory.articlesList(False)
                     for Page in pagegenerators.PreloadingGenerator(pages,100):
