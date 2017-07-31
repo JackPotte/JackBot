@@ -55,6 +55,16 @@ def treatPageByName(pageName):
     PageBegin = getContentFromPage(page, 'All')
     PageTemp = PageBegin
 
+    #*** Traitement des textes ***
+    regex = ur'([^\./])[Mm]arianne2.fr'
+    PageTemp = re.sub(regex, ur'\1Marianne', PageTemp)
+
+    regex = ur'\[http://www\.dmoz\.org/([^ \]]*)([^\]]*)\]'
+    PageTemp = re.sub(regex, ur'[[dmoz:\1|\2]]', PageTemp)
+
+    regex = ur'http://www\.dmoz\.org/([^ \]]*)'
+    PageTemp = re.sub(regex, ur'[[dmoz:\1]]', PageTemp)
+
     if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
     if checkURL:
@@ -119,9 +129,6 @@ def treatPageByName(pageName):
         PageTemp = PageTemp.replace(u'Catégorie:Modèle de source‎', u'Catégorie:Modèle pmid')
         PageTemp = PageTemp.replace(u'[[Catégorie:Modèle pmid]]', u'[[Catégorie:Modèle pmid‎|{{SUBPAGENAME}}]]')
 
-    #*** Traitement des textes ***
-    regex = u'([^\./])[Mm]arianne2.fr'
-    PageTemp = re.sub(regex, ur'\1Marianne', PageTemp)
 
     # Analyse des crochets et accolades (à faire : hors LaTex)
     if PageTemp.count('{') - PageTemp.count('}') != 0:
