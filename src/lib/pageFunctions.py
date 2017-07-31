@@ -554,7 +554,7 @@ def hasMoreThanTime(page, timeAfterLastEdition = 60): # minutes
         print maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')
         print version[0]['timestamp']
         print version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')   
-    if version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ') or username in page.title():
+    if version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ') or username in page.title() or page.contributors(total=1).keys()[0] == 'JackPotte':
         return True
     if debugLevel > 0: print u' dernière version trop récente ' + version[0]['timestamp']
     return False

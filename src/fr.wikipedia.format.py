@@ -51,7 +51,7 @@ def treatPageByName(pageName):
     page = Page(site,pageName)
     if not page.exists(): return
     if not hasMoreThanTime(page): return
-    if not allNamespaces and page.namespace() != 0 and pageName.find(u'Utilisateur:JackBot/test') == -1 and pageName.find(u'Modèle:Cite pmid/') == -1: return
+    if not allNamespaces and page.namespace() != 0 and pageName.find(username) == -1 and pageName.find(u'Modèle:Cite pmid/') == -1: return
     PageBegin = getContentFromPage(page, 'All')
     PageTemp = PageBegin
 
