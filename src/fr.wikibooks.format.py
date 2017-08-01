@@ -31,7 +31,7 @@ username = config.usernames[siteFamily][siteLanguage]
 checkURL = False
 fixTags = False
 fixFiles = True
-addCategory = True
+addCategory = False
 
 def treatPageByName(pageName):
     if debugLevel > -1: print(pageName.encode(config.console_encoding, 'replace'))
@@ -141,6 +141,8 @@ def main(*args):
             while 1:
                 p.pagesByRCLastDay()
         elif sys.argv[1] == u'-nocat':
+            global addCategory
+            addCategory = True
             p.pagesBySpecialNotCategorized()
         elif sys.argv[1] == u'-lint':
             p.pagesBySpecialLint()

@@ -32,7 +32,7 @@ username = config.usernames[siteFamily][siteLanguage]
 checkURL = False # TODO: translate hyperlynx.py by adding content{} at the top
 fixTags = False
 fixFiles = True
-addCategory = True
+addCategory = False
 
 bookCatTemplates = []
 bookCatTemplates.append(u'{{Auto category}}')
@@ -114,6 +114,8 @@ def main(*args):
             while 1:
                 p.pagesByRCLastDay()
         elif sys.argv[1] == u'-nocat':
+            global addCategory
+            addCategory = True
             p.pagesBySpecialNotCategorized()
         elif sys.argv[1] == u'-lint':
             p.pagesBySpecialLint()
