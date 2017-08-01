@@ -2,7 +2,6 @@
 # coding: utf-8
 # Ce script :
 #     Vérifie tous les hyperliens, les marque comme {{lien brisé}} le cas échéant, et traduit leurs modèles en français
-#     Retire les espaces dans {{FORMATNUM:}} qui empêche de les trier dans les tableaux
 #     Ajoute des liens vers les projets frères dans les pages d'homonymie, multilatéralement
 # A terme peut-être :
 #     Mettra à jour les liens vers les projets frères existants (fusions avec Sisterlinks...), et remplacement des liens bleu fr.wikipedia.org/wiki par [[ ]], des liens rouges par {{lien|lang=xx}}
@@ -58,9 +57,6 @@ def treatPageByName(pageName):
 
 
     #*** Traitement des textes ***
-    regex = ur'([^\./])[Mm]arianne2.fr'
-    PageTemp = re.sub(regex, ur'\1Marianne', PageTemp)
-
     PageTemp = globalOperations(PageTemp)
     if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
@@ -75,8 +71,6 @@ def treatPageByName(pageName):
 
 
     #*** Traitement des modèles ***
-    PageTemp = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', PageTemp)
-
     #https://fr.wikipedia.org/wiki/Catégorie:Page_utilisant_un_modèle_avec_un_paramètre_obsolète
     regex = ur' *{{[Rr]eflist([^}]*)}}'
     if re.search(regex, PageTemp):

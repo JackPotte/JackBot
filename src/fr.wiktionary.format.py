@@ -2107,7 +2107,6 @@ def treatPageByName(pageName):
                 PageTemp = re.sub(regex, ur'\1' + newTemplate[p] + ur'\2', PageTemp)
         PageTemp = PageTemp.replace(u'{{WP|lang=sgs', u'{{WP|lang=bat-smg')
 
-        PageTemp = re.sub(ur'{{(formatnum|Formatnum|FORMATNUM)\:([0-9]*) ', ur'{{\1:\2', PageTemp)
         PageTemp = re.sub(ur'{{régio *\| *', ur'{{région|', PageTemp)
         PageTemp = re.sub(ur'{{terme *\| *', ur'{{term|', PageTemp)
         PageTemp = re.sub(ur'{{term *\|Registre neutre}} *', ur'', PageTemp)

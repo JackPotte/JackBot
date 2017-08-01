@@ -268,6 +268,9 @@ def replaceISBN(PageTemp):
 def globalOperations(PageTemp):
     PageTemp = replaceDMOZ(PageTemp)
     PageTemp = replaceISBN(PageTemp)
+
+    # Retire les espaces dans {{FORMATNUM:}} qui empêche de les trier dans les tableaux
+    PageTemp = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', PageTemp)
     return PageTemp
 
 
