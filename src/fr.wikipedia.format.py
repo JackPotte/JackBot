@@ -44,6 +44,7 @@ fixMissingTitles = False
 safeMode = True # Count if the braces & brackets are even before saving
 output = u'dumps/articles_WPout.txt'
 URLend = ' \\n\[\]}{<>\|\^`\\"\''
+referencesAliases = []
 
 
 def treatPageByName(pageName):
@@ -56,13 +57,14 @@ def treatPageByName(pageName):
     PageBegin = getContentFromPage(page, 'All')
     PageTemp = PageBegin
 
+
     #*** Traitement des textes ***
     regex = ur'([^\./])[Mm]arianne2.fr'
     PageTemp = re.sub(regex, ur'\1Marianne', PageTemp)
 
     if PageTemp.find('dmoz.org/search?') == -1:
         regex = ur'\[http://(www\.)?dmoz\.org/([^' + URLend + ur']*)([^\]]*)\]'
-        print regex
+        # \[http://(www\.)?dmoz\.org/([^ \n\[\]}{<>\|\^`\"']*)([^\]]*)\]
         PageTemp = re.sub(regex, ur'[[dmoz:\2|\3]]', PageTemp)
         regex =   ur'http://(www\.)?dmoz\.org/([^' + URLend + ur']*)'
         PageTemp = re.sub(regex, ur'[[dmoz:\2]]', PageTemp)
@@ -73,30 +75,22 @@ def treatPageByName(pageName):
     if checkURL:
         if debugLevel > 0: print u'Test des URL'
         PageTemp = hyperlynx(PageTemp, debugLevel)
-    regex = ur'({{[l|L]ien *\|[^}]*)traducteur( *=)'
+    regex = ur'({{[Ll]ien *\|[^}]*)traducteur( *=)'
     if re.search(regex, PageTemp):
         PageTemp = re.sub(regex, ur'\1trad\2', PageTemp)
     PageTemp = PageTemp.replace(u'http://http://', u'http://')
     PageTemp = PageTemp.replace(u'https://https://', u'https://')
 
+
     #*** Traitement des modèles ***
     PageTemp = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', PageTemp)
 
     #https://fr.wikipedia.org/wiki/Catégorie:Page_utilisant_un_modèle_avec_un_paramètre_obsolète
-    PageTemp = PageTemp.replace(u'{{Reflist|2}}', u'{{Références}}')
-    PageTemp = PageTemp.replace(u'{{reflist|2}}', u'{{Références}}')
-    PageTemp = PageTemp.replace(u'{{Reflist|3}}', u'{{Références}}')
-    PageTemp = PageTemp.replace(u'{{reflist|3}}', u'{{Références}}')
-    PageTemp = PageTemp.replace(u'{{Reflist|30em}}', u'{{Références}}')
-    PageTemp = PageTemp.replace(u'{{reflist|30em}}', u'{{Références}}')
-    PageTemp = PageTemp.replace(u'{{Reflist|colwidth = 30em}}', u'{{Références}}')
-    PageTemp = PageTemp.replace(u'{{Reflist|colwidth=40em}}', u'{{Références}}')
-    PageTemp = PageTemp.replace(u'{{Références|2}}', u'{{Références}}')
-    PageTemp = PageTemp.replace(u'{{références|2}}', u'{{Références}}')
-    PageTemp = PageTemp.replace(u'{{Références|30em}}', u'{{Références}}')
-    PageTemp = PageTemp.replace(u'{{références|colonnes}}', u'{{Références}}')
-    PageTemp = PageTemp.replace(u'{{Références|taille}}', u'{{Références}}')
-    
+    regex = ur' *{{[Rr]eflist([^}]*)}}'
+    if re.search(regex, PageTemp):
+        PageTemp = re.sub(regex,  ur'{{Références\1}}', PageTemp)
+    #TODO: garder les paramètres non vides : pasdecol, group(e), références, mais quid de taille et colonnes ?
+
     # https://fr.wikipedia.org/wiki/Catégorie:Page_du_modèle_Article_comportant_une_erreur
     if fixArticle:
         PageEnd = u''
@@ -187,7 +181,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'chinois')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Modèle:autres projets')
+            p.pagesByLink(u'Modèle:Reflist')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
@@ -211,28 +205,29 @@ def main(*args):
     else:
         # Daily:
         p.pagesByCat(u'Catégorie:Modèle de source', ns = 10, names = ['pmid'])
-        p.pagesByLink(u'Modèle:Cite web',u'')
-        p.pagesByLink(u'Modèle:Cite journal',u'')
-        p.pagesByLink(u'Modèle:Cite news',u'')
-        p.pagesByLink(u'Modèle:Cite press release',u'')
-        p.pagesByLink(u'Modèle:Cite episode',u'')
-        p.pagesByLink(u'Modèle:Cite video',u'')
-        p.pagesByLink(u'Modèle:Cite conference',u'')
-        p.pagesByLink(u'Modèle:Cite arXiv',u'')
-        p.pagesByLink(u'Modèle:Lien news',u'')
-        p.pagesByLink(u'Modèle:deadlink',u'')
-        p.pagesByLink(u'Modèle:lien brise',u'')
-        p.pagesByLink(u'Modèle:lien cassé',u'')
-        p.pagesByLink(u'Modèle:lien mort',u'')
-        p.pagesByLink(u'Modèle:lien web brisé',u'')
-        p.pagesByLink(u'Modèle:webarchive',u'')
-        p.pagesByLink(u'Modèle:Docu',u'')
-        p.pagesByLink(u'Modèle:Cita web',u'')
-        p.pagesByLink(u'Modèle:Cita noticia',u'')
-        p.pagesByLink(u'Modèle:Citeweb',u'')
-        p.pagesByLink(u'Modèle:Cite magazine',u'')
-        p.pagesByLink(u'Modèle:Cite',u'')
-        p.pagesByLink(u'Modèle:Cite book',u'')
+        p.pagesByLink(u'Modèle:Cite web')
+        p.pagesByLink(u'Modèle:Cite journal')
+        p.pagesByLink(u'Modèle:Cite news')
+        p.pagesByLink(u'Modèle:Cite press release')
+        p.pagesByLink(u'Modèle:Cite episode')
+        p.pagesByLink(u'Modèle:Cite video')
+        p.pagesByLink(u'Modèle:Cite conference')
+        p.pagesByLink(u'Modèle:Cite arXiv')
+        p.pagesByLink(u'Modèle:Lien news')
+        p.pagesByLink(u'Modèle:deadlink')
+        p.pagesByLink(u'Modèle:lien brise')
+        p.pagesByLink(u'Modèle:lien cassé')
+        p.pagesByLink(u'Modèle:lien mort')
+        p.pagesByLink(u'Modèle:lien web brisé')
+        p.pagesByLink(u'Modèle:webarchive')
+        p.pagesByLink(u'Modèle:Docu')
+        p.pagesByLink(u'Modèle:Cita web')
+        p.pagesByLink(u'Modèle:Cita noticia')
+        p.pagesByLink(u'Modèle:Citeweb')
+        p.pagesByLink(u'Modèle:Cite magazine')
+        p.pagesByLink(u'Modèle:Cite')
+        p.pagesByLink(u'Modèle:Cite book')
+        p.pagesByLink(u'Modèle:Reflist')
 
 if __name__ == "__main__":
     main(sys.argv)
