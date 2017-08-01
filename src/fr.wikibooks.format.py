@@ -74,7 +74,7 @@ def treatPageByName(pageName):
         PageTemp = PageTemp.replace(u'[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
         PageTemp = PageTemp.replace(u'{{BookCat}}', u'{{AutoCat}}')
         if addCategory:
-            if PageTemp.find(u'[[Catégorie:') == -1 and PageTemp.find(u'{{AutoCat}}') == -1 and trim(PageTemp) != '':
+            if trim(PageTemp) != '' and PageTemp.find(u'[[Catégorie:') == -1 and PageTemp.find(u'{{AutoCat}}') == -1 and PageTemp.find(u'{{imprimable') == -1:
                 PageTemp = PageTemp + u'\n\n{{AutoCat}}'
 
         regex = ur'\(*ISBN +([0-9\-]+)\)*'

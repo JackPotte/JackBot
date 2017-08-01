@@ -63,7 +63,7 @@ def treatPageByName(pageName):
             PageTemp = PageTemp.replace(bookCatTemplate, u'{{BookCat}}')
         if addCategory and hasMoreThanTime(page) and isTrustedVersion(page):
             # The untrusted can have blanked a relevant content including {{BookCat}}
-            if PageTemp.find(u'[[Category:') == -1 and PageTemp.find(u'{{BookCat}}') == -1 and trim(PageTemp) != '':
+            if trim(PageTemp) != '' and PageTemp.find(u'[[Category:') == -1 and PageTemp.find(u'{{BookCat}}') == -1 and PageTemp.find(u'{{printable') == -1:
                 PageTemp = PageTemp + u'\n\n{{BookCat}}'
 
         regex = ur'\(*ISBN +([0-9\-]+)\)*'
