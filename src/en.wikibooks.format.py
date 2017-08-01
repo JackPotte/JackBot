@@ -66,12 +66,6 @@ def treatPageByName(pageName):
             if trim(PageTemp) != '' and PageTemp.find(u'[[Category:') == -1 and PageTemp.find(u'{{BookCat}}') == -1 and PageTemp.find(u'{{printable') == -1:
                 PageTemp = PageTemp + u'\n\n{{BookCat}}'
 
-        regex = ur'\(*ISBN +([0-9\-]+)\)*'
-        if re.search(regex, PageTemp):
-            if debugLevel > 0: u'ISBN'
-            PageTemp = re.sub(regex, ur'{{ISBN|\1}}', PageTemp)
-            summary += ', ajout de {{ISBN}}'
-
     PageEnd = PageEnd + PageTemp
     if PageEnd != PageBegin: savePage(page,PageEnd,summary)
 

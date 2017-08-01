@@ -2153,9 +2153,6 @@ def treatPageByName(pageName):
         PageTemp = PageTemp.replace(u'#*: {{trad-exe|fr}}', u'')
         PageTemp = PageTemp.replace(u'\n{{WP', u'\n* {{WP')
 
-        regex = ur'\(*ISBN +([0-9\-]+)\)*'
-        if re.search(regex, PageTemp): PageTemp = re.sub(regex, ur'{{ISBN|\1}}', PageTemp)
-
         regex = ur"{{ *dés *([\|}])"
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, ur"{{désuet\1", PageTemp)

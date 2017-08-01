@@ -77,12 +77,6 @@ def treatPageByName(pageName):
             if trim(PageTemp) != '' and PageTemp.find(u'[[Catégorie:') == -1 and PageTemp.find(u'{{AutoCat}}') == -1 and PageTemp.find(u'{{imprimable') == -1:
                 PageTemp = PageTemp + u'\n\n{{AutoCat}}'
 
-        regex = ur'\(*ISBN +([0-9\-]+)\)*'
-        if re.search(regex, PageTemp):
-            if debugLevel > 0: u'ISBN'
-            PageTemp = re.sub(regex, ur'{{ISBN|\1}}', PageTemp)
-            summary += ', ajout de {{ISBN}}'
-
         # Clés de tri pour les noms propres
         if PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') != -1:
             PageEnd = PageEnd + PageTemp[:PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')]

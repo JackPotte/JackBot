@@ -249,14 +249,26 @@ def replaceFilesErrors(PageTemp):
 def replaceDMOZ(PageTemp):
     # http://www.dmoz.org => http://dmoztools.net
     if PageTemp.find('dmoz.org/search?') == -1 and PageTemp.find('dmoz.org/license.html') == -1:
+        if debugLevel > 1: print regex
         regex = ur'\[http://(www\.)?dmoz\.org/([^' + URLend + ur']*)([^\]]*)\]'
         PageTemp = re.sub(regex, ur'[[dmoz:\2|\3]]', PageTemp)
         regex =   ur'http://(www\.)?dmoz\.org/([^' + URLend + ur']*)'
         PageTemp = re.sub(regex, ur'[[dmoz:\2]]', PageTemp)
     return PageTemp
 
+def replaceISBN(PageTemp):
+    regex = ur'\(*ISBN +([0-9\-X]+)\)*'
+    if debugLevel > 1: print regex
+    if re.search(regex, PageTemp):
+        if debugLevel > 0: u'ISBN'
+        PageTemp = re.sub(regex, ur'{{ISBN|\1}}', PageTemp)
+        #summary += ', + {{ISBN}}'
+    return PageTemp
+
 def globalOperations(PageTemp):
-    return replaceDMOZ(PageTemp)
+    PageTemp = replaceDMOZ(PageTemp)
+    PageTemp = replaceISBN(PageTemp)
+    return PageTemp
 
 
 #*** Wiktionary functions ***
