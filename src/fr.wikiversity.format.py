@@ -68,7 +68,8 @@ def treatPageByName(pageName):
     PageBegin = getContentFromPage(page, 'All')
     PageTemp = PageBegin
     PageEnd = '' # On sauvegarde la partie traitée d'une page provisoire dans une page finale jusqu'à disparition de la première
- 
+
+    PageTemp = globalOperations(PageTemp)
     if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
     if checkURL: PageTemp = hyperlynx(PageTemp)
@@ -499,6 +500,8 @@ def main(*args):
             p.pagesBySpecialNotCategorized()
         elif sys.argv[1] == u'-lint':
             p.pagesBySpecialLint()
+        elif sys.argv[1] == u'-extlinks':
+            p. pagesBySpecialLinkSearch('www.dmoz.org')
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
             treatPageByName(html2Unicode(sys.argv[1]))

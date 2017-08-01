@@ -12,7 +12,7 @@ from pywikibot import pagegenerators
 defaultLevel = 0
 site = pywikibot.Site('fr', 'wiktionary')
 username = 'JackBot'
-
+URLend = ' \\n\[\]}{<>\|\^`\\"\''
 
 deprecatedTags = {}
 deprecatedTags['big'] = 'strong'
@@ -245,6 +245,17 @@ def replaceFilesErrors(PageTemp):
     regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *thumb *[\|\]])'
     PageTemp = re.sub(regex, ur'\1\3', PageTemp)
     return PageTemp
+
+def replaceDMOZ(PageTemp):
+    if PageTemp.find('dmoz.org/search?') == -1 and PageTemp.find('dmoz.org/license.html') == -1:
+        regex = ur'\[http://(www\.)?dmoz\.org/([^' + URLend + ur']*)([^\]]*)\]'
+        PageTemp = re.sub(regex, ur'[[dmoz:\2|\3]]', PageTemp)
+        regex =   ur'http://(www\.)?dmoz\.org/([^' + URLend + ur']*)'
+        PageTemp = re.sub(regex, ur'[[dmoz:\2]]', PageTemp)
+    return PageTemp
+
+def globalOperations(PageTemp):
+    return replaceDMOZ(PageTemp)
 
 
 #*** Wiktionary functions ***

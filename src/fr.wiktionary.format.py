@@ -1611,6 +1611,7 @@ def treatPageByName(pageName):
     CleTri = defaultSort(pageName)
     rePageName = re.escape(pageName)
 
+    PageTemp = globalOperations(PageTemp)
     if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
     if checkURL: PageTemp = hyperlynx(PageTemp)
@@ -3862,8 +3863,8 @@ def main(*args):
             p.pagesBySpecialNotCategorized()
         elif sys.argv[1] == u'-lint':
             p.pagesBySpecialLint()
-        elif sys.argv[1] == u'-ut':
-            addLine(u"== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n{{fr-rég|}}\n\'\'\'{{subst:PAGENAME}}\'\'\' {{pron||fr}} {{genre ?}}\n#\n#* ''''\n==== {{S|variantes orthographiques}} ====\n==== {{S|synonymes}} ====\n==== {{S|antonymes}} ====\n==== {{S|dérivés}} ====\n==== {{S|apparentés}} ====\n==== {{S|vocabulaire}} ====\n==== {{S|hyperonymes}} ====\n==== {{S|hyponymes}} ====\n==== {{S|méronymes}} ====\n==== {{S|holonymes}} ====\n==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n=== {{S|prononciation}} ===\n* {{pron||fr}}\n* {{écouter|<!--  précisez svp la ville ou la région -->||audio=|lang=}}\n==== {{S|homophones}} ====\n==== {{S|paronymes}} ====\n=== {{S|anagrammes}} ===\n=== {{S|voir aussi}} ===\n* {{WP}}\n=== {{S|références}} ===\n", u'fr', u'prononciation', u'* {{pron|boum|fr}}')
+        elif sys.argv[1] == u'-extlinks':
+            p. pagesBySpecialLinkSearch('www.dmoz.org')
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
             treatPageByName(html2Unicode(sys.argv[1]))

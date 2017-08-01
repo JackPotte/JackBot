@@ -43,7 +43,6 @@ fixArticle = False
 fixMissingTitles = False
 safeMode = True # Count if the braces & brackets are even before saving
 output = u'dumps/articles_WPout.txt'
-URLend = ' \\n\[\]}{<>\|\^`\\"\''
 referencesAliases = []
 
 
@@ -62,14 +61,7 @@ def treatPageByName(pageName):
     regex = ur'([^\./])[Mm]arianne2.fr'
     PageTemp = re.sub(regex, ur'\1Marianne', PageTemp)
 
-    if PageTemp.find('dmoz.org/search?') == -1:
-        regex = ur'\[http://(www\.)?dmoz\.org/([^' + URLend + ur']*)([^\]]*)\]'
-        # \[http://(www\.)?dmoz\.org/([^ \n\[\]}{<>\|\^`\"']*)([^\]]*)\]
-        PageTemp = re.sub(regex, ur'[[dmoz:\2|\3]]', PageTemp)
-        regex =   ur'http://(www\.)?dmoz\.org/([^' + URLend + ur']*)'
-        PageTemp = re.sub(regex, ur'[[dmoz:\2]]', PageTemp)
-        #raw_input(PageTemp.encode(config.console_encoding, 'replace'))
-
+    PageTemp = globalOperations(PageTemp)
     if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
     if checkURL:
