@@ -247,6 +247,7 @@ def replaceFilesErrors(PageTemp):
     return PageTemp
 
 def replaceDMOZ(PageTemp):
+    # http://www.dmoz.org => http://dmoztools.net
     if PageTemp.find('dmoz.org/search?') == -1 and PageTemp.find('dmoz.org/license.html') == -1:
         regex = ur'\[http://(www\.)?dmoz\.org/([^' + URLend + ur']*)([^\]]*)\]'
         PageTemp = re.sub(regex, ur'[[dmoz:\2|\3]]', PageTemp)
