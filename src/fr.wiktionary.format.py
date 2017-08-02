@@ -3828,7 +3828,8 @@ def main(*args):
         elif sys.argv[1] == u'-test2':
             treatPageByName(u'Utilisateur:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'Catégorie:Python')
+            treatPageByName(u'Annexe:Liste de racines en indo-européen commun')
+            treatPageByName(u'Annexe:Réforme orthographique française de 1878')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
@@ -3847,7 +3848,7 @@ def main(*args):
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Catégorie:Python', afterPage = afterPage)
+            p.pagesByCat(u'Catégorie:Pages utilisant des liens magiques ISBN', namespaces = None, afterPage = afterPage)
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
@@ -3866,35 +3867,34 @@ def main(*args):
             treatPageByName(html2Unicode(sys.argv[1]))
     else:
         # Daily:
-        p.pagesByCat(u'Catégorie:Wiktionnaire:Terminologie sans langue précisée', True, u'')
-        p.pagesByCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée', False, u'')
-        p.pagesByCat(u'Catégorie:Wiktionnaire:Flexions à vérifier',True,u'')
-        p.pagesByCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet', False, u'')
-        p.pagesByCat(u'Catégorie:Wiktionnaire:Ébauches à compléter', False, u'')
-        p.pagesByLink(u'Modèle:trad',u'')
-        p.pagesByLink(u'Modèle:1ergroupe',u'')
-        p.pagesByLink(u'Modèle:2egroupe',u'')
-        p.pagesByLink(u'Modèle:3egroupe',u'')
-        p.pagesByLink(u'Modèle:-',u'')
-        p.pagesByLink(u'Modèle:-ortho-alt-',u'')
-        p.pagesByLink(u'Modèle:mascul',u'')
-        p.pagesByLink(u'Modèle:fémin',u'')
-        p.pagesByLink(u'Modèle:femin',u'')
-        p.pagesByLink(u'Modèle:sing',u'')
-        p.pagesByLink(u'Modèle:plur',u'')
-        p.pagesByLink(u'Modèle:pluri',u'')
-        p.pagesByLink(u'Modèle:=langue=',u'')
-        p.pagesByLink(u'Modèle:-déf-',u'')
-        p.pagesByLink(u'Modèle:pron-rég',u'')
-        p.pagesByLink(u'Modèle:mp',u'')
-        p.pagesByLink(u'Modèle:fp',u'')
-        p.pagesByLink(u'Modèle:vx',u'')
-        p.pagesByLink(u'Modèle:pron-rég',u'')
-        p.pagesByCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français', False, u'')
-        p.pagesByCat(u'Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section', False, u'') # TODO: ns
-        p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec titre inconnu', False, u'')
-        p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus', False, u'')
-        p.pagesByCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias', False, u'')
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Terminologie sans langue précisée', recursive = True)
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Flexions à vérifier', recursive = True)
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée')
+        p.pagesByCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet')
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Ébauches à compléter')
+        p.pagesByLink(u'Modèle:trad')
+        p.pagesByLink(u'Modèle:1ergroupe')
+        p.pagesByLink(u'Modèle:2egroupe')
+        p.pagesByLink(u'Modèle:3egroupe')
+        p.pagesByLink(u'Modèle:-')
+        p.pagesByLink(u'Modèle:-ortho-alt-')
+        p.pagesByLink(u'Modèle:mascul')
+        p.pagesByLink(u'Modèle:fémin')
+        p.pagesByLink(u'Modèle:femin')
+        p.pagesByLink(u'Modèle:sing')
+        p.pagesByLink(u'Modèle:plur')
+        p.pagesByLink(u'Modèle:pluri')
+        p.pagesByLink(u'Modèle:=langue=')
+        p.pagesByLink(u'Modèle:-déf-')
+        p.pagesByLink(u'Modèle:pron-rég')
+        p.pagesByLink(u'Modèle:mp')
+        p.pagesByLink(u'Modèle:fp')
+        p.pagesByLink(u'Modèle:vx')
+        p.pagesByCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français')
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section')
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec titre inconnu')
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus')
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias')
 
 if __name__ == "__main__":
     main(sys.argv)

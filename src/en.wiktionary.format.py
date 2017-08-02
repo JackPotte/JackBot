@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # coding: utf-8
-# Ce script formate les articles de Wikiquote
+# Ce script formate les articles de Wikilivres
 
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
@@ -8,6 +8,7 @@ from lib import *
 import pywikibot
 from pywikibot import *
 from pywikibot import pagegenerators
+from pywikibot.data import api
 
 # Global variables
 debugLevel = 0
@@ -28,16 +29,17 @@ if debugLevel > 1: print siteFamily
 site = pywikibot.Site(siteLanguage, siteFamily)
 username = config.usernames[siteFamily][siteLanguage]
 
-checkURL = False
-fixTags = True
+checkURL = False # TODO: translate hyperlynx.py by adding content{} at the top
+fixTags = False
 fixFiles = True
 
 
 def treatPageByName(pageName):
-    print(pageName.encode(config.console_encoding, 'replace'))
-    summary = u'Formatage'
+    if debugLevel > -1: print(pageName.encode(config.console_encoding, 'replace'))
+    summary = u'Formatting'
     page = Page(site, pageName)
     PageBegin = getContentFromPage(page, 'All')
+    if PageBegin == 'KO' or pageName.find(u'/Print version') != -1: return
     PageTemp = PageBegin
     PageEnd = u''
 
@@ -46,46 +48,9 @@ def treatPageByName(pageName):
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
     if checkURL: PageTemp = hyperlynx(PageTemp)
 
-    regex = ur'({{[a|A]utres projets[^}]*)\|noclear *= *1'
-    if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'\1', PageTemp)
-    if debugLevel > 1: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
+     #if page.namespace() == 0: TODO
 
-    if page.namespace() == 0:
-        # Traitement des modèles
-        regex = ur'\{\{[P|p]ortail([^\}]*)\}\}'
-        if re.search(regex, PageTemp):
-            summary += ', retrait des portails'
-            PageTemp = re.sub(regex, ur'', PageTemp)
-        regex = ur'\{\{[P|p]alette([^\}]*)\}\}'
-        if re.search(regex, PageTemp):
-            summary += ', retrait des palettes'
-            PageTemp = re.sub(regex, ur'', PageTemp)
-        PageTemp = PageTemp.replace(u'{{PDC}}', u'profondeur de champ')
-        PageTemp = PageTemp.replace(u'[[Catégorie:{{PAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
-        PageTemp = PageTemp.replace(u'[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
-        PageTemp = PageTemp.replace(u'{{BookCat}}', u'{{AutoCat}}')
-        PageTemp = PageTemp.replace(u'{{reflist}}', u'{{Références}}')
-        PageTemp = PageTemp.replace(u'{{Reflist}}', u'{{Références}}')
-
-        # Clés de tri pour les noms propres
-        if PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') != -1:
-            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')]
-            PageTemp = PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'):PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie')] + PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}'):]
-        '''ne convient pas pour les biographies https://fr.wikibooks.org/w/index.php?title=Photographie/Personnalit%C3%A9s/B/Pierre_Berdoy&diff=prev&oldid=526479
-        regex = ur'()\n{{DEFAULTSORT[^}]*}}'
-        if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur'\1', PageTemp)
-        regex = ur'()\n{{defaultsort[^}]*}}'
-        if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur'\1', PageTemp)
-        '''
-
-    PageEnd = PageEnd + PageTemp
-    if PageEnd != PageBegin:
-        PageTemp = PageTemp.replace(u'<references/>', u'{{Références}}')
-        PageTemp = PageTemp.replace(u'<references />', u'{{Références}}')
-        savePage(page, PageEnd, summary)
+    if PageEnd != PageBegin: savePage(page,PageEnd,summary)
 
 
 p = PageProvider(treatPageByName, site, debugLevel)
@@ -117,7 +82,7 @@ def main(*args):
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Catégorie:Pages utilisant des liens magiques ISBN', namespaces = None, afterPage = afterPage)
+            p.pagesByCat(u'Category:Pages with ISBN errors', namespaces = None, afterPage = afterPage)
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
@@ -126,6 +91,8 @@ def main(*args):
             while 1:
                 p.pagesByRCLastDay()
         elif sys.argv[1] == u'-nocat':
+            global addCategory
+            addCategory = True
             p.pagesBySpecialNotCategorized()
         elif sys.argv[1] == u'-lint':
             p.pagesBySpecialLint()

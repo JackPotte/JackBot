@@ -85,12 +85,17 @@ class PageProvider:
         outputFile.close()
 
     # Traitement des pages d'une catégorie
-    def pagesByCat(self, category, recursive = False, afterPage = None, ns = 0, names = None, notNames = None, notCatNames = None, site = None):
+    def pagesByCat(self, category, recursive = False, afterPage = None, namespaces = [0], names = None, notNames = None, notCatNames = None, site = None):
         if site is None: site = self.site
         if self.debugLevel > 0: print category.encode(config.console_encoding, 'replace')
         cat = catlib.Category(self.site, category)
         pages = cat.articlesList(False)
-        gen =  pagegenerators.NamespaceFilterPageGenerator(pages, [ns]) # HS sur Commons
+        if namespaces is None:
+            namespaces = []
+            for ns in range(15):
+                namespaces.append(ns)
+            namespaces.append(100)  # KO
+        gen =  pagegenerators.NamespaceFilterPageGenerator(pages, namespaces)
         #gen =  pagegenerators.CategorizedPageGenerator(cat)
         modify = u'False'
         for Page in pagegenerators.PreloadingGenerator(gen, 100):
@@ -98,10 +103,12 @@ class PageProvider:
                 modify = u'True'
             elif afterPage is None or afterPage == u'' or modify == u'True':
                 self.treatPageIfName(Page.title(), names, notNames)
-        if recursive:
-            subcat = cat.subcategories(recurse = True)
-            for subcategory in subcat:
-                if self.debugLevel > 0: print u' ' + subcategory.title()
+        subcat = cat.subcategories(recurse = recursive == True)
+        for subcategory in subcat:
+            if self.debugLevel > 0: print u' ' + subcategory.title()
+            if 14 in namespaces:
+                self.treatPageIfName(subcategory.title(), names, notNames)
+            if recursive:
                 modify = u'True'
                 if notCatNames is not None:
                     for notCatName in notCatNames:
