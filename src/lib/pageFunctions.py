@@ -264,7 +264,7 @@ def replaceISBN(PageTemp):
         PageTemp = re.sub(regex, ur'{{ISBN|\1}}', PageTemp)
         #summary += ', + {{ISBN}}'
     # Fix
-    regex = ur'\(*{{ISBN *\|([0-9X\- ]+)}}(X?)\)*'
+    regex = ur'{{ISBN *\|([0-9X\- ]+)}}(X?)'
     if re.search(regex, PageTemp):
         PageTemp = re.sub(regex, ur'{{ISBN|\1\2}}', PageTemp)
     return PageTemp
