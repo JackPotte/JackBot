@@ -4,6 +4,7 @@
 #python core/pwb.py movepages     -lang:fr -family:wiktionary -pairs:"articles_fr_wiktionary.txt" -noredirect -pairs
 #python core/pwb.py protect       -lang:fr -family:wiktionary -cat:"Élections de patrouilleurs" -summary:"Vote archivé" -move:sysop -edit:sysop
 #python core/pwb.py delete        -lang:fr -family:wikiversity -file:"scripts/JackBot/articles_fr_wiktionary.txt"
+#python core/pwb.py delete        -lang:en -family:wikibooks -cat:"Candidates for speedy deletion"
 
 #python core/pwb.py clean_sandbox -lang:fr -family:wiktionary  -always
 #python core/pwb.py clean_sandbox -lang:fr -family:wikibooks   -always

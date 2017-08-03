@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Ce script formate les articles de Wikiquote
+# Ce script formate les articles de Wikinews
 
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
