@@ -2265,10 +2265,7 @@ def treatPageByName(pageName):
         while PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}') != -1:
             PageTemp = PageTemp[:PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}')] + PageTemp[PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}\n{{R:Littré}}'):len(PageTemp)]
             summary = summary + u', doublon {{R:Littré}}'
-        while PageTemp.find(u'\n{{R:') != -1:
-            PageTemp = PageTemp[:PageTemp.find(u'\n{{R:')+1] + u'*' + PageTemp[PageTemp.find(u'\n{{R:')+1:len(PageTemp)]
-        while PageTemp.find(u'\n{{Import:') != -1:
-            PageTemp = PageTemp[:PageTemp.find(u'\n{{Import:')+1] + u'*' + PageTemp[PageTemp.find(u'\n{{Import:')+1:len(PageTemp)]
+        PageTemp = PageTemp.replace(u'\n{{Import:', u'\n* {{Import:')
 
         if debugLevel > 1: print u' Retrait des catégories contenues dans les modèles'
         if PageTemp.find(u'[[Catégorie:Villes') != -1 and PageTemp.find(u'{{localités|') != -1:
@@ -3849,6 +3846,7 @@ def main(*args):
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
             p.pagesByCat(u'Catégorie:Pages avec ISBN invalide', namespaces = None, afterPage = afterPage)
+            #TODO: ISSN
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
