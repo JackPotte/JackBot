@@ -46,9 +46,7 @@ def treatPageByName(pageName):
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
     if checkURL: PageTemp = hyperlynx(PageTemp)
 
-    # Protocoles
-    PageTemp = PageTemp.replace(u'http://http://', u'http://')
-
+    PageTemp = PageTemp.replace('\n,', ',')
 
     # Traitements des modèles
     templates = [u'Aller', u'Circuler', u'Voir', u'Faire', u'Acheter', u'Manger', u'Sortir', u'Se loger', u'Destination',
@@ -210,7 +208,7 @@ def main(*args):
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
-            regex = u''
+            regex = '\n[ \t]*,'
             if len(sys.argv) > 2: regex = sys.argv[2]
             p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex)
         elif sys.argv[1] == u'-u':
