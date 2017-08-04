@@ -66,8 +66,6 @@ def treatPageByName(pageName):
     regex = ur'({{[Ll]ien *\|[^}]*)traducteur( *=)'
     if re.search(regex, PageTemp):
         PageTemp = re.sub(regex, ur'\1trad\2', PageTemp)
-    PageTemp = PageTemp.replace(u'http://http://', u'http://')
-    PageTemp = PageTemp.replace(u'https://https://', u'https://')
 
 
     #*** Traitement des modèles ***

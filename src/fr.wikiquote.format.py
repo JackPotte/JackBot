@@ -46,11 +46,6 @@ def treatPageByName(pageName):
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
     if checkURL: PageTemp = hyperlynx(PageTemp)
 
-    regex = ur'({{[a|A]utres projets[^}]*)\|noclear *= *1'
-    if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'\1', PageTemp)
-    if debugLevel > 1: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
-
     if page.namespace() == 0:
         # Traitement des modèles
         regex = ur'\{\{[P|p]ortail([^\}]*)\}\}'
@@ -61,25 +56,9 @@ def treatPageByName(pageName):
         if re.search(regex, PageTemp):
             summary += ', retrait des palettes'
             PageTemp = re.sub(regex, ur'', PageTemp)
-        PageTemp = PageTemp.replace(u'{{PDC}}', u'profondeur de champ')
-        PageTemp = PageTemp.replace(u'[[Catégorie:{{PAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
-        PageTemp = PageTemp.replace(u'[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
         PageTemp = PageTemp.replace(u'{{BookCat}}', u'{{AutoCat}}')
         PageTemp = PageTemp.replace(u'{{reflist}}', u'{{Références}}')
         PageTemp = PageTemp.replace(u'{{Reflist}}', u'{{Références}}')
-
-        # Clés de tri pour les noms propres
-        if PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') != -1:
-            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')]
-            PageTemp = PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'):PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie')] + PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}'):]
-        '''ne convient pas pour les biographies https://fr.wikibooks.org/w/index.php?title=Photographie/Personnalit%C3%A9s/B/Pierre_Berdoy&diff=prev&oldid=526479
-        regex = ur'()\n{{DEFAULTSORT[^}]*}}'
-        if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur'\1', PageTemp)
-        regex = ur'()\n{{defaultsort[^}]*}}'
-        if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur'\1', PageTemp)
-        '''
 
     PageEnd = PageEnd + PageTemp
     if PageEnd != PageBegin:
