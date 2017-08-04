@@ -257,14 +257,14 @@ def replaceDMOZ(PageTemp):
     return PageTemp
 
 def replaceISBN(PageTemp):
-    regex = ur'\(*ISBN +([0-9X\- ]+)\)*'
+    regex = ur'\(*ISBN +([0-9Xx\- ]+)\)*'
     if debugLevel > 1: print regex
     if re.search(regex, PageTemp):
         if debugLevel > 0: u'ISBN'
         PageTemp = re.sub(regex, ur'{{ISBN|\1}}', PageTemp)
         #summary += ', + {{ISBN}}'
     # Fix
-    regex = ur'{{ISBN *\|([0-9X\- ]+)}}(X?)'
+    regex = ur'{{ISBN *\|([0-9X\- ]+)}}([Xx]?)'
     if re.search(regex, PageTemp):
         PageTemp = re.sub(regex, ur'{{ISBN|\1\2}}', PageTemp)
     regex = ur'{{ISBN *\| *(1[03]) *}}'

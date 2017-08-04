@@ -21,15 +21,20 @@
 #python core/pwb.py src/fr.wikiquote.count-quotes -family:wikiquote -output:"User:JackBot/statistiques" -outputarticles:"Template:NUMBEROFQARTICLES" -outputquotes:"Template:NUMBEROFQUOTES"
 
 #*** Homemade ***
-python core/pwb.py src/en.wikibooks.format -nocat
-python core/pwb.py src/fr.wikibooks.format -nocat
-python core/pwb.py src/fr.wikipedia.format
-python core/pwb.py src/fr.wikiquote.format
-python core/pwb.py src/fr.wikiversity.format -nocat
-python core/pwb.py src/fr.wikivoyage.format
-python core/pwb.py src/fr.wiktionary.archive
-python core/pwb.py src/fr.wiktionary.create-flexions
-python core/pwb.py src/fr.wiktionary.format
-python core/pwb.py src/fr.wiktionary.import-from-commons
+#python core/pwb.py src/en.wikibooks.format -nocat
+#python core/pwb.py src/fr.wikibooks.format -nocat
+#python core/pwb.py src/fr.wikipedia.format
+#python core/pwb.py src/fr.wikiversity.format -nocat
+#python core/pwb.py src/fr.wiktionary.archive
+#python core/pwb.py src/fr.wiktionary.create-flexions
+#python core/pwb.py src/fr.wiktionary.format
+#python core/pwb.py src/fr.wiktionary.import-from-commons
 
-#TODO: unit tests after reset, eg: python core/pwb.py src/fr.wiktionary.format "User:JackBot/test"
+python core/pwb.py src/fr.wikibooks.format -cat
+python core/pwb.py src/fr.wikinews.format -cat
+#python core/pwb.py src/fr.wikipedia.format -cat
+python core/pwb.py src/fr.wikiquote.format -cat
+python core/pwb.py src/fr.wikiversity.format -cat
+python core/pwb.py src/fr.wikivoyage.format -cat
+python core/pwb.py src/fr.wiktionary.format -cat
+#commons
