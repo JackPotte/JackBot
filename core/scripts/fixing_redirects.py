@@ -19,7 +19,7 @@ options -file, -ref, -links, ...
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 6e58f7920b1bef80b86c65439a0a5aed20b93868 $'
+__version__ = '$Id$'
 #
 import re
 

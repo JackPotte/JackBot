@@ -42,7 +42,7 @@ Copy the template "Query service" from the Toolserver wiki to wikitech:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: e6ece368a717ae9b0fd0e484e18d8e7ec9602204 $'
+__version__ = '$Id$'
 #
 
 import pywikibot

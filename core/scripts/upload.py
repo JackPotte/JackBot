@@ -54,7 +54,7 @@ parameter, and for a description.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: d7902df618dbea65f23288d3619e6606c93543ad $'
+__version__ = '$Id$'
 #
 import math
 import os

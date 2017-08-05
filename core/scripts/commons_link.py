@@ -33,7 +33,7 @@ and pagegenerator can be one of these:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 3ddffaf5d093141550d2f0941e9656b18e1ce9a0 $'
+__version__ = '$Id$'
 
 import re
 

@@ -18,7 +18,7 @@ If no starting name is provided, the bot starts at '!'.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 610be9746f73184de6bb336b819f6db71e18f769 $'
+__version__ = '$Id$'
 #
 import pywikibot
 

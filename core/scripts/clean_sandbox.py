@@ -36,7 +36,7 @@ Furthermore, the following command line parameters are supported:
 # Distributed under the terms of the MIT license.
 #
 from __future__ import absolute_import, division, unicode_literals
-__version__ = '$Id: 2019321b18131b515a1c74b5add89de39dbd5589 $'
+__version__ = '$Id$'
 #
 
 import datetime

@@ -21,7 +21,7 @@ PRE-REQUISITE : Need to install python-pycountry library.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: fde07ba4e096252be66321bac7b820bd2b7877a1 $'
+__version__ = '$Id$'
 #
 
 import re

@@ -7,7 +7,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 448394cd9569ea4cec5c8467f407a951ee031080 $'
+__version__ = '$Id$'
 
 import datetime
 import hashlib

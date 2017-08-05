@@ -13,7 +13,7 @@ function/method instead.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 346850a0806cb1bf7bce4f8279c91bb2865b315d $'
+__version__ = '$Id$'
 
 
 from pywikibot import Category

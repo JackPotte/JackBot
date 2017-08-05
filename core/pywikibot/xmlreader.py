@@ -15,7 +15,7 @@ XmlEntry objects which can be used by other bots.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 5d7a4122f5cbd68e4791f2c41d9b319be4cc8fd1 $'
+__version__ = '$Id$'
 #
 
 import re

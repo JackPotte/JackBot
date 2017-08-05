@@ -55,7 +55,7 @@ Delete everything in the category "To delete" without prompting.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: c159b2170ab3b5f6fa40a76844f7b07c784aa157 $'
+__version__ = '$Id$'
 #
 
 import collections

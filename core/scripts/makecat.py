@@ -43,7 +43,7 @@ L(ist) - show current list of pages to include or to check
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 20b22670ded8707056d822c9324a47183f752c25 $'
+__version__ = '$Id$'
 #
 
 import codecs

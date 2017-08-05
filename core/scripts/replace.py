@@ -134,7 +134,7 @@ Please type "replace.py -help | more" if you can't read the top of the help.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 4357358a83771973e48723dd76ca030d13941e94 $'
+__version__ = '$Id$'
 #
 
 import codecs

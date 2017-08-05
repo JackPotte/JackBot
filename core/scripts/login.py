@@ -59,7 +59,7 @@ subdirectory.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 67efa1ba1971d344f9214f11fe2a78cc06bcdaef $'
+__version__ = '$Id$'
 #
 
 from os.path import join

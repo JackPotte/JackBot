@@ -54,7 +54,7 @@ used.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 500fb5d6633973e8593e09c6b19e27e4a6af54c0 $'
+__version__ = '$Id$'
 
 # Note: the intention is to develop this module (at some point) into a Bot
 # class definition that can be subclassed to create new, functional bot
@@ -958,8 +958,8 @@ def handle_args(args=None, do_help=True):
         # have to - some git versions (like 1.7.0.4) seem to treat lines
         # containing just `$Id:` as if they were ident lines (see
         # gitattributes(5)) leading to unwanted behaviour like automatic
-        # replacement with `$Id: 500fb5d6633973e8593e09c6b19e27e4a6af54c0 $`
-        # or `$Id: 500fb5d6633973e8593e09c6b19e27e4a6af54c0 $`.
+        # replacement with `$Id$`
+        # or `$Id$`.
         m = re.search(r"\$Id"
                       r": (\w+) \$", pywikibot.__version__)
         if m:

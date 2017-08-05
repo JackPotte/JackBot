@@ -33,7 +33,7 @@ used on a page reachable via interwiki links.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 33e71f49e104ba07ddcf26d6b96fe1012f52bed6 $'
+__version__ = '$Id$'
 
 import re
 import sys

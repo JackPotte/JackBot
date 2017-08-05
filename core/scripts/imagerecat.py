@@ -33,7 +33,7 @@ The following command line parameters are supported:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: c7945f7f92dde315f58c6a76699da0fff7ea01d1 $'
+__version__ = '$Id$'
 #
 
 import re

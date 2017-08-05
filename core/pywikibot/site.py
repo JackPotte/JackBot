@@ -12,7 +12,7 @@ groups of wikis on the same topic in different languages.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: e2bc6ccdedd4fab998768b34292bd3f7e17252ff $'
+__version__ = '$Id$'
 #
 
 import copy

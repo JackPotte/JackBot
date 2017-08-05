@@ -13,7 +13,7 @@ and return a unicode string.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: ebb72a96975924550e822c017efdc5a3df0212c3 $'
+__version__ = '$Id$'
 #
 
 import collections

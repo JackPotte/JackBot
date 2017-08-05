@@ -28,7 +28,7 @@ Command line options:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 9d89085b3821b4dafec7109a75d34aa47b338359 $'
+__version__ = '$Id$'
 #
 
 import pywikibot

@@ -18,7 +18,7 @@ This module also includes objects:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 32663d6fbebc516e1ffab87204b4a39d049a5f5e $'
+__version__ = '$Id$'
 #
 
 import hashlib

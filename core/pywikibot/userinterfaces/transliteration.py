@@ -7,7 +7,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 357cb84e68b27ee583059fc1c03189935bef6761 $'
+__version__ = '$Id$'
 
 
 class transliterator(object):

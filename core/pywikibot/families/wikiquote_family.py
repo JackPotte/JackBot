@@ -9,7 +9,7 @@ from __future__ import absolute_import, unicode_literals
 
 from pywikibot import family
 
-__version__ = '$Id: 6eb69e541004e75c61ddbbb8ef49c895a68b3435 $'
+__version__ = '$Id$'
 
 
 # The Wikimedia family that is known as Wikiquote

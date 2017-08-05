@@ -23,7 +23,7 @@ The following command line parameters are supported:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 3752a3a3a720f2b62524553ab8e17da1a56019ad $'
+__version__ = '$Id$'
 #
 
 import re

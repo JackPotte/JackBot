@@ -33,7 +33,7 @@ For further information see pywikibot/cosmetic_changes.py
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: e8c23eb7aad8648734f39c0faf2d1e1d17690005 $'
+__version__ = '$Id$'
 #
 
 import pywikibot

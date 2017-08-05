@@ -38,7 +38,7 @@ Lists all the category pages that transclude {{cfd}} and {{cfdu}}:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: ad00bdf36b84a87aa4263cff61985967240edecd $'
+__version__ = '$Id$'
 
 import datetime
 
