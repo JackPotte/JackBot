@@ -101,7 +101,7 @@ Section = [] # Sections à remplacer
 # Paragraphes autorisant les modèles catégorisants par langue ({{voir| et {{voir/ sont gérés individuellement)
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
 Modele.append(u'-adj-dem-')
-Section.append(u'adjectif d��monstratif')
+Section.append(u'adjectif démonstratif')
 Modele.append(u'-adj-dém-')
 Section.append(u'adjectif démonstratif')
 Modele.append(u'-adj-excl-')
@@ -2054,6 +2054,9 @@ def treatPageByName(pageName):
 
         if debugLevel > 0: print u'Formatage des modèles'
         PageTemp = PageTemp.replace(u'\n {{', u'\n{{')
+        PageTemp = PageTemp.replace(u'\n{{clé de tri}}<!-- Veuillez mettre juste après « {{clé de tri| » le titre de la page en y enlevant tous les accents et éventuels apostrophes, et en changeant les éventuels traits d’union et autres caractères spéciaux par une espace ; s’il n’y a rien à changer, merci d’effacer ces lignes. -->', '')
+        PageTemp = PageTemp.replace(u'\n{{clé de tri|}}<!-- Veuillez mettre juste après « {{clé de tri| » le titre de la page en y enlevant tous les accents et éventuels apostrophes, et en changeant les éventuels traits d’union et autres caractères spéciaux par une espace ; s’il n’y a rien à changer, merci d’effacer ces lignes. -->', '')
+
         if debugLevel > 1: print u' Remplacements des anciens modèles de langue'
         PageTemp = PageTemp.replace(u'{{grc}}', u'grec ancien')
         PageTemp = PageTemp.replace(u'{{la}}', u'latin')
@@ -3831,7 +3834,7 @@ def main(*args):
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
-            regex = u''
+            regex = u'le titre de la page en y enlevant'
             if len(sys.argv) > 2: regex = sys.argv[2]
             p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex)
         elif sys.argv[1] == u'-u':
@@ -3840,7 +3843,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'chinois')
+                p.pagesBySearch(u'le titre de la page en y enlevant', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Modèle:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':

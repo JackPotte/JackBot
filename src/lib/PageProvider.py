@@ -174,9 +174,9 @@ class PageProvider:
                     modifier = u'True'
 
     # [[Special:Search]]
-    def pagesBySearch(self, pageName, ns = None, site = None):
+    def pagesBySearch(self, pageName, namespaces = None, site = None):
         if site is None: site = self.site
-        gen = pagegenerators.SearchPageGenerator(pageName, site = site, namespaces = ns)
+        gen = pagegenerators.SearchPageGenerator(pageName, site = site, namespaces = namespaces)
         for Page in pagegenerators.PreloadingGenerator(gen,100):
             self.treatPage(Page.title())
 
