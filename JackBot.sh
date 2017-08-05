@@ -41,5 +41,6 @@
 #python core/pwb.py src/fr.wiktionary.format -cat
 
 python core/pwb.py src/fr.wikipedia.format -cat
+python core/pwb.py src/en.wikiquote.format -cat
 #python core/pwb.py src/en.wikibooks.format -cat
-#python core/pwb.py src/en.wikiquote.format -cat
+

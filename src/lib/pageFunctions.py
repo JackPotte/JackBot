@@ -258,6 +258,7 @@ def replaceDMOZ(PageTemp):
 
 def replaceISBN(PageTemp):
     #TODO: out of <source> <nowiki> <pre>
+    PageTemp = PageTemp.replace('ISBN&#160;', 'ISBN ')
     regex = ur'\(*ISBN +([0-9Xx\- ]+)\)*( [^0-9Xx\- ])'
     if debugLevel > 1: print regex
     if re.search(regex, PageTemp):

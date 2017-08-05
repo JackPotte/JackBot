@@ -50,7 +50,8 @@ def treatPageByName(pageName):
 
      #if page.namespace() == 0: TODO
 
-    if PageEnd != PageBegin: savePage(page,PageEnd,summary)
+    PageEnd = PageEnd + PageTemp
+    if PageEnd != PageBegin: savePage(page, PageEnd, summary)
 
 
 p = PageProvider(treatPageByName, site, debugLevel)

@@ -67,7 +67,7 @@ def treatPageByName(pageName):
                 PageTemp = PageTemp + u'\n\n{{BookCat}}'
 
     PageEnd = PageEnd + PageTemp
-    if PageEnd != PageBegin: savePage(page,PageEnd,summary)
+    if PageEnd != PageBegin: savePage(page, PageEnd, summary)
 
 
 p = PageProvider(treatPageByName, site, debugLevel)
