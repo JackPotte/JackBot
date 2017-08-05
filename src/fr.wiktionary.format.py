@@ -2540,7 +2540,7 @@ def treatPageByName(pageName):
             langue1 = PageTemp[PageTemp.find(u'{{T|')+4:PageTemp.find(u'}')]
             if langue1.find(u'|') != -1: langue1 = langue1[:langue1.find(u'|')]
             #raw_input(PageEnd.encode(config.console_encoding, 'replace'))
-            if langue1 != u'' and (PageEnd.find(u'<!--') == -1 or PageEnd.find(u'-->') != -1): # bug https://fr.wiktionary.org/w/index.php?title=Utilisateur:JackBot/test&diff=15092317&oldid=15090227
+            if langue1 != u'' and (PageEnd.find(u'<!--') == -1 or PageEnd.find(u'-->') != -1): # bug https://fr.wiktionary.org/w/index.php?title=User:JackBot/test&diff=15092317&oldid=15090227
                 #if PageEnd.find(u'<!--') != -1: raw_input(PageEnd[:PageEnd.rfind(u'\n')].encode(config.console_encoding, 'replace'))
                 if debugLevel > 1: print u'Langue 1 : ' + langue1
                 if len(langue1) > 3 and langue1.find(u'-') == -1:
@@ -2613,7 +2613,7 @@ def treatPageByName(pageName):
                 if langue1.find(u'|') != -1: langue1 = langue1[:langue1.find(u'|')]
                 if langue1 != u'':
                     #print(langue1) # ca pt
-                    Langue1 = Page(site,u'Modèle:' + langue1)
+                    Langue1 = Page(site,u'Template:' + langue1)
                     try: PageTemp2 = Langue1.get()
                     except pywikibot.exceptions.NoPage:
                         print "NoPage l 1521 : " + langue1
@@ -2646,7 +2646,7 @@ def treatPageByName(pageName):
                             langue2 = PageEnd[PageEnd.rfind(u'{{langue|')+len(u'{{langue|'):len(PageEnd)]
                             langue2 = langue2[:langue2.find('}}')]
                             if langue2.find(u'|') != -1: langue2 = langue2[:langue2.find(u'|')]
-                            Langue2 = Page(site,u'Modèle:' + langue2)
+                            Langue2 = Page(site,u'Template:' + langue2)
                             try: PageTemp3 = Langue2.get()
                             except pywikibot.exceptions.NoPage:
                                 print "NoPage l 1607 : " + langue2
@@ -2797,7 +2797,7 @@ def treatPageByName(pageName):
                                     if debugLevel > 0: print anagramme.encode(config.console_encoding, 'replace')
                                     pageAnagr = Page(site,anagramme)
                                     if pageAnagr.exists():
-                                        if pageAnagr.namespace() !=0 and anagramme != u'Utilisateur:JackBot/test':
+                                        if pageAnagr.namespace() !=0 and anagramme != u'User:JackBot/test':
                                             break
                                         else:
                                             PageTempAnagr = getContentFromPage(pageAnagr)
@@ -3709,7 +3709,7 @@ def treatPageByName(pageName):
                     summary = summary + u', ajout de {{en-nom-rég}}'
 
         if debugLevel > 0: print u'\nSynchro des prononciations'
-        #TODO: prononciations post-paramètres (à déplacer ?) + tous les modèles, fr-accord-rég... https://fr.wiktionary.org/wiki/Utilisateur:JackBot/test_court
+        #TODO: prononciations post-paramètres (à déplacer ?) + tous les modèles, fr-accord-rég... https://fr.wiktionary.org/wiki/User:JackBot/test_court
         regex = ur"({{fr\-inv\|)([^{}\|]+)([^{}]*}}\n\'\'\'" + rePageName.replace(u'User:',u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
         if re.search(regex, PageEnd): PageEnd = re.sub(regex, ur'\1\2\3 {{pron|\2|fr}}\4\n', PageEnd)
         regex = ur"({{fr\-rég\|)([^{}\|]+)([^{}]*}}\n'\'\'" + rePageName.replace(u'User:',u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
@@ -3834,9 +3834,9 @@ def main(*args):
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
         if sys.argv[1] == u'-test':
-            treatPageByName(u'Utilisateur:' + username + u'/test')
+            treatPageByName(u'User:' + username + u'/test')
         elif sys.argv[1] == u'-test2':
-            treatPageByName(u'Utilisateur:' + username + u'/test2')
+            treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             treatPageByName(u'Annexe:Liste de racines en indo-européen commun')
             treatPageByName(u'Annexe:Réforme orthographique française de 1878')
@@ -3854,7 +3854,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'le titre de la page en y enlevant', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Modèle:autres projets')
+            p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
@@ -3883,24 +3883,24 @@ def main(*args):
         p.pagesByCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée')
         p.pagesByCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Ébauches à compléter')
-        p.pagesByLink(u'Modèle:trad')
-        p.pagesByLink(u'Modèle:1ergroupe')
-        p.pagesByLink(u'Modèle:2egroupe')
-        p.pagesByLink(u'Modèle:3egroupe')
-        p.pagesByLink(u'Modèle:-')
-        p.pagesByLink(u'Modèle:-ortho-alt-')
-        p.pagesByLink(u'Modèle:mascul')
-        p.pagesByLink(u'Modèle:fémin')
-        p.pagesByLink(u'Modèle:femin')
-        p.pagesByLink(u'Modèle:sing')
-        p.pagesByLink(u'Modèle:plur')
-        p.pagesByLink(u'Modèle:pluri')
-        p.pagesByLink(u'Modèle:=langue=')
-        p.pagesByLink(u'Modèle:-déf-')
-        p.pagesByLink(u'Modèle:pron-rég')
-        p.pagesByLink(u'Modèle:mp')
-        p.pagesByLink(u'Modèle:fp')
-        p.pagesByLink(u'Modèle:vx')
+        p.pagesByLink(u'Template:trad')
+        p.pagesByLink(u'Template:1ergroupe')
+        p.pagesByLink(u'Template:2egroupe')
+        p.pagesByLink(u'Template:3egroupe')
+        p.pagesByLink(u'Template:-')
+        p.pagesByLink(u'Template:-ortho-alt-')
+        p.pagesByLink(u'Template:mascul')
+        p.pagesByLink(u'Template:fémin')
+        p.pagesByLink(u'Template:femin')
+        p.pagesByLink(u'Template:sing')
+        p.pagesByLink(u'Template:plur')
+        p.pagesByLink(u'Template:pluri')
+        p.pagesByLink(u'Template:=langue=')
+        p.pagesByLink(u'Template:-déf-')
+        p.pagesByLink(u'Template:pron-rég')
+        p.pagesByLink(u'Template:mp')
+        p.pagesByLink(u'Template:fp')
+        p.pagesByLink(u'Template:vx')
         p.pagesByCat(u'Catégorie:Traduction en français demandée d’exemple(s) écrits en français')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec titre inconnu')

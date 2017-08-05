@@ -51,7 +51,7 @@ def treatPageByName(pageName):
     page = Page(site,pageName)
     if not page.exists(): return
     if not hasMoreThanTime(page): return
-    if not allNamespaces and page.namespace() != 0 and pageName.find(username) == -1 and pageName.find(u'Modèle:Cite pmid/') == -1: return
+    if not allNamespaces and page.namespace() != 0 and pageName.find(username) == -1 and pageName.find(u'Template:Cite pmid/') == -1: return
     PageBegin = getContentFromPage(page, 'All')
     PageTemp = PageBegin
 
@@ -106,17 +106,17 @@ def treatPageByName(pageName):
 
 
     #*** Traitement des Catégories ***
-    if pageName.find(u'Modèle:Cite pmid/') != -1:
+    if pageName.find(u'Template:Cite pmid/') != -1:
         PageTemp = PageTemp.replace(u'Catégorie:Modèle de source‎', u'Catégorie:Modèle pmid')
         PageTemp = PageTemp.replace(u'[[Catégorie:Modèle pmid]]', u'[[Catégorie:Modèle pmid‎|{{SUBPAGENAME}}]]')
 
 
     # Analyse des crochets et accolades (à faire : hors LaTex)
     if PageTemp.count('{') - PageTemp.count('}') != 0:
-        if pageName.find(u'Utilisateur:JackBot/') == -1: log(u'*[[' + pageName + u']] : accolade cassée')
+        if pageName.find(u'User:JackBot/') == -1: log(u'*[[' + pageName + u']] : accolade cassée')
         #if debugLevel > 1: raise Exception(u'Accolade cassée')
     if PageTemp.count('[') - PageTemp.count(']') != 0:
-        if pageName.find(u'Utilisateur:JackBot/') == -1: log(u'*[[' + pageName + u']] : crochet cassé')
+        if pageName.find(u'User:JackBot/') == -1: log(u'*[[' + pageName + u']] : crochet cassé')
         #if debugLevel > 1: raise Exception(u'Crochet cassé')
     if PageBegin.count('[[') - PageBegin.count(']]') != PageTemp.count('[[') - PageTemp.count(']]'):
         txtfile = codecs.open(output, 'a', 'utf-8')
@@ -146,9 +146,9 @@ def main(*args):
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
         if sys.argv[1] == u'-test':
-            treatPageByName(u'Utilisateur:' + username + u'/test')
+            treatPageByName(u'User:' + username + u'/test')
         elif sys.argv[1] == u'-test2':
-            treatPageByName(u'Utilisateur:' + username + u'/test2')
+            treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             treatPageByName(u'Catégorie:Python')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
@@ -165,7 +165,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'chinois')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Modèle:Reflist')
+            p.pagesByLink(u'Template:Reflist')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
@@ -190,29 +190,29 @@ def main(*args):
     else:
         # Daily:
         p.pagesByCat(u'Catégorie:Modèle de source', namespaces = [10], names = ['pmid'])
-        p.pagesByLink(u'Modèle:Cite web')
-        p.pagesByLink(u'Modèle:Cite journal')
-        p.pagesByLink(u'Modèle:Cite news')
-        p.pagesByLink(u'Modèle:Cite press release')
-        p.pagesByLink(u'Modèle:Cite episode')
-        p.pagesByLink(u'Modèle:Cite video')
-        p.pagesByLink(u'Modèle:Cite conference')
-        p.pagesByLink(u'Modèle:Cite arXiv')
-        p.pagesByLink(u'Modèle:Lien news')
-        p.pagesByLink(u'Modèle:deadlink')
-        p.pagesByLink(u'Modèle:lien brise')
-        p.pagesByLink(u'Modèle:lien cassé')
-        p.pagesByLink(u'Modèle:lien mort')
-        p.pagesByLink(u'Modèle:lien web brisé')
-        p.pagesByLink(u'Modèle:webarchive')
-        p.pagesByLink(u'Modèle:Docu')
-        p.pagesByLink(u'Modèle:Cita web')
-        p.pagesByLink(u'Modèle:Cita noticia')
-        p.pagesByLink(u'Modèle:Citeweb')
-        p.pagesByLink(u'Modèle:Cite magazine')
-        p.pagesByLink(u'Modèle:Cite')
-        p.pagesByLink(u'Modèle:Cite book')
-        p.pagesByLink(u'Modèle:Reflist')
+        p.pagesByLink(u'Template:Cite web')
+        p.pagesByLink(u'Template:Cite journal')
+        p.pagesByLink(u'Template:Cite news')
+        p.pagesByLink(u'Template:Cite press release')
+        p.pagesByLink(u'Template:Cite episode')
+        p.pagesByLink(u'Template:Cite video')
+        p.pagesByLink(u'Template:Cite conference')
+        p.pagesByLink(u'Template:Cite arXiv')
+        p.pagesByLink(u'Template:Lien news')
+        p.pagesByLink(u'Template:deadlink')
+        p.pagesByLink(u'Template:lien brise')
+        p.pagesByLink(u'Template:lien cassé')
+        p.pagesByLink(u'Template:lien mort')
+        p.pagesByLink(u'Template:lien web brisé')
+        p.pagesByLink(u'Template:webarchive')
+        p.pagesByLink(u'Template:Docu')
+        p.pagesByLink(u'Template:Cita web')
+        p.pagesByLink(u'Template:Cita noticia')
+        p.pagesByLink(u'Template:Citeweb')
+        p.pagesByLink(u'Template:Cite magazine')
+        p.pagesByLink(u'Template:Cite')
+        p.pagesByLink(u'Template:Cite book')
+        p.pagesByLink(u'Template:Reflist')
 
 if __name__ == "__main__":
     main(sys.argv)

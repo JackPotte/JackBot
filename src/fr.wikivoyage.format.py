@@ -65,10 +65,10 @@ def treatPageByName(pageName):
 
     # Analyse des crochets et accolades (à faire : hors LaTex)
     if PageTemp.count('{') - PageTemp.count('}') != 0:
-        if pageName.find(u'Utilisateur:JackBot/') == -1: log(u'*[[' + pageName + u']] : accolade cassée')
+        if pageName.find(u'User:JackBot/') == -1: log(u'*[[' + pageName + u']] : accolade cassée')
         #if debugLevel > 1: raise Exception(u'Accolade cassée')
     if PageTemp.count('[') - PageTemp.count(']') != 0:
-        if pageName.find(u'Utilisateur:JackBot/') == -1: log(u'*[[' + pageName + u']] : crochet cassé')
+        if pageName.find(u'User:JackBot/') == -1: log(u'*[[' + pageName + u']] : crochet cassé')
         #if debugLevel > 1: raise Exception(u'Crochet cassé')
     if PageBegin.count('[[') - PageBegin.count(']]') != PageTemp.count('[[') - PageTemp.count(']]'):
         txtfile = codecs.open(output, 'a', 'utf-8')
@@ -200,9 +200,9 @@ def main(*args):
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
         if sys.argv[1] == u'-test':
-            treatPageByName(u'Utilisateur:' + username + u'/test')
+            treatPageByName(u'User:' + username + u'/test')
         elif sys.argv[1] == u'-test2':
-            treatPageByName(u'Utilisateur:' + username + u'/test2')
+            treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             treatPageByName(u'Catégorie:Python')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
@@ -219,7 +219,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'chinois')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Modèle:autres projets')
+            p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]

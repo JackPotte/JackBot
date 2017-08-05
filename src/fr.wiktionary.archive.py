@@ -34,7 +34,7 @@ summary = u'Autoarchivage de [[Wiktionnaire:Bot/Requêtes]]'
 def treatPageByName(pageName):
 	page = Page(site, pageName)
 	if page.exists():
-		if page.namespace() != 4 and page.title() != u'Utilisateur:JackBot/test': 
+		if page.namespace() != 4 and page.title() != u'User:JackBot/test': 
 			return
 		else:
 			try:

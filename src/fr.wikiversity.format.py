@@ -47,7 +47,7 @@ Ttemp = range(1, sizeT)
 temp[1] = u'numero'
 Ttemp[1] = u'numéro'
 
-# Modèle:Chapitre
+# Template:Chapitre
 param = range(1, sizeP)
 param[1] = u'titre ' # espace pour disambiguiser
 param[2] = u'idfaculté'
@@ -168,7 +168,7 @@ def treatPageByName(pageName):
                     if Lecon != u'' and Lecon.find(u'.') == -1: 
                         page2 = Page(site,Lecon)
                         if page2.exists():
-                            if page2.namespace() != 0 and page2.title() != u'Utilisateur:JackBot/test': 
+                            if page2.namespace() != 0 and page2.title() != u'User:JackBot/test': 
                                 return
                             else:
                                 try:
@@ -465,9 +465,9 @@ def main(*args):
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
         if sys.argv[1] == u'-test':
-            treatPageByName(u'Utilisateur:' + username + u'/test')
+            treatPageByName(u'User:' + username + u'/test')
         elif sys.argv[1] == u'-test2':
-            treatPageByName(u'Utilisateur:' + username + u'/test2')
+            treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             treatPageByName(u'Catégorie:Python')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
@@ -484,7 +484,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'chinois')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Modèle:autres projets')
+            p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]

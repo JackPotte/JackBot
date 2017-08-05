@@ -41,7 +41,7 @@ def treatPageByName(pageName):
     print(pageName.encode(config.console_encoding, 'replace'))
     page = Page(site, pageName)
     if page.exists():
-        if page.namespace() != 0 and page.title() != u'Utilisateur:JackBot/test':
+        if page.namespace() != 0 and page.title() != u'User:JackBot/test':
             print u' Autre namespace l 45'
             return
     else:
@@ -385,9 +385,9 @@ def main(*args):
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
         if sys.argv[1] == u'-test':
-            treatPageByName(u'Utilisateur:' + username + u'/test')
+            treatPageByName(u'User:' + username + u'/test')
         elif sys.argv[1] == u'-test2':
-            treatPageByName(u'Utilisateur:' + username + u'/test2')
+            treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             treatPageByName(u'Catégorie:Python')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
@@ -404,7 +404,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'chinois')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Modèle:autres projets')
+            p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
