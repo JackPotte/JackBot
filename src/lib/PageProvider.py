@@ -16,7 +16,7 @@ class PageProvider:
         self.site = site
         self.debugLevel = debugLevel
 
-    # articles_list.txt may need to be formatted with Format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
+    # articles_list.txt may need to be formatted with format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
     def pagesByFile(self, source, site = None):
         from lib import html2Unicode
         if site is None: site = self.site
@@ -264,7 +264,7 @@ class PageProvider:
     def pagesBySpecialLint(self, site = None):
         if site is None: site = self.site
         #TODO
-        page = pywikibot.Page(site, u'Spécial:ApiSandbox')
+        page = pywikibot.Page(site, u'Special:ApiSandbox')
         raw_input(page._get_parsed_page())  # WARNING: API error pagecannotexist: Namespace doesn't allow actual pages.
         #self.treatPage(Page.title())
 

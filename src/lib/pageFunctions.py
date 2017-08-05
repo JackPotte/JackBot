@@ -723,7 +723,7 @@ def log(source):
     txtfile.write(u'\n' + source + u'\n')
     txtfile.close()
 
-def ArretDUrgence(username = username):
+def stopRequired(username = username):
     PageTemp = getContentFromPageName(u'User talk:' + username)
     if PageTemp == 'KO': return
     if PageTemp != u"{{/Stop}}":
@@ -742,7 +742,7 @@ def savePage(currentPage, pageContent, summary):
             print(pageContent[len(pageContent)-taille:].encode(config.console_encoding, 'replace'))
         result = raw_input((u'\nSauvegarder [[' + currentPage.title() + u']] ? (o/n) ').encode('utf-8'))
     if result != "n" and result != "no" and result != "non":
-        if currentPage.title().find(u'JackBot/') == -1: ArretDUrgence()
+        if currentPage.title().find(u'JackBot/') == -1: stopRequired()
         if not summary: summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
         try:
             currentPage.put(pageContent, summary)
