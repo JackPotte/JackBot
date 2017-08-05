@@ -260,10 +260,13 @@ def replaceISBN(PageTemp):
     #TODO: out of <source> <nowiki> <pre>
     regex = ur'\(*ISBN +([0-9Xx\- ]+)\)*'
     if debugLevel > 1: print regex
-    if re.search(regex, PageTemp):
+    s = re.search(regex, PageTemp)
+    if s:
+        space = ''
+        if s.group(1)[-1:] == ' ': space = ' '
+        ISBN = trim(s.group(1)[:-1])
         if debugLevel > 0: u'ISBN'
-        PageTemp = re.sub(regex, ur'{{ISBN|\1}}', PageTemp)
-        #summary += ', + {{ISBN}}'
+        PageTemp = re.sub(regex, ur'{{ISBN|' + ISBN + ur'}}' + space, PageTemp)
     # Fix
     regex = ur'{{ISBN *\|([0-9X\- ]+)}}([Xx]?)'
     if re.search(regex, PageTemp):
