@@ -16,6 +16,7 @@
 ##python core/pwb.py clean_sandbox -lang:fr -family:wikipedia   -always
 #python core/pwb.py clean_sandbox -lang:en -family:wikibooks   -always
 
+
 #*** Maintained ***
 #python core/pwb.py src/fr.wikinews.2wikipedia
 #python core/pwb.py src/fr.wikiquote.count-quotes -family:wikiquote -output:"User:JackBot/statistiques" -outputarticles:"Template:NUMBEROFQARTICLES" -outputquotes:"Template:NUMBEROFQUOTES"
@@ -30,11 +31,15 @@
 #python core/pwb.py src/fr.wiktionary.format
 #python core/pwb.py src/fr.wiktionary.import-from-commons
 
-python core/pwb.py src/fr.wikibooks.format -cat
-python core/pwb.py src/fr.wikinews.format -cat
-#python core/pwb.py src/fr.wikipedia.format -cat
-python core/pwb.py src/fr.wikiquote.format -cat
-python core/pwb.py src/fr.wikiversity.format -cat
-python core/pwb.py src/fr.wikivoyage.format -cat
+
+#*** Current global operation ***
+#python core/pwb.py src/fr.wikibooks.format -cat
+#python core/pwb.py src/fr.wikinews.format -cat
+#python core/pwb.py src/fr.wikiquote.format -cat
+#python core/pwb.py src/fr.wikiversity.format -cat
+#python core/pwb.py src/fr.wikivoyage.format -cat
 python core/pwb.py src/fr.wiktionary.format -cat
-#commons
+
+#python core/pwb.py src/fr.wikipedia.format -cat
+#python core/pwb.py src/en.wikibooks.format -cat
+#python core/pwb.py src/en.wikiquote.format -cat
