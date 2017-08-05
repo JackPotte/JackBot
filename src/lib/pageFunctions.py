@@ -263,7 +263,6 @@ def replaceISBN(PageTemp):
     if re.search(regex, PageTemp):
         if debugLevel > 0: u'ISBN'
         PageTemp = re.sub(regex, ur'{{ISBN|\1}}\2', PageTemp)
-    raw_input(PageTemp.encode(config.console_encoding, 'replace'))
     regex = ur'\(*ISBN +([0-9Xx\- ]+)\)*'
     if debugLevel > 1: print regex
     if re.search(regex, PageTemp):
@@ -276,6 +275,7 @@ def replaceISBN(PageTemp):
     regex = ur'{{ISBN *\| *(1[03]) *}}'
     if re.search(regex, PageTemp):
         PageTemp = re.sub(regex, ur'ISBN \1', PageTemp)
+    if debugLevel > 1: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
     return PageTemp
 
 def globalOperations(PageTemp):
