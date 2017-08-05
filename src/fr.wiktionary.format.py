@@ -2761,7 +2761,7 @@ def treatPageByName(pageName):
                     languageCode = PageTemp[endPosition+1:PageTemp.find('}}')]
                     if languageCode == u'':
                         if debugLevel > 0: print u' code langue vide'
-                        return #TODO : chercher dans {{S}}
+                        return
                     if debugLevel > 0: print u' code langue trouvé : ' + languageCode
                     regex = ur'[a-zA-Z\-]+'
                     if not re.search(regex, languageCode):
@@ -2846,6 +2846,14 @@ def treatPageByName(pageName):
                         if debugLevel > 1: print u' Paragraphe définition'
                         addLanguageCode = True # Paragraphe avec code langue dans les modèles lexicaux
                         translationSection = False
+
+                        if languageCode is None:
+                            languageCode = PageTemp[endPosition+1+len(section)+1:PageTemp.find('}}')]
+                            if debugLevel > 0: print u'  ajout du {{langue|' + languageCode + u'}} manquant'
+                            PageTemp = '== {{langue|' + languageCode + u'}} ==\n' + PageEnd[PageEnd.rfind('==='):] + PageTemp
+                            PageEnd = PageEnd[:PageEnd.rfind('===')]
+                            backward = True
+                            break
 
                         if PageTemp.find(languageCode) == -1 or PageTemp.find(languageCode) > PageTemp.find('}}'):
                             PageTemp = PageTemp[:endPosition+1+len(section)] + u'|' + languageCode + PageTemp[PageTemp.find('}}'):]
