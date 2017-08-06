@@ -48,7 +48,7 @@ referencesAliases = []
 def treatPageByName(pageName):
     print(pageName.encode(config.console_encoding, 'replace'))
     summary = u'Formatage'
-    page = Page(site,pageName)
+    page = Page(site, pageName)
     if not page.exists(): return
     if not hasMoreThanTime(page): return
     if not allNamespaces and page.namespace() != 0 and pageName.find(username) == -1 and pageName.find(u'Template:Cite pmid/') == -1: return

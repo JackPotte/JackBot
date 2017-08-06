@@ -84,7 +84,7 @@ def main(*args):
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
             p.pagesByCat(u'Category:Pages using ISBN magic links', namespaces = None, afterPage = afterPage)
-            p.pagesByCat(u'Category:Pages with ISBN errors', namespaces = None, afterPage = afterPage)
+            #p.pagesByCat(u'Category:Pages with ISBN errors', namespaces = None, afterPage = afterPage)
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
