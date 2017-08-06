@@ -94,8 +94,8 @@ class PageProvider:
             namespaces = []
             for ns in range(15):
                 namespaces.append(ns)
-            namespaces.append(100)  # KO
-        gen =  pagegenerators.NamespaceFilterPageGenerator(pages, namespaces)
+        if self.debugLevel > 0: print namespaces
+        gen =  pagegenerators.NamespaceFilterPageGenerator(pages, namespaces) # TODO: filtre 0, 2, 12, mais pas 10 ni 100
         #gen =  pagegenerators.CategorizedPageGenerator(cat)
         modify = u'False'
         for Page in pagegenerators.PreloadingGenerator(gen, 100):
