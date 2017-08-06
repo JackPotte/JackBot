@@ -45,10 +45,10 @@ bookCatTemplates.append(u'[[Category:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]')
 
 def treatPageByName(pageName):
     if debugLevel > -1: print(pageName.encode(config.console_encoding, 'replace'))
-    summary = u'Formatting'
     page = Page(site, pageName)
     PageBegin = getContentFromPage(page, 'All')
     if PageBegin == 'KO' or pageName.find(u'/Print version') != -1: return
+    summary = u'Formatting'
     PageTemp = PageBegin
     PageEnd = u''
 
@@ -57,8 +57,15 @@ def treatPageByName(pageName):
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
     if checkURL: PageTemp = hyperlynx(PageTemp)
 
+    if debugLevel > 0: print 'Templates treatment'
+    regex = ur'{{[Tt]alk *archive([^}]*)}}='
+    if re.search(regex, PageTemp):
+        PageTemp = re.sub(regex, ur'{{Talk archive\1}}\n=', PageTemp)
+    regex = ur'{{[Tt]alk *header([^}]*)}}='
+    if re.search(regex, PageTemp):
+        PageTemp = re.sub(regex, ur'{{Talk header\1}}\n=', PageTemp)
+
     if page.namespace() == 0:
-        # Templates treatment
         for bookCatTemplate in bookCatTemplates:
             PageTemp = PageTemp.replace(bookCatTemplate, u'{{BookCat}}')
         if addCategory and hasMoreThanTime(page) and isTrustedVersion(page):
@@ -88,14 +95,16 @@ def main(*args):
             if len(sys.argv) > 2: regex = sys.argv[2]
             p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex)
         elif sys.argv[1] == u'-u':
-            p.pagesByUser(u'User:' + username)
+            user = username
+            if len(sys.argv) > 2: user = sys.argv[2]
+            p.pagesByUser(u'User:' + user)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
-            if len(sys.argv) > 2:
-                p.pagesBySearch(sys.argv[2])
-            else:
-                p.pagesBySearch(u'chinois')
+            research = u'French'
+            if len(sys.argv) > 2: research = sys.argv[2]
+            p.pagesBySearch(research)
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:autres projets')
+            p.pagesByLink(u'Template:Talk header')
+            p.pagesByLink(u'Template:Talk archive')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
