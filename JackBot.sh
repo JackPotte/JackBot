@@ -15,6 +15,7 @@
 #python core/pwb.py clean_sandbox -lang:fr -family:wikivoyage  -always
 ##python core/pwb.py clean_sandbox -lang:fr -family:wikipedia   -always
 #python core/pwb.py clean_sandbox -lang:en -family:wikibooks   -always
+##python core/pwb.py clean_sandbox -lang:en -family:wikiquote   -always
 
 
 #*** Maintained ***
@@ -42,6 +43,6 @@
 #python core/pwb.py src/en.wikiquote.format -cat
 #python core/pwb.py src/en.wikiversity.format -cat
 
-#python core/pwb.py src/fr.wikipedia.format -cat
-#python core/pwb.py src/en.wiktionary.format -cat
-python core/pwb.py src/en.wikibooks.format -cat
+python core/pwb.py src/fr.wikipedia.format -cat
+python core/pwb.py src/en.wiktionary.format -cat
+#python core/pwb.py src/en.wikibooks.format -cat

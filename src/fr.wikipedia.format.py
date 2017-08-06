@@ -167,6 +167,8 @@ def main(*args):
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:Reflist')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
+            global checkURL
+            checkURL = False
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
             p.pagesByCat(u'Catégorie:Pages utilisant des liens magiques ISBN', namespaces = None, afterPage = afterPage)
