@@ -48,7 +48,15 @@ def treatPageByName(pageName):
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
     if checkURL: PageTemp = hyperlynx(PageTemp)
 
-     #if page.namespace() == 0: TODO
+    if page.namespace() == 0:
+        if PageTemp.find('<ref') != -1 and PageTemp.find('<references') == -1:
+            if debugLevel > 0: print ' <references/> addition'
+            regex = u'===References===([^<]*)'
+            if re.search(regex, PageTemp):
+                PageTemp = re.sub(regex, ur'===References===\n<references/>\n\1', PageTemp)
+            regex = u'<references/>\n\n\*'
+            if re.search(regex, PageTemp):
+                PageTemp = re.sub(regex, ur'<references/>\n*', PageTemp)
 
     PageEnd = PageEnd + PageTemp
     if PageEnd != PageBegin: savePage(page, PageEnd, summary)

@@ -40,8 +40,8 @@
 #python core/pwb.py src/fr.wikivoyage.format -cat
 #python core/pwb.py src/fr.wiktionary.format -cat
 #python core/pwb.py src/en.wikiquote.format -cat
+#python core/pwb.py src/en.wikiversity.format -cat
 
 #python core/pwb.py src/fr.wikipedia.format -cat
-python core/pwb.py src/en.wikiversity.format -cat
-python core/pwb.py src/en.wiktionary.format -cat
-#python core/pwb.py src/en.wikibooks.format -cat
+#python core/pwb.py src/en.wiktionary.format -cat
+python core/pwb.py src/en.wikibooks.format -cat
