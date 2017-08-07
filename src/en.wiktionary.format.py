@@ -43,10 +43,11 @@ def treatPageByName(pageName):
     PageTemp = PageBegin
     PageEnd = u''
 
-    PageTemp = globalOperations(PageTemp)
-    if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
-    if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
-    if checkURL: PageTemp = hyperlynx(PageTemp)
+    if page.namespace() in [':', 'Citations:', 'Reconstruction:']:
+        PageTemp = globalOperations(PageTemp)
+        if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
+        if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
+        if checkURL: PageTemp = hyperlynx(PageTemp)
 
     if page.namespace() == 0:
         if PageTemp.find('<ref') != -1 and PageTemp.find('<references') == -1:
