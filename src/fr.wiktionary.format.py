@@ -1965,6 +1965,7 @@ def treatPageByName(pageName):
             if re.search(regex, PageTemp):
                 summary = summary + u', retrait de {{clé de tri}}'
                 PageTemp = re.sub(regex, '', PageTemp)
+        PageTemp = PageTemp.replace(u'<!-- supprimer si le mot ne contient pas de caractères accentués ni de caractères typographiques (par ex. trait d’union ou apostrophe) ; sinon suivez les instructions à [[Modèle:clé de tri]] -->', '')
 
 
         if debugLevel > 0: print u'Catégories de prononciation'
@@ -3859,16 +3860,15 @@ def main(*args):
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
-            regex = u'le titre de la page en y enlevant'
+            regex = u'supprimer si le mot ne contient pas de caractères accentués'
             if len(sys.argv) > 2: regex = sys.argv[2]
             p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex)
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
-            if len(sys.argv) > 2:
-                p.pagesBySearch(sys.argv[2])
-            else:
-                p.pagesBySearch(u'le titre de la page en y enlevant', namespaces = [0])
+            research = u'supprimer si le mot ne contient pas de caractères accentués'
+            if len(sys.argv) > 2: research = p.pagesBySearch(sys.argv[2])
+            p.pagesBySearch(research, namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':

@@ -604,16 +604,17 @@ def timeAfterLastEdition(page, site = None):
     return diff_last_edit_time.seconds/60 + diff_last_edit_time.days*24*60
 
 def hasMoreThanTime(page, timeAfterLastEdition = 60): # minutes
-    version = page.getLatestEditors(1)
-    dateNow = datetime.datetime.utcnow()
-    maxDate = dateNow - datetime.timedelta(minutes=timeAfterLastEdition)
-    if debugLevel > 1:
-        print maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')
-        print version[0]['timestamp']
-        print version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')   
-    if version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ') or username in page.title() or page.contributors(total=1).keys()[0] == 'JackPotte':
-        return True
-    if debugLevel > 0: print u' dernière version trop récente ' + version[0]['timestamp']
+    if page.exists():
+        version = page.getLatestEditors(1)
+        dateNow = datetime.datetime.utcnow()
+        maxDate = dateNow - datetime.timedelta(minutes=timeAfterLastEdition)
+        if debugLevel > 1:
+            print maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')
+            print version[0]['timestamp']
+            print version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')   
+        if version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ') or username in page.title() or page.contributors(total=1).keys()[0] == 'JackPotte':
+            return True
+        if debugLevel > 0: print u' dernière version trop récente ' + version[0]['timestamp']
     return False
 
 def isTrustedVersion(page, site = site):
