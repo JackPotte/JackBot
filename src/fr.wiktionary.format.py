@@ -45,6 +45,7 @@ checkURL = False
 fixTags = False
 fixFiles = True
 addDefaultSort = False
+allNamespaces = False
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
 
@@ -1965,8 +1966,6 @@ def treatPageByName(pageName):
             if re.search(regex, PageTemp):
                 summary = summary + u', retrait de {{clé de tri}}'
                 PageTemp = re.sub(regex, '', PageTemp)
-        PageTemp = PageTemp.replace(u'<!-- supprimer si le mot ne contient pas de caractères accentués ni de caractères typographiques (par ex. trait d’union ou apostrophe) ; sinon suivez les instructions à [[Modèle:clé de tri]] -->', '')
-
 
         if debugLevel > 0: print u'Catégories de prononciation'
         if pageName[-2:] == u'um' and PageTemp.find(u'ɔm|fr}}') != -1:
@@ -2412,7 +2411,7 @@ def treatPageByName(pageName):
         if PageTemp.find(u'|flexion}}') != -1:
             lemmaPageName = getLemmaFromPlural(PageTemp)
         else:
-            pass #TODO
+            lemmaPageName = getFirstLemmaFromLocution(pageName)
         if lemmaPageName != '':
             regex = u"==== *{{S\|homophones\|fr}} *====\n\* *'''" + pageName + "''' *{{cf\|" + lemmaPageName +"}}\n"
             if re.search(regex, PageTemp):
@@ -3638,7 +3637,6 @@ def treatPageByName(pageName):
             if pageName[-1:] == u'é':
                 PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
 
-            lemmaPageName = getFirstLemmaFromLocution(pageName)
             if lemmaPageName != u'':
                 lemmaGender = getGenderFromPageName(lemmaPageName)
                 if lemmaGender != '':
@@ -3858,7 +3856,7 @@ def main(*args):
             treatPageByName(u'Annexe:Liste de racines en indo-européen commun')
             treatPageByName(u'Annexe:Réforme orthographique française de 1878')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
-            p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
+            p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
             regex = u'supprimer si le mot ne contient pas de caractères accentués'
             if len(sys.argv) > 2: regex = sys.argv[2]
@@ -3874,8 +3872,8 @@ def main(*args):
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Catégorie:Pages avec ISBN invalide', namespaces = None, afterPage = afterPage)
-            #TODO: ISSN
+            p.pagesByCat(u'Genres manquants en français')
+            #p.pagesByCat(u'Mots ayant des homophones en français')
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
@@ -3922,7 +3920,6 @@ def main(*args):
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec titre inconnu')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias')
-        p.pagesByCat(u'Genres manquants en français')
 
 if __name__ == "__main__":
     main(sys.argv)

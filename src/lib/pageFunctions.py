@@ -298,6 +298,7 @@ def getFirstLemmaFromLocution(pageName):
     return lemmaPageName
 
 def getGenderFromPageName(pageName, languageCode = 'fr', nature = None):
+    if debugLevel > 0: print u'\ngetGenderFromPageName'
     gender = u''
     pageContent = getContentFromPageName(pageName)
     if pageContent.find(u'|' + languageCode + '}} {{m}}') != -1:
@@ -308,6 +309,7 @@ def getGenderFromPageName(pageName, languageCode = 'fr', nature = None):
         gender = u'{{m}}'
     elif pageContent.find(u"''' {{f}}") != -1:
         gender = u'{{f}}'
+    if debugLevel > 1: raw_input(gender)
     return gender
 
 def getLemmaFromPlural(pageContent, languageCode = 'fr', natures = ['nom', 'adjectif', 'suffixe']):

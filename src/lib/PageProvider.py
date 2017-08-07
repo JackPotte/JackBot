@@ -90,13 +90,11 @@ class PageProvider:
         if self.debugLevel > 0: print category.encode(config.console_encoding, 'replace')
         cat = catlib.Category(self.site, category)
         pages = cat.articlesList(False)
-        if namespaces is None:
-            namespaces = []
-            for ns in range(15):
-                namespaces.append(ns)
-        if self.debugLevel > 0: print namespaces
-        gen =  pagegenerators.NamespaceFilterPageGenerator(pages, namespaces) # TODO: filtre 0, 2, 12, mais pas 10 ni 100
-        #gen =  pagegenerators.CategorizedPageGenerator(cat)
+        if namespaces == [0]:
+            # Filtre bien 0, 2, 12, mais pas 10 ni 100 ni 114, Namespace identifier(s) not recognised
+            gen =  pagegenerators.NamespaceFilterPageGenerator(pages, namespaces)
+        else:
+            gen =  pagegenerators.CategorizedPageGenerator(cat)
         modify = u'False'
         for Page in pagegenerators.PreloadingGenerator(gen, 100):
             if Page.title() == afterPage:
