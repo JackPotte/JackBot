@@ -127,21 +127,21 @@ def testAdd(PageHS, summary = '', site = site):
     if debugLevel > 1: raw_input(u'Fin')
     if PageEnd != PageBegin: savePage(page1, PageEnd, summary)
 
-def replaceDepretacedTags(PageTemp):
+def replaceDepretacedTags(pageContent):
     if debugLevel > 0: print u'Remplacements des balises HTML'
 
-    PageTemp = PageTemp.replace(u'</br>', u'<br/>')
-    PageTemp = PageTemp.replace(u'<source lang="html4strict">', u'<source lang="html">')
+    pageContent = pageContent.replace(u'</br>', u'<br/>')
+    pageContent = pageContent.replace(u'<source lang="html4strict">', u'<source lang="html">')
 
     #TODO: {{citation}} https://fr.wikiversity.org/w/index.php?title=Matrice%2FD%C3%A9terminant&action=historysubmit&type=revision&diff=669911&oldid=664849
     #TODO: multiparamètre
-    PageTemp = PageTemp.replace('<font size="+1" color="red">', ur'<span style="font-size:0.63em; color:red;>')
+    pageContent = pageContent.replace('<font size="+1" color="red">', ur'<span style="font-size:0.63em; color:red;>')
     regex = ur'<font color="?([^>"]*)"?>'
     pattern = re.compile(regex, re.UNICODE)
-    for match in pattern.finditer(PageTemp):
+    for match in pattern.finditer(pageContent):
         if debugLevel > 1: print u'Remplacement de ' + match.group(0) + u' par <span style="color:' + match.group(1) + u'">'
-        PageTemp = PageTemp.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
-        PageTemp = PageTemp.replace('</font>', u'</span>')
+        pageContent = pageContent.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
+        pageContent = pageContent.replace('</font>', u'</span>')
 
     for oldTag, newTag in deprecatedTags.items():
         if debugLevel > 1: print "Clé : %s, valeur : %s." % (oldTag, newTag)
@@ -155,11 +155,11 @@ def replaceDepretacedTags(PageTemp):
             closingNewTag = newTag[:newTag.find(u' ')]
         #regex = ur'<' + oldTag + ur'([^>]*)>([^\n]*)</' + closingOldTag + '>' # bug https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:-flex-nom-fam-/Documentation&diff=prev&oldid=24027702
         regex = ur'< *' + oldTag + ur'([^>]*) *>'
-        if re.search(regex, PageTemp):
+        if re.search(regex, pageContent):
             #summary = summary + u', ajout de ' + newTag
-            #PageTemp = re.sub(regex, ur'<' + newTag + ur'\1>', PageTemp)
+            #pageContent = re.sub(regex, ur'<' + newTag + ur'\1>', pageContent)
             pattern = re.compile(regex, re.UNICODE)
-            for match in pattern.finditer(PageTemp):
+            for match in pattern.finditer(pageContent):
                 if debugLevel > 0: print str(match.group(1))
                 if newTag.find(u'font-size') != -1:
                     size = match.group(1).replace('"', '')
@@ -171,62 +171,62 @@ def replaceDepretacedTags(PageTemp):
                         openingTag = newTag + size + '"'
                 else:
                     openingTag = newTag + match.group(1)
-                PageTemp = PageTemp.replace(match.group(0), ur'<' + openingTag + ur'>')
+                pageContent = pageContent.replace(match.group(0), ur'<' + openingTag + ur'>')
 
         regex = ur'</ *' + closingOldTag + ' *>'
-        PageTemp = re.sub(regex, ur'</' + closingNewTag + '>', PageTemp)
-    PageTemp = PageTemp.replace('<strong">', ur'<strong>')
-    PageTemp = PageTemp.replace('<s">', ur'<s>')
-    PageTemp = PageTemp.replace('<code">', ur'<code>')
-    PageTemp = PageTemp.replace(';"">', ur';">')
+        pageContent = re.sub(regex, ur'</' + closingNewTag + '>', pageContent)
+    pageContent = pageContent.replace('<strong">', ur'<strong>')
+    pageContent = pageContent.replace('<s">', ur'<s>')
+    pageContent = pageContent.replace('<code">', ur'<code>')
+    pageContent = pageContent.replace(';"">', ur';">')
 
     # Fix
     regex = ur'<span style="font\-size:([a-z]+)>'
     pattern = re.compile(regex, re.UNICODE)
-    for match in pattern.finditer(PageTemp):
+    for match in pattern.finditer(pageContent):
         #summary = summary + u', correction de color'
-        PageTemp = PageTemp.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
-    PageTemp = PageTemp.replace('</font>', u'</span>')
-    PageTemp = PageTemp.replace('</font>'.upper(), u'</span>')
+        pageContent = pageContent.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
+    pageContent = pageContent.replace('</font>', u'</span>')
+    pageContent = pageContent.replace('</font>'.upper(), u'</span>')
 
     regex = ur'<span style="font\-size:(#[0-9]+)"?>'
-    s = re.search(regex, PageTemp)
+    s = re.search(regex, pageContent)
     if s:
         #summary = summary + u', correction de color'
-        PageTemp = re.sub(regex, ur'<span style="color:' + s.group(1) + ur'">', PageTemp)
+        pageContent = re.sub(regex, ur'<span style="color:' + s.group(1) + ur'">', pageContent)
 
     regex = ur'<span style="text\-size:([0-9]+)"?>'
-    s = re.search(regex, PageTemp)
+    s = re.search(regex, pageContent)
     if s:
         #summary = summary + u', correction de font-size'
-        PageTemp = re.sub(regex, ur'<span style="font-size:' + str(fontSize[int(s.group(1))]) + ur'em">', PageTemp)
+        pageContent = re.sub(regex, ur'<span style="font-size:' + str(fontSize[int(s.group(1))]) + ur'em">', pageContent)
 
     # Fix :
     regex = ur'(<span style="font\-size:[0-9]+px;">)[0-9]+px</span>([^<]*)</strong></strong>'
-    if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'\1 \2</span>', PageTemp)
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur'\1 \2</span>', pageContent)
 
-    PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong><strong>', u'<span style="font-size:75px;">')
-    PageTemp = PageTemp.replace(u'<strong><strong><strong><strong><strong>', u'<span style="font-size:50px;">')
-    PageTemp = PageTemp.replace(u'<strong><strong><strong><strong>', u'<span style="font-size:40px;">')
-    PageTemp = PageTemp.replace(u'<strong><strong><strong>', u'<span style="font-size:25px;">')
-    PageTemp = PageTemp.replace(u'<strong><strong>', u'<span style="font-size:20px;">')
-    PageTemp = re.sub(ur'</strong></strong></strong></strong></strong></strong>', ur'</span>', PageTemp)
-    PageTemp = re.sub(ur'</strong></strong></strong></strong></strong>', ur'</span>', PageTemp)
-    PageTemp = re.sub(ur'</strong></strong></strong></strong>', ur'</span>', PageTemp)
-    PageTemp = re.sub(ur'</strong></strong></strong>', ur'</span>', PageTemp)
-    PageTemp = re.sub(ur'</strong></strong>', ur'</span>', PageTemp)
+    pageContent = pageContent.replace(u'<strong><strong><strong><strong><strong><strong>', u'<span style="font-size:75px;">')
+    pageContent = pageContent.replace(u'<strong><strong><strong><strong><strong>', u'<span style="font-size:50px;">')
+    pageContent = pageContent.replace(u'<strong><strong><strong><strong>', u'<span style="font-size:40px;">')
+    pageContent = pageContent.replace(u'<strong><strong><strong>', u'<span style="font-size:25px;">')
+    pageContent = pageContent.replace(u'<strong><strong>', u'<span style="font-size:20px;">')
+    pageContent = re.sub(ur'</strong></strong></strong></strong></strong></strong>', ur'</span>', pageContent)
+    pageContent = re.sub(ur'</strong></strong></strong></strong></strong>', ur'</span>', pageContent)
+    pageContent = re.sub(ur'</strong></strong></strong></strong>', ur'</span>', pageContent)
+    pageContent = re.sub(ur'</strong></strong></strong>', ur'</span>', pageContent)
+    pageContent = re.sub(ur'</strong></strong>', ur'</span>', pageContent)
     regex = ur'<strong>([^<]*)</span>'
-    if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'<strong>\1</strong>', PageTemp)
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur'<strong>\1</strong>', pageContent)
     regex = ur'<strong><span ([^<]*)</span></span>'
-    if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'<strong><span \1</span></strong>', PageTemp)
-    #PageTemp = re.sub(ur'</span></span>', ur'</span>', PageTemp)
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur'<strong><span \1</span></strong>', pageContent)
+    #pageContent = re.sub(ur'</span></span>', ur'</span>', pageContent)
 
-    return PageTemp
+    return pageContent
 
-def replaceFilesErrors(PageTemp):
+def replaceFilesErrors(pageContent):
     #https://fr.wiktionary.org/wiki/Sp%C3%A9cial:LintErrors/bogus-image-options
     badFileParameters = []
     badFileParameters.append(u'')
@@ -234,102 +234,118 @@ def replaceFilesErrors(PageTemp):
     for badFileParameter in badFileParameters:
         regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *' + badFileParameter + ur' *(\||\])'
         if debugLevel > 1: print regex
-        PageTemp = re.sub(regex, ur'\1\3', PageTemp)
+        pageContent = re.sub(regex, ur'\1\3', pageContent)
     # Doublons
     regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *thumb *[\|\]])'
-    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
+    pageContent = re.sub(regex, ur'\1\3', pageContent)
     regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *vignette *[\|\]])'
-    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
+    pageContent = re.sub(regex, ur'\1\3', pageContent)
     regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *vignette *[\|\]])'
-    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
+    pageContent = re.sub(regex, ur'\1\3', pageContent)
     regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *thumb *[\|\]])'
-    PageTemp = re.sub(regex, ur'\1\3', PageTemp)
-    return PageTemp
+    pageContent = re.sub(regex, ur'\1\3', pageContent)
+    return pageContent
 
-def replaceDMOZ(PageTemp):
+def replaceDMOZ(pageContent):
     # http://www.dmoz.org => http://dmoztools.net
-    if PageTemp.find('dmoz.org/search?') == -1 and PageTemp.find('dmoz.org/license.html') == -1:
+    if pageContent.find('dmoz.org/search?') == -1 and pageContent.find('dmoz.org/license.html') == -1:
         if debugLevel > 1: print regex
         regex = ur'\[http://(www\.)?dmoz\.org/([^' + URLend + ur']*)([^\]]*)\]'
-        PageTemp = re.sub(regex, ur'[[dmoz:\2|\3]]', PageTemp)
+        pageContent = re.sub(regex, ur'[[dmoz:\2|\3]]', pageContent)
         regex =   ur'http://(www\.)?dmoz\.org/([^' + URLend + ur']*)'
-        PageTemp = re.sub(regex, ur'[[dmoz:\2]]', PageTemp)
-    return PageTemp
+        pageContent = re.sub(regex, ur'[[dmoz:\2]]', pageContent)
+    return pageContent
 
-def replaceISBN(PageTemp):
+def replaceISBN(pageContent):
     #TODO: out of <source> <nowiki> <pre>
-    PageTemp = PageTemp.replace('ISBN&#160;', 'ISBN ')
+    pageContent = pageContent.replace('ISBN&#160;', 'ISBN ')
     regex = ur'\(*ISBN +([0-9Xx\- ]+)\)*( [^0-9Xx\- ])'
     if debugLevel > 1: print regex
-    if re.search(regex, PageTemp):
+    if re.search(regex, pageContent):
         if debugLevel > 0: u'ISBN'
-        PageTemp = re.sub(regex, ur'{{ISBN|\1}}\2', PageTemp)
+        pageContent = re.sub(regex, ur'{{ISBN|\1}}\2', pageContent)
     regex = ur'\(*ISBN +([0-9Xx\- ]+)\)*'
     if debugLevel > 1: print regex
-    if re.search(regex, PageTemp):
+    if re.search(regex, pageContent):
         if debugLevel > 0: u'ISBN'
-        PageTemp = re.sub(regex, ur'{{ISBN|\1}}', PageTemp)
+        pageContent = re.sub(regex, ur'{{ISBN|\1}}', pageContent)
     # Fix
     regex = ur'{{ISBN *\|([0-9X\- ]+)}}([Xx]?)'
-    if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'{{ISBN|\1\2}}', PageTemp)
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur'{{ISBN|\1\2}}', pageContent)
     regex = ur'{{ISBN *\| *(1[03]) *}}'
-    if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'ISBN \1', PageTemp)
-    if debugLevel > 1: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
-    return PageTemp
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur'ISBN \1', pageContent)
+    if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+    return pageContent
 
-def globalOperations(PageTemp):
-    PageTemp = replaceDMOZ(PageTemp)
-    PageTemp = replaceISBN(PageTemp)
+def globalOperations(pageContent):
+    pageContent = replaceDMOZ(pageContent)
+    pageContent = replaceISBN(pageContent)
 
     # Retire les espaces dans {{FORMATNUM:}} qui empêche de les trier dans les tableaux
-    PageTemp = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', PageTemp)
-    return PageTemp
+    pageContent = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', pageContent)
+    return pageContent
 
 
 #*** Wiktionary functions ***
-def getLemmaFromLocution(pageName):
-    if debugLevel > 0: print u'\ngetLemmaFromLocution'
-    pageLemma = getContentFromPageName(pageName[:pageName.find(u' ')])
-    return pageLemma
+def getFirstLemmaFromLocution(pageName):
+    if debugLevel > 0: print u'\ngetFirstLemmaFromLocution'
+    lemmaPageName = ''
+    if pageName.find(u' ') != -1:
+        if debugLevel > 0: print u' lemme de locution trouvé : ' + lemmaPageName
+        lemmaPageName = pageName[:pageName.find(u' ')]
+    return lemmaPageName
 
-def getLemmaFromPlural(PageTemp):
+def getGenderFromPageName(pageName, languageCode = 'fr', nature = None):
+    gender = u''
+    pageContent = getContentFromPageName(pageName)
+    if pageContent.find(u'|' + languageCode + '}} {{m}}') != -1:
+        gender = u'{{m}}'
+    elif pageContent.find(u'|' + languageCode + '}} {{f}}') != -1:
+        gender = u'{{f}}'
+    elif pageContent.find(u"''' {{m}}") != -1:
+        gender = u'{{m}}'
+    elif pageContent.find(u"''' {{f}}") != -1:
+        gender = u'{{f}}'
+    return gender
+
+def getLemmaFromPlural(pageContent, languageCode = 'fr', natures = ['nom', 'adjectif', 'suffixe']):
     if debugLevel > 0: print u'\ngetLemmaFromPlural'
-    pageLemma = u''
-
-    regex = ur"(=== {{S\|(nom|adjectif)\|fr\|flexion}} ===\n({{fr\-[^}]*}}\n)*'''[^\n]+\n# *'* *(Masculin|Féminin)* *'* *'*[P|p]luriel *'* *de'* *'* *(\[\[|{{li?e?n?\|))([^#\|\]}]+)"
-    s = re.search(regex, PageTemp)
+    lemmaPageName = u''
+    regex = ur"(=== {{S\|(" + '|'.join(natures) + ")\|" + languageCode + "\|flexion}} ===\n({{" + languageCode + "\-[^}]*}}\n)*'''[^\n]+\n# *'* *(Masculin|Féminin)* *'* *'*[P|p]luriel *'* *de'* *'* *(\[\[|{{li?e?n?\|))([^#\|\]}]+)"
+    s = re.search(regex, pageContent)
     if s:
         if debugLevel > 1:
             print(s.group(1).encode(config.console_encoding, 'replace')) # 2 = adjectif, 3 = fr-rég, 4 = Féminin, 5 = {{lien|, 6 = lemme
             raw_input(s.group(6).encode(config.console_encoding, 'replace'))
-        pageLemma = s.group(6)
-    if debugLevel > 0: print u' pageLemma found: ' + pageLemma
+        lemmaPageName = s.group(6)
+    if debugLevel > 0: print u' lemmaPageName found: ' + lemmaPageName
+    if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
 
-    return pageLemma
+    return lemmaPageName
 
-def getLemmaFromConjugation(PageTemp):
+def getLemmaFromConjugation(pageContent):
     if debugLevel > 0: print u'\ngetLemmaFromConjugation'
-    pageLemma = u''
+    lemmaPageName = u''
     regex = ur"(=== {{S\|verbe\|fr\|flexion}} ===\n({{fr\-[^}]*}}\n)*'''[^\n]+\n#[^\n\[{]+(\[\[|{{li?e?n?\|))([^#\|\]}]+)}*\]*'*\."
-    s = re.search(regex, PageTemp)
+    s = re.search(regex, pageContent)
     if s:
         if debugLevel > 1:
             print(s.group(1).encode(config.console_encoding, 'replace')) # 2 fr-verbe-flexion, 3 = {{lien|, 4 = lemme
             raw_input(s.group(4).encode(config.console_encoding, 'replace'))
-        pageLemma = s.group(4)
-    if debugLevel > 0: print u' pageLemma found: ' + pageLemma
+        lemmaPageName = s.group(4)
+    if debugLevel > 0: print u' lemmaPageName found: ' + lemmaPageName
 
-    return pageLemma
+    return lemmaPageName
 
 def getFlexionTemplate(pageName, language, nature):
     if debugLevel > 0: print u'\ngetFlexionTemplate'
     FlexionTemplate = u''
-    PageTemp = getContentFromPageName(pageName)
+    pageContent = getContentFromPageName(pageName)
     regex = ur"=== {{S\|" + nature + ur"\|" + language + ur"\|flexion(\|num=[0-9])?}} ===\n{{(" + language + ur"\-[^}]+)}}"
     if debugLevel > 1: print u' ' + regex
-    s = re.search(regex, PageTemp)
+    s = re.search(regex, pageContent)
     if s:
         if debugLevel > 1:
             if not s.group(1) is None: print u' ' + s.group(1)
@@ -345,10 +361,10 @@ def getFlexionTemplate(pageName, language, nature):
 def getFlexionTemplateFromLemma(pageName, language, nature):
     if debugLevel > 0: print u'\ngetFlexionTemplateFromLemma'
     FlexionTemplate = u''
-    PageTemp = getContentFromPageName(pageName)
+    pageContent = getContentFromPageName(pageName)
     regex = ur"=== {{S\|" + nature + ur"\|" + language + ur"(\|num=[0-9])?}} ===\n{{(" + language + ur"\-[^}]+)}}"
     if debugLevel > 1: print u' ' + regex
-    s = re.search(regex, PageTemp)
+    s = re.search(regex, pageContent)
     if s:
         if debugLevel > 1:
             if not s.group(1) is None: print u' ' + s.group(1)
@@ -361,44 +377,44 @@ def getFlexionTemplateFromLemma(pageName, language, nature):
 
     return FlexionTemplate
 
-def nextTemplate(PageEnd, PageTemp, currentTemplate = None, languageCode = None):
+def nextTemplate(PageEnd, pageContent, currentTemplate = None, languageCode = None):
     if languageCode is None:
-        PageEnd = PageEnd + PageTemp[:PageTemp.find('}}')+2]
+        PageEnd = PageEnd + pageContent[:pageContent.find('}}')+2]
     else:
         PageEnd = PageEnd + currentTemplate + "|" + languageCode + '}}'
-    PageTemp = PageTemp[PageTemp.find('}}')+2:]
-    return PageEnd, PageTemp
+    pageContent = pageContent[pageContent.find('}}')+2:]
+    return PageEnd, pageContent
 
-def nextTranslationTemplate(PageEnd, PageTemp, result = u'-'):
-    PageEnd = PageEnd + PageTemp[:len(u'trad')] + result
-    PageTemp = PageTemp[PageTemp.find(u'|'):]
-    return PageEnd, PageTemp
+def nextTranslationTemplate(PageEnd, pageContent, result = u'-'):
+    PageEnd = PageEnd + pageContent[:len(u'trad')] + result
+    pageContent = pageContent[pageContent.find(u'|'):]
+    return PageEnd, pageContent
                       
-def addCat(PageTemp, lang, cat):    # à remplacer par celle ci-dessous
+def addCat(pageContent, lang, cat):    # à remplacer par celle ci-dessous
     if lang != u'':
-        if PageTemp.find(cat) == -1 and PageTemp.find(u'{{langue|' + lang + '}}') != -1:
+        if pageContent.find(cat) == -1 and pageContent.find(u'{{langue|' + lang + '}}') != -1:
             if cat.find(u'[[Catégorie:') == -1: cat = u'[[Catégorie:' + cat + u']]'
-            PageTemp2 = PageTemp[PageTemp.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}'):]
-            if PageTemp2.find(u'{{langue|') != -1:
+            pageContent2 = pageContent[pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}'):]
+            if pageContent2.find(u'{{langue|') != -1:
                 if debugLevel > 0: print u' catégorie ajoutée avant la section suivante'
-                if PageTemp2.find(u'== {{langue|') != -1:
-                    PageTemp = PageTemp[:PageTemp.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+PageTemp2.find(u'== {{langue|')] + cat + u'\n\n' + PageTemp[PageTemp.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+PageTemp2.find(u'== {{langue|'):]
-                elif PageTemp2.find(u'=={{langue|') != -1:
-                    PageTemp = PageTemp[:PageTemp.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+PageTemp2.find(u'=={{langue|')] + cat + u'\n\n' + PageTemp[PageTemp.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+PageTemp2.find(u'=={{langue|'):]
+                if pageContent2.find(u'== {{langue|') != -1:
+                    pageContent = pageContent[:pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'== {{langue|')] + cat + u'\n\n' + pageContent[pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'== {{langue|'):]
+                elif pageContent2.find(u'=={{langue|') != -1:
+                    pageContent = pageContent[:pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'=={{langue|')] + cat + u'\n\n' + pageContent[pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'=={{langue|'):]
                 else:
                      print u'Modèle {{langue| mal positionné'
             else:
                 if debugLevel > 0: print u' catégorie ajoutée avant les interwikis'
                 regex = ur'\n\[\[\w?\w?\w?:'
-                if re.compile(regex).search(PageTemp):
+                if re.compile(regex).search(pageContent):
                     try:
-                        PageTemp = PageTemp[:re.search(regex,PageTemp).start()] + u'\n' + cat + u'\n' + PageTemp[re.search(regex,PageTemp).start():]
+                        pageContent = pageContent[:re.search(regex,pageContent).start()] + u'\n' + cat + u'\n' + pageContent[re.search(regex,pageContent).start():]
                     except:
                         print u'pb regex interwiki'
                 else:
                     if debugLevel > 0: print u' catégorie ajoutée en fin de page'
-                    PageTemp = PageTemp + u'\n' + cat
-    return PageTemp
+                    pageContent = pageContent + u'\n' + cat
+    return pageContent
 
 
 def addLine(Page, CodeLangue, Section, pageContent):
@@ -421,9 +437,9 @@ def addLine(Page, CodeLangue, Section, pageContent):
             if debugLevel > 1: print u' position S : ' + s
 
             # Recherche de l'ordre réel de la section à ajouter
-            PageTemp2 = Page[Page.find(u'{{langue|' + CodeLangue + '}}')+len(u'{{langue|' + CodeLangue + '}}'):]
-            #SectionPage = re.findall("{{S\|([^}]+)}}", PageTemp2) # Mais il faut trouver le {{langue}} de la limite de fin
-            SectionPage = re.findall(ur"\n=+ *{{S?\|?([^}/|]+)([^}]*)}}", PageTemp2)
+            pageContent2 = Page[Page.find(u'{{langue|' + CodeLangue + '}}')+len(u'{{langue|' + CodeLangue + '}}'):]
+            #SectionPage = re.findall("{{S\|([^}]+)}}", pageContent2) # Mais il faut trouver le {{langue}} de la limite de fin
+            SectionPage = re.findall(ur"\n=+ *{{S?\|?([^}/|]+)([^}]*)}}", pageContent2)
             if debugLevel > 1:
                 o = 0
                 while o < len(SectionPage):
@@ -453,17 +469,17 @@ def addLine(Page, CodeLangue, Section, pageContent):
                 print u''
 
             # Ajout après la section trouvée
-            if PageTemp2.find(u'{{S|' + SectionPage[o][0]) == -1:
+            if pageContent2.find(u'{{S|' + SectionPage[o][0]) == -1:
                 print 'Erreur d\'encodage'
                 return
 
-            PageTemp3 = PageTemp2[PageTemp2.find(u'{{S|' + SectionPage[o][0]):]
+            pageContent3 = pageContent2[pageContent2.find(u'{{S|' + SectionPage[o][0]):]
             if SectionPage[o][0] != Section and Section != u'catégorie' and Section != u'clé de tri':
                 if debugLevel > 1: print u' ajout de la section'
                 pageContent = u'\n' + Niveau[NumSection] + u' {{S|' + Section + u'}} ' + Niveau[NumSection] + u'\n' + pageContent
 
             # Ajout à la ligne
-            if PageTemp3.find(u'\n==') == -1:
+            if pageContent3.find(u'\n==') == -1:
                 regex = ur'\n\[\[\w?\w?\w?:'
                 if re.compile(regex).search(Page):
                     interwikis = re.search(regex, Page).start()
@@ -489,7 +505,7 @@ def addLine(Page, CodeLangue, Section, pageContent):
                     if debugLevel > 0: print u' ajout en fin de page'
                     Page = Page + pageContent
             else:
-                Page = Page[:-len(PageTemp2)] + PageTemp2[:-len(PageTemp3)] + PageTemp3[:PageTemp3.find(u'\n\n')] + u'\n' + pageContent + u'\n' + PageTemp3[PageTemp3.find(u'\n\n'):]
+                Page = Page[:-len(pageContent2)] + pageContent2[:-len(pageContent3)] + pageContent3[:pageContent3.find(u'\n\n')] + u'\n' + pageContent + u'\n' + pageContent3[pageContent3.find(u'\n\n'):]
     return Page
 
 def sectionNumber(Section):
@@ -614,13 +630,13 @@ def isTrustedVersion(page, site = site):
         return True
     return False
 
-def searchDoubles(PageTemp, parameter):
+def searchDoubles(pageContent, parameter):
     if debugLevel > 0: u' Recherche de doublons dans le modèle : ' + parameter[1]
     PageEnd = u''
     regex = ur'{{' + parameter[1] + ur'[^\n]*{{' + parameter[1]
-    while re.search(regex, PageTemp):
-        raw_input(PageTemp[re.search(regex, PageTemp).start():re.search(regex, PageTemp).end()].encode(config.console_encoding, 'replace'))
-    return PageEnd + PageTemp
+    while re.search(regex, pageContent):
+        raw_input(pageContent[re.search(regex, pageContent).start():re.search(regex, pageContent).end()].encode(config.console_encoding, 'replace'))
+    return PageEnd + pageContent
 
 def getContentFromPageName(pageName, allowedNamespaces = None, site = site):
     page = Page(site, pageName)
@@ -706,23 +722,23 @@ def getParameter(Page, p):
 	else:
 		return trim(Page[:Page.find(u'}')])
 
-def addParameter(PageTemp, parameter, content = None):
+def addParameter(pageContent, parameter, content = None):
     PageEnd = u''
     if parameter == u'titre' and content is None:
         # Détermination du titre d'un site web
         URL = getParameter(u'url')
-        PageEnd = PageTemp
+        PageEnd = pageContent
 
     else:
         print 'en travaux'
     return PageEnd
         
-def replaceParameterValue(PageTemp, template, parameterKey, oldValue, newValue):
+def replaceParameterValue(pageContent, template, parameterKey, oldValue, newValue):
     regex = ur'({{ *(' + template[:1].lower() + ur'|' + template[:1].upper() + ur')' + template[1:] + ur' *\n* *\|[^}]*' + parameterKey + ur' *= *)' + oldValue
     if debugLevel > 0: print regex
-    PageTemp = re.sub(regex, ur'\1' + newValue, PageTemp)
+    pageContent = re.sub(regex, ur'\1' + newValue, pageContent)
 
-    return PageTemp
+    return pageContent
 
 def log(source):        
     txtfile = codecs.open(u'JackBot.log', 'a', 'utf-8')
@@ -730,9 +746,9 @@ def log(source):
     txtfile.close()
 
 def stopRequired(username = username):
-    PageTemp = getContentFromPageName(u'User talk:' + username)
-    if PageTemp == 'KO': return
-    if PageTemp != u"{{/Stop}}":
+    pageContent = getContentFromPageName(u'User talk:' + username)
+    if pageContent == 'KO': return
+    if pageContent != u"{{/Stop}}":
         pywikibot.output (u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
         exit(0)
 

@@ -2,19 +2,17 @@
 # coding: utf-8
 '''
 Ce script formate les pages du Wiktionnaire, tous les jours après minuit depuis le labs Wikimedia :
-1) Retire certains doublons de modèles et d'espaces.
-2) Ajoute les clés de tris, prononciations vides, et certains liens vers les conjugaisons.
-3) Met à jour les liens vers les traductions (modèles trad, trad+, trad-, trad-début et trad-fin), et les classe par ordre alphabétique.
-4) Ajoute les codes langues appropriés dans les modèles du Wiktionnaire du namespace 0 et paragraphes appropriés (dont "nocat=1" si une catégorie le justifie).
-5) Complète les flexions de verbes en français à vérifier.
-6) Gère des modèles {{voir}} en début de page.
-7) Ajoute les anagrammes (pour les petits mots)
-8) Teste les URL et indique si elles sont brisées avec {{lien brisé}}, et les transforme en modèle s'il existe pour leur site
-9) Remplace les modèles catégorisés comme obsolètes
-10) Créer des liens absents : http://fr.wiktionary.org/w/index.php?title=radiateur&diff=prev&oldid=14443668
-11) Détecte les modèles à ajouter : http://fr.wiktionary.org/w/index.php?title=cl%C3%A9&diff=prev&oldid=14443625
-12) Crée les redirection d'apostrophe dactylographique vers apostrophe typographique
-Testé ici : http://fr.wiktionary.org/w/index.php?title=Utilisateur%3AJackBot%2Ftest&diff=14533806&oldid=14533695
+1) Crée les redirection d'apostrophe dactylographique vers apostrophe typographique
+2) Gère des modèles {{voir}} en début de page.
+3) Retire certains doublons de modèles et d'espaces.
+4) Remplace les modèles catégorisés comme obsolètes
+5) Ajoute les prononciations sur la ligne de forme, et certains liens vers les conjugaisons.
+6) Met à jour les liens vers les traductions (modèles trad, trad+, trad-, trad-début et trad-fin), et les classe par ordre alphabétique.
+7) Détecte les modèles de contexte à ajouter, et ajoute leurs codes langues  ou "nocat=1"
+8) Complète la boite de flexions de verbes en français.
+9) Ajoute les anagrammes (pour les petits mots)
+10) Teste les URL et indique si elles sont brisées avec {{lien brisé}}, et les transforme en modèle s'il existe pour leur site
+Tests sur http://fr.wiktionary.org/w/index.php?title=Utilisateur%3AJackBot%2Ftest&diff=14533806&oldid=14533695
 '''
 
 from __future__ import absolute_import, unicode_literals
@@ -1701,7 +1699,6 @@ def treatPageByName(pageName):
         PageTemp = re.sub(ur'{{S\| ?gent(ilés)?\|?[a-zé]*}}', u'{{S|gentilés}}', PageTemp)
         PageTemp = re.sub(ur'{{S\| ?faux\-amis?\|?[a-zé]*}}', u'{{S|faux-amis}}', PageTemp)
         PageTemp = re.sub(ur'{{S\| ?holo(nymes)?\|?[a-z ]*}}', u'{{S|holonymes}}', PageTemp)
-        PageTemp = re.sub(ur'{{S\| ?homo(phones)?\|?[a-z ]*}}', u'{{S|homophones}}', PageTemp)
         PageTemp = re.sub(ur'{{S\| ?hyper(onymes)?\|?[a-z ]*}}', u'{{S|hyperonymes}}', PageTemp)
         PageTemp = re.sub(ur'{{S\| ?hypo(nymes)?\|?[a-z ]*}}', u'{{S|hyponymes}}', PageTemp)
         PageTemp = re.sub(ur'{{S\| ?m(é|e)ro(nymes)?\|?[a-z ]*}}', u'{{S|méronymes}}', PageTemp)
@@ -1797,216 +1794,222 @@ def treatPageByName(pageName):
             summary = summary + u', ajout de {{S|traductions}}'
         '''
 
-        if page.namespace() == 0:
-            if debugLevel > 0: print u'Ajout des {{voir}}'
-            if PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}') != -1:
-                PageTemp = PageTemp[:PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[:1].lower() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|{{lc:{{PAGENAME}}}}'):len(PageTemp)]
-                summary = summary + u', subst de {{lc:{{PAGENAME}}}}'
-            if PageTemp.find(u'{{voir|{{ucfirst:{{PAGENAME}}}}}}') != -1:
-                PageTemp = PageTemp[:PageTemp.find(u'{{voir|{{ucfirst:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[:1].upper() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{ucfirst:{{PAGENAME}}}}}}')+len(u'{{voir|{{ucfirst:{{PAGENAME}}}}'):len(PageTemp)]
-                summary = summary + u', subst de {{ucfirst:{{PAGENAME}}}}'
-            if PageTemp.find(u'{{voir|{{LC:{{PAGENAME}}}}}}') != -1:
-                PageTemp = PageTemp[:PageTemp.find(u'{{voir|{{LC:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[:1].lower() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{LC:{{PAGENAME}}}}}}')+len(u'{{voir|{{LC:{{PAGENAME}}}}'):len(PageTemp)]
-                summary = summary + u', subst de {{LC:{{PAGENAME}}}}'
-            if PageTemp.find(u'{{voir|{{UCFIRST:{{PAGENAME}}}}}}') != -1:
-                PageTemp = PageTemp[:PageTemp.find(u'{{voir|{{UCFIRST:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[:1].upper() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{UCFIRST:{{PAGENAME}}}}}}')+len(u'{{voir|{{UCFIRST:{{PAGENAME}}}}'):len(PageTemp)]
-                summary = summary + u', subst de {{UCFIRST:{{PAGENAME}}}}'
-            if PageTemp.find(u'{{voir|') == -1 and PageTemp.find(u'{{voir/') == -1:
-                PageVoir = u''
-                # Liste de toutes les pages potentiellement "à voir"
-                PagesCleTotal = pageName
-                if PagesCleTotal.find(pageName.lower()) == -1: PagesCleTotal = PagesCleTotal + u'|' + pageName.lower()
-                if PagesCleTotal.find(pageName.upper()) == -1: PagesCleTotal = PagesCleTotal + u'|' + pageName.upper()
-                if PagesCleTotal.find(pageName[:1].lower() + pageName[1:]) == -1: PagesCleTotal = PagesCleTotal + u'|' + pageName[:1].lower() + pageName[1:]
-                if PagesCleTotal.find(pageName[:1].upper() + pageName[1:]) == -1: PagesCleTotal = PagesCleTotal + u'|' + pageName[:1].upper() + pageName[1:]
-                if PagesCleTotal.find(u'-' + pageName[:1].lower() + pageName[1:]) == -1: PagesCleTotal = PagesCleTotal + u'|-' + pageName[:1].lower() + pageName[1:]
-                if PagesCleTotal.find(pageName[:1].lower() + pageName[1:] + u'-') == -1: PagesCleTotal = PagesCleTotal + u'|' + pageName[:1].lower() + pageName[1:] + u'-'
-                if PagesCleTotal.find(u'-') != -1: PagesCleTotal = PagesCleTotal + u'|' + PagesCleTotal.replace(u'-',u'')
-                LettresDiacritiques = []
-                LettresDiacritiques.append([u'a',u'á',u'à',u'ä',u'â',u'ã'])
-                LettresDiacritiques.append([u'c',u'ç'])
-                LettresDiacritiques.append([u'e',u'é',u'è',u'ë',u'ê'])
-                LettresDiacritiques.append([u'i',u'í',u'ì',u'ï',u'î'])
-                LettresDiacritiques.append([u'n',u'ñ'])
-                LettresDiacritiques.append([u'o',u'ó',u'ò',u'ö',u'ô',u'õ'])
-                LettresDiacritiques.append([u'u',u'ú',u'ù',u'ü',u'û'])
-                for l in range(0,len(LettresDiacritiques)):
-                    for d in range(0,len(LettresDiacritiques[l])):
-                        if pageName.find(LettresDiacritiques[l][d]) != -1:
-                            if debugLevel > 1: print u'Titre contenant : ' + LettresDiacritiques[l][d]
-                            Lettre = LettresDiacritiques[l][d]
-                            for d in range(0,len(LettresDiacritiques[l])):
-                                PagesCleTotal = PagesCleTotal + u'|' + pageName.replace(Lettre,LettresDiacritiques[l][d])
-                if PagesCleTotal.find(CleTri) == -1: PagesCleTotal = PagesCleTotal + u'|' + CleTri    # exception ? and PageTemp.find(u'{{langue|eo}}') == -1
-                # Filtre des pages de la liste "à voir"
-                PagesCleRestant = PagesCleTotal + u'|'
-                PagesCleTotal = u''
-                PagesVoir = u''
-                if debugLevel > 0: print u' Recherche des clés...'
-                while PagesCleRestant != u'':
-                    if debugLevel > 1: print PagesCleRestant.encode(config.console_encoding, 'replace')
-                    currentPage = PagesCleRestant[:PagesCleRestant.find(u'|')]
-                    PagesCleRestant = PagesCleRestant[PagesCleRestant.find(u'|')+1:len(PagesCleRestant)]
-                    pageCle = Page(site, currentPage)
-                    PageTempCle = getContentFromPage(pageCle)
-                    if PageTempCle != u'KO':
-                        if PagesCleTotal.find(currentPage) == -1: PagesCleTotal = PagesCleTotal + u'|' + currentPage
-                        if PageTempCle.find(u'{{voir|') != -1:
-                            PageTempCle2 = PageTempCle[PageTempCle.find(u'{{voir|')+len(u'{{voir|'):len(PageTempCle)]
-                            PagesVoir = PagesVoir + u'|' + PageTempCle2[:PageTempCle2.find('}}')]
-                        elif PageTempCle.find(u'{{voir/') != -1:
-                            PageTempCle2 = PageTempCle[PageTempCle.find(u'{{voir/')+len(u'{{voir/'):len(PageTempCle)]
-                            PageTemp = u'{{voir/' + PageTempCle2[:PageTempCle2.find('}}')+3] + PageTemp
-                            pageMod = Page(site, u'Template:voir/' + PageTempCle2[:PageTempCle2.find('}}')])
-                            PageTempModBegin = getContentFromPage(pageMod)
-                            if PageTempModBegin == 'KO': break
-                            PageTempMod = PageTempModBegin
-                            if PageTempMod.find(u'!') == -1:
-                                if PageTempMod.find(pageName) == -1: PageTempMod = PageTempMod[:PageTempMod.find('}}')] + u'|' + pageName + PageTempMod[PageTempMod.find('}}'):len(PageTempMod)]
-                                if PageTempMod.find(PageVoir) == -1: PageTempMod = PageTempMod[:PageTempMod.find('}}')] + u'|' + PageVoir + PageTempMod[PageTempMod.find('}}'):len(PageTempMod)]
-                            if debugLevel > 0:
-                                print u'PagesCleRestant vide'
-                            else:
-                                if PageTempMod != PageTempModBegin: savePage(pageMod,PageTempMod, summary)
-                            PagesCleRestant = u''
-                            break
-
-                if debugLevel > 0: print u' Filtre des doublons...'
-                if PagesVoir != u'':
-                    PagesVoir = PagesVoir + u'|'
-                    while PagesVoir.find(u'|') != -1:
-                        if PagesCleTotal.find(PagesVoir[:PagesVoir.find(u'|')]) == -1: PagesCleTotal = PagesCleTotal + u'|' + PagesVoir[:PagesVoir.find(u'|')]
-                        PagesVoir = PagesVoir[PagesVoir.find(u'|')+1:len(PagesVoir)]
-                if debugLevel > 2: raw_input(PagesCleTotal.encode(config.console_encoding, 'replace'))
-
-                if debugLevel > 0: print u' Balayage de toutes les pages "à voir"...'
-                if PagesCleTotal != u'':
-                    while PagesCleTotal[:1] == u'|': PagesCleTotal = PagesCleTotal[1:len(PagesCleTotal)]
-                if PagesCleTotal != pageName:
-                    if debugLevel > 0: print u'  Différent de la page courante'
-                    PagesCleRestant = PagesCleTotal + u'|'
-                    while PagesCleRestant.find(u'|') != -1:
-                        currentPage = PagesCleRestant[:PagesCleRestant.find(u'|')]
-                        if currentPage == u'':
-                            if debugLevel > 0: print u'currentPage vide'
-                            break
-                        PagesCleRestant = PagesCleRestant[PagesCleRestant.find(u'|')+1:len(PagesCleRestant)]
-                        if currentPage != pageName:
-                            pageCle = Page(site, currentPage)
-                            PageTempCleBegin = getContentFromPage(pageCle)
+        if debugLevel > 0: print u'Ajout des {{voir}}'
+        if PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}') != -1:
+            PageTemp = PageTemp[:PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[:1].lower() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|{{lc:{{PAGENAME}}}}'):len(PageTemp)]
+            summary = summary + u', subst de {{lc:{{PAGENAME}}}}'
+        if PageTemp.find(u'{{voir|{{ucfirst:{{PAGENAME}}}}}}') != -1:
+            PageTemp = PageTemp[:PageTemp.find(u'{{voir|{{ucfirst:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[:1].upper() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{ucfirst:{{PAGENAME}}}}}}')+len(u'{{voir|{{ucfirst:{{PAGENAME}}}}'):len(PageTemp)]
+            summary = summary + u', subst de {{ucfirst:{{PAGENAME}}}}'
+        if PageTemp.find(u'{{voir|{{LC:{{PAGENAME}}}}}}') != -1:
+            PageTemp = PageTemp[:PageTemp.find(u'{{voir|{{LC:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[:1].lower() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{LC:{{PAGENAME}}}}}}')+len(u'{{voir|{{LC:{{PAGENAME}}}}'):len(PageTemp)]
+            summary = summary + u', subst de {{LC:{{PAGENAME}}}}'
+        if PageTemp.find(u'{{voir|{{UCFIRST:{{PAGENAME}}}}}}') != -1:
+            PageTemp = PageTemp[:PageTemp.find(u'{{voir|{{UCFIRST:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[:1].upper() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{UCFIRST:{{PAGENAME}}}}}}')+len(u'{{voir|{{UCFIRST:{{PAGENAME}}}}'):len(PageTemp)]
+            summary = summary + u', subst de {{UCFIRST:{{PAGENAME}}}}'
+        if PageTemp.find(u'{{voir|') == -1 and PageTemp.find(u'{{voir/') == -1:
+            PageVoir = u''
+            # Liste de toutes les pages potentiellement "à voir"
+            PagesCleTotal = pageName
+            if PagesCleTotal.find(pageName.lower()) == -1: PagesCleTotal = PagesCleTotal + u'|' + pageName.lower()
+            if PagesCleTotal.find(pageName.upper()) == -1: PagesCleTotal = PagesCleTotal + u'|' + pageName.upper()
+            if PagesCleTotal.find(pageName[:1].lower() + pageName[1:]) == -1: PagesCleTotal = PagesCleTotal + u'|' + pageName[:1].lower() + pageName[1:]
+            if PagesCleTotal.find(pageName[:1].upper() + pageName[1:]) == -1: PagesCleTotal = PagesCleTotal + u'|' + pageName[:1].upper() + pageName[1:]
+            if PagesCleTotal.find(u'-' + pageName[:1].lower() + pageName[1:]) == -1: PagesCleTotal = PagesCleTotal + u'|-' + pageName[:1].lower() + pageName[1:]
+            if PagesCleTotal.find(pageName[:1].lower() + pageName[1:] + u'-') == -1: PagesCleTotal = PagesCleTotal + u'|' + pageName[:1].lower() + pageName[1:] + u'-'
+            if PagesCleTotal.find(u'-') != -1: PagesCleTotal = PagesCleTotal + u'|' + PagesCleTotal.replace(u'-',u'')
+            LettresDiacritiques = []
+            LettresDiacritiques.append([u'a',u'á',u'à',u'ä',u'â',u'ã'])
+            LettresDiacritiques.append([u'c',u'ç'])
+            LettresDiacritiques.append([u'e',u'é',u'è',u'ë',u'ê'])
+            LettresDiacritiques.append([u'i',u'í',u'ì',u'ï',u'î'])
+            LettresDiacritiques.append([u'n',u'ñ'])
+            LettresDiacritiques.append([u'o',u'ó',u'ò',u'ö',u'ô',u'õ'])
+            LettresDiacritiques.append([u'u',u'ú',u'ù',u'ü',u'û'])
+            for l in range(0,len(LettresDiacritiques)):
+                for d in range(0,len(LettresDiacritiques[l])):
+                    if pageName.find(LettresDiacritiques[l][d]) != -1:
+                        if debugLevel > 1: print u'Titre contenant : ' + LettresDiacritiques[l][d]
+                        Lettre = LettresDiacritiques[l][d]
+                        for d in range(0,len(LettresDiacritiques[l])):
+                            PagesCleTotal = PagesCleTotal + u'|' + pageName.replace(Lettre,LettresDiacritiques[l][d])
+            if PagesCleTotal.find(CleTri) == -1: PagesCleTotal = PagesCleTotal + u'|' + CleTri    # exception ? and PageTemp.find(u'{{langue|eo}}') == -1
+            # Filtre des pages de la liste "à voir"
+            PagesCleRestant = PagesCleTotal + u'|'
+            PagesCleTotal = u''
+            PagesVoir = u''
+            if debugLevel > 0: print u' Recherche des clés...'
+            while PagesCleRestant != u'':
+                if debugLevel > 1: print PagesCleRestant.encode(config.console_encoding, 'replace')
+                currentPage = PagesCleRestant[:PagesCleRestant.find(u'|')]
+                PagesCleRestant = PagesCleRestant[PagesCleRestant.find(u'|')+1:len(PagesCleRestant)]
+                pageCle = Page(site, currentPage)
+                PageTempCle = getContentFromPage(pageCle)
+                if PageTempCle != u'KO':
+                    if PagesCleTotal.find(currentPage) == -1: PagesCleTotal = PagesCleTotal + u'|' + currentPage
+                    if PageTempCle.find(u'{{voir|') != -1:
+                        PageTempCle2 = PageTempCle[PageTempCle.find(u'{{voir|')+len(u'{{voir|'):len(PageTempCle)]
+                        PagesVoir = PagesVoir + u'|' + PageTempCle2[:PageTempCle2.find('}}')]
+                    elif PageTempCle.find(u'{{voir/') != -1:
+                        PageTempCle2 = PageTempCle[PageTempCle.find(u'{{voir/')+len(u'{{voir/'):len(PageTempCle)]
+                        PageTemp = u'{{voir/' + PageTempCle2[:PageTempCle2.find('}}')+3] + PageTemp
+                        pageMod = Page(site, u'Template:voir/' + PageTempCle2[:PageTempCle2.find('}}')])
+                        PageTempModBegin = getContentFromPage(pageMod)
+                        if PageTempModBegin == 'KO': break
+                        PageTempMod = PageTempModBegin
+                        if PageTempMod.find(u'!') == -1:
+                            if PageTempMod.find(pageName) == -1: PageTempMod = PageTempMod[:PageTempMod.find('}}')] + u'|' + pageName + PageTempMod[PageTempMod.find('}}'):len(PageTempMod)]
+                            if PageTempMod.find(PageVoir) == -1: PageTempMod = PageTempMod[:PageTempMod.find('}}')] + u'|' + PageVoir + PageTempMod[PageTempMod.find('}}'):len(PageTempMod)]
+                        if debugLevel > 0:
+                            print u'PagesCleRestant vide'
                         else:
-                            PageTempCleBegin = PageTemp
-                        if PageTempCleBegin != u'KO':
-                            PageTempCle = PageTempCleBegin
-                            if PageTempCle.find(u'{{voir/') != -1:
-                                if debugLevel > 0: print u' {{voir/ trouvé'
-                                break
-                            elif PageTempCle.find(u'{{voir|') != -1:
-                                if debugLevel > 0: print u' {{voir| trouvé'
-                                if PagesCleTotal.find(u'|' + currentPage) != -1:
-                                    PageTempCle2 = PageTempCle[PageTempCle.find(u'{{voir|')+len(u'{{voir|'):len(PageTempCle)]
-                                    PageTempCle = PageTempCle[:PageTempCle.find(u'{{voir|')+len(u'{{voir|')] + PagesCleTotal[:PagesCleTotal.find(u'|' + currentPage)] + PagesCleTotal[PagesCleTotal.find(u'|' + currentPage)+len(u'|' + currentPage):len(PagesCleTotal)] + PageTempCle[PageTempCle.find(u'{{voir|')+len(u'{{voir|')+PageTempCle2.find('}}'):len(PageTempCle)]
-                                else:    # Cas du premier
-                                    PageTempCle2 = PageTempCle[PageTempCle.find(u'{{voir|')+len(u'{{voir'):len(PageTempCle)]
-                                    PageTempCle = PageTempCle[:PageTempCle.find(u'{{voir|')+len(u'{{voir|')] + PagesCleTotal[len(currentPage):len(PagesCleTotal)] + PageTempCle[PageTempCle.find(u'{{voir|')+len(u'{{voir')+PageTempCle2.find('}}'):len(PageTempCle)]
-                                if PageTempCle != PageTempCleBegin:
-                                    if currentPage == pageName:
-                                        PageTemp = PageTempCle
-                                    else:
-                                        if debugLevel > 0:
-                                            print u' Première savePage dédiée à {{voir}}'
-                                        else:
-                                            savePage(pageCle, PageTempCle, summary)
-                            else:
-                                if PagesCleTotal.find(u'|' + currentPage) != -1:
-                                    PageTempCle = u'{{voir|' + PagesCleTotal[:PagesCleTotal.find(u'|' + currentPage)] + PagesCleTotal[PagesCleTotal.find(u'|' + currentPage)+len(u'|' + currentPage):len(PagesCleTotal)] + u'}}\n' + PageTempCle
-                                else:    # Cas du premier
-                                    PageTempCle = u'{{voir' + PagesCleTotal[len(currentPage):len(PagesCleTotal)] + u'}}\n' + PageTempCle
+                            if PageTempMod != PageTempModBegin: savePage(pageMod,PageTempMod, summary)
+                        PagesCleRestant = u''
+                        break
+
+            if debugLevel > 0: print u' Filtre des doublons...'
+            if PagesVoir != u'':
+                PagesVoir = PagesVoir + u'|'
+                while PagesVoir.find(u'|') != -1:
+                    if PagesCleTotal.find(PagesVoir[:PagesVoir.find(u'|')]) == -1: PagesCleTotal = PagesCleTotal + u'|' + PagesVoir[:PagesVoir.find(u'|')]
+                    PagesVoir = PagesVoir[PagesVoir.find(u'|')+1:len(PagesVoir)]
+            if debugLevel > 2: raw_input(PagesCleTotal.encode(config.console_encoding, 'replace'))
+
+            if debugLevel > 0: print u' Balayage de toutes les pages "à voir"...'
+            if PagesCleTotal != u'':
+                while PagesCleTotal[:1] == u'|': PagesCleTotal = PagesCleTotal[1:len(PagesCleTotal)]
+            if PagesCleTotal != pageName:
+                if debugLevel > 0: print u'  Différent de la page courante'
+                PagesCleRestant = PagesCleTotal + u'|'
+                while PagesCleRestant.find(u'|') != -1:
+                    currentPage = PagesCleRestant[:PagesCleRestant.find(u'|')]
+                    if currentPage == u'':
+                        if debugLevel > 0: print u'currentPage vide'
+                        break
+                    PagesCleRestant = PagesCleRestant[PagesCleRestant.find(u'|')+1:len(PagesCleRestant)]
+                    if currentPage != pageName:
+                        pageCle = Page(site, currentPage)
+                        PageTempCleBegin = getContentFromPage(pageCle)
+                    else:
+                        PageTempCleBegin = PageTemp
+                    if PageTempCleBegin != u'KO':
+                        PageTempCle = PageTempCleBegin
+                        if PageTempCle.find(u'{{voir/') != -1:
+                            if debugLevel > 0: print u' {{voir/ trouvé'
+                            break
+                        elif PageTempCle.find(u'{{voir|') != -1:
+                            if debugLevel > 0: print u' {{voir| trouvé'
+                            if PagesCleTotal.find(u'|' + currentPage) != -1:
+                                PageTempCle2 = PageTempCle[PageTempCle.find(u'{{voir|')+len(u'{{voir|'):len(PageTempCle)]
+                                PageTempCle = PageTempCle[:PageTempCle.find(u'{{voir|')+len(u'{{voir|')] + PagesCleTotal[:PagesCleTotal.find(u'|' + currentPage)] + PagesCleTotal[PagesCleTotal.find(u'|' + currentPage)+len(u'|' + currentPage):len(PagesCleTotal)] + PageTempCle[PageTempCle.find(u'{{voir|')+len(u'{{voir|')+PageTempCle2.find('}}'):len(PageTempCle)]
+                            else:    # Cas du premier
+                                PageTempCle2 = PageTempCle[PageTempCle.find(u'{{voir|')+len(u'{{voir'):len(PageTempCle)]
+                                PageTempCle = PageTempCle[:PageTempCle.find(u'{{voir|')+len(u'{{voir|')] + PagesCleTotal[len(currentPage):len(PagesCleTotal)] + PageTempCle[PageTempCle.find(u'{{voir|')+len(u'{{voir')+PageTempCle2.find('}}'):len(PageTempCle)]
+                            if PageTempCle != PageTempCleBegin:
                                 if currentPage == pageName:
                                     PageTemp = PageTempCle
-                                else:    
+                                else:
                                     if debugLevel > 0:
-                                        print u' Deuxième savePage dédiée à {{voir}}'
+                                        print u' Première savePage dédiée à {{voir}}'
                                     else:
                                         savePage(pageCle, PageTempCle, summary)
+                        else:
+                            if PagesCleTotal.find(u'|' + currentPage) != -1:
+                                PageTempCle = u'{{voir|' + PagesCleTotal[:PagesCleTotal.find(u'|' + currentPage)] + PagesCleTotal[PagesCleTotal.find(u'|' + currentPage)+len(u'|' + currentPage):len(PagesCleTotal)] + u'}}\n' + PageTempCle
+                            else:    # Cas du premier
+                                PageTempCle = u'{{voir' + PagesCleTotal[len(currentPage):len(PagesCleTotal)] + u'}}\n' + PageTempCle
+                            if currentPage == pageName:
+                                PageTemp = PageTempCle
+                            else:    
+                                if debugLevel > 0:
+                                    print u' Deuxième savePage dédiée à {{voir}}'
+                                else:
+                                    savePage(pageCle, PageTempCle, summary)
 
-            elif PageTemp.find(u'{{voir|') != -1:
-                if debugLevel > 0: print u'  Identique à la page courante'
-                PageTemp2 = PageTemp[PageTemp.find(u'{{voir|'):len(PageTemp)]
-                if PageTemp2.find(u'|' + pageName + u'|') != -1 and PageTemp2.find(u'|' + pageName + u'|') < PageTemp2.find('}}'):
-                    PageTemp = PageTemp[:PageTemp.find(u'{{voir|') + PageTemp2.find(u'|' + pageName + u'|')] + PageTemp[PageTemp.find(u'{{voir|') + PageTemp2.find(u'|' + pageName + u'|')+len(u'|' + pageName):]
-                if PageTemp2.find(u'|' + pageName + u'}') != -1 and PageTemp2.find(u'|' + pageName + u'}') < PageTemp2.find('}}'):
-                    PageTemp = PageTemp[:PageTemp.find(u'{{voir|') + PageTemp2.find(u'|' + pageName + u'}')] + PageTemp[PageTemp.find(u'{{voir|') + PageTemp2.find(u'|' + pageName + u'}')+len(u'|' + pageName):]
+        elif PageTemp.find(u'{{voir|') != -1:
+            if debugLevel > 0: print u'  Identique à la page courante'
+            PageTemp2 = PageTemp[PageTemp.find(u'{{voir|'):len(PageTemp)]
+            if PageTemp2.find(u'|' + pageName + u'|') != -1 and PageTemp2.find(u'|' + pageName + u'|') < PageTemp2.find('}}'):
+                PageTemp = PageTemp[:PageTemp.find(u'{{voir|') + PageTemp2.find(u'|' + pageName + u'|')] + PageTemp[PageTemp.find(u'{{voir|') + PageTemp2.find(u'|' + pageName + u'|')+len(u'|' + pageName):]
+            if PageTemp2.find(u'|' + pageName + u'}') != -1 and PageTemp2.find(u'|' + pageName + u'}') < PageTemp2.find('}}'):
+                PageTemp = PageTemp[:PageTemp.find(u'{{voir|') + PageTemp2.find(u'|' + pageName + u'}')] + PageTemp[PageTemp.find(u'{{voir|') + PageTemp2.find(u'|' + pageName + u'}')+len(u'|' + pageName):]
 
-            if debugLevel > 0: print u' Nettoyage des {{voir}}...'
-            if PageTemp.find(u'{{voir}}\n') != -1: PageTemp = PageTemp[:PageTemp.find(u'{{voir}}\n')] + PageTemp[PageTemp.find(u'{{voir}}\n')+len(u'{{voir}}\n'):len(PageTemp)]
-            if PageTemp.find(u'{{voir}}') != -1: PageTemp = PageTemp[:PageTemp.find(u'{{voir}}')] + PageTemp[PageTemp.find(u'{{voir}}')+len(u'{{voir}}'):len(PageTemp)]
-            PageTemp = html2Unicode(PageTemp)
-            PageTemp = PageTemp.replace(u'}}&#32;[[', u'}} [[')
-            PageTemp = PageTemp.replace(u']]&#32;[[', u']] [[')
-            regex = ur'\[\[([^\]]*)\|\1\]\]'
+        if debugLevel > 0: print u' Nettoyage des {{voir}}...'
+        if PageTemp.find(u'{{voir}}\n') != -1: PageTemp = PageTemp[:PageTemp.find(u'{{voir}}\n')] + PageTemp[PageTemp.find(u'{{voir}}\n')+len(u'{{voir}}\n'):len(PageTemp)]
+        if PageTemp.find(u'{{voir}}') != -1: PageTemp = PageTemp[:PageTemp.find(u'{{voir}}')] + PageTemp[PageTemp.find(u'{{voir}}')+len(u'{{voir}}'):len(PageTemp)]
+        PageTemp = html2Unicode(PageTemp)
+        PageTemp = PageTemp.replace(u'}}&#32;[[', u'}} [[')
+        PageTemp = PageTemp.replace(u']]&#32;[[', u']] [[')
+        regex = ur'\[\[([^\]]*)\|\1\]\]'
+        if re.search(regex, PageTemp):
+            if debugLevel > 0: print u'Lien interne inutile'
+            PageTemp = re.sub(regex, ur'[[\1]]', PageTemp)
+
+        if PageTemp.find(u'{{vérifier création automatique}}') != -1:
+            if debugLevel > 0: print u' {{vérifier création automatique}} trouvé'
+            PageTemp2 = PageTemp
+            LanguesV = u'|'
+            while PageTemp2.find(u'{{langue|') > 0:
+                PageTemp2 = PageTemp2[PageTemp2.find(u'{{langue|')+len(u'{{langue|'):]
+                LanguesV += u'|' + PageTemp2[:PageTemp2.find('}}')]
+            if LanguesV != u'|':
+                PageTemp = PageTemp.replace(u'{{vérifier création automatique}}', u'{{vérifier création automatique' + LanguesV + '}}')
+            if debugLevel > 2: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
+
+        '''if addDefaultSort:
+            if debugLevel > 0: print u'Clés de tri'
+            PageTemp = addDefaultSort(PageTemp)
+        '''
+        if pageName.find('-') == -1:
+            regex = ur"\n{{clé de tri([^}]*)}}"
             if re.search(regex, PageTemp):
-                if debugLevel > 0: print u'Lien interne inutile'
-                PageTemp = re.sub(regex, ur'[[\1]]', PageTemp)
+                summary = summary + u', retrait de {{clé de tri}}'
+                PageTemp = re.sub(regex, '', PageTemp)
 
-            if PageTemp.find(u'{{vérifier création automatique}}') != -1:
-                if debugLevel > 0: print u' {{vérifier création automatique}} trouvé'
-                PageTemp2 = PageTemp
-                LanguesV = u'|'
-                while PageTemp2.find(u'{{langue|') > 0:
-                    PageTemp2 = PageTemp2[PageTemp2.find(u'{{langue|')+len(u'{{langue|'):]
-                    LanguesV += u'|' + PageTemp2[:PageTemp2.find('}}')]
-                if LanguesV != u'|':
-                    PageTemp = PageTemp.replace(u'{{vérifier création automatique}}', u'{{vérifier création automatique' + LanguesV + '}}')
-                if debugLevel > 2: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 
-            if addDefaultSort:
-                if debugLevel > 0: print u'Clés de tri'
-                PageTemp = addDefaultSort(PageTemp)
-
-            if debugLevel > 0: print u'Catégories de prononciation'
-            if pageName[-2:] == u'um' and PageTemp.find(u'ɔm|fr}}') != -1:
-                PageTemp = addCat(PageTemp, u'fr', u'um prononcés /ɔm/ en français')
-            if pageName[:2] == u'qu':
-                regex = ur'{{pron\|kw[^}\|]+\|fr}}'
-                if re.search(regex, PageTemp):
-                    PageTemp = addCat(PageTemp, u'fr', u'qu prononcés /kw/ en français')
-            if pageName[:2] == u'qu':
-                regex = ur'{{fr\-rég\|kw[^}\|]+}}'
-                if re.search(regex, PageTemp):
-                    PageTemp = addCat(PageTemp, u'fr', u'qu prononcés /kw/ en français')
-            if pageName[:2] == u'ch':
-                regex = ur'{{pron\|k[^}\|]+\|fr}}'
-                if re.search(regex, PageTemp):
-                    PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
-            if pageName[:2] == u'ch':
-                regex = ur'{{fr\-rég\|k[^}\|]+}}'
-                if re.search(regex, PageTemp):
-                    PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
-            if pageName[:2] == u'Ch':
-                regex = ur'{{pron\|k[^}\|]+\|fr}}'
-                if re.search(regex, PageTemp):
-                    PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
-            if pageName[:2] == u'Ch':
-                regex = ur'{{fr\-rég\|k[^}\|]+}}'
-                if re.search(regex, PageTemp):
-                    PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
-            if pageName[-2:] == u'ch':
-                regex = ur'{{pron\|[^}\|]+k\|fr}}'
-                if re.search(regex, PageTemp):
-                    PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
-            if pageName[-2:] == u'ch':
-                regex = ur'{{fr\-rég\|[^}\|]+k}}'
-                if re.search(regex, PageTemp):
-                    PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
-            if pageName[-3:] == u'chs':
-                regex = ur'{{pron\|[^}\|]+k}}'
-                if re.search(regex, PageTemp):
-                    PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
-            if pageName[-3:] == u'chs':
-                regex = ur'{{fr\-rég\|[^}\|]+k}}'
-                if re.search(regex, PageTemp):
-                    PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+        if debugLevel > 0: print u'Catégories de prononciation'
+        if pageName[-2:] == u'um' and PageTemp.find(u'ɔm|fr}}') != -1:
+            PageTemp = addCat(PageTemp, u'fr', u'um prononcés /ɔm/ en français')
+        if pageName[:2] == u'qu':
+            regex = ur'{{pron\|kw[^}\|]+\|fr}}'
+            if re.search(regex, PageTemp):
+                PageTemp = addCat(PageTemp, u'fr', u'qu prononcés /kw/ en français')
+        if pageName[:2] == u'qu':
+            regex = ur'{{fr\-rég\|kw[^}\|]+}}'
+            if re.search(regex, PageTemp):
+                PageTemp = addCat(PageTemp, u'fr', u'qu prononcés /kw/ en français')
+        if pageName[:2] == u'ch':
+            regex = ur'{{pron\|k[^}\|]+\|fr}}'
+            if re.search(regex, PageTemp):
+                PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+        if pageName[:2] == u'ch':
+            regex = ur'{{fr\-rég\|k[^}\|]+}}'
+            if re.search(regex, PageTemp):
+                PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+        if pageName[:2] == u'Ch':
+            regex = ur'{{pron\|k[^}\|]+\|fr}}'
+            if re.search(regex, PageTemp):
+                PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+        if pageName[:2] == u'Ch':
+            regex = ur'{{fr\-rég\|k[^}\|]+}}'
+            if re.search(regex, PageTemp):
+                PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+        if pageName[-2:] == u'ch':
+            regex = ur'{{pron\|[^}\|]+k\|fr}}'
+            if re.search(regex, PageTemp):
+                PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+        if pageName[-2:] == u'ch':
+            regex = ur'{{fr\-rég\|[^}\|]+k}}'
+            if re.search(regex, PageTemp):
+                PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+        if pageName[-3:] == u'chs':
+            regex = ur'{{pron\|[^}\|]+k}}'
+            if re.search(regex, PageTemp):
+                PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
+        if pageName[-3:] == u'chs':
+            regex = ur'{{fr\-rég\|[^}\|]+k}}'
+            if re.search(regex, PageTemp):
+                PageTemp = addCat(PageTemp, u'fr', u'ch prononcés /k/ en français')
 
         if debugLevel > 1: print u'Formatage de la ligne de forme'
         PageTemp = PageTemp.replace(u'{{PAGENAME}}', u'{{subst:PAGENAME}}')
@@ -2120,6 +2123,8 @@ def treatPageByName(pageName):
         PageTemp = PageTemp.replace(u'{{escrim|', u'{{escrime|')
         PageTemp = PageTemp.replace(u'{{f}} {{fsing}}', u'{{f}}')
         PageTemp = PageTemp.replace(u'{{m}} {{msing}}', u'{{m}}')
+        PageTemp = PageTemp.replace(u'{{f}} {{p}}', u'{{fplur}}')
+        PageTemp = PageTemp.replace(u'{{m}} {{p}}', u'{{mplur}}')
         PageTemp = PageTemp.replace(u'fm?', u'fm ?')
         PageTemp = PageTemp.replace(u'mf?', u'mf ?')
         PageTemp = PageTemp.replace(u'myt=scandinave', u'myt=nordique')
@@ -2400,12 +2405,24 @@ def treatPageByName(pageName):
         PageTemp = PageEnd + PageTemp
         PageEnd = u''
 
-        # Faux homophones : lemme et sa flexion
-        if debugLevel > 0: print u'Faux homophones'
-        if PageTemp.find(u'|flexion}}') != -1 and pageName[len(pageName)-1:] == u's' and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']]\n*') == -1 and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']]') != -1 and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']] ') == -1 and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']],') == -1:
-            PageTemp = PageTemp[:PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']]')] + PageTemp[PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']]')+len(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']]')+1:len(PageTemp)]
-        elif PageTemp.find(u'|flexion}}') != -1 and pageName[len(pageName)-1:] == u's' and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']]\n*') == -1 and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']]') != -1 and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']] ') == -1 and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']],') == -1:
-            PageTemp = PageTemp[:PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']]')] + PageTemp[PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']]')+len(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']]')+1:len(PageTemp)]
+        if debugLevel > 0: print u'Faux homophones : lemme et sa flexion'
+        lemmaPageName = ''
+        flexionPageName = ''
+        if PageTemp.find(u'|flexion}}') != -1:
+            lemmaPageName = getLemmaFromPlural(PageTemp)
+        else:
+            pass #TODO
+        if lemmaPageName != '':
+            regex = u"==== *{{S\|homophones\|fr}} *====\n\* *'''" + pageName + "''' *{{cf\|" + lemmaPageName +"}}\n"
+            if re.search(regex, PageTemp):
+                PageTemp = re.sub(regex, '==== {{S|homophones|fr}} ====\n', PageTemp)
+                summary = summary + u', homophone erroné'
+            if PageTemp.find(u'|flexion}}') != -1 and pageName[len(pageName)-1:] == u's' and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']]\n*') == -1 and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']]') != -1 and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']] ') == -1 and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']],') == -1:
+                PageTemp = PageTemp[:PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']]')] + PageTemp[PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']]')+len(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']]')+1:len(PageTemp)]
+                summary = summary + u', homophone erroné'
+            elif PageTemp.find(u'|flexion}}') != -1 and pageName[len(pageName)-1:] == u's' and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']]\n*') == -1 and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']]') != -1 and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']] ') == -1 and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']],') == -1:
+                PageTemp = PageTemp[:PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']]')] + PageTemp[PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']]')+len(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']]')+1:len(PageTemp)]
+                summary = summary + u', homophone erroné'
 
         # Ajout des redirections des pronominaux
         if PageTemp.find(u'{{S|verbe|fr}}') != -1 and pageName[:3] != u'se' and pageName[:2] != u's’':
@@ -2876,7 +2893,11 @@ def treatPageByName(pageName):
 
                         if section == u'homophones':
                             if debugLevel > 0: print ' Catégorisation des homophones'
-                            PageTemp = PageTemp[:PageTemp.find('}}')] + u'|' + languageCode + PageTemp[PageTemp.find('}}'):]
+                            sectionTitle = PageTemp[:PageTemp.find('}}')]
+                            if sectionTitle.rfind('|') > len(section):
+                                PageTemp = sectionTitle[:sectionTitle.rfind('|')] + u'|' + languageCode + PageTemp[PageTemp.find('}}'):]
+                            else:
+                                PageTemp = PageTemp[:PageTemp.find('}}')] + u'|' + languageCode + PageTemp[PageTemp.find('}}'):]
 
                         if section == 'traductions':
                             translationSection = True
@@ -3551,81 +3572,76 @@ def treatPageByName(pageName):
         PageEnd = PageEnd + PageTemp
 
 
-        # Maintenance des genres
-        PageEnd = PageEnd.replace(u'{{genre|fr}}\n# Masculin ', u'{{m}}\n# Masculin ')
-        PageEnd = PageEnd.replace(u'{{genre|fr}}\n# Féminin ', u'{{f}}\n# Féminin ')
-        PageEnd = PageEnd.replace(u"{{genre|fr}}\n# ''Masculin ", u"{{m}}\n# ''Masculin ")
-        PageEnd = PageEnd.replace(u"{{genre|fr}}\n# ''Féminin ", u"{{f}}\n# ''Féminin ")
-        if pageName[-3:] == u'eur':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
-        if pageName[-3:] == u'eux':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
-        if pageName[-4:] == u'euse':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
-        if pageName[-3:] == u'ant':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
-        if pageName[-4:] == u'ante':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
-        if pageName[-4:] == u'ance':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
-        if pageName[-3:] == u'age':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
-        if pageName[-4:] == u'ette':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
-        if pageName[-3:] == u'ier':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
-        if pageName[-3:] == u'ien':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
-        if pageName[-5:] == u'ienne':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
-        if pageName[-3:] == u'rie':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
-        if pageName[-3:] == u'ois':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
-        if pageName[-4:] == u'oise':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
-        if pageName[-3:] == u'ais':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
-        if pageName[-4:] == u'aise':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
-        if pageName[-5:] == u'logie':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
-        if pageName[-4:] == u'tion':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
-        if pageName[-3:] == u'ité':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
-        if pageName[-4:] == u'isme':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
-        if pageName[-2:] == u'el':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
-        if pageName[-4:] == u'elle':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
-        if pageName[-2:] == u'if':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
-        if pageName[-3:] == u'ive':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
-        if pageName[-4:] == u'ment':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
-        if pageName[-5:] == u'ments':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
-        if pageName[-4:] == u'iste':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{mf}}")
-        if pageName[-4:] == u'aire':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{mf}}")
-        if pageName[-1:] == u'é':
-            PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+        if PageEnd.find(u'{{genre|fr}}') != -1:
+            if debugLevel > 0: ' Recherche de genre'
+            PageEnd = PageEnd.replace(u'{{genre|fr}}\n# Masculin ', u'{{m}}\n# Masculin ')
+            PageEnd = PageEnd.replace(u'{{genre|fr}}\n# Féminin ', u'{{f}}\n# Féminin ')
+            PageEnd = PageEnd.replace(u"{{genre|fr}}\n# ''Masculin ", u"{{m}}\n# ''Masculin ")
+            PageEnd = PageEnd.replace(u"{{genre|fr}}\n# ''Féminin ", u"{{f}}\n# ''Féminin ")
+            if pageName[-3:] == u'eur':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+            if pageName[-3:] == u'eux':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+            if pageName[-4:] == u'euse':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+            if pageName[-3:] == u'ant':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+            if pageName[-4:] == u'ante':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+            if pageName[-4:] == u'ance':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+            if pageName[-3:] == u'age':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+            if pageName[-4:] == u'ette':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+            if pageName[-3:] == u'ier':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+            if pageName[-3:] == u'ien':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+            if pageName[-5:] == u'ienne':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+            if pageName[-3:] == u'rie':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+            if pageName[-3:] == u'ois':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+            if pageName[-4:] == u'oise':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+            if pageName[-3:] == u'ais':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+            if pageName[-4:] == u'aise':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+            if pageName[-5:] == u'logie':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+            if pageName[-4:] == u'tion':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+            if pageName[-3:] == u'ité':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+            if pageName[-4:] == u'isme':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+            if pageName[-2:] == u'el':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+            if pageName[-4:] == u'elle':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+            if pageName[-2:] == u'if':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+            if pageName[-3:] == u'ive':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+            if pageName[-4:] == u'ment':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+            if pageName[-5:] == u'ments':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+            if pageName[-4:] == u'iste':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{mf}}")
+            if pageName[-4:] == u'aire':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{mf}}")
+            if pageName[-1:] == u'é':
+                PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
 
-        if debugLevel > 0: print u'Genre manquant de locution'
-        if pageName.find(u' ') != -1 and pageName.find(u'{{langue|fr}}') != -1:
-            pageLemma = getLemmaFromLocution(pageName)
-            if pageLemma != u'':
-                genre = u''
-                if pageLemma.find(u'|fr}} {{m}}') != -1:
-                    genre = u'{{m}}'
-                elif pageLemma.find(u'|fr}} {{f}}') != -1:
-                    genre = u'{{f}}'
-                if genre != u'':
-                    PageEnd = PageEnd.replace(u'{{genre|fr}}', genre)
+            lemmaPageName = getFirstLemmaFromLocution(pageName)
+            if lemmaPageName != u'':
+                lemmaGender = getGenderFromPageName(lemmaPageName)
+                if lemmaGender != '':
+                    PageEnd = PageEnd.replace(u'{{genre|fr}}', lemmaGender)
 
         if debugLevel > 0: print u'Formatage des flexions'
         regex = ur"(=== {{S\|nom\|fr)\|flexion(}} ===\n'''" + rePageName + ur"''' [^\n]*{{fsing}})"
@@ -3634,10 +3650,10 @@ def treatPageByName(pageName):
             summary = summary + u', un nom féminin n\'est pas une flexion en français'
 
         if pageName.find(u'*') == -1 and pageName[-1:] == 's':
-            natures = [u'nom', u'adjectif', u'suffixe']
             language = u'fr'
-            pageLemma = getLemmaFromPlural(PageEnd) # TODO language, nature, & n°
-            if pageLemma != u'': treatPageByName(pageLemma) # Formatage des boites de flexion à récupérer
+            natures = ['nom', 'adjectif', 'suffixe']
+            lemmaPageName = getLemmaFromPlural(PageEnd, language, natures)
+            if lemmaPageName != u'': treatPageByName(lemmaPageName) # Formatage des boites de flexion à récupérer
             for nature in natures:
                 regex = ur"(== {{langue|" + language + ur"}} ==\n=== {{S\|" + nature + ur"\|" + language + ur")\|num=2"
                 if re.search(regex, PageEnd):
@@ -3650,22 +3666,22 @@ def treatPageByName(pageName):
                     summary = summary + u', ajout de |flexion'
 
                 if pageName[-2:] != 'ss':
-                    if pageLemma != u'':
+                    if lemmaPageName != u'':
                         flexionFlexionTemplate = getFlexionTemplate(pageName, language, nature)
                         if flexionFlexionTemplate == u'':
                             if debugLevel > 0: print u' Ajout d\'une boite dans une flexion'
-                            lemmaFlexionTemplate = getFlexionTemplateFromLemma(pageLemma, language, nature)
+                            lemmaFlexionTemplate = getFlexionTemplateFromLemma(lemmaPageName, language, nature)
                             for flexionTemplateWithMs in flexionTemplatesWithMs:
                                 if lemmaFlexionTemplate.find(flexionTemplateWithMs) != -1:
                                     if debugLevel > 0: print u'flexionTemplateWithMs'
                                     regex = ur"\|ms=[^\|}]*"
                                     if not re.search(regex, lemmaFlexionTemplate):
-                                        lemmaFlexionTemplate = lemmaFlexionTemplate + ur'|ms=' + pageLemma
+                                        lemmaFlexionTemplate = lemmaFlexionTemplate + ur'|ms=' + lemmaPageName
                             for flexionTemplateWithS in flexionTemplatesWithS:
                                 if lemmaFlexionTemplate.find(flexionTemplateWithS) != -1:
                                     regex = ur"\|s=[^\|}]*"
                                     if not re.search(regex, lemmaFlexionTemplate):
-                                        lemmaFlexionTemplate = lemmaFlexionTemplate + ur'|s=' + pageLemma
+                                        lemmaFlexionTemplate = lemmaFlexionTemplate + ur'|s=' + lemmaPageName
 
                             ''' Remplacement des {{fr-rég}} par plus précis (lancé pour patcher des pages)
                             if lemmaFlexionTemplate.find(language + ur'-rég') != -1: lemmaFlexionTemplate = u''
@@ -3686,12 +3702,12 @@ def treatPageByName(pageName):
                         regex = ur"(=== {{S\|" + nature + ur"\|" + language + ur"\|flexion}} ===\n)('''" + pageName + ur"''' {{pron\|)([^\|}]*)(\|" + language + ur"}}\n# *'*'* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
                         if re.search(regex, PageEnd):
                             #PageEnd = re.sub(regex, ur'\1{{' + language + ur'-rég|s=\7|\3}}\n\2\3\4\7', PageEnd)
-                            PageEnd = re.sub(regex, ur'\1{{' + language + ur'-rég|s=' + pageLemma + u'|\3}}\n\2\3\4\5', PageEnd)
+                            PageEnd = re.sub(regex, ur'\1{{' + language + ur'-rég|s=' + lemmaPageName + u'|\3}}\n\2\3\4\5', PageEnd)
                             summary = summary + u', ajout de {{' + language + ur'-rég}}'
 
                         regex = ur"(=== {{S\|" + nature + ur"\|" + language + ur"\|flexion}} ===\n)('''" + pageName + ur"'''\n# *'*'* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
                         if re.search(regex, PageEnd):
-                            PageEnd = re.sub(regex, ur'\1{{' + language + ur'-rég|s=' + pageLemma + u'|}}\n\2\5', PageEnd)
+                            PageEnd = re.sub(regex, ur'\1{{' + language + ur'-rég|s=' + lemmaPageName + u'|}}\n\2\5', PageEnd)
                             summary = summary + u', ajout de {{' + language + ur'-rég}}'
 
             if debugLevel > 1: raw_input(PageEnd.encode(config.console_encoding, 'replace'))
@@ -3906,6 +3922,7 @@ def main(*args):
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec titre inconnu')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias')
+        p.pagesByCat(u'Genres manquants en français')
 
 if __name__ == "__main__":
     main(sys.argv)
