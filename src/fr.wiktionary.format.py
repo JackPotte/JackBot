@@ -46,6 +46,7 @@ fixTags = False
 fixFiles = True
 addDefaultSort = False
 allNamespaces = False
+fixGenders = False
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
 
@@ -3578,54 +3579,55 @@ def treatPageByName(pageName):
             summary = summary + u', précision du pluriel'
             PageEnd = re.sub(regex, ur'{{p}}\2', PageEnd)
 
-        if debugLevel > 0: ' Recherche du genre'
-        regex = ur"{{genre *\?*\|fr}}(\n# *'* *[Mm]asculin)"
-        if re.search(regex, PageEnd):
-            PageEnd = re.sub(regex, ur'{{m}}\1', PageEnd)
-            summary = summary + u', précision du genre m'
-            if debugLevel > 1: print ' m1'
+        if fixGenders:
+            if debugLevel > 0: ' Recherche du genre'
+            regex = ur"{{genre *\?*\|fr}}(\n# *'* *[Mm]asculin)"
+            if re.search(regex, PageEnd):
+                PageEnd = re.sub(regex, ur'{{m}}\1', PageEnd)
+                summary = summary + u', précision du genre m'
+                if debugLevel > 1: print ' m1'
 
-        regex = ur"{{genre *\?*\|fr}}(\n# *'* *[Ff]éminin)"
-        if re.search(regex, PageEnd):
-            PageEnd = re.sub(regex, ur'{{f}}\1', PageEnd)
-            summary = summary + u', précision du genre f'
-            if debugLevel > 1: print ' f1'
+            regex = ur"{{genre *\?*\|fr}}(\n# *'* *[Ff]éminin)"
+            if re.search(regex, PageEnd):
+                PageEnd = re.sub(regex, ur'{{f}}\1', PageEnd)
+                summary = summary + u', précision du genre f'
+                if debugLevel > 1: print ' f1'
 
-        if PageEnd.find(u'{{genre|fr}}') != -1 or PageEnd.find(u'{{genre ?|fr}}') != -1:
-            mSuffixes = ['eur', 'eux', 'ant', 'age', 'ier', 'ien', 'ois', 'ais', 'isme', 'el', 'if', 'ment', 'ments', 'é']
-            for mSuffix in mSuffixes:
-                if pageName[-len(mSuffix):] == mSuffix:
-                    PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
-                    PageEnd = PageEnd.replace(u"{{genre ?|fr}}", u"{{m}}")
-                    summary = summary + u', précision du genre m'
-                    if debugLevel > 1: print ' m2'
-                    break
+            if PageEnd.find(u'{{genre|fr}}') != -1 or PageEnd.find(u'{{genre ?|fr}}') != -1:
+                mSuffixes = ['eur', 'eux', 'ant', 'age', 'ier', 'ien', 'ois', 'ais', 'isme', 'el', 'if', 'ment', 'ments', 'é']
+                for mSuffix in mSuffixes:
+                    if pageName[-len(mSuffix):] == mSuffix:
+                        PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
+                        PageEnd = PageEnd.replace(u"{{genre ?|fr}}", u"{{m}}")
+                        summary = summary + u', précision du genre m'
+                        if debugLevel > 1: print ' m2'
+                        break
 
-            fSuffixes = ['euse', 'ante', 'ance', 'ette', 'ienne', 'rie', 'oise', 'aise', 'logie', 'tion', 'ité', 'elle', 'ive']
-            for fSuffix in fSuffixes:
-                if pageName[-len(fSuffix):] == fSuffix:
-                    PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
-                    PageEnd = PageEnd.replace(u"{{genre ?|fr}}", u"{{f}}")
-                    summary = summary + u', précision du genre f'
-                    if debugLevel > 1: print ' f2'
-                    break
+                fSuffixes = ['euse', 'ante', 'ance', 'ette', 'ienne', 'rie', 'oise', 'aise', 'logie', 'tion', 'ité', 'elle', 'ive']
+                for fSuffix in fSuffixes:
+                    if pageName[-len(fSuffix):] == fSuffix:
+                        PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{f}}")
+                        PageEnd = PageEnd.replace(u"{{genre ?|fr}}", u"{{f}}")
+                        summary = summary + u', précision du genre f'
+                        if debugLevel > 1: print ' f2'
+                        break
 
-            mfSuffixes = ['iste']
-            for mfSuffix in mfSuffixes:
-                if pageName[-len(mfSuffix):] == mfSuffix:
-                    PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{mf}}")
-                    PageEnd = PageEnd.replace(u"{{genre ?|fr}}", u"{{mf}}")
-                    summary = summary + u', précision du genre mf'
-                    if debugLevel > 1: print ' mf1'
-                    break
+                mfSuffixes = ['iste']
+                for mfSuffix in mfSuffixes:
+                    if pageName[-len(mfSuffix):] == mfSuffix:
+                        PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{mf}}")
+                        PageEnd = PageEnd.replace(u"{{genre ?|fr}}", u"{{mf}}")
+                        summary = summary + u', précision du genre mf'
+                        if debugLevel > 1: print ' mf1'
+                        break
 
-            if lemmaPageName != u'':
-                lemmaGender = getGenderFromPageName(lemmaPageName)
-                if lemmaGender != '':
-                    PageEnd = PageEnd.replace(u'{{genre|fr}}', lemmaGender)
-                    PageEnd = PageEnd.replace(u'{{genre ?|fr}}', lemmaGender)
-                    summary = summary + u', précision du genre ' + lemmaGender
-                    if debugLevel > 1: print ' loc'
+                if lemmaPageName != u'':
+                    lemmaGender = getGenderFromPageName(lemmaPageName)
+                    if lemmaGender != '':
+                        PageEnd = PageEnd.replace(u'{{genre|fr}}', lemmaGender)
+                        PageEnd = PageEnd.replace(u'{{genre ?|fr}}', lemmaGender)
+                        summary = summary + u', précision du genre ' + lemmaGender
+                        if debugLevel > 1: print ' loc'
 
         if debugLevel > 0: print u'Formatage des flexions'
         regex = ur"(=== {{S\|nom\|fr)\|flexion(}} ===\n'''" + rePageName + ur"''' [^\n]*{{fsing}})"
