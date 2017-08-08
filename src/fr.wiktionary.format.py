@@ -46,7 +46,7 @@ fixTags = False
 fixFiles = True
 addDefaultSort = False
 allNamespaces = False
-fixGenders = False
+fixGenders = True
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
 
@@ -3594,7 +3594,7 @@ def treatPageByName(pageName):
                 if debugLevel > 1: print ' f1'
 
             if PageEnd.find(u'{{genre|fr}}') != -1 or PageEnd.find(u'{{genre ?|fr}}') != -1:
-                mSuffixes = ['eur', 'eux', 'ant', 'age', 'ier', 'ien', 'ois', 'ais', 'isme', 'el', 'if', 'ment', 'ments', 'é']
+                mSuffixes = ['eur', 'eux', 'ant', 'age', 'ier', 'ien', 'ois', 'ais', 'isme', 'el', 'if', 'ment', 'ments'] # pas "é" : adaptabilité
                 for mSuffix in mSuffixes:
                     if pageName[-len(mSuffix):] == mSuffix:
                         PageEnd = PageEnd.replace(u"{{genre|fr}}", u"{{m}}")
