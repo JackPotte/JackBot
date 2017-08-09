@@ -312,6 +312,12 @@ def getGenderFromPageName(pageName, languageCode = 'fr', nature = None):
     if debugLevel > 1: raw_input(gender)
     return gender
 
+def getLemmaFromContent(pageContent, languageCode = 'fr'):
+    lemmaPageName = getLemmaFromPlural(pageContent, languageCode)
+    if lemmaPageName == '':
+        lemmaPageName = getLemmaFromConjugation(pageContent, languageCode)
+    return lemmaPageName
+
 def getLemmaFromPlural(pageContent, languageCode = 'fr', natures = ['nom', 'adjectif', 'suffixe']):
     if debugLevel > 0: print u'\ngetLemmaFromPlural'
     lemmaPageName = u''
@@ -327,7 +333,7 @@ def getLemmaFromPlural(pageContent, languageCode = 'fr', natures = ['nom', 'adje
 
     return lemmaPageName
 
-def getLemmaFromConjugation(pageContent):
+def getLemmaFromConjugation(pageContent, languageCode = 'fr'):
     if debugLevel > 0: print u'\ngetLemmaFromConjugation'
     lemmaPageName = u''
     regex = ur"(=== {{S\|verbe\|fr\|flexion}} ===\n({{fr\-[^}]*}}\n)*'''[^\n]+\n#[^\n\[{]+(\[\[|{{li?e?n?\|))([^#\|\]}]+)}*\]*'*\."
@@ -647,7 +653,12 @@ def getContentFromPageName(pageName, allowedNamespaces = None, site = site):
 
 def getContentFromPage(page, allowedNamespaces = None, username = username):
     PageBegin = u''
-    if page.exists():
+    try:
+        get = page.exists()
+    except:
+        pywikibot.exceptions.InvalidTitle
+        return PageBegin
+    if get:
         if type(allowedNamespaces) == type([]): #'list'
             if debugLevel > 1: print u' namespace : ' + str(page.namespace())
             condition = page.namespace() in allowedNamespaces

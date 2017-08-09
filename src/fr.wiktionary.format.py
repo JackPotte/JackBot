@@ -993,6 +993,7 @@ Modele.append(u'montagnes')
 Modele.append(u'morphologie végétale')
 Modele.append(u'mot-valise')
 Modele.append(u'motocyclisme')
+Modele.append(u'mouches')
 Modele.append(u'Moyen Âge')
 Modele.append(u'muscle')
 Modele.append(u'musculation')
@@ -1088,6 +1089,7 @@ Modele.append(u'philosophie')
 Modele.append(u'phobies')
 Modele.append(u'phon')
 Modele.append(u'phonétique')
+Modele.append(u'phonologie')
 Modele.append(u'photo')
 Modele.append(u'photographie')
 Modele.append(u'phys')
@@ -1271,6 +1273,7 @@ Modele.append(u'théorie des graphes')
 Modele.append(u'thermodynamique')
 Modele.append(u'tind')
 Modele.append(u'tissage')
+Modele.append(u'tissus')
 Modele.append(u'tonnellerie')
 Modele.append(u'topo')
 Modele.append(u'topographie')
@@ -2404,21 +2407,36 @@ def treatPageByName(pageName):
         if debugLevel > 0: print u'Faux homophones : lemme et sa flexion'
         lemmaPageName = ''
         flexionPageName = ''
-        if PageTemp.find(u'|flexion}}') != -1:
-            lemmaPageName = getLemmaFromPlural(PageTemp)
+        language = 'fr'
+        if PageTemp.find('|' + language + '|flexion}}') != -1:
+            lemmaPageName = getLemmaFromContent(PageTemp, language)
         else:
-            lemmaPageName = getFirstLemmaFromLocution(pageName)
-        if lemmaPageName != '':
-            regex = u"==== *{{S\|homophones\|fr}} *====\n\* *'''" + pageName + "''' *{{cf\|" + lemmaPageName +"}}\n"
+            pass
+            #TODO: flexionPageName = getflexionFromLemma(pageName)
+
+        if lemmaPageName is not None and lemmaPageName != '':
+            regex = ur"==== *{{S\|homophones\|fr}} *====\n\* *'''" + pageName + ur"''' *{{cf\|" + lemmaPageName + ur"}}\n"
             if re.search(regex, PageTemp):
                 PageTemp = re.sub(regex, '==== {{S|homophones|fr}} ====\n', PageTemp)
                 summary = summary + u', homophone erroné'
+            regex = ur"==== *{{S\|homophones\|fr}} *====\n\* *\[\[[^}]+{{cf\|" + lemmaPageName + ur"}}\n"
+            if re.search(regex, PageTemp):
+                PageTemp = re.sub(regex, '==== {{S|homophones|fr}} ====\n', PageTemp)
+                summary = summary + u', homophone erroné'
+
             if PageTemp.find(u'|flexion}}') != -1 and pageName[len(pageName)-1:] == u's' and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']]\n*') == -1 and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']]') != -1 and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']] ') == -1 and PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']],') == -1:
                 PageTemp = PageTemp[:PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']]')] + PageTemp[PageTemp.find(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']]')+len(u'{{S|homophones}}\n*[[' + pageName[:len(pageName)-1] + u']]')+1:len(PageTemp)]
                 summary = summary + u', homophone erroné'
             elif PageTemp.find(u'|flexion}}') != -1 and pageName[len(pageName)-1:] == u's' and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']]\n*') == -1 and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']]') != -1 and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']] ') == -1 and PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']],') == -1:
                 PageTemp = PageTemp[:PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']]')] + PageTemp[PageTemp.find(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']]')+len(u'{{S|homophones}}\n* [[' + pageName[:len(pageName)-1] + u']]')+1:len(PageTemp)]
                 summary = summary + u', homophone erroné'
+
+            regex = ur"=== {{S\|prononciation}} ===\n==== *{{S\|homophones\|fr}} *====\n(\n|$)"
+            if re.search(regex, PageTemp):
+                PageTemp = re.sub(regex, '', PageTemp)
+            regex = ur"==== *{{S\|homophones\|fr}} *====\n(\n|$)"
+            if re.search(regex, PageTemp):
+                PageTemp = re.sub(regex, '', PageTemp)
 
         # Ajout des redirections des pronominaux
         if PageTemp.find(u'{{S|verbe|fr}}') != -1 and pageName[:3] != u'se' and pageName[:2] != u's’':
@@ -3857,10 +3875,9 @@ def main(*args):
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
-            afterPage = u''
+            afterPage = u'Morgan'
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Genres manquants en français')
-            #p.pagesByCat(u'Mots ayant des homophones en français')
+            p.pagesByCat(u'Mots ayant des homophones en français', afterPage = afterPage)
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
