@@ -38,6 +38,7 @@ checkURL = False
 fixTags = False
 fixFiles = True
 fixTemplates = False
+addCategory = False
 
 sizeT = 3
 sizeP = 12
@@ -49,16 +50,41 @@ Ttemp[1] = u'numéro'
 
 # Template:Chapitre
 param = range(1, sizeP)
-param[1] = u'titre ' # espace pour disambiguiser
-param[2] = u'idfaculté'
-param[3] = u' leçon'
-param[4] = u'page'
-param[5] = u'numero'
-param[6] = u'précédent'
-param[7] = u'suivant'
-param[8] = u'align'
-param[9] = u'niveau'
-param[10] = u'titre_leçon'
+param.append(u'titre ') # espace pour disambiguiser
+param.append(u'idfaculté')
+param.append(u' leçon')
+param.append(u'page')
+param.append(u'numero')
+param.append(u'précédent')
+param.append(u'suivant')
+param.append(u'align')
+param.append(u'niveau')
+param.append(u'titre_leçon')
+sizeP = len(param)
+
+subPages = []
+# {{leçon}}
+subPages.append(u'Présentation de la leçon')
+subPages.append(u'Objectifs')
+subPages.append(u'Prérequis conseillés')
+subPages.append(u'Référents')
+subPages.append(u'Post-notions')
+# {{cours}}
+subPages.append(u'Leçons')
+subPages.append(u'Fiche')
+subPages.append(u'Feuille d\'exercices')
+subPages.append(u'Annexe')
+subPages.append(u'Voir aussi')
+# {{département}}
+subPages.append(u'Présentation du département')
+subPages.append(u'Leçons par thèmes')
+subPages.append(u'Leçons par niveaux')
+subPages.append(u'Contributeurs')
+
+# {{faculté}}
+subPages.append(u'Présentation de la faculté')
+subPages.append(u'Départements')
+subPages.append(u'Transverse')
 
 
 def treatPageByName(pageName):
@@ -73,38 +99,22 @@ def treatPageByName(pageName):
     if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
     if checkURL: PageTemp = hyperlynx(PageTemp)
+        
+    PageTemp = PageTemp.replace(u'[[Catégorie:{{PAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
+    PageTemp = PageTemp.replace(u'[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
+    PageTemp = PageTemp.replace(u'{{autoCat}}', u'{{AutoCat}}')
+    if addCategory and pageName.find(u'/') != -1:
+        subPageName = pageName[pageName.find(u'/')+1:]
+        if debugLevel > 0: print subPageName
+        if subPageName in subPages and PageTemp.find(u'[[Catégorie:') == -1 and PageTemp.find(u'{{AutoCat}}') == -1 and PageTemp.find(u'{{imprimable') == -1:
+            PageTemp = PageTemp + u'\n\n{{AutoCat}}'
 
     if page.namespace() == 0:
-        templates = []
-        templates.append('bas de page')
-        templates.append('chapitre')
-        templates.append('cfExo')
-        templates.append('département')
-        templates.append('évaluation')
-        templates.append('leçon')
-        for template in templates:
-            PageTemp = replaceParameterValue(PageTemp, template, 'idfaculté', 'langues étrangères', 'langues')
-
-        # Clés de tri
-        sizeR = 7
-        regex = range(1, sizeR+1)
-        regex[1] = ur'()\n{{[Cc]lé de tri[^}]*}}'
-        regex[2] = ur'({{[Cc]hapitre[^}]*)\| *clé *=[^}\|]*'
-        regex[3] = ur'({{[Ll]eçon[^}]*)\| *clé *=[^}\|]*'
-        regex[4] = ur'({{[Cc]ours[^}]*)\| *clé *=[^}\|]*'
-        regex[5] = ur'({{[Dd]épartement[^}]*)\| *clé *=[^}\|]*'
-        regex[6] = ur'({{[Ff]aculté[^}]*)\| *clé *=[^}\|]*'
-
-        for p in range(1, sizeR-1):
-            if re.search(regex[p], PageTemp):
-                PageTemp = re.sub(regex[p], ur'\1', PageTemp)
-                if summary.find(u'clé de tri') == -1: summary = summary + u', retrait de la clé de tri'
-
-        # Remplacements consensuels
+        # Remplacements consensuels (ex : numero -> numéro)
         for p in range(1,sizeT-1):
             if PageTemp.find(u'{{' + temp[p] + u'|') != -1 or PageTemp.find(u'{{' + temp[p] + u'}}') != -1:
                 PageTemp = PageTemp[0:PageTemp.find(temp[p])] + Ttemp[p] + PageTemp[PageTemp.find(temp[p])+len(temp[p]):len(PageTemp)]
-            #p=p+1
+
 
         # http://fr.wikiversity.org/wiki/Catégorie:Modèle_mal_utilisé
         if fixTemplates == True:
@@ -128,7 +138,7 @@ def treatPageByName(pageName):
                             if re.compile('{{Chapitre[\n.]*(\n.*leçon.*=.*\n)').search(PageTemp):
                                     print "leçon1"
                             if re.compile('{{Chapitre.*\n.*\n.*(\n.*leçon.*=.*\n)').search(PageTemp):
-                                    print "le�on2"
+                                    print "leçon2"
                             if re.compile('{{Chapitre.*\n.*\n.*\n.*(\n.*leçon.*=.*\n)').search(PageTemp):
                                     print "leçon3"
                             if re.compile('{{Chapitre[.\n]*(\n.*niveau.*=.*\n)').search(PageTemp):
@@ -221,7 +231,7 @@ def treatPageByName(pageName):
                                                     PageEnd = PageEnd + PageTemp[0:PageTemp.find(u'niveau')+len(u'niveau')] + "=" + Valeur(u'niveau',PageLecon)
                                                     PageTemp = PageTemp2
                                                 elif Valeur(u'niveau',PageLecon) != PageTemp2[0:PageTemp2.find(u'\n')]:
-                                                    if debugLevel > 0: 
+                                                    if debugLevel > 0:
                                                         print u'Différence de niveau dans ' + pageName.encode(config.console_encoding, 'replace') + u' : '
                                                         print Valeur(u'niveau',PageLecon)
                                                         print PageTemp2[0:PageTemp2.find(u'\n')].encode(config.console_encoding, 'replace')
@@ -498,6 +508,8 @@ def main(*args):
             while 1:
                 p.pagesByRCLastDay()
         elif sys.argv[1] == u'-nocat':
+            global addCategory
+            addCategory = True
             p.pagesBySpecialNotCategorized()
         elif sys.argv[1] == u'-lint':
             p.pagesBySpecialLint()

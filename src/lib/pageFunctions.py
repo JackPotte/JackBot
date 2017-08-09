@@ -652,6 +652,7 @@ def getContentFromPageName(pageName, allowedNamespaces = None, site = site):
     return getContentFromPage(page, allowedNamespaces)
 
 def getContentFromPage(page, allowedNamespaces = None, username = username):
+    if debugLevel > 0: print '\ngetContentFromPage'
     PageBegin = u''
     try:
         get = page.exists()
@@ -672,10 +673,10 @@ def getContentFromPage(page, allowedNamespaces = None, username = username):
             try:
                 PageBegin = page.get()
             except pywikibot.exceptions.BadTitle:
-                if debugLevel > 0: print u'IsRedirect l 5658'
+                if debugLevel > 0: print u' IsRedirect l 676'
                 return 'KO'
             except pywikibot.exceptions.IsRedirectPage:
-                if debugLevel > 0: print u'IsRedirect l 5662'
+                if debugLevel > 0: print u' IsRedirect l 679'
                 if page.namespace() == 'Template:':
                     PageBegin = page.get(get_redirect=True)
                     if PageBegin[:len(u'#REDIRECT')] == u'#REDIRECT':
@@ -690,16 +691,16 @@ def getContentFromPage(page, allowedNamespaces = None, username = username):
                 else:
                     return 'KO'
             except pywikibot.exceptions.NoPage:
-                if debugLevel > 0: print u'NoPage l 5665'
+                if debugLevel > 0: print u' NoPage l 694'
                 return 'KO'
             except pywikibot.exceptions.ServerError:
-                if debugLevel > 0: print u'NoPage l 5668'
+                if debugLevel > 0: print u' NoPage l 697'
                 return 'KO'
         else:
-            if debugLevel > 0: print u'Forbidden namespace l 5671'
+            if debugLevel > 0: print u' Forbidden namespace l 700'
             return 'KO'
     else:
-        if debugLevel > 0: print u'No page l 5674'
+        if debugLevel > 0: print u' No page l 703'
         return 'KO'
 
     return PageBegin
