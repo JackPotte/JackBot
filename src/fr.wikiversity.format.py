@@ -40,27 +40,21 @@ fixFiles = True
 fixTemplates = False
 addCategory = False
 
-sizeT = 3
-sizeP = 12
 
-temp = range(1, sizeT)
-Ttemp = range(1, sizeT)
-temp[1] = u'numero'
-Ttemp[1] = u'numéro'
+oldParameters = []
+newParameters = []
+oldParameters.append(u'numero')
+newParameters.append(u'numéro')
 
-# Template:Chapitre
-param = range(1, sizeP)
-param.append(u'titre ') # espace pour disambiguiser
-param.append(u'idfaculté')
-param.append(u' leçon')
-param.append(u'page')
-param.append(u'numero')
-param.append(u'précédent')
-param.append(u'suivant')
-param.append(u'align')
-param.append(u'niveau')
-param.append(u'titre_leçon')
-sizeP = len(param)
+# https://fr.wikiversity.org/wiki/Catégorie:Modèles_de_l'université
+categorizingTemplates = []
+categorizingTemplates.append(u'Faculté')
+categorizingTemplates.append(u'Département')
+categorizingTemplates.append(u'Cours')
+categorizingTemplates.append(u'Leçon')
+categorizingTemplates.append(u'Chapitre')
+categorizingTemplates.append(u'Annexe')
+categorizingTemplates.append(u'Quiz')
 
 subPages = []
 # {{leçon}}
@@ -85,6 +79,21 @@ subPages.append(u'Contributeurs')
 subPages.append(u'Présentation de la faculté')
 subPages.append(u'Départements')
 subPages.append(u'Transverse')
+
+# {{Chapitre}} parameters
+'''
+param = []
+param.append(u'titre ') # espace pour disambiguiser
+param.append(u'titre_leçon')
+param.append(u'idfaculté')
+param.append(u' leçon')
+param.append(u'page')
+param.append(u'numero')
+param.append(u'précédent')
+param.append(u'suivant')
+param.append(u'align')
+param.append(u'niveau')
+'''
 
 
 def treatPageByName(pageName):
@@ -111,9 +120,9 @@ def treatPageByName(pageName):
 
     if page.namespace() == 0:
         # Remplacements consensuels (ex : numero -> numéro)
-        for p in range(1,sizeT-1):
-            if PageTemp.find(u'{{' + temp[p] + u'|') != -1 or PageTemp.find(u'{{' + temp[p] + u'}}') != -1:
-                PageTemp = PageTemp[0:PageTemp.find(temp[p])] + Ttemp[p] + PageTemp[PageTemp.find(temp[p])+len(temp[p]):len(PageTemp)]
+        for p in range(1, len(oldParameters)-1):
+            if PageTemp.find(u'{{' + temp[p] + u'|') != -1 or PageTemp.find(u'{{' + oldParameters[p] + u'}}') != -1:
+                PageTemp = PageTemp[0:PageTemp.find(temp[p])] + newParameters[p] + PageTemp[PageTemp.find(temp[p])+len(temp[p]):]
 
 
         # http://fr.wikiversity.org/wiki/Catégorie:Modèle_mal_utilisé
