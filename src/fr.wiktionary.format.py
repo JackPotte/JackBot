@@ -1765,17 +1765,6 @@ def treatPageByName(pageName):
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, u'{{ébauche-trad}}\n{{', PageTemp)
 
-            # 4) Contrôle du nombre de paragraphes de traduction par rapport au nombre de sens
-        #if PageTemp.find(u'{{langue|fr}}') != -1:
-            '''TODO
-            NbSensFr = count(#)
-            replace(
-                {{trad-début}}
-                {{ébauche-trad}}
-                {{trad-fin}}
-                {{trad-début}}
-            '''
-
         while PageTemp.find(u'{{trad-fin}}\n* {{T|') != -1:
             PageTemp2 = PageTemp[PageTemp.find(u'{{trad-fin}}\n* {{T|'):]
             delta = PageTemp2.find(u'\n')+1
@@ -2526,10 +2515,11 @@ def treatPageByName(pageName):
 
             # Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
             if PageTemp.find(u'{{S|traductions}}') == -1 and PageTemp.find(u'fr|flexion') == -1 and \
-             PageTemp.find(u'Variante d') == -1 and PageTemp.find(u'Synonyme d') == -1:
-                PageTemp = addLine(PageTemp, u'fr', u'traduction', u'\n==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n')
+             PageTemp.find(u'Variante d') == -1 and PageTemp.find(u'Synonyme d') == -1 and PageTemp.find(u'{{S|erreur|fr}}') == -1:
+                PageTemp = addLine(PageTemp, u'fr', u'traduction', u'\n==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n')
                 summary = summary + u', ajout de {{S|traductions}}'
-            
+            # TODO Contrôle du nombre de paragraphes de traduction par rapport au nombre de sens
+
         if PageTemp.find(u'{{langue|es}}') != -1:
             ligne = 1
             colonne = 4
@@ -3561,7 +3551,8 @@ def treatPageByName(pageName):
                         if PageTemp.find(nextSection) == -1:
                             nextSection = u'{{langue|'
                         PageTemp2 = PageTemp[PageTemp.find(nextSection):]
-                        PageTemp = PageTemp[PageTemp.find('}}')+2:PageTemp.find(nextSection)+PageTemp2.find(u'\n')+1] + u'{{ébauche}}\n' + PageTemp[PageTemp.find(nextSection)+PageTemp2.find(u'\n')+1:]
+                        PageTemp = PageTemp[PageTemp.find('}}')+2:PageTemp.find(nextSection)+PageTemp2.find(u'\n')+1] \
+                         + u'{{ébauche}}\n' + PageTemp[PageTemp.find(nextSection)+PageTemp2.find(u'\n')+1:]
                         PageEnd = PageEnd[:-2]
                         backward = True
                     elif languageCode:
@@ -3573,7 +3564,11 @@ def treatPageByName(pageName):
                     if debugLevel > 0: print u' Modèle régional : non catégorisé dans la prononciation'
                     if PageEnd.rfind('{{') != -1:
                         PageEnd2 = PageEnd[:PageEnd.rfind('{{')]
-                        if addLanguageCode and ((PageEnd2.rfind('{{') != PageEnd2.rfind(u'{{pron|') and PageEnd2.rfind('{{') != PageEnd2.rfind(u'{{US|') and PageEnd2.rfind('{{') != PageEnd2.rfind(u'{{UK|')) or PageEnd.rfind(u'{{pron|') < PageEnd.rfind(u'\n') or PageEnd2.rfind(u'{{pron|') == -1) and ((PageTemp.find('{{') != PageTemp.find(u'{{pron|') or PageTemp.find(u'{{pron|') > PageTemp.find(u'\n')) or PageTemp.find(u'{{pron|') == -1):
+                        if addLanguageCode and ((PageEnd2.rfind('{{') != PageEnd2.rfind(u'{{pron|') and \
+                         PageEnd2.rfind('{{') != PageEnd2.rfind(u'{{US|') and PageEnd2.rfind('{{') != PageEnd2.rfind(u'{{UK|')) \
+                          or PageEnd.rfind(u'{{pron|') < PageEnd.rfind(u'\n') or PageEnd2.rfind(u'{{pron|') == -1) \
+                          and ((PageTemp.find('{{') != PageTemp.find(u'{{pron|') or PageTemp.find(u'{{pron|') > PageTemp.find(u'\n')) \
+                          or PageTemp.find(u'{{pron|') == -1):
                             PageEnd, PageTemp = nextTemplate(PageEnd, PageTemp, currentTemplate, languageCode)
                         else:
                             PageEnd, PageTemp = nextTemplate(PageEnd, PageTemp, currentTemplate, 'nocat=1')
