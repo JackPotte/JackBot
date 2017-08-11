@@ -153,7 +153,8 @@ def replaceDepretacedTags(pageContent):
             closingNewTag = newTag
         else:
             closingNewTag = newTag[:newTag.find(u' ')]
-        #regex = ur'<' + oldTag + ur'([^>]*)>([^\n]*)</' + closingOldTag + '>' # bug https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:-flex-nom-fam-/Documentation&diff=prev&oldid=24027702
+        #regex = ur'<' + oldTag + ur'([^>]*)>([^\n]*)</' + closingOldTag + '>'
+        # bug https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:-flex-nom-fam-/Documentation&diff=prev&oldid=24027702
         regex = ur'< *' + oldTag + ur'([^>]*) *>'
         if re.search(regex, pageContent):
             #summary = summary + u', ajout de ' + newTag
@@ -321,7 +322,8 @@ def getLemmaFromContent(pageContent, languageCode = 'fr'):
 def getLemmaFromPlural(pageContent, languageCode = 'fr', natures = ['nom', 'adjectif', 'suffixe']):
     if debugLevel > 0: print u'\ngetLemmaFromPlural'
     lemmaPageName = u''
-    regex = ur"(=== {{S\|(" + '|'.join(natures) + ")\|" + languageCode + "\|flexion}} ===\n({{" + languageCode + "\-[^}]*}}\n)*'''[^\n]+\n# *'* *(Masculin|Féminin)* *'* *'*[P|p]luriel *'* *de'* *'* *(\[\[|{{li?e?n?\|))([^#\|\]}]+)"
+    regex = ur"(=== {{S\|(" + '|'.join(natures) + ")\|" + languageCode + "\|flexion}} ===\n({{" + languageCode + \
+     "\-[^}]*}}\n)*'''[^\n]+\n# *'* *(Masculin|Féminin)* *'* *'*[P|p]luriel *'* *de'* *'* *(\[\[|{{li?e?n?\|))([^#\|\]}]+)"
     s = re.search(regex, pageContent)
     if s:
         if debugLevel > 1:
@@ -408,9 +410,11 @@ def addCat(pageContent, lang, cat):    # à remplacer par celle ci-dessous
             if pageContent2.find(u'{{langue|') != -1:
                 if debugLevel > 0: print u' catégorie ajoutée avant la section suivante'
                 if pageContent2.find(u'== {{langue|') != -1:
-                    pageContent = pageContent[:pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'== {{langue|')] + cat + u'\n\n' + pageContent[pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'== {{langue|'):]
+                    pageContent = pageContent[:pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'== {{langue|')] \
+                     + cat + u'\n\n' + pageContent[pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'== {{langue|'):]
                 elif pageContent2.find(u'=={{langue|') != -1:
-                    pageContent = pageContent[:pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'=={{langue|')] + cat + u'\n\n' + pageContent[pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'=={{langue|'):]
+                    pageContent = pageContent[:pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'=={{langue|')] \
+                     + cat + u'\n\n' + pageContent[pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'=={{langue|'):]
                 else:
                      print u'Modèle {{langue| mal positionné'
             else:
@@ -426,12 +430,11 @@ def addCat(pageContent, lang, cat):    # à remplacer par celle ci-dessous
                     pageContent = pageContent + u'\n' + cat
     return pageContent
 
-
-def addLine(Page, CodeLangue, Section, pageContent):
-    if Page != '' and CodeLangue != '' and Section != '' and pageContent != '':
-        if Page.find(pageContent) == -1 and Page.find(u'{{langue|' + CodeLangue + '}}') != -1:
-            if Section == u'catégorie' and pageContent.find(u'[[Catégorie:') == -1: pageContent = u'[[Catégorie:' + pageContent + u']]'
-            if Section == u'clé de tri' and pageContent.find(u'{{clé de tri|') == -1: pageContent = u'{{clé de tri|' + pageContent + '}}'
+def addLine(pageContent, CodeLangue, Section, lineContent):
+    if pageContent != '' and CodeLangue != '' and Section != '' and lineContent != '':
+        if pageContent.find(lineContent) == -1 and pageContent.find(u'{{langue|' + CodeLangue + '}}') != -1:
+            if Section == u'catégorie' and lineContent.find(u'[[Catégorie:') == -1: lineContent = u'[[Catégorie:' + lineContent + u']]'
+            if Section == u'clé de tri' and lineContent.find(u'{{clé de tri|') == -1: lineContent = u'{{clé de tri|' + lineContent + '}}'
 
             # Recherche de l'ordre théorique de la section à ajouter
             NumSection = sectionNumber(Section)
@@ -443,83 +446,80 @@ def addLine(Page, CodeLangue, Section, pageContent):
                     print u' dans une section inconnue'
                     print u' (car ' + len(Sections) + u' = ' + str(NumSection) + u')'
                     print u''
-                return Page
+                return pageContent
             if debugLevel > 1: print u' position S : ' + s
 
             # Recherche de l'ordre réel de la section à ajouter
-            pageContent2 = Page[Page.find(u'{{langue|' + CodeLangue + '}}')+len(u'{{langue|' + CodeLangue + '}}'):]
-            #SectionPage = re.findall("{{S\|([^}]+)}}", pageContent2) # Mais il faut trouver le {{langue}} de la limite de fin
-            SectionPage = re.findall(ur"\n=+ *{{S?\|?([^}/|]+)([^}]*)}}", pageContent2)
-            if debugLevel > 1:
-                o = 0
-                while o < len(SectionPage):
-                     print str(SectionPage[o]).encode(config.console_encoding, 'replace')
-                     o = o + 1
-                if o == len(SectionPage): o = o - 1
-                raw_input()
-
+            lineContent2 = pageContent[pageContent.find(u'{{langue|' + CodeLangue + '}}')+len(u'{{langue|' + CodeLangue + '}}'):]
+            #sectionsInPage = re.findall("{{S\|([^}]+)}}", lineContent2) # OK mais il faut trouver le {{langue}} de la limite de fin
+            sectionsInPage = re.findall(ur"\n=+ *{{S?\|?([^}/|]+)([^}]*)}}", lineContent2)
             o = 0
-            #raw_input(str(SectionPage[0][0].encode(config.console_encoding, 'replace')))
             # pb encodage : étymologie non fusionnée + catégorie = 1 au lieu de 20 !?
-            while o < len(SectionPage) and str(SectionPage[o][0].encode(config.console_encoding, 'replace')) != 'langue' and sectionNumber(SectionPage[o][0]) <= NumSection:
+            while o < len(sectionsInPage) and str(sectionsInPage[o][0].encode(config.console_encoding, 'replace')) != u'langue' \
+             and sectionNumber(sectionsInPage[o][0]) <= NumSection:
                 if debugLevel > 0:
-                    print SectionPage[o][0]
-                    print sectionNumber(SectionPage[o][0])
+                    print ' ' + sectionsInPage[o][0] + ' ' + str(sectionNumber(sectionsInPage[o][0]))
                 o = o + 1
-            SectionLimite = str(SectionPage[o][0].encode(config.console_encoding, 'replace'))
-            o = o - 1
-            if debugLevel > 1: print u' position O : ' + o
-            if debugLevel > 0:
-                print u''
-                print u'Ajout de '
-                print Section.encode(config.console_encoding, 'replace')
-                print u' avant '
-                print SectionLimite
-                print u' (car ' + str(sectionNumber(SectionLimite)) + u' > ' + str(NumSection) + u')'
-                print u''
+            if debugLevel > 0: print ' ' + str(len(sectionsInPage)) + ' >? ' + str(o)
+            if o == len(sectionsInPage):
+                if debugLevel > 0: print ' section à ajouter en fin de page'
+                pageContent = pageContent + u'\n' + lineContent
+            else:
+                SectionLimite = str(sectionsInPage[o][0].encode(config.console_encoding, 'replace'))
+                o = o - 1
+                if debugLevel > 1: print u' position O : ' + o
+                if debugLevel > 0:
+                    print u''
+                    print u'Ajout de '
+                    print Section.encode(config.console_encoding, 'replace')
+                    print u' avant '
+                    print SectionLimite
+                    print u' (car ' + str(sectionNumber(SectionLimite)) + u' > ' + str(NumSection) + u')'
+                    print u''
 
-            # Ajout après la section trouvée
-            if pageContent2.find(u'{{S|' + SectionPage[o][0]) == -1:
-                print 'Erreur d\'encodage'
-                return
+                # Ajout après la section trouvée
+                if lineContent2.find(u'{{S|' + sectionsInPage[o][0]) == -1:
+                    print 'Erreur d\'encodage'
+                    return
 
-            pageContent3 = pageContent2[pageContent2.find(u'{{S|' + SectionPage[o][0]):]
-            if SectionPage[o][0] != Section and Section != u'catégorie' and Section != u'clé de tri':
-                if debugLevel > 1: print u' ajout de la section'
-                pageContent = u'\n' + Niveau[NumSection] + u' {{S|' + Section + u'}} ' + Niveau[NumSection] + u'\n' + pageContent
+                lineContent3 = lineContent2[lineContent2.find(u'{{S|' + sectionsInPage[o][0]):]
+                if sectionsInPage[o][0] != Section and Section != u'catégorie' and Section != u'clé de tri':
+                    if debugLevel > 1: print u' ajout de la section'
+                    lineContent = u'\n' + Niveau[NumSection] + u' {{S|' + Section + u'}} ' + Niveau[NumSection] + u'\n' + lineContent
 
-            # Ajout à la ligne
-            if pageContent3.find(u'\n==') == -1:
-                regex = ur'\n\[\[\w?\w?\w?:'
-                if re.compile(regex).search(Page):
-                    interwikis = re.search(regex, Page).start()
-                    categories = Page.find(u'\n[[Catégorie:')
-                    defaultSort = Page.find(u'\n{{clé de tri|')
+                # Ajout à la ligne
+                if lineContent3.find(u'\n==') == -1:
+                    regex = ur'\n\[\[\w?\w?\w?:'
+                    if re.compile(regex).search(pageContent):
+                        interwikis = re.search(regex, pageContent).start()
+                        categories = pageContent.find(u'\n[[Catégorie:')
+                        defaultSort = pageContent.find(u'\n{{clé de tri|')
 
-                    if (interwikis < categories or categories == -1) and (interwikis < defaultSort or defaultSort == -1):
-                        if debugLevel > 0: print u' ajout avant les interwikis'
-                        try:
-                            Page = Page[:interwikis] + u'\n' + pageContent + u'\n' + Page[interwikis:]
-                        except:
-                            print u' pb regex interwiki'
-                    elif categories != -1 and (categories < defaultSort or defaultSort == -1):
-                        if debugLevel > 0: print u' ajout avant les catégories'
-                        Page = Page[:Page.find(u'\n[[Catégorie:')] + pageContent + Page[Page.find(u'\n[[Catégorie:'):]
-                    elif defaultSort != -1:
-                        if debugLevel > 0: print u' ajout avant la clé de tri'
-                        Page = Page[:Page.find(u'\n{{clé de tri|')] + pageContent + Page[Page.find(u'\n{{clé de tri|'):]
+                        if (interwikis < categories or categories == -1) and (interwikis < defaultSort or defaultSort == -1):
+                            if debugLevel > 0: print u' ajout avant les interwikis'
+                            try:
+                                pageContent = pageContent[:interwikis] + u'\n' + lineContent + u'\n' + pageContent[interwikis:]
+                            except:
+                                print u' pb regex interwiki'
+                        elif categories != -1 and (categories < defaultSort or defaultSort == -1):
+                            if debugLevel > 0: print u' ajout avant les catégories'
+                            pageContent = pageContent[:pageContent.find(u'\n[[Catégorie:')] + lineContent + pageContent[pageContent.find(u'\n[[Catégorie:'):]
+                        elif defaultSort != -1:
+                            if debugLevel > 0: print u' ajout avant la clé de tri'
+                            pageContent = pageContent[:pageContent.find(u'\n{{clé de tri|')] + lineContent + pageContent[pageContent.find(u'\n{{clé de tri|'):]
+                        else:
+                            if debugLevel > 0: print u' ajout en fin de page'
+                            pageContent = pageContent + lineContent
                     else:
                         if debugLevel > 0: print u' ajout en fin de page'
-                        Page = Page + pageContent
+                        pageContent = pageContent + lineContent
                 else:
-                    if debugLevel > 0: print u' ajout en fin de page'
-                    Page = Page + pageContent
-            else:
-                Page = Page[:-len(pageContent2)] + pageContent2[:-len(pageContent3)] + pageContent3[:pageContent3.find(u'\n\n')] + u'\n' + pageContent + u'\n' + pageContent3[pageContent3.find(u'\n\n'):]
-    return Page
+                    pageContent = pageContent[:-len(lineContent2)] + lineContent2[:-len(lineContent3)] + lineContent3[:lineContent3.find(u'\n\n')] \
+                     + u'\n' + lineContent + u'\n' + lineContent3[lineContent3.find(u'\n\n'):]
+    return pageContent
 
 def sectionNumber(Section):
-    if debugLevel > 0: print u'sectionNumber()'
+    if debugLevel > 1: print u'sectionNumber()'
     if debugLevel > 1:
         print u''
         print Section

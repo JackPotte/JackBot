@@ -2447,7 +2447,7 @@ def treatPageByName(pageName):
             regex = ur"==== *{{S\|homophones\|fr}} *====\n(\n|$)"
             if re.search(regex, PageTemp):
                 PageTemp = re.sub(regex, '', PageTemp)
-            if debugLevel > 0: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
+            if debugLevel > 2: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 
 
             # Ajout des redirections des pronominaux
@@ -2524,6 +2524,12 @@ def treatPageByName(pageName):
                     PageTemp = re.sub(regex, ur'\1\3\n\2', PageTemp)
                     summary = summary + u', déplacement des modèles de flexions'
 
+            # Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
+            if PageTemp.find(u'{{S|traductions}}') == -1 and PageTemp.find(u'fr|flexion') == -1 and \
+             PageTemp.find(u'Variante d') == -1 and PageTemp.find(u'Synonyme d') == -1:
+                PageTemp = addLine(PageTemp, u'fr', u'traduction', u'\n==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n')
+                summary = summary + u', ajout de {{S|traductions}}'
+            
         if PageTemp.find(u'{{langue|es}}') != -1:
             ligne = 1
             colonne = 4
@@ -2734,13 +2740,6 @@ def treatPageByName(pageName):
             #print(PageTemp.encode(config.console_encoding, 'replace'))
         PageTemp = PageEnd + PageTemp
         PageEnd = u''"""
-
-
-        '''TODO Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
-        if PageTemp.find(u'{{langue|fr}}') != -1 and PageTemp.find(u'{{S|traductions}}') == -1 and PageTemp.find(u'Variante d') == -1 and PageTemp.find(u'Synonyme d') == -1:
-            PageTemp = addCat(PageTemp, u'fr', u'\n==== {{S|traductions}} ====\n{{trad-début}}\n{{trad-fin}}\n')
-            summary = summary + u', ajout de {{S|traductions}}'
-        '''
 
 
         if debugLevel > 0: print (u'Gestion des codes langues dans les modèles')
