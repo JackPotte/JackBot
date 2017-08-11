@@ -347,18 +347,20 @@ def getLemmaFromConjugation(pageContent, languageCode = 'fr'):
 
     return lemmaPageName
 
-def getFlexionTemplate(pageName, language, nature):
-    if debugLevel > 0: print u'\ngetFlexionTemplate'
+def getFlexionTemplate(pageName, language, nature = None):
+    if debugLevel > 1: print u'\ngetFlexionTemplate'
     FlexionTemplate = u''
+    if nature is None: nature = 'nom|adjectif|suffixe'
     pageContent = getContentFromPageName(pageName)
-    regex = ur"=== {{S\|" + nature + ur"\|" + language + ur"\|flexion(\|num=[0-9])?}} ===\n{{(" + language + ur"\-[^}]+)}}"
-    if debugLevel > 1: print u' ' + regex
+    regex = ur"=== {{S\|(" + nature + ur")\|" + language + ur"(\|flexion)?(\|num=[0-9])?}} ===\n{{(" + language + ur"\-[^}]+)}}"
     s = re.search(regex, pageContent)
     if s:
         if debugLevel > 1:
-            if not s.group(1) is None: print u' ' + s.group(1)
-            if not s.group(2) is None: print u' ' + s.group(2)
-        FlexionTemplate = s.group(2)
+            if not s.group(1) is None: print u' ' + s.group(1) # Nature
+            if not s.group(2) is None: print u' ' + s.group(2) # Flexion
+            if not s.group(3) is None: print u' ' + s.group(3) # Number
+            if not s.group(4) is None: print u' ' + s.group(4) # Template
+        FlexionTemplate = s.group(4)
     if debugLevel > 0: print u' FlexionTemplate found: ' + FlexionTemplate
     # TODO
     if FlexionTemplate.find('{{') != -1: FlexionTemplate = u''
@@ -652,7 +654,7 @@ def getContentFromPageName(pageName, allowedNamespaces = None, site = site):
     return getContentFromPage(page, allowedNamespaces)
 
 def getContentFromPage(page, allowedNamespaces = None, username = username):
-    if debugLevel > 0: print '\ngetContentFromPage'
+    if debugLevel > 0: print '\ngetContentFromPage ' + page.title()
     PageBegin = u''
     try:
         get = page.exists()
@@ -721,21 +723,13 @@ def getWiki(language, family, site = site):
         #TODO: WARNING: src/fr.wiktionary.format.py:4145: UserWarning: Site wiktionary:ro instantiated using different code "mo"
     return wiki
 
-def getParameter(Page, p):				
-	'''
-	print pron.encode(config.console_encoding, 'replace')
-	pattern = ur'.*\|([^}\|]*)}|\|'
-	regex = re.search(pattern, pron)
-	print regex.start()
-	print regex.end()
-	raw_input(pron[regex.start():regex.end()])
-	'''
-	if Page.find(p + u'=') == -1 or Page.find(u'}}') == -1 or Page.find(p + u'=') > Page.find(u'}}'): return u''
-	Page = Page[Page.find(p + u'=')+len(p + u'='):]
-	if Page.find(u'|') != -1 and Page.find(u'|') < Page.find(u'}}'):
-		return trim(Page[:Page.find(u'|')])
+def getParameter(pageContent, p):
+	if pageContent.find(p + u'=') == -1 or pageContent.find(u'}}') == -1 or pageContent.find(p + u'=') > pageContent.find(u'}}'): return u''
+	pageContent = pageContent[pageContent.find(p + u'=')+len(p + u'='):]
+	if pageContent.find(u'|') != -1 and pageContent.find(u'|') < pageContent.find(u'}}'):
+		return trim(pageContent[:pageContent.find(u'|')])
 	else:
-		return trim(Page[:Page.find(u'}')])
+		return trim(pageContent[:pageContent.find(u'}')])
 
 def addParameter(pageContent, parameter, content = None):
     PageEnd = u''
