@@ -330,7 +330,7 @@ def getLemmaFromPlural(pageContent, languageCode = 'fr', natures = ['nom', 'adje
             print(s.group(1).encode(config.console_encoding, 'replace')) # 2 = adjectif, 3 = fr-rég, 4 = Féminin, 5 = {{lien|, 6 = lemme
             raw_input(s.group(6).encode(config.console_encoding, 'replace'))
         lemmaPageName = s.group(6)
-    if debugLevel > 0: print u' lemmaPageName found: ' + lemmaPageName
+    if debugLevel > 0: pywikibot.output(u" lemmaPageName found: \n\03{red}" + + lemmaPageName + "\03{default}")
     if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
 
     return lemmaPageName
@@ -345,13 +345,13 @@ def getLemmaFromConjugation(pageContent, languageCode = 'fr'):
             print(s.group(1).encode(config.console_encoding, 'replace')) # 2 fr-verbe-flexion, 3 = {{lien|, 4 = lemme
             raw_input(s.group(4).encode(config.console_encoding, 'replace'))
         lemmaPageName = s.group(4)
-    if debugLevel > 0: print u' lemmaPageName found: ' + lemmaPageName
+    if debugLevel > 0: pywikibot.output(u" lemmaPageName found: \n\03{red}" + + lemmaPageName + "\03{default}")
 
     return lemmaPageName
 
 def getFlexionTemplate(pageName, language, nature = None):
     if debugLevel > 1: print u'\ngetFlexionTemplate'
-    FlexionTemplate = u''
+    flexionTemplate = u''
     if nature is None: nature = 'nom|adjectif|suffixe'
     pageContent = getContentFromPageName(pageName)
     regex = ur"=== {{S\|(" + nature + ur")\|" + language + ur"(\|flexion)?(\|num=[0-9])?}} ===\n{{(" + language + ur"\-[^}]+)}}"
@@ -362,13 +362,13 @@ def getFlexionTemplate(pageName, language, nature = None):
             if not s.group(2) is None: print u' ' + s.group(2) # Flexion
             if not s.group(3) is None: print u' ' + s.group(3) # Number
             if not s.group(4) is None: print u' ' + s.group(4) # Template
-        FlexionTemplate = s.group(4)
-    if debugLevel > 0: print u' FlexionTemplate found: ' + FlexionTemplate
+        flexionTemplate = s.group(4)
+    if debugLevel > 0: pywikibot.output(u" flexionTemplate found: \n\03{red}" + + flexionTemplate + "\03{default}")
     # TODO
-    if FlexionTemplate.find('{{') != -1: FlexionTemplate = u''
-    if FlexionTemplate.find(u'-inv') != -1: FlexionTemplate = u''
+    if flexionTemplate.find('{{') != -1: flexionTemplate = u''
+    if flexionTemplate.find(u'-inv') != -1: flexionTemplate = u''
 
-    return FlexionTemplate
+    return flexionTemplate
 
 def getFlexionTemplateFromLemma(pageName, language, nature):
     if debugLevel > 0: print u'\ngetFlexionTemplateFromLemma'
@@ -758,12 +758,14 @@ def stopRequired(username = username):
     pageContent = getContentFromPageName(u'User talk:' + username)
     if pageContent == 'KO': return
     if pageContent != u"{{/Stop}}":
-        pywikibot.output (u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
+        pywikibot.output(u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
         exit(0)
 
 def savePage(currentPage, pageContent, summary):
     result = "ok"
     if debugLevel > 0:
+        pywikibot.output(u"\n\03{blue}" + summary + u"\03{default}")
+        pywikibot.output(u"\n\03{red}---------------------------------------------------\03{default}")
         if len(pageContent) < 6000:
             print(pageContent.encode(config.console_encoding, 'replace'))
         else:

@@ -1656,9 +1656,9 @@ def treatPageByName(pageName):
                 PageTemp = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'|\2|flexion}} ' + EgalSection, PageTemp)
 
         if debugLevel > 1:
-            pywikibot.output (u"\n\03{red}---------------------------------------------------\03{default}")
+            pywikibot.output(u"\n\03{red}---------------------------------------------------\03{default}")
             raw_input(PageTemp.encode(config.console_encoding, 'replace'))
-            pywikibot.output (u"\n\03{red}---------------------------------------------------\03{default}")
+            pywikibot.output(u"\n\03{red}---------------------------------------------------\03{default}")
         if PageTemp.find(u'|===') != -1 or PageTemp.find(u'{===') != -1:
             if debugLevel > 0: print u' *==='
             return
@@ -2318,7 +2318,7 @@ def treatPageByName(pageName):
 
         if debugLevel > 1: print u' Modèles bandeaux' 
         while PageTemp.find(u'\n{{colonnes|') != -1:
-            if debugLevel > 0: pywikibot.output (u'\nTemplate: \03{blue}colonnes\03{default}')
+            if debugLevel > 0: pywikibot.output(u'\nTemplate: \03{blue}colonnes\03{default}')
             PageTemp2 = PageTemp[:PageTemp.find(u'\n{{colonnes|')]
             if PageTemp2.rfind('{{') != -1 and PageTemp2.rfind('{{') == PageTemp2.rfind(u'{{trad-début'):    # modèles impriqués dans trad
                 PageTemp2 = PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
@@ -2334,7 +2334,7 @@ def treatPageByName(pageName):
                     break
 
             elif PageTemp2.rfind('{{') != -1 and PageTemp2.rfind('{{') == PageTemp2.rfind(u'{{('):    # modèles impriqués ailleurs
-                if debugLevel > 0: pywikibot.output (u'\nTemplate: \03{blue}(\03{default}')
+                if debugLevel > 0: pywikibot.output(u'\nTemplate: \03{blue}(\03{default}')
                 PageTemp2 = PageTemp[PageTemp.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(PageTemp)]
                 if PageTemp2.find(u'\n}}\n') != -1:
                     if PageTemp2[:len(u'titre=')] == u'titre=':
@@ -2743,10 +2743,10 @@ def treatPageByName(pageName):
         # On sauvegarde la partie délimitée par "position" d'une page temporaire dans une page finale jusqu'à disparition de la première
         while startPosition > -1:
             if debugLevel > 1:
-                pywikibot.output (u"\n\03{red}---------------------------------------------------\03{default}")
+                pywikibot.output(u"\n\03{red}---------------------------------------------------\03{default}")
                 print(PageEnd.encode(config.console_encoding, 'replace')[:1000])
                 raw_input(PageTemp.encode(config.console_encoding, 'replace')[:1000])
-                pywikibot.output (u"\n\03{red}---------------------------------------------------\03{default}")
+                pywikibot.output(u"\n\03{red}---------------------------------------------------\03{default}")
             if debugLevel > 1:
                 if languageCode is None:
                     print u'Boucle langue'
@@ -2773,12 +2773,12 @@ def treatPageByName(pageName):
             else:
                 if debugLevel > 0:
                     print(u' Retour en arrière')
-                    pywikibot.output (u"\n\03{red}---------------------------------------------------\03{default}")
+                    pywikibot.output(u"\n\03{red}---------------------------------------------------\03{default}")
             backward = False
 
             if currentTemplate in Modele:
                 p = Modele.index(currentTemplate)
-                if debugLevel > 0: pywikibot.output (u'\nTemplate: \03{blue}' + currentTemplate + u'\03{default} (' + str(p) + u')')
+                if debugLevel > 0: pywikibot.output(u'\nTemplate: \03{blue}' + currentTemplate + u'\03{default} (' + str(p) + u')')
 
                 # Missing language section
                 if not languageCode and (p < limit1 or p >= limit6) and currentTemplate != u'ébauche':
@@ -3574,25 +3574,25 @@ def treatPageByName(pageName):
                             PageEnd, PageTemp = nextTemplate(PageEnd, PageTemp, currentTemplate, 'nocat=1')
 
                 if debugLevel > 1:
-                    pywikibot.output (u"\n\03{red}---------------------------------------------\03{default}")
-                    pywikibot.output (u"\n\03{blue}Modèle traité\03{default}")
+                    pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
+                    pywikibot.output(u"\n\03{blue}Modèle traité\03{default}")
                     print (PageEnd.encode(config.console_encoding, 'replace')[:1000])
-                    pywikibot.output (u"\n\03{red}---------------------------------------------\03{default}")
+                    pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
                     raw_input (PageTemp.encode(config.console_encoding, 'replace'))
-                    pywikibot.output (u"\n\03{red}---------------------------------------------\03{default}")
+                    pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
             else:
-                if debugLevel > 0: pywikibot.output (u"\n\03{blue}Modèle inconnu\03{default} " + currentTemplate)
+                if debugLevel > 0: pywikibot.output(u"\n\03{blue}Modèle inconnu\03{default} " + currentTemplate)
                 PageEnd, PageTemp = nextTemplate(PageEnd, PageTemp)
 
             if not backward:
                 if debugLevel > 0:
                     message = u' Remplacement par \x1b[6;32;40m' + PageEnd[PageEnd.rfind('{{'):] + u'\x1b[0m\n\n'
                     print(message.encode(config.console_encoding, 'replace'))
-                    pywikibot.output (u"\n\03{red}---------------------------------------------\03{default}")
+                    pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
                 if debugLevel > 1:
-                    pywikibot.output (u"\n\03{red}---------------------------------------------\03{default}")
+                    pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
                     raw_input(PageTemp.encode(config.console_encoding, 'replace'))
-                    pywikibot.output (u"\n\03{red}---------------------------------------------\03{default}")
+                    pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
 
         PageEnd = PageEnd + PageTemp
 
@@ -3847,7 +3847,7 @@ def treatPageByName(pageName):
     else:
         PageEnd = PageTemp
 
-    if debugLevel > 0: pywikibot.output (u"\n\03{red}---------------------------------------------\03{default}")
+    if debugLevel > 0: pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
     if PageEnd != PageBegin:
         if page.namespace() == u'':
             # Modifications mineures, ne justifiant pas une édition à elles seules
