@@ -2490,6 +2490,7 @@ def treatPageByName(pageName):
                     PageTemp = re.sub(regex, ur'\1\3\n\2', PageTemp)
                     summary = summary + u', déplacement des modèles de flexions'
 
+
             # Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
             regex = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|apocope|aphérèse|ellipse|par ellipse|sigle|acronyme|abréviation)[\|}]'
             regex2 = ur'([Vv]ariante d|[Ss]ynonyme d|fr\|flexion)'
@@ -2753,18 +2754,18 @@ def treatPageByName(pageName):
             currentTemplate = PageTemp[:endPosition]
 
             if not backward:
-                if debugLevel > 0:
+                if debugLevel > 1:
                     message = u' Remplacement de \x1b[6;31;40m{{' + PageTemp[:PageTemp.find('}}')+2] + u'\x1b[0m'
                     print(message.encode(config.console_encoding, 'replace'))
             else:
-                if debugLevel > 0:
+                if debugLevel > 1:
                     print(u' Retour en arrière')
                     pywikibot.output(u"\n\03{red}---------------------------------------------------\03{default}")
             backward = False
 
             if currentTemplate in Modele:
                 p = Modele.index(currentTemplate)
-                if debugLevel > 0: pywikibot.output(u'\nTemplate: \03{blue}' + currentTemplate + u'\03{default} (' + str(p) + u')')
+                if debugLevel > 1: pywikibot.output(u'\nTemplate: \03{blue}' + currentTemplate + u'\03{default} (' + str(p) + u')')
 
                 # Missing language section
                 if not languageCode and (p < limit1 or p >= limit6) and currentTemplate != u'ébauche':
@@ -3574,7 +3575,7 @@ def treatPageByName(pageName):
                 PageEnd, PageTemp = nextTemplate(PageEnd, PageTemp)
 
             if not backward:
-                if debugLevel > 0:
+                if debugLevel > 1:
                     message = u' Remplacement par \x1b[6;32;40m' + PageEnd[PageEnd.rfind('{{'):] + u'\x1b[0m\n\n'
                     print(message.encode(config.console_encoding, 'replace'))
                     pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
