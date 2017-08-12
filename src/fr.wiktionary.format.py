@@ -1782,7 +1782,7 @@ def treatPageByName(pageName):
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, u'}}\n{{trad-fin}}', PageTemp)
 
-        if not username in pageName:
+        if not username in pageName and debugLevel == 0:
             if debugLevel > 0: print u'Ajout des {{voir}}'
             if PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}') != -1:
                 PageTemp = PageTemp[:PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[:1].lower() + pageName[1:] + PageTemp[PageTemp.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|{{lc:{{PAGENAME}}}}'):len(PageTemp)]
@@ -2387,57 +2387,8 @@ def treatPageByName(pageName):
         PageTemp = PageEnd + PageTemp
         PageEnd = u''
 
-
-        if debugLevel > 0: print u'Faux homophones car lemme et sa flexion'
+        
         if PageTemp.find(u'{{langue|fr}}') != -1:
-            language = 'fr'
-            lemmaPageName = ''
-            flexionPageName = ''
-            if PageTemp.find('|' + language + '|flexion}}') != -1:
-                lemmaPageName = getLemmaFromContent(PageTemp, language)
-            else:
-                # Recherche d'éventuelles flexions dans la page du lemme
-                flexionTemplate = getFlexionTemplate(pageName, language)
-                if flexionTemplate.find(u'inv=') == -1 and \
-                 (flexionTemplate[:flexionTemplate.find('|')] in flexionTemplatesWithS \
-                 or flexionTemplate[:flexionTemplate.find('|')] in flexionTemplatesWithMs):
-                    flexionPageName = getParameter(flexionTemplate, 'p')
-                    if flexionPageName == '':
-                        flexionPageName = pageName + 's'
-                #TODO: flexionTemplate = [conjugaisons]
-                
-            if lemmaPageName is not None and lemmaPageName != '':
-                regex = ur"==== *{{S\|homophones\|fr}} *====\n\* *'''" + pageName + ur"''' *{{cf\|" + lemmaPageName + ur"}}\n"
-                if re.search(regex, PageTemp):
-                    PageTemp = re.sub(regex, '==== {{S|homophones|fr}} ====\n', PageTemp)
-                    summary = summary + u', homophone erroné'
-                regex = ur"==== *{{S\|homophones\|fr}} *====\n\* *\[\[[^}]+{{cf\|" + lemmaPageName + ur"}}\n?"
-                if re.search(regex, PageTemp):
-                    PageTemp = re.sub(regex, '==== {{S|homophones|fr}} ====\n', PageTemp)
-                    summary = summary + u', homophone erroné'
-                regex = ur"==== *{{S\|homophones\|fr}} *====\n\* *\[\[" + lemmaPageName + ur"\]\]\n?"
-                if re.search(regex, PageTemp):
-                    PageTemp = re.sub(regex, '==== {{S|homophones|fr}} ====\n', PageTemp)
-                    summary = summary + u', homophone erroné'
-
-            elif flexionPageName is not None and flexionPageName != '':
-                regex = ur"==== *{{S\|homophones\|fr}} *====\n\* *\[\[[^}]+{{cf\|" + flexionPageName + ur"}}\n?"
-                if re.search(regex, PageTemp):
-                    PageTemp = re.sub(regex, '==== {{S|homophones|fr}} ====\n', PageTemp)
-                    summary = summary + u', homophone erroné'
-                regex = ur"==== *{{S\|homophones\|fr}} *====\n\* *\[\[" + flexionPageName + ur"\]\]\n?"
-                if re.search(regex, PageTemp):
-                    PageTemp = re.sub(regex, '==== {{S|homophones|fr}} ====\n', PageTemp)
-                    summary = summary + u', homophone erroné'
-
-            regex = ur"=== {{S\|prononciation}} ===\n==== *{{S\|homophones\|fr}} *====\n(\n|$)"
-            if re.search(regex, PageTemp):
-                PageTemp = re.sub(regex, '', PageTemp)
-            regex = ur"==== *{{S\|homophones\|fr}} *====\n(\n|$)"
-            if re.search(regex, PageTemp):
-                PageTemp = re.sub(regex, '', PageTemp)
-            if debugLevel > 2: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
-
 
             # Ajout des redirections des pronominaux
             if PageTemp.find(u'{{S|verbe|fr}}') != -1 and pageName[:3] != u'se' and pageName[:2] != u's’':
@@ -2740,6 +2691,8 @@ def treatPageByName(pageName):
         languageCode = None
         if debugLevel > 0: print u' languageCode = None'
         startPosition = 1
+        singularPageName = ''
+        infinitive = ''
         # On sauvegarde la partie délimitée par "position" d'une page temporaire dans une page finale jusqu'à disparition de la première
         while startPosition > -1:
             if debugLevel > 1:
@@ -3650,8 +3603,8 @@ def treatPageByName(pageName):
                         if debugLevel > 1: print ' mf1'
                         break
 
-                if lemmaPageName != u'':
-                    lemmaGender = getGenderFromPageName(lemmaPageName)
+                if singularPageName != u'':
+                    lemmaGender = getGenderFromPageName(singularPageName)
                     if lemmaGender != '':
                         PageEnd = PageEnd.replace(u'{{genre|fr}}', lemmaGender)
                         PageEnd = PageEnd.replace(u'{{genre ?|fr}}', lemmaGender)
@@ -3667,8 +3620,8 @@ def treatPageByName(pageName):
         if pageName.find(u'*') == -1 and pageName[-1:] == 's':
             language = u'fr'
             natures = ['nom', 'adjectif', 'suffixe']
-            lemmaPageName = getLemmaFromPlural(PageEnd, language, natures)
-            if lemmaPageName != u'': treatPageByName(lemmaPageName) # Formatage des boites de flexion à récupérer
+            singularPageName = getLemmaFromPlural(PageEnd, language, natures)
+            if singularPageName != u'': treatPageByName(singularPageName) # Formatage des boites de flexion à récupérer
             for nature in natures:
                 regex = ur"(== {{langue|" + language + ur"}} ==\n=== {{S\|" + nature + ur"\|" + language + ur")\|num=2"
                 if re.search(regex, PageEnd):
@@ -3681,22 +3634,22 @@ def treatPageByName(pageName):
                     summary = summary + u', ajout de |flexion'
 
                 if pageName[-2:] != 'ss':
-                    if lemmaPageName != u'':
+                    if singularPageName != u'':
                         flexionFlexionTemplate = getFlexionTemplate(pageName, language, nature)
                         if flexionFlexionTemplate == u'':
                             if debugLevel > 0: print u' Ajout d\'une boite dans une flexion'
-                            lemmaFlexionTemplate = getFlexionTemplateFromLemma(lemmaPageName, language, nature)
+                            lemmaFlexionTemplate = getFlexionTemplateFromLemma(singularPageName, language, nature)
                             for flexionTemplateWithMs in flexionTemplatesWithMs:
                                 if lemmaFlexionTemplate.find(flexionTemplateWithMs) != -1:
                                     if debugLevel > 0: print u'flexionTemplateWithMs'
                                     regex = ur"\|ms=[^\|}]*"
                                     if not re.search(regex, lemmaFlexionTemplate):
-                                        lemmaFlexionTemplate = lemmaFlexionTemplate + ur'|ms=' + lemmaPageName
+                                        lemmaFlexionTemplate = lemmaFlexionTemplate + ur'|ms=' + singularPageName
                             for flexionTemplateWithS in flexionTemplatesWithS:
                                 if lemmaFlexionTemplate.find(flexionTemplateWithS) != -1:
                                     regex = ur"\|s=[^\|}]*"
                                     if not re.search(regex, lemmaFlexionTemplate):
-                                        lemmaFlexionTemplate = lemmaFlexionTemplate + ur'|s=' + lemmaPageName
+                                        lemmaFlexionTemplate = lemmaFlexionTemplate + ur'|s=' + singularPageName
 
                             ''' Remplacement des {{fr-rég}} par plus précis (lancé pour patcher des pages)
                             if lemmaFlexionTemplate.find(language + ur'-rég') != -1: lemmaFlexionTemplate = u''
@@ -3717,12 +3670,12 @@ def treatPageByName(pageName):
                         regex = ur"(=== {{S\|" + nature + ur"\|" + language + ur"\|flexion}} ===\n)('''" + pageName + ur"''' {{pron\|)([^\|}]*)(\|" + language + ur"}}\n# *'*'* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
                         if re.search(regex, PageEnd):
                             #PageEnd = re.sub(regex, ur'\1{{' + language + ur'-rég|s=\7|\3}}\n\2\3\4\7', PageEnd)
-                            PageEnd = re.sub(regex, ur'\1{{' + language + ur'-rég|s=' + lemmaPageName + u'|\3}}\n\2\3\4\5', PageEnd)
+                            PageEnd = re.sub(regex, ur'\1{{' + language + ur'-rég|s=' + singularPageName + u'|\3}}\n\2\3\4\5', PageEnd)
                             summary = summary + u', ajout de {{' + language + ur'-rég}}'
 
                         regex = ur"(=== {{S\|" + nature + ur"\|" + language + ur"\|flexion}} ===\n)('''" + pageName + ur"'''\n# *'*'* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
                         if re.search(regex, PageEnd):
-                            PageEnd = re.sub(regex, ur'\1{{' + language + ur'-rég|s=' + lemmaPageName + u'|}}\n\2\5', PageEnd)
+                            PageEnd = re.sub(regex, ur'\1{{' + language + ur'-rég|s=' + singularPageName + u'|}}\n\2\5', PageEnd)
                             summary = summary + u', ajout de {{' + language + ur'-rég}}'
 
             if debugLevel > 1: raw_input(PageEnd.encode(config.console_encoding, 'replace'))
@@ -3843,6 +3796,30 @@ def treatPageByName(pageName):
                                 except:
                                     print pageName.encode(config.console_encoding, 'replace') + u' ' + langue.encode(config.console_encoding, 'replace') + u' sans {{pron}}'
             '''
+
+        language = 'fr'
+        if PageEnd.find(u'{{langue|' + language + u'}}') != -1:
+            if debugLevel > 0: print u'Faux homophones car lemme et sa flexion'
+            #TODO Doublon systématique ? singularPageName = getLemmaFromContent(PageEnd, language)
+            flexionPageName = ''
+            if PageEnd.find('|' + language + '|flexion}}') == -1:
+                # Recherche d'éventuelles flexions dans la page du lemme
+                flexionTemplate = getFlexionTemplate(pageName, language)
+                if flexionTemplate.find(u'inv=') == -1 and \
+                 (flexionTemplate[:flexionTemplate.find('|')] in flexionTemplatesWithS \
+                 or flexionTemplate[:flexionTemplate.find('|')] in flexionTemplatesWithMs):
+                    flexionPageName = getParameter(flexionTemplate, 'p')
+                    if flexionPageName == '':
+                        flexionPageName = pageName + 's'
+                #TODO: flexionTemplate = [conjugaisons]
+
+            if infinitive is not None and infinitive != '':
+                PageEnd, summary = removeFalseHomophones(PageEnd, language, pageName, infinitive, summary)
+            if singularPageName is not None and singularPageName != '':
+                PageEnd, summary = removeFalseHomophones(PageEnd, language, pageName, singularPageName, summary)
+            if flexionPageName is not None and flexionPageName != '':
+                PageEnd, summary = removeFalseHomophones(PageEnd, language, pageName, flexionPageName, summary)
+            if debugLevel > 2: raw_input(PageEnd.encode(config.console_encoding, 'replace'))             
 
     else:
         PageEnd = PageTemp

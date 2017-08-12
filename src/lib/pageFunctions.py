@@ -109,23 +109,23 @@ def getLineNumber():
     frameinfo = getframeinfo(currentframe())
     return str(frameinfo.lineno)
 
-def testAdd(PageHS, summary = '', site = site):
-    page1 = Page(site, PageHS)
+def testAdd(pageName, summary = '', site = site):
+    page1 = Page(site, pageName)
     try:
-        PageBegin = page1.get()
+        initialPageContent = page1.get()
     except pywikibot.exceptions.NoPage:
         print 'NoPage'
-    PageEnd = PageBegin
+    pageContent = initialPageContent
     codelangue = u'fr'
-    
-    PageEnd = addLine(PageEnd, codelangue, u'prononciation', u'* {{écouter|||lang=fr|audio=test.ogg}}')
-    PageEnd = addLine(PageEnd, codelangue, u'prononciation', u'* {{écouter|||lang=fr|audio=test2.ogg}}')
-    PageEnd = addLine(PageEnd, codelangue, u'catégorie', u'Tests en français')
-    PageEnd = addLine(PageEnd, codelangue, u'catégorie', u'[[Catégorie:Tests en français]]')
-    PageEnd = addLine(PageEnd, codelangue, u'clé de tri', u'test')
-    PageEnd = addLine(PageEnd, codelangue, u'étymologie', u':{{étyl|test|fr}}')
+
+    pageContent = addLine(pageContent, codelangue, u'prononciation', u'* {{écouter|||lang=fr|audio=test.ogg}}')
+    pageContent = addLine(pageContent, codelangue, u'prononciation', u'* {{écouter|||lang=fr|audio=test2.ogg}}')
+    pageContent = addLine(pageContent, codelangue, u'catégorie', u'Tests en français')
+    pageContent = addLine(pageContent, codelangue, u'catégorie', u'[[Catégorie:Tests en français]]')
+    pageContent = addLine(pageContent, codelangue, u'clé de tri', u'test')
+    pageContent = addLine(pageContent, codelangue, u'étymologie', u':{{étyl|test|fr}}')
     if debugLevel > 1: raw_input(u'Fin')
-    if PageEnd != PageBegin: savePage(page1, PageEnd, summary)
+    if pageContent != initialPageContent: savePage(page1, pageContent, summary)
 
 def replaceDepretacedTags(pageContent):
     if debugLevel > 0: print u'Remplacements des balises HTML'
@@ -330,7 +330,7 @@ def getLemmaFromPlural(pageContent, languageCode = 'fr', natures = ['nom', 'adje
             print(s.group(1).encode(config.console_encoding, 'replace')) # 2 = adjectif, 3 = fr-rég, 4 = Féminin, 5 = {{lien|, 6 = lemme
             raw_input(s.group(6).encode(config.console_encoding, 'replace'))
         lemmaPageName = s.group(6)
-    if debugLevel > 0: pywikibot.output(u" lemmaPageName found: \n\03{red}" + + lemmaPageName + "\03{default}")
+    if debugLevel > 0: pywikibot.output(u" lemmaPageName found: \03{red}" + lemmaPageName + "\03{default}")
     if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
 
     return lemmaPageName
@@ -345,7 +345,7 @@ def getLemmaFromConjugation(pageContent, languageCode = 'fr'):
             print(s.group(1).encode(config.console_encoding, 'replace')) # 2 fr-verbe-flexion, 3 = {{lien|, 4 = lemme
             raw_input(s.group(4).encode(config.console_encoding, 'replace'))
         lemmaPageName = s.group(4)
-    if debugLevel > 0: pywikibot.output(u" lemmaPageName found: \n\03{red}" + + lemmaPageName + "\03{default}")
+    if debugLevel > 0: pywikibot.output(u" lemmaPageName found: \03{red}" + lemmaPageName + "\03{default}")
 
     return lemmaPageName
 
@@ -363,7 +363,7 @@ def getFlexionTemplate(pageName, language, nature = None):
             if not s.group(3) is None: print u' ' + s.group(3) # Number
             if not s.group(4) is None: print u' ' + s.group(4) # Template
         flexionTemplate = s.group(4)
-    if debugLevel > 0: pywikibot.output(u" flexionTemplate found: \n\03{red}" + + flexionTemplate + "\03{default}")
+    if debugLevel > 0: pywikibot.output(u" flexionTemplate found: \03{red}" + flexionTemplate + "\03{default}")
     # TODO
     if flexionTemplate.find('{{') != -1: flexionTemplate = u''
     if flexionTemplate.find(u'-inv') != -1: flexionTemplate = u''
@@ -389,18 +389,18 @@ def getFlexionTemplateFromLemma(pageName, language, nature):
 
     return FlexionTemplate
 
-def nextTemplate(PageEnd, pageContent, currentTemplate = None, languageCode = None):
+def nextTemplate(finalPageContent, currentPageContent, currentTemplate = None, languageCode = None):
     if languageCode is None:
-        PageEnd = PageEnd + pageContent[:pageContent.find('}}')+2]
+        finalPageContent = finalPageContent + currentPageContent[:currentPageContent.find('}}')+2]
     else:
-        PageEnd = PageEnd + currentTemplate + "|" + languageCode + '}}'
-    pageContent = pageContent[pageContent.find('}}')+2:]
-    return PageEnd, pageContent
+        finalPageContent = finalPageContent + currentTemplate + "|" + languageCode + '}}'
+    currentPageContent = currentPageContent[currentPageContent.find('}}')+2:]
+    return finalPageContent, currentPageContent
 
-def nextTranslationTemplate(PageEnd, pageContent, result = u'-'):
-    PageEnd = PageEnd + pageContent[:len(u'trad')] + result
-    pageContent = pageContent[pageContent.find(u'|'):]
-    return PageEnd, pageContent
+def nextTranslationTemplate(finalPageContent, currentPageContent, result = u'-'):
+    finalPageContent = finalPageContent + currentPageContent[:len(u'trad')] + result
+    currentPageContent = currentPageContent[currentPageContent.find(u'|'):]
+    return finalPageContent, currentPageContent
                       
 def addCat(pageContent, lang, cat):    # à remplacer par celle ci-dessous
     if lang != u'':
@@ -548,6 +548,30 @@ def sectionNumber(Section):
         print u''
     return s
 
+def removeFalseHomophones(pageContent, languageCode, pageName, relatedPageName, summary):
+    if debugLevel > 0: print u'\nremoveFalseHomophones(' + relatedPageName + u')'
+    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *'''" + pageName + ur"''' *{{cf\|" + relatedPageName + ur"}}\n"
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, '==== {{S|homophones|" + languageCode + u"}} ====\n', pageContent)
+        summary = summary + u', homophone erroné'
+    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *\[\[[^}]+{{cf\|" + relatedPageName + ur"}}\n?"
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, "==== {{S|homophones|" + languageCode + u"}} ====\n", pageContent)
+        summary = summary + u', homophone erroné'
+    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *\[\[" + relatedPageName + ur"\]\][^,]\n?"
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, '==== {{S|homophones|" + languageCode + u"}} ====\n', pageContent)
+        summary = summary + u', homophone erroné'
+
+    regex = ur"=== {{S\|prononciation}} ===\n==== *{{S\|homophones\|" + languageCode + u"}} *====\n(\n|$)"
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, '', pageContent)
+    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n(\n|$)"
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, '', pageContent)
+
+    return pageContent, summary
+
 def rec_anagram(counter):
     # Copyright http://www.siteduzero.com/forum-83-541573-p2-exercice-generer-tous-les-anagrammes.html
     if sum(counter.values()) == 0:
@@ -643,11 +667,12 @@ def isTrustedVersion(page, site = site):
 
 def searchDoubles(pageContent, parameter):
     if debugLevel > 0: u' Recherche de doublons dans le modèle : ' + parameter[1]
-    PageEnd = u''
+    finalPageContent = u''
     regex = ur'{{' + parameter[1] + ur'[^\n]*{{' + parameter[1]
     while re.search(regex, pageContent):
+        #TODO: finalPageContent = pageContent[:], pageContent = pageContent[:]
         raw_input(pageContent[re.search(regex, pageContent).start():re.search(regex, pageContent).end()].encode(config.console_encoding, 'replace'))
-    return PageEnd + pageContent
+    return finalPageContent + pageContent
 
 def getContentFromPageName(pageName, allowedNamespaces = None, site = site):
     page = Page(site, pageName)
@@ -732,15 +757,15 @@ def getParameter(pageContent, p):
 		return trim(pageContent[:pageContent.find(u'}')])
 
 def addParameter(pageContent, parameter, content = None):
-    PageEnd = u''
+    finalPageContent = u''
     if parameter == u'titre' and content is None:
         # Détermination du titre d'un site web
         URL = getParameter(u'url')
-        PageEnd = pageContent
+        finalPageContent = pageContent
 
     else:
         print 'en travaux'
-    return PageEnd
+    return finalPageContent
         
 def replaceParameterValue(pageContent, template, parameterKey, oldValue, newValue):
     regex = ur'({{ *(' + template[:1].lower() + ur'|' + template[:1].upper() + ur')' + template[1:] + ur' *\n* *\|[^}]*' + parameterKey + ur' *= *)' + oldValue
