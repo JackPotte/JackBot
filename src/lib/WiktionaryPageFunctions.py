@@ -202,9 +202,9 @@ def addCat(pageContent, lang, cat):    # à remplacer par celle ci-dessous
                     pageContent = pageContent + u'\n' + cat
     return pageContent
 
-def addLine(pageContent, CodeLangue, Section, lineContent):
-    if pageContent != '' and CodeLangue != '' and Section != '' and lineContent != '':
-        if pageContent.find(lineContent) == -1 and pageContent.find(u'{{langue|' + CodeLangue + '}}') != -1:
+def addLine(pageContent, languageCode, Section, lineContent):
+    if pageContent != '' and languageCode != '' and Section != '' and lineContent != '':
+        if pageContent.find(lineContent) == -1 and pageContent.find(u'{{langue|' + languageCode + '}}') != -1:
             if Section == u'catégorie' and lineContent.find(u'[[Catégorie:') == -1: lineContent = u'[[Catégorie:' + lineContent + u']]'
             if Section == u'clé de tri' and lineContent.find(u'{{clé de tri|') == -1: lineContent = u'{{clé de tri|' + lineContent + '}}'
 
@@ -222,7 +222,7 @@ def addLine(pageContent, CodeLangue, Section, lineContent):
             if debugLevel > 1: print u' position S : ' + s
 
             # Recherche de l'ordre réel de la section à ajouter
-            lineContent2 = pageContent[pageContent.find(u'{{langue|' + CodeLangue + '}}')+len(u'{{langue|' + CodeLangue + '}}'):]
+            lineContent2 = pageContent[pageContent.find(u'{{langue|' + languageCode + '}}')+len(u'{{langue|' + languageCode + '}}'):]
             #sectionsInPage = re.findall("{{S\|([^}]+)}}", lineContent2) # OK mais il faut trouver le {{langue}} de la limite de fin
             sectionsInPage = re.findall(ur"\n=+ *{{S?\|?([^}/|]+)([^}]*)}}", lineContent2)
             o = 0
@@ -251,13 +251,13 @@ def addLine(pageContent, CodeLangue, Section, lineContent):
 
                 # Ajout après la section trouvée
                 if lineContent2.find(u'{{S|' + sectionsInPage[o][0]) == -1:
-                    print 'Erreur d\'encodage'
-                    return
+                    if debugLevel > 0: print 'Erreur d\'encodage'
+                    return pageContent
 
-                lineContent3 = lineContent2[lineContent2.find(u'{{S|' + sectionsInPage[o][0]):]
+                lineContent3 = lineContent2[lineContent2.find(u'{{S|' + sectionsInPage[o][0]):] # end of page from the last section before the one to add
                 if sectionsInPage[o][0] != Section and Section != u'catégorie' and Section != u'clé de tri':
                     if debugLevel > 1: print u' ajout de la section'
-                    lineContent = u'\n' + Niveau[NumSection] + u' {{S|' + Section + u'}} ' + Niveau[NumSection] + u'\n' + lineContent
+                    lineContent = Niveau[NumSection] + u' {{S|' + Section + u'}} ' + Niveau[NumSection] + u'\n' + lineContent
 
                 # Ajout à la ligne
                 if lineContent3.find(u'\n==') == -1:
@@ -286,8 +286,12 @@ def addLine(pageContent, CodeLangue, Section, lineContent):
                         if debugLevel > 0: print u' ajout en fin de page'
                         pageContent = pageContent + lineContent
                 else:
-                    pageContent = pageContent[:-len(lineContent2)] + lineContent2[:-len(lineContent3)] + lineContent3[:lineContent3.find(u'\n\n')] \
-                     + u'\n' + lineContent + u'\n' + lineContent3[lineContent3.find(u'\n\n'):]
+                    if debugLevel > 0: print u' ajout de la ligne avant la section suivante'
+                    #pageContent = pageContent[:-len(lineContent2)] + lineContent2[:-len(lineContent3)] + lineContent3[:lineContent3.find(u'\n\n')] \
+                    # + u'\n' + lineContent + u'\n' + lineContent3[lineContent3.find(u'\n\n'):]
+                    pageContent = pageContent[:-len(lineContent2)] + lineContent2[:-len(lineContent3)] + lineContent3[:lineContent3.find(u'\n==')] \
+                     + u'\n' + lineContent + u'\n' + lineContent3[lineContent3.find(u'\n=='):]
+    #raw_input(pageContent.encode(config.console_encoding, 'replace'))
     return pageContent
 
 def sectionNumber(Section):

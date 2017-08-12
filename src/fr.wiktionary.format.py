@@ -2470,7 +2470,7 @@ def treatPageByName(pageName):
              and PageTemp.find(u'{{S|erreur|fr}}') == -1 and PageTemp.find(u'{{abréviation') == -1 \
              and PageTemp.find(u'{{apocope') == -1 and PageTemp.find(u'{{aphérèse') == -1 \
              and PageTemp.find(u'{{ellipse') == -1 and PageTemp.find(u'{{par ellipse') == -1:
-                PageTemp = addLine(PageTemp, u'fr', u'traductions', u'\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n')
+                PageTemp = addLine(PageTemp, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
                 summary = summary + u', ajout de {{S|traductions}}'
             # TODO Contrôle du nombre de paragraphes de traduction par rapport au nombre de sens
 
@@ -2490,7 +2490,7 @@ def treatPageByName(pageName):
                     PageTemp = re.sub(regex, '{{' + ModeleGent[l][1] + u'|' + rePageRadicalName + ur'}}', PageTemp)
                     summary = summary + u', conversion des liens flexions en modèle boite'
                 regex = ur'\({{f}} : [\[\']*' + rePageRadicalName + ModeleGent[l][3] + ur'[\]\']*, {{mplur}} : [\[\']*' + rePageRadicalName + ModeleGent[l][2] + ur'[\]\']*, {{fplur}} : [\[\']*' + rePageRadicalName + ModeleGent[l][4] + ur'[\]\']*\)'
-                if debugLevel > 0: print regex.encode(config.console_encoding, 'replace')
+                if debugLevel > 1: print regex.encode(config.console_encoding, 'replace')
                 if re.search(regex, PageTemp):
                     PageTemp = re.sub(regex, '{{' + ModeleGent[l][1] + u'|' + rePageRadicalName + ur'}}', PageTemp)
                     summary = summary + u', conversion des liens flexions en modèle boite'
