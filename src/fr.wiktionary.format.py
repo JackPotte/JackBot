@@ -2491,9 +2491,9 @@ def treatPageByName(pageName):
                     summary = summary + u', déplacement des modèles de flexions'
 
             # Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
-            regex = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|fr\|flexion|apocope|aphérèse|ellipse|par ellipse|sigle|acronyme|abréviation)[\|}]'
-            regex2 = ur'([Vv]ariante d|[Ss]ynonyme d)'
-            if not re.search(regex, PageTemp) and not re.search(regex2, PageTemp):
+            regex = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|apocope|aphérèse|ellipse|par ellipse|sigle|acronyme|abréviation)[\|}]'
+            regex2 = ur'([Vv]ariante d|[Ss]ynonyme d|fr\|flexion)'
+            if re.search(regex, PageTemp) and re.search(regex2, PageTemp):
                 PageTemp = addLine(PageTemp, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
                 summary = summary + u', ajout de {{S|traductions}}'
             # TODO Contrôle du nombre de paragraphes de traduction par rapport au nombre de sens
