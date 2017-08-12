@@ -8,127 +8,227 @@ import pywikibot
 from pywikibot import *
 from pywikibot import pagegenerators
 
-# Global variables
-defaultLevel = 0
-site = pywikibot.Site('fr', 'wiktionary')
-username = 'JackBot'
-URLend = ' \\n\[\]}{<>\|\^`\\"\''
+#*** General functions ***
+def setGlobals(myDebugLevel, mySite, myUsername):
+    global debugLevel
+    global site
+    global username
+    debugLevel  = myDebugLevel
+    site        = mySite
+    username    = myUsername 
 
-deprecatedTags = {}
-deprecatedTags['big'] = 'strong'
-deprecatedTags['center'] = 'div style="text-align: center;"'
-deprecatedTags['font color *= *"?'] = 'span style="color:'
-deprecatedTags['font face *= *"?'] = 'span style="font-family:'
-deprecatedTags['font size *= *"?\+?\-?'] = 'span style="font-size:'
-#deprecatedTags['font '] = 'span ' #TODO: ajouter des ";" entre plusieurs param
-deprecatedTags['strike'] = 's'
-deprecatedTags['tt'] = 'code'
-deprecatedTags['BIG'] = 'strong'
-deprecatedTags['CENTER'] = 'div style="text-align: center;"'
-deprecatedTags['FONT COLOR *= *"?'] = 'span style="color:'
-deprecatedTags['FONT SIZE *= *"?\+?'] = 'span style="font-size:'
-deprecatedTags['STRIKE'] = 's'
-deprecatedTags['TT'] = 'code'
-fontSize = {}
-fontSize[1] = 0.63
-fontSize[2] = 0.82
-fontSize[3] = 1.0
-fontSize[4] = 1.13
-fontSize[5] = 1.5
-fontSize[6] = 2.0
-fontSize[7] = 3.0
-fontColor = []
-fontColor.append('black')
-fontColor.append('blue')
-fontColor.append('green')
-fontColor.append('orange')
-fontColor.append('red')
-fontColor.append('white')
-fontColor.append('yellow')
-fontColor.append('#808080')
+def globalOperations(pageContent):
+    pageContent = replaceDMOZ(pageContent)
+    pageContent = replaceISBN(pageContent)
 
+    # Retire les espaces dans {{FORMATNUM:}} qui empêche de les trier dans les tableaux
+    pageContent = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', pageContent)
+    return pageContent
 
-Sections = []
-Niveau = []
-Sections.append(u'étymologie')
-Niveau.append(u'===')
-Sections.append(u'nom')
-Niveau.append(u'===')
-Sections.append(u'variantes orthographiques')
-Niveau.append(u'====')
-Sections.append(u'synonymes')
-Niveau.append(u'====')
-Sections.append(u'antonymes')
-Niveau.append(u'====')
-Sections.append(u'dérivés')
-Niveau.append(u'====')
-Sections.append(u'apparentés')
-Niveau.append(u'====')
-Sections.append(u'vocabulaire')
-Niveau.append(u'====')
-Sections.append(u'hyperonymes')
-Niveau.append(u'====')
-Sections.append(u'hyponymes')
-Niveau.append(u'====')
-Sections.append(u'méronymes')
-Niveau.append(u'====')
-Sections.append(u'holonymes')
-Niveau.append(u'====')
-Sections.append(u'traductions')
-Niveau.append(u'====')
-Sections.append(u'prononciation')
-Niveau.append(u'===')
-Sections.append(u'homophones')
-Niveau.append(u'====')
-Sections.append(u'paronymes')
-Niveau.append(u'====')
-Sections.append(u'anagrammes')
-Niveau.append(u'===')
-Sections.append(u'voir aussi')
-Niveau.append(u'===')
-Sections.append(u'références')
-Niveau.append(u'===')
-Sections.append(u'catégorie')
-Niveau.append(u'')
-Sections.append(u'clé de tri')
-Niveau.append(u'')
+def trim(s):
+    return s.strip(" \t\n\r\0\x0B")
 
+def datePlusMonth(months):
+	year, month, day = datetime.date.today().timetuple()[:3]
+	new_month = month + months
+	if new_month == 0:
+		new_month = 12
+		year = year - 1
+	elif new_month == -1:
+		new_month = 11
+		year = year - 1
+	elif new_month == -2:
+		new_month = 10
+		year = year - 1
+	elif new_month == -3:
+		new_month = 9
+		year = year - 1
+	elif new_month == -4:
+		new_month = 8
+		year = year - 1
+	elif new_month == -5:
+		new_month = 7
+		year = year - 1
+	if new_month == 2 and day > 28: day = 28
+	return datetime.date(year, new_month, day)
 
-#*** Tested functions ***
-def isPatrolled(version):
-    #TODO: extensions Patrolled Edits & Flagged Revisions
-    if debugLevel > 1: print version  #eg: [{u'timestamp': u'2017-07-25T02:26:15Z', u'user': u'27.34.18.159'}]
-    if debugLevel > 0: print ' user: ' + version[0]['user']
+def timeAfterLastEdition(page, site = None):
+    # Timestamp au format Zulu de la dernière version
+    lastEditTime = page.getVersionHistory()[0][1]
+    if debugLevel > 1: print lastEditTime   # 2017-07-29T21:57:34Z
+    matchTime = re.match(r'(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})', str(lastEditTime))
+    # Mise au format "datetime" du timestamp de la dernière version
+    dateLastEditTime = datetime.datetime(int(matchTime.group(1)), int(matchTime.group(2)), int(matchTime.group(3)),
+        int(matchTime.group(4)), int(matchTime.group(5)), int(matchTime.group(6)))
+    datetime_now = datetime.datetime.utcnow()
+    diff_last_edit_time = datetime_now - dateLastEditTime
+
+    # Ecart en minutes entre l'horodotage actuelle et l'horodotage de la dernière version
+    return diff_last_edit_time.seconds/60 + diff_last_edit_time.days*24*60
+
+def hasMoreThanTime(page, timeAfterLastEdition = 60): # minutes
+    if page.exists():
+        version = page.getLatestEditors(1)
+        dateNow = datetime.datetime.utcnow()
+        maxDate = dateNow - datetime.timedelta(minutes=timeAfterLastEdition)
+        if debugLevel > 1:
+            print maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')
+            print version[0]['timestamp']
+            print version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')   
+        if version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ') or username in page.title() or page.contributors(total=1).keys()[0] == 'JackPotte':
+            return True
+        if debugLevel > 0: print u' dernière version trop récente ' + version[0]['timestamp']
     return False
-    #admins = site.allusers(group='sysop')  #<pywikibot.data.api.ListGenerator object at 0x7f6ebc521fd0>
-    #patrollers = site.allusers(group='patrollers')
 
-def getLineNumber():
-    # Bug des n° de lignes auto
-    from inspect import currentframe, getframeinfo
-    frameinfo = getframeinfo(currentframe())
-    return str(frameinfo.lineno)
+def isTrustedVersion(page, site = site):
+    firstEditor = page.oldest_revision['user']
+    lastEditor = page.contributors(total=1).keys()[0]
+    if firstEditor == lastEditor:
+        if debugLevel > 0: print u'Page crée et modifiée par ' + lastEditor
+        return True
+    userPage = u' user: ' + lastEditor
+    page = Page(site, userPage)
+    user = User(page)
+    if u'autoconfirmed' in user.groups():
+        if debugLevel > 0: print u'Page modifiée par l\'utilisateur autoconfirmed ' + lastEditor
+        return True
+    return False
 
-def testAdd(pageName, summary = '', site = site):
-    page1 = Page(site, pageName)
+def getContentFromPageName(pageName, allowedNamespaces = None, site = site):
+    page = Page(site, pageName)
+    return getContentFromPage(page, allowedNamespaces)
+
+def getContentFromPage(page, allowedNamespaces = None, username = username):
+    if debugLevel > 0: print '\ngetContentFromPage ' + page.title()
+    PageBegin = u''
     try:
-        initialPageContent = page1.get()
-    except pywikibot.exceptions.NoPage:
-        print 'NoPage'
-    pageContent = initialPageContent
-    codelangue = u'fr'
+        get = page.exists()
+    except:
+        pywikibot.exceptions.InvalidTitle
+        return PageBegin
+    if get:
+        if type(allowedNamespaces) == type([]): #'list'
+            if debugLevel > 1: print u' namespace : ' + str(page.namespace())
+            condition = page.namespace() in allowedNamespaces
+        elif allowedNamespaces == 'All':
+            if debugLevel > 1: print u' all namespaces'
+            condition = True
+        else:
+            if debugLevel > 1: print u' content namespaces'
+            condition = page.namespace() in [0, 12, 14, 100] or page.title().find(username) != -1
+        if condition:
+            try:
+                PageBegin = page.get()
+            except pywikibot.exceptions.BadTitle:
+                if debugLevel > 0: print u' IsRedirect l 676'
+                return 'KO'
+            except pywikibot.exceptions.IsRedirectPage:
+                if debugLevel > 0: print u' IsRedirect l 679'
+                if page.namespace() == 'Template:':
+                    PageBegin = page.get(get_redirect=True)
+                    if PageBegin[:len(u'#REDIRECT')] == u'#REDIRECT':
+                        regex = ur'\[\[([^\]]+)\]\]'
+                        s = re.search(regex, PageBegin)
+                        if s:
+                            PageBegin = getContentFromPageName(s.group(1), allowedNamespaces = allowedNamespaces)
+                        else:
+                            return 'KO'
+                    else:
+                        return 'KO'
+                else:
+                    return 'KO'
+            except pywikibot.exceptions.NoPage:
+                if debugLevel > 0: print u' NoPage l 694'
+                return 'KO'
+            except pywikibot.exceptions.ServerError:
+                if debugLevel > 0: print u' NoPage l 697'
+                return 'KO'
+        else:
+            if debugLevel > 0: print u' Forbidden namespace l 700'
+            return 'KO'
+    else:
+        if debugLevel > 0: print u' No page l 703'
+        return 'KO'
 
-    pageContent = addLine(pageContent, codelangue, u'prononciation', u'* {{écouter|||lang=fr|audio=test.ogg}}')
-    pageContent = addLine(pageContent, codelangue, u'prononciation', u'* {{écouter|||lang=fr|audio=test2.ogg}}')
-    pageContent = addLine(pageContent, codelangue, u'catégorie', u'Tests en français')
-    pageContent = addLine(pageContent, codelangue, u'catégorie', u'[[Catégorie:Tests en français]]')
-    pageContent = addLine(pageContent, codelangue, u'clé de tri', u'test')
-    pageContent = addLine(pageContent, codelangue, u'étymologie', u':{{étyl|test|fr}}')
-    if debugLevel > 1: raw_input(u'Fin')
-    if pageContent != initialPageContent: savePage(page1, pageContent, summary)
+    return PageBegin
+
+def getWiki(language, family, site = site):
+    if family is None:
+        return site
+    else:
+        wiki = u'KO'
+        try:
+            wiki = pywikibot.Site(language, family)
+        except pywikibot.exceptions.ServerError:
+            if debugLevel > 1: print u'  ServerError in getWiki'
+        except pywikibot.exceptions.NoSuchSite:
+            if debugLevel > 1: print u'  NoSuchSite in getWiki'
+        except UnicodeEncodeError:
+            if debugLevel > 1: print u'  UnicodeEncodeError in getWiki'
+        #TODO: WARNING: src/fr.wiktionary.format.py:4145: UserWarning: Site wiktionary:ro instantiated using different code "mo"
+    return wiki
+
+def getParameter(pageContent, p):
+	if pageContent.find(p + u'=') == -1 or pageContent.find(u'}}') == -1 or pageContent.find(p + u'=') > pageContent.find(u'}}'): return u''
+	pageContent = pageContent[pageContent.find(p + u'=')+len(p + u'='):]
+	if pageContent.find(u'|') != -1 and pageContent.find(u'|') < pageContent.find(u'}}'):
+		return trim(pageContent[:pageContent.find(u'|')])
+	else:
+		return trim(pageContent[:pageContent.find(u'}')])
+
+def addParameter(pageContent, parameter, content = None):
+    finalPageContent = u''
+    if parameter == u'titre' and content is None:
+        # Détermination du titre d'un site web
+        URL = getParameter(u'url')
+        finalPageContent = pageContent
+
+    else:
+        print 'en travaux'
+    return finalPageContent
+        
+def replaceParameterValue(pageContent, template, parameterKey, oldValue, newValue):
+    regex = ur'({{ *(' + template[:1].lower() + ur'|' + template[:1].upper() + ur')' + template[1:] + ur' *\n* *\|[^}]*' + parameterKey + ur' *= *)' + oldValue
+    if debugLevel > 0: print regex
+    pageContent = re.sub(regex, ur'\1' + newValue, pageContent)
+
+    return pageContent
 
 def replaceDepretacedTags(pageContent):
     if debugLevel > 0: print u'Remplacements des balises HTML'
+
+    deprecatedTags = {}
+    deprecatedTags['big'] = 'strong'
+    deprecatedTags['center'] = 'div style="text-align: center;"'
+    deprecatedTags['font color *= *"?'] = 'span style="color:'
+    deprecatedTags['font face *= *"?'] = 'span style="font-family:'
+    deprecatedTags['font size *= *"?\+?\-?'] = 'span style="font-size:'
+    #deprecatedTags['font '] = 'span ' #TODO: ajouter des ";" entre plusieurs param
+    deprecatedTags['strike'] = 's'
+    deprecatedTags['tt'] = 'code'
+    deprecatedTags['BIG'] = 'strong'
+    deprecatedTags['CENTER'] = 'div style="text-align: center;"'
+    deprecatedTags['FONT COLOR *= *"?'] = 'span style="color:'
+    deprecatedTags['FONT SIZE *= *"?\+?'] = 'span style="font-size:'
+    deprecatedTags['STRIKE'] = 's'
+    deprecatedTags['TT'] = 'code'
+    fontSize = {}
+    fontSize[1] = 0.63
+    fontSize[2] = 0.82
+    fontSize[3] = 1.0
+    fontSize[4] = 1.13
+    fontSize[5] = 1.5
+    fontSize[6] = 2.0
+    fontSize[7] = 3.0
+    fontColor = []
+    fontColor.append('black')
+    fontColor.append('blue')
+    fontColor.append('green')
+    fontColor.append('orange')
+    fontColor.append('red')
+    fontColor.append('white')
+    fontColor.append('yellow')
+    fontColor.append('#808080')
 
     pageContent = pageContent.replace(u'</br>', u'<br/>')
     pageContent = pageContent.replace(u'<source lang="html4strict">', u'<source lang="html">')
@@ -249,6 +349,7 @@ def replaceFilesErrors(pageContent):
 
 def replaceDMOZ(pageContent):
     # http://www.dmoz.org => http://dmoztools.net
+    URLend = ' \\n\[\]}{<>\|\^`\\"\''
     if pageContent.find('dmoz.org/search?') == -1 and pageContent.find('dmoz.org/license.html') == -1:
         if debugLevel > 1: print regex
         regex = ur'\[http://(www\.)?dmoz\.org/([^' + URLend + ur']*)([^\]]*)\]'
@@ -278,500 +379,6 @@ def replaceISBN(pageContent):
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, ur'ISBN \1', pageContent)
     if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
-    return pageContent
-
-def globalOperations(pageContent):
-    pageContent = replaceDMOZ(pageContent)
-    pageContent = replaceISBN(pageContent)
-
-    # Retire les espaces dans {{FORMATNUM:}} qui empêche de les trier dans les tableaux
-    pageContent = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', pageContent)
-    return pageContent
-
-
-#*** Wiktionary functions ***
-def getFirstLemmaFromLocution(pageName):
-    if debugLevel > 0: print u'\ngetFirstLemmaFromLocution'
-    lemmaPageName = ''
-    if pageName.find(u' ') != -1:
-        if debugLevel > 0: print u' lemme de locution trouvé : ' + lemmaPageName
-        lemmaPageName = pageName[:pageName.find(u' ')]
-    return lemmaPageName
-
-def getGenderFromPageName(pageName, languageCode = 'fr', nature = None):
-    if debugLevel > 0: print u'\ngetGenderFromPageName'
-    gender = u''
-    pageContent = getContentFromPageName(pageName)
-    if pageContent.find(u'|' + languageCode + '}} {{m}}') != -1:
-        gender = u'{{m}}'
-    elif pageContent.find(u'|' + languageCode + '}} {{f}}') != -1:
-        gender = u'{{f}}'
-    elif pageContent.find(u"''' {{m}}") != -1:
-        gender = u'{{m}}'
-    elif pageContent.find(u"''' {{f}}") != -1:
-        gender = u'{{f}}'
-    if debugLevel > 1: raw_input(gender)
-    return gender
-
-def getLemmaFromContent(pageContent, languageCode = 'fr'):
-    lemmaPageName = getLemmaFromPlural(pageContent, languageCode)
-    if lemmaPageName == '':
-        lemmaPageName = getLemmaFromConjugation(pageContent, languageCode)
-    return lemmaPageName
-
-def getLemmaFromPlural(pageContent, languageCode = 'fr', natures = ['nom', 'adjectif', 'suffixe']):
-    if debugLevel > 0: print u'\ngetLemmaFromPlural'
-    lemmaPageName = u''
-    regex = ur"(=== {{S\|(" + '|'.join(natures) + ")\|" + languageCode + "\|flexion}} ===\n({{" + languageCode + \
-     "\-[^}]*}}\n)*'''[^\n]+\n# *'* *(Masculin|Féminin)* *'* *'*[P|p]luriel *'* *de'* *'* *(\[\[|{{li?e?n?\|))([^#\|\]}]+)"
-    s = re.search(regex, pageContent)
-    if s:
-        if debugLevel > 1:
-            print(s.group(1).encode(config.console_encoding, 'replace')) # 2 = adjectif, 3 = fr-rég, 4 = Féminin, 5 = {{lien|, 6 = lemme
-            raw_input(s.group(6).encode(config.console_encoding, 'replace'))
-        lemmaPageName = s.group(6)
-    if debugLevel > 0: pywikibot.output(u" lemmaPageName found: \03{red}" + lemmaPageName + "\03{default}")
-    if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
-
-    return lemmaPageName
-
-def getLemmaFromConjugation(pageContent, languageCode = 'fr'):
-    if debugLevel > 0: print u'\ngetLemmaFromConjugation'
-    lemmaPageName = u''
-    regex = ur"(=== {{S\|verbe\|fr\|flexion}} ===\n({{fr\-[^}]*}}\n)*'''[^\n]+\n#[^\n\[{]+(\[\[|{{li?e?n?\|))([^#\|\]}]+)}*\]*'*\."
-    s = re.search(regex, pageContent)
-    if s:
-        if debugLevel > 1:
-            print(s.group(1).encode(config.console_encoding, 'replace')) # 2 fr-verbe-flexion, 3 = {{lien|, 4 = lemme
-            raw_input(s.group(4).encode(config.console_encoding, 'replace'))
-        lemmaPageName = s.group(4)
-    if debugLevel > 0: pywikibot.output(u" lemmaPageName found: \03{red}" + lemmaPageName + "\03{default}")
-
-    return lemmaPageName
-
-def getFlexionTemplate(pageName, language, nature = None):
-    if debugLevel > 1: print u'\ngetFlexionTemplate'
-    flexionTemplate = u''
-    if nature is None: nature = 'nom|adjectif|suffixe'
-    pageContent = getContentFromPageName(pageName)
-    regex = ur"=== {{S\|(" + nature + ur")\|" + language + ur"(\|flexion)?(\|num=[0-9])?}} ===\n{{(" + language + ur"\-[^}]+)}}"
-    s = re.search(regex, pageContent)
-    if s:
-        if debugLevel > 1:
-            if not s.group(1) is None: print u' ' + s.group(1) # Nature
-            if not s.group(2) is None: print u' ' + s.group(2) # Flexion
-            if not s.group(3) is None: print u' ' + s.group(3) # Number
-            if not s.group(4) is None: print u' ' + s.group(4) # Template
-        flexionTemplate = s.group(4)
-    if debugLevel > 0: pywikibot.output(u" flexionTemplate found: \03{red}" + flexionTemplate + "\03{default}")
-    # TODO
-    if flexionTemplate.find('{{') != -1: flexionTemplate = u''
-    if flexionTemplate.find(u'-inv') != -1: flexionTemplate = u''
-
-    return flexionTemplate
-
-def getFlexionTemplateFromLemma(pageName, language, nature):
-    if debugLevel > 0: print u'\ngetFlexionTemplateFromLemma'
-    FlexionTemplate = u''
-    pageContent = getContentFromPageName(pageName)
-    regex = ur"=== {{S\|" + nature + ur"\|" + language + ur"(\|num=[0-9])?}} ===\n{{(" + language + ur"\-[^}]+)}}"
-    if debugLevel > 1: print u' ' + regex
-    s = re.search(regex, pageContent)
-    if s:
-        if debugLevel > 1:
-            if not s.group(1) is None: print u' ' + s.group(1)
-            if not s.group(2) is None: print u' ' + s.group(2)
-        FlexionTemplate = s.group(2)
-    if debugLevel > 0: print u' FlexionTemplate found: ' + FlexionTemplate
-    # TODO
-    if FlexionTemplate.find('{{') != -1: FlexionTemplate = u''
-    if FlexionTemplate.find(u'-inv') != -1: FlexionTemplate = u''
-
-    return FlexionTemplate
-
-def nextTemplate(finalPageContent, currentPageContent, currentTemplate = None, languageCode = None):
-    if languageCode is None:
-        finalPageContent = finalPageContent + currentPageContent[:currentPageContent.find('}}')+2]
-    else:
-        finalPageContent = finalPageContent + currentTemplate + "|" + languageCode + '}}'
-    currentPageContent = currentPageContent[currentPageContent.find('}}')+2:]
-    return finalPageContent, currentPageContent
-
-def nextTranslationTemplate(finalPageContent, currentPageContent, result = u'-'):
-    finalPageContent = finalPageContent + currentPageContent[:len(u'trad')] + result
-    currentPageContent = currentPageContent[currentPageContent.find(u'|'):]
-    return finalPageContent, currentPageContent
-                      
-def addCat(pageContent, lang, cat):    # à remplacer par celle ci-dessous
-    if lang != u'':
-        if pageContent.find(cat) == -1 and pageContent.find(u'{{langue|' + lang + '}}') != -1:
-            if cat.find(u'[[Catégorie:') == -1: cat = u'[[Catégorie:' + cat + u']]'
-            pageContent2 = pageContent[pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}'):]
-            if pageContent2.find(u'{{langue|') != -1:
-                if debugLevel > 0: print u' catégorie ajoutée avant la section suivante'
-                if pageContent2.find(u'== {{langue|') != -1:
-                    pageContent = pageContent[:pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'== {{langue|')] \
-                     + cat + u'\n\n' + pageContent[pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'== {{langue|'):]
-                elif pageContent2.find(u'=={{langue|') != -1:
-                    pageContent = pageContent[:pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'=={{langue|')] \
-                     + cat + u'\n\n' + pageContent[pageContent.find(u'{{langue|' + lang + '}}')+len(u'{{langue|' + lang + '}}')+pageContent2.find(u'=={{langue|'):]
-                else:
-                     print u'Modèle {{langue| mal positionné'
-            else:
-                if debugLevel > 0: print u' catégorie ajoutée avant les interwikis'
-                regex = ur'\n\[\[\w?\w?\w?:'
-                if re.compile(regex).search(pageContent):
-                    try:
-                        pageContent = pageContent[:re.search(regex,pageContent).start()] + u'\n' + cat + u'\n' + pageContent[re.search(regex,pageContent).start():]
-                    except:
-                        print u'pb regex interwiki'
-                else:
-                    if debugLevel > 0: print u' catégorie ajoutée en fin de page'
-                    pageContent = pageContent + u'\n' + cat
-    return pageContent
-
-def addLine(pageContent, CodeLangue, Section, lineContent):
-    if pageContent != '' and CodeLangue != '' and Section != '' and lineContent != '':
-        if pageContent.find(lineContent) == -1 and pageContent.find(u'{{langue|' + CodeLangue + '}}') != -1:
-            if Section == u'catégorie' and lineContent.find(u'[[Catégorie:') == -1: lineContent = u'[[Catégorie:' + lineContent + u']]'
-            if Section == u'clé de tri' and lineContent.find(u'{{clé de tri|') == -1: lineContent = u'{{clé de tri|' + lineContent + '}}'
-
-            # Recherche de l'ordre théorique de la section à ajouter
-            NumSection = sectionNumber(Section)
-            if NumSection == len(Sections):
-                if debugLevel > 0:
-                    print u''
-                    print u' ajout de '
-                    print Section.encode(config.console_encoding, 'replace')
-                    print u' dans une section inconnue'
-                    print u' (car ' + len(Sections) + u' = ' + str(NumSection) + u')'
-                    print u''
-                return pageContent
-            if debugLevel > 1: print u' position S : ' + s
-
-            # Recherche de l'ordre réel de la section à ajouter
-            lineContent2 = pageContent[pageContent.find(u'{{langue|' + CodeLangue + '}}')+len(u'{{langue|' + CodeLangue + '}}'):]
-            #sectionsInPage = re.findall("{{S\|([^}]+)}}", lineContent2) # OK mais il faut trouver le {{langue}} de la limite de fin
-            sectionsInPage = re.findall(ur"\n=+ *{{S?\|?([^}/|]+)([^}]*)}}", lineContent2)
-            o = 0
-            # pb encodage : étymologie non fusionnée + catégorie = 1 au lieu de 20 !?
-            while o < len(sectionsInPage) and str(sectionsInPage[o][0].encode(config.console_encoding, 'replace')) != u'langue' \
-             and sectionNumber(sectionsInPage[o][0]) <= NumSection:
-                if debugLevel > 0:
-                    print ' ' + sectionsInPage[o][0] + ' ' + str(sectionNumber(sectionsInPage[o][0]))
-                o = o + 1
-            if debugLevel > 0: print ' ' + str(len(sectionsInPage)) + ' >? ' + str(o)
-            if o == len(sectionsInPage):
-                if debugLevel > 0: print ' section à ajouter en fin de page'
-                pageContent = pageContent + u'\n' + lineContent
-            else:
-                SectionLimite = str(sectionsInPage[o][0].encode(config.console_encoding, 'replace'))
-                o = o - 1
-                if debugLevel > 1: print u' position O : ' + o
-                if debugLevel > 0:
-                    print u''
-                    print u'Ajout de '
-                    print Section.encode(config.console_encoding, 'replace')
-                    print u' avant '
-                    print SectionLimite
-                    print u' (car ' + str(sectionNumber(SectionLimite)) + u' > ' + str(NumSection) + u')'
-                    print u''
-
-                # Ajout après la section trouvée
-                if lineContent2.find(u'{{S|' + sectionsInPage[o][0]) == -1:
-                    print 'Erreur d\'encodage'
-                    return
-
-                lineContent3 = lineContent2[lineContent2.find(u'{{S|' + sectionsInPage[o][0]):]
-                if sectionsInPage[o][0] != Section and Section != u'catégorie' and Section != u'clé de tri':
-                    if debugLevel > 1: print u' ajout de la section'
-                    lineContent = u'\n' + Niveau[NumSection] + u' {{S|' + Section + u'}} ' + Niveau[NumSection] + u'\n' + lineContent
-
-                # Ajout à la ligne
-                if lineContent3.find(u'\n==') == -1:
-                    regex = ur'\n\[\[\w?\w?\w?:'
-                    if re.compile(regex).search(pageContent):
-                        interwikis = re.search(regex, pageContent).start()
-                        categories = pageContent.find(u'\n[[Catégorie:')
-                        defaultSort = pageContent.find(u'\n{{clé de tri|')
-
-                        if (interwikis < categories or categories == -1) and (interwikis < defaultSort or defaultSort == -1):
-                            if debugLevel > 0: print u' ajout avant les interwikis'
-                            try:
-                                pageContent = pageContent[:interwikis] + u'\n' + lineContent + u'\n' + pageContent[interwikis:]
-                            except:
-                                print u' pb regex interwiki'
-                        elif categories != -1 and (categories < defaultSort or defaultSort == -1):
-                            if debugLevel > 0: print u' ajout avant les catégories'
-                            pageContent = pageContent[:pageContent.find(u'\n[[Catégorie:')] + lineContent + pageContent[pageContent.find(u'\n[[Catégorie:'):]
-                        elif defaultSort != -1:
-                            if debugLevel > 0: print u' ajout avant la clé de tri'
-                            pageContent = pageContent[:pageContent.find(u'\n{{clé de tri|')] + lineContent + pageContent[pageContent.find(u'\n{{clé de tri|'):]
-                        else:
-                            if debugLevel > 0: print u' ajout en fin de page'
-                            pageContent = pageContent + lineContent
-                    else:
-                        if debugLevel > 0: print u' ajout en fin de page'
-                        pageContent = pageContent + lineContent
-                else:
-                    pageContent = pageContent[:-len(lineContent2)] + lineContent2[:-len(lineContent3)] + lineContent3[:lineContent3.find(u'\n\n')] \
-                     + u'\n' + lineContent + u'\n' + lineContent3[lineContent3.find(u'\n\n'):]
-    return pageContent
-
-def sectionNumber(Section):
-    if debugLevel > 1: print u'sectionNumber()'
-    if debugLevel > 1:
-        print u''
-        print Section
-        print Sections[0]
-        raw_input(Section == Sections[0])
-    #UnicodeDecodeError: 'ascii' codec can't decode byte 0x82 in position 1: ordinal not in range(128)
-    #if isinstance(Section, str): Section = Section
-    #if isinstance(Section, str): Section = Section.encode(config.console_encoding, 'replace')
-    #if isinstance(Section, str): Section = Section.encode('utf-8')
-    #if isinstance(Section, str): Section = Section.decode('ascii')
-    #if isinstance(Section, str): Section = Section.decode('ascii').encode(config.console_encoding, 'replace')
-    #if isinstance(Section, str): Section = Section.decode('ascii').encode('utf-8')
-    #if isinstance(Section, str): Section = unicode(Section)
-    #if isinstance(Section, unicode): Section = Section.decode("utf-8")
-    
-    s = 0
-    while s < len(Sections) and Section != Sections[s]:
-        s = s + 1
-    if s >= len(Sections):
-        if debugLevel > 0: print u' ' + Section + u' non trouvé'
-        s = 1    # pour éviter de lister les natures grammaticales
-    if debugLevel > 1:
-        print u''
-        print Section
-        print u' = ' + str(s)
-        print u''
-    return s
-
-def removeFalseHomophones(pageContent, languageCode, pageName, relatedPageName, summary):
-    if debugLevel > 0: print u'\nremoveFalseHomophones(' + relatedPageName + u')'
-    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *'''" + pageName + ur"''' *{{cf\|" + relatedPageName + ur"}}\n"
-    if re.search(regex, pageContent):
-        pageContent = re.sub(regex, "==== {{S|homophones|" + languageCode + u"}} ====\n", pageContent)
-        summary = summary + u', homophone erroné'
-    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *\[\[[^}]+{{cf\|" + relatedPageName + ur"}}\n?"
-    if re.search(regex, pageContent):
-        pageContent = re.sub(regex, "==== {{S|homophones|" + languageCode + u"}} ====\n", pageContent)
-        summary = summary + u', homophone erroné'
-    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *\[\[" + relatedPageName + ur"\]\][^,]\n?"
-    if re.search(regex, pageContent):
-        pageContent = re.sub(regex, "==== {{S|homophones|" + languageCode + u"}} ====\n", pageContent)
-        summary = summary + u', homophone erroné'
-
-    regex = ur"=== {{S\|prononciation}} ===\n==== *{{S\|homophones\|" + languageCode + u"}} *====\n(\n|$)"
-    if re.search(regex, pageContent):
-        pageContent = re.sub(regex, '', pageContent)
-    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n(\n|$)"
-    if re.search(regex, pageContent):
-        pageContent = re.sub(regex, '', pageContent)
-
-    return pageContent, summary
-
-def rec_anagram(counter):
-    # Copyright http://www.siteduzero.com/forum-83-541573-p2-exercice-generer-tous-les-anagrammes.html
-    if sum(counter.values()) == 0:
-        yield ''
-    else:
-        for c in counter:
-            if counter[c] != 0:
-                counter[c] -= 1
-                for _ in rec_anagram(counter):
-                    yield c + _
-                counter[c] += 1
-def anagram(word):
-    return rec_anagram(collections.Counter(word))
-
-
-#*** General functions ***
-def setGlobals(myDebugLevel, mySite, myUsername):
-    global debugLevel
-    global site
-    global username
-    debugLevel  = myDebugLevel
-    site        = mySite
-    username    = myUsername 
-
-def trim(s):
-    return s.strip(" \t\n\r\0\x0B")
-
-def datePlusMonth(months):
-	year, month, day = datetime.date.today().timetuple()[:3]
-	new_month = month + months
-	if new_month == 0:
-		new_month = 12
-		year = year - 1
-	elif new_month == -1:
-		new_month = 11
-		year = year - 1
-	elif new_month == -2:
-		new_month = 10
-		year = year - 1
-	elif new_month == -3:
-		new_month = 9
-		year = year - 1
-	elif new_month == -4:
-		new_month = 8
-		year = year - 1
-	elif new_month == -5:
-		new_month = 7
-		year = year - 1
-	if new_month == 2 and day > 28: day = 28
-	return datetime.date(year, new_month, day)
-
-def timeAfterLastEdition(page, site = None):
-    # Timestamp au format Zulu de la dernière version
-    lastEditTime = page.getVersionHistory()[0][1]
-    if debugLevel > 1: print lastEditTime   # 2017-07-29T21:57:34Z
-    matchTime = re.match(r'(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})', str(lastEditTime))
-    # Mise au format "datetime" du timestamp de la dernière version
-    dateLastEditTime = datetime.datetime(int(matchTime.group(1)), int(matchTime.group(2)), int(matchTime.group(3)),
-        int(matchTime.group(4)), int(matchTime.group(5)), int(matchTime.group(6)))
-    datetime_now = datetime.datetime.utcnow()
-    diff_last_edit_time = datetime_now - dateLastEditTime
-
-    # Ecart en minutes entre l'horodotage actuelle et l'horodotage de la dernière version
-    return diff_last_edit_time.seconds/60 + diff_last_edit_time.days*24*60
-
-def hasMoreThanTime(page, timeAfterLastEdition = 60): # minutes
-    if page.exists():
-        version = page.getLatestEditors(1)
-        dateNow = datetime.datetime.utcnow()
-        maxDate = dateNow - datetime.timedelta(minutes=timeAfterLastEdition)
-        if debugLevel > 1:
-            print maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')
-            print version[0]['timestamp']
-            print version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')   
-        if version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ') or username in page.title() or page.contributors(total=1).keys()[0] == 'JackPotte':
-            return True
-        if debugLevel > 0: print u' dernière version trop récente ' + version[0]['timestamp']
-    return False
-
-def isTrustedVersion(page, site = site):
-    firstEditor = page.oldest_revision['user']
-    lastEditor = page.contributors(total=1).keys()[0]
-    if firstEditor == lastEditor:
-        if debugLevel > 0: print u'Page crée et modifiée par ' + lastEditor
-        return True
-    userPage = u' user: ' + lastEditor
-    page = Page(site, userPage)
-    user = User(page)
-    if u'autoconfirmed' in user.groups():
-        if debugLevel > 0: print u'Page modifiée par l\'utilisateur autoconfirmed ' + lastEditor
-        return True
-    return False
-
-def searchDoubles(pageContent, parameter):
-    if debugLevel > 0: u' Recherche de doublons dans le modèle : ' + parameter[1]
-    finalPageContent = u''
-    regex = ur'{{' + parameter[1] + ur'[^\n]*{{' + parameter[1]
-    while re.search(regex, pageContent):
-        #TODO: finalPageContent = pageContent[:], pageContent = pageContent[:]
-        raw_input(pageContent[re.search(regex, pageContent).start():re.search(regex, pageContent).end()].encode(config.console_encoding, 'replace'))
-    return finalPageContent + pageContent
-
-def getContentFromPageName(pageName, allowedNamespaces = None, site = site):
-    page = Page(site, pageName)
-    return getContentFromPage(page, allowedNamespaces)
-
-def getContentFromPage(page, allowedNamespaces = None, username = username):
-    if debugLevel > 0: print '\ngetContentFromPage ' + page.title()
-    PageBegin = u''
-    try:
-        get = page.exists()
-    except:
-        pywikibot.exceptions.InvalidTitle
-        return PageBegin
-    if get:
-        if type(allowedNamespaces) == type([]): #'list'
-            if debugLevel > 1: print u' namespace : ' + str(page.namespace())
-            condition = page.namespace() in allowedNamespaces
-        elif allowedNamespaces == 'All':
-            if debugLevel > 1: print u' all namespaces'
-            condition = True
-        else:
-            if debugLevel > 1: print u' content namespaces'
-            condition = page.namespace() in [0, 12, 14, 100] or page.title().find(username) != -1
-        if condition:
-            try:
-                PageBegin = page.get()
-            except pywikibot.exceptions.BadTitle:
-                if debugLevel > 0: print u' IsRedirect l 676'
-                return 'KO'
-            except pywikibot.exceptions.IsRedirectPage:
-                if debugLevel > 0: print u' IsRedirect l 679'
-                if page.namespace() == 'Template:':
-                    PageBegin = page.get(get_redirect=True)
-                    if PageBegin[:len(u'#REDIRECT')] == u'#REDIRECT':
-                        regex = ur'\[\[([^\]]+)\]\]'
-                        s = re.search(regex, PageBegin)
-                        if s:
-                            PageBegin = getContentFromPageName(s.group(1), allowedNamespaces = allowedNamespaces)
-                        else:
-                            return 'KO'
-                    else:
-                        return 'KO'
-                else:
-                    return 'KO'
-            except pywikibot.exceptions.NoPage:
-                if debugLevel > 0: print u' NoPage l 694'
-                return 'KO'
-            except pywikibot.exceptions.ServerError:
-                if debugLevel > 0: print u' NoPage l 697'
-                return 'KO'
-        else:
-            if debugLevel > 0: print u' Forbidden namespace l 700'
-            return 'KO'
-    else:
-        if debugLevel > 0: print u' No page l 703'
-        return 'KO'
-
-    return PageBegin
-
-def getWiki(language, family, site = site):
-    if family is None:
-        return site
-    else:
-        wiki = u'KO'
-        try:
-            wiki = pywikibot.Site(language, family)
-        except pywikibot.exceptions.ServerError:
-            if debugLevel > 1: print u'  ServerError in getWiki'
-        except pywikibot.exceptions.NoSuchSite:
-            if debugLevel > 1: print u'  NoSuchSite in getWiki'
-        except UnicodeEncodeError:
-            if debugLevel > 1: print u'  UnicodeEncodeError in getWiki'
-        #TODO: WARNING: src/fr.wiktionary.format.py:4145: UserWarning: Site wiktionary:ro instantiated using different code "mo"
-    return wiki
-
-def getParameter(pageContent, p):
-	if pageContent.find(p + u'=') == -1 or pageContent.find(u'}}') == -1 or pageContent.find(p + u'=') > pageContent.find(u'}}'): return u''
-	pageContent = pageContent[pageContent.find(p + u'=')+len(p + u'='):]
-	if pageContent.find(u'|') != -1 and pageContent.find(u'|') < pageContent.find(u'}}'):
-		return trim(pageContent[:pageContent.find(u'|')])
-	else:
-		return trim(pageContent[:pageContent.find(u'}')])
-
-def addParameter(pageContent, parameter, content = None):
-    finalPageContent = u''
-    if parameter == u'titre' and content is None:
-        # Détermination du titre d'un site web
-        URL = getParameter(u'url')
-        finalPageContent = pageContent
-
-    else:
-        print 'en travaux'
-    return finalPageContent
-        
-def replaceParameterValue(pageContent, template, parameterKey, oldValue, newValue):
-    regex = ur'({{ *(' + template[:1].lower() + ur'|' + template[:1].upper() + ur')' + template[1:] + ur' *\n* *\|[^}]*' + parameterKey + ur' *= *)' + oldValue
-    if debugLevel > 0: print regex
-    pageContent = re.sub(regex, ur'\1' + newValue, pageContent)
-
     return pageContent
 
 def log(source):        
@@ -830,3 +437,46 @@ def savePage(currentPage, pageContent, summary):
         except AttributeError:
             print "AttributeError in savePage"
             return
+
+
+#*** Tested functions ***
+def isPatrolled(version):
+    #TODO: extensions Patrolled Edits & Flagged Revisions
+    if debugLevel > 1: print version  #eg: [{u'timestamp': u'2017-07-25T02:26:15Z', u'user': u'27.34.18.159'}]
+    if debugLevel > 0: print ' user: ' + version[0]['user']
+    return False
+    #admins = site.allusers(group='sysop')  #<pywikibot.data.api.ListGenerator object at 0x7f6ebc521fd0>
+    #patrollers = site.allusers(group='patrollers')
+
+def getLineNumber():
+    # Bug des n° de lignes auto
+    from inspect import currentframe, getframeinfo
+    frameinfo = getframeinfo(currentframe())
+    return str(frameinfo.lineno)
+
+def testAdd(pageName, summary = '', site = site):
+    page1 = Page(site, pageName)
+    try:
+        initialPageContent = page1.get()
+    except pywikibot.exceptions.NoPage:
+        print 'NoPage'
+    pageContent = initialPageContent
+    codelangue = u'fr'
+
+    pageContent = addLine(pageContent, codelangue, u'prononciation', u'* {{écouter|||lang=fr|audio=test.ogg}}')
+    pageContent = addLine(pageContent, codelangue, u'prononciation', u'* {{écouter|||lang=fr|audio=test2.ogg}}')
+    pageContent = addLine(pageContent, codelangue, u'catégorie', u'Tests en français')
+    pageContent = addLine(pageContent, codelangue, u'catégorie', u'[[Catégorie:Tests en français]]')
+    pageContent = addLine(pageContent, codelangue, u'clé de tri', u'test')
+    pageContent = addLine(pageContent, codelangue, u'étymologie', u':{{étyl|test|fr}}')
+    if debugLevel > 1: raw_input(u'Fin')
+    if pageContent != initialPageContent: savePage(page1, pageContent, summary)
+
+def searchDoubles(pageContent, parameter):
+    if debugLevel > 0: u' Recherche de doublons dans le modèle : ' + parameter[1]
+    finalPageContent = u''
+    regex = ur'{{' + parameter[1] + ur'[^\n]*{{' + parameter[1]
+    while re.search(regex, pageContent):
+        #TODO: finalPageContent = pageContent[:], pageContent = pageContent[:]
+        raw_input(pageContent[re.search(regex, pageContent).start():re.search(regex, pageContent).end()].encode(config.console_encoding, 'replace'))
+    return finalPageContent + pageContent

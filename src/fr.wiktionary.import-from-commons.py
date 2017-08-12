@@ -153,6 +153,7 @@ def treatPageByName(pageName):
 
 p = PageProvider(treatPageByName, site, debugLevel)
 setGlobals(debugLevel, site, username)
+setGlobalsWiktionary(debugLevel, site, username)
 def main(*args):
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv

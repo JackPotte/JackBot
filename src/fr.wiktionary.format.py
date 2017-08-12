@@ -2465,9 +2465,12 @@ def treatPageByName(pageName):
                     summary = summary + u', déplacement des modèles de flexions'
 
             # Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
-            if PageTemp.find(u'{{S|traductions}}') == -1 and PageTemp.find(u'fr|flexion') == -1 and \
-             PageTemp.find(u'Variante d') == -1 and PageTemp.find(u'Synonyme d') == -1 and PageTemp.find(u'{{S|erreur|fr}}') == -1:
-                PageTemp = addLine(PageTemp, u'fr', u'traduction', u'\n==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n')
+            if PageTemp.find(u'{{S|traductions}}') == -1 and PageTemp.find(u'fr|flexion') == -1 \
+             and PageTemp.find(u'Variante d') == -1 and PageTemp.find(u'Synonyme d') == -1 \
+             and PageTemp.find(u'{{S|erreur|fr}}') == -1 and PageTemp.find(u'{{abréviation') == -1 \
+             and PageTemp.find(u'{{apocope') == -1 and PageTemp.find(u'{{aphérèse') == -1 \
+             and PageTemp.find(u'{{ellipse') == -1 and PageTemp.find(u'{{par ellipse') == -1:
+                PageTemp = addLine(PageTemp, u'fr', u'traductions', u'\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n')
                 summary = summary + u', ajout de {{S|traductions}}'
             # TODO Contrôle du nombre de paragraphes de traduction par rapport au nombre de sens
 
@@ -3838,6 +3841,7 @@ def treatPageByName(pageName):
 
 p = PageProvider(treatPageByName, site, debugLevel)
 setGlobals(debugLevel, site, username)
+setGlobalsWiktionary(debugLevel, site, username)
 def main(*args):
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
@@ -3863,7 +3867,7 @@ def main(*args):
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
-            afterPage = u'amont'
+            afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
             p.pagesByCat(u'Mots ayant des homophones en français', afterPage = afterPage)
         elif sys.argv[1] == u'-redirects':
