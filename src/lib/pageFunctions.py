@@ -552,7 +552,7 @@ def removeFalseHomophones(pageContent, languageCode, pageName, relatedPageName, 
     if debugLevel > 0: print u'\nremoveFalseHomophones(' + relatedPageName + u')'
     regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *'''" + pageName + ur"''' *{{cf\|" + relatedPageName + ur"}}\n"
     if re.search(regex, pageContent):
-        pageContent = re.sub(regex, '==== {{S|homophones|" + languageCode + u"}} ====\n', pageContent)
+        pageContent = re.sub(regex, "==== {{S|homophones|" + languageCode + u"}} ====\n", pageContent)
         summary = summary + u', homophone erroné'
     regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *\[\[[^}]+{{cf\|" + relatedPageName + ur"}}\n?"
     if re.search(regex, pageContent):
@@ -560,7 +560,7 @@ def removeFalseHomophones(pageContent, languageCode, pageName, relatedPageName, 
         summary = summary + u', homophone erroné'
     regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *\[\[" + relatedPageName + ur"\]\][^,]\n?"
     if re.search(regex, pageContent):
-        pageContent = re.sub(regex, '==== {{S|homophones|" + languageCode + u"}} ====\n', pageContent)
+        pageContent = re.sub(regex, "==== {{S|homophones|" + languageCode + u"}} ====\n", pageContent)
         summary = summary + u', homophone erroné'
 
     regex = ur"=== {{S\|prononciation}} ===\n==== *{{S\|homophones\|" + languageCode + u"}} *====\n(\n|$)"
