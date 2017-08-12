@@ -38,6 +38,7 @@ bookCatTemplates = []
 bookCatTemplates.append(u'{{Auto category}}')
 bookCatTemplates.append(u'{{Book category}}')
 bookCatTemplates.append(u'{{AutoCat}}')
+bookCatTemplates.append(u'{{Bookcat}}')
 bookCatTemplates.append(u'{{BOOKCAT}}')
 bookCatTemplates.append(u'[[Category:{{PAGENAME}}|{{SUBPAGENAME}}]]')
 bookCatTemplates.append(u'[[Category:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]')
@@ -68,6 +69,7 @@ def treatPageByName(pageName):
     if page.namespace() == 0:
         for bookCatTemplate in bookCatTemplates:
             PageTemp = PageTemp.replace(bookCatTemplate, u'{{BookCat}}')
+            PageTemp = PageTemp.replace(bookCatTemplate[:2] + bookCatTemplate[2:3].lower() + bookCatTemplate[3:], u'{{BookCat}}')
         if addCategory and hasMoreThanTime(page) and isTrustedVersion(page):
             # The untrusted can have blanked a relevant content including {{BookCat}}
             if trim(PageTemp) != '' and PageTemp.find(u'[[Category:') == -1 and PageTemp.find(u'{{BookCat}}') == -1 and PageTemp.find(u'{{printable') == -1:
