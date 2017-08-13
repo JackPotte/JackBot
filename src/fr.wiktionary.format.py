@@ -1644,7 +1644,7 @@ def treatPageByName(pageName):
 
         if debugLevel > 0: print u'Conversion vers {{S}}'
         EgalSection = u'==='
-        for p in range(1, limit3):
+        for p in range(1, limit4):
             if debugLevel > 1: print Modele[p] + ur'|S\|'+ Section[p]
             if p == limit2: EgalSection = u'===='
             if p == limit3: EgalSection = u'====='
@@ -1735,6 +1735,7 @@ def treatPageByName(pageName):
             PageTemp = re.sub(regex, ur"= \1 =", PageTemp)
 
         # Formatage général des traductions
+        PageTemp = PageTemp.replace(u'{{(}}\n{{ébauche-trad}}\n{{)}}', '')
         PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier}}}}', u'{{trad-trier}}\n{{trad-début}}')
         PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier|fr}}}}', u'{{trad-trier}}\n{{trad-début}}')
 
@@ -3874,13 +3875,16 @@ def treatPageByName(pageName):
     else:
         PageEnd = PageTemp
 
+    if debugLevel > 0 and username in pageName: PageEnd = addLineTest(PageEnd)
     if debugLevel > 0: pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
     if PageEnd != PageBegin:
-        if page.namespace() == u'':
+        if page.namespace() == 0 or username in pageName:
             # Modifications mineures, ne justifiant pas une édition à elles seules
             PageEnd = PageEnd.replace(u'  ', u' ')
             PageEnd = PageEnd.replace(u'\n\n\n\n', u'\n\n\n')
             PageEnd = PageEnd.replace(u'.\n=', u'.\n\n=')
+            regex = ur'(\])(\n== {{langue\|)'
+            PageEnd = re.sub(regex, ur'\1\n\2', PageEnd)
         savePage(page, PageEnd, summary)
     elif debugLevel > 0:
         print "Aucun changement"

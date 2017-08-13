@@ -381,6 +381,15 @@ def replaceISBN(pageContent):
     if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
     return pageContent
 
+def searchDoubles(pageContent, parameter):
+    if debugLevel > 0: u' Recherche de doublons dans le modèle : ' + parameter[1]
+    finalPageContent = u''
+    regex = ur'{{' + parameter[1] + ur'[^\n]*{{' + parameter[1]
+    while re.search(regex, pageContent):
+        #TODO: finalPageContent = pageContent[:], pageContent = pageContent[:]
+        print(pageContent[re.search(regex, pageContent).start():re.search(regex, pageContent).end()].encode(config.console_encoding, 'replace'))
+    return finalPageContent + pageContent
+
 def log(source):        
     txtfile = codecs.open(u'JackBot.log', 'a', 'utf-8')
     txtfile.write(u'\n' + source + u'\n')
@@ -453,30 +462,3 @@ def getLineNumber():
     from inspect import currentframe, getframeinfo
     frameinfo = getframeinfo(currentframe())
     return str(frameinfo.lineno)
-
-def testAdd(pageName, summary = '', site = site):
-    page1 = Page(site, pageName)
-    try:
-        initialPageContent = page1.get()
-    except pywikibot.exceptions.NoPage:
-        print 'NoPage'
-    pageContent = initialPageContent
-    codelangue = u'fr'
-
-    pageContent = addLine(pageContent, codelangue, u'prononciation', u'* {{écouter|||lang=fr|audio=test.ogg}}')
-    pageContent = addLine(pageContent, codelangue, u'prononciation', u'* {{écouter|||lang=fr|audio=test2.ogg}}')
-    pageContent = addLine(pageContent, codelangue, u'catégorie', u'Tests en français')
-    pageContent = addLine(pageContent, codelangue, u'catégorie', u'[[Catégorie:Tests en français]]')
-    pageContent = addLine(pageContent, codelangue, u'clé de tri', u'test')
-    pageContent = addLine(pageContent, codelangue, u'étymologie', u':{{étyl|test|fr}}')
-    if debugLevel > 1: raw_input(u'Fin')
-    if pageContent != initialPageContent: savePage(page1, pageContent, summary)
-
-def searchDoubles(pageContent, parameter):
-    if debugLevel > 0: u' Recherche de doublons dans le modèle : ' + parameter[1]
-    finalPageContent = u''
-    regex = ur'{{' + parameter[1] + ur'[^\n]*{{' + parameter[1]
-    while re.search(regex, pageContent):
-        #TODO: finalPageContent = pageContent[:], pageContent = pageContent[:]
-        raw_input(pageContent[re.search(regex, pageContent).start():re.search(regex, pageContent).end()].encode(config.console_encoding, 'replace'))
-    return finalPageContent + pageContent
