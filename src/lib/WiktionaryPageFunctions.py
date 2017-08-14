@@ -181,12 +181,13 @@ def getLanguageSection(pageContent, languageCode):
     if pageContent.find(u'{{langue|' + languageCode + '}}') == -1: raw_input(' langue absente') #TODO
     regex = ur'\n=* *{{langue\|(^' + languageCode + ur')}}'
     position = len(pageContent)
-    s = re.search(regex, pageContent)
+    s = re.match(regex, pageContent)
     if s:
+        print 'ok'
         position = s.start()
         pageContent = pageContent[:position]
         if debugLevel > 0: print position
-    if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+    if debugLevel > 0: raw_input(pageContent.encode(config.console_encoding, 'replace'))
     return pageContent, position
 
 def addCat(pageContent, languageCode, lineContent):
@@ -322,6 +323,94 @@ def addLineTest(pageContent, languageCode = 'fr'):
     pageContent = addLine(pageContent, languageCode, u'prononciation', u'* {{écouter|||lang=fr|audio=test2.ogg}}')
     pageContent = addLine(pageContent, languageCode, u'étymologie', u':{{étyl|test|fr}}')
     pageContent = addLine(pageContent, languageCode, u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
+    return pageContent
+
+def addPronunciation(pageContent, CodeLangue, Section, lineContent):
+    if pageContent != '' and CodeLangue != '' and Section != '' and lineContent != '':
+        if pageContent.find(lineContent) == -1 and pageContent.find(u'{{langue|' + CodeLangue + '}}') != -1:
+            if Section == u'catégorie' and lineContent.find(u'[[Catégorie:') == -1: lineContent = u'[[Catégorie:' + lineContent + u']]'
+            if Section == u'clé de tri' and lineContent.find(u'{{clé de tri|') == -1: lineContent = u'{{clé de tri|' + lineContent + '}}'
+
+            # Recherche de l'ordre théorique de la section à ajouter
+            NumSection = sectionNumber(Section)
+            if NumSection == len(Sections):
+                if debugLevel > 0:
+                    print u''
+                    print u' ajout de '
+                    print Section.encode(config.console_encoding, 'replace')
+                    print u' dans une section inconnue'
+                    print u' (car ' + len(Sections) + u' = ' + str(NumSection) + u')'
+                    print u''
+                return pageContent
+            if debugLevel > 1: print u' position S : ' + s
+
+            # Recherche de l'ordre réel de la section à ajouter
+            lineContent2 = pageContent[pageContent.find(u'{{langue|' + CodeLangue + '}}')+len(u'{{langue|' + CodeLangue + '}}'):]
+            #sectionsInPage = re.findall("{{S\|([^}]+)}}", lineContent2) # OK mais il faut trouver le {{langue}} de la limite de fin
+            sectionsInPage = re.findall(ur"\n=+ *{{S?\|?([^}/|]+)([^}]*)}}", lineContent2)
+            o = 0
+            # pb encodage : étymologie non fusionnée + catégorie = 1 au lieu de 20 !?
+            while o < len(sectionsInPage) and sectionsInPage[o][0] != 'langue' \
+             and sectionNumber(sectionsInPage[o][0]) <= NumSection:
+                if debugLevel > 0:
+                    print ' ' + sectionsInPage[o][0] + ' ' + str(sectionNumber(sectionsInPage[o][0]))
+                o = o + 1
+            if debugLevel > 0: print ' ' + str(len(sectionsInPage)) + ' >? ' + str(o)
+            if o == len(sectionsInPage):
+                if debugLevel > 0: print ' section à ajouter en fin de page'
+                pageContent = pageContent + u'\n' + lineContent
+            else:
+                SectionLimite = str(sectionsInPage[o][0].encode(config.console_encoding, 'replace'))
+                o = o - 1
+                if debugLevel > 1: print u' position O : ' + o
+                if debugLevel > 0:
+                    print u''
+                    print u'Ajout de '
+                    print Section.encode(config.console_encoding, 'replace')
+                    print u' avant '
+                    print SectionLimite
+                    print u' (car ' + str(sectionNumber(SectionLimite)) + u' > ' + str(NumSection) + u')'
+                    print u''
+
+                # Ajout après la section trouvée
+                if lineContent2.find(u'{{S|' + sectionsInPage[o][0]) == -1:
+                    print 'Erreur d\'encodage'
+                    return
+
+                lineContent3 = lineContent2[lineContent2.find(u'{{S|' + sectionsInPage[o][0]):]
+                if sectionsInPage[o][0] != Section and Section != u'catégorie' and Section != u'clé de tri':
+                    if debugLevel > 1: print u' ajout de la section'
+                    lineContent = u'\n' + Niveau[NumSection] + u' {{S|' + Section + u'}} ' + Niveau[NumSection] + u'\n' + lineContent
+
+                # Ajout à la ligne
+                if lineContent3.find(u'\n==') == -1:
+                    regex = ur'\n\[\[\w?\w?\w?:'
+                    if re.compile(regex).search(pageContent):
+                        interwikis = re.search(regex, pageContent).start()
+                        categories = pageContent.find(u'\n[[Catégorie:')
+                        defaultSort = pageContent.find(u'\n{{clé de tri|')
+
+                        if (interwikis < categories or categories == -1) and (interwikis < defaultSort or defaultSort == -1):
+                            if debugLevel > 0: print u' ajout avant les interwikis'
+                            try:
+                                pageContent = pageContent[:interwikis] + u'\n' + lineContent + u'\n' + pageContent[interwikis:]
+                            except:
+                                print u' pb regex interwiki'
+                        elif categories != -1 and (categories < defaultSort or defaultSort == -1):
+                            if debugLevel > 0: print u' ajout avant les catégories'
+                            pageContent = pageContent[:pageContent.find(u'\n[[Catégorie:')] + lineContent + pageContent[pageContent.find(u'\n[[Catégorie:'):]
+                        elif defaultSort != -1:
+                            if debugLevel > 0: print u' ajout avant la clé de tri'
+                            pageContent = pageContent[:pageContent.find(u'\n{{clé de tri|')] + lineContent + pageContent[pageContent.find(u'\n{{clé de tri|'):]
+                        else:
+                            if debugLevel > 0: print u' ajout en fin de page'
+                            pageContent = pageContent + lineContent
+                    else:
+                        if debugLevel > 0: print u' ajout en fin de page'
+                        pageContent = pageContent + lineContent
+                else:
+                    pageContent = pageContent[:-len(lineContent2)] + lineContent2[:-len(lineContent3)] + lineContent3[:lineContent3.find(u'\n\n')] \
+                     + u'\n' + lineContent + u'\n' + lineContent3[lineContent3.find(u'\n\n'):]
     return pageContent
 
 def sectionNumber(Section):

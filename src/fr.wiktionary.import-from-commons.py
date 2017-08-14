@@ -145,7 +145,7 @@ def treatPageByName(pageName):
         return
     PageTemp = PageBegin
 
-    PageEnd = addLine(PageTemp, codelangue, u'prononciation', u'* {{écouter|' + region + u'|' + prononciation + u'|lang=' + codelangue + u'|audio=' + Son + u'}}')
+    PageEnd = addPronunciation(PageTemp, codelangue, u'prononciation', u'* {{écouter|' + region + u'|' + prononciation + u'|lang=' + codelangue + u'|audio=' + Son + u'}}')
 
     # Sauvegarde
     if PageEnd != PageBegin: savePage(page1, PageEnd, summary)
@@ -162,7 +162,7 @@ def main(*args):
         elif sys.argv[1] == u'-test2':
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'File:De-Abbreviation.ogg')
+            treatPageByName(u'File:De-Ablass.ogg')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
