@@ -180,7 +180,7 @@ def getFlexionTemplateFromLemma(pageName, language, nature):
 def getLanguageSection(pageContent, languageCode):
     if pageContent.find(u'{{langue|' + languageCode + '}}') == -1: raw_input(' langue absente') #TODO
     regex = ur'\n=* *{{langue|(^' + languageCode + ur')}}'
-    position = 0
+    position = len(pageContent)
     s = re.search(regex, pageContent)
     if s:
         position = s.start()
@@ -229,7 +229,7 @@ def addLine(pageContent, languageCode, Section, lineContent):
                 if debugLevel > d: print u' ajout dans la sous-section existante "' + Section.encode(config.console_encoding, 'replace') + u'"'
                 print u' (car ' + str(sectionNumber(limitSection)) + u' = ' + str(sectionToAddNumber) + u')\n'
             elif not Section in [u'catégorie', u'clé de tri']:
-                sectionToAdd = u'\n' + Niveau[sectionToAddNumber] + u' {{S|' + Section + u'}} ' + Niveau[sectionToAddNumber] + u'\n'
+                sectionToAdd = u'\n\n' + Niveau[sectionToAddNumber] + u' {{S|' + Section + u'}} ' + Niveau[sectionToAddNumber] + u'\n'
                 if sectionToAddNumber >= sectionNumber(limitSection):
                     if debugLevel > d:
                         print u' ajout de la sous-section "' + Section + u'" après "' + limitSection + u'"'
