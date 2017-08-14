@@ -1275,6 +1275,7 @@ Modele.append(u'technologie')
 Modele.append(u'télé')
 Modele.append(u'télécom')
 Modele.append(u'télécommunications')
+Modele.append(u'téléphonie')
 Modele.append(u'télévision')
 Modele.append(u'temps')
 Modele.append(u'temps géologiques')
@@ -3332,14 +3333,8 @@ def treatPageByName(pageName):
                                         pageExtExists = False
 
                                     if pageExtExists:
-                                        PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '+')
                                         if debugLevel > d: print u'  exists (+)'
-                                    else:
-                                        if debugLevel > d: print u'  does not exists (-)'
-                                        PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '-')
-                                else:
-                                    if debugLevel > d: print u'  does not exists (-)'
-                                    PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '-')
+                                        PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '+')
 
                 elif currentTemplate == u'(':
                     if translationSection:

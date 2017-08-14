@@ -234,13 +234,18 @@ def addLine(pageContent, languageCode, Section, lineContent):
                     if debugLevel > d:
                         print u' ajout de la sous-section "' + Section + u'" après "' + limitSection + u'"'
                         print u'  (car ' + str(sectionToAddNumber) + u' > ' + str(sectionNumber(limitSection)) + u')'
-                    categories = languageSection.find(u'\n[[Catégorie:')
                     regex = u'{{S\|' + limitSection + u'[\|}]'
                     s = re.search(regex, languageSection)
-                    if categories != -1 and categories < s.start():
-                        pageContent = languageSection[:categories] + sectionToAdd + languageSection[categories:] + pageContent[position:]
-                    elif limitSection == sectionsInPage[len(sectionsInPage)-1][0]:
-                        pageContent = languageSection + sectionToAdd + pageContent[position:]
+                    if limitSection == sectionsInPage[len(sectionsInPage)-1][0]:
+                        if debugLevel > d: print u' ajout de la sous-section après la dernière de la section langue : ' + limitSection
+                        categories = languageSection.find(u'\n[[Catégorie:')
+                        if categories != -1:
+                            if debugLevel > d: print u'  avant les catégories'
+                            pageContent = languageSection[:categories] + sectionToAdd + languageSection[categories:] + pageContent[position:]
+                        else:
+                            if debugLevel > d: print u'  sans catégorie'
+                            pageContent = languageSection + sectionToAdd + pageContent[position:]
+                        if debugLevel > d+1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
                     else:
                         print u' ajout de la sous-section "' + Section + u'" avant "' + sectionsInPage[o+1][0] + u'"'
                         regex = ur'\n=* *{{S\|' + sectionsInPage[o+1][0]
@@ -263,12 +268,14 @@ def addLine(pageContent, languageCode, Section, lineContent):
                     else:
                         raw_input(' bug section')
             if debugLevel > d+1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+            if debugLevel > d+1: raw_input(languageSection.encode(config.console_encoding, 'replace'))
 
             regex = ur'\n=* *{{S\|' + Section
             s = re.search(regex, languageSection)
             if s:
                 if debugLevel > d: print u' ajout dans la sous-section'
                 finalSection = languageSection[s.end():]
+
             else:
                 regex = ur'\n=* *{{S\|' + sectionsInPage[len(sectionsInPage)-1][0]
                 s = re.search(regex, languageSection)
