@@ -235,14 +235,25 @@ def addLine(pageContent, languageCode, Section, lineContent):
                         print u' ajout de la sous-section "' + Section + u'" après "' + limitSection + u'"'
                         print u'  (car ' + str(sectionToAddNumber) + u' > ' + str(sectionNumber(limitSection)) + u')'
                     categories = languageSection.find(u'\n[[Catégorie:')
-                    if categories != -1:
+                    regex = u'{{S\|' + limitSection + u'[\|}]'
+                    s = re.search(regex, languageSection)
+                    if categories != -1 and categories < s.start():
                         pageContent = languageSection[:categories] + sectionToAdd + languageSection[categories:] + pageContent[position:]
-                    else:
+                    elif limitSection == sectionsInPage[len(sectionsInPage)-1][0]:
                         pageContent = languageSection + sectionToAdd + pageContent[position:]
+                    else:
+                        print u' ajout de la sous-section "' + Section + u'" avant "' + sectionsInPage[o+1][0] + u'"'
+                        regex = ur'\n=* *{{S\|' + sectionsInPage[o+1][0]
+                        s = re.search(regex, languageSection)
+                        if s:
+                            pageContent = languageSection[:s.start()] + sectionToAdd + languageSection[s.start():] + pageContent[position:]
+                            languageSection, position = getLanguageSection(pageContent, languageCode)
+                        else:
+                            raw_input(' bug section')
                     languageSection, position = getLanguageSection(pageContent, languageCode)
                 else:
                     if debugLevel > d:
-                        print u' ajout de la sous-section "' + Section + u'" avant "' + limitSection + u'"'
+                        print u' ajout de "' + Section + u'" avant "' + limitSection + u'"'
                         print u'  (car ' + str(sectionToAddNumber) + u' < ' + str(sectionNumber(limitSection)) + u')'
                     regex = ur'\n=* *{{S\|' + limitSection
                     s = re.search(regex, languageSection)

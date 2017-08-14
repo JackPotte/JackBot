@@ -1692,6 +1692,7 @@ def treatPageByName(pageName):
         regex = ur'([^\n=])(===?=? *{{S\|)'
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, ur'\1\n\n\2', PageTemp)
+        PageTemp = PageTemp.replace(u'===== {{S|note}} ===== =====', u'===== {{S|note}} =====')
 
         # Titres en minuscules
         #PageTemp = re.sub(ur'{{S\|([^}]+)}}', ur'{{S|' + ur'\1'.lower() + ur'}}', PageTemp)
