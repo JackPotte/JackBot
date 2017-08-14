@@ -3264,13 +3264,14 @@ def treatPageByName(pageName):
                             # Identification des Wiktionnaires hébergeant les traductions
                             siteExterne = u''
                             pageExterne = u''
+                            d = 0
                             PageTemp3 = PageTemp2[PageTemp2.find(u'|')+1:]
-                            if debugLevel > 0: print u' langue distante : ' + currentLanguage
+                            if debugLevel > d: print u' langue distante : ' + currentLanguage
                             if PageTemp3.find('}}') == "" or not PageTemp3.find('}}'):
-                                if debugLevel > 1: print u'  aucun mot distant'
+                                if debugLevel > d: print u'  aucun mot distant'
                                 if PageEnd.rfind('<!--') == -1 or PageEnd.rfind('<!--') < PageEnd.rfind('-->'):
                                     # On retire le modèle pour que la page ne soit plus en catégorie de maintenance
-                                    if debugLevel > 0: print u' Retrait de commentaire de traduction l 4362'
+                                    if debugLevel > d: print u' Retrait de commentaire de traduction l 4362'
                                     PageEnd = PageEnd[:-2]
                                     backward = True
                             elif currentLanguage == u'conv':
@@ -3278,8 +3279,9 @@ def treatPageByName(pageName):
                             else:
                                 siteExterne = getWiki(currentLanguage, siteFamily)
                             if siteExterne == 'KO':
-                                if debugLevel > 1: print u'  no site (--)'
+                                if debugLevel > d: print u'  no site (--)'
                                 PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '--')
+                                siteExterne = ''
                             elif siteExterne != u'':
                                 if PageTemp3.find(u'|') != -1 and PageTemp3.find(u'|') < PageTemp3.find('}}'):
                                     pageExterne = PageTemp3[:PageTemp3.find(u'|')]
@@ -3287,25 +3289,25 @@ def treatPageByName(pageName):
                                     pageExterne = PageTemp3[:PageTemp3.find('}}')]
                             if pageExterne != u'' and pageExterne.find(u'<') != -1:
                                 pageExterne = pageExterne[:pageExterne.find(u'<')]
-                            if debugLevel > 1:
+                            if debugLevel > d:
                                 print u' Page distante : '
                                 print pageExterne.encode(config.console_encoding, 'replace')
 
-                            # Connexions aux Wiktionnaires pour vérifier la présence de la page (sous-entendu dans sa langue maternelle)
+                            # Connexions aux Wiktionnaires pour vérifier la présence de la page (TODO: et de sa section langue)
                             if siteExterne != u'' and pageExterne != u'':
                                 pageFound = True
                                 try:
                                     PageExt = Page(siteExterne, pageExterne)
                                 except pywikibot.exceptions.BadTitle:
-                                    if debugLevel > 1: print u'  BadTitle (-)'
+                                    if debugLevel > d: print u'  BadTitle (-)'
                                     PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '-')
                                     pageFound = False
                                 except pywikibot.exceptions.InvalidTitle:
-                                    if debugLevel > 1: print u'  InvalidTitle (-)'
+                                    if debugLevel > d: print u'  InvalidTitle (-)'
                                     PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '-')
                                     pageFound = False
                                 except pywikibot.exceptions.NoPage:
-                                    if debugLevel > 1: print u'  NoPage'
+                                    if debugLevel > d: print u'  NoPage'
                                     if pageExterne.find(u'\'') != -1:
                                         pageExterne = pageExterne.replace(u'\'', u'’')
                                     elif pageExterne.find(u'’') != -1:
@@ -3321,17 +3323,23 @@ def treatPageByName(pageName):
                                     try:
                                         pageExtExists = PageExt.exists()
                                     except AttributeError:
-                                        if debugLevel > 1: print u'  removed site (--)'
+                                        if debugLevel > d: print u'  removed site (--)'
                                         PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '--')
                                         pageExtExists = False
                                     except pywikibot.exceptions.InconsistentTitleReceived:
-                                        if debugLevel > 1: print u'  InconsistentTitleReceived (-)'
+                                        if debugLevel > d: print u'  InconsistentTitleReceived (-)'
                                         PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '-')
                                         pageExtExists = False
 
                                     if pageExtExists:
                                         PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '+')
-                                        if debugLevel > 1: print u'  exists (+)'
+                                        if debugLevel > d: print u'  exists (+)'
+                                    else:
+                                        if debugLevel > d: print u'  does not exists (-)'
+                                        PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '-')
+                                else:
+                                    if debugLevel > d: print u'  does not exists (-)'
+                                    PageEnd, PageTemp = nextTranslationTemplate(PageEnd, PageTemp, '-')
 
                 elif currentTemplate == u'(':
                     if translationSection:
