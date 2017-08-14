@@ -87,7 +87,8 @@ class PageProvider:
     # Traitement des pages d'une catégorie
     def pagesByCat(self, category, recursive = False, afterPage = None, namespaces = [0], names = None, notNames = None, notCatNames = None, site = None):
         if site is None: site = self.site
-        if self.debugLevel > 0: print category.encode(config.console_encoding, 'replace')
+        if self.debugLevel > 0:
+            print category.encode(config.console_encoding, 'replace')
         cat = catlib.Category(self.site, category)
         pages = cat.articlesList(False)
         if namespaces == [0]:

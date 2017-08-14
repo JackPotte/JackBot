@@ -179,12 +179,14 @@ def getFlexionTemplateFromLemma(pageName, language, nature):
 
 def getLanguageSection(pageContent, languageCode):
     if pageContent.find(u'{{langue|' + languageCode + '}}') == -1: raw_input(' langue absente') #TODO
-    regex = ur'\n=* *{{langue|(^' + languageCode + ur')}}'
+    regex = ur'\n=* *{{langue\|(^' + languageCode + ur')}}'
     position = len(pageContent)
     s = re.search(regex, pageContent)
     if s:
         position = s.start()
         pageContent = pageContent[:position]
+        if debugLevel > 0: print position
+    if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
     return pageContent, position
 
 def addCat(pageContent, languageCode, lineContent):
@@ -195,7 +197,7 @@ def addLine(pageContent, languageCode, Section, lineContent):
     d = 0
     if debugLevel > d:
         pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
-        print u'\naddLine into ' + Section
+        print u'\naddLine into "' + Section + '"'
     if pageContent != '' and languageCode != '' and Section != '' and lineContent != '':
         if pageContent.find(lineContent) == -1 and pageContent.find(u'{{langue|' + languageCode + '}}') != -1:
             if Section == u'catégorie' and lineContent.find(u'[[Catégorie:') == -1: lineContent = u'[[Catégorie:' + lineContent + u']]'
@@ -211,18 +213,22 @@ def addLine(pageContent, languageCode, Section, lineContent):
 
             # Recherche de l'ordre réel de la section à ajouter
             languageSection, position = getLanguageSection(pageContent, languageCode)
-            #sectionsInPage = re.findall("{{S\|([^}]+)}}", languageSection) # OK mais il faut trouver le {{langue}} de la limite de fin
-            sectionsInPage = re.findall(ur"\n=+ *{{S?\|?([^}/|]+)([^}]*)}}", languageSection)
+            sectionsInPage = re.findall(ur"\n=+ *{{S\|?([^}/|]+)([^}]*)}}", languageSection)
+            if debugLevel > d: raw_input(str(sectionsInPage))
             o = 0
-            while o < len(sectionsInPage) and sectionsInPage[o][0] != 'langue' \
-             and sectionNumber(sectionsInPage[o][0]) <= sectionToAddNumber:
+            while o < len(sectionsInPage) and sectionNumber(sectionsInPage[o][0]) <= sectionToAddNumber:
                 if debugLevel > d: print ' ' + sectionsInPage[o][0] + ' ' + str(sectionNumber(sectionsInPage[o][0]))
                 o = o + 1
             if o > 0: o = o - 1
+            if debugLevel > d:
+                 print ' while ' + str(sectionNumber(sectionsInPage[o][0])) + ' <= ' + str(sectionToAddNumber) \
+                  + ' and ' + str(o) + ' < ' + str(len(sectionsInPage)) + ' and ' + sectionsInPage[o][0] + ' != langue'
+
             #limitSection = str(sectionsInPage[o][0].encode(config.console_encoding, 'replace'))
             limitSection = sectionsInPage[o][0] # pb encodage : "étymologie" non fusionnée + "catégorie" = 1 au lieu de 20
-            if languageSection.find(u'{{S|' + limitSection) == -1:
-                if debugLevel > d: print ' Erreur d\'encodage'
+            if languageSection.find(u'{{S|' + limitSection) == -1 and limitSection != 'langue':
+                if debugLevel > d: print ' Erreur d\'encodage sur "' + limitSection + '"'
+                if debugLevel > d: raw_input(languageSection.encode(config.console_encoding, 'replace'))
                 return pageContent
 
             if limitSection == Section:
