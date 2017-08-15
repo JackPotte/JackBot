@@ -89,8 +89,8 @@ ModeleEN.append(u'docu')
 ModeleFR.append(u'lien vidéo')
 ModeleEN.append(u'cite book')
 ModeleFR.append(u'ouvrage')
-ModeleEN.append(u'cite')
-ModeleFR.append(u'ouvrage')
+#ModeleEN.append(u'cite')
+#ModeleFR.append(u'ouvrage')
 # it
 ModeleEN.append(u'cita pubblicazione')
 ModeleFR.append(u'article')
@@ -1083,9 +1083,10 @@ def hyperlynx(PageTemp, debugLevel = 0):
     
     PageEnd = PageEnd + PageTemp
 
-    # Rustines
-    PageEnd = PageEnd.replace(u'{{lien mortarchive',u'{{lien mort archive')
+    # TODO: avoid these fixes when: ModeleEN.append(u'cite')
     PageEnd = PageEnd.replace(u'{{citeencyclopedia',u'{{cite encyclopedia')
+    PageEnd = PageEnd.replace(u'{{citeOED',u'{{cite OED')
+    PageEnd = PageEnd.replace(u'{{lien mortarchive',u'{{lien mort archive')
 
     if debugLevel > 0: print(u'Fin hyperlynx.py')
     return PageEnd
