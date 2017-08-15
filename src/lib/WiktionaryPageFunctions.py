@@ -473,11 +473,11 @@ def nextTranslationTemplate(finalPageContent, currentPageContent, result = u'-')
 
 def removeFalseHomophones(pageContent, languageCode, pageName, relatedPageName, summary):
     if debugLevel > 0: print u'\nremoveFalseHomophones(' + relatedPageName + u')'
-    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *'''" + pageName + ur"''' *{{cf\|" + relatedPageName + ur"}}\n"
+    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *'''" + pageName + ur"''' *{{cf\|" + relatedPageName + ur"[\|}][^\n]*\n"
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, "==== {{S|homophones|" + languageCode + u"}} ====\n", pageContent)
         summary = summary + u', homophone erroné'
-    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *\[\[[^}\n]+{{cf\|" + relatedPageName + ur"}}\n?"
+    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *\[\[[^}\n]+{{cf\|" + relatedPageName + ur"[\|}][^\n]*\n?"
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, "==== {{S|homophones|" + languageCode + u"}} ====\n", pageContent)
         summary = summary + u', homophone erroné'
@@ -490,7 +490,7 @@ def removeFalseHomophones(pageContent, languageCode, pageName, relatedPageName, 
     if re.search(regex, pageContent): pageContent = re.sub(regex, ur'\1', pageContent)
     regex = ur"==== *{{S\|homophones\|[^}]*}} *====\n*(=|$)"
     if re.search(regex, pageContent): pageContent = re.sub(regex, ur'\1', pageContent)
-    regex = ur"==== *{{S\|homophones\|[^}]*}} *====\n*({{clé de tri)"
+    regex = ur"==== *{{S\|homophones\|[^}]*}} *====\n*({{clé de tri|\[\[Catégorie:)"
     if re.search(regex, pageContent): pageContent = re.sub(regex, ur'\1', pageContent)
 
     return pageContent, summary
