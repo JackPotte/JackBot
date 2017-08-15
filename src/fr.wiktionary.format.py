@@ -3762,7 +3762,8 @@ def treatPageByName(pageName):
                         if debugLevel > 1: print ' loc'
 
         if debugLevel > 0: print u'\nSynchro des prononciations'
-        PageEnd = PageEnd.replace(u'\n* {{écouter|', u'\n\n=== {{S|prononciation}} ===\n* {{écouter|')
+        if PageEnd.find(u'\n* {{écouter|') != -1 and PageEnd.find(u'=== {{S|prononciation}} ===') == -1:
+            PageEnd = PageEnd.replace(u'\n* {{écouter|', u'\n\n=== {{S|prononciation}} ===\n* {{écouter|')
         #TODO: prononciations post-paramètres (à déplacer ?) + tous les modèles, fr-accord-rég... https://fr.wiktionary.org/wiki/User:JackBot/test_court
         regex = ur"({{fr\-inv\|)([^{}\|]+)([^{}]*}}\n\'\'\'" + rePageName.replace(u'User:',u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
         if re.search(regex, PageEnd): PageEnd = re.sub(regex, ur'\1\2\3 {{pron|\2|fr}}\4\n', PageEnd)

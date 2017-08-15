@@ -335,12 +335,8 @@ def addPronunciation(pageContent, CodeLangue, Section, lineContent):
             NumSection = sectionNumber(Section)
             if NumSection == len(Sections):
                 if debugLevel > 0:
-                    print u''
-                    print u' ajout de '
-                    print Section.encode(config.console_encoding, 'replace')
-                    print u' dans une section inconnue'
-                    print u' (car ' + len(Sections) + u' = ' + str(NumSection) + u')'
-                    print u''
+                    print u' ajout de ' + Section + u' dans une section inconnue'
+                    print u'  (car ' + len(Sections) + u' = ' + str(NumSection) + u')'
                 return pageContent
             if debugLevel > 1: print u' position S : ' + s
 
@@ -364,13 +360,8 @@ def addPronunciation(pageContent, CodeLangue, Section, lineContent):
                 o = o - 1
                 if debugLevel > 1: print u' position O : ' + o
                 if debugLevel > 0:
-                    print u''
-                    print u'Ajout de '
-                    print Section.encode(config.console_encoding, 'replace')
-                    print u' avant '
-                    print SectionLimite
-                    print u' (car ' + str(sectionNumber(SectionLimite)) + u' > ' + str(NumSection) + u')'
-                    print u''
+                    print u' ajout de ' + Section + u' avant ' + SectionLimite
+                    print u'  (car ' + str(sectionNumber(SectionLimite)) + u' > ' + str(NumSection) + u')'
 
                 # Ajout après la section trouvée
                 if lineContent2.find(u'{{S|' + sectionsInPage[o][0]) == -1:
@@ -379,8 +370,10 @@ def addPronunciation(pageContent, CodeLangue, Section, lineContent):
 
                 lineContent3 = lineContent2[lineContent2.find(u'{{S|' + sectionsInPage[o][0]):]
                 if sectionsInPage[o][0] != Section and Section != u'catégorie' and Section != u'clé de tri':
-                    if debugLevel > 1: print u' ajout de la section'
+                    if debugLevel > 0: print u' ajout de la section ' + sectionsInPage[o][0]
                     lineContent = u'\n' + Niveau[NumSection] + u' {{S|' + Section + u'}} ' + Niveau[NumSection] + u'\n' + lineContent
+                else:
+                     if debugLevel > 0: print u' ajout dans la section existante'
 
                 # Ajout à la ligne
                 if lineContent3.find(u'\n==') == -1:
