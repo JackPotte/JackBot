@@ -564,7 +564,8 @@ def hyperlynx(PageTemp, debugLevel = 0):
                     codelangue = PageDebut[PageDebut.rfind(u'{{')+2:PageDebut.rfind(u'}}')]
                     if family == 'wikipedia' or family == 'wiktionary':
                         # Recherche de validité mais tous les codes ne sont pas encore sur les sites francophones
-                        page2 = Page(site,u'Modèle:' + codelangue)
+                        if debugLevel > 1: print u'Modèle:' + codelangue
+                        page2 = Page(site, u'Modèle:' + codelangue)
                         try:
                             PageCode = page2.get()
                         except pywikibot.exceptions.NoPage:

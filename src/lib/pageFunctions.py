@@ -186,12 +186,20 @@ def addParameter(pageContent, parameter, content = None):
     else:
         print 'en travaux'
     return finalPageContent
-        
+
 def replaceParameterValue(pageContent, template, parameterKey, oldValue, newValue):
     regex = ur'({{ *(' + template[:1].lower() + ur'|' + template[:1].upper() + ur')' + template[1:] + ur' *\n* *\|[^}]*' + parameterKey + ur' *= *)' + oldValue
     if debugLevel > 0: print regex
     pageContent = re.sub(regex, ur'\1' + newValue, pageContent)
 
+    return pageContent
+
+def replaceTemplate(pageContent, oldTemplate, newTemplate = ''):
+    regex = ur'({{[ \n]*)' + oldTemplate + ur'([ \n]*[{}\|][^{}]*}}?)'
+    if re.search(regex, pageContent):
+        result = ur''
+        if newTemplate != '': result = ur'\1' + newTemplate + ur'\2'
+        pageContent = re.sub(regex, result, pageContent)
     return pageContent
 
 def replaceDepretacedTags(pageContent):
