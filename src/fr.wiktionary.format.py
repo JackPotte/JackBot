@@ -1632,7 +1632,7 @@ def treatPageByName(pageName):
             savePage(page, u'#REDIRECT[[' + pageName + ']]', u'Redirection pour apostrophe')
 
     page = Page(site, pageName)
-    if not hasMoreThanTime(page): return
+    if debugLevel == 0 and not hasMoreThanTime(page): return
 
     PageBegin = getContentFromPage(page, 'All')
     if PageBegin == 'KO': return
@@ -2522,7 +2522,7 @@ def treatPageByName(pageName):
 
             # Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
             regex = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|apocope|aphérèse|ellipse|par ellipse|sigle|acronyme|abréviation|variante)[\|}]'
-            regex2 = ur'([Vv]ariante |[Ss]ynonyme |fr\|flexion)'
+            regex2 = ur'([Vv]ariante[ ,]|[Ss]ynonyme[ ,]|fr\|flexion)'
             if re.search(regex, PageTemp) is None and re.search(regex2, PageTemp) is None:
                 PageTemp = addLine(PageTemp, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
                 summary = summary + u', ajout de {{S|traductions}}'
@@ -3936,8 +3936,7 @@ def main(*args):
         elif sys.argv[1] == u'-test2':
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'Annexe:Liste de racines en indo-européen commun')
-            treatPageByName(u'Annexe:Réforme orthographique française de 1878')
+            treatPageByName(u'audio-visuel')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':

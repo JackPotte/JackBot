@@ -195,7 +195,7 @@ def addCat(pageContent, languageCode, lineContent):
     return addLine(pageContent, languageCode, 'catégorie', lineContent)
 
 def addLine(pageContent, languageCode, Section, lineContent):
-    d = 1
+    d = 0
     if debugLevel > d:
         pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
         print u'\naddLine into "' + Section + '"'
@@ -246,9 +246,15 @@ def addLine(pageContent, languageCode, Section, lineContent):
                     if limitSection == sectionsInPage[len(sectionsInPage)-1][0]:
                         if debugLevel > d: print u' ajout de la sous-section après la dernière de la section langue : ' + limitSection
                         categories = languageSection.find(u'\n[[Catégorie:')
-                        if categories != -1:
+                        defaultSort = languageSection.find(u'\n{{clé de tri|')
+                        if categories != -1 and (categories < defaultSort or defaultSort == -1):
                             if debugLevel > d: print u'  avant les catégories'
-                            pageContent = languageSection[:categories] + sectionToAdd + languageSection[categories:] + pageContent[position:]
+                            pageContent = languageSection[:categories] + sectionToAdd + languageSection[categories:] \
+                             + pageContent[position:]
+                        elif defaultSort != -1:
+                            if debugLevel > d: print u'  avant la clé de tri'
+                            pageContent = languageSection[:defaultSort] + u'\n' + sectionToAdd \
+                             + languageSection[defaultSort:] + pageContent[position:]
                         else:
                             if debugLevel > d: print u'  sans catégorie'
                             pageContent = languageSection + sectionToAdd + pageContent[position:]
@@ -484,7 +490,7 @@ def removeFalseHomophones(pageContent, languageCode, pageName, relatedPageName, 
     if re.search(regex, pageContent): pageContent = re.sub(regex, ur'\1', pageContent)
     regex = ur"==== *{{S\|homophones\|[^}]*}} *====\n*(=|$)"
     if re.search(regex, pageContent): pageContent = re.sub(regex, ur'\1', pageContent)
-    regex = ur"==== *{{S\|homophones\|[^}]*}} *====\n({{clé de tri)"
+    regex = ur"==== *{{S\|homophones\|[^}]*}} *====\n*({{clé de tri)"
     if re.search(regex, pageContent): pageContent = re.sub(regex, ur'\1', pageContent)
 
     return pageContent, summary
