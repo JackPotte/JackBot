@@ -2936,16 +2936,19 @@ def treatPageByName(pageName):
 
                         if section == 'traductions':
                             translationSection = True
-                            # Ajout de {{trad-début}} si {{T| en français (pas {{L| car certains les trient par famille de langue)
-                            if PageTemp.find('{{') == PageTemp.find(u'{{T|') and languageCode == 'fr':
-                                PageTemp = PageTemp[:PageTemp.find(u'\n')] + u'\n{{trad-début}}' + PageTemp[PageTemp.find(u'\n'):]
-                                PageTemp2 = PageTemp[PageTemp.find(u'{{trad-début}}\n')+len(u'{{trad-début}}\n'):]
-                                if PageTemp2.find(u'\n') == -1:
-                                    PageTemp = PageTemp + u'\n'
-                                    PageTemp2 = PageTemp2 + u'\n'
-                                while PageTemp2.find(u'{{T|') < PageTemp2.find(u'\n') and PageTemp2.find(u'{{T|') != -1:
-                                    PageTemp2 = PageTemp2[PageTemp2.find(u'\n')+1:]
-                                PageTemp = PageTemp[:len(PageTemp)-len(PageTemp2)] + u'{{trad-fin}}\n' + PageTemp[len(PageTemp)-len(PageTemp2):]
+                            regex = ur'{{S\|traductions}} *=*\n:?\*? *({{cf|[Vv]oir)'
+                            regex2 = ur'{{S\|traductions}} *=*\n\n'
+                            if not re.search(regex, PageTemp) and re.search(regex2, PageTemp):
+                                # Ajout de {{trad-début}} si {{T| en français (pas {{L| car certains les trient par famille de langue)
+                                if PageTemp.find('{{') == PageTemp.find(u'{{T|') and languageCode == 'fr':
+                                    PageTemp = PageTemp[:PageTemp.find(u'\n')] + u'\n{{trad-début}}' + PageTemp[PageTemp.find(u'\n'):]
+                                    PageTemp2 = PageTemp[PageTemp.find(u'{{trad-début}}\n')+len(u'{{trad-début}}\n'):]
+                                    if PageTemp2.find(u'\n') == -1:
+                                        PageTemp = PageTemp + u'\n'
+                                        PageTemp2 = PageTemp2 + u'\n'
+                                    while PageTemp2.find(u'{{T|') < PageTemp2.find(u'\n') and PageTemp2.find(u'{{T|') != -1:
+                                        PageTemp2 = PageTemp2[PageTemp2.find(u'\n')+1:]
+                                    PageTemp = PageTemp[:len(PageTemp)-len(PageTemp2)] + u'{{trad-fin}}\n' + PageTemp[len(PageTemp)-len(PageTemp2):]
                         elif section == u'traductions à trier':
                             translationSection = True
 
@@ -3291,8 +3294,7 @@ def treatPageByName(pageName):
                             if pageExterne != u'' and pageExterne.find(u'<') != -1:
                                 pageExterne = pageExterne[:pageExterne.find(u'<')]
                             if debugLevel > d:
-                                print u' Page distante : '
-                                print pageExterne.encode(config.console_encoding, 'replace')
+                                print u' Page distante : ' + pageExterne
 
                             # Connexions aux Wiktionnaires pour vérifier la présence de la page (TODO: et de sa section langue)
                             if siteExterne != u'' and pageExterne != u'':
@@ -3760,6 +3762,7 @@ def treatPageByName(pageName):
                         if debugLevel > 1: print ' loc'
 
         if debugLevel > 0: print u'\nSynchro des prononciations'
+        PageEnd = PageEnd.replace(u'\n* {{écouter|', u'\n\n=== {{S|prononciation}} ===\n* {{écouter|')
         #TODO: prononciations post-paramètres (à déplacer ?) + tous les modèles, fr-accord-rég... https://fr.wiktionary.org/wiki/User:JackBot/test_court
         regex = ur"({{fr\-inv\|)([^{}\|]+)([^{}]*}}\n\'\'\'" + rePageName.replace(u'User:',u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
         if re.search(regex, PageEnd): PageEnd = re.sub(regex, ur'\1\2\3 {{pron|\2|fr}}\4\n', PageEnd)
