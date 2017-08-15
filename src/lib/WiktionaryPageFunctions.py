@@ -187,7 +187,7 @@ def getLanguageSection(pageContent, languageCode):
         position = s.start()
         pageContent = pageContent[:position]
         if debugLevel > 0: print position
-    if debugLevel > 0: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+    if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
     return pageContent, position
 
 def addCat(pageContent, languageCode, lineContent):
@@ -195,7 +195,7 @@ def addCat(pageContent, languageCode, lineContent):
     return addLine(pageContent, languageCode, 'catégorie', lineContent)
 
 def addLine(pageContent, languageCode, Section, lineContent):
-    d = 0
+    d = 1
     if debugLevel > d:
         pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
         print u'\naddLine into "' + Section + '"'
@@ -322,7 +322,7 @@ def addLineTest(pageContent, languageCode = 'fr'):
     pageContent = addLine(pageContent, languageCode, u'prononciation', u'* {{écouter|||lang=fr|audio=test.ogg}}')
     pageContent = addLine(pageContent, languageCode, u'prononciation', u'* {{écouter|||lang=fr|audio=test2.ogg}}')
     pageContent = addLine(pageContent, languageCode, u'étymologie', u':{{étyl|test|fr}}')
-    pageContent = addLine(pageContent, languageCode, u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
+    pageContent = addLine(pageContent, languageCode, u'traductions', u'{{trad-début}}\n123\n{{trad-fin}}')
     return pageContent
 
 def addPronunciation(pageContent, CodeLangue, Section, lineContent):
@@ -479,13 +479,13 @@ def removeFalseHomophones(pageContent, languageCode, pageName, relatedPageName, 
         pageContent = re.sub(regex, "==== {{S|homophones|" + languageCode + u"}} ====\n", pageContent)
         summary = summary + u', homophone erroné'
 
-    regex = ur"=== {{S\|prononciation}} ===\n==== *{{S\|homophones\|" + languageCode + u"}} *====\n(\n|$)"
+    regex = ur"=== {{S\|prononciation}} ===\n==== *{{S\|homophones\|[^}]*}} *====\n*(=|$)"
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, '', pageContent)
-    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n(\n|$)"
+    regex = ur"==== *{{S\|homophones\|[^}]*}} *====\n*(=|$)"
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, '', pageContent)
-    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n({{clé de tri)"
+    regex = ur"==== *{{S\|homophones\|[^}]*}} *====\n({{clé de tri)"
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, ur'\1', pageContent)
 
