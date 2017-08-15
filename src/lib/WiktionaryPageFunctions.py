@@ -481,10 +481,10 @@ def removeFalseHomophones(pageContent, languageCode, pageName, relatedPageName, 
 
     regex = ur"=== {{S\|prononciation}} ===\n==== *{{S\|homophones\|[^}]*}} *====\n*(=|$)"
     if re.search(regex, pageContent):
-        pageContent = re.sub(regex, '', pageContent)
+        pageContent = re.sub(regex, '\1', pageContent)
     regex = ur"==== *{{S\|homophones\|[^}]*}} *====\n*(=|$)"
     if re.search(regex, pageContent):
-        pageContent = re.sub(regex, '', pageContent)
+        pageContent = re.sub(regex, '\1', pageContent)
     regex = ur"==== *{{S\|homophones\|[^}]*}} *====\n({{clé de tri)"
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, ur'\1', pageContent)
