@@ -408,7 +408,6 @@ def addPronunciation(pageContent, CodeLangue, Section, lineContent):
             pageContent = pageContent.replace(u'\n* {{écouter|', u'\n\n=== {{S|prononciation}} ===\n* {{écouter|')    
     return pageContent
 
-# TODO: complete parsing
 def addLineIntoSection(pageContent, languageCode, Section, lineContent):
     d = 0
     if debugLevel > d:
@@ -418,7 +417,9 @@ def addLineIntoSection(pageContent, languageCode, Section, lineContent):
         if pageContent.find(lineContent) == -1 and pageContent.find(u'{{langue|' + languageCode + '}}') != -1:
             if Section == u'catégorie' and lineContent.find(u'[[Catégorie:') == -1: lineContent = u'[[Catégorie:' + lineContent + u']]'
             if Section == u'clé de tri' and lineContent.find(u'{{clé de tri|') == -1: lineContent = u'{{clé de tri|' + lineContent + '}}'
-    #sections = 
+    sections = re.findall(ur"\n=+ *{{S?\|?([^}/|]+)([^}]*)}}", pageContent)
+    # TODO: complete parsing
+    raw_input(str(sections))
     return pageContent
 
 def sectionNumber(Section):
@@ -480,14 +481,11 @@ def removeFalseHomophones(pageContent, languageCode, pageName, relatedPageName, 
         summary = summary + u', homophone erroné'
 
     regex = ur"=== {{S\|prononciation}} ===\n==== *{{S\|homophones\|[^}]*}} *====\n*(=|$)"
-    if re.search(regex, pageContent):
-        pageContent = re.sub(regex, '\1', pageContent)
+    if re.search(regex, pageContent): pageContent = re.sub(regex, '\1', pageContent)
     regex = ur"==== *{{S\|homophones\|[^}]*}} *====\n*(=|$)"
-    if re.search(regex, pageContent):
-        pageContent = re.sub(regex, '\1', pageContent)
+    if re.search(regex, pageContent): pageContent = re.sub(regex, ur'\1', pageContent)
     regex = ur"==== *{{S\|homophones\|[^}]*}} *====\n({{clé de tri)"
-    if re.search(regex, pageContent):
-        pageContent = re.sub(regex, ur'\1', pageContent)
+    if re.search(regex, pageContent): pageContent = re.sub(regex, ur'\1', pageContent)
 
     return pageContent, summary
 

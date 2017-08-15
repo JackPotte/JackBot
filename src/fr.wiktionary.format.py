@@ -1633,6 +1633,7 @@ def treatPageByName(pageName):
 
     page = Page(site, pageName)
     if not hasMoreThanTime(page): return
+
     PageBegin = getContentFromPage(page, 'All')
     if PageBegin == 'KO': return
     PageTemp = PageBegin
@@ -3894,15 +3895,16 @@ def treatPageByName(pageName):
                         flexionPageName = pageName + 's'
                 #TODO: flexionTemplate = [conjugaisons]
 
-            if infinitive is not None and infinitive != '':
-                PageEnd, summary = removeFalseHomophones(PageEnd, language, pageName, infinitive, summary)
-            if singularPageName is not None and singularPageName != '':
-                PageEnd, summary = removeFalseHomophones(PageEnd, language, pageName, singularPageName, summary)
-            if flexionPageName is not None and flexionPageName != '':
-                PageEnd, summary = removeFalseHomophones(PageEnd, language, pageName, flexionPageName, summary)
-            MSPageName = getLemmaFromFeminine(PageEnd, language, ['adjectif'])
-            if MSPageName is not None and MSPageName != '':
-                 PageEnd, summary = removeFalseHomophones(PageEnd, language, pageName, MSPageName, summary)
+            for i in range(0, 2):
+                if infinitive is not None and infinitive != '':
+                    PageEnd, summary = removeFalseHomophones(PageEnd, language, pageName, infinitive, summary)
+                if singularPageName is not None and singularPageName != '':
+                    PageEnd, summary = removeFalseHomophones(PageEnd, language, pageName, singularPageName, summary)
+                if flexionPageName is not None and flexionPageName != '':
+                    PageEnd, summary = removeFalseHomophones(PageEnd, language, pageName, flexionPageName, summary)
+                MSPageName = getLemmaFromFeminine(PageEnd, language, ['adjectif'])
+                if MSPageName is not None and MSPageName != '':
+                     PageEnd, summary = removeFalseHomophones(PageEnd, language, pageName, MSPageName, summary)
             if debugLevel > 2: raw_input(PageEnd.encode(config.console_encoding, 'replace'))             
 
     else:
@@ -3952,7 +3954,7 @@ def main(*args):
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
-            afterPage = u'arômes'
+            afterPage = u'attifet'
             if len(sys.argv) > 2: afterPage = sys.argv[2]
             p.pagesByCat(u'Mots ayant des homophones en français', afterPage = afterPage)
         elif sys.argv[1] == u'-redirects':
