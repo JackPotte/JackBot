@@ -404,6 +404,21 @@ def addPronunciation(pageContent, CodeLangue, Section, lineContent):
                 else:
                     pageContent = pageContent[:-len(lineContent2)] + lineContent2[:-len(lineContent3)] + lineContent3[:lineContent3.find(u'\n\n')] \
                      + u'\n' + lineContent + u'\n' + lineContent3[lineContent3.find(u'\n\n'):]
+        if pageContent.find(u'\n* {{écouter|') != -1 and pageContent.find(u'=== {{S|prononciation}} ===') == -1:
+            pageContent = pageContent.replace(u'\n* {{écouter|', u'\n\n=== {{S|prononciation}} ===\n* {{écouter|')    
+    return pageContent
+
+# TODO: complete parsing
+def addLineIntoSection(pageContent, languageCode, Section, lineContent):
+    d = 0
+    if debugLevel > d:
+        pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
+        print u'\naddLineIntoSection "' + Section + '"'
+    if pageContent != '' and languageCode != '' and Section != '' and lineContent != '':
+        if pageContent.find(lineContent) == -1 and pageContent.find(u'{{langue|' + languageCode + '}}') != -1:
+            if Section == u'catégorie' and lineContent.find(u'[[Catégorie:') == -1: lineContent = u'[[Catégorie:' + lineContent + u']]'
+            if Section == u'clé de tri' and lineContent.find(u'{{clé de tri|') == -1: lineContent = u'{{clé de tri|' + lineContent + '}}'
+    #sections = 
     return pageContent
 
 def sectionNumber(Section):

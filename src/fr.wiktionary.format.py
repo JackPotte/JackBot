@@ -2520,8 +2520,8 @@ def treatPageByName(pageName):
 
 
             # Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
-            regex = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|apocope|aphérèse|ellipse|par ellipse|sigle|acronyme|abréviation)[\|}]'
-            regex2 = ur'([Vv]ariante d|[Ss]ynonyme d|fr\|flexion)'
+            regex = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|apocope|aphérèse|ellipse|par ellipse|sigle|acronyme|abréviation|variante)[\|}]'
+            regex2 = ur'([Vv]ariante |[Ss]ynonyme |fr\|flexion)'
             if re.search(regex, PageTemp) is None and re.search(regex2, PageTemp) is None:
                 PageTemp = addLine(PageTemp, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
                 summary = summary + u', ajout de {{S|traductions}}'
@@ -3880,7 +3880,7 @@ def treatPageByName(pageName):
 
         language = 'fr'
         if PageEnd.find(u'{{langue|' + language + u'}}') != -1:
-            if debugLevel > 0: print u'Faux homophones car lemme et sa flexion'
+            if debugLevel > 0: print u'Faux homophones car lemme et sa flexion' # TODO: locutions
             #TODO Doublon systématique ? singularPageName = getLemmaFromContent(PageEnd, language)
             flexionPageName = ''
             if PageEnd.find('|' + language + '|flexion}}') == -1:
@@ -3939,9 +3939,10 @@ def main(*args):
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
-            regex = u'supprimer si le mot ne contient pas de caractères accentués'
+            #regex = u'supprimer si le mot ne contient pas de caractères accentués'
             if len(sys.argv) > 2: regex = sys.argv[2]
-            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex)
+            #p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
+            p.pagesByXML(siteLanguage + siteFamily + '.*xml', include = '{{écouter|', exclude = '{{S|prononciation}}')
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
@@ -3951,7 +3952,7 @@ def main(*args):
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
-            afterPage = u''
+            afterPage = u'arômes'
             if len(sys.argv) > 2: afterPage = sys.argv[2]
             p.pagesByCat(u'Mots ayant des homophones en français', afterPage = afterPage)
         elif sys.argv[1] == u'-redirects':

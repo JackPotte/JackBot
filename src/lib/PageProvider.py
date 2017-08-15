@@ -35,7 +35,7 @@ class PageProvider:
                 self.treatPage(html2Unicode(pageName))
             pagesList.close()
 
-    def pagesByXML(self, source, regex = u'', site = None, folder = 'dumps'):
+    def pagesByXML(self, source, regex = None, site = None, folder = 'dumps', include = None, exclude = None):
         if site is None: site = self.site
         if self.debugLevel > 1: print u'pagesByXML'
         if not source:
@@ -54,24 +54,28 @@ class PageProvider:
         parser = dump.parse()
         outputFile = open(u'src/lists/articles_' + str(site.lang) + u'_' + str(site.family) + u'.txt', 'a')
         for entry in parser:
-            PageTemp = entry.text
-            if regex != str(''):
-                if re.search(regex, PageTemp):
+            pageContent = entry.text
+            if regex:
+                if re.search(regex, pageContent):
+                    outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+            elif include and exclude:
+                if include in pageContent and not exclude in pageContent:
                     outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
             else:
+                pass
                 '''
                 if self.debugLevel > 1: print u' Pluriels non flexion'
                 if entry.title[-2:] == u'es':
                     if self.debugLevel > 1: print entry.title
                     regex = ur"=== {{S\|adjectif\|fr[^}]+}} ===\n[^\n]*\n*{{fr\-rég\|[^\n]+\n*'''" + re.escape(entry.title) + ur"'''[^\n]*\n# *'*'*(Masculin|Féminin)+ *[P|p]luriel de *'*'* *\[\["
-                    if re.search(regex, PageTemp):
+                    if re.search(regex, pageContent):
                         if self.debugLevel > 0: print entry.title
-                        #PageTemp = re.sub(regex, ur'\1|flexion\2', PageTemp)
+                        #pageContent = re.sub(regex, ur'\1|flexion\2', pageContent)
                         #self.treatPage(html2Unicode(entry.title))
 
                 if self.debugLevel > 1: print u' Ajout de la boite de flexion'
                 if entry.title[-1:] == u's':
-                    if (PageTemp.find(u'{{S|adjectif|fr|flexion}}') != -1 or PageTemp.find(u'{{S|nom|fr|flexion}}') != -1) and PageTemp.find(u'{{fr-') == -1:
+                    if (pageContent.find(u'{{S|adjectif|fr|flexion}}') != -1 or pageContent.find(u'{{S|nom|fr|flexion}}') != -1) and pageContent.find(u'{{fr-') == -1:
                         #print entry.title # limite de 8191 lignes dans le terminal.
                         #self.treatPage(entry.title)
                         outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
@@ -79,7 +83,7 @@ class PageProvider:
                 if self.debugLevel > 1: print u' balises HTML désuètes'
                 from lib import *
                 for deprecatedTag in deprecatedTags.keys():
-                    if PageTemp.find(u'<' + deprecatedTag) != -1:
+                    if pageContent.find(u'<' + deprecatedTag) != -1:
                         outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
                 '''
         outputFile.close()
@@ -222,8 +226,8 @@ class PageProvider:
                 if regex is None:
                     self.treatPage(Page.title())
                 else:
-                    PageTemp = getContentFromPageName(Page.title(), allowedNamespaces = 'All')
-                    if re.search(regex, PageTemp):
+                    pageContent = getContentFromPageName(Page.title(), allowedNamespaces = 'All')
+                    if re.search(regex, pageContent):
                         self.treatPage(Page.title())
                 numberOfPagesTreated = numberOfPagesTreated + 1
                 if numberOfPagesToTreat is not None and numberOfPagesTreated > numberOfPagesToTreat: break
