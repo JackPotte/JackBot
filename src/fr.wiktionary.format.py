@@ -1761,6 +1761,7 @@ def treatPageByName(pageName):
             PageTemp = re.sub(regex, ur"= \1 =", PageTemp)
 
         # Formatage général des traductions
+        PageTemp = PageTemp.replace(u'{{trad|', u'{{trad-|')
         PageTemp = PageTemp.replace(u'{{(}}\n{{ébauche-trad}}\n{{)}}', '')
         PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier}}}}', u'{{trad-trier}}\n{{trad-début}}')
         PageTemp = PageTemp.replace(u'{{trad-début|{{trad-trier|fr}}}}', u'{{trad-trier}}\n{{trad-début}}')
@@ -3294,7 +3295,7 @@ def treatPageByName(pageName):
                             if pageExterne != u'' and pageExterne.find(u'<') != -1:
                                 pageExterne = pageExterne[:pageExterne.find(u'<')]
                             if debugLevel > d:
-                                print u' Page distante : ' + pageExterne
+                                print u' page distante : ' + pageExterne
 
                             # Connexions aux Wiktionnaires pour vérifier la présence de la page (TODO: et de sa section langue)
                             if siteExterne != u'' and pageExterne != u'':
