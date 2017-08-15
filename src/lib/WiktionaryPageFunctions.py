@@ -254,7 +254,7 @@ def addLine(pageContent, languageCode, Section, lineContent):
                             pageContent = languageSection + sectionToAdd + pageContent[position:]
                         if debugLevel > d+1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
                     else:
-                        print u' ajout de la sous-section "' + Section + u'" avant "' + sectionsInPage[o+1][0] + u'"'
+                        if debugLevel > d: print u' ajout de la sous-section "' + Section + u'" avant "' + sectionsInPage[o+1][0] + u'"'
                         regex = ur'\n=* *{{S\|' + sectionsInPage[o+1][0]
                         s = re.search(regex, languageSection)
                         if s:
@@ -481,7 +481,7 @@ def removeFalseHomophones(pageContent, languageCode, pageName, relatedPageName, 
         summary = summary + u', homophone erroné'
 
     regex = ur"=== {{S\|prononciation}} ===\n==== *{{S\|homophones\|[^}]*}} *====\n*(=|$)"
-    if re.search(regex, pageContent): pageContent = re.sub(regex, '\1', pageContent)
+    if re.search(regex, pageContent): pageContent = re.sub(regex, ur'\1', pageContent)
     regex = ur"==== *{{S\|homophones\|[^}]*}} *====\n*(=|$)"
     if re.search(regex, pageContent): pageContent = re.sub(regex, ur'\1', pageContent)
     regex = ur"==== *{{S\|homophones\|[^}]*}} *====\n({{clé de tri)"
