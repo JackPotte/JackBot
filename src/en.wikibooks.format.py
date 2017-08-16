@@ -42,13 +42,14 @@ bookCatTemplates.append(u'{{Bookcat}}')
 bookCatTemplates.append(u'{{BOOKCAT}}')
 bookCatTemplates.append(u'[[Category:{{PAGENAME}}|{{SUBPAGENAME}}]]')
 bookCatTemplates.append(u'[[Category:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]')
+bookCatTemplates.append(u'[[Category:{{FULLBOOKNAME}}|{{FULLCHAPTERNAME}}]]')
 
 
 def treatPageByName(pageName):
     if debugLevel > -1: print(pageName.encode(config.console_encoding, 'replace'))
     page = Page(site, pageName)
     PageBegin = getContentFromPage(page, 'All')
-    if PageBegin == 'KO' or pageName.find(u'/Print version') != -1: return
+    if not username in pageName and (PageBegin == 'KO' or pageName.find(u'/Print version') != -1): return
     summary = u'Formatting'
     PageTemp = PageBegin
     PageEnd = u''
@@ -58,7 +59,7 @@ def treatPageByName(pageName):
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
     if checkURL: PageTemp = hyperlynx(PageTemp)
 
-    if debugLevel > 0: print 'Templates treatment'
+    if debugLevel > 1: print 'Templates treatment'
     regex = ur'{{[Tt]alk *archive([^}]*)}}='
     if re.search(regex, PageTemp):
         PageTemp = re.sub(regex, ur'{{Talk archive\1}}\n=', PageTemp)
@@ -66,7 +67,7 @@ def treatPageByName(pageName):
     if re.search(regex, PageTemp):
         PageTemp = re.sub(regex, ur'{{Talk header\1}}\n=', PageTemp)
 
-    if page.namespace() == 0:
+    if username in pageName or page.namespace() == 0:
         for bookCatTemplate in bookCatTemplates:
             PageTemp = PageTemp.replace(bookCatTemplate, u'{{BookCat}}')
             PageTemp = PageTemp.replace(bookCatTemplate[:2] + bookCatTemplate[2:3].lower() + bookCatTemplate[3:], u'{{BookCat}}')
@@ -74,6 +75,12 @@ def treatPageByName(pageName):
             # The untrusted can have blanked a relevant content including {{BookCat}}
             if trim(PageTemp) != '' and PageTemp.find(u'[[Category:') == -1 and PageTemp.find(u'{{BookCat}}') == -1 and PageTemp.find(u'{{printable') == -1:
                 PageTemp = PageTemp + u'\n\n{{BookCat}}'
+                summary = summary + u', {{BookCat}}'
+        # Fix
+        regex = ur'\[\[{{BookCat}}(\n|$)'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur'{{BookCat}}\1', PageTemp)
+            summary = summary + u', {{BookCat}} correction'
 
     PageEnd = PageEnd + PageTemp
     if PageEnd != PageBegin: savePage(page, PageEnd, summary)
@@ -99,9 +106,9 @@ def main(*args):
         elif sys.argv[1] == u'-u':
             user = username
             if len(sys.argv) > 2: user = sys.argv[2]
-            p.pagesByUser(u'User:' + user)
+            p.pagesByUser(u'User:' + user, numberOfPagesToTreat = 10000)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
-            research = u'French'
+            research = u'insource:"Category:{{FULLBOOKNAME}}"'
             if len(sys.argv) > 2: research = sys.argv[2]
             p.pagesBySearch(research)
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':

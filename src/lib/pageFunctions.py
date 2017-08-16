@@ -99,7 +99,7 @@ def getContentFromPageName(pageName, allowedNamespaces = None, site = site):
     return getContentFromPage(page, allowedNamespaces)
 
 def getContentFromPage(page, allowedNamespaces = None, username = username):
-    if debugLevel > 0: print '\ngetContentFromPage ' + page.title()
+    if debugLevel > 0: print '\ngetContentFromPage : ' + page.title()
     PageBegin = u''
     try:
         get = page.exists()
