@@ -190,12 +190,50 @@ def getLanguageSection(pageContent, languageCode):
     if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
     return pageContent, position
 
+def getPronunciationFromContent(pageContent, languageCode, nature = None):
+    #TODO: prononciations post-paramètres des autres modèles : fr-accord-rég...
+    pronunciation = ''
+    regex = ur"({{" + languageCode + "\-inv\||{{" + languageCode + "\-rég\|)([^{}\|]+)([^{}]*}}\n\'\'\'" \
+     + rePageName.replace(u'User:',u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
+    if re.search(regex, pageContent): pageContent = re.sub(regex, ur'\1\2\3 {{pron|\2|' + languageCode + '}}\4\n', pageContent)
+
+    #raw_input(pageContent.encode(config.console_encoding, 'replace'))
+    regex = ur"{{pron\|([^}]+)\|" + languageCode + "}}"
+    s = re.search(regex, pageContent)
+    if s:
+        pronunciation = s.group(1)
+        if debugLevel > 0: raw_input(u' prononciation en ' + languageCode + ' : ' + pronunciation)
+        pron = pron[:pron.find(u'=')]
+        pron = pron[:pron.rfind(u'|')]
+        pageContent = re.sub(ur'{{pron\|'+pronInitiale+ur'\|' + languageCode + '}}', ur'{{pron|'+pron+ur'|' + languageCode + '}}', pageContent)
+    return pronunciation
+
+def getPronunciation(pageContent, languageCode, nature = None):
+    pronunciation = getPronunciationFromContent(pageContent, languageCode, nature)
+    #TODO: from other pages or wikis
+    '''
+    if pronunciation == '':
+        if pageContent.find(u'|' + languageCode + u'|flexion}}') != -1:
+            pronunciation = getPronunciationFromFlexion(pageContent, languageCode, nature)
+        else:
+            pronunciation = getPronunciationFromLemma(pageContent, languageCode, nature)
+    '''
+    if debugLevel > 0: print u' Pronunciation found: ' + pronunciation
+    return pronunciation
+
+def addPronunciationFromContent(pageContent, languageCode, nature = None):
+    if pageContent.find(u'{{pron||' + languageCode + u'}}') != -1:
+        pronunciation = getPronunciation(pageContent, languageCode, nature = None)
+        if pronunciation != u'':
+            pageContent = pageContent.replace(u'{{pron||' + languageCode + u'}}', u'{{pron|' + pronunciation + u'|' + languageCode + u'}}')
+    return pageContent
+
 def addCat(pageContent, languageCode, lineContent):
     if lineContent.find(u'[[Catégorie:') == -1: lineContent = u'[[Catégorie:' + lineContent + u']]'
     return addLine(pageContent, languageCode, 'catégorie', lineContent)
 
 def addLine(pageContent, languageCode, Section, lineContent):
-    d = 0
+    d = 1
     if debugLevel > d:
         pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
         print u'\naddLine into "' + Section + '"'

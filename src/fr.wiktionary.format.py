@@ -3764,25 +3764,6 @@ def treatPageByName(pageName):
                         summary = summary + u', précision du genre ' + lemmaGender
                         if debugLevel > 1: print ' loc'
 
-        if debugLevel > 0: print u'\nSynchro des prononciations'
-        if PageEnd.find(u'\n* {{écouter|') != -1 and PageEnd.find(u'=== {{S|prononciation}} ===') == -1:
-            PageEnd = PageEnd.replace(u'\n* {{écouter|', u'\n\n=== {{S|prononciation}} ===\n* {{écouter|')
-        #TODO: prononciations post-paramètres (à déplacer ?) + tous les modèles, fr-accord-rég... https://fr.wiktionary.org/wiki/User:JackBot/test_court
-        regex = ur"({{fr\-inv\|)([^{}\|]+)([^{}]*}}\n\'\'\'" + rePageName.replace(u'User:',u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
-        if re.search(regex, PageEnd): PageEnd = re.sub(regex, ur'\1\2\3 {{pron|\2|fr}}\4\n', PageEnd)
-        regex = ur"({{fr\-rég\|)([^{}\|]+)([^{}]*}}\n'\'\'" + rePageName.replace(u'User:',u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
-        if re.search(regex, PageEnd): PageEnd = re.sub(regex, ur'\1\2\3 {{pron|\2|fr}}\4\n', PageEnd)
-        # pb des {{fr-rég|p=...|pron}} = {{pron|p|fr}}
-        regex = ur"{{pron\|([^}]+)\|fr}}" # TODO: intl
-        Prononciations = re.findall(regex, PageEnd)
-        if debugLevel > 1: print " " + " ".join(Prononciations).encode(config.console_encoding, 'replace')
-        for pron in Prononciations:
-            pronInitiale = re.escape(pron)    # Pour retrouver la chaine à susbtituer
-            while pron.find(u'=') != -1:
-                if debugLevel > 0: print u' prononciation existante trouvée'
-                pron = pron[:pron.find(u'=')]
-                pron = pron[:pron.rfind(u'|')]
-                PageEnd = re.sub(ur'{{pron\|'+pronInitiale+ur'\|fr}}', ur'{{pron|'+pron+ur'|fr}}', PageEnd)
 
         # Liens vers les annexes de conjugaisons
         LanguesC = [ (u'es',u'ar',u'arsi',u'er',u'ersi',u'ir',u'irsi'),
@@ -3880,8 +3861,12 @@ def treatPageByName(pageName):
                                     print pageName.encode(config.console_encoding, 'replace') + u' ' + langue.encode(config.console_encoding, 'replace') + u' sans {{pron}}'
             '''
 
-        language = 'fr'
+        language = 'fr' # TODO: intl
         if PageEnd.find(u'{{langue|' + language + u'}}') != -1:
+
+            #if debugLevel > 0: print u'\nSynchro des prononciations'
+            #PageEnd = addPronunciationFromContent(PageEnd, language)  
+
             if debugLevel > 0: print u'Faux homophones car lemme et sa flexion' # TODO: locutions
             #TODO Doublon systématique ? singularPageName = getLemmaFromContent(PageEnd, language)
             flexionPageName = ''
