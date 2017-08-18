@@ -51,7 +51,7 @@ Todo:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: aa7d1f25776a65c39f3af8f4a1a04e3390b95c5f $'
 
 import re
 import threading

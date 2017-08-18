@@ -45,7 +45,7 @@ sysopnames['wikibooks']['fr'] = u'JackBot'
 sysopnames['wiktionary']['fr'] = u'JackBot'
 sysopnames['wikibooks']['en'] = u'JackPotte'
 
-usernames['commons']['commons'] = u'JackBot'
+usernames['commons']['commons'] = u'JackPotte'
 usernames['wikidata']['wikidata'] = u'JackBot'
 usernames['meta']['meta'] = u'JackBot'
 usernames['species']['species'] = u'JackBot'

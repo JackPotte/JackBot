@@ -15,7 +15,7 @@ Parameters:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: bf7be08705642ce7a77442a9b17fefe2b85b2ea3 $'
 
 import pywikibot
 
