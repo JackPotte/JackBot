@@ -1692,11 +1692,6 @@ def treatPageByName(pageName):
             if debugLevel > 0: print u' *==='
             return
 
-        regex = ur'([^\n=])(===?=? *{{S\|)'
-        if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur'\1\n\n\2', PageTemp)
-        PageTemp = PageTemp.replace(u'===== {{S|note}} ===== =====', u'===== {{S|note}} =====')
-
         # Titres en minuscules
         #PageTemp = re.sub(ur'{{S\|([^}]+)}}', ur'{{S|' + ur'\1'.lower() + ur'}}', PageTemp)
         for f in re.findall("{{S\|([^}]+)}}", PageTemp):
@@ -3895,6 +3890,11 @@ def treatPageByName(pageName):
 
     else:
         PageEnd = PageTemp
+
+    regex = ur'([^\n=])(===?=? *{{S\|)'
+    if re.search(regex, PageEnd):
+        PageEnd = re.sub(regex, ur'\1\n\n\2', PageEnd)
+    PageEnd = PageEnd.replace(u'===== {{S|note}} ===== =====', u'===== {{S|note}} =====')
 
     if debugLevel > 0 and username in pageName: PageEnd = addLineTest(PageEnd)
     if debugLevel > 0: pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
