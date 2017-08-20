@@ -195,8 +195,10 @@ def replaceParameterValue(pageContent, template, parameterKey, oldValue, newValu
     return pageContent
 
 def replaceTemplate(pageContent, oldTemplate, newTemplate = ''):
+    if debugLevel > 0: print u'\nreplaceTemplate : ' + oldTemplate
     regex = ur'({{[ \n]*)' + oldTemplate + ur'([ \n]*[{}\|][^{}]*}}?)'
     if re.search(regex, pageContent):
+        if debugLevel > 0: print u' trouvé'
         result = ur''
         if newTemplate != '': result = ur'\1' + newTemplate + ur'\2'
         pageContent = re.sub(regex, result, pageContent)

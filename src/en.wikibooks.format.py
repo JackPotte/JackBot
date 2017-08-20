@@ -85,6 +85,10 @@ def treatPageByName(pageName):
             PageTemp = re.sub(regex, ur'{{BookCat}}\1', PageTemp)
             summary = summary + u', {{BookCat}} correction'
 
+    # Renamed books
+    PageTemp = PageTemp.replace(u'Opening theory in chess/', u'Chess Opening Theory/')
+    PageTemp = PageTemp.replace(u'Quantum theory of observation/ ', u'Quantum theory of observation/')
+
     PageEnd = PageEnd + PageTemp
     if PageEnd != PageBegin: savePage(page, PageEnd, summary)
 
@@ -111,12 +115,11 @@ def main(*args):
             if len(sys.argv) > 2: user = sys.argv[2]
             p.pagesByUser(u'User:' + user, numberOfPagesToTreat = 10000)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
-            research = u'insource:"Category:{{FULLBOOKNAME}}"'
+            research = u'insource:"Quantum theory of observation/ "'
             if len(sys.argv) > 2: research = sys.argv[2]
             p.pagesBySearch(research)
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:Talk header')
-            p.pagesByLink(u'Template:Talk archive')
+            p.pagesByLink(u'Opening theory in chess', namespaces = None)
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]

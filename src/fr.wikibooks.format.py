@@ -32,6 +32,7 @@ checkURL = False
 fixTags = False
 fixFiles = True
 addCategory = False
+oldTemplates = False
 
 def treatPageByName(pageName):
     if debugLevel > -1: print(pageName.encode(config.console_encoding, 'replace'))
@@ -48,13 +49,17 @@ def treatPageByName(pageName):
     if checkURL: PageTemp = hyperlynx(PageTemp)
 
     # Templates
-    oldTemplates = []
-    oldTemplates.append(u'lienDePage')
-    for oldTemplate in oldTemplates:
-        PageTemp = replaceTemplate(PageTemp, oldTemplate)
-    regex = ur'<noinclude>[ \n\-]*</noinclude>\n?'
-    if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, '', PageTemp)
+    if oldTemplates and PageTemp.find('{{AutoCat}}') == -1:
+        # Présence de {{bas de page}} par inclusion
+        oldTemplates = []
+        oldTemplates.append(u'lienDePage')
+        oldTemplates.append(u'NavTitre')
+        oldTemplates.append(u'NavChapitre')
+        for oldTemplate in oldTemplates:
+            PageTemp = replaceTemplate(PageTemp, oldTemplate)
+        regex = ur'<noinclude>[ \n\-]*</noinclude>\n?'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, '', PageTemp)
 
     regex = ur'({{[a|A]utres projets[^}]*)\|noclear *= *1'
     if re.search(regex, PageTemp):
@@ -131,6 +136,8 @@ def main(*args):
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
+            p.pagesByCat(u'Programmation Java (livre)')
+            p.pagesByCat(u'Programmation PHP (livre)')
             p.pagesByCat(u'Programmation Python (livre)')
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
