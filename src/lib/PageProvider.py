@@ -15,6 +15,7 @@ class PageProvider:
         self.treatPage = treatPage
         self.site = site
         self.debugLevel = debugLevel
+        self.outputFile = open(u'src/lists/articles_' + str(site.lang) + u'_' + str(site.family) + u'.txt', 'a')
 
     # articles_list.txt may need to be formatted with format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
     def pagesByFile(self, source, site = None):
@@ -52,15 +53,14 @@ class PageProvider:
         from pywikibot import xmlreader
         dump = xmlreader.XmlDump(folder + '/' + fileName)
         parser = dump.parse()
-        outputFile = open(u'src/lists/articles_' + str(site.lang) + u'_' + str(site.family) + u'.txt', 'a')
         for entry in parser:
             pageContent = entry.text
             if regex:
                 if re.search(regex, pageContent):
-                    outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                    self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
             elif include and exclude:
                 if include in pageContent and not exclude in pageContent:
-                    outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                    self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
             else:
                 pass
                 '''
@@ -78,18 +78,20 @@ class PageProvider:
                     if (pageContent.find(u'{{S|adjectif|fr|flexion}}') != -1 or pageContent.find(u'{{S|nom|fr|flexion}}') != -1) and pageContent.find(u'{{fr-') == -1:
                         #print entry.title # limite de 8191 lignes dans le terminal.
                         #self.treatPage(entry.title)
-                        outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                        self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
                 
                 if self.debugLevel > 1: print u' balises HTML désuètes'
                 from lib import *
                 for deprecatedTag in deprecatedTags.keys():
                     if pageContent.find(u'<' + deprecatedTag) != -1:
-                        outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                        self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
                 '''
-        outputFile.close()
+        self.outputFile.close()
 
     # Traitement des pages d'une catégorie
-    def pagesByCat(self, category, recursive = False, afterPage = None, namespaces = [0], names = None, notNames = None, notCatNames = None, site = None):
+    def pagesByCat(self, category, recursive = False, afterPage = None, namespaces = [0], names = None, notNames = None,
+        notCatNames = None, site = None, pagesList = False
+    ):
         if site is None: site = self.site
         if self.debugLevel > 0:
             print category.encode(config.console_encoding, 'replace')
@@ -105,7 +107,10 @@ class PageProvider:
             if Page.title() == afterPage:
                 modify = u'True'
             elif afterPage is None or afterPage == u'' or modify == u'True':
-                self.treatPageIfName(Page.title(), names, notNames)
+                if pagesList:
+                    self.outputFile.write((Page.title() + '\n').encode(config.console_encoding, 'replace'))
+                else:
+                    self.treatPageIfName(Page.title(), names, notNames)
         subcat = cat.subcategories(recurse = recursive == True)
         for subcategory in subcat:
             if self.debugLevel > 0: print u' ' + subcategory.title()
@@ -265,26 +270,8 @@ class PageProvider:
     #*** Tested methods ***
     # [[Special:LintErrors]]
     def pagesBySpecialLint(self, site = None):
+        #TODO: impossible de parser une page spéciale ainsi (et pywikibot.site.BaseSite.postForm is deprecated)
         if site is None: site = self.site
-        #TODO
         page = pywikibot.Page(site, u'Special:ApiSandbox')
         raw_input(page._get_parsed_page())  # WARNING: API error pagecannotexist: Namespace doesn't allow actual pages.
-        #self.treatPage(Page.title())
-
-    def pagesBySpecialLint2(self, site = None):
-        if site is None: site = self.site
-        predata = { # https://fr.wiktionary.org/wiki/Sp%C3%A9cial:ApiSandbox#action=query&format=rawfm&prop=info&list=linterrors&inprop=url&lntcategories=obsolete-tag&lntlimit=5000&lntnamespace=10
-           'action': 'query',
-           'format': 'json',
-           'prop': 'info',
-           'list': 'linterrors',
-           'inprop': 'url',
-           'lntcategories': 'obsolete-tag',
-           'lntlimit': '5000',
-           'lntnamespace': '10'
-        }
-        data = site.postForm(site.apipath(), predata) # WARNING: Http response status 405
-        if self.debugLevel > 0: raw_input(data)
-        text = simplejson.loads(data)['parse']['text']['*'] # ValueError: No JSON object could be decode
-        if self.debugLevel > 0: raw_input(text)
         #self.treatPage(Page.title())
