@@ -210,7 +210,7 @@ def main(*args):
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
             regex = '\n[ \t]*,'
             if len(sys.argv) > 2: regex = sys.argv[2]
-            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex)
+            p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex)
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':

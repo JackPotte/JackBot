@@ -42,6 +42,7 @@ class PageProvider:
         if not source:
             print ' Dump non précisé'
             return
+        source = source.replace('wikipedia', 'wiki')
         if source.find('*') != -1:
             fileName = [f for f in os.listdir(folder) if re.match(source, f)]
         if len(fileName) == 0:
