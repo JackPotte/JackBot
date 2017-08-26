@@ -65,7 +65,7 @@ def parseNews(text):
             yield prefix, Page(site, li.getElementsByTagName('a')[0].getAttribute('title'))
 
 def getNews(page):
-    text = page._get_parsed_page()  # TODO : APIError missing title
+    text = page._get_parsed_page()  # TODO: APIError missing title when the WN page doesn't exist
     #raw_input(parsed_text.encode(config.console_encoding, 'replace'))
     return parseNews(text)
 
@@ -83,6 +83,7 @@ def doOnePage(tpl, page, site_src):
  
     raw_config = rx.group(1).split('|')[1:]
     for x in raw_config:
+        if debugLevel > 0: print x
         var, val = x.split('=',1)
         var, val = var.strip(), val.strip()
         config[var] = (val, True)
@@ -90,8 +91,8 @@ def doOnePage(tpl, page, site_src):
     if not config['page'][0]:
         pywikibot.output(u'No target page specified!')
 
-    newsPage = Page(site_src, config['page'][0])    # ex : Page:Canada/Wikipedia
-    if debugLevel > 0: print newsPage                # ex : <DynamicPageList>
+    newsPage = Page(site_src, config['page'][0])    # ex: [[wikinews:fr:Page:Canada/Wikipedia]]
+    if debugLevel > 0: print newsPage               # ex: <DynamicPageList>...
     text = u'\n'.join(
         [u'%(indent)s %(prefix)s[[wikinews:%(lang)s:%(article_page)s|%(article_title)s]]' % {
                 'article_page' : re.sub(r'[\s\xa0]', ' ', news.title()),
