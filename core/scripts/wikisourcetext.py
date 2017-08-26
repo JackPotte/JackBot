@@ -35,7 +35,7 @@ The following parameters are supported:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 6ee8ae99577caf49a5cec50921daaf4966af5a32 $'
+__version__ = '$Id$'
 
 import itertools
 

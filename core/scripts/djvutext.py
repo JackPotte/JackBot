@@ -34,7 +34,7 @@ The following parameters are supported:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: c7a8f133a23da73d4eb5cfe5d0bd45bf2e58e7b0 $'
+__version__ = '$Id$'
 
 import os.path
 

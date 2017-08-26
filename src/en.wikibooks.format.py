@@ -85,10 +85,6 @@ def treatPageByName(pageName):
             PageTemp = re.sub(regex, ur'{{BookCat}}\1', PageTemp)
             summary = summary + u', {{BookCat}} correction'
 
-    # Renamed books
-    PageTemp = PageTemp.replace(u'Opening theory in chess/', u'Chess Opening Theory/')
-    PageTemp = PageTemp.replace(u'Quantum theory of observation/ ', u'Quantum theory of observation/')
-
     PageEnd = PageEnd + PageTemp
     if PageEnd != PageBegin: savePage(page, PageEnd, summary)
 
@@ -119,11 +115,11 @@ def main(*args):
             if len(sys.argv) > 2: research = sys.argv[2]
             p.pagesBySearch(research)
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Opening theory in chess', namespaces = None)
+            p.pagesByLink(u'Category:Side Dish recipes', namespaces = None)
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Candidates for speedy deletion', pagesList = True)
+            p.pagesByCat(u'Rebol programming')
             #p.pagesByCat(u'Category:Pages using ISBN magic links', namespaces = None, afterPage = afterPage)
             #p.pagesByCat(u'Category:Pages with ISBN errors', namespaces = None, afterPage = afterPage)
         elif sys.argv[1] == u'-redirects':

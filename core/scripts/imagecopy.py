@@ -83,7 +83,7 @@ Known issues/FIXMEs (no critical issues known):
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 80e53eb02d7697fb7cbd70f139aa23b4da73f860 $'
+__version__ = '$Id$'
 
 import codecs
 import re

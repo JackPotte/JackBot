@@ -27,7 +27,7 @@ Furthermore, the following command line parameters are supported:
 #
 from __future__ import unicode_literals, absolute_import
 
-__version__ = '$Id: f4c23d5f8707a121f4b76c9dda324325585c062f $'
+__version__ = '$Id$'
 #
 
 import pywikibot
