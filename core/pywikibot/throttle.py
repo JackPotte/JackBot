@@ -7,7 +7,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 24d2266688786510a12407cb807eb7e8b352001a $'
 #
 
 import math
@@ -251,7 +251,7 @@ class Throttle(object):
         else:
             pywikibot.log(message)
 
-        time.sleep(seconds)
+        time.sleep(0)
 
     def __call__(self, requestsize=1, write=False):
         """Block the calling program if the throttle time has not expired.
