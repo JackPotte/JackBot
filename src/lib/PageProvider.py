@@ -90,7 +90,7 @@ class PageProvider:
 
     # Traitement des pages d'une catégorie
     def pagesByCat(self, category, recursive = False, afterPage = None, namespaces = [0], names = None, notNames = None,
-        notCatNames = None, site = None, pagesList = False
+        notCatNames = None, site = None, pagesList = False, linked = False
     ):
         if site is None: site = self.site
         if self.debugLevel > 0:
@@ -102,12 +102,20 @@ class PageProvider:
             gen =  pagegenerators.NamespaceFilterPageGenerator(pages, namespaces)
         else:
             gen =  pagegenerators.CategorizedPageGenerator(cat)
-        modify = u'False'
+        modify = False
         for Page in pagegenerators.PreloadingGenerator(gen, 100):
             if Page.title() == afterPage:
-                modify = u'True'
-            elif afterPage is None or afterPage == u'' or modify == u'True':
-                if pagesList:
+                modify = True
+            elif afterPage is None or afterPage == u'' or modify:
+                if linked:
+                    gen2 = pagegenerators.ReferringPageGenerator(Page.title())
+                    gen2 =  pagegenerators.NamespaceFilterPageGenerator(gen2, namespaces)
+                    for LinkedPage in pagegenerators.PreloadingGenerator(gen2, 100):
+                        if pagesList:
+                            self.outputFile.write((LinkedPage.title() + '\n').encode(config.console_encoding, 'replace'))
+                        else:
+                            self.treatPage(LinkedPage.title())
+                elif pagesList:
                     self.outputFile.write((Page.title() + '\n').encode(config.console_encoding, 'replace'))
                 else:
                     self.treatPageIfName(Page.title(), names, notNames)
@@ -117,12 +125,12 @@ class PageProvider:
             if 14 in namespaces:
                 self.treatPageIfName(subcategory.title(), names, notNames)
             if recursive:
-                modify = u'True'
+                modify = True
                 if notCatNames is not None:
                     for notCatName in notCatNames:
                         if subcategory.title().find(notCatName) != -1:
                             if self.debugLevel > 0: print u' ' + notCatName + u' ignoré'
-                            modify = u'False'
+                            modify = False
                 if modify:
                     pages = subcategory.articlesList(False)
                     for Page in pagegenerators.PreloadingGenerator(pages,100):
@@ -151,36 +159,23 @@ class PageProvider:
                         return
 
     # [[Special:WhatLinksHere]]
-    def pagesByLink(self, pageName, afterPage = None, site = None, namespaces = [0]):
+    def pagesByLink(self, pageName, afterPage = None, site = None, namespaces = [0], linked = False):
         if site is None: site = self.site
-        modifier = u'False'
-        #pageName = unicode(arg[len('-links:'):], 'utf-8')
+        modify = False
         page = pywikibot.Page(site, pageName)
         gen =  pagegenerators.ReferringPageGenerator(page)
-        if namespaces == [0]:
-            pagegenerators.NamespaceFilterPageGenerator(gen, [0])
+        if namespaces is not None: pagegenerators.NamespaceFilterPageGenerator(gen, namespaces) #TODO: KO
         for Page in pagegenerators.PreloadingGenerator(gen, 100):
-            if not afterPage or afterPage == u'' or modifier == u'True':
-                self.treatPage(Page.title())
+            if not afterPage or afterPage == u'' or modify:
+                if linked:
+                    gen2 = pagegenerators.ReferringPageGenerator(Page.title())
+                    gen2 =  pagegenerators.NamespaceFilterPageGenerator(gen2, namespaces)
+                    for LinkedPage in pagegenerators.PreloadingGenerator(gen2, 100):
+                        self.treatPage(LinkedPage.title())
+                else:
+                    self.treatPage(Page.title())
             elif Page.title() == afterPage:
-                modifier = u'True'
-
-    # Traitement des pages liées aux entrées d'une catégorie
-    def pagesByCatLink(self, pageName, afterPage = None, site = None):
-        if site is None: site = self.site
-        modifier = u'False'
-        cat = catlib.Category(site, pageName)
-        pages = cat.articlesList(False)
-        for Page in pagegenerators.PreloadingGenerator(pages,100):
-            print Page.title().encode(config.console_encoding, 'replace')
-            page = pywikibot.Page(site, Page.title())
-            gen = pagegenerators.ReferringPageGenerator(page)
-            gen =  pagegenerators.NamespaceFilterPageGenerator(gen, [0])
-            for PageLiee in pagegenerators.PreloadingGenerator(gen,100):
-                if not afterPage or afterPage == u'' or modifier == u'True':
-                    self.treatPage(PageLiee.title()) #pagesByLink(Page.title())
-                elif PageLiee.title() == afterPage:
-                    modifier = u'True'
+                modify = True
 
     # [[Special:Search]]
     def pagesBySearch(self, pageName, namespaces = None, site = None):
