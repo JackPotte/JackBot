@@ -34,26 +34,12 @@ fixTags = False
 fixFiles = True
 addCategory = False
 
-bookCatTemplates = []
-bookCatTemplates.append(u'{{Auto category}}')
-bookCatTemplates.append(u'{{Book category}}')
-bookCatTemplates.append(u'{{AutoCat}}')
-bookCatTemplates.append(u'{{Bookcat}}')
-bookCatTemplates.append(u'{{BOOKCAT}}')
-bookCatTemplates.append(u'[[Category:{{PAGENAME}}|{{SUBPAGENAME}}]]')
-bookCatTemplates.append(u'[[Category:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]')
-bookCatTemplates.append(u'[[Category:{{FULLBOOKNAME}}|{{FULLCHAPTERNAME}}]]')
-bookCatTemplates.append(u'[[Category:{{PAGENAME}}]]')
-bookCatTemplates.append(u'[[Category:{{BASEPAGENAME}}]]')
-bookCatTemplates.append(u'[[Category:{{FULLBOOKNAME}}]]')
-
-
 def treatPageByName(pageName):
     if debugLevel > -1: print(pageName.encode(config.console_encoding, 'replace'))
     page = Page(site, pageName)
     PageBegin = getContentFromPage(page, 'All')
     if not username in pageName and (PageBegin == 'KO' or pageName.find(u'/Print version') != -1): return
-    summary = u'Formatting'
+    summary = u'Formato'
     PageTemp = PageBegin
     PageEnd = u''
 
@@ -62,25 +48,9 @@ def treatPageByName(pageName):
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
     if checkURL: PageTemp = hyperlynx(PageTemp)
 
-    if debugLevel > 1: print 'Templates treatment'
-    regex = ur'{{[Tt]alk *archive([^}]*)}}='
+    regex = ur'^{{Software[ _]e[ _]didattica}}\n'
     if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'{{Talk archive\1}}\n=', PageTemp)
-    regex = ur'{{[Tt]alk *header([^}]*)}}='
-    if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'{{Talk header\1}}\n=', PageTemp)
-
-    if username in pageName or page.namespace() == 0:
-        for bookCatTemplate in bookCatTemplates:
-            PageTemp = PageTemp.replace(bookCatTemplate, u'{{BookCat}}')
-            PageTemp = PageTemp.replace(bookCatTemplate[:2] + bookCatTemplate[2:3].lower() + bookCatTemplate[3:], u'{{BookCat}}')
-        if addCategory and hasMoreThanTime(page) and isTrustedVersion(page):
-            # The untrusted can have blanked a relevant content including {{BookCat}}
-            if trim(PageTemp) != '' and PageTemp.find(u'{{BookCat}}') == -1 and \
-              PageTemp.find(u'[[category:') == -1 and PageTemp.find(u'[[Category:') == -1 and \
-              PageTemp.find(u'{{printable') == -1 and PageTemp.find(u'{{Printable') == -1:
-                PageTemp = PageTemp + u'\n\n{{BookCat}}'
-                summary = summary + u', {{BookCat}}'
+        PageTemp = re.sub(regex, ur'<noinclude>{{Software e didattica}}</noinclude>\n', PageTemp)
 
     PageEnd = PageEnd + PageTemp
     if PageEnd != PageBegin: savePage(page, PageEnd, summary)
@@ -116,7 +86,7 @@ def main(*args):
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Rebol programming')
+            p.pagesByCat(u'Software e didattica')
             #p.pagesByCat(u'Category:Pages using ISBN magic links', namespaces = None, afterPage = afterPage)
             #p.pagesByCat(u'Category:Pages with ISBN errors', namespaces = None, afterPage = afterPage)
         elif sys.argv[1] == u'-redirects':

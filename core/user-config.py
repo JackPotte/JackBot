@@ -85,6 +85,9 @@ usernames['wiktionary']['zh'] = u'JackBot'
 usernames['wikibooks']['es'] = u'JackBot'
 usernames['wikivoyage']['de'] = u'JackBot'
 
+# No flag
+usernames['wikibooks']['it'] = u'JackBot'
+
 # ############# LOGFILE SETTINGS ##############
 
 # Defines for which scripts a logfile should be enabled. Logfiles will be
