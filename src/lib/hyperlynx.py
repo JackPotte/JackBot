@@ -358,24 +358,27 @@ FinDURL2[7] = u"'"
 
 ligneB = 6
 colonneB = 2
-Balise = [[0] * (colonneB+1) for _ in range(ligneB+1)]
-Balise[1][1] = u'<pre>'
-Balise[1][2] = u'</pre>'
-Balise[2][1] = u'<nowiki>'
-Balise[2][2] = u'</nowiki>'
-Balise[3][1] = u'<ref name='
-Balise[3][2] = u'>'
-Balise[4][1] = u'<rdf'
-Balise[4][2] = u'>'
-Balise[5][1] = u'<source'
-Balise[5][2] = u'</source' + u'>'
-Balise[6][1] = u'\n '
-Balise[6][2] = u'\n'
+noTag = [[0] * (colonneB+1) for _ in range(ligneB+1)]
+noTag[1][1] = u'<pre>'
+noTag[1][2] = u'</pre>'
+noTag[2][1] = u'<nowiki>'
+noTag[2][2] = u'</nowiki>'
+noTag[3][1] = u'<ref name='
+noTag[3][2] = u'>'
+noTag[4][1] = u'<rdf'
+noTag[4][2] = u'>'
+noTag[5][1] = u'<source'
+noTag[5][2] = u'</source' + u'>'
+noTag[6][1] = u'\n '
+noTag[6][2] = u'\n'
 '''
     ligneB = ligneB + 1
-    Balise[ligneB-1][1] = u'<!--'
-    Balise[ligneB-1][2] = u'-->'
+    noTag[ligneB-1][1] = u'<!--'
+    noTag[ligneB-1][2] = u'-->'
 '''
+noTemplates = []
+if not retablirNonBrise: noTemplates.append('lien brisé')
+
 limiteE = 20
 Erreur = []
 Erreur.append("403 Forbidden")
@@ -710,7 +713,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
     
     if debugLevel > 1:
         print u'Fin des traductions :'
-        raw_input(PageTemp.encode(config.console_encoding, 'replace'))    
+        raw_input(PageTemp.encode(config.console_encoding, 'replace'))
 
     # Recherche de chaque hyperlien en clair ------------------------------------------------------------------------------------------------------------------------------------
     while PageTemp.find(u'//') != -1:
@@ -728,45 +731,65 @@ def hyperlynx(PageTemp, debugLevel = 0):
             PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
             PageTemp = PageTemp[PageTemp.find(u'}}')+2:]
 
-        # Balises interdisant la modification de l'URL
+        # noTags interdisant la modification de l'URL
         ignoredLink = False
-        for b in range(1,ligneB):
-            if PageDebut.rfind(Balise[b][1]) != -1 and PageDebut.rfind(Balise[b][1]) > PageDebut.rfind(Balise[b][2]):
+        for b in range(1, ligneB):
+            if PageDebut.rfind(noTag[b][1]) != -1 and PageDebut.rfind(noTag[b][1]) > PageDebut.rfind(noTag[b][2]):
                 ignoredLink = True
-                if debugLevel > 0: print u'URL dans ' + Balise[b][1]
+                if debugLevel > 0: print u'URL non traitée, car dans ' + noTag[b][1]
                 break
-            if PageEnd.rfind(Balise[b][1]) != -1 and PageEnd.rfind(Balise[b][1]) > PageEnd.rfind(Balise[b][2]):
+            if PageEnd.rfind(noTag[b][1]) != -1 and PageEnd.rfind(noTag[b][1]) > PageEnd.rfind(noTag[b][2]):
                 ignoredLink = True
-                if debugLevel > 0: print u'URL dans ' + Balise[b][1]
+                if debugLevel > 0: print u'URL non traitée, car dans ' + noTag[b][1]
                 break
+        for noTemplate in noTemplates:
+            if PageDebut.rfind(u'{{' + noTemplate + u'|') != -1 and PageDebut.rfind(u'{{' + noTemplate + u'|') > PageDebut.rfind(u'}}'):
+                ignoredLink = True
+                if debugLevel > 0: print u'URL non traitée, car dans ' + noTemplate
+                break
+            if PageDebut.rfind(u'{{' + noTemplate[:1].upper() + noTemplate[1:] + u'|') != -1 and \
+                PageDebut.rfind(u'{{' + noTemplate[:1].upper() + noTemplate[1:] + u'|') > PageDebut.rfind(u'}}'):
+                ignoredLink = True
+                if debugLevel > 0: print u'URL non traitée, car dans ' + noTemplate
+                break
+            if PageEnd.rfind(u'{{' + noTemplate + u'|') != -1 and PageEnd.rfind(u'{{' + noTemplate + u'|') > PageEnd.rfind(u'}}'):
+                ignoredLink = True
+                if debugLevel > 0: print u'URL non traitée, car dans ' + noTemplate
+                break
+            if PageEnd.rfind(u'{{' + noTemplate[:1].upper() + noTemplate[1:] + u'|') != -1 and \
+                PageEnd.rfind(u'{{' + noTemplate[:1].upper() + noTemplate[1:] + u'|') > PageEnd.rfind(u'}}'):
+                ignoredLink = True
+                if debugLevel > 0: print u'URL non traitée, car dans ' + noTemplate
+                break
+
         if ignoredLink == False:
             # titre=
             if PageDebut.rfind(u'titre=') != -1 and PageDebut.rfind(u'titre=') > PageDebut.rfind(u'{{') and PageDebut.rfind(u'titre=') > PageDebut.rfind(u'}}'):
-                PageTemp3 = PageDebut[PageDebut.rfind(u'titre=')+len(u'titre='):len(PageDebut)]
+                PageTemp3 = PageDebut[PageDebut.rfind(u'titre=')+len(u'titre='):]
                 if PageTemp3.find(u'|') != -1 and (PageTemp3.find(u'|') < PageTemp3.find(u'}}') or PageTemp3.rfind(u'}}') == -1):
-                    titre = PageTemp3[0:PageTemp3.find(u'|')]
+                    titre = PageTemp3[:PageTemp3.find(u'|')]
                 else:
-                    titre = PageTemp3[0:len(PageTemp3)]
-                if debugLevel > 0: print u'Titre avant URL'
+                    titre = PageTemp3
+                if debugLevel > 0: print u'Titre= avant URL : ' + titre
             elif PageDebut.rfind(u'titre =') != -1 and PageDebut.rfind(u'titre =') > PageDebut.rfind(u'{{') and PageDebut.rfind(u'titre =') > PageDebut.rfind(u'}}'):
-                PageTemp3 = PageDebut[PageDebut.rfind(u'titre =')+len(u'titre ='):len(PageDebut)]
+                PageTemp3 = PageDebut[PageDebut.rfind(u'titre =')+len(u'titre ='):]
                 if PageTemp3.find(u'|') != -1 and (PageTemp3.find(u'|') < PageTemp3.find(u'}}') or PageTemp3.rfind(u'}}') == -1):
-                    titre = PageTemp3[0:PageTemp3.find(u'|')]
+                    titre = PageTemp3[:PageTemp3.find(u'|')]
                 else:
-                    titre = PageTemp3[0:len(PageTemp3)]
-                if debugLevel > 0: print u'Titre avant URL'
+                    titre = PageTemp3
+                if debugLevel > 0: print u'Titre = avant URL : ' + titre
         
             # url=
-            if PageDebut[len(PageDebut)-1:len(PageDebut)] == u'[':
+            if PageDebut[-1:] == u'[':
                 if debugLevel > 0: print u'URL entre crochets sans protocole'
                 DebutURL = 1
-            elif PageDebut[len(PageDebut)-5:len(PageDebut)] == u'http:':
+            elif PageDebut[-5:] == u'http:':
                 if debugLevel > 0: print u'URL http'
                 DebutURL = 5
-            elif PageDebut[len(PageDebut)-6:len(PageDebut)] == u'https:':
+            elif PageDebut[-6:] == u'https:':
                 if debugLevel > 0: print u'URL https'
                 DebutURL = 6
-            elif PageDebut[len(PageDebut)-2:len(PageDebut)] == u'{{':
+            elif PageDebut[-2:] == u'{{':
                 if debugLevel > 0: print u"URL d'un modèle"
                 break
             else:
@@ -777,7 +800,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
                 FinPageURL = PageTemp[PageTemp.find(u'//'):]
                 # url=    
                 CharFinURL = u' '
-                for l in range(1,limiteURL):
+                for l in range(1, limiteURL):
                     if FinPageURL.find(CharFinURL) == -1 or (FinPageURL.find(FinDURL[l]) != -1 and FinPageURL.find(FinDURL[l]) < FinPageURL.find(CharFinURL)):
                         CharFinURL = FinDURL[l]
                 if debugLevel > 0: print u'*Caractère de fin URL : ' + CharFinURL
@@ -1115,7 +1138,7 @@ def TestURL(url, debugLevel = 0):
     connectionMethod = u'Request'
     try:
         req = urllib2.Request(url)
-        res = urllib2.urlopen(req) # If blocked here for hours, just whitelist the domain
+        res = urllib2.urlopen(req) # If blocked here for hours, just whitelist the domain if the page isn't forbidden
         # TODO : ssl.CertificateError: hostname 'www.mediarodzina.com.pl' doesn't match either of 'mediarodzina.pl', 'www.mediarodzina.pl'
         # UnicodeWarning: Unicode unequal comparison failed to convert both arguments to Unicode
         htmlSource = res.read()
