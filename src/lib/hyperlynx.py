@@ -1059,7 +1059,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
 
         if PageEnd.find(u'|langue=None') != -1:
             if isBrokenLink == False:
-                URLlanguage = getURLsiteLanguage(htmlSource, 1)
+                URLlanguage = getURLsiteLanguage(htmlSource)
                 if URLlanguage != 'None':
                     try:
                         PageEnd = PageEnd.replace(u'|langue=None', u'|langue=' + URLlanguage)
