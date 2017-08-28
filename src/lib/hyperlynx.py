@@ -158,6 +158,8 @@ ParamEN.append(u'accessdate')
 ParamFR.append(u'consulté le')
 ParamEN.append(u'language')
 ParamFR.append(u'langue')
+ParamEN.append(u'lang')
+ParamFR.append(u'langue')
 ParamEN.append(u'quote')
 ParamFR.append(u'extrait')
 ParamEN.append(u'titre vo')
@@ -560,16 +562,16 @@ def hyperlynx(PageTemp, debugLevel = 0):
             PageEnd = PageEnd + PageTemp[:re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1]
             PageTemp = PageTemp[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1:]    
             # Identification du code langue existant dans le modèle
-            codelangue = u''
+            languageCode = u''
             if PageEnd.rfind(u'{{') != -1:
                 PageDebut = PageEnd[:PageEnd.rfind(u'{{')]
                 if PageDebut.rfind(u'{{') != -1 and PageDebut.rfind(u'}}') != -1 and (PageDebut[len(PageDebut)-2:] == u'}}' or PageDebut[len(PageDebut)-3:] == u'}} '):
-                    codelangue = PageDebut[PageDebut.rfind(u'{{')+2:PageDebut.rfind(u'}}')]
+                    languageCode = PageDebut[PageDebut.rfind(u'{{')+2:PageDebut.rfind(u'}}')]
                     if family == 'wikipedia' or family == 'wiktionary':
                         # Recherche de validité mais tous les codes ne sont pas encore sur les sites francophones
-                        if codelangue.find('}}') != -1: codelangue = codelangue[:codelangue.find('}}')]
-                        if debugLevel > 1: print u'Modèle:' + codelangue
-                        page2 = Page(site, u'Modèle:' + codelangue)
+                        if languageCode.find('}}') != -1: languageCode = languageCode[:languageCode.find('}}')]
+                        if debugLevel > 1: print u'Modèle:' + languageCode
+                        page2 = Page(site, u'Modèle:' + languageCode)
                         try:
                             PageCode = page2.get()
                         except pywikibot.exceptions.NoPage:
@@ -582,18 +584,19 @@ def hyperlynx(PageTemp, debugLevel = 0):
                             PageCode = page2.get(get_redirect=True)
                         if debugLevel > 0: print(PageCode.encode(config.console_encoding, 'replace'))
                         if PageCode.find(u'Indication de langue') != -1:
-                            if len(codelangue) == 2:    # or len(codelangue) == 3: if codelangue == u'pdf': |format=codelangue, absent de {{lien web}}
+                            if len(languageCode) == 2:    # or len(languageCode) == 3: if languageCode == u'pdf': |format=languageCode, absent de {{lien web}}
                                 # Retrait du modèle de langue devenu inutile
-                                PageEnd = PageEnd[:PageEnd.rfind(u'{{' + codelangue + u'}}')] + PageEnd[PageEnd.rfind(u'{{' + codelangue + u'}}')+len(u'{{' + codelangue + u'}}'):]
-            if codelangue == u'':
+                                PageEnd = PageEnd[:PageEnd.rfind(u'{{' + languageCode + u'}}')] + PageEnd[PageEnd.rfind(u'{{' + languageCode + u'}}')+len(u'{{' + languageCode + u'}}'):]
+            if languageCode == u'':
                 if debugLevel > 0: print u' Code langue à remplacer une fois trouvé sur la page distante...'
-                codelangue = 'JackBot'
+                languageCode = 'None'
             # Ajout du code langue dans le modèle
-            if debugLevel > 0: print u'Modèle préalable : ' + codelangue
-            if not re.search(u'[^}]*langu[ag]*e *=[^}]*}}', PageTemp):
-                PageTemp = u'|langue=' + codelangue + PageTemp
-            elif re.search(u'[^}]*langu[ag]*e *=[^}]*}}', PageTemp).end() > PageTemp.find(u'}}')+2:
-                PageTemp = u'|langue=' + codelangue + PageTemp
+            if debugLevel > 0: print u'Modèle préalable : ' + languageCode
+            regex = ur'[^}]*lang(ue|uage)* *=[^}]*}}'
+            if not re.search(regex, PageTemp):
+                PageTemp = u'|langue=' + languageCode + PageTemp
+            elif re.search(regex, PageTemp).end() > PageTemp.find(u'}}')+2:
+                PageTemp = u'|langue=' + languageCode + PageTemp
                 
         PageTemp = PageEnd + PageTemp
         PageEnd = u''
@@ -622,46 +625,46 @@ def hyperlynx(PageTemp, debugLevel = 0):
                 FinPageURL = FinPageURL[FinPageURL.find(u'}}')+2:]
             FinModele = FinModele + FinPageURL.find(u'}}')+2
             
-            ModeleCourant = PageTemp[:FinModele]
+            currentTemplate = PageTemp[:FinModele]
             if debugLevel > 1:
                 print(u'Modèle courant : ')
-                print(ModeleCourant.encode(config.console_encoding, 'replace'))
+                print(currentTemplate.encode(config.console_encoding, 'replace'))
             for p in range(0, limiteP):
                 # Faux-amis variables selon les modèles
                 if debugLevel > 1: print ParamEN[p].encode(config.console_encoding, 'replace')
                 tradFr = ParamFR[p]
                 if ParamEN[p] == u'work':
-                    if (ModeleCourant.find(u'rticle') != -1 and ModeleCourant.find(u'rticle') < ModeleCourant.find(u'|')) and ModeleCourant.find(u'ériodique') == -1:
+                    if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1:
                         tradFr = u'périodique'
-                    elif ModeleCourant.find(u'ien web') != -1 and ModeleCourant.find(u'ien web') < ModeleCourant.find(u'|'):
+                    elif currentTemplate.find(u'ien web') != -1 and currentTemplate.find(u'ien web') < currentTemplate.find(u'|'):
                         tradFr = u'série'
                 elif ParamEN[p] == u'publisher':
-                    if (ModeleCourant.find(u'rticle') != -1 and ModeleCourant.find(u'rticle') < ModeleCourant.find(u'|')) and ModeleCourant.find(u'ériodique') == -1 and ModeleCourant.find(u'|work=') == -1:
+                    if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1 and currentTemplate.find(u'|work=') == -1:
                         tradFr = u'périodique'
                     else:
                         tradFr = u'éditeur'
-                elif ParamEN[p] == u'language' and (ModeleCourant.find(u'|langue=') != -1 and ModeleCourant.find(u'|langue=') < ModeleCourant.find(u'}}')):
+                elif ParamEN[p] == u'language' and (currentTemplate.find(u'|langue=') != -1 and currentTemplate.find(u'|langue=') < currentTemplate.find(u'}}')):
                     tradFr = u''
-                elif ParamEN[p] == u'issue' and (ModeleCourant.find(u'|numéro=') != -1 and ModeleCourant.find(u'|numéro=') < ModeleCourant.find(u'}}')):
+                elif ParamEN[p] == u'issue' and (currentTemplate.find(u'|numéro=') != -1 and currentTemplate.find(u'|numéro=') < currentTemplate.find(u'}}')):
                     tradFr = u'date'
                 elif ParamEN[p] == u'en ligne le':
-                    if ModeleCourant.find(u'archiveurl') == -1 and ModeleCourant.find(u'archive url') == -1 and ModeleCourant.find(u'archive-url') == -1:
+                    if currentTemplate.find(u'archiveurl') == -1 and currentTemplate.find(u'archive url') == -1 and currentTemplate.find(u'archive-url') == -1:
                         continue
-                    elif ModeleCourant.find(u'archivedate') != -1 or ModeleCourant.find(u'archive date') != -1 or ModeleCourant.find(u'archive-date') != -1:
+                    elif currentTemplate.find(u'archivedate') != -1 or currentTemplate.find(u'archive date') != -1 or currentTemplate.find(u'archive-date') != -1:
                             continue
                     elif debugLevel > 0: u' archiveurl ' + u' archivedate'
 
-                ModeleCourant = re.sub(ur'(\| *)' + ParamEN[p] + ur'( *=)', ur'\1' + tradFr + ur'\2', ModeleCourant)
-                ModeleCourant = ModeleCourant.replace(u'|=',u'|')
-                ModeleCourant = ModeleCourant.replace(u'| =',u'|')
-                ModeleCourant = ModeleCourant.replace(u'|  =',u'|')
-                ModeleCourant = ModeleCourant.replace(u'|}}',u'}}')
-                ModeleCourant = ModeleCourant.replace(u'| }}',u'}}')
-                if ModeleCourant.find(u'{{') == -1:    # Sans modèle inclus
-                    ModeleCourant = ModeleCourant.replace(u'||',u'|')
+                currentTemplate = re.sub(ur'(\| *)' + ParamEN[p] + ur'( *=)', ur'\1' + tradFr + ur'\2', currentTemplate)
+                currentTemplate = currentTemplate.replace(u'|=',u'|')
+                currentTemplate = currentTemplate.replace(u'| =',u'|')
+                currentTemplate = currentTemplate.replace(u'|  =',u'|')
+                currentTemplate = currentTemplate.replace(u'|}}',u'}}')
+                currentTemplate = currentTemplate.replace(u'| }}',u'}}')
+                if currentTemplate.find(u'{{') == -1:    # Sans modèle inclus
+                    currentTemplate = currentTemplate.replace(u'||',u'|')
             if debugLevel > 1: print FinModele
             
-            PageTemp = ModeleCourant + PageTemp[FinModele:]
+            PageTemp = currentTemplate + PageTemp[FinModele:]
             
         PageTemp = PageEnd + PageTemp
         PageEnd = u''
@@ -723,7 +726,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
         CharFinURL = u''
         titre = u''
         FinModele = 0
-        LienBrise = False
+        isBrokenLink = False
         # Avant l'URL
         PageDebut = PageTemp[:PageTemp.find(u'//')]
         while PageTemp.find(u'//') > PageTemp.find(u'}}') and PageTemp.find(u'}}') != -1:
@@ -815,7 +818,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
                 if len(url) <= 10:
                     url = u''
                     htmlSource = u''
-                    LienBrise = False
+                    isBrokenLink = False
                 else:
                     for u in range(1,limiteURL2):
                         while url[len(url)-1:] == FinDURL2[u]:
@@ -831,35 +834,35 @@ def hyperlynx(PageTemp, debugLevel = 0):
                             Media = True
                     if Media == False:
                         if debugLevel > 0: print(u'Recherche de la page distante : ' + url)
-                        htmlSource = TestURL(url, debugLevel)
+                        htmlSource = testURL(url, debugLevel)
                         if debugLevel > 0: print(u'Recherche dans son contenu')
-                        LienBrise = TestPage(htmlSource, url)
+                        isBrokenLink = testURLPage(htmlSource, url)
                 
                 # Site réputé HS, mais invisible car ses sous-pages ont toutes été déplacées, et renvoient vers l'accueil
                 for u in range(1,limiteU):
                     if url.find(URLDeplace[u]) != -1 and len(url) > len(URLDeplace[u]) + 8:    #http://.../
-                        LienBrise = True
+                        isBrokenLink = True
                 
                 # Confirmation manuelle
                 if semiauto == True:
                     webbrowser.open_new_tab(url)
-                    if LienBrise == True:
+                    if isBrokenLink:
                         result = raw_input("Lien brisé ? (o/n) ")
                     else:
                         result = raw_input("Lien fonctionnel ? (o/n) ")
                     if result != "n" and result != "no" and result != "non":
-                        LienBrise = True
+                        isBrokenLink = True
                     else:
-                        LienBrise = False
+                        isBrokenLink = False
                         
                 if debugLevel > 0:
                     # Compte-rendu des URL détectées
                     try:
                         print u'*URL : ' + url.encode(config.console_encoding, 'replace')
                         print u'*Titre : ' + titre.encode(config.console_encoding, 'replace')
-                        print u'*HS : ' + str(LienBrise)
+                        print u'*HS : ' + str(isBrokenLink)
                     except UnicodeDecodeError:
-                        print u'*HS : ' + str(LienBrise)
+                        print u'*HS : ' + str(isBrokenLink)
                         print "UnicodeDecodeError l 466"
                 if debugLevel > 1: raw_input (htmlSource[:7000])
                 
@@ -907,12 +910,12 @@ def hyperlynx(PageTemp, debugLevel = 0):
                         FinModele = FinModele + FinPageModele.find(u'}}')+2
                         FinPageModele = FinPageModele[FinPageModele.find(u'}}')+2:len(FinPageModele)]
                     FinModele = FinModele + FinPageModele.find(u'}}')+2
-                    ModeleCourant = PageTemp[DebutModele:FinModele]
-                    #if debugLevel > 0: print "*Modele : " + ModeleCourant[:100].encode(config.console_encoding, 'replace')
+                    currentTemplate = PageTemp[DebutModele:FinModele]
+                    #if debugLevel > 0: print "*Modele : " + currentTemplate[:100].encode(config.console_encoding, 'replace')
                     
                     if AncienModele != u'':
                         if debugLevel > 0: print u'Ancien modèle à traiter : ' + AncienModele
-                        if LienBrise == True:
+                        if isBrokenLink:
                             try:
                                 PageTemp = PageTemp[:DebutModele] + u'{{lien brisé' + PageTemp[re.search(u'{{ *[' + AncienModele[:1] + u'|' + AncienModele[:1].upper() + u']' + AncienModele[1:] + u' *[\||\n]', PageTemp).end()-1:]
                             except AttributeError:
@@ -940,8 +943,8 @@ def hyperlynx(PageTemp, debugLevel = 0):
                         if debugLevel > 1: raw_input(FinPageURL.encode(config.console_encoding, 'replace'))    
                         
                         # En cas de modèles inclus le titre a pu ne pas être détecté précédemment
-                        if titre == u'' and re.search(u'\| *titre *=', ModeleCourant):
-                            PageTemp3 = ModeleCourant[re.search(u'\| *titre *=', ModeleCourant).end():]
+                        if titre == u'' and re.search(u'\| *titre *=', currentTemplate):
+                            PageTemp3 = currentTemplate[re.search(u'\| *titre *=', currentTemplate).end():]
                             # Modèles inclus dans les titres
                             while PageTemp3.find(u'{{') != -1 and PageTemp3.find(u'{{') < PageTemp3.find(u'}}') and PageTemp3.find(u'{{') < PageTemp3.find(u'|'):
                                 titre = titre + PageTemp3[:PageTemp3.find(u'}}')+2]
@@ -951,19 +954,19 @@ def hyperlynx(PageTemp, debugLevel = 0):
                                 print u'*Titre2 : '
                                 print titre.encode(config.console_encoding, 'replace')
                             
-                        if LienBrise == True and AncienModele != u'lien brisé' and AncienModele != u'Lien brisé':
+                        if isBrokenLink == True and AncienModele != u'lien brisé' and AncienModele != u'Lien brisé':
                             summary = summary + u', remplacement de ' + AncienModele + u' par {{lien brisé}}'
                             if debugLevel > 0: print u', remplacement de ' + AncienModele + u' par {{lien brisé}}'
                             if titre == u'':
                                 PageTemp = PageTemp[0:DebutModele] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + PageTemp[FinModele:len(PageTemp)]
                             else:
                                 PageTemp = PageTemp[0:DebutModele] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + PageTemp[FinModele:len(PageTemp)]
-                        elif LienBrise == False and (AncienModele == u'lien brisé' or AncienModele == u'Lien brisé'):
+                        elif isBrokenLink == False and (AncienModele == u'lien brisé' or AncienModele == u'Lien brisé'):
                             summary = summary + u', Retrait de {{lien brisé}}'
                             PageTemp = PageTemp[0:DebutModele] + u'{{lien web' + PageTemp[DebutModele+len(u'lien brisé')+2:len(PageTemp)]
                         '''
                             
-                        '''elif LienBrise == True:
+                        '''elif isBrokenLink:
                         summary = summary + u', ajout de {{lien brisé}}'
                         if DebutURL == 1:
                             if debugLevel > 0: print u'Ajout de lien brisé entre crochets 1'
@@ -985,7 +988,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
                     
                 else:
                     if debugLevel > 0: print u'URL hors modèle'
-                    if LienBrise == True:
+                    if isBrokenLink:
                         summary = summary + u', ajout de {{lien brisé}}'
                         if DebutURL == 1:
                             if debugLevel > 0: print u'Ajout de lien brisé entre crochets sans protocole'
@@ -1038,7 +1041,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
             if debugLevel > 1: print u'URL entre balises sautée'
 
         # Lien suivant, en sautant les URL incluses dans l'actuelle, et celles avec d'autres protocoles que http(s)
-        if FinModele == 0 and LienBrise == False:
+        if FinModele == 0 and isBrokenLink == False:
             FinPageURL = PageTemp[PageTemp.find(u'//')+2:len(PageTemp)]
             CharFinURL = u' '
             for l in range(1,limiteURL):
@@ -1054,31 +1057,41 @@ def hyperlynx(PageTemp, debugLevel = 0):
             PageTemp = PageTemp[FinModele:]
         if debugLevel > 1: raw_input(PageEnd.encode(config.console_encoding, 'replace'))
 
+        if PageEnd.find(u'|langue=None') != -1:
+            if isBrokenLink == False:
+                URLlanguage = getURLsiteLanguage(htmlSource, 1)
+                if URLlanguage != 'None':
+                    try:
+                        PageEnd = PageEnd.replace(u'|langue=None', u'|langue=' + URLlanguage)
+                    except UnicodeDecodeError:
+                        if debugLevel > 0: print u'UnicodeEncodeError l 1038'
+            PageEnd = PageEnd.replace(u'|langue=None', u'')
+
     PageTemp = PageEnd + PageTemp
     PageEnd = u''    
     if debugLevel > 0: print ("Fin des tests URL")
-    
+
     # Recherche de chaque hyperlien de modèles ------------------------------------------------------------------------------------------------------------------------------------
     if PageTemp.find(u'{{langue') != -1: # du Wiktionnaire
-        if debugLevel > 0: print ("Modèles Wiktionnaire")
+        if debugLevel > 0: print("Modèles Wiktionnaire")
         for m in range(1,ligne):
-            PagEnd = u''
+            PageEnd = u''
             while PageTemp.find(u'{{' + TabModeles[m][1] + u'|') != -1:
-                PageEnd =  PageEnd + PageTemp[0:PageTemp.find(u'{{' + TabModeles[m][1] + u'|')+len(u'{{' + TabModeles[m][1] + u'|')]
+                PageEnd =  PageEnd + PageTemp[:PageTemp.find(u'{{' + TabModeles[m][1] + u'|')+len(u'{{' + TabModeles[m][1] + u'|')]
                 PageTemp =  PageTemp[PageTemp.find(u'{{' + TabModeles[m][1] + u'|')+len(u'{{' + TabModeles[m][1] + u'|'):len(PageTemp)]
                 if PageTemp[0:PageTemp.find(u'}}')].find(u'|') != -1:
-                    Param1Encode = PageTemp[0:PageTemp.find(u'|')].replace(u' ',u'_')
+                    Param1Encode = PageTemp[:PageTemp.find(u'|')].replace(u' ',u'_')
                 else:
-                    Param1Encode = PageTemp[0:PageTemp.find(u'}}')].replace(u' ',u'_')
-                htmlSource = TestURL(TabModeles[m][2] + Param1Encode, debugLevel)
-                LienBrise = TestPage(htmlSource,url)
-                if LienBrise == True: PageEnd = PageEnd[0:PageEnd.rfind(u'{{' + TabModeles[m][1] + u'|')] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + TabModeles[m][2]
+                    Param1Encode = PageTemp[:PageTemp.find(u'}}')].replace(u' ',u'_')
+                htmlSource = testURL(TabModeles[m][2] + Param1Encode, debugLevel)
+                isBrokenLink = testURLPage(htmlSource, url)
+                if isBrokenLink: PageEnd = PageEnd[:PageEnd.rfind(u'{{' + TabModeles[m][1] + u'|')] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + TabModeles[m][2]
             PageTemp = PageEnd + PageTemp
             PageEnd = u''
         PageTemp = PageEnd + PageTemp
         PageEnd = u''
     if debugLevel > 0: print (u'Fin des tests modèle')
-    
+
     # Paramètre inutile ?
     '''while PageTemp.find(u'|deadurl=no|') != -1:
         PageTemp = PageTemp[0:PageTemp.find(u'|deadurl=no|')+1] + PageTemp[PageTemp.find(u'|deadurl=no|')+len(u'|deadurl=no|'):len(PageTemp)]'''
@@ -1086,37 +1099,29 @@ def hyperlynx(PageTemp, debugLevel = 0):
     PageTemp = re.sub(ur'{{(o|O)uvrage(\||\n[^}]*)\| *lire en ligne *= *([\||}|\n]+)', ur'{{\1uvrage\2\3', PageTemp)
     # Idem dans {{article}} : "éditeur" vide bloque "périodique", "journal" ou "revue"
     PageTemp = re.sub(ur'{{(a|A)rticle(\||\n[^}]*)\| *éditeur *= *([\||}|\n]+)', ur'{{\1rticle\2\3', PageTemp)
-            
-    # Recherche de la langue sur le web
-    languePage = u'en'
+
+    PageEnd = PageEnd + PageTemp
+    # TODO: avoid these fixes when: ModeleEN.append(u'lien mort')
+    PageEnd = PageEnd.replace(u'{{lien mortarchive',u'{{lien mort archive')
+    if debugLevel > 0: print(u'Fin hyperlynx.py')
+    return PageEnd
+
+
+def getURLsiteLanguage(htmlSource, debugLevel = 0):
+    URLlanguage = u'None'
     try:
         regex = u'<html [^>]*lang *= *"?\'?([a-zA-Z\-]+)'
         result = re.search(regex, htmlSource)
         if result:
-            languePage = result.group(1)
+            URLlanguage = result.group(1)
             if debugLevel > 0: print u' Langue trouvée sur le site'
-            if (len(languePage)) > 6: languePage = u'en'
+            if (len(URLlanguage)) > 6: URLlanguage = u'None'
     except UnicodeDecodeError:
         if debugLevel > 0: print u'UnicodeEncodeError l 1032'
+    if debugLevel > 0: print u' Langue retenue : ' + URLlanguage
+    return URLlanguage
 
-    if debugLevel > 0: print u' Langue retenue : ' + languePage
-    try:
-        PageTemp = PageTemp.replace(u'|langue=JackBot',u'|langue='+languePage)
-    except UnicodeDecodeError:
-        if debugLevel > 0: print u'UnicodeEncodeError l 1038'
-        PageTemp = PageTemp.replace(u'|langue=JackBot',u'|langue=en')
-    
-    PageEnd = PageEnd + PageTemp
-
-    # TODO: avoid these fixes when: ModeleEN.append(u'cite')
-    PageEnd = PageEnd.replace(u'{{citeencyclopedia',u'{{cite encyclopedia')
-    PageEnd = PageEnd.replace(u'{{citeOED',u'{{cite OED')
-    PageEnd = PageEnd.replace(u'{{lien mortarchive',u'{{lien mort archive')
-
-    if debugLevel > 0: print(u'Fin hyperlynx.py')
-    return PageEnd
-
-def TestURL(url, debugLevel = 0):
+def testURL(url, debugLevel = 0):
     # Renvoie la page web d'une URL dès qu'il arrive à la lire.
     if checkURL == False: return 'ok'
     if debugLevel > 0: print u'--------'
@@ -1685,8 +1690,8 @@ def TestURL(url, debugLevel = 0):
     if debugLevel > 0: print connectionMethod + u' Fin du test d\'existance du site'
     return u''
 
-def TestPage(htmlSource, url, debugLevel = 0):
-    LienBrise = False
+def testURLPage(htmlSource, url, debugLevel = 0):
+    isBrokenLink = False
     try:
         #if debugLevel > 1 and htmlSource != str('') and htmlSource is not None: raw_input (htmlSource[0:1000])
         if htmlSource is None:
@@ -1706,73 +1711,73 @@ def TestPage(htmlSource, url, debugLevel = 0):
                     if debugLevel > 1: print u'  Trouvé'
                     # Exceptions
                     if Erreur[e] == "404 Not Found" and url.find("audiofilemagazine.com") == -1:    # Exception avec popup formulaire en erreur
-                        LienBrise = True
+                        isBrokenLink = True
                         if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
                         break
                     # Wikis : page vide à créer
                     if Erreur[e] == "Soit vous avez mal &#233;crit le titre" and url.find("wiki") != -1:
-                        LienBrise = True
+                        isBrokenLink = True
                         if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
                         break
                     elif Erreur[e] == "Il n'y a pour l'instant aucun texte sur cette page." != -1 and htmlSource.find("wiki") != -1:
-                        LienBrise = True
+                        isBrokenLink = True
                         if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
                         break
                     elif Erreur[e] == "There is currently no text in this page." != -1 and htmlSource.find("wiki") != -1:
-                        LienBrise = True
+                        isBrokenLink = True
                         if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
                         break
                     # Sites particuliers
                     elif Erreur[e] == "The page you requested cannot be found" and url.find("restaurantnewsresource.com") == -1:    # bug avec http://www.restaurantnewsresource.com/article35143 (Landry_s_Restaurants_Opens_T_REX_Cafe_at_Downtown_Disney.html)
-                        LienBrise = True
+                        isBrokenLink = True
                         if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
                         break
                     elif Erreur[e] == "Terme introuvable" != -1 and htmlSource.find("Site de l'ATILF") != -1:
-                        LienBrise = True
+                        isBrokenLink = True
                         if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
                         break
                     elif Erreur[e] == "Cette forme est introuvable !" != -1 and htmlSource.find("Site de l'ATILF") != -1:
-                        LienBrise = True
+                        isBrokenLink = True
                         if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
                         break
                     elif Erreur[e] == "Sorry, no matching records for query" != -1 and htmlSource.find("ATILF - CNRS") != -1:
-                        LienBrise = True
+                        isBrokenLink = True
                         if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
                         break
                     else:
-                        LienBrise = True
+                        isBrokenLink = True
                         if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
                         break
 
     except UnicodeError:
         if debugLevel > 0: print u'UnicodeError lors de la lecture'
-        LienBrise = False
+        isBrokenLink = False
     except UnicodeEncodeError:
         if debugLevel > 0: print u'UnicodeEncodeError lors de la lecture'
-        LienBrise = False
+        isBrokenLink = False
     except UnicodeDecodeError:
         if debugLevel > 0: print u'UnicodeDecodeError lors de la lecture'
-        LienBrise = False
+        isBrokenLink = False
     except httplib.BadStatusLine:
         if debugLevel > 0: print u'BadStatusLine lors de la lecture'
     except httplib.HTTPException:
         if debugLevel > 0: print u'HTTPException'
-        LienBrise = False
+        isBrokenLink = False
     except httplib.InvalidURL:
         if debugLevel > 0: print u'InvalidURL lors de la lecture'
-        LienBrise = False
+        isBrokenLink = False
     except urllib2.HTTPError, e:
         if debugLevel > 0: print u'HTTPError %s.' % e.code +  u' lors de la lecture'
-        LienBrise = False
+        isBrokenLink = False
     except IOError as e:
         if debugLevel > 0: print u'I/O error({0}): {1}'.format(e.errno, e.strerror) +  u' lors de la lecture'
-        LienBrise = False
+        isBrokenLink = False
     except urllib2.URLError:
         if debugLevel > 0: print u'URLError lors de la lecture'
-        LienBrise = False
+        isBrokenLink = False
     else:
         if debugLevel > 1: print u'Fin du test du contenu'
-    return LienBrise
+    return isBrokenLink
 
 # TODO:
 #    i18n
