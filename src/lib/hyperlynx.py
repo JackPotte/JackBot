@@ -83,6 +83,8 @@ ModeleEN.append(u'cite arXiv')
 ModeleFR.append(u'lien arXiv')
 ModeleEN.append(u'cite press release')
 ModeleFR.append(u'lien web')
+ModeleEN.append(u'cite press_release')
+ModeleFR.append(u'lien web')
 ModeleEN.append(u'cite conference')
 ModeleFR.append(u'lien conférence')
 ModeleEN.append(u'docu')
@@ -99,6 +101,8 @@ limiteL = len(ModeleFR)    # Limite de la liste des modèles traduis de l'anglai
 # Modèle avec alias français
 ModeleEN.append(u'deadlink')
 ModeleFR.append(u'lien brisé')
+#ModeleEN.append(u'dead link') TODO: if previous template is {{lien brisé}} then remove else replace 
+#ModeleFR.append(u'lien brisé')
 ModeleEN.append(u'webarchive')
 ModeleFR.append(u'lien brisé')
 ModeleEN.append(u'lien brise')

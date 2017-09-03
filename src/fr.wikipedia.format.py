@@ -166,7 +166,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'chinois')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:Reflist')
+            p.pagesByLink(u'Modèle:Dead link')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             global checkURL
             checkURL = False
