@@ -30,7 +30,7 @@ checkURL = True
 brokenDomains = []
 #brokenDomains.append('marianne2.fr')    # Site remplacé par marianne.net en mai 2017
 
-blockedDomains = [] # à cause des popovers ou node.js ?
+blockedDomains = [] # à cause des popovers ou Node.js ?
 blockedDomains.append(u'bbc.co.uk')
 blockedDomains.append(u'biodiversitylibrary.org')
 blockedDomains.append(u'charts.fi')
@@ -39,6 +39,7 @@ blockedDomains.append(u'finnishcharts.com')
 blockedDomains.append(u'history.navy.mil') # IP Free bloquée en lecture
 blockedDomains.append(u'itunes.apple.com')
 blockedDomains.append(u'nytimes.com')
+blockedDomains.append(u'psaworldtour.com')
 blockedDomains.append(u'rottentomatoes.com')
 blockedDomains.append(u'soundcloud.com')
 blockedDomains.append(u'twitter.com')
