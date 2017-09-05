@@ -160,7 +160,7 @@ class PageProvider:
                         return
 
     # [[Special:WhatLinksHere]]
-    def pagesByLink(self, pageName, afterPage = None, site = None, namespaces = [0, 10], linked = False):
+    def pagesByLink(self, pageName, afterPage = None, site = None, namespaces = [0, 10], linked = False, onlyTemplateInclusion = True):
         if site is None: site = self.site
         modify = False
         page = pywikibot.Page(site, pageName)
@@ -169,7 +169,7 @@ class PageProvider:
         for Page in pagegenerators.PreloadingGenerator(gen, 100):
             if not afterPage or afterPage == u'' or modify:
                 if linked:
-                    gen2 = pagegenerators.ReferringPageGenerator(Page.title(), onlyTemplateInclusion=True)
+                    gen2 = pagegenerators.ReferringPageGenerator(Page.title(), onlyTemplateInclusion = onlyTemplateInclusion)
                     gen2 =  pagegenerators.NamespaceFilterPageGenerator(gen2, namespaces)
                     for LinkedPage in pagegenerators.PreloadingGenerator(gen2, 100):
                         self.treatPage(LinkedPage.title())

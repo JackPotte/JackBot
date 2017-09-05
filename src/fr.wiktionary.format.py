@@ -3943,9 +3943,9 @@ def main(*args):
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
-            afterPage = u'ballet'
+            afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Mots ayant des homophones en français', afterPage = afterPage)
+            p.pagesByCat(u'Mots ayant des homophones', afterPage = afterPage, recursive = False)
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
@@ -3992,6 +3992,7 @@ def main(*args):
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec titre inconnu')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias')
+        p.pagesByLink(u'Template:clé de tri')
 
 if __name__ == "__main__":
     main(sys.argv)
