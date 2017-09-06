@@ -3936,7 +3936,7 @@ def main(*args):
             p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
             #p.pagesByXML(siteLanguage + siteFamily + '.*xml', include = '{{écouter|', exclude = '{{S|prononciation}}')
         elif sys.argv[1] == u'-u':
-            p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 100)
+            p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 40000, notRegex = ur'[a-zA-Z]')
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
             research = u'supprimer si le mot ne contient pas de caractères accentués'
             if len(sys.argv) > 2: research = p.pagesBySearch(sys.argv[2])
