@@ -2080,9 +2080,6 @@ def treatPageByName(pageName):
 
         if debugLevel > 0: print u'Formatage des modèles'
         PageTemp = PageTemp.replace(u'\n {{', u'\n{{')
-        regex = u'\n{{clé de tri(\|[^}]*)?}}<!--[^\-]*-->'
-        if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur'', PageTemp)
 
         if debugLevel > 1: print u' Remplacements des anciens modèles de langue'
         PageTemp = PageTemp.replace(u'{{grc}}', u'grec ancien')
