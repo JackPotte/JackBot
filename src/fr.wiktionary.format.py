@@ -1986,13 +1986,13 @@ def treatPageByName(pageName):
         '''if addDefaultSort:
             if debugLevel > 0: print u'Clés de tri'
             PageTemp = addDefaultSort(PageTemp)
-        '''
-        if u'{{langue|fr}}' in PageTemp and u'-' in pageName:
+        #TODO: consensus
+        if u'{{langue|fr}}' in PageTemp and not u'-' in pageName and not u'/' in pageName:
             regex = ur"\n{{clé de tri([^}]*)}}"
             if re.search(regex, PageTemp):
                 summary = summary + u', retrait de {{clé de tri}}'
                 PageTemp = re.sub(regex, '', PageTemp)
-
+        '''
         if debugLevel > 0: print u'Catégories de prononciation'
         if pageName[-2:] == u'um' and PageTemp.find(u'ɔm|fr}}') != -1:
             PageTemp = addCat(PageTemp, u'fr', u'um prononcés /ɔm/ en français')
