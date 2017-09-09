@@ -1785,7 +1785,7 @@ def testURLPage(htmlSource, url, debugLevel = 0):
     return isBrokenLink
 
 # TODO:
-#    i18n
+#   {{lien web|brisé le=}}
+#    i18n (pour Wikibooks en anglais)
 #    sauter les longs PDF comme dans [[w:Apollo 11]]
-#    remplacer "éditeur" par "périodique" dans "article" ?
-# Hyperlinks.py : “Request Mozilla/5.0” et “Request &_r=4&” prend 3 plombes + certains sites ne se lisent pas (comme Twitter)
+#    gérer les timeout comme http://www.walkforlifewc.com/history2005.htm

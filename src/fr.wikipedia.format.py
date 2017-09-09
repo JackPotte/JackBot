@@ -217,7 +217,7 @@ def main(*args):
         p.pagesByLink(u'Template:Cite magazine')
         p.pagesByLink(u'Template:Cite')
         p.pagesByLink(u'Template:Cite book')
-        p.pagesByLink(u'Template:Reflist')
+        #p.pagesByLink(u'Template:Reflist') Interblocages quotidients
 
 if __name__ == "__main__":
     main(sys.argv)
