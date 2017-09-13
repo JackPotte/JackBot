@@ -3623,6 +3623,10 @@ def treatPageByName(pageName):
         if re.search(regex, PageEnd):
             PageEnd = re.sub(regex, ur'\1\2', PageEnd)
             summary = summary + u', un nom féminin n\'est pas une flexion en français'
+        regex = ur"(=== {{S\|nom\|fr)\|flexion(}} ===\n'''" + rePageName + ur"''' [^\n]*{{f}}\n# *'*[Ff]éminin singulier)"
+        if re.search(regex, PageEnd):
+            PageEnd = re.sub(regex, ur'\1\2', PageEnd)
+            summary = summary + u', un nom féminin n\'est pas une flexion en français'
 
         if pageName.find(u'*') == -1 and pageName[-1:] == 's':
             language = u'fr'
