@@ -3943,7 +3943,8 @@ def main(*args):
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Mots ayant des homophones', afterPage = afterPage, recursive = False)
+            #p.pagesByCat(u'Mots ayant des homophones', afterPage = afterPage, recursive = False)
+            p.pagesByCat(u'Formes de noms communs en français', recursive = False)
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
