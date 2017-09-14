@@ -3619,11 +3619,11 @@ def treatPageByName(pageName):
 
 
         if debugLevel > 0: print u'Formatage des flexions'
-        regex = ur"(=== {{S\|nom\|fr)\|flexion(}} ===\n'''" + rePageName + ur"''' [^\n]*{{fsing}})"
+        regex = ur"(=== {{S\|nom\|fr)\|flexion(}} ===\n(?:{{fr[^\n]*\n)*'''" + rePageName + ur"''' [^\n]*{{fsing}})"
         if re.search(regex, PageEnd):
             PageEnd = re.sub(regex, ur'\1\2', PageEnd)
             summary = summary + u', un nom féminin n\'est pas une flexion en français'
-        regex = ur"(=== {{S\|nom\|fr)\|flexion(}} ===\n'''" + rePageName + ur"''' [^\n]*{{f}}\n# *'*[Ff]éminin singulier)"
+        regex = ur"(=== {{S\|nom\|fr)\|flexion(}} ===\n(?:{{fr[^\n]*\n)*'''" + rePageName + ur"''' [^\n]*{{f}}\n# *'*[Ff]éminin (?:de|singulier))"
         if re.search(regex, PageEnd):
             PageEnd = re.sub(regex, ur'\1\2', PageEnd)
             summary = summary + u', un nom féminin n\'est pas une flexion en français'
