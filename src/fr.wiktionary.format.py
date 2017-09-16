@@ -3957,8 +3957,7 @@ def main(*args):
             afterPage = u'apalanche'
             if len(sys.argv) > 2: afterPage = sys.argv[2]
             #p.pagesByCat(u'Mots ayant des homophones', afterPage = afterPage, recursive = False)
-            #p.pagesByCat(u'Formes de noms communs en français', recursive = False)
-            p.pagesByCat(u'Modèles de contexte', namespaces = None, recursive = True)
+            p.pagesByCat(u'Formes de noms communs en français', afterPage = afterPage, recursive = False)
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
