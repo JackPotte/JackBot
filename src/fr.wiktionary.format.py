@@ -46,6 +46,8 @@ fixTags = False
 fixFiles = True
 addDefaultSort = False
 allNamespaces = False
+treatTemplates = False
+treatCategories = False
 fixGenders = True
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
@@ -1651,13 +1653,16 @@ def treatPageByName(pageName):
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
     if checkURL: PageTemp = hyperlynx(PageTemp)
 
-    #if page.namespace() == 10:
-    #    if not u'{{{clé|' in PageTemp and PageTemp[:len(u'{{term')] == u'{{term':
-    #        summary = u'[[Wiktionnaire:Wikidémie/juillet_2017#Pour_conclure_Wiktionnaire:Prise_de_d.C3.A9cision.2FCl.C3.A9s_de_tri_fran.C3.A7aises_par_d.C3.A9faut|Clé de tri]]'
+    if treatTemplates and page.namespace() == 10:
+        templates = [u'emploi', u'région', u'registre', u'term']
+        for template in templates:
+            if not u'{{{clé|' in PageTemp and PageTemp[:len(u'{{' + template)] == u'{{' + template and u'\n}}<noinclude>' in PageTemp:
+                summary = u'[[Wiktionnaire:Wikidémie/juillet_2017#Pour_conclure_Wiktionnaire:Prise_de_d.C3.A9cision.2FCl.C3.A9s_de_tri_fran.C3.A7aises_par_d.C3.A9faut|Clé de tri]]'
+                PageTemp = PageTemp[:PageTemp.find(u'\n}}<noinclude>')] + u'\n|clé={{{clé|}}}' + PageTemp[PageTemp.find(u'\n}}<noinclude>'):]
 
-    #if page.namespace() == 14:
-        #if pageName.find(u'Catégorie:Lexique en français d') != -1 and PageTemp.find(u'[[Catégorie:Lexiques en français|') == -1:
-        #    PageTemp = PageTemp + u'\n[[Catégorie:Lexiques en français|' + defaultSort(trim(pageName[pageName.rfind(' '):])) + u']]\n'
+    if treatCategories and page.namespace() == 14:
+        if pageName.find(u'Catégorie:Lexique en français d') != -1 and PageTemp.find(u'[[Catégorie:Lexiques en français|') == -1:
+            PageTemp = PageTemp + u'\n[[Catégorie:Lexiques en français|' + defaultSort(trim(pageName[pageName.rfind(' '):])) + u']]\n'
 
     if page.namespace() == 0 or username in pageName:
         regex = ur'{{=([a-z\-]+)=}}'
@@ -3952,8 +3957,8 @@ def main(*args):
             afterPage = u'apalanche'
             if len(sys.argv) > 2: afterPage = sys.argv[2]
             #p.pagesByCat(u'Mots ayant des homophones', afterPage = afterPage, recursive = False)
-            p.pagesByCat(u'Formes de noms communs en français', recursive = False)
-            #p.pagesByCat(u'Modèles de domaine d’utilisation', recursive = False)
+            #p.pagesByCat(u'Formes de noms communs en français', recursive = False)
+            p.pagesByCat(u'Modèles de contexte', namespaces = None, recursive = True)
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':

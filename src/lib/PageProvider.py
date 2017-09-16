@@ -123,7 +123,7 @@ class PageProvider:
         subcat = cat.subcategories(recurse = recursive == True)
         for subcategory in subcat:
             if self.debugLevel > 0: print u' ' + subcategory.title()
-            if 14 in namespaces:
+            if not namespaces is None and 14 in namespaces:
                 self.treatPageIfName(subcategory.title(), names, notNames)
             if recursive:
                 modify = True
