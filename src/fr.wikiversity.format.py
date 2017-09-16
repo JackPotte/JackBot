@@ -64,6 +64,7 @@ subPages.append(u'Prérequis conseillés')
 subPages.append(u'Référents')
 subPages.append(u'Post-notions')
 # {{cours}}
+subPages.append(u'Présentation du cours')
 subPages.append(u'Leçons')
 subPages.append(u'Fiche')
 subPages.append(u'Feuille d\'exercices')

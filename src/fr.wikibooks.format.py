@@ -49,7 +49,7 @@ def treatPageByName(pageName):
     if checkURL: PageTemp = hyperlynx(PageTemp)
 
     # Templates
-    if oldTemplates and PageTemp.find('{{AutoCat}}') == -1:
+    if PageTemp.find('{{AutoCat}}') == -1:
         # Présence de {{bas de page}} par inclusion
         oldTemplates = []
         oldTemplates.append(u'lienDePage')
