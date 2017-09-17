@@ -2531,9 +2531,9 @@ def treatPageByName(pageName):
             regex = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|apocope|aphérèse|ellipse|par ellipse|sigle|acronyme|abréviation|variante)[\|}]'
             regex2 = ur'([Vv]ariante[ ,]|[Ss]ynonyme[ ,]|fr\|flexion)'
             if re.search(regex, PageTemp) is None and re.search(regex2, PageTemp) is None:
-                PageTemp = addLine(PageTemp, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
                 summary = summary + u', ajout de {{S|traductions}}'
-            # TODO Contrôle du nombre de paragraphes de traduction par rapport au nombre de sens
+                PageTemp = addLine(PageTemp, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
+            # TODO: contrôle du nombre de paragraphes de traduction par rapport au nombre de sens
 
         if PageTemp.find(u'{{langue|es}}') != -1:
             ligne = 1

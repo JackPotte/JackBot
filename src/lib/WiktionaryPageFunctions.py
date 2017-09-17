@@ -178,15 +178,15 @@ def getFlexionTemplateFromLemma(pageName, language, nature):
     return FlexionTemplate
 
 def getLanguageSection(pageContent, languageCode):
+    if debugLevel > 0: print u'\ngetLanguageSection de ' + languageCode
     if pageContent.find(u'{{langue|' + languageCode + '}}') == -1: raw_input(' langue absente') #TODO
-    regex = ur'\n=* *{{langue\|(^' + languageCode + ur')}}'
     position = len(pageContent)
-    s = re.match(regex, pageContent)
+    regex = ur'\n== {{langue\|(?!' + languageCode + ur').*}} =='
+    s = re.search(regex, pageContent, re.MULTILINE)
     if s:
-        print 'ok'
         position = s.start()
         pageContent = pageContent[:position]
-        if debugLevel > 0: print position
+        if debugLevel > 1: print position
     if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
     return pageContent, position
 
