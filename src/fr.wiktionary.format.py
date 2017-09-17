@@ -2292,22 +2292,18 @@ def treatPageByName(pageName):
             PageTemp2 = PageTemp[PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/')+len(u'[http://www.mediadico.com/dictionnaire/definition/'):len(PageTemp)]
             PageTemp = PageTemp[:PageTemp.find(u'[http://www.mediadico.com/dictionnaire/definition/')] + u'{{R:Mediadico|' + PageTemp2[:PageTemp2.find(u'/1')] + '}}' + PageTemp2[PageTemp2.find(u']')+1:]
             summary = summary + u', ajout de {{R:Mediadico}}'
-        while PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}') != -1:
-            PageTemp = PageTemp[:PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{R:DAF8}}\n{{Import:DAF8}}')+len(u'{{R:DAF8}}\n'):len(PageTemp)]
-            summary = summary + u', doublon {{R:DAF8}}'
-        while PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}') != -1:
-            PageTemp = PageTemp[:PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{R:DAF8}}\n\n{{Import:DAF8}}')+len(u'{{R:DAF8}}\n\n'):len(PageTemp)]
-            summary = summary + u', doublon {{R:DAF8}}'
-        while PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}') != -1:
-            PageTemp = PageTemp[:PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}')+len(u'{{Import:DAF8}}')] + PageTemp[PageTemp.find(u'{{Import:DAF8}}\n{{R:DAF8}}')+len(u'{{Import:DAF8}}\n{{R:DAF8}}'):]
-            summary = summary + u', doublon {{R:DAF8}}'
-        while PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}') != -1:
-            PageTemp = PageTemp[:PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}')] + PageTemp[PageTemp.find(u'{{R:Littré}}\n{{Import:Littré}}')+len(u'{{R:Littré}}\n'):]
-            summary = summary + u', doublon {{R:Littré}}'
-        while PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}') != -1:
-            PageTemp = PageTemp[:PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}')] + PageTemp[PageTemp.find(u'{{Import:Littré}}\n{{R:Littré}}')+len(u'{{Import:Littré}}\n{{R:Littré}}'):]
-            summary = summary + u', doublon {{R:Littré}}'
-        PageTemp = PageTemp.replace(u'\n{{Import:', u'\n* {{Import:')
+
+        importedSites = ['DAF8', 'Littré']
+        for importedSite in importedSites:
+            regex = ur'\n\** *{{R:' + importedSite + ur'}} *\n\** *({{Import:' + importedSite + ur'}})'
+            print regex
+            if re.search(regex, PageTemp):
+                summary = summary + u', doublon {{R:' + importedSite + ur'}}'
+                PageTemp = re.sub(regex, ur'\n* \1', PageTemp)
+            regex = ur'\n\** *({{Import:' + importedSite + ur'}}) *\n\** *{{R:' + importedSite + ur'}}'
+            if re.search(regex, PageTemp):
+                summary = summary + u', doublon {{R:' + importedSite + ur'}}'
+                PageTemp = re.sub(regex, ur'\n* \1', PageTemp)
 
         if debugLevel > 1: print u' Retrait des catégories contenues dans les modèles'
         if PageTemp.find(u'[[Catégorie:Villes') != -1 and PageTemp.find(u'{{localités|') != -1:
