@@ -71,6 +71,17 @@ def treatPageByName(pageName):
         PageTemp = re.sub(regex, ur'{{Talk header\1}}\n=', PageTemp)
 
     if username in pageName or page.namespace() == 0:
+        regex = ur'({{Programming/Navigation)\n?\|[^{}]*}}'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur'\1}}', PageTemp)
+            PageTemp = PageTemp.replace(u'\n{{BookCat}}', '')
+            summary = summary + u', {{Programming/Navigation}} automation'
+
+        regex = ur'^{{Programming/Navigation}}'
+        if re.search(regex, PageTemp):
+            PageTemp = '<noinclude>' + PageTemp[:len(ur'{{Programming/Navigation}}')] + '</noinclude>' + PageTemp[len(ur'{{Programming/Navigation}}'):]
+
+        #TODO: {{BookCat|filing=deep}}
         for bookCatTemplate in bookCatTemplates:
             PageTemp = PageTemp.replace(bookCatTemplate, u'{{BookCat}}')
             PageTemp = PageTemp.replace(bookCatTemplate[:2] + bookCatTemplate[2:3].lower() + bookCatTemplate[3:], u'{{BookCat}}')
@@ -116,7 +127,7 @@ def main(*args):
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Rebol programming')
+            p.pagesByCat(u'Navigation template with parameters')
             #p.pagesByCat(u'Category:Pages using ISBN magic links', namespaces = None, afterPage = afterPage)
             #p.pagesByCat(u'Category:Pages with ISBN errors', namespaces = None, afterPage = afterPage)
         elif sys.argv[1] == u'-redirects':
