@@ -428,6 +428,7 @@ Modele.append(u'n')
 Modele.append(u'c')
 Modele.append(u'pl-rare')
 Modele.append(u'plus rare')
+Modele.append(u'pluriel')
 limit6 = len(Modele)
 Modele.append(u'pron')
 Modele.append(u'écouter')
@@ -1138,7 +1139,6 @@ Modele.append(u'plantes')
 Modele.append(u'plantes aromatiques')
 Modele.append(u'plongée')
 Modele.append(u'plurale tantum')
-Modele.append(u'pluriel')
 Modele.append(u'pluriel ?')
 Modele.append(u'poés')
 Modele.append(u'poésie')
@@ -3954,7 +3954,7 @@ def main(*args):
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
-            afterPage = u'aseptolines'
+            afterPage = u'casseroleries'
             if len(sys.argv) > 2: afterPage = sys.argv[2]
             #p.pagesByCat(u'Mots ayant des homophones', afterPage = afterPage, recursive = False)
             p.pagesByCat(u'Formes de noms communs en français', afterPage = afterPage, recursive = False)
