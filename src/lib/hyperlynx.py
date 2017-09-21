@@ -216,7 +216,9 @@ ParamFR.append(u'traducteur')
 ParamEN.append(u'at')
 ParamFR.append(u'passage')
 ParamEN.append(u'origyear')
-ParamFR.append(u'année première impression')
+ParamFR.append(u'année première édition') # "année première impression" sur les projets frères
+ParamEN.append(u'année première impression')
+ParamFR.append(u'année première édition')
 ParamEN.append(u'location')
 ParamFR.append(u'lieu')
 ParamEN.append(u'place')
@@ -609,14 +611,14 @@ def hyperlynx(PageTemp, debugLevel = 0):
     for m in range(0, limiteM):
         if debugLevel > 1: print(u' Traduction des noms du modèle ' + ModeleEN[m])
         PageTemp = PageTemp.replace(u'{{' + ModeleEN[m] + u' ', u'{{' + ModeleEN[m] + u'')
-        PageTemp = re.sub(ur'({{[\n ]*)[' + ModeleEN[m][0:1] + ur'|' + ModeleEN[m][0:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])] + ur'( *[\||\n\t|}])', ur'\1' +  ModeleFR[m] + ur'\2', PageTemp)
+        PageTemp = re.sub(ur'({{[\n ]*)[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])] + ur'( *[\||\n\t|}])', ur'\1' +  ModeleFR[m] + ur'\2', PageTemp)
         # Suppression des modèles vides
-        regex = u'{{ *[' + ModeleFR[m][0:1] + ur'|' + ModeleFR[m][0:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *}}'
+        regex = u'{{ *[' + ModeleFR[m][:1] + ur'|' + ModeleFR[m][:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *}}'
         while re.search(regex, PageTemp):
             if debugLevel > 1: print(u' while1' + regex)
             PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + PageTemp[re.search(regex, PageTemp).end():]
         # Traduction des paramètres de chaque modèle de la page
-        regex = u'{{ *[' + ModeleFR[m][0:1] + ur'|' + ModeleFR[m][0:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *[\||\n]'
+        regex = u'{{ *[' + ModeleFR[m][:1] + ur'|' + ModeleFR[m][:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *[\||\n]'
         while re.search(regex, PageTemp):
             if debugLevel > 1: print(u' while2')
             PageEnd = PageEnd + PageTemp[:re.search(regex, PageTemp).start()+2]

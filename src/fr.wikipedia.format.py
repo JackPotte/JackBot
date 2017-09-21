@@ -164,7 +164,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'chinois')
+                p.pagesBySearch(u'insource:"année première impression"')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Modèle:Dead link')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
