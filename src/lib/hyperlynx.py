@@ -890,7 +890,9 @@ def hyperlynx(PageTemp, debugLevel = 0):
                     
                 
                 # Détection si l'hyperlien est dans un modèle (si aucun modèle n'est fermé avant eux)
-                if DebutPage.rfind(u'{{') != -1 and DebutPage.rfind(u'{{') > DebutPage.rfind(u'}}'):
+                if (DebutPage.rfind(u'{{') != -1 and DebutPage.rfind(u'{{') > DebutPage.rfind(u'}}')) or \
+                    (DebutPage.rfind(u'url=') != -1 and DebutPage.rfind(u'url=') > DebutPage.rfind(u'}}')) or \
+                    (DebutPage.rfind(u'url =') != -1 and DebutPage.rfind(u'url =') > DebutPage.rfind(u'}}')):
                     DebutModele = DebutPage.rfind(u'{{')
                     DebutPage = DebutPage[DebutPage.rfind(u'{{'):len(DebutPage)]
                     AncienModele = u''
