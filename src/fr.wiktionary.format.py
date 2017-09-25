@@ -3954,7 +3954,7 @@ def main(*args):
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
-            afterPage = u'casseroleries'
+            afterPage = u'tritonides'
             if len(sys.argv) > 2: afterPage = sys.argv[2]
             #p.pagesByCat(u'Mots ayant des homophones', afterPage = afterPage, recursive = False)
             p.pagesByCat(u'Formes de noms communs en français', afterPage = afterPage, recursive = False)
