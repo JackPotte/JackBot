@@ -2010,7 +2010,6 @@ def treatPageByName(pageName):
                     summary = summary + u', retrait de {{clé de tri}}'
                     PageTemp = re.sub(regex, '', PageTemp)
 
-        '''
         if debugLevel > 0: print u'Catégories de prononciation'
         if pageName[-2:] == u'um' and PageTemp.find(u'ɔm|fr}}') != -1:
             PageTemp = addCat(PageTemp, u'fr', u'um prononcés /ɔm/ en français')
@@ -3945,7 +3944,7 @@ def main(*args):
         elif sys.argv[1] == u'-test2':
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'Adréchoise')
+            treatPageByName(u'Agnièroise')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
