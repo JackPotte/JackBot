@@ -50,6 +50,7 @@ allNamespaces = False
 treatTemplates = False
 treatCategories = False
 fixGenders = True
+waitAfterHumans = True
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
 
@@ -1646,7 +1647,7 @@ def treatPageByName(pageName):
             savePage(page, u'#REDIRECT[[' + pageName + ']]', u'Redirection pour apostrophe')
 
     page = Page(site, pageName)
-    if debugLevel == 0 and not hasMoreThanTime(page): return
+    if debugLevel == 0 and waitAfterHumans and not hasMoreThanTime(page): return
 
     PageBegin = getContentFromPage(page, 'All')
     if PageBegin == 'KO': return
@@ -3937,6 +3938,7 @@ p = PageProvider(treatPageByName, site, debugLevel)
 setGlobals(debugLevel, site, username)
 setGlobalsWiktionary(debugLevel, site, username)
 def main(*args):
+    global waitAfterHumans
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
         if sys.argv[1] == u'-test':
@@ -3944,8 +3946,10 @@ def main(*args):
         elif sys.argv[1] == u'-test2':
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'Agnièroise')
+            waitAfterHumans = False
+            treatPageByName(u'Sérézinoise')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
+            waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
             regex = ur'{{langue\|conv}}.*{{S\|traductions}}.*{{langue\|fr}}'
