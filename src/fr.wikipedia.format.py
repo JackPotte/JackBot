@@ -34,7 +34,7 @@ if debugLevel > 1: print siteFamily
 site = pywikibot.Site(siteLanguage, siteFamily)
 username = config.usernames[siteFamily][siteLanguage]
 
-checkURL = True
+translateURL = True
 fixTags = False
 fixFiles = True
 allNamespaces = False
@@ -61,7 +61,7 @@ def treatPageByName(pageName):
     PageTemp = globalOperations(PageTemp)
     if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
-    if checkURL:
+    if translateURL:
         if debugLevel > 0: print u'Test des URL'
         PageTemp = hyperlynx(PageTemp, debugLevel)
     regex = ur'({{[Ll]ien *\|[^}]*)traducteur( *=)'
@@ -168,8 +168,8 @@ def main(*args):
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Modèle:Dead link')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
-            global checkURL
-            checkURL = False
+            global translateURL
+            translateURL = False
             global allNamespaces
             allNamespaces = True
             afterPage = u''
