@@ -45,6 +45,7 @@ checkURL = False
 fixTags = False
 fixFiles = True
 addDefaultSort = False
+removeDefaultSort = True
 allNamespaces = False
 treatTemplates = False
 treatCategories = False
@@ -832,6 +833,7 @@ Modele.append(u'gram')
 Modele.append(u'grammaire')
 Modele.append(u'graphe')
 Modele.append(u'gravure')
+Modele.append(u'grenouilles')
 Modele.append(u'guerre')
 Modele.append(u'gymnastique')
 Modele.append(u'hand')
@@ -1997,15 +1999,17 @@ def treatPageByName(pageName):
 
         PageTemp = PageTemp.replace(u'{{clef de tri', u'{{clé de tri')
         #TODO: uca-default gère af, am, ar, as, ast, az, be, be-tarask, bg, bn, bn@collation=traditional, bo, br, bs, bs-Cyrl, ca, chr, co, cs, cy, da, de, de-AT@collation=phonebook, dsb, ee, el, en, eo, es, et, eu, fa, fi, fil, fo, fr, fr-CA, fur, fy, ga, gd, gl, gu, ha, haw, he, hi, hr, hsb, hu, hy, id, ig, is, it, ka, kk, kl, km, kn, kok, ku, ky, la, lb, lkt, ln, lo, lt, lv, mk, ml, mn, mo, mr, ms, mt, nb, ne, nl, nn, no, oc, om, or, pa, pl, pt, rm, ro, ru, rup, sco, se, si, sk, sl, smn, sq, sr, sr-Latn, sv, sv@collation=standard, sw, ta, te, th, tk, tl, to, tr, tt, uk, uz, vi, vo, yi, yo, zu
-        '''if addDefaultSort:
+        if addDefaultSort:
             if debugLevel > 0: print u'Clés de tri'
             PageTemp = addDefaultSort(PageTemp)
         #TODO: consensus
-        if u'{{langue|fr}}' in PageTemp and not u'-' in pageName and not u'/' in pageName:
-            regex = ur"\n{{clé de tri([^}]*)}}"
-            if re.search(regex, PageTemp):
-                summary = summary + u', retrait de {{clé de tri}}'
-                PageTemp = re.sub(regex, '', PageTemp)
+        if removeDefaultSort:
+            if u'{{langue|fr}}' in PageTemp and not u'-' in pageName and not u'/' in pageName and not u'’' in pageName:
+                regex = ur"\n{{clé de tri([^}]*)}}"
+                if re.search(regex, PageTemp):
+                    summary = summary + u', retrait de {{clé de tri}}'
+                    PageTemp = re.sub(regex, '', PageTemp)
+
         '''
         if debugLevel > 0: print u'Catégories de prononciation'
         if pageName[-2:] == u'um' and PageTemp.find(u'ɔm|fr}}') != -1:
@@ -2471,6 +2475,10 @@ def treatPageByName(pageName):
 
             # Ajout de modèles pour les gentités et leurs adjectifs
             if debugLevel > 0: print u'Gentilés'
+            regex = ur'({{fr\-[^}]+)\\'
+            if re.search(regex, PageTemp):
+                PageTemp = re.sub(regex, ur'\1', PageTemp)
+
             ligne = 6
             colonne = 4
             # TODO : fusionner avec le tableau des modèles de flexion
@@ -2510,7 +2518,7 @@ def treatPageByName(pageName):
                 if ModeleGent[l][1] == ur'fr-accord-s' and rePageName[-1:] == u'e' and rePageName[-2:-1] == u's':
                     regex = ur'\({{p}} : [\[\']*' + rePageName + ur's[\]\']*, {{m}} : [\[\']*' + rePageName[:-1] + ur'[\]\']*\)'
                     if re.search(regex, PageTemp):
-                        PageTemp = re.sub(regex, '{{' + ModeleGent[l][1] + u'|ms=' + rePageName[:-1] + '}}', PageTemp)
+                        PageTemp = re.sub(regex, '{{' + ModeleGent[l][1] + u'|ms=' + rePageName[:-1].replace(u'\\', u'') + '}}', PageTemp)
                         summary = summary + u', conversion des liens flexions en modèle boite'
                 regex = ur'\({{f}} : [\[\']*' + rePageName + ModeleGent[l][3] + ur'[\]\']*, {{mplur}} : [\[\']*' + rePageName + ModeleGent[l][2] + ur'[\]\']*, {{fplur}} : [\[\']*' + rePageName + ModeleGent[l][4] + ur'[\]\']*\)'
                 if re.search(regex, PageTemp):
@@ -3937,11 +3945,25 @@ def main(*args):
         elif sys.argv[1] == u'-test2':
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'audio-visuel')
+            treatPageByName(u'Adréchoise')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
-            regex = u'{{[Cc]itation bloc *\|[^}]*text-align: center'
+            regex = ur'{{langue\|conv}}.*{{S\|traductions}}.*{{langue\|fr}}'
+            testPage = None
+            if testPage is not None:
+                pageContent = getContentFromPageName(testPage)
+                if re.search(regex, pageContent, re.MULTILINE| re.DOTALL):
+                    print 'bon ok'
+                else:
+                    print 'ko'
+                pageContent = getContentFromPageName(u'Utilisateur:JackBot/test unitaire')
+                if re.search(regex, pageContent, re.MULTILINE| re.DOTALL):
+                    print 'ok'
+                else:
+                    print 'bon ko'
+                return
+
             if len(sys.argv) > 2: regex = sys.argv[2]
             p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
             #p.pagesByXML(siteLanguage + siteFamily + '.*xml', include = '{{écouter|', exclude = '{{S|prononciation}}')
