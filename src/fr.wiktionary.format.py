@@ -2475,7 +2475,7 @@ def treatPageByName(pageName):
             # Ajout de modèles pour les gentités et leurs adjectifs
             if debugLevel > 0: print u'Gentilés'
             regex = ur'({{fr\-[^}]+)\\'
-            if re.search(regex, PageTemp):
+            while re.search(regex, PageTemp):
                 PageTemp = re.sub(regex, ur'\1', PageTemp)
 
             ligne = 6
