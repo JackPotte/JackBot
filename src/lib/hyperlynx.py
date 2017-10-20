@@ -25,7 +25,7 @@ site = pywikibot.Site(language, family)
 # Préférences
 semiauto = False
 retablirNonBrise = False    # Reteste les liens brisés
-checkURL = True
+checkURL = False
 
 brokenDomains = []
 #brokenDomains.append('marianne2.fr')    # Site remplacé par marianne.net en mai 2017
