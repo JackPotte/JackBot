@@ -2257,6 +2257,10 @@ def treatPageByName(pageName):
         pattern = re.compile(regex)
         PageTemp = pattern.sub(ur"\1", PageTemp)
 
+        regex = ur"(\#\* {{ébauche\-exe\|[^}]*}})\n\#\*: {{trad\-exe\|[^}]*}}"
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur"\1", PageTemp)
+
         if debugLevel > 1: print u' Modèles trop courts'
         PageTemp = PageTemp.replace(u'{{fp}}', u'{{fplur}}')
         PageTemp = PageTemp.replace(u'{{mp}}', u'{{mplur}}')
