@@ -91,7 +91,7 @@ def treatPageByName(pageName):
               PageTemp.find(u'[[category:') == -1 and PageTemp.find(u'[[Category:') == -1 and \
               PageTemp.find(u'{{printable') == -1 and PageTemp.find(u'{{Printable') == -1:
                 PageTemp = PageTemp + u'\n\n{{BookCat}}'
-                summary = summary + u', {{BookCat}}'
+                summary = summary + u', [[Special:UncategorizedPages]]'
 
     PageEnd = PageEnd + PageTemp
     if PageEnd != PageBegin: savePage(page, PageEnd, summary)

@@ -118,6 +118,7 @@ def treatPageByName(pageName):
         if debugLevel > 0: print subPageName
         if subPageName in subPages and PageTemp.find(u'[[Catégorie:') == -1 and PageTemp.find(u'{{AutoCat}}') == -1 and PageTemp.find(u'{{imprimable') == -1:
             PageTemp = PageTemp + u'\n\n{{AutoCat}}'
+            summary = summary + u', [[Spécial:Pages non catégorisées]]'
 
     if page.namespace() == 0:
         # Remplacements consensuels (ex : numero -> numéro)

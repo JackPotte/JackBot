@@ -86,6 +86,7 @@ def treatPageByName(pageName):
         if addCategory:
             if trim(PageTemp) != '' and PageTemp.find(u'[[Catégorie:') == -1 and PageTemp.find(u'{{AutoCat}}') == -1 and PageTemp.find(u'{{imprimable') == -1:
                 PageTemp = PageTemp + u'\n\n{{AutoCat}}'
+                summary = summary + u', [[Spécial:Pages non catégorisées]]'
 
         # Clés de tri pour les noms propres
         if PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') != -1:
