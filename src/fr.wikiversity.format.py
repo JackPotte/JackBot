@@ -114,13 +114,20 @@ def treatPageByName(pageName):
     PageTemp = PageTemp.replace(u'[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
     PageTemp = PageTemp.replace(u'{{autoCat}}', u'{{AutoCat}}')
     if addCategory and pageName.find(u'/') != -1:
-        subPageName = pageName[pageName.find(u'/')+1:]
+        subPageName = pageName[pageName.rfind(u'/')+1:]
         if debugLevel > 0: print subPageName
         if subPageName in subPages and PageTemp.find(u'[[Catégorie:') == -1 and PageTemp.find(u'{{AutoCat}}') == -1 and PageTemp.find(u'{{imprimable') == -1:
             PageTemp = PageTemp + u'\n\n{{AutoCat}}'
 
     if page.namespace() == 0:
         # Remplacements consensuels (ex : numero -> numéro)
+        '''regex = ur'<div *style *= *"? *text\-align: *center;? *"? *>((?!div).*)</div>'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur'{{centrer|1=\1}}', PageTemp)
+        regex = ur'<div *style *= *"? *text\-align: *right;? *"? *>((?!div).*)</div>'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur'{{droite|1=\1}}', PageTemp)
+        '''
         for p in range(1, len(oldParameters)-1):
             if PageTemp.find(u'{{' + temp[p] + u'|') != -1 or PageTemp.find(u'{{' + oldParameters[p] + u'}}') != -1:
                 PageTemp = PageTemp[0:PageTemp.find(temp[p])] + newParameters[p] + PageTemp[PageTemp.find(temp[p])+len(temp[p]):]
@@ -489,11 +496,12 @@ def main(*args):
         elif sys.argv[1] == u'-test2':
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'Catégorie:Python')
+            treatPageByName(u'Acidité et basicité/Introduction')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
-            regex = u'{{[Ee]ncadre *\|[^}]*text-align: center'
+            #regex = u'{{[Ee]ncadre *\|[^}]*text-align: center'
+            regex = u'text-align'
             if len(sys.argv) > 2: regex = sys.argv[2]
             p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex)
         elif sys.argv[1] == u'-u':
