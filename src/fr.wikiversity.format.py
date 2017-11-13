@@ -122,6 +122,7 @@ def treatPageByName(pageName):
 
     if page.namespace() == 0:
         # Remplacements consensuels (ex : numero -> numéro)
+        # Balises désuètes : center
         '''regex = ur'<div *style *= *"? *text\-align: *center;? *"? *>((?!div).*)</div>'
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, ur'{{centrer|1=\1}}', PageTemp)
@@ -129,6 +130,11 @@ def treatPageByName(pageName):
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, ur'{{droite|1=\1}}', PageTemp)
         '''
+
+        regex = ur'<div *style *= *"? *text\-align: *center;? *"? *>({{[Ee]ncadre\|)((?!div).*)</div>'
+        if re.search(regex, PageTemp):
+            PageTemp = re.sub(regex, ur'\1class=center|\2', PageTemp)
+
         for p in range(1, len(oldParameters)-1):
             if PageTemp.find(u'{{' + temp[p] + u'|') != -1 or PageTemp.find(u'{{' + oldParameters[p] + u'}}') != -1:
                 PageTemp = PageTemp[0:PageTemp.find(temp[p])] + newParameters[p] + PageTemp[PageTemp.find(temp[p])+len(temp[p]):]
@@ -497,7 +503,7 @@ def main(*args):
         elif sys.argv[1] == u'-test2':
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'Acidité et basicité/Introduction')
+            treatPageByName(u'Fonctions d\'une variable réelle/Dérivabilité')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
@@ -513,7 +519,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'chinois')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:autres projets')
+            p.pagesByLink(u'Modèle:Encadre')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
