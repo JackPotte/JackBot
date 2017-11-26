@@ -53,53 +53,6 @@ fixGenders = True
 waitAfterHumans = True
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
-
-Sections = []
-Niveau = []
-Sections.append(u'étymologie')
-Niveau.append(u'===')
-Sections.append(u'nom')
-Niveau.append(u'===')
-Sections.append(u'variantes orthographiques')
-Niveau.append(u'====')
-Sections.append(u'synonymes')
-Niveau.append(u'====')
-Sections.append(u'antonymes')
-Niveau.append(u'====')
-Sections.append(u'dérivés')
-Niveau.append(u'====')
-Sections.append(u'apparentés')
-Niveau.append(u'====')
-Sections.append(u'vocabulaire')
-Niveau.append(u'====')
-Sections.append(u'hyperonymes')
-Niveau.append(u'====')
-Sections.append(u'hyponymes')
-Niveau.append(u'====')
-Sections.append(u'méronymes')
-Niveau.append(u'====')
-Sections.append(u'holonymes')
-Niveau.append(u'====')
-Sections.append(u'traductions')
-Niveau.append(u'====')
-Sections.append(u'prononciation')
-Niveau.append(u'===')
-Sections.append(u'homophones')
-Niveau.append(u'====')
-Sections.append(u'paronymes')
-Niveau.append(u'====')
-Sections.append(u'anagrammes')
-Niveau.append(u'===')
-Sections.append(u'voir aussi')
-Niveau.append(u'===')
-Sections.append(u'références')
-Niveau.append(u'===')
-Sections.append(u'catégorie')
-Niveau.append(u'')
-Sections.append(u'clé de tri')
-Niveau.append(u'')
-
-
 Modele = [] # Liste des modèles du site à traiter
 Section = [] # Sections à remplacer
 # Paragraphes autorisant les modèles catégorisants par langue ({{voir| et {{voir/ sont gérés individuellement)
@@ -651,6 +604,7 @@ Modele.append(u'contemporain')
 Modele.append(u'copropriété')
 Modele.append(u'cordonnerie')
 Modele.append(u'cosm')
+Modele.append(u'cosmétique')
 Modele.append(u'cosmétologie')
 Modele.append(u'couche application')
 Modele.append(u'couche liaison')
@@ -759,6 +713,7 @@ Modele.append(u'figures')
 Modele.append(u'figuré')
 Modele.append(u'finan')
 Modele.append(u'finance')
+Modele.append(u'fisc')
 Modele.append(u'fiscalité')
 Modele.append(u'flamants')
 Modele.append(u'fleurs')
@@ -830,6 +785,7 @@ Modele.append(u'hand')
 Modele.append(u'handball')
 Modele.append(u'handisport')
 Modele.append(u'hapax')
+Modele.append(u'herpétologie')
 Modele.append(u'hindouisme')
 Modele.append(u'hippisme')
 Modele.append(u'hippologie')
@@ -909,6 +865,7 @@ Modele.append(u'jeux')
 Modele.append(u'joaillerie')
 Modele.append(u'jogging')
 Modele.append(u'jonglage')
+Modele.append(u'jonglerie')
 Modele.append(u'jouets')
 Modele.append(u'journal')
 Modele.append(u'journalisme')
@@ -969,8 +926,10 @@ Modele.append(u'mathématiques')
 Modele.append(u'maçon')
 Modele.append(u'maçonnerie')
 Modele.append(u'menuiserie')
+Modele.append(u'mercatique')
 Modele.append(u'mers')
 Modele.append(u'meuble')
+Modele.append(u'mf ?')
 Modele.append(u'mf ?')
 Modele.append(u'microbiologie')
 Modele.append(u'mili')
@@ -1079,11 +1038,13 @@ Modele.append(u'par analogie')
 Modele.append(u'par dérision')
 Modele.append(u'par ellipse')
 Modele.append(u'parataxe')
+Modele.append(u'parfumerie')
 Modele.append(u'passif')
 Modele.append(u'pathologie')
 Modele.append(u'patin')
 Modele.append(u'paume')
 Modele.append(u'pays')
+Modele.append(u'pêche à la ligne')
 Modele.append(u'peinture')
 Modele.append(u'perroquets')
 Modele.append(u'peu attesté')
@@ -1191,6 +1152,7 @@ Modele.append(u'religieux')
 Modele.append(u'religion')
 Modele.append(u'religions')
 Modele.append(u'reliure')
+Modele.append(u'renseignement')
 Modele.append(u'repro')
 Modele.append(u'reproduction')
 Modele.append(u'reptiles')
@@ -1633,31 +1595,6 @@ Genre.append(u'msing')
 Genre.append(u'n')
 Genre.append(u'nplur')
 Genre.append(u'nsing')
-
-# https://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Mod%C3%A8les_d%E2%80%99accord_en_fran%C3%A7ais
-flexionTemplatesWithMs = []
-flexionTemplatesWithMs.append(u'fr-accord-ain')
-flexionTemplatesWithMs.append(u'fr-accord-al')
-flexionTemplatesWithMs.append(u'fr-accord-an')
-flexionTemplatesWithMs.append(u'fr-accord-cons')
-flexionTemplatesWithMs.append(u'fr-accord-eau')
-flexionTemplatesWithMs.append(u'fr-accord-el')
-flexionTemplatesWithMs.append(u'fr-accord-en')
-flexionTemplatesWithMs.append(u'fr-accord-er')
-flexionTemplatesWithMs.append(u'fr-accord-et')
-flexionTemplatesWithMs.append(u'fr-accord-in')
-flexionTemplatesWithMs.append(u'fr-accord-mixte')
-flexionTemplatesWithMs.append(u'fr-accord-on')
-flexionTemplatesWithMs.append(u'fr-accord-ot')
-flexionTemplatesWithMs.append(u'fr-accord-rég')
-flexionTemplatesWithMs.append(u'fr-accord-s')
-flexionTemplatesWithMs.append(u'fr-accord-un')
-
-flexionTemplatesWithS = []
-flexionTemplatesWithS.append(u'fr-rég')
-flexionTemplatesWithS.append(u'fr-rég-x')
-#TODO: autres = fr-accord-mf-ail, fr-accord-mf-al, fr-accord-comp, fr-accord-comp-mf, fr-accord-eur, fr-accord-eux, fr-accord-f, fr-inv, fr-accord-ind, fr-accord-mf, fr-accord-oux, fr-accord-personne, fr-accord-t-avant1835
-
 
 def treatPageByName(pageName):
     summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
@@ -3980,7 +3917,7 @@ def main(*args):
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
-            regex = ur'{{langue\|conv}}.*{{S\|traductions}}.*{{langue\|fr}}'
+            regex = ur"(\#\* {{ébauche\-exe\|[^}]*}})\n\#\*: {{trad\-exe\|[^}]*}}"
             testPage = None
             if testPage is not None:
                 pageContent = getContentFromPageName(testPage)
@@ -4007,10 +3944,10 @@ def main(*args):
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
-            afterPage = u'tritonides'
+            afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
             #p.pagesByCat(u'Mots ayant des homophones', afterPage = afterPage, recursive = False)
-            p.pagesByCat(u'Formes de noms communs en français', afterPage = afterPage, recursive = False)
+            p.pagesByCat(u'Traduction en français demandée d’exemple(s) écrits en anglais', afterPage = afterPage, recursive = False)
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':

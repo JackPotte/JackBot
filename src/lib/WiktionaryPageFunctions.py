@@ -53,6 +53,44 @@ Niveau.append(u'')
 Sections.append(u'clé de tri')
 Niveau.append(u'')
 
+# https://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Mod%C3%A8les_d%E2%80%99accord_en_fran%C3%A7ais
+flexionTemplatesWithMs = []
+flexionTemplatesWithMs.append(u'fr-accord-ain')
+flexionTemplatesWithMs.append(u'fr-accord-al')
+flexionTemplatesWithMs.append(u'fr-accord-an')
+flexionTemplatesWithMs.append(u'fr-accord-cons')
+flexionTemplatesWithMs.append(u'fr-accord-eau')
+flexionTemplatesWithMs.append(u'fr-accord-el')
+flexionTemplatesWithMs.append(u'fr-accord-en')
+flexionTemplatesWithMs.append(u'fr-accord-er')
+flexionTemplatesWithMs.append(u'fr-accord-et')
+flexionTemplatesWithMs.append(u'fr-accord-in')
+flexionTemplatesWithMs.append(u'fr-accord-mixte')
+flexionTemplatesWithMs.append(u'fr-accord-on')
+flexionTemplatesWithMs.append(u'fr-accord-ot')
+flexionTemplatesWithMs.append(u'fr-accord-rég')
+flexionTemplatesWithMs.append(u'fr-accord-s')
+flexionTemplatesWithMs.append(u'fr-accord-un')
+
+flexionTemplatesWithS = []
+flexionTemplatesWithS.append(u'fr-rég')
+flexionTemplatesWithS.append(u'fr-rég-x')
+
+flexionTemplates = []
+flexionTemplates.append(u'fr-accord-mf-ail')
+flexionTemplates.append(u'fr-accord-mf-al')
+flexionTemplates.append(u'fr-accord-comp')
+flexionTemplates.append(u'fr-accord-comp-mf')
+flexionTemplates.append(u'fr-accord-eur')
+flexionTemplates.append(u'fr-accord-eux')
+flexionTemplates.append(u'fr-accord-f')
+flexionTemplates.append(u'fr-inv')
+flexionTemplates.append(u'fr-accord-ind')
+flexionTemplates.append(u'fr-accord-mf')
+flexionTemplates.append(u'fr-accord-oux')
+flexionTemplates.append(u'fr-accord-personne')
+flexionTemplates.append(u'fr-accord-t-avant1835')
+#TODO flexionTemplates['fr'] pour join()
 
 def setGlobalsWiktionary(myDebugLevel, mySite, myUsername):
     global debugLevel
@@ -200,21 +238,27 @@ def getLanguageSection(pageContent, languageCode = 'fr'):
     return pageContent, startPosition, endPosition
 
 def getPronunciationFromContent(pageContent, languageCode, nature = None):
-    #TODO: prononciations post-paramètres des autres modèles : fr-accord-rég...
-    pronunciation = ''
-    regex = ur"({{" + languageCode + "\-inv\||{{" + languageCode + "\-rég\|)([^{}\|]+)([^{}]*}}\n\'\'\'" \
-     + rePageName.replace(u'User:',u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
-    if re.search(regex, pageContent): pageContent = re.sub(regex, ur'\1\2\3 {{pron|\2|' + languageCode + '}}\4\n', pageContent)
-
-    #raw_input(pageContent.encode(config.console_encoding, 'replace'))
+    regex = ur".*'''([^']+)'''.*"
+    s = re.search(regex, pageContent, re.MULTILINE| re.DOTALL)
+    if not s: return
+    pageName = s.group(1)
+    rePageName = re.escape(pageName)
+    #templates = '|'.join(flexionTemplates['fr'])
+    templates = u'fr\-inv|fr\-rég'
+    regex = ur'{{(' + templates + u")\|([^{}\|]+)([^{}]*}}\n\'\'\'" \
+     + rePageName.replace(u'User:', u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur'{{\1|\2\3 {{pron|\2|' + languageCode + '}}\4\n', pageContent)
     regex = ur"{{pron\|([^}]+)\|" + languageCode + "}}"
     s = re.search(regex, pageContent)
+    pronunciation = ''
     if s:
         pronunciation = s.group(1)
-        if debugLevel > 0: raw_input(u' prononciation en ' + languageCode + ' : ' + pronunciation)
-        pron = pron[:pron.find(u'=')]
-        pron = pron[:pron.rfind(u'|')]
-        pageContent = re.sub(ur'{{pron\|'+pronInitiale+ur'\|' + languageCode + '}}', ur'{{pron|'+pron+ur'|' + languageCode + '}}', pageContent)
+        pronunciation = pronunciation[:pronunciation.find(u'=')]
+        pronunciation = pronunciation[:pronunciation.rfind(u'|')]
+        if debugLevel > 0: raw_input(u' prononciation en ' + languageCode + u' : ' + pronunciation)
+        pageContent = re.sub(ur'{{pron\|\|' + languageCode + '}}', \
+            ur'{{pron|'+ pronunciation + ur'|' + languageCode + '}}', pageContent)
     return pronunciation
 
 def getPronunciation(pageContent, languageCode, nature = None):

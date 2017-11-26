@@ -49,7 +49,10 @@ def treatPageByName(pageName):
         print u' Page inexistante'
         return
     PageSing = getContentFromPage(page, 'All')
-    if PageSing.find(u'{{formater') != -1 or PageSing.find(u'{{SI|') != -1 or PageSing.find(u'{{SI}}') != -1 or PageSing.find(u'{{supp|') != -1 or PageSing.find(u'{{supp}}') != -1 or PageSing.find(u'{{supprimer|') != -1 or PageSing.find(u'{{supprimer') != -1 or PageSing.find(u'{{PàS') != -1 or PageSing.find(u'{{S|faute') != -1 or PageSing.find(u'{{S|erreur') != -1:
+    if PageSing.find(u'{{formater') != -1 or PageSing.find(u'{{SI|') != -1 or PageSing.find(u'{{SI}}') != -1 or \
+        PageSing.find(u'{{supp|') != -1 or PageSing.find(u'{{supp}}') != -1 or PageSing.find(u'{{supprimer|') != -1 or \
+        PageSing.find(u'{{supprimer') != -1 or PageSing.find(u'{{PàS') != -1 or PageSing.find(u'{{S|faute') != -1 or \
+        PageSing.find(u'{{S|erreur') != -1:
         if debugLevel > 0: print u'Page en travaux : non traitée l 65'
         return
 
@@ -66,7 +69,7 @@ def treatPageByName(pageName):
     #param.append(u'1')
 
     for m in range(0, len(template)):
-        l = template[m][:2]
+        languageCode = template[m][:2]
         # Parcours de la page pour chaque modèle
         if debugLevel > 1: print ' début du for ' + str(m) + u', recherche du modèle : ' + template[m]
         if PageSing.find(template[m] + u'|') == -1 and PageSing.find(template[m] + u'}') == -1:
@@ -74,18 +77,18 @@ def treatPageByName(pageName):
             continue
         else:
             if debugLevel > 0: pywikibot.output(u' Modèle : \03{blue}' + template[m] + u'\03{default} trouvé')
-            PageTemp = PageSing
+            pageContent = PageSing
         
-        while PageTemp.find(template[m]) != -1:
+        while pageContent.find(template[m]) != -1:
             if len(template[m]) < 3:
                 if debugLevel > 0: print u' bug'
                 break
             if debugLevel > 1: 
                 print template[m].encode(config.console_encoding, 'replace')
-                print PageTemp.find(template[m])
+                print pageContent.find(template[m])
                 
             # Parcours de la page pour chaque occurence du modèle
-            nature = PageTemp[:PageTemp.find(template[m])]
+            nature = pageContent[:pageContent.find(template[m])]
             nature = nature[nature.rfind(u'{{S|')+len(u'{{S|'):]
             nature = nature[:nature.find(u'|')]
             if debugLevel > 0:
@@ -99,9 +102,9 @@ def treatPageByName(pageName):
                 print u'  section erreur'
                 return
                 
-            PageTemp = PageTemp[PageTemp.find(template[m])+len(template[m]):]
-            suffix = getParameter(PageTemp, u'inv')
-            singular = getParameter(PageTemp, u's')
+            pageContent = pageContent[pageContent.find(template[m])+len(template[m]):]
+            suffix = getParameter(pageContent, u'inv')
+            singular = getParameter(pageContent, u's')
             plural = u''
             if suffix != u'':
                 if singular == u'':
@@ -114,18 +117,19 @@ def treatPageByName(pageName):
                     print u'  s= ne correspond pas'
                     print singular.encode(config.console_encoding, 'replace')
                 break
-                
-            # Prononciation
-            if PageTemp.find(u'|pp=') != -1 and PageTemp.find(u'|pp=') < PageTemp.find(u'}}'):
+
+            pron = getPronunciationFromContent(pageContent, languageCode)
+            if debugLevel > 1: raw_input(pron)
+            if pageContent.find(u'|pp=') != -1 and pageContent.find(u'|pp=') < pageContent.find(u'}}'):
                 if debugLevel > 0: print ' pp='
-                PageTemp2 = PageTemp[PageTemp.find(u'|pp=')+4:PageTemp.find(u'}}')]
-                if PageTemp2.find(u'|') != -1:
-                    pron = PageTemp[PageTemp.find(u'|pp=')+4:PageTemp.find(u'|pp=')+4+PageTemp2.find(u'|')]
+                pageContent2 = pageContent[pageContent.find(u'|pp=')+4:pageContent.find(u'}}')]
+                if pageContent2.find(u'|') != -1:
+                    pron = pageContent[pageContent.find(u'|pp=')+4:pageContent.find(u'|pp=')+4+pageContent2.find(u'|')]
                 else:
-                    pron = PageTemp[PageTemp.find(u'|pp=')+4:PageTemp.find(u'}}')]
+                    pron = pageContent[pageContent.find(u'|pp=')+4:pageContent.find(u'}}')]
             else:
                 if debugLevel > 1: print '  prononciation identique au singulier'
-                pron = PageTemp[:PageTemp.find(u'}}')]
+                pron = pageContent[:pageContent.find(u'}}')]
                 if debugLevel > 1: print u'  pron avant while : ' + pron.encode(config.console_encoding, 'replace')
                 if pron.find(u'|pron=') != -1:
                     pron = u'|' + pron[pron.find(u'|pron=')+len(u'|pron='):]
@@ -159,7 +163,7 @@ def treatPageByName(pageName):
                         if debugLevel > 0: print u'  pron dans while2 : ' + pron.encode(config.console_encoding, 'replace')
                 '''
                 if debugLevel > 1: print u'  pron après while : ' + pron.encode(config.console_encoding, 'replace')
-            while pron[:1] == u' ': pron = pron[1:len(pron)]
+            pron = trim(pron)
             if pron.rfind(u'|') > 0:
                 pronM = pron[:pron.rfind(u'|')]
                 while pronM.rfind(u'|') > 0:
@@ -177,27 +181,30 @@ def treatPageByName(pageName):
             
             # h aspiré
             H = u''
-            if PageTemp.find(u'|prefpron={{h aspiré') != -1 and PageTemp.find(u'|prefpron={{h aspiré') < PageTemp.find(u'}}'): H = u'|prefpron={{h aspiré}}'
-            if PageTemp.find(u'|préfpron={{h aspiré') != -1 and PageTemp.find(u'|préfpron={{h aspiré') < PageTemp.find(u'}}'): H = u'|préfpron={{h aspiré}}'
+            if pageContent.find(u'|prefpron={{h aspiré') != -1 and pageContent.find(u'|prefpron={{h aspiré') < pageContent.find(u'}}'):
+                H = u'|prefpron={{h aspiré}}'
+            if pageContent.find(u'|préfpron={{h aspiré') != -1 and pageContent.find(u'|préfpron={{h aspiré') < pageContent.find(u'}}'):
+                H = u'|préfpron={{h aspiré}}'
             # gender
             gender = u''
-            PageTemp2 = PageTemp[PageTemp.find(u'\n')+1:len(PageTemp)]
-            while PageTemp2[:1] == u'[' or PageTemp2[:1] == u'\n' and len(PageTemp2) > 1: PageTemp2 = PageTemp2[PageTemp2.find(u'\n')+1:len(PageTemp2)]
-            if PageTemp2.find(u'{{m}}') != -1 and PageTemp2.find(u'{{m}}') < PageTemp2.find(u'\n'): gender = u' {{m}}'    
-            if PageTemp2.find(u'{{f}}') != -1 and PageTemp2.find(u'{{f}}') < PageTemp2.find(u'\n'): gender = u' {{f}}'
+            pageContent2 = pageContent[pageContent.find(u'\n')+1:len(pageContent)]
+            while pageContent2[:1] == u'[' or pageContent2[:1] == u'\n' and len(pageContent2) > 1:
+                pageContent2 = pageContent2[pageContent2.find(u'\n')+1:len(pageContent2)]
+            if pageContent2.find(u'{{m}}') != -1 and pageContent2.find(u'{{m}}') < pageContent2.find(u'\n'): gender = u' {{m}}'    
+            if pageContent2.find(u'{{f}}') != -1 and pageContent2.find(u'{{f}}') < pageContent2.find(u'\n'): gender = u' {{f}}'
             MF = u''
-            if PageTemp2.find(u'{{mf}}') != -1 and PageTemp2.find(u'{{mf}}') < PageTemp2.find(u'\n'):
+            if pageContent2.find(u'{{mf}}') != -1 and pageContent2.find(u'{{mf}}') < pageContent2.find(u'\n'):
                 gender = u' {{mf}}'
                 MF = u'|mf=oui'
                 if PageSing.find(u'|mf=') == -1:
-                    PageSing = PageSing[:PageSing.find(template[m])+len(template[m])] + u'|mf=oui' + PageSing[PageSing.find(template[m])+len(template[m]):len(PageSing)]
+                    PageSing = PageSing[:PageSing.find(template[m])+len(template[m])] + u'|mf=oui' + PageSing[PageSing.find(template[m])+len(template[m]):]
                     savePage(page, PageSing, u'|mf=oui')
-            if PageTemp.find(u'|mf=') != -1 and PageTemp.find(u'|mf=') < PageTemp.find(u'}}'): MF = u'|mf=oui' 
+            if pageContent.find(u'|mf=') != -1 and pageContent.find(u'|mf=') < pageContent.find(u'}}'): MF = u'|mf=oui' 
             # Pluriel
             summary = u'Création du pluriel de [[' + pageName + u']]'
             if plural == u'':
-                if (PageTemp.find(u'|p=') != -1 and PageTemp.find(u'|p=') < PageTemp.find(u'}}')):
-                    plural = PageTemp[PageTemp.find(u'|p=')+3:PageTemp.find(u'}}')]
+                if (pageContent.find(u'|p=') != -1 and pageContent.find(u'|p=') < pageContent.find(u'}}')):
+                    plural = pageContent[pageContent.find(u'|p=')+3:pageContent.find(u'}}')]
                     if plural.find(u'|') != -1: plural = plural[:plural.find(u'|')]
                 if not plural:
                     if template[m][-1:] == u'x':
@@ -208,7 +215,7 @@ def treatPageByName(pageName):
                     print u' pluriel en -ss'
                     return
                 if debugLevel > 1:
-                    print '  paramètre du modèle du lemme : ' + PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace')
+                    print '  paramètre du modèle du lemme : ' + pageContent[:pageContent.find(u'}}')].encode(config.console_encoding, 'replace')
             
             page2 = Page(site, plural)
             if page2.exists():
@@ -219,39 +226,45 @@ def treatPageByName(pageName):
             else:
                 if debugLevel > 0: print u'  Pluriel introuvable l 219'
                 pluralPage = u''
-            
+
             # **************** Pluriel 1 ****************
             if debugLevel > 1: print u'  Pluriel n°1'
-            if param[m] == '1':
-                lemma = ''
+            if plural[-2:] == u'xs':
+                print u' Pluriel en xs : erreur'
+                return
+            elif plural[-2:] == u'ss':
+                lemmaParam = u'|' + param[m] + u'=' + plural[:-2]
+                PageSing = PageSing[:PageSing.find(template[m])+len(template[m])] + lemmaParam + \
+                    PageSing[PageSing.find(template[m])+len(template[m]):]
+                savePage(page, PageSing, u'{{' + template[m] + u'|s=...}}')
+                break
+            elif param[m] == '1':
+                lemmaParam = ''
             else:
-                lemma = '|' + param[m] + u'=' + pageName
-            flexionTemplate = u'{{' + template[m] + pronM + H + MF + lemma
+                lemmaParam = '|' + param[m] + u'=' + pageName
+
+            flexionTemplate = u'{{' + template[m] + pronM + H + MF + lemmaParam
             if plural != pageName + u's' and plural != pageName + u'x':
                 flexionTemplate += u'|p={{subst:PAGENAME}}'
             flexionTemplate += u'}}'
-            PageEnd = u'== {{langue|' + l + u'}} ==\n=== {{S|' + nature + u'|' + l + u'|flexion}} ===\n' + flexionTemplate + u'\n\'\'\'' + plural + u'\'\'\' {{pron' + pronM + '|' + l + u'}}' + gender + u'\n# \'\'Pluriel de\'\' [[' + pageName +']].\n'
-            while PageEnd.find(u'{{pron|' + l + u'}}') != -1:
-                PageEnd = PageEnd[:PageEnd.find(u'{{pron|' + l + u'}}')+7] + u'|' + PageEnd[PageEnd.find(u'{{pron|' + l + u'}}')+7:len(PageEnd)]
 
-            if plural[-2:] == u'ss':
-                PageSing = PageSing[:PageSing.find(template[m])+len(template[m])] + u'|' + param[m] + u'=' + plural[:-2] + PageSing[PageSing.find(template[m])+len(template[m]):]
-                savePage(page, PageSing, u'{{' + template[m] + u'|s=...}}')
-            elif plural[-2:] == u'xs':
-                print u' Pluriel en xs'
-                return
-            else:
-                PageEnd = PageEnd + u'\n' + pluralPage
+            PageEnd = u'== {{langue|' + languageCode + u'}} ==\n=== {{S|' + nature + u'|' + \
+                languageCode + u'|flexion}} ===\n' + flexionTemplate + u'\n\'\'\'' + plural + u'\'\'\' {{pron' + pronM + \
+                '|' + languageCode + u'}}' + gender + u'\n# \'\'Pluriel de\'\' [[' + pageName +']].\n'
+            while PageEnd.find(u'{{pron|' + languageCode + u'}}') != -1:
+                PageEnd = PageEnd[:PageEnd.find(u'{{pron|' + languageCode + u'}}')+7] + u'|' + \
+                    PageEnd[PageEnd.find(u'{{pron|' + languageCode + u'}}')+7:]
+            PageEnd = PageEnd + u'\n' + pluralPage
 
-                CleTri = defaultSort(plural)
-                if addDefaultSort:
-                    if PageEnd.find(u'{{clé de tri') == -1 and CleTri != u'' and CleTri.lower() != plural.lower():
-                        PageEnd = PageEnd +  u'\n{{clé de tri|' + CleTri + u'}}\n'
-                PageEnd = html2Unicode(PageEnd)
-                savePage(page2, PageEnd, summary)
+            CleTri = defaultSort(plural)
+            if addDefaultSort:
+                if PageEnd.find(u'{{clé de tri') == -1 and CleTri != u'' and CleTri.lower() != plural.lower():
+                    PageEnd = PageEnd +  u'\n{{clé de tri|' + CleTri + u'}}\n'
+            PageEnd = html2Unicode(PageEnd)
+            savePage(page2, PageEnd, summary)
 
             # TODO: pluriel n°2
-            #raw_input(PageTemp.encode(config.console_encoding, 'replace'))
+            #raw_input(pageContent.encode(config.console_encoding, 'replace'))
             if debugLevel > 1: print u'  Fin du while'
         if debugLevel > 1: print u' Fin du for ' + str(m)
 
@@ -261,66 +274,67 @@ def createPluralFromForeignWiki(Page2):
     page1 = Page(site,Page2)
     if debugLevel > 0: print Page2.encode(config.console_encoding, 'replace')
     if page2.exists() and page2.namespace() == 0 and not page1.exists():
-        PageTemp = getPage(page2)
-        if PageTemp == u'': return
+        pageContent = getPage(page2)
+        if pageContent == u'': return
         # Nature grammaticale
-        PageTemp2 = PageTemp[:PageTemp.find(templateSource)]
+        pageContent2 = pageContent[:pageContent.find(templateSource)]
         # Code langue
-        PageTemp = PageTemp[PageTemp.find(templateSource)+len(templateSource)+1:len(PageTemp)]
-        if PageTemp.find("lang=") != -1 and PageTemp.find("lang=") < PageTemp.find(u'}}'):
-            PageTemp2 = PageTemp[PageTemp.find("lang=")+5:len(PageTemp)]
-            if PageTemp2.find(u'|') != -1 and PageTemp2.find(u'|') < PageTemp2.find(u'}}'):
-                codelangue = PageTemp2[:PageTemp2.find("|")]
-                PageTemp = PageTemp[:PageTemp.find("lang=")] + PageTemp[PageTemp.find("lang=")+5+PageTemp2.find("|"):len(PageTemp)]
+        pageContent = pageContent[pageContent.find(templateSource)+len(templateSource)+1:len(pageContent)]
+        if pageContent.find("lang=") != -1 and pageContent.find("lang=") < pageContent.find(u'}}'):
+            pageContent2 = pageContent[pageContent.find("lang=")+5:len(pageContent)]
+            if pageContent2.find(u'|') != -1 and pageContent2.find(u'|') < pageContent2.find(u'}}'):
+                languageCode = pageContent2[:pageContent2.find("|")]
+                pageContent = pageContent[:pageContent.find("lang=")] + pageContent[pageContent.find("lang=")+5+pageContent2.find("|"):]
             else:
-                codelangue = PageTemp2[:PageTemp2.find("}}")]
-                PageTemp = PageTemp[:PageTemp.find("lang=")] + PageTemp[PageTemp.find("lang=")+5+PageTemp2.find("}"):len(PageTemp)]
-            if codelangue == u'': codelangue = u'en'
-            elif codelangue == u'Italian': codelangue = u'it'
-            elif codelangue == u'Irish': codelangue = u'ga'
-            elif codelangue == u'German': codelangue = u'de'
-            elif codelangue == u'Middle English': codelangue = u'enm'
-            elif codelangue == u'Old English': codelangue = u'ang'
-            elif codelangue == u'Dutch': codelangue = u'nl'
-            elif codelangue == u'Romanian': codelangue = u'ro'
-            elif codelangue == u'Spanish': codelangue = u'es'
-            elif codelangue == u'Catalan': codelangue = u'ca'
-            elif codelangue == u'Portuguese': codelangue = u'pt'
-            elif codelangue == u'Russian': codelangue = u'ru'
-            elif codelangue == u'French': codelangue = u'fr'
-            elif codelangue == u'Scots': codelangue = u'sco'
-            elif codelangue == u'Chinese': codelangue = u'zh'
-            elif codelangue == u'Mandarin': codelangue = u'zh'
-            elif codelangue == u'Japanese': codelangue = u'ja'
+                languageCode = pageContent2[:pageContent2.find("}}")]
+                pageContent = pageContent[:pageContent.find("lang=")] + pageContent[pageContent.find("lang=")+5+pageContent2.find("}"):]
+            if languageCode == u'': languageCode = u'en'
+            elif languageCode == u'Italian': languageCode = u'it'
+            elif languageCode == u'Irish': languageCode = u'ga'
+            elif languageCode == u'German': languageCode = u'de'
+            elif languageCode == u'Middle English': languageCode = u'enm'
+            elif languageCode == u'Old English': languageCode = u'ang'
+            elif languageCode == u'Dutch': languageCode = u'nl'
+            elif languageCode == u'Romanian': languageCode = u'ro'
+            elif languageCode == u'Spanish': languageCode = u'es'
+            elif languageCode == u'Catalan': languageCode = u'ca'
+            elif languageCode == u'Portuguese': languageCode = u'pt'
+            elif languageCode == u'Russian': languageCode = u'ru'
+            elif languageCode == u'French': languageCode = u'fr'
+            elif languageCode == u'Scots': languageCode = u'sco'
+            elif languageCode == u'Chinese': languageCode = u'zh'
+            elif languageCode == u'Mandarin': languageCode = u'zh'
+            elif languageCode == u'Japanese': languageCode = u'ja'
         else:
-            codelangue = u'en'
-        #if debugLevel > 0: print u' ' + codelangue
+            languageCode = u'en'
+        #if debugLevel > 0: print u' ' + languageCode
         
-        while PageTemp[:1] == u' ' or PageTemp[:1] == u'|':
-            PageTemp = PageTemp[1:len(PageTemp)]
+        while pageContent[:1] == u' ' or pageContent[:1] == u'|':
+            pageContent = pageContent[1:len(pageContent)]
         # Lemme
-        if PageTemp.find(u']]') != -1 and PageTemp.find(u']]') < PageTemp.find(u'}}'): # Si on est dans un lien
-            mot = PageTemp[:PageTemp.find(u']]')+2]
-        elif PageTemp.find(u'|') != -1 and PageTemp.find(u'|') < PageTemp.find(u'}}'):
-            mot = PageTemp[:PageTemp.find(u'|')] # A faire : si dièse on remplace en même temps que les codelangue ci-dessous, à patir d'un tableau des langues
+        if pageContent.find(u']]') != -1 and pageContent.find(u']]') < pageContent.find(u'}}'): # Si on est dans un lien
+            mot = pageContent[:pageContent.find(u']]')+2]
+        elif pageContent.find(u'|') != -1 and pageContent.find(u'|') < pageContent.find(u'}}'):
+            mot = pageContent[:pageContent.find(u'|')]
+            # A faire : si dièse on remplace en même temps que les languageCode ci-dessous, à patir d'un tableau des langues
         else:
-            mot = PageTemp[:PageTemp.find(u'}}')]
+            mot = pageContent[:pageContent.find(u'}}')]
         if mot[:2] != u'[[': mot = u'[[' + mot + u']]'
         
-        # Demande de Lmaltier : on ne crée que les flexions des lemmes existant
-        page3 = Page(site,mot[2:len(mot)-2])
+        # On ne crée que les flexions des lemmes existant
+        page3 = Page(site, mot[2:-2])
         if page3.exists() == u'False':
             print 'Page du lemme absente du Wiktionnaire'
             return
         PageLemme = getPage(page3)
         if PageLemme == u'': return
-        if PageLemme.find(u'{{langue|' + codelangue + u'}}') == -1:
+        if PageLemme.find(u'{{langue|' + languageCode + u'}}') == -1:
             print ' Paragraphe du lemme absent du Wiktionnaire'
             return
         else:
             # Prononciation
             pron = u''
-            PageLemme = PageLemme[PageLemme.find(u'{{langue|' + codelangue + u'}}'):]
+            PageLemme = PageLemme[PageLemme.find(u'{{langue|' + languageCode + u'}}'):]
             if debugLevel > 1: raw_input(PageLemme.encode(config.console_encoding, 'replace'))
 
             p = re.compile(ur'{{pron\|([^}]+)\|en}}')
@@ -355,11 +369,11 @@ def createPluralFromForeignWiki(Page2):
                     pron = pron + u'd'
             if debugLevel > 0: print u' prononciation : ' + pron #.encode(config.console_encoding, 'replace')
         
-        if PageTemp2.rfind(u'===') == -1:
+        if pageContent2.rfind(u'===') == -1:
             return
         else:
-            PageTemp3 = PageTemp2[:PageTemp2.rfind(u'===')]
-            nature = PageTemp3[PageTemp3.rfind(u'===')+3:]
+            pageContent3 = pageContent2[:pageContent2.rfind(u'===')]
+            nature = pageContent3[pageContent3.rfind(u'===')+3:]
             if debugLevel > 1: raw_input(nature.encode(config.console_encoding, 'replace'))
         if nature == 'Noun':
             nature = u'S|nom'
@@ -374,13 +388,9 @@ def createPluralFromForeignWiki(Page2):
             return
         if debugLevel > 0: print u' nature : ' + nature
 
-        # Interwikis
-        interwikiInside = pywikibot.getLanguageLinks(PageTemp, siteSource)
-        interwiki = replaceLanguageLinks(u'', interwikiInside, siteSource)
-        while interwiki.find(u'[[wiktionary:') != -1:
-            interwiki = interwiki[:interwiki.find(u'[[wiktionary:')+2] + interwiki[interwiki.find(u'[[wiktionary:')+len(u'[[wiktionary:'):len(interwiki)]
-
-        Page1 = u'== {{langue|' + codelangue + u'}} ==\n=== {{' + nature + u'|' + codelangue + u'|flexion}} ===\n\'\'\'' + page2.title() + u'\'\'\' {{pron|'+pron+'|' + codelangue + u'}}\n# \'\'Prétérit de\'\' ' + mot + u'.\n# \'\'Participe passé de\'\' ' + mot + u'.\n\n[[en:' + page2.title() + u']]\n' + trim(interwiki)
+        Page1 = u'== {{langue|' + languageCode + u'}} ==\n=== {{' + nature + u'|' + languageCode + u'|flexion}} ===\n\'\'\'' + \
+            page2.title() + u'\'\'\' {{pron|'+pron+'|' + languageCode + u'}}\n# \'\'Prétérit de\'\' ' + mot + \
+            u'.\n# \'\'Participe passé de\'\' ' + mot + u'.\n\n[[en:' + page2.title() + u']]\n'
         summary = u'Importation depuis [[en:' + page2.title() + u']]'
         savePage(page1, Page1, summary)
 
