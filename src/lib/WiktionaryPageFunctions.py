@@ -54,43 +54,43 @@ Sections.append(u'clé de tri')
 Niveau.append(u'')
 
 # https://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Mod%C3%A8les_d%E2%80%99accord_en_fran%C3%A7ais
-flexionTemplatesWithMs = []
-flexionTemplatesWithMs.append(u'fr-accord-ain')
-flexionTemplatesWithMs.append(u'fr-accord-al')
-flexionTemplatesWithMs.append(u'fr-accord-an')
-flexionTemplatesWithMs.append(u'fr-accord-cons')
-flexionTemplatesWithMs.append(u'fr-accord-eau')
-flexionTemplatesWithMs.append(u'fr-accord-el')
-flexionTemplatesWithMs.append(u'fr-accord-en')
-flexionTemplatesWithMs.append(u'fr-accord-er')
-flexionTemplatesWithMs.append(u'fr-accord-et')
-flexionTemplatesWithMs.append(u'fr-accord-in')
-flexionTemplatesWithMs.append(u'fr-accord-mixte')
-flexionTemplatesWithMs.append(u'fr-accord-on')
-flexionTemplatesWithMs.append(u'fr-accord-ot')
-flexionTemplatesWithMs.append(u'fr-accord-rég')
-flexionTemplatesWithMs.append(u'fr-accord-s')
-flexionTemplatesWithMs.append(u'fr-accord-un')
+flexionTemplatesFrWithMs = []
+flexionTemplatesFrWithMs.append(u'fr-accord-ain')
+flexionTemplatesFrWithMs.append(u'fr-accord-al')
+flexionTemplatesFrWithMs.append(u'fr-accord-an')
+flexionTemplatesFrWithMs.append(u'fr-accord-cons')
+flexionTemplatesFrWithMs.append(u'fr-accord-eau')
+flexionTemplatesFrWithMs.append(u'fr-accord-el')
+flexionTemplatesFrWithMs.append(u'fr-accord-en')
+flexionTemplatesFrWithMs.append(u'fr-accord-er')
+flexionTemplatesFrWithMs.append(u'fr-accord-et')
+flexionTemplatesFrWithMs.append(u'fr-accord-in')
+flexionTemplatesFrWithMs.append(u'fr-accord-mixte')
+flexionTemplatesFrWithMs.append(u'fr-accord-on')
+flexionTemplatesFrWithMs.append(u'fr-accord-ot')
+flexionTemplatesFrWithMs.append(u'fr-accord-rég')
+flexionTemplatesFrWithMs.append(u'fr-accord-s')
+flexionTemplatesFrWithMs.append(u'fr-accord-un')
 
-flexionTemplatesWithS = []
-flexionTemplatesWithS.append(u'fr-rég')
-flexionTemplatesWithS.append(u'fr-rég-x')
+flexionTemplatesFrWithS = []
+flexionTemplatesFrWithS.append(u'fr-rég')
+flexionTemplatesFrWithS.append(u'fr-rég-x')
 
-flexionTemplates = []
-flexionTemplates.append(u'fr-accord-mf-ail')
-flexionTemplates.append(u'fr-accord-mf-al')
-flexionTemplates.append(u'fr-accord-comp')
-flexionTemplates.append(u'fr-accord-comp-mf')
-flexionTemplates.append(u'fr-accord-eur')
-flexionTemplates.append(u'fr-accord-eux')
-flexionTemplates.append(u'fr-accord-f')
-flexionTemplates.append(u'fr-inv')
-flexionTemplates.append(u'fr-accord-ind')
-flexionTemplates.append(u'fr-accord-mf')
-flexionTemplates.append(u'fr-accord-oux')
-flexionTemplates.append(u'fr-accord-personne')
-flexionTemplates.append(u'fr-accord-t-avant1835')
-#TODO flexionTemplates['fr'] pour join()
+flexionTemplatesFr = []
+flexionTemplatesFr.append(u'fr-accord-mf-ail')
+flexionTemplatesFr.append(u'fr-accord-mf-al')
+flexionTemplatesFr.append(u'fr-accord-comp')
+flexionTemplatesFr.append(u'fr-accord-comp-mf')
+flexionTemplatesFr.append(u'fr-accord-eur')
+flexionTemplatesFr.append(u'fr-accord-eux')
+flexionTemplatesFr.append(u'fr-accord-f')
+flexionTemplatesFr.append(u'fr-inv')
+flexionTemplatesFr.append(u'fr-accord-ind')
+flexionTemplatesFr.append(u'fr-accord-mf')
+flexionTemplatesFr.append(u'fr-accord-oux')
+flexionTemplatesFr.append(u'fr-accord-personne')
+flexionTemplatesFr.append(u'fr-accord-t-avant1835')
+
 
 def setGlobalsWiktionary(myDebugLevel, mySite, myUsername):
     global debugLevel
@@ -242,11 +242,9 @@ def getPronunciationFromContent(pageContent, languageCode, nature = None):
     s = re.search(regex, pageContent, re.MULTILINE| re.DOTALL)
     if not s: return
     pageName = s.group(1)
-    rePageName = re.escape(pageName)
-    #templates = '|'.join(flexionTemplates['fr'])
-    templates = u'fr\-inv|fr\-rég'
-    regex = ur'{{(' + templates + u")\|([^{}\|]+)([^{}]*}}\n\'\'\'" \
-     + rePageName.replace(u'User:', u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
+    templates = '|'.join(flexionTemplatesFr) + '|' + '|'.join(flexionTemplatesFrWithS) + '|' + '|'.join(flexionTemplatesFrWithMs)
+    regex = ur'{{(' + re.escape(templates) + u")\|([^{}\|]+)([^{}]*}}\n\'\'\'" \
+     + re.escape(pageName).replace(u'User:', u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, ur'{{\1|\2\3 {{pron|\2|' + languageCode + '}}\4\n', pageContent)
     regex = ur"{{pron\|([^}]+)\|" + languageCode + "}}"

@@ -3632,13 +3632,13 @@ def treatPageByName(pageName):
                         if flexionFlexionTemplate == u'':
                             if debugLevel > 0: print u' Ajout d\'une boite dans une flexion'
                             lemmaFlexionTemplate = getFlexionTemplateFromLemma(singularPageName, language, nature)
-                            for flexionTemplateWithMs in flexionTemplatesWithMs:
-                                if lemmaFlexionTemplate.find(flexionTemplateWithMs) != -1:
-                                    if debugLevel > 0: print u'flexionTemplateWithMs'
+                            for flexionTemplateFrWithMs in flexionTemplatesFrWithMs:
+                                if lemmaFlexionTemplate.find(flexionTemplateFrWithMs) != -1:
+                                    if debugLevel > 0: print u'flexionTemplateFrWithMs'
                                     regex = ur"\|ms=[^\|}]*"
                                     if not re.search(regex, lemmaFlexionTemplate):
                                         lemmaFlexionTemplate = lemmaFlexionTemplate + ur'|ms=' + singularPageName
-                            for flexionTemplateWithS in flexionTemplatesWithS:
+                            for flexionTemplateWithS in flexionTemplatesFrWithS:
                                 if lemmaFlexionTemplate.find(flexionTemplateWithS) != -1:
                                     regex = ur"\|s=[^\|}]*"
                                     if not re.search(regex, lemmaFlexionTemplate):
@@ -3857,8 +3857,8 @@ def treatPageByName(pageName):
                 # Recherche d'éventuelles flexions dans la page du lemme
                 flexionTemplate = getFlexionTemplate(pageName, language)
                 if flexionTemplate.find(u'inv=') == -1 and \
-                 (flexionTemplate[:flexionTemplate.find('|')] in flexionTemplatesWithS \
-                 or flexionTemplate[:flexionTemplate.find('|')] in flexionTemplatesWithMs):
+                 (flexionTemplate[:flexionTemplate.find('|')] in flexionTemplatesFrWithS \
+                 or flexionTemplate[:flexionTemplate.find('|')] in flexionTemplatesFrWithMs):
                     flexionPageName = getParameter(flexionTemplate, 'p')
                     if flexionPageName == '':
                         flexionPageName = pageName + 's'

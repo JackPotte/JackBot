@@ -119,7 +119,7 @@ def treatPageByName(pageName):
                 break
 
             pron = getPronunciationFromContent(pageContent, languageCode)
-            if debugLevel > 1: raw_input(pron)
+            if debugLevel > 0: raw_input(pron)
             if pageContent.find(u'|pp=') != -1 and pageContent.find(u'|pp=') < pageContent.find(u'}}'):
                 if debugLevel > 0: print ' pp='
                 pageContent2 = pageContent[pageContent.find(u'|pp=')+4:pageContent.find(u'}}')]
