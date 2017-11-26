@@ -65,8 +65,8 @@ def treatPageByName(pageName):
     template.append(u'fr-accord-cons')
     param.append(u'ms')
     #TODO: ajouter Catégorie:Modèles d’accord en français
-    #template.append(u'fr-accord-eur')
-    #param.append(u'1')
+    template.append(u'fr-accord-eur')
+    param.append(u'1')
 
     for m in range(0, len(template)):
         languageCode = template[m][:2]

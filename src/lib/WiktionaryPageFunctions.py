@@ -242,10 +242,16 @@ def getPronunciationFromContent(pageContent, languageCode, nature = None):
     s = re.search(regex, pageContent, re.MULTILINE| re.DOTALL)
     if not s: return
     pageName = s.group(1)
-    templates = '|'.join(flexionTemplatesFr) + '|' + '|'.join(flexionTemplatesFrWithS) + '|' + '|'.join(flexionTemplatesFrWithMs)
+    templates = ''
+    if languageCode == 'fr':
+        templates = '|'.join(flexionTemplatesFr) + '|' + '|'.join(flexionTemplatesFrWithS) + '|' + '|'.join(flexionTemplatesFrWithMs)
     regex = ur'{{(' + re.escape(templates) + u")\|([^{}\|]+)([^{}]*}}\n\'\'\'" \
-     + re.escape(pageName).replace(u'User:', u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
+        + re.escape(pageName).replace(u'User:', u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
+    if debugLevel > 0: 
+        print regex
+        print pageContent
     if re.search(regex, pageContent):
+        if debugLevel > 0: print u' prononciation trouvée dans une boite de flexion'
         pageContent = re.sub(regex, ur'{{\1|\2\3 {{pron|\2|' + languageCode + '}}\4\n', pageContent)
     regex = ur"{{pron\|([^}]+)\|" + languageCode + "}}"
     s = re.search(regex, pageContent)
