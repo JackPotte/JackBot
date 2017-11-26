@@ -40,6 +40,7 @@ def treatPageByName(pageName):
     if debugLevel > 0: print u'------------------------------------'
     print(pageName.encode(config.console_encoding, 'replace'))
     page = Page(site, pageName)
+    if not hasMoreThanTime(page, 1440): return
     if page.exists():
         if page.namespace() != 0 and page.title() != u'User:JackBot/test':
             print u' Autre namespace l 45'
@@ -47,44 +48,44 @@ def treatPageByName(pageName):
     else:
         print u' Page inexistante'
         return
-    if not hasMoreThanTime(page, 1440): return
-
-    Modele = [] # Liste des modèles du site à traiter
-    Param = [] # Paramètre du lemme associé
-    Modele.append(u'fr-rég-x')
-    Param.append(u's')
-    Modele.append(u'fr-rég')
-    Param.append(u's')
-    Modele.append(u'fr-accord-cons')
-    Param.append(u'ms')
-    languageCode = siteLanguage
-    #TODO: ajouter Catégorie:Modèles d’accord en français
-
     PageSing = getContentFromPage(page, 'All')
     if PageSing.find(u'{{formater') != -1 or PageSing.find(u'{{SI|') != -1 or PageSing.find(u'{{SI}}') != -1 or PageSing.find(u'{{supp|') != -1 or PageSing.find(u'{{supp}}') != -1 or PageSing.find(u'{{supprimer|') != -1 or PageSing.find(u'{{supprimer') != -1 or PageSing.find(u'{{PàS') != -1 or PageSing.find(u'{{S|faute') != -1 or PageSing.find(u'{{S|erreur') != -1:
         if debugLevel > 0: print u'Page en travaux : non traitée l 65'
         return
-        
-    for m in range(0, len(Modele)):
+
+    template = [] # Liste des modèles du site à traiter
+    param  = [] # paramètre du lemme associé
+    template.append(u'fr-rég-x')
+    param.append(u's')
+    template.append(u'fr-rég')
+    param.append(u's')
+    template.append(u'fr-accord-cons')
+    param.append(u'ms')
+    #TODO: ajouter Catégorie:Modèles d’accord en français
+    #template.append(u'fr-accord-eur')
+    #param.append(u'1')
+
+    for m in range(0, len(template)):
+        l = template[m][:2]
         # Parcours de la page pour chaque modèle
-        if debugLevel > 1: print ' début du for ' + str(m) + u', recherche du modèle : ' + Modele[m]
-        if PageSing.find(Modele[m] + u'|') == -1 and PageSing.find(Modele[m] + u'}') == -1:
-            if debugLevel > 1: pywikibot.output(u' Modèle : \03{blue}' + Modele[m] + u'\03{default} absent')
+        if debugLevel > 1: print ' début du for ' + str(m) + u', recherche du modèle : ' + template[m]
+        if PageSing.find(template[m] + u'|') == -1 and PageSing.find(template[m] + u'}') == -1:
+            if debugLevel > 1: pywikibot.output(u' Modèle : \03{blue}' + template[m] + u'\03{default} absent')
             continue
         else:
-            if debugLevel > 0: pywikibot.output(u' Modèle : \03{blue}' + Modele[m] + u'\03{default} trouvé')
+            if debugLevel > 0: pywikibot.output(u' Modèle : \03{blue}' + template[m] + u'\03{default} trouvé')
             PageTemp = PageSing
         
-        while PageTemp.find(Modele[m]) != -1:
-            if len(Modele[m]) < 3:
+        while PageTemp.find(template[m]) != -1:
+            if len(template[m]) < 3:
                 if debugLevel > 0: print u' bug'
                 break
             if debugLevel > 1: 
-                print Modele[m].encode(config.console_encoding, 'replace')
-                print PageTemp.find(Modele[m])
+                print template[m].encode(config.console_encoding, 'replace')
+                print PageTemp.find(template[m])
                 
             # Parcours de la page pour chaque occurence du modèle
-            nature = PageTemp[:PageTemp.find(Modele[m])]
+            nature = PageTemp[:PageTemp.find(template[m])]
             nature = nature[nature.rfind(u'{{S|')+len(u'{{S|'):]
             nature = nature[:nature.find(u'|')]
             if debugLevel > 0:
@@ -98,20 +99,20 @@ def treatPageByName(pageName):
                 print u'  section erreur'
                 return
                 
-            PageTemp = PageTemp[PageTemp.find(Modele[m])+len(Modele[m]):]
-            suffixe = getParameter(PageTemp, u'inv')
-            singulier = getParameter(PageTemp, u's')
-            pluriel = u''
-            if suffixe != u'':
-                if singulier == u'':
+            PageTemp = PageTemp[PageTemp.find(template[m])+len(template[m]):]
+            suffix = getParameter(PageTemp, u'inv')
+            singular = getParameter(PageTemp, u's')
+            plural = u''
+            if suffix != u'':
+                if singular == u'':
                     if debugLevel > 0: print u'  inv= sans s='
                     break
-                pluriel = singulier + u's ' + suffixe
-                singulier = singulier + u' ' + suffixe
-            elif singulier != u'' and singulier != pageName:
+                plural = singular + u's ' + suffix
+                singular = singular + u' ' + suffix
+            elif singular != u'' and singular != pageName:
                 if debugLevel > 0:
                     print u'  s= ne correspond pas'
-                    print singulier.encode(config.console_encoding, 'replace')
+                    print singular.encode(config.console_encoding, 'replace')
                 break
                 
             # Prononciation
@@ -178,68 +179,73 @@ def treatPageByName(pageName):
             H = u''
             if PageTemp.find(u'|prefpron={{h aspiré') != -1 and PageTemp.find(u'|prefpron={{h aspiré') < PageTemp.find(u'}}'): H = u'|prefpron={{h aspiré}}'
             if PageTemp.find(u'|préfpron={{h aspiré') != -1 and PageTemp.find(u'|préfpron={{h aspiré') < PageTemp.find(u'}}'): H = u'|préfpron={{h aspiré}}'
-            # genre
-            genre = u''
+            # gender
+            gender = u''
             PageTemp2 = PageTemp[PageTemp.find(u'\n')+1:len(PageTemp)]
             while PageTemp2[:1] == u'[' or PageTemp2[:1] == u'\n' and len(PageTemp2) > 1: PageTemp2 = PageTemp2[PageTemp2.find(u'\n')+1:len(PageTemp2)]
-            if PageTemp2.find(u'{{m}}') != -1 and PageTemp2.find(u'{{m}}') < PageTemp2.find(u'\n'): genre = u' {{m}}'    
-            if PageTemp2.find(u'{{f}}') != -1 and PageTemp2.find(u'{{f}}') < PageTemp2.find(u'\n'): genre = u' {{f}}'
+            if PageTemp2.find(u'{{m}}') != -1 and PageTemp2.find(u'{{m}}') < PageTemp2.find(u'\n'): gender = u' {{m}}'    
+            if PageTemp2.find(u'{{f}}') != -1 and PageTemp2.find(u'{{f}}') < PageTemp2.find(u'\n'): gender = u' {{f}}'
             MF = u''
             if PageTemp2.find(u'{{mf}}') != -1 and PageTemp2.find(u'{{mf}}') < PageTemp2.find(u'\n'):
-                genre = u' {{mf}}'
+                gender = u' {{mf}}'
                 MF = u'|mf=oui'
                 if PageSing.find(u'|mf=') == -1:
-                    PageSing = PageSing[:PageSing.find(Modele[m])+len(Modele[m])] + u'|mf=oui' + PageSing[PageSing.find(Modele[m])+len(Modele[m]):len(PageSing)]
+                    PageSing = PageSing[:PageSing.find(template[m])+len(template[m])] + u'|mf=oui' + PageSing[PageSing.find(template[m])+len(template[m]):len(PageSing)]
                     savePage(page, PageSing, u'|mf=oui')
             if PageTemp.find(u'|mf=') != -1 and PageTemp.find(u'|mf=') < PageTemp.find(u'}}'): MF = u'|mf=oui' 
             # Pluriel
             summary = u'Création du pluriel de [[' + pageName + u']]'
-            if pluriel == u'':
+            if plural == u'':
                 if (PageTemp.find(u'|p=') != -1 and PageTemp.find(u'|p=') < PageTemp.find(u'}}')):
-                    pluriel = PageTemp[PageTemp.find(u'|p=')+3:PageTemp.find(u'}}')]
-                    if pluriel.find(u'|') != -1: pluriel = pluriel[:pluriel.find(u'|')]
-                if not pluriel:
-                    if Modele[m][-1:] == u'x':
-                        pluriel = pageName + u'x'
+                    plural = PageTemp[PageTemp.find(u'|p=')+3:PageTemp.find(u'}}')]
+                    if plural.find(u'|') != -1: plural = plural[:plural.find(u'|')]
+                if not plural:
+                    if template[m][-1:] == u'x':
+                        plural = pageName + u'x'
                     else:
-                        pluriel = pageName + u's'
-                if (pluriel[-2:] == u'ss' or pluriel.find(u'{') != -1) and suffixe == u'':
+                        plural = pageName + u's'
+                if (plural[-2:] == u'ss' or plural.find(u'{') != -1) and suffix == u'':
                     print u' pluriel en -ss'
                     return
                 if debugLevel > 1:
-                    print '  Paramètre du modèle du lemme : ' + PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace')
+                    print '  paramètre du modèle du lemme : ' + PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace')
             
-            page2 = Page(site, pluriel)
+            page2 = Page(site, plural)
             if page2.exists():
-                PagePluriel = getContentFromPage(page2)
-                if PagePluriel.find(u'{{langue|' + languageCode + u'}}') != -1:
-                    if debugLevel > 0: print u'  Pluriel existant l 216 : ' + pluriel
+                pluralPage = getContentFromPage(page2)
+                if pluralPage.find(u'{{langue|' + languageCode + u'}}') != -1:
+                    if debugLevel > 0: print u'  Pluriel existant l 216 : ' + plural
                     break
             else:
                 if debugLevel > 0: print u'  Pluriel introuvable l 219'
-                PagePluriel = u''
+                pluralPage = u''
             
             # **************** Pluriel 1 ****************
             if debugLevel > 1: print u'  Pluriel n°1'
-            flexionTemplate = u'{{' + Modele[m] + pronM + H + MF + '|' + Param[m] + u'=' + pageName
-            if pluriel != pageName + u's' and pluriel != pageName + u'x':
+            if param[m] == '1':
+                lemma = ''
+            else:
+                lemma = '|' + param[m] + u'=' + pageName
+            flexionTemplate = u'{{' + template[m] + pronM + H + MF + lemma
+            if plural != pageName + u's' and plural != pageName + u'x':
                 flexionTemplate += u'|p={{subst:PAGENAME}}'
             flexionTemplate += u'}}'
-            PageEnd = u'== {{langue|fr}} ==\n=== {{S|' + nature + u'|fr|flexion}} ===\n' + flexionTemplate + u'\n\'\'\'' + pluriel + u'\'\'\' {{pron' + pronM + '|fr}}' + genre + u'\n# \'\'Pluriel de\'\' [[' + pageName +']].\n'
-            while PageEnd.find(u'{{pron|fr}}') != -1:
-                PageEnd = PageEnd[:PageEnd.find(u'{{pron|fr}}')+7] + u'|' + PageEnd[PageEnd.find(u'{{pron|fr}}')+7:len(PageEnd)]
+            PageEnd = u'== {{langue|' + l + u'}} ==\n=== {{S|' + nature + u'|' + l + u'|flexion}} ===\n' + flexionTemplate + u'\n\'\'\'' + plural + u'\'\'\' {{pron' + pronM + '|' + l + u'}}' + gender + u'\n# \'\'Pluriel de\'\' [[' + pageName +']].\n'
+            while PageEnd.find(u'{{pron|' + l + u'}}') != -1:
+                PageEnd = PageEnd[:PageEnd.find(u'{{pron|' + l + u'}}')+7] + u'|' + PageEnd[PageEnd.find(u'{{pron|' + l + u'}}')+7:len(PageEnd)]
 
-            if pluriel[-2:] == u'ss':
-                PageSing = PageSing[:PageSing.find(Modele[m])+len(Modele[m])] + u'|' + Param[m] + u'=' + pluriel[:-2] + PageSing[PageSing.find(Modele[m])+len(Modele[m]):]
-                savePage(page, PageSing, u'{{' + Modele[m] + u'|s=...}}')
-            elif pluriel[-2:] == u'xs':
+            if plural[-2:] == u'ss':
+                PageSing = PageSing[:PageSing.find(template[m])+len(template[m])] + u'|' + param[m] + u'=' + plural[:-2] + PageSing[PageSing.find(template[m])+len(template[m]):]
+                savePage(page, PageSing, u'{{' + template[m] + u'|s=...}}')
+            elif plural[-2:] == u'xs':
                 print u' Pluriel en xs'
                 return
             else:
-                PageEnd = PageEnd + u'\n' + PagePluriel
-                CleTri = defaultSort(pluriel)
+                PageEnd = PageEnd + u'\n' + pluralPage
+
+                CleTri = defaultSort(plural)
                 if addDefaultSort:
-                    if PageEnd.find(u'{{clé de tri') == -1 and CleTri != u'' and CleTri.lower() != pluriel.lower():
+                    if PageEnd.find(u'{{clé de tri') == -1 and CleTri != u'' and CleTri.lower() != plural.lower():
                         PageEnd = PageEnd +  u'\n{{clé de tri|' + CleTri + u'}}\n'
                 PageEnd = html2Unicode(PageEnd)
                 savePage(page2, PageEnd, summary)
@@ -251,7 +257,7 @@ def treatPageByName(pageName):
 
 
 def createPluralFromForeignWiki(Page2):
-    page2 = Page(siteSource,Page2)
+    page2 = Page(siteSource, Page2)
     page1 = Page(site,Page2)
     if debugLevel > 0: print Page2.encode(config.console_encoding, 'replace')
     if page2.exists() and page2.namespace() == 0 and not page1.exists():
@@ -340,10 +346,10 @@ def createPluralFromForeignWiki(Page2):
 
             if pron != '':
                 # Suffixe du -ed
-                l = pron[-1:]
-                if l in (u'f', u'k', u'p', u'θ', u's', u'ʃ'):
+                letter = pron[-1:]
+                if letter in (u'f', u'k', u'p', u'θ', u's', u'ʃ'):
                     pron = pron + u't'
-                elif l in (u't', u'd'):
+                elif letter in (u't', u'd'):
                     pron = pron + u'ɪd' 
                 else:
                     pron = pron + u'd'
