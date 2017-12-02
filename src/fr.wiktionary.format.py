@@ -1964,9 +1964,9 @@ def treatPageByName(pageName):
         if addDefaultSort:
             if debugLevel > 0: print u'Clés de tri'
             pageContent = addDefaultSort(pageContent)
-        #TODO: consensus
         if removeDefaultSort:
-            if u'{{langue|fr}}' in pageContent and not u'-' in pageName and not u'/' in pageName and not u'’' in pageName:
+            regex = ur'^[ 0-9a-zàçéèêëîôùûA-ZÀÇÉÈÊËÎÔÙÛ]+$'
+            if u'{{langue|fr}}' in pageContent and re.search(regex, pageName):
                 regex = ur"\n{{clé de tri([^}]*)}}"
                 if re.search(regex, pageContent):
                     summary = summary + u', retrait de {{clé de tri}}'
@@ -3912,7 +3912,8 @@ def main(*args):
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             waitAfterHumans = False
-            treatPageByName(u'Sérézinoise')
+            treatPageByName(u'Éancé')
+            treatPageByName(u'particule α')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
