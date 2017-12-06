@@ -49,7 +49,7 @@ bookCatTemplates.append(u'[[Category:{{FULLBOOKNAME}}]]')
 
 
 def treatPageByName(pageName):
-    if debugLevel > -1: print(pageName.encode(config.console_encoding, 'replace'))
+    if debugLevel > -1: print(u'\n' + pageName.encode(config.console_encoding, 'replace'))
     page = Page(site, pageName)
     PageBegin = getContentFromPage(page, 'All')
     if not username in pageName and (PageBegin == 'KO' or pageName.find(u'/Print version') != -1): return
@@ -70,7 +70,7 @@ def treatPageByName(pageName):
     if re.search(regex, PageTemp):
         PageTemp = re.sub(regex, ur'{{Talk header\1}}\n=', PageTemp)
 
-    if username in pageName or page.namespace() == 0:
+    if username in pageName or page.namespace() in (0, 102, 110):
         regex = ur'({{Programming/Navigation)\n?\|[^{}]*}}'
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, ur'\1}}', PageTemp)

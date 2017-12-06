@@ -77,29 +77,33 @@ def hasMoreThanTime(page, timeAfterLastEdition = 60): # minutes
             print version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')   
         if version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ') or username in page.title() or page.contributors(total=1).keys()[0] == 'JackPotte':
             return True
-        if debugLevel > 0: print u' dernière version trop récente ' + version[0]['timestamp']
+        if debugLevel > 0: pywikibot.output(u' \03{red}the last edition is too recent to edit: \03{default}' + version[0]['timestamp'])
     return False
 
 def isTrustedVersion(page, site = site):
     firstEditor = page.oldest_revision['user']
     lastEditor = page.contributors(total=1).keys()[0]
     if firstEditor == lastEditor:
-        if debugLevel > 0: print u'Page crée et modifiée par ' + lastEditor
+        if debugLevel > 0: pywikibot.output(u' \03{green} the page belongs to its last edition user: \03{default}' + lastEditor)
         return True
     userPage = u' user: ' + lastEditor
     page = Page(site, userPage)
     user = User(page)
     if u'autoconfirmed' in user.groups():
-        if debugLevel > 0: print u'Page modifiée par l\'utilisateur autoconfirmed ' + lastEditor
+        if debugLevel > 0: pywikibot.output(u' \03{green} the last edition user can be trusted: \03{default}' + lastEditor)
         return True
-    return False
+    if user.isAnonymous:
+        if debugLevel > 0: pywikibot.output(u' \03{red}the last edition user cannot be trusted: \03{default}' + lastEditor)
+        return False
+    if debugLevel > 0: pywikibot.output(u' \03{green} the last edition user could be trusted: \03{default}' + lastEditor)
+    return True
 
 def getContentFromPageName(pageName, allowedNamespaces = None, site = site):
     page = Page(site, pageName)
     return getContentFromPage(page, allowedNamespaces)
 
 def getContentFromPage(page, allowedNamespaces = None, username = username):
-    if debugLevel > 0: print '\ngetContentFromPage : ' + page.title()
+    if debugLevel > 0: pywikibot.output(u' \03{blue}getContentFromPage : \03{default}' + page.title())
     PageBegin = u''
     try:
         get = page.exists()
