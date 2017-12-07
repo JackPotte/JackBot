@@ -77,19 +77,19 @@ flexionTemplatesFrWithS.append(u'fr-rég')
 flexionTemplatesFrWithS.append(u'fr-rég-x')
 
 flexionTemplatesFr = []
-flexionTemplatesFr.append(u'fr-accord-mf-ail')
-flexionTemplatesFr.append(u'fr-accord-mf-al')
 flexionTemplatesFr.append(u'fr-accord-comp')
 flexionTemplatesFr.append(u'fr-accord-comp-mf')
 flexionTemplatesFr.append(u'fr-accord-eur')
 flexionTemplatesFr.append(u'fr-accord-eux')
 flexionTemplatesFr.append(u'fr-accord-f')
-flexionTemplatesFr.append(u'fr-inv')
 flexionTemplatesFr.append(u'fr-accord-ind')
 flexionTemplatesFr.append(u'fr-accord-mf')
+flexionTemplatesFr.append(u'fr-accord-mf-ail')
+flexionTemplatesFr.append(u'fr-accord-mf-al')
 flexionTemplatesFr.append(u'fr-accord-oux')
 flexionTemplatesFr.append(u'fr-accord-personne')
 flexionTemplatesFr.append(u'fr-accord-t-avant1835')
+flexionTemplatesFr.append(u'fr-inv')
 
 
 def setGlobalsWiktionary(myDebugLevel, mySite, myUsername):
@@ -242,17 +242,8 @@ def getPronunciationFromContent(pageContent, languageCode, nature = None):
     s = re.search(regex, pageContent, re.MULTILINE| re.DOTALL)
     if not s: return
     pageName = s.group(1)
-    templates = ''
-    if languageCode == 'fr':
-        templates = '|'.join(flexionTemplatesFr) + '|' + '|'.join(flexionTemplatesFrWithS) + '|' + '|'.join(flexionTemplatesFrWithMs)
-    regex = ur'{{(' + re.escape(templates) + u")\|([^{}\|]+)([^{}]*}}\n\'\'\'" \
-        + re.escape(pageName).replace(u'User:', u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
-    if debugLevel > 0: 
-        print regex
-        print pageContent
-    if re.search(regex, pageContent):
-        if debugLevel > 0: print u' prononciation trouvée dans une boite de flexion'
-        pageContent = re.sub(regex, ur'{{\1|\2\3 {{pron|\2|' + languageCode + '}}\4\n', pageContent)
+
+    # Template {{pron}}
     regex = ur"{{pron\|([^}]+)\|" + languageCode + "}}"
     s = re.search(regex, pageContent)
     pronunciation = ''
@@ -263,6 +254,83 @@ def getPronunciationFromContent(pageContent, languageCode, nature = None):
         if debugLevel > 0: raw_input(u' prononciation en ' + languageCode + u' : ' + pronunciation)
         pageContent = re.sub(ur'{{pron\|\|' + languageCode + '}}', \
             ur'{{pron|'+ pronunciation + ur'|' + languageCode + '}}', pageContent)
+        return pronunciation
+
+    # Templates {{fr-xxx}}
+    if languageCode == 'fr':
+        templates = '|'.join(flexionTemplatesFrWithS) + '|' + '|'.join(flexionTemplatesFrWithMs)
+        templates2 = '|'.join(flexionTemplatesFr)
+    else:
+        return
+
+    #TODO: templateContent = getTemplateContent(pageContent, template) ?
+    regex = ur'{{(' + templates.replace('-', '\-') + u")\|([^{}\|=]+)([^{}]*}}\n\'\'\'" \
+        + re.escape(pageName).replace(u'User:', u'') + ur"'\'\')( *{*f?m?n?}* *)\n"
+    s = re.search(regex, pageContent)
+    if s:
+        pronunciation = s.group(1)
+        if debugLevel > 0: print u' prononciation trouvée en {{{1}}} dans une boite de flexion : ' + pronunciation
+        pageContent = re.sub(regex, ur'{{\1|\2\3 {{pron|\2|' + languageCode + '}}\4\n', pageContent)
+        return pronunciation
+
+    regex = ur'{{(' + templates.replace('-', '\-') + u")\|([^{}]+)}}"
+    s = re.search(regex, pageContent)
+    if s:
+        template = s.group(1)
+        if debugLevel > 0: print template.encode(config.console_encoding, 'replace')
+
+    regex = ur'{{(' + templates2 + u")\|([^{}]+)}}"
+    s = re.search(regex, pageContent)
+    if s:
+        template = s.group(1)
+        parameters = s.group(2)
+        if debugLevel > 0: print u' template trouvé : ' + template
+        if debugLevel > 0: print u' paramètres : ' + parameters
+
+        if template == u'fr-accord-comp':
+            #pronunciation = getParameter(template, 3)
+            pass
+        elif template == u'fr-accord-comp-mf':
+            #pronunciation = getParameter(template, 3)
+            pass
+        elif template == u'fr-accord-eur':
+            #TODO pronunciation = getParameter(template, 2)
+            pronunciation = parameters[parameters.rfind(u'|')+1:]
+            pronunciation = pronunciation + u'œʁ'
+        elif template == u'fr-accord-eux':
+            #pronunciation = getParameter(template, 2)
+            pronunciation = pronunciation + u'ø'
+        elif template == u'fr-accord-f':
+            #pronunciation = getParameter(template, 2)
+            pronunciation = pronunciation + u'f'
+        elif template == u'fr-accord-ind':
+            pronunciation = getParameter(template, 'pm')
+            pass
+        elif template == u'fr-accord-mf':
+            pronunciation = getParameter(template, 'pron')
+        elif template == u'fr-accord-mf-ail':
+            #pronunciation = getParameter(template, 2)
+            pass
+        elif template == u'fr-accord-mf-al':
+            #pronunciation = getParameter(template, 2)
+            pass
+        elif template == u'fr-accord-oux':
+            #pronunciation = getParameter(template, 2)
+            pass
+        elif template == u'fr-accord-personne':
+            #pronunciation = getParameter(template, 'p1ms')
+            #pronunciation = getParameter(template, 'p2s')
+            pass
+        elif template == u'fr-accord-t-avant1835':
+            #pronunciation = getParameter(template, 2)
+            pass
+        elif template == u'fr-inv':
+            #pronunciation = getParameter(template, 1)
+            pass
+
+        if pronunciation.find(u'.') != -1:
+            if debugLevel > 0: print u' prononciation trouvée dans une boite de flexion : ' + pronunciation
+    if debugLevel > 0: raw_input('Fin du test en cours')
     return pronunciation
 
 def getPronunciation(pageContent, languageCode, nature = None):

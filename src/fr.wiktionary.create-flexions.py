@@ -69,16 +69,18 @@ def treatPageByName(pageName):
     param.append(u'1')
 
     for m in range(0, len(template)):
-        languageCode = template[m][:2]
-        # Parcours de la page pour chaque modèle
         if debugLevel > 1: print ' début du for ' + str(m) + u', recherche du modèle : ' + template[m]
+
         if PageSing.find(template[m] + u'|') == -1 and PageSing.find(template[m] + u'}') == -1:
             if debugLevel > 1: pywikibot.output(u' Modèle : \03{blue}' + template[m] + u'\03{default} absent')
             continue
         else:
             if debugLevel > 0: pywikibot.output(u' Modèle : \03{blue}' + template[m] + u'\03{default} trouvé')
             pageContent = PageSing
-        
+
+        languageCode = template[m][:2]
+        if debugLevel > 0: pron = getPronunciationFromContent(pageContent, languageCode)
+
         while pageContent.find(template[m]) != -1:
             if len(template[m]) < 3:
                 if debugLevel > 0: print u' bug'
@@ -101,7 +103,7 @@ def treatPageByName(pageName):
             if nature == u'erreur' or nature == u'faute':
                 print u'  section erreur'
                 return
-                
+
             pageContent = pageContent[pageContent.find(template[m])+len(template[m]):]
             suffix = getParameter(pageContent, u'inv')
             singular = getParameter(pageContent, u's')
@@ -118,8 +120,6 @@ def treatPageByName(pageName):
                     print singular.encode(config.console_encoding, 'replace')
                 break
 
-            pron = getPronunciationFromContent(pageContent, languageCode)
-            if debugLevel > 0: raw_input(pron)
             if pageContent.find(u'|pp=') != -1 and pageContent.find(u'|pp=') < pageContent.find(u'}}'):
                 if debugLevel > 0: print ' pp='
                 pageContent2 = pageContent[pageContent.find(u'|pp=')+4:pageContent.find(u'}}')]
@@ -173,12 +173,12 @@ def treatPageByName(pageName):
             if pronM[:1] != u'|': pronM = u'|' + pronM
             if debugLevel > 0:
                 try:
-                    print u'  Prononciation : ' + pronM.encode(config.console_encoding, 'replace')
+                    print u'  Prononciation : ' + pronM
                 except UnicodeDecodeError:
                     print u'  Prononciation à décoder'
                 except UnicodeEncodeError:
                     print u'  Prononciation à encoder'
-            
+
             # h aspiré
             H = u''
             if pageContent.find(u'|prefpron={{h aspiré') != -1 and pageContent.find(u'|prefpron={{h aspiré') < pageContent.find(u'}}'):
