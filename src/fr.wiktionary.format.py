@@ -528,6 +528,7 @@ Modele.append(u'botan')
 Modele.append(u'botanique')
 Modele.append(u'boucherie')
 Modele.append(u'bouddhisme')
+Modele.append(u'bourrellerie')
 Modele.append(u'bovins')
 Modele.append(u'bowling')
 Modele.append(u'boxe')
@@ -717,6 +718,7 @@ Modele.append(u'fisc')
 Modele.append(u'fiscalité')
 Modele.append(u'flamants')
 Modele.append(u'fleurs')
+Modele.append(u'fleuve')
 Modele.append(u'fm ?')
 Modele.append(u'fonderie')
 Modele.append(u'fontainerie')
@@ -3918,7 +3920,7 @@ def main(*args):
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
-            regex = ur"(\#\* {{ébauche\-exe\|[^}]*}})\n\#\*: {{trad\-exe\|[^}]*}}"
+            regex = None
             testPage = None
             if testPage is not None:
                 pageContent = getContentFromPageName(testPage)
@@ -3934,7 +3936,7 @@ def main(*args):
                 return
 
             if len(sys.argv) > 2: regex = sys.argv[2]
-            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
+            p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex, include = u'verbe|es|flexion', exclude = u'es-verbe-flexion')
             #p.pagesByXML(siteLanguage + siteFamily + '.*xml', include = '{{écouter|', exclude = '{{S|prononciation}}')
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 40000, notRegex = ur'[a-zA-Z]')
