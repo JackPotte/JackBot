@@ -94,6 +94,7 @@ def isTrustedVersion(page, site = site):
         return True
     if user.isAnonymous():
         if debugLevel > 0: pywikibot.output(u' \03{red}the last edition user cannot be trusted: \03{default}' + lastEditor)
+        pywikibot.output(u' \03{red}to check manually\03{default}')
         return False
     if debugLevel > 0: pywikibot.output(u' \03{green} the last edition user could be trusted: \03{default}' + lastEditor)
     return True
