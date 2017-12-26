@@ -2508,6 +2508,11 @@ def treatPageByName(pageName):
             if re.search(regex, pageContent) is None and re.search(regex2, pageContent) is None:
                 summary = summary + u', ajout de {{S|traductions}}'
                 pageContent = addLine(pageContent, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
+            pageContent = pageContent.replace(ur'=== {{S|traductions}} ====\n\n{{trad-début', ur'=== {{S|traductions}} ====\n{{trad-début')
+            regex = ur'({{trad\-fin}}\n)([^\n])'
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur'\1\n\2', pageContent)
+
             # TODO: contrôle du nombre de paragraphes de traduction par rapport au nombre de sens
 
         if pageContent.find(u'{{langue|es}}') != -1:
@@ -3914,8 +3919,7 @@ def main(*args):
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             waitAfterHumans = False
-            treatPageByName(u'Éancé')
-            treatPageByName(u'particule α')
+            treatPageByName(u'Utilisateur:JackBot/test unitaire')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
@@ -3936,7 +3940,7 @@ def main(*args):
                 return
 
             if len(sys.argv) > 2: regex = sys.argv[2]
-            p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex, include = u'verbe|es|flexion', exclude = u'es-verbe-flexion')
+            p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex, include = u'verbe|it|flexion', exclude = u'it-verbe-flexion')
             #p.pagesByXML(siteLanguage + siteFamily + '.*xml', include = '{{écouter|', exclude = '{{S|prononciation}}')
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 40000, notRegex = ur'[a-zA-Z]')

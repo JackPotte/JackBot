@@ -330,7 +330,7 @@ def getPronunciationFromContent(pageContent, languageCode, nature = None):
 
         if pronunciation.find(u'.') != -1:
             if debugLevel > 0: print u' prononciation trouvée dans une boite de flexion : ' + pronunciation
-    if debugLevel > 0: raw_input('Fin du test en cours')
+    if debugLevel > 1: raw_input('Fin du test des flexions féminines')
     return pronunciation
 
 def getPronunciation(pageContent, languageCode, nature = None):

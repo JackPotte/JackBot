@@ -79,7 +79,8 @@ def treatPageByName(pageName):
             pageContent = PageSing
 
         languageCode = template[m][:2]
-        if debugLevel > 0: pron = getPronunciationFromContent(pageContent, languageCode)
+        #TODO pronunciation = getParameter(template, 2) / class Flesion extends Word
+        if debugLevel > 1: pron = getPronunciationFromContent(pageContent, languageCode)
 
         while pageContent.find(template[m]) != -1:
             if len(template[m]) < 3:
