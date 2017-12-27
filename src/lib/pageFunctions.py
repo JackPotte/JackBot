@@ -8,6 +8,8 @@ import pywikibot
 from pywikibot import *
 from pywikibot import pagegenerators
 
+debugLevel = 0
+
 #*** General functions ***
 def setGlobals(myDebugLevel, mySite, myUsername):
     global debugLevel
