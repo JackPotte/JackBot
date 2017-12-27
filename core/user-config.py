@@ -2640,6 +2640,10 @@ usernames['wikinews']['zh-tw'] = u'JackBot'
 usernames['wikinews']['zh-yue'] = u'JackBot'
 usernames['wikinews']['zu'] = u'JackBot'
 
+usernames['wikivoyage']['de'] = u'JackBot'
+usernames['wikivoyage']['en'] = u'JackBot'
+usernames['wikivoyage']['fr'] = u'JackBot'
+
 # ############# LOGFILE SETTINGS ##############
 
 # Defines for which scripts a logfile should be enabled. Logfiles will be
