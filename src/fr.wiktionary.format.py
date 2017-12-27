@@ -44,7 +44,7 @@ username = config.usernames[siteFamily][siteLanguage]
 checkURL = False
 fixTags = False
 fixFiles = True
-addDefaultSort = False
+addDefaultSortKey = True
 removeDefaultSort = True
 allNamespaces = False
 treatTemplates = False
@@ -1963,9 +1963,9 @@ def treatPageByName(pageName):
 
         pageContent = pageContent.replace(u'{{clef de tri', u'{{clé de tri')
         #TODO: uca-default gère af, am, ar, as, ast, az, be, be-tarask, bg, bn, bn@collation=traditional, bo, br, bs, bs-Cyrl, ca, chr, co, cs, cy, da, de, de-AT@collation=phonebook, dsb, ee, el, en, eo, es, et, eu, fa, fi, fil, fo, fr, fr-CA, fur, fy, ga, gd, gl, gu, ha, haw, he, hi, hr, hsb, hu, hy, id, ig, is, it, ka, kk, kl, km, kn, kok, ku, ky, la, lb, lkt, ln, lo, lt, lv, mk, ml, mn, mo, mr, ms, mt, nb, ne, nl, nn, no, oc, om, or, pa, pl, pt, rm, ro, ru, rup, sco, se, si, sk, sl, smn, sq, sr, sr-Latn, sv, sv@collation=standard, sw, ta, te, th, tk, tl, to, tr, tt, uk, uz, vi, vo, yi, yo, zu
-        if addDefaultSort:
+        if addDefaultSortKey:
             if debugLevel > 0: print u'Clés de tri'
-            pageContent = addDefaultSort(pageContent)
+            pageContent = addDefaultSort(pageName, pageContent)
         if removeDefaultSort:
             regex = ur'^[ 0-9a-zàçéèêëîôùûA-ZÀÇÉÈÊËÎÔÙÛ]+$'
             if u'{{langue|fr}}' in pageContent and re.search(regex, pageName):
@@ -3919,7 +3919,8 @@ def main(*args):
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             waitAfterHumans = False
-            treatPageByName(u'Utilisateur:JackBot/test unitaire')
+            #treatPageByName(u'Utilisateur:JackBot/test unitaire')
+            treatPageByName(u'd’abord')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
