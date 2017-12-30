@@ -2508,7 +2508,9 @@ def treatPageByName(pageName):
             if re.search(regex, pageContent) is None and re.search(regex2, pageContent) is None:
                 summary = summary + u', ajout de {{S|traductions}}'
                 pageContent = addLine(pageContent, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
-            pageContent = pageContent.replace(ur'=== {{S|traductions}} ====\n\n{{trad-début', ur'=== {{S|traductions}} ====\n{{trad-début')
+            regex = ur'(=== {{S\|traductions}} ====\n)\n* *\n*({{trad\-début)'
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur'\1\2', pageContent)
             regex = ur'({{trad\-fin}}\n)([^\n])'
             if re.search(regex, pageContent):
                 pageContent = re.sub(regex, ur'\1\n\2', pageContent)
@@ -3891,7 +3893,7 @@ def treatPageByName(pageName):
         finalPageContent = re.sub(regex, ur'\1\n\n\2', finalPageContent)
     finalPageContent = finalPageContent.replace(u'===== {{S|note}} ===== =====', u'===== {{S|note}} =====')
 
-    if debugLevel > 0 and username in pageName: finalPageContent = addLineTest(finalPageContent)
+    if debugLevel > 1 and username in pageName: finalPageContent = addLineTest(finalPageContent)
     if debugLevel > 0: pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
     if finalPageContent != currentPageContent:
         if page.namespace() == 0 or username in pageName:
@@ -3919,8 +3921,7 @@ def main(*args):
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             waitAfterHumans = False
-            #treatPageByName(u'Utilisateur:JackBot/test unitaire')
-            treatPageByName(u'd’abord')
+            treatPageByName(u'Utilisateur:JackBot/test unitaire')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
