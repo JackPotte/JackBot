@@ -607,7 +607,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
                 
         PageTemp = PageEnd + PageTemp
         PageEnd = u''
-            
+
     for m in range(0, limiteM):
         if debugLevel > 1: print(u' Traduction des noms du modèle ' + ModeleEN[m])
         PageTemp = PageTemp.replace(u'{{' + ModeleEN[m] + u' ', u'{{' + ModeleEN[m] + u'')
@@ -675,7 +675,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
             
         PageTemp = PageEnd + PageTemp
         PageEnd = u''
-    
+
     
     # Traduction des dates
     limiteParamDate = 9
@@ -1066,15 +1066,14 @@ def hyperlynx(PageTemp, debugLevel = 0):
             PageTemp = PageTemp[FinModele:]
         if debugLevel > 1: raw_input(PageEnd.encode(config.console_encoding, 'replace'))
 
-        if PageEnd.find(u'|langue=None') != -1:
-            if isBrokenLink == False:
-                URLlanguage = getURLsiteLanguage(htmlSource)
-                if URLlanguage != 'None':
-                    try:
-                        PageEnd = PageEnd.replace(u'|langue=None', u'|langue=' + URLlanguage)
-                    except UnicodeDecodeError:
-                        if debugLevel > 0: print u'UnicodeEncodeError l 1038'
-            PageEnd = PageEnd.replace(u'|langue=None', u'')
+    if PageEnd.find(u'|langue=None') != -1:
+        if isBrokenLink == False:
+            URLlanguage = getURLsiteLanguage(htmlSource)
+            if URLlanguage != 'None':
+                try:
+                    PageEnd = PageEnd.replace(u'|langue=None', u'|langue=' + URLlanguage)
+                except UnicodeDecodeError:
+                    if debugLevel > 0: print u'UnicodeEncodeError l 1038'
 
     PageTemp = PageEnd + PageTemp
     PageEnd = u''    
@@ -1110,13 +1109,17 @@ def hyperlynx(PageTemp, debugLevel = 0):
     PageTemp = re.sub(ur'{{(a|A)rticle(\||\n[^}]*)\| *éditeur *= *([\||}|\n]+)', ur'{{\1rticle\2\3', PageTemp)
 
     PageEnd = PageEnd + PageTemp
+
     # TODO: avoid these fixes when: ModeleEN.append(u'lien mort')
     PageEnd = PageEnd.replace(u'{{lien mortarchive',u'{{lien mort archive')
+    PageEnd = PageEnd.replace(u'|langue=None', u'')
     if debugLevel > 0: print(u'Fin hyperlynx.py')
+
     return PageEnd
 
 
 def getURLsiteLanguage(htmlSource, debugLevel = 0):
+    if debugLevel > 0: print u'getURLsiteLanguage() Code langue à remplacer une fois trouvé sur la page distante...'
     URLlanguage = u'None'
     try:
         regex = u'<html [^>]*lang *= *"?\'?([a-zA-Z\-]+)'

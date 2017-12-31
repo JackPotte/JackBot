@@ -53,6 +53,9 @@ def treatPageByName(pageName):
     if not hasMoreThanTime(page): return
     if not allNamespaces and page.namespace() != 0 and pageName.find(username) == -1 and pageName.find(u'Template:Cite pmid/') == -1: return
     PageBegin = getContentFromPage(page, 'All')
+    if PageBegin == 'KO':
+        print 'Page illisible'
+        return
     PageTemp = PageBegin
 
 
@@ -149,7 +152,7 @@ def main(*args):
         if sys.argv[1] == u'-test':
             treatPageByName(u'User:' + username + u'/test')
         elif sys.argv[1] == u'-test2':
-            treatPageByName(u'User:' + username + u'/test2')
+            treatPageByName(u'User:' + username + u'/test unitaire')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             treatPageByName(u'Train (groupe)')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
