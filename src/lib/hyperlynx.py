@@ -293,7 +293,7 @@ ParamFR.append(u'journal')
 ParamEN.append(u'series')
 ParamFR.append(u'collection')
 ParamEN.append(u'agency')
-ParamFR.append(u'auteur institutionnel')
+ParamFR.append(u'auteur institutionnel') # ou "périodique" si absent
 ParamEN.append(u'magazine')
 ParamFR.append(u'périodique')
 
@@ -640,6 +640,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
                 # Faux-amis variables selon les modèles
                 if debugLevel > 1: print ParamEN[p].encode(config.console_encoding, 'replace')
                 tradFr = ParamFR[p]
+
                 if ParamEN[p] == u'work':
                     if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1:
                         tradFr = u'périodique'
@@ -650,6 +651,12 @@ def hyperlynx(PageTemp, debugLevel = 0):
                         tradFr = u'périodique'
                     else:
                         tradFr = u'éditeur'
+                elif ParamEN[p] == u'agency':
+                    if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1 and currentTemplate.find(u'|work=') == -1:
+                        tradFr = u'périodique'
+                    else:
+                        tradFr = u'auteur institutionnel'
+
                 elif ParamEN[p] == u'language' and (currentTemplate.find(u'|langue=') != -1 and currentTemplate.find(u'|langue=') < currentTemplate.find(u'}}')):
                     tradFr = u''
                 elif ParamEN[p] == u'issue' and (currentTemplate.find(u'|numéro=') != -1 and currentTemplate.find(u'|numéro=') < currentTemplate.find(u'}}')):
