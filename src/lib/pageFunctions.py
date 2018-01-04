@@ -388,13 +388,19 @@ def replaceISBN(pageContent):
     if re.search(regex, pageContent):
         if debugLevel > 0: u'ISBN'
         pageContent = re.sub(regex, ur'{{ISBN|\1}}', pageContent)
-    # Fix
+
+    #TODO: no hardfix anymore
     regex = ur'{{ISBN *\|([0-9X\- ]+)}}([Xx]?)'
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, ur'{{ISBN|\1\2}}', pageContent)
     regex = ur'{{ISBN *\| *(1[03]) *}}'
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, ur'ISBN \1', pageContent)
+
+    regex = ur'({{ISBN *\|.*)\-\-}}>'
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur'\1}}-->', pageContent)
+
     if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
     return pageContent
 
