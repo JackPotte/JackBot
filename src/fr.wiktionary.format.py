@@ -1624,18 +1624,27 @@ def treatPageByName(pageName):
     if fixTags: pageContent = replaceDepretacedTags(pageContent)
     if checkURL: pageContent = hyperlynx(pageContent)
 
-    if treatTemplates and page.namespace() == 10:
+    if page.namespace() == 14:
+        if u'par caractère' in pageContent:
+            pageContent = u'{{tableau han/cat}}'
+
+        finalPageContent = pageContent
+
+    elif treatTemplates and page.namespace() == 10:
         templates = [u'emploi', u'région', u'registre', u'term']
         for template in templates:
             if not u'{{{clé|' in pageContent and pageContent[:len(u'{{' + template)] == u'{{' + template and u'\n}}<noinclude>' in pageContent:
                 summary = u'[[Wiktionnaire:Wikidémie/juillet_2017#Pour_conclure_Wiktionnaire:Prise_de_d.C3.A9cision.2FCl.C3.A9s_de_tri_fran.C3.A7aises_par_d.C3.A9faut|Clé de tri]]'
                 pageContent = pageContent[:pageContent.find(u'\n}}<noinclude>')] + u'\n|clé={{{clé|}}}' + pageContent[pageContent.find(u'\n}}<noinclude>'):]
 
-    if treatCategories and page.namespace() == 14:
-        if pageName.find(u'Catégorie:Lexique en français d') != -1 and pageContent.find(u'[[Catégorie:Lexiques en français|') == -1:
-            pageContent = pageContent + u'\n[[Catégorie:Lexiques en français|' + defaultSort(trim(pageName[pageName.rfind(' '):])) + u']]\n'
+        regex = u'<includeonly> *\n*{{\#if(eq)?: *{{NAMESPACE}}[^<]+\[\[Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section[^<]+</includeonly>'
+        if re.search(regex, pageContent):
+            pageContent = re.sub(regex,  u'{{anciens modèles de section}}', pageContent, re.MULTILINE)
+        if debugLevel > 0: raw_input(pageContent.encode(config.console_encoding, 'replace'))
 
-    if page.namespace() == 0 or username in pageName:
+        finalPageContent = pageContent
+
+    elif page.namespace() == 0 or username in pageName:
         regex = ur'{{=([a-z\-]+)=}}'
         if re.search(regex, pageContent):
             pageContent = re.sub(regex, ur'{{langue|\1}}', pageContent)
@@ -2162,6 +2171,12 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'{{antiquité|fr}} {{term|romaine}}', u'{{antiquité|spéc=romaine}}')
         pageContent = pageContent.replace(u'#*: {{trad-exe|fr}}', u'')
         pageContent = pageContent.replace(u'\n{{WP', u'\n* {{WP')
+        pageContent = pageContent.replace(u'\n \n', u'\n\n')
+
+        # Factorisation des citations
+        #regex = ur"(?:— \(|{{source\|)Cirad/Gret/MAE, ''Mémento de l['’]Agronome'', 1 *692 p(?:\.|ages), p(?:\.|age) ([0-9 ]+), 2002, Paris, France, Cirad/Gret/Ministère des Affaires [EÉ]trangères \(\+ 2 cdroms\)(?:\)|}})"
+        #if re.search(regex, pageContent):
+        #    pageContent = re.sub(regex, ur"{{Citation/Cirad/Gret/MAE/Mémento de l’Agronome|\1}}", pageContent)
 
         regex = ur"{{ *dés *([\|}])"
         if re.search(regex, pageContent):
@@ -2508,6 +2523,7 @@ def treatPageByName(pageName):
             if re.search(regex, pageContent) is None and re.search(regex2, pageContent) is None:
                 summary = summary + u', ajout de {{S|traductions}}'
                 pageContent = addLine(pageContent, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
+            # Hardfix
             regex = ur'(=== {{S\|traductions}} ====\n)\n* *\n*({{trad\-début)'
             if re.search(regex, pageContent):
                 pageContent = re.sub(regex, ur'\1\2', pageContent)
@@ -3947,7 +3963,7 @@ def main(*args):
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 40000, notRegex = ur'[a-zA-Z]')
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
-            research = u'supprimer si le mot ne contient pas de caractères accentués'
+            research = u'2 cdroms'
             if len(sys.argv) > 2: research = p.pagesBySearch(sys.argv[2])
             p.pagesBySearch(research, namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
@@ -3956,7 +3972,8 @@ def main(*args):
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
             #p.pagesByCat(u'Mots ayant des homophones', afterPage = afterPage, recursive = False)
-            p.pagesByCat(u'Traduction en français demandée d’exemple(s) écrits en anglais', afterPage = afterPage, recursive = False)
+            p.pagesByCat(u'Termes en japonais par caractère', afterPage = afterPage, recursive = False, namespaces = [14])
+            p.pagesByCat(u'Termes en chinois par caractère', afterPage = afterPage, recursive = False, namespaces = [14])
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':

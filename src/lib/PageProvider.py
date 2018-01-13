@@ -270,6 +270,18 @@ class PageProvider:
         for Page in site.uncategorizedpages():
             self.treatPage(Page.title())
 
+    # [[Special:WantedCategories]]
+    def pagesBySpecialWantedCategories(self, site = None):
+        if site is None: site = self.site
+        for Page in site.wantedcategories():
+            self.treatPage(Page.title())
+
+    # [[Special:WantedPages]]
+    def pagesBySpecialWantedPages(self, site = None):
+        if site is None: site = self.site
+        for Page in site.wantedpages():
+            self.treatPage(Page.title())
+
     # [[Special:LinkSearch]]
     def pagesBySpecialLinkSearch(self, url, namespaces = [0], site = None):
         if site is None: site = self.site
