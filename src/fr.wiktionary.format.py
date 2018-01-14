@@ -2519,7 +2519,7 @@ def treatPageByName(pageName):
 
             # Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
             regex = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|apocope|aphérèse|ellipse|par ellipse|sigle|acronyme|abréviation|variante)[\|}]'
-            regex2 = ur'([Vv]ariante[ ,]|[Ss]ynonyme[ ,]|fr\|flexion)'
+            regex2 = ur'([Vv]ariante[ ,]|[Ss]ynonyme[ ,]|[Aa]utre nom|fr\|flexion)'
             if re.search(regex, pageContent) is None and re.search(regex2, pageContent) is None:
                 summary = summary + u', ajout de {{S|traductions}}'
                 pageContent = addLine(pageContent, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
