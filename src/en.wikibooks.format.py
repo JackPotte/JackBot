@@ -89,7 +89,8 @@ def treatPageByName(pageName):
             # The untrusted can have blanked a relevant content including {{BookCat}}
             if trim(PageTemp) != '' and PageTemp.find(u'{{BookCat}}') == -1 and \
               PageTemp.find(u'[[category:') == -1 and PageTemp.find(u'[[Category:') == -1 and \
-              PageTemp.find(u'{{printable') == -1 and PageTemp.find(u'{{Printable') == -1:
+              PageTemp.find(u'{{printable') == -1 and PageTemp.find(u'{{Printable') == -1 and \
+              PageTemp.find(u'{{subjects') == -1 and PageTemp.find(u'{{Subjects') == -1:
                 PageTemp = PageTemp + u'\n\n{{BookCat}}'
                 summary = summary + u', [[Special:UncategorizedPages]]'
 
