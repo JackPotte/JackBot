@@ -367,6 +367,12 @@ Modele.append(u'trad-')
 Modele.append(u'trad+')
 Modele.append(u'trad')
 Modele.append(u'préciser')
+
+Modele.append(u'cf')
+Modele.append(u'compos')
+Modele.append(u'composé de')
+Modele.append(u'deet')
+
 limit5 = len(Modele)
 Modele.append(u'comparatif')
 Modele.append(u'superlatif')
@@ -2981,9 +2987,8 @@ def treatPageByName(pageName):
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
 
 # Templates with language code at second
-                elif currentTemplate == u'pron' or currentTemplate == u'phon' or currentTemplate == u'dénominal de' \
-                 or currentTemplate == u'déverbal de' or currentTemplate == u'déverbal' or currentTemplate == u'superlatif de' \
-                 or currentTemplate == u'comparatif de' or currentTemplate == u'déverbal sans suffixe' or currentTemplate == u'abréviation de':
+                elif currentTemplate in ( u'pron', u'phon', u'dénominal de', u'déverbal de', u'déverbal', \
+                    u'superlatif de', u'comparatif de', u'déverbal sans suffixe', u'abréviation de'):
                     if languageCode != u'conv':
                         # Tri des lettres de l'API
                         if currentTemplate == u'pron':
@@ -3015,7 +3020,8 @@ def treatPageByName(pageName):
                     else:
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
 
-                elif currentTemplate == u'écouter':
+# Templates with "lang="
+                elif currentTemplate in (u'écouter', u'cf', u'compos', u'composé de', u'deet'):
                     pageContent2 = pageContent[endPosition+1:len(pageContent)]
                     # Saut des modèles régionnaux
                     if pageContent2.find("lang=") == -1 or pageContent2.find("lang=") > pageContent2.find('}}'):
@@ -3029,7 +3035,8 @@ def treatPageByName(pageName):
                     else:
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
 
-                elif currentTemplate == u'référence nécessaire' or currentTemplate == u'réf?' or currentTemplate == u'réf ?' or currentTemplate == u'refnec' or currentTemplate == u'réfnéc' or currentTemplate == u'source?' or currentTemplate == u'réfnéc':
+                elif currentTemplate in (u'référence nécessaire', u'réf?', u'réf ?', u'refnec', u'réfnéc', u'source?', \
+                    u'réfnéc'):
                     pageContent2 = pageContent[endPosition+1:len(pageContent)]
                     if pageContent2.find("lang=") == -1 or pageContent2.find("lang=") > pageContent2.find('}}'):
                         finalPageContent = finalPageContent + currentTemplate + u'|lang=' + languageCode + pageContent[endPosition:pageContent.find('}}')+2]
@@ -3038,7 +3045,7 @@ def treatPageByName(pageName):
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
 
 # Wrong genders
-                elif currentTemplate == u'm' or currentTemplate == u'f':
+                elif currentTemplate in (u'm', u'f'):
                     if translationSection or (languageCode != u'en' and languageCode != u'zh' and languageCode != u'ja' and languageCode != u'ko'):
                         finalPageContent = finalPageContent + pageContent[:pageContent.find('}}')+2]
                     else:
@@ -3046,7 +3053,7 @@ def treatPageByName(pageName):
                         finalPageContent = finalPageContent[:-2]
                         backward = True
                     pageContent = pageContent[pageContent.find('}}')+2:]
-                elif currentTemplate == u'mf' or currentTemplate == u'mf?':
+                elif currentTemplate in (u'mf', u'mf?'):
                     if translationSection or (languageCode != u'en' and languageCode != u'zh' and languageCode != u'ja' and languageCode != u'ko'):
                         finalPageContent = finalPageContent + pageContent[:pageContent.find('}}')+2]
                     else:
@@ -3054,7 +3061,7 @@ def treatPageByName(pageName):
                         finalPageContent = finalPageContent[:-2]
                         backward = True
                     pageContent = pageContent[pageContent.find('}}')+2:]
-                elif currentTemplate == u'n' or currentTemplate == u'c':
+                elif currentTemplate in (u'n', u'c'):
                     if translationSection or (languageCode != u'en' and languageCode != u'zh' and languageCode != u'ja' and languageCode != u'ko' and languageCode != u'fr'):
                         finalPageContent = finalPageContent + currentTemplate + '}}'
                     else:
@@ -3064,13 +3071,15 @@ def treatPageByName(pageName):
                     pageContent = pageContent[pageContent.find('}}')+2:]
 
 # Templates with language code at first
-                elif currentTemplate == u'perfectif' or currentTemplate == u'perf' or currentTemplate == u'imperfectif' or currentTemplate == u'imperf' or currentTemplate == u'déterminé' or currentTemplate == u'dét' or currentTemplate == u'indéterminé' or currentTemplate == u'indét':
+                elif currentTemplate in (u'perfectif', u'perf', u'imperfectif', u'imperf', u'déterminé', u'dét', \
+                    u'indéterminé', u'indét'):
                     if (not addLanguageCode) or finalPageContent.rfind(u'(') > finalPageContent.rfind(u')'): # Si on est dans des parenthèses
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent, currentTemplate, 'nocat=1')
                     else:
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent, currentTemplate, languageCode)
 
-                elif currentTemplate == u'conjugaison' or currentTemplate == u'conj' or currentTemplate == u'1ergroupe' or currentTemplate == u'2egroupe' or currentTemplate == u'3egroupe':    # Modèle à deux paramètres
+# Templates with two parameters
+                elif currentTemplate in (u'conjugaison', u'conj', u'1ergroupe', u'2egroupe', u'3egroupe'):
                     if currentTemplate == u'1ergroupe':
                         pageContent = u'|grp=1' + pageContent[len(u'1ergroupe'):]
                         finalPageContent = finalPageContent + u'conj'
@@ -3972,8 +3981,7 @@ def main(*args):
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
             #p.pagesByCat(u'Mots ayant des homophones', afterPage = afterPage, recursive = False)
-            p.pagesByCat(u'Termes en japonais par caractère', afterPage = afterPage, recursive = False, namespaces = [14])
-            p.pagesByCat(u'Termes en chinois par caractère', afterPage = afterPage, recursive = False, namespaces = [14])
+            p.pagesByCat(u'Appels de modèles incorrects:deet', afterPage = afterPage, recursive = False, namespaces = [14])
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
@@ -3996,6 +4004,7 @@ def main(*args):
         p.pagesByCat(u'Catégorie:Wiktionnaire:Flexions à vérifier', recursive = True)
         p.pagesByCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée')
         p.pagesByCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet')
+        p.pagesByCat(u'Catégorie:Appels de modèles incorrects:deet')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Ébauches à compléter')
         p.pagesByLink(u'Template:trad')
         p.pagesByLink(u'Template:1ergroupe')
