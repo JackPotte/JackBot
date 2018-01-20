@@ -229,11 +229,11 @@ class PageProvider:
     # [[Special:Contributions]]: the last pages touched by a user
     def pagesByUser(self, username, numberOfPagesToTreat = None, afterPage = None, regex = None, notRegex = None, site = None):
         if site is None: site = self.site
-        modifier = u'False'
+        modify = False
         numberOfPagesTreated = 0
         gen = pagegenerators.UserContributionsGenerator(username, site = site)
         for Page in pagegenerators.PreloadingGenerator(gen,100):
-            if not afterPage or afterPage == u'' or modifier == u'True':
+            if not afterPage or afterPage == u'' or modify:
                 found = False
                 if regex is not None and notRegex is None:
                     if re.search(regex, Page.title()): found = True
@@ -241,13 +241,16 @@ class PageProvider:
                     if not re.search(notRegex, Page.title()): found = True
                 elif regex is not None and notRegex is not None:
                     if re.search(regex, Page.title()) or not re.search(notRegex, Page.title()): found = True  
+                else:
+                    found = True
+
                 if found:
-                     #self.treatPage(Page.title())
-                      self.outputFile.write((Page.title() + '\n').encode(config.console_encoding, 'replace'))
-                numberOfPagesTreated = numberOfPagesTreated + 1
+                    self.treatPage(Page.title())
+                    #self.outputFile.write((Page.title() + '\n').encode(config.console_encoding, 'replace'))
+                numberOfPagesTreated += 1
                 if numberOfPagesToTreat is not None and numberOfPagesTreated > numberOfPagesToTreat: break
             elif Page.title() == afterPage:
-                modifier = u'True'
+                modify = True
 
     # [[Special:AllPages]]
     def pagesByAll(self, start = u'', ns = 0, site = None):
