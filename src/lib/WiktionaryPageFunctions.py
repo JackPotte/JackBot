@@ -228,14 +228,57 @@ def getLanguageSection(pageContent, languageCode = 'fr'):
 
     startPosition = s.start()
     pageContent = pageContent[s.start():]
-    regex = ur'\n== {{langue\|(?!' + languageCode + ur').*}} =='
+    regex = ur'\n== *{{langue\|(?!' + languageCode + ur').*}} *='
     s = re.search(regex, pageContent, re.MULTILINE)
     if s:
         endPosition = s.start()
         pageContent = pageContent[:endPosition]
         if debugLevel > 1: print endPosition
     if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+
     return pageContent, startPosition, endPosition
+
+def getSection(pageContent, sectionName):
+    if debugLevel > 0: print u'\ngetSection ' + sectionName
+    startPosition = 0
+    endPosition = len(pageContent)
+
+    regex = ur'=* *{{S\|' + sectionName + ur'}}'
+    s = re.search(regex, pageContent, re.MULTILINE)
+    if not s:
+        print(' section absente !') #TODO
+        return pageContent, startPosition, endPosition
+
+    startPosition = s.start()
+    pageContent = pageContent[s.start():]
+    regex = ur'\n=* *{{S\|(?!' + sectionName + ur').*}} *='
+    s = re.search(regex, pageContent, re.MULTILINE)
+    if s:
+        endPosition = s.start()
+        pageContent = pageContent[:endPosition]
+        if debugLevel > 1: print endPosition
+    if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+
+    return pageContent, startPosition, endPosition
+
+def getDefinitions(pageContent):
+    if debugLevel > 0: print u'\ngetDefinitions'
+    regexDef = ur'(\n#.*\n)(\n|$)'
+    s = re.search(regexDef, pageContent)
+    if s:
+        return s
+    return ''
+
+def getFirstDefinitionSize(pageContent):
+    if debugLevel > 0: print u'\ngetFirstDefinitionSize'
+    if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+    definitions = getDefinitions(pageContent)
+    if definitions == '': return 0
+    definition = definitions.group(0)
+    if debugLevel > 1: raw_input(definition)
+    words = definition.split(" ")
+    if debugLevel > 0: print len(words)
+    return len(words)
 
 def getPronunciationFromContent(pageContent, languageCode, nature = None):
     regex = ur".*'''([^']+)'''.*"

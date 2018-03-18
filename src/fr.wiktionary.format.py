@@ -520,6 +520,7 @@ Modele.append(u'basket')
 Modele.append(u'bateaux')
 Modele.append(u'beaux-arts')
 Modele.append(u'bibliothéconomie')
+Modele.append(u'bières')
 Modele.append(u'bijou')
 Modele.append(u'bijouterie')
 Modele.append(u'billard')
@@ -1176,6 +1177,7 @@ Modele.append(u'réciproque')
 Modele.append(u'réfl')
 Modele.append(u'réflexif')
 Modele.append(u'réfléchi')
+Modele.append(u'région')
 Modele.append(u'réseau')
 Modele.append(u'réseaux informatiques')
 Modele.append(u'réseaux')
@@ -1458,6 +1460,7 @@ Modele.append(u'Liban')
 Modele.append(u'Liechtenstein')
 Modele.append(u'Limousin')
 Modele.append(u'Lituanie')
+Modele.append(u'Lorraine')
 Modele.append(u'Louisiane')
 Modele.append(u'Luxembourg')
 Modele.append(u'Lyonnais')
@@ -2041,6 +2044,8 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u']] {{imperf}}', u']] {{imperf|nocat=1}}')
         pageContent = pageContent.replace(u']] {{perf}}', u']] {{perf|nocat=1}}')
         pageContent = pageContent.replace(u'{{perf}} / \'\'\'', u'{{perf|nocat=1}} / \'\'\'')
+        pageContent = pageContent.replace(u'{{term|Blason}}', u'{{héraldique}}')
+
         regex = ur'({{fr\-[^}]*\|[\'’]+=[^}]*)\|[\'’]+=[oui|1]'
         if re.search(regex, pageContent):
             pageContent = re.sub(regex, ur'\1', pageContent)
@@ -2195,7 +2200,19 @@ def treatPageByName(pageName):
             pageContent = re.sub(regex, ur"{{péjoratif\1", pageContent)
         regex = ur"{{ *vx *([\|}])"
         if re.search(regex, pageContent):
-            pageContent = re.sub(regex, ur"{{vieilli\1", pageContent)       
+            pageContent = re.sub(regex, ur"{{vieilli\1", pageContent)
+
+        regexCat = ur'(\n\[\[Catégorie:Louchébem\]\])'
+        if re.search(regexCat, pageContent):
+            French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
+            etymology, sStart, sEnd = getSection(French, u'étymologie')
+            if etymology != French:
+                regexEtym = ur'(=\n):? *'
+                if re.search(regexEtym, pageContent):
+                    etymology2 = re.sub(regexEtym, ur'\1: {{louchébem}} ', etymology)
+                    pageContent = pageContent.replace(etymology, etymology2)
+                    pageContent = re.sub(regexCat, ur'', pageContent)
+                    summary = summary + u', ajout de {{louchébem}}'
 
         if debugLevel > 1: print u' Modèles alias en doublon'
         regex = ur"(\{\{figuré\|[^}]*\}\}) ?\{\{métaphore\|[^}]*\}\}"
@@ -2526,7 +2543,8 @@ def treatPageByName(pageName):
             # Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
             regex = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|apocope|aphérèse|ellipse|par ellipse|sigle|acronyme|abréviation|variante)[\|}]'
             regex2 = ur'([Vv]ariante[ ,]|[Ss]ynonyme[ ,]|[Aa]utre nom|fr\|flexion)'
-            if re.search(regex, pageContent) is None and re.search(regex2, pageContent) is None:
+            French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
+            if re.search(regex, pageContent) is None and re.search(regex2, pageContent) is None and getFirstDefinitionSize(French) > 2:
                 summary = summary + u', ajout de {{S|traductions}}'
                 pageContent = addLine(pageContent, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
             # Hardfix
@@ -2780,17 +2798,18 @@ def treatPageByName(pageName):
                     if debugLevel > 0: print " addLanguageCode = " + str(addLanguageCode)
                     finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
 
-                elif currentTemplate == u'term':
+                elif currentTemplate in [u'term', u'région']:
+                    
                     rawTerm = pageContent[endPosition+1:pageContent.find('}}')]
                     term = trim(rawTerm.replace('[[', '').replace(']]', ''))
                     if term.find('|') != -1: term = term[:term.find('|')]
-                    if debugLevel > 0: print " terminologie = " + term
+                    if debugLevel > 0: print " terminologie ou régionalisme 1 = " + term
                     templatePage = getContentFromPageName(u'Template:' + term, allowedNamespaces = [u'Template:'])
-                    if templatePage.find(u'Catégorie:Modèles de domaine') == -1 and term[:1] != term[:1].lower():
+                    if templatePage.find(u'Catégorie:Modèles de domaine') == -1 and templatePage.find(u'{{région|') == -1 and term[:1] != term[:1].lower():
                         term = term[:1].lower() + term[1:]
-                        if debugLevel > 0: print " terminologie = " + trim(str(term))
+                        if debugLevel > 0: print u' terminologie ou régionalisme 2 = ' + term
                         templatePage = getContentFromPageName(u'Template:' + term, allowedNamespaces = [u'Template:'])
-                    if templatePage.find(u'Catégorie:Modèles de domaine') != -1:
+                    if templatePage.find(u'Catégorie:Modèles de domaine') != -1 or templatePage.find(u'{{région|') != -1:
                         if debugLevel > 0: print u'  substitution par le modèle existant'
                         pageContent = '{{' + term + pageContent[endPosition+1+len(rawTerm):]
                         finalPageContent = finalPageContent[:-2]
@@ -3758,7 +3777,8 @@ def main(*args):
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             waitAfterHumans = False
-            treatPageByName(u'Utilisateur:JackBot/test unitaire')
+            #treatPageByName(u'Utilisateur:JackBot/test unitaire')
+            treatPageByName(u'à loilpé')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
@@ -3779,21 +3799,21 @@ def main(*args):
                 return
 
             if len(sys.argv) > 2: regex = sys.argv[2]
+            p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex)
             #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex, include = u'verbe|it|flexion', exclude = u'it-verbe-flexion')
-            p.pagesByXML(siteLanguage + siteFamily + '.*xml', exclude = u'{{clé de tri', titleInclude = u'’')
+            #p.pagesByXML(siteLanguage + siteFamily + '.*xml', exclude = u'{{clé de tri', titleInclude = u'’')
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
-            research = u'2 cdroms'
+            research = u'insource:"{{term|Lorraine}}"'
             if len(sys.argv) > 2: research = p.pagesBySearch(sys.argv[2])
-            p.pagesBySearch(research, namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            #p.pagesByCat(u'Mots ayant des homophones', afterPage = afterPage, recursive = False)
-            p.pagesByCat(u'Appels de modèles incorrects:deet', afterPage = afterPage, recursive = False, namespaces = [14])
+            p.pagesByCat(u'Catégorie:Louchébem', recursive = False)
+            #p.pagesByCat(u'Appels de modèles incorrects:deet', afterPage = afterPage, recursive = False, namespaces = [14])
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':

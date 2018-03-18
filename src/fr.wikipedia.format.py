@@ -70,7 +70,7 @@ def treatPageByName(pageName):
     regex = ur'({{[Ll]ien *\|[^}]*)traducteur( *=)'
     if re.search(regex, PageTemp):
         PageTemp = re.sub(regex, ur'\1trad\2', PageTemp)
-
+    PageTemp = PageTemp.replace(u'hhttp://', u'http://')
 
     #*** Traitement des modèles ***
     #https://fr.wikipedia.org/wiki/Catégorie:Page_utilisant_un_modèle_avec_un_paramètre_obsolète
@@ -138,8 +138,7 @@ def treatPageByName(pageName):
     PageEnd = PageTemp
     if debugLevel > 0: print (u'--------------------------------------------------------------------------------------------')
     if PageEnd != PageBegin and PageEnd != PageBegin.replace(u'{{chapitre |', u'{{chapitre|') and PageEnd != PageBegin.replace(u'{{Chapitre |', u'{{Chapitre|'):
-        summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/11#Identifier les liens brisés (le retour ;-))|Vérification des liens externes]]'
-        summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/12#Remplacer_les_.7B.7BCite_web.7D.7D_par_.7B.7BLien_web.7D.7D|traduction de leurs modèles]]'
+        summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/12#Remplacer_les_.7B.7BCite_web.7D.7D_par_.7B.7BLien_web.7D.7D|traduction des modèles de liens]]'
         PageEnd = PageEnd.replace(ur'</ref><ref>', ur'</ref>{{,}}<ref>')
         savePage(page, PageEnd, summary)
 
@@ -167,7 +166,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:"année première impression"')
+                p.pagesBySearch(u'"hhttp://"')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Modèle:Dead link')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
