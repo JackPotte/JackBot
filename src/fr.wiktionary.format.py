@@ -2544,7 +2544,7 @@ def treatPageByName(pageName):
             regex = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|apocope|aphérèse|ellipse|par ellipse|sigle|acronyme|abréviation|variante)[\|}]'
             regex2 = ur'([Vv]ariante[ ,]|[Ss]ynonyme[ ,]|[Aa]utre nom|fr\|flexion)'
             French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
-            if re.search(regex, pageContent) is None and re.search(regex2, pageContent) is None and getFirstDefinitionSize(French) > 2:
+            if re.search(regex, pageContent) is None and re.search(regex2, pageContent) is None and countFirstDefinitionSize(French) > 2:
                 summary = summary + u', ajout de {{S|traductions}}'
                 pageContent = addLine(pageContent, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
             # Hardfix

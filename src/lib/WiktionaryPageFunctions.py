@@ -263,20 +263,22 @@ def getSection(pageContent, sectionName):
 
 def getDefinitions(pageContent):
     if debugLevel > 0: print u'\ngetDefinitions'
-    regexDef = ur'(\n#.*\n)(\n|$)'
-    s = re.search(regexDef, pageContent)
-    if s:
-        return s
-    return ''
+    regex = ur'(\n#.*(\n\n|$))'
+    s = re.search(regex, pageContent)
+    if debugLevel > 1: raw_input(s)
+    return s
 
-def getFirstDefinitionSize(pageContent):
-    if debugLevel > 0: print u'\ngetFirstDefinitionSize'
+def countFirstDefinitionSize(pageContent):
+    if debugLevel > 0: print u'\ncountFirstDefinitionSize'
     if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
     definitions = getDefinitions(pageContent)
-    if definitions == '': return 0
+    if definitions is None: return 0
     definition = definitions.group(0)
     if debugLevel > 1: raw_input(definition)
-    words = definition.split(" ")
+    regex = ur' *({{[^}]*}}|\([^\)]*\) *\.?)'
+    definition = re.sub(regex, '', definition)
+    if debugLevel > 0: raw_input(definition)
+    words = definition.split(' ')
     if debugLevel > 0: print len(words)
     return len(words)
 
