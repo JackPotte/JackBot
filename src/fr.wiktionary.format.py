@@ -2205,18 +2205,6 @@ def treatPageByName(pageName):
         if re.search(regex, pageContent):
             pageContent = re.sub(regex, ur"{{vieilli\1", pageContent)
 
-        regexCat = ur'(\n\[\[Catégorie:Louchébem\]\])'
-        if re.search(regexCat, pageContent):
-            French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
-            etymology, sStart, sEnd = getSection(French, u'étymologie')
-            if etymology != French:
-                regexEtym = ur'(=\n):? *'
-                if re.search(regexEtym, pageContent):
-                    etymology2 = re.sub(regexEtym, ur'\1: {{louchébem}} ', etymology)
-                    pageContent = pageContent.replace(etymology, etymology2)
-                    pageContent = re.sub(regexCat, ur'', pageContent)
-                    summary = summary + u', ajout de {{louchébem}}'
-
         if debugLevel > 1: print u' Modèles alias en doublon'
         regex = ur"(\{\{figuré\|[^}]*\}\}) ?\{\{métaphore\|[^}]*\}\}"
         pattern = re.compile(regex)
@@ -2328,6 +2316,21 @@ def treatPageByName(pageName):
             pageContent = pageContent.replace(u'\n[[Catégorie:Gentilés en français]]', u'')
 
         if debugLevel > 1: print u' Modèles à déplacer'
+        if debugLevel > 0:
+            etymTemplates = ['louchébem', 'verlan', 'abréviation', 'acronyme', 'sigle']
+            for etymTemplate in etymTemplates:
+                regexCat = ur'(\n\[\[Catégorie:' + etymTemplate[:1].upper() + etymTemplate[1:] + ur'\]\])'
+                if re.search(regexCat, pageContent):
+                    French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
+                    etymology, sStart, sEnd = getSection(French, u'étymologie')
+                    if etymology != French:
+                        regexEtym = ur'(=\n):? *'
+                        if re.search(regexEtym, pageContent):
+                            etymology2 = re.sub(regexEtym, ur'\1: {{' + etymTemplate + ur'}} ', etymology)
+                            pageContent = pageContent.replace(etymology, etymology2)
+                            pageContent = re.sub(regexCat, ur'', pageContent)
+                            summary = summary + u', ajout de {{' + etymTemplate + ur'}}'
+
         if pageContent.find(u'{{ru-conj') != -1:
             finalPageContent = pageContent[:pageContent.find(u'{{ru-conj')]
             pageContent = pageContent[pageContent.find(u'{{ru-conj'):]
@@ -3815,7 +3818,7 @@ def main(*args):
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Catégorie:Louchébem', recursive = False)
+            p.pagesByCat(u'Catégorie:Verlan', recursive = False)
             #p.pagesByCat(u'Appels de modèles incorrects:deet', afterPage = afterPage, recursive = False, namespaces = [14])
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
@@ -3832,7 +3835,14 @@ def main(*args):
             p. pagesBySpecialLinkSearch('www.dmoz.org')
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
-            treatPageByName(html2Unicode(sys.argv[1]))
+            try:
+                treatPageByName(html2Unicode(sys.argv[1]))
+            except UnicodeDecodeError:
+                print u' page à décoder'
+                treatPageByName(sys.argv[1].decode(config.console_encoding, 'replace'))
+            except UnicodeEncodeError:
+                print u' page à encoder'
+                treatPageByName(sys.argv[1].encode(config.console_encoding, 'replace'))
     else:
         # Daily:
         p.pagesByCat(u'Catégorie:Wiktionnaire:Terminologie sans langue précisée', recursive = True)

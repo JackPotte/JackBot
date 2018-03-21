@@ -273,11 +273,12 @@ def countFirstDefinitionSize(pageContent):
     if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
     definitions = getDefinitions(pageContent)
     if definitions is None: return 0
+    if debugLevel > 0: raw_input(definitions)
     definition = definitions.group(0)
-    if debugLevel > 1: raw_input(definition)
+    if debugLevel > 1: raw_input(definition.encode(config.console_encoding, 'replace'))
     regex = ur' *({{[^}]*}}|\([^\)]*\) *\.?)'
     definition = re.sub(regex, '', definition)
-    if debugLevel > 0: raw_input(definition)
+    if debugLevel > 1: raw_input(definition.encode(config.console_encoding, 'replace'))
     words = definition.split(' ')
     if debugLevel > 0: print len(words)
     return len(words)
