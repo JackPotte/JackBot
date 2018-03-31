@@ -2547,23 +2547,24 @@ def treatPageByName(pageName):
 
 
             if debugLevel > 0: print u'Traductions manquantes' # si la définition du mot ne renvoie pas vers un autre, les centralisant
-            regex = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|apocope|aphérèse|ellipse|par ellipse|sigle|acronyme|abréviation|variante)[\|}]'
-            regex2 = ur'([Vv]ariante[ ,]|[Ss]ynonyme[ ,]|[Aa]utre nom|fr\|flexion)'
-            French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
-            definitions = getDefinitions(French)
-            if definitions is not None and re.search(regex, definitions) is None and re.search(regex2, definitions) is None \
-                and countFirstDefinitionSize(French) > 2:
-                summary = summary + u', ajout de {{S|traductions}}'
-                pageContent = addLine(pageContent, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
-            # Cosmetic hardfix
-            pageContent = pageContent.replace(u'\n\n\n\n==== {{S|traductions}} ====', u'\n\n\n==== {{S|traductions}} ====')
-            pageContent = pageContent.replace(u'\n\n\n==== {{S|traductions}} ====', u'\n\n==== {{S|traductions}} ====')
-            regex = ur'(==== {{S\|traductions}} ====\n)\n* *\n*({{trad\-début)'
-            if re.search(regex, pageContent):
-                pageContent = re.sub(regex, ur'\1\2', pageContent)
-            regex = ur'({{trad\-fin}}\n)([^\n])'
-            if re.search(regex, pageContent):
-                pageContent = re.sub(regex, ur'\1\n\2', pageContent)
+            if pageContent.find(u'{{S|traductions}}') == -1:   # TODO: addLine devrait checker la présence de toutes les sections qu'ils ajoutent
+                regex = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|apocope|aphérèse|ellipse|par ellipse|sigle|acronyme|abréviation|variante)[\|}]'
+                regex2 = ur'([Vv]ariante[ ,]|[Ss]ynonyme[ ,]|[Aa]utre nom|fr\|flexion)'
+                French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
+                definitions = getDefinitions(French)
+                if definitions is not None and re.search(regex, definitions) is None and re.search(regex2, definitions) is None \
+                    and countFirstDefinitionSize(French) > 2:
+                    summary = summary + u', ajout de {{S|traductions}}'
+                    pageContent = addLine(pageContent, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
+                # Cosmetic hardfix
+                pageContent = pageContent.replace(u'\n\n\n\n==== {{S|traductions}} ====', u'\n\n\n==== {{S|traductions}} ====')
+                pageContent = pageContent.replace(u'\n\n\n==== {{S|traductions}} ====', u'\n\n==== {{S|traductions}} ====')
+                regex = ur'(==== {{S\|traductions}} ====\n)\n* *\n*({{trad\-début)'
+                if re.search(regex, pageContent):
+                    pageContent = re.sub(regex, ur'\1\2', pageContent)
+                regex = ur'({{trad\-fin}}\n)([^\n])'
+                if re.search(regex, pageContent):
+                    pageContent = re.sub(regex, ur'\1\n\2', pageContent)
 
             # TODO: contrôle du nombre de paragraphes de traduction par rapport au nombre de sens
 
