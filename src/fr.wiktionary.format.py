@@ -2552,7 +2552,7 @@ def treatPageByName(pageName):
                 regex2 = ur'([Vv]ariante[ ,]|[Ss]ynonyme[ ,]|[Aa]utre nom|fr\|flexion)'
                 French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
                 definitions = getDefinitions(French)
-                if definitions is not None and re.search(regex, definitions) is None and re.search(regex2, definitions) is None \
+                if definitions is not None and re.search(regex, pageContent) is None and re.search(regex2, pageContent) is None \
                     and countFirstDefinitionSize(French) > 2:
                     summary = summary + u', ajout de {{S|traductions}}'
                     pageContent = addLine(pageContent, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
