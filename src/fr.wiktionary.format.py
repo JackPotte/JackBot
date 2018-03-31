@@ -3809,9 +3809,9 @@ def main(*args):
                 return
 
             if len(sys.argv) > 2: regex = sys.argv[2]
-            p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex)
+            #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex)
             #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex, include = u'verbe|it|flexion', exclude = u'it-verbe-flexion')
-            #p.pagesByXML(siteLanguage + siteFamily + '.*xml', exclude = u'{{clé de tri', titleInclude = u'’')
+            p.pagesByXML(siteLanguage + siteFamily + '.*xml', exclude = u'{{clé de tri', titleInclude = u'’')
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
