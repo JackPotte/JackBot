@@ -2546,15 +2546,19 @@ def treatPageByName(pageName):
                     summary = summary + u', déplacement des modèles de flexions'
 
 
-            # Ajout des traductions, s'il n'y a pas un seul sens renvoyant vers un autre mot les centralisant
+            if debugLevel > 0: print u'Traductions manquantes' # si la définition du mot ne renvoie pas vers un autre, les centralisant
             regex = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|apocope|aphérèse|ellipse|par ellipse|sigle|acronyme|abréviation|variante)[\|}]'
             regex2 = ur'([Vv]ariante[ ,]|[Ss]ynonyme[ ,]|[Aa]utre nom|fr\|flexion)'
             French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
-            if re.search(regex, pageContent) is None and re.search(regex2, pageContent) is None and countFirstDefinitionSize(French) > 2:
+            definitions = getDefinitions(French)
+            if definitions is not None and re.search(regex, definitions) is None and re.search(regex2, definitions) is None \
+                and countFirstDefinitionSize(French) > 2:
                 summary = summary + u', ajout de {{S|traductions}}'
                 pageContent = addLine(pageContent, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
-            # Hardfix
-            regex = ur'(=== {{S\|traductions}} ====\n)\n* *\n*({{trad\-début)'
+            # Cosmetic hardfix
+            pageContent = pageContent.replace(u'\n\n\n\n==== {{S|traductions}} ====', u'\n\n\n==== {{S|traductions}} ====')
+            pageContent = pageContent.replace(u'\n\n\n==== {{S|traductions}} ====', u'\n\n==== {{S|traductions}} ====')
+            regex = ur'(==== {{S\|traductions}} ====\n)\n* *\n*({{trad\-début)'
             if re.search(regex, pageContent):
                 pageContent = re.sub(regex, ur'\1\2', pageContent)
             regex = ur'({{trad\-fin}}\n)([^\n])'

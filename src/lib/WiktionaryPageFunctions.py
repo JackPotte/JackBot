@@ -244,7 +244,7 @@ def getSection(pageContent, sectionName):
     endPosition = len(pageContent)
 
     regex = ur'=* *{{S\|' + sectionName + ur'}}'
-    s = re.search(regex, pageContent, re.MULTILINE)
+    s = re.search(regex, pageContent, re.DOTALL)
     if not s:
         print(' section absente !') #TODO
         return pageContent, startPosition, endPosition
@@ -252,7 +252,7 @@ def getSection(pageContent, sectionName):
     startPosition = s.start()
     pageContent = pageContent[s.start():]
     regex = ur'\n=* *{{S\|(?!' + sectionName + ur').*}} *='
-    s = re.search(regex, pageContent, re.MULTILINE)
+    s = re.search(regex, pageContent, re.DOTALL)
     if s:
         endPosition = s.start()
         pageContent = pageContent[:endPosition]
@@ -263,22 +263,31 @@ def getSection(pageContent, sectionName):
 
 def getDefinitions(pageContent):
     if debugLevel > 0: print u'\ngetDefinitions'
-    regex = ur'(\n#.*(\n\n|$))'
-    s = re.search(regex, pageContent)
-    if debugLevel > 1: raw_input(s)
-    return s
+    if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+    regex = ur"\n'''[^\n]*\n(#.*?(\n\n|\n=|$))"
+    s = re.search(regex, pageContent, re.DOTALL)
+    if s is None:
+        if debugLevel > 1: print 'No definition'
+        return None
+    if debugLevel > 1: print s.group(1)
+    return s.group(1)
 
 def countFirstDefinitionSize(pageContent):
     if debugLevel > 0: print u'\ncountFirstDefinitionSize'
     if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
-    definitions = getDefinitions(pageContent)
-    if definitions is None: return 0
-    if debugLevel > 0: raw_input(definitions)
-    definition = definitions.group(0)
-    if debugLevel > 1: raw_input(definition.encode(config.console_encoding, 'replace'))
+
+    definition = getDefinitions(pageContent)
+    if definition is None: return 0
+    if definition.find(u'\n') != -1: definition = definition[:definition.find(u'\n')]
+    if debugLevel > 1:
+        print u' First definition:' #regex = ur"\n'''[^\n]*(\n#(!:\*)?.*(\n|$))"
+        raw_input(definition.encode(config.console_encoding, 'replace'))
+
     regex = ur' *({{[^}]*}}|\([^\)]*\) *\.?)'
     definition = re.sub(regex, '', definition)
-    if debugLevel > 1: raw_input(definition.encode(config.console_encoding, 'replace'))
+    if debugLevel > 1:
+        print u' Parsed definition:'
+        raw_input(definition.encode(config.console_encoding, 'replace'))
     words = definition.split(' ')
     if debugLevel > 0: print len(words)
     return len(words)
