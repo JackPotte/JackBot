@@ -224,7 +224,7 @@ def getLanguageSection(pageContent, languageCode = 'fr'):
     s = re.search(regex, pageContent)
     if not s:
         print(' langue absente !') #TODO
-        return pageContent, startPosition, endPosition
+        return '', startPosition, endPosition
 
     startPosition = s.start()
     pageContent = pageContent[s.start():]
