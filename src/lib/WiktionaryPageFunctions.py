@@ -294,6 +294,11 @@ def countFirstDefinitionSize(pageContent):
         print u' First definition:' #regex = ur"\n'''[^\n]*(\n#(!:\*)?.*(\n|$))"
         raw_input(definition.encode(config.console_encoding, 'replace'))
 
+    regex = ur'^#( *{{[^}]*}})?( *{{[^}]*}})? *\[\[[^\]]+\]\]\.?$'
+    if re.search(regex, definition):
+        if debugLevel > 0: print u' The definition is just one link to another article'
+        return 1
+
     regex = ur' *({{[^}]*}}|\([^\)]*\) *\.?)'
     definition = re.sub(regex, '', definition)
     if debugLevel > 1:

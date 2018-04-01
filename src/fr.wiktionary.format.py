@@ -3241,7 +3241,7 @@ def treatPageByName(pageName):
                         infinitivePage = getContentFromPageName(infinitive)
                         if infinitivePage != 'KO':
                             # http://fr.wiktionary.org/w/index.php?title=Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet
-                            pageContent2 = pageContent[pageContent.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(pageContent)]
+                            pageContent2 = pageContent[pageContent.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):]
                             if pageContent2.find(u'flexion=') != -1 and pageContent2.find(u'flexion=') < pageContent2.find('}}'):
                                 pageContent3 = pageContent2[pageContent2.find(u'flexion='):len(pageContent2)]
                                 if pageContent3.find(u'|') != -1 and pageContent3.find(u'|') < pageContent3.find(u'}'):
@@ -3252,12 +3252,13 @@ def treatPageByName(pageName):
                                 if pageContent.find(u'|' + infinitive + u'\n') != -1:    # Bug de l'hyperlien vers l'annexe
                                     pageContent = pageContent[:pageContent.find(u'|' + infinitive + u'\n')+len(u'|' + infinitive)] + pageContent[pageContent.find(u'|' + infinitive + u'\n')+len(u'|' + infinitive + u'\n'):len(pageContent)]
                             # Analyse du modèle en cours
-                            pageContent2 = pageContent[pageContent.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(pageContent)]
+                            pageContent2 = pageContent[pageContent.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):]
                             pageContent2 = pageContent2[:pageContent2.find('}}')+2]
                             if pageContent2.find(u'impers=oui') == -1:
-                                # http://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:fr-verbe-flexion&action=edit
-                                if infinitivePage.find(u'{{impers') != -1 and infinitive != u'être':
-                                    pageContent = pageContent[:pageContent.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|impers=oui' + pageContent[pageContent.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):len(pageContent)]
+                                # http://fr.wiktionary.org/w/index.php?title=Modèle:fr-verbe-flexion&action=edit
+                                French, lStart, lEnd = getLanguageSection(infinitivePage, 'fr')
+                                if infinitivePage.find(u'{{impers|fr}}') != -1 or (infinitivePage.find(u'{{impersonnel|fr}}') != -1 and French is not None and countDefinitions(French) == 1):
+                                    pageContent = pageContent[:pageContent.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion')] + u'|impers=oui' + pageContent[pageContent.find(u'fr-verbe-flexion')+len(u'fr-verbe-flexion'):]
                                 elif (infinitivePage.find(u'|groupe=1') != -1 or infinitivePage.find(u'|grp=1') != -1) and infinitivePage.find(u'|groupe2=') == -1:
                                     # je
                                     if pageContent2.find(u'ind.p.1s=oui') != -1 and pageContent2.find(u'ind.p.3s=oui') != -1 and pageContent2.find(u'sub.p.1s=oui') != -1 and pageContent2.find(u'sub.p.3s=oui') != -1 and pageContent2.find(u'imp.p.2s=oui') != -1:
@@ -3649,7 +3650,7 @@ def treatPageByName(pageName):
             if debugLevel > 0: print u'Ajout de {{conj}}'
             for l in LanguesC:
                 if not (l[0] == u'fr' and pageName[-3:] == u'ave'):
-                    if re.compile(ur'{{S\|verbe\|'+l[0]+'}}').search(finalPageContent) and not re.compile(ur'{{S\|verbe\|'+l[0]+u'}}[= ]+\n+[^\n]*\n*[^\n]*\n*{{conj[a-z1-3\| ]*').search(finalPageContent):
+                    if re.compile(ur'{{S\|verbe\|'+l[0]+'}}').search(finalPageContent) and not re.compile(ur'{{S\|verbe\|'+l[0]+u'}}[= ]+\n+[^\n]*\n*[^\n]*\n*{{(conj[a-z1-3\| ]*|invar)').search(finalPageContent):
                         if debugLevel > 0: print u' {{conj|'+l[0]+u'}} manquant'
                         if re.compile(ur'{{S\|verbe\|'+l[0]+u'}}[^\n]*\n*[^\n]*\n*[^\{]*{{pron\|[^\}]*}}').search(finalPageContent):
                             if debugLevel > 0: print u' ajout de {{conj|'+l[0]+u'}} après {{pron|...}}'
