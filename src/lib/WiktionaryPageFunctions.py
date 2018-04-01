@@ -713,6 +713,16 @@ def removeFalseHomophones(pageContent, languageCode, pageName, relatedPageName, 
 
     return pageContent, summary
 
+def removeCategory(pageContent, category, summary):
+    if debugLevel > 0: print u'\nremoveCategory(' + category + u')'
+    #TODO
+    return pageContent, summary
+
+def removeTemplate(pageContent, template, section, summary):
+    if debugLevel > 0: print u'\nremoveTemplate(' + template + u')'
+    #TODO
+    return pageContent, summary
+
 def rec_anagram(counter):
     # Copyright http://www.siteduzero.com/forum-83-541573-p2-exercice-generer-tous-les-anagrammes.html
     if sum(counter.values()) == 0:

@@ -2320,8 +2320,8 @@ def treatPageByName(pageName):
         if debugLevel > 1: print u' Modèles à déplacer'
         if debugLevel > 0:
             etymTemplates = ['louchébem', 'verlan', 'abréviation', 'acronyme', 'sigle']
-            #TODO: retirer {{verlan}} et {{argot}} des définitions : getDefinitions()
             for etymTemplate in etymTemplates:
+                #TODO: retirer {{verlan}} et {{argot}} des définitions : getDefinitions()
                 regexCat = ur'(\n\[\[Catégorie:' + etymTemplate[:1].upper() + etymTemplate[1:] + ur'\]\])'
                 if re.search(regexCat, pageContent):
                     French, lStart, lEnd = getLanguageSection(pageContent, 'fr')

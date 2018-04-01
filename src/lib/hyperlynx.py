@@ -553,7 +553,10 @@ def hyperlynx(PageTemp, debugLevel = 0):
     PageTemp = PageTemp.replace(u'[//http://', u'[http://')
     PageTemp = PageTemp.replace(u'http://http://', u'http://')
     PageTemp = PageTemp.replace(u'https://https://', u'https://')
-    
+    PageTemp = PageTemp.replace(u'<ref>{{en}}} ', u'<ref>{{en}} ')
+    PageTemp = PageTemp.replace(u'<ref>{{{en}} ', u'<ref>{{en}} ')
+    PageTemp = PageTemp.replace(u'<ref>{{{en}}} ', u'<ref>{{en}} ')
+
     # Paramètre langue= si traduction
     PageTemp = re.sub(u'[C|c]ita(tion)? *\n* *(\|[^}{]*title *=)', ur'ouvrage\2', PageTemp)
     for m in range(0, limiteL):
