@@ -2334,7 +2334,7 @@ def treatPageByName(pageName):
                         French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
                         #TODO generic addToLine(append, prepend)
                         etymology, sStart, sEnd = getSection(French, u'étymologie')
-                        if etymology is not None:
+                        if etymology is not None and etymology.find(u'{{' + etymTemplate + ur'}}') == -1:
                             regexEtymology = ur'(=\n):? *'
                             if re.search(regexEtymology, pageContent):
                                 etymology2 = re.sub(regexEtymology, ur'\1: {{' + etymTemplate + ur'}} ', etymology)
