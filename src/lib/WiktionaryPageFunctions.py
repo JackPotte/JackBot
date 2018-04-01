@@ -216,15 +216,15 @@ def getFlexionTemplateFromLemma(pageName, language, nature):
     return FlexionTemplate
 
 def getLanguageSection(pageContent, languageCode = 'fr'):
-    if debugLevel > 0: print u'\ngetLanguageSection de ' + languageCode
+    if debugLevel > 0: print u'\ngetLanguageSection(' + languageCode + u')'
     startPosition = 0
     endPosition = len(pageContent)
 
     regex = ur'=* *{{langue\|' + languageCode + '}}'
     s = re.search(regex, pageContent)
     if not s:
-        print(' langue absente !') #TODO
-        return '', startPosition, endPosition
+        if debugLevel > 0: print(' missing language!')
+        return None, startPosition, endPosition
 
     startPosition = s.start()
     pageContent = pageContent[s.start():]
@@ -239,15 +239,15 @@ def getLanguageSection(pageContent, languageCode = 'fr'):
     return pageContent, startPosition, endPosition
 
 def getSection(pageContent, sectionName):
-    if debugLevel > 0: print u'\ngetSection ' + sectionName
+    if debugLevel > 0: print u'\ngetSection(' + sectionName + u')'
     startPosition = 0
     endPosition = len(pageContent)
 
-    regex = ur'=* *{{S\|' + sectionName + ur'}}'
+    regex = ur'=* *{{S\|' + sectionName + ur'(\||})'
     s = re.search(regex, pageContent, re.DOTALL)
     if not s:
-        print(' section absente !') #TODO
-        return pageContent, startPosition, endPosition
+        if debugLevel > 0: print(' missing section!')
+        return None, startPosition, endPosition
 
     startPosition = s.start()
     pageContent = pageContent[s.start():]
@@ -271,6 +271,17 @@ def getDefinitions(pageContent):
         return None
     if debugLevel > 1: print s.group(1)
     return s.group(1)
+
+def countDefinitions(pageContent):
+    if debugLevel > 0: print u'\ncountDefinitions'
+    definitions = getDefinitions(pageContent)
+    if definitions is None: return 0
+    definitions = definitions.split('\n')
+    total = 0
+    for definition in definitions:
+        if definition[:1] == u'#' and definition[:2] not in [u'#:', u'#*']:
+            total += 1
+    return total
 
 def countFirstDefinitionSize(pageContent):
     if debugLevel > 0: print u'\ncountFirstDefinitionSize'
@@ -408,9 +419,41 @@ def addPronunciationFromContent(pageContent, languageCode, nature = None):
             pageContent = pageContent.replace(u'{{pron||' + languageCode + u'}}', u'{{pron|' + pronunciation + u'|' + languageCode + u'}}')
     return pageContent
 
-def addCat(pageContent, languageCode, lineContent):
+def addCategory(pageContent, languageCode, lineContent):
     if lineContent.find(u'[[Catégorie:') == -1: lineContent = u'[[Catégorie:' + lineContent + u']]'
     return addLine(pageContent, languageCode, 'catégorie', lineContent)
+
+def removeCategory(pageContent, category, summary):
+    if debugLevel > 0: print u'\nremoveCategory(' + category + u')'
+    regexCategory = ur'(\n\[\[Catégorie:' + category + ur'(\||\])[^\]]*\]\]?)'
+    newPageContent = re.sub(regexCategory, ur'', pageContent)
+    if newPageContent != pageContent:
+        summary = summary + u', retrait de [[Catégorie:' + category + u']]'
+    return newPageContent, summary
+
+def removeTemplate(pageContent, template, summary, language = None, inSection = None):
+    if debugLevel > 0: print u'\nremoveTemplate(' + template + u')'
+    regexTemplate = ur'( *{{' + template + ur'(\||})[^}]*}}?)'
+    oldSection = pageContent
+    if inSection is not None:
+        if language is not None: oldSection, lStart, lEnd = getLanguageSection(oldSection, language)
+        if oldSection is not None:
+            for section in inSection:
+                oldSubSection, sStart, sEnd = getSection(oldSection, section)
+                if oldSubSection is not None:
+                    if debugLevel > 2: raw_input(oldSubSection.encode(config.console_encoding, 'replace'))
+                    newSubSection = re.sub(regexTemplate, ur'', oldSubSection)
+                    if oldSubSection != newSubSection:
+                        pageContent = pageContent.replace(oldSubSection, newSubSection)
+                        if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+                        summary = summary + u', retrait de {{' + template + u'}} dans {{S|' + section + u'}}'
+    else:
+        newSection = re.sub(regexTemplate, ur'', oldSection)
+        if oldSection != newSection:
+            pageContent = pageContent.replace(oldSection, newSection)
+            summary = summary + u', retrait de {{' + template + u'}}'
+
+    return pageContent, summary
 
 def addLine(pageContent, languageCode, Section, lineContent):
     d = 1
@@ -432,6 +475,7 @@ def addLine(pageContent, languageCode, Section, lineContent):
 
             # Recherche de l'ordre réel de la section à ajouter
             languageSection, startPosition, endPosition = getLanguageSection(pageContent, languageCode)
+            if languageSection is None: return pageContent
             sectionsInPage = re.findall(ur"\n=+ *{{S\|?([^}/|]+)([^}]*)}}", languageSection)
             if debugLevel > d: raw_input(str(sectionsInPage))
             o = 0
@@ -484,10 +528,10 @@ def addLine(pageContent, languageCode, Section, lineContent):
                         if s:
                             pageContent = pageContent[:startPosition] + languageSection[:s.start()] + \
                                 sectionToAdd + languageSection[s.start():] + pageContent[startPosition+endPosition:]
-                            languageSection, startPosition, endPosition = getLanguageSection(pageContent, languageCode)
                         else:
                             raw_input(' bug section')
                     languageSection, startPosition, endPosition = getLanguageSection(pageContent, languageCode)
+                    if languageSection is None: return pageContent
                 else:
                     if debugLevel > d:
                         print u' ajout de "' + Section + u'" avant "' + limitSection + u'"'
@@ -498,6 +542,7 @@ def addLine(pageContent, languageCode, Section, lineContent):
                         pageContent = pageContent[:startPosition] + languageSection[:s.start()] + sectionToAdd + \
                             languageSection[s.start():] + pageContent[startPosition+endPosition:]
                         languageSection, startPosition, endPosition = getLanguageSection(pageContent, languageCode)
+                        if languageSection is None: return pageContent
                     else:
                         raw_input(' bug section')
             if debugLevel > d+1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
@@ -544,7 +589,7 @@ def addLine(pageContent, languageCode, Section, lineContent):
     return pageContent
 
 def addLineTest(pageContent, languageCode = 'fr'):
-    pageContent = addCat(pageContent, languageCode, u'Tests en français')
+    pageContent = addCategory(pageContent, languageCode, u'Tests en français')
     pageContent = addLine(pageContent, languageCode, u'prononciation', u'* {{écouter|||lang=fr|audio=test.ogg}}')
     pageContent = addLine(pageContent, languageCode, u'prononciation', u'* {{écouter|||lang=fr|audio=test2.ogg}}')
     pageContent = addLine(pageContent, languageCode, u'étymologie', u':{{étyl|test|fr}}')
@@ -711,16 +756,6 @@ def removeFalseHomophones(pageContent, languageCode, pageName, relatedPageName, 
     regex = ur"==== *{{S\|homophones\|[^}]*}} *====\n*(=|$|{{clé de tri|\[\[Catégorie:)"
     if re.search(regex, pageContent): pageContent = re.sub(regex, ur'\1', pageContent)
 
-    return pageContent, summary
-
-def removeCategory(pageContent, category, summary):
-    if debugLevel > 0: print u'\nremoveCategory(' + category + u')'
-    #TODO
-    return pageContent, summary
-
-def removeTemplate(pageContent, template, section, summary):
-    if debugLevel > 0: print u'\nremoveTemplate(' + template + u')'
-    #TODO
     return pageContent, summary
 
 def rec_anagram(counter):

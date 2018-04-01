@@ -1999,47 +1999,47 @@ def treatPageByName(pageName):
 
         if debugLevel > 0: print u'Catégories de prononciation'
         if pageName[-2:] == u'um' and pageContent.find(u'ɔm|fr}}') != -1:
-            pageContent = addCat(pageContent, u'fr', u'um prononcés /ɔm/ en français')
+            pageContent = addCategory(pageContent, u'fr', u'um prononcés /ɔm/ en français')
         if pageName[:2] == u'qu':
             regex = ur'{{pron\|kw[^}\|]+\|fr}}'
             if re.search(regex, pageContent):
-                pageContent = addCat(pageContent, u'fr', u'qu prononcés /kw/ en français')
+                pageContent = addCategory(pageContent, u'fr', u'qu prononcés /kw/ en français')
         if pageName[:2] == u'qu':
             regex = ur'{{fr\-rég\|kw[^}\|]+}}'
             if re.search(regex, pageContent):
-                pageContent = addCat(pageContent, u'fr', u'qu prononcés /kw/ en français')
+                pageContent = addCategory(pageContent, u'fr', u'qu prononcés /kw/ en français')
         if pageName[:2] == u'ch':
             regex = ur'{{pron\|k[^}\|]+\|fr}}'
             if re.search(regex, pageContent):
-                pageContent = addCat(pageContent, u'fr', u'ch prononcés /k/ en français')
+                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
         if pageName[:2] == u'ch':
             regex = ur'{{fr\-rég\|k[^}\|]+}}'
             if re.search(regex, pageContent):
-                pageContent = addCat(pageContent, u'fr', u'ch prononcés /k/ en français')
+                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
         if pageName[:2] == u'Ch':
             regex = ur'{{pron\|k[^}\|]+\|fr}}'
             if re.search(regex, pageContent):
-                pageContent = addCat(pageContent, u'fr', u'ch prononcés /k/ en français')
+                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
         if pageName[:2] == u'Ch':
             regex = ur'{{fr\-rég\|k[^}\|]+}}'
             if re.search(regex, pageContent):
-                pageContent = addCat(pageContent, u'fr', u'ch prononcés /k/ en français')
+                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
         if pageName[-2:] == u'ch':
             regex = ur'{{pron\|[^}\|]+k\|fr}}'
             if re.search(regex, pageContent):
-                pageContent = addCat(pageContent, u'fr', u'ch prononcés /k/ en français')
+                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
         if pageName[-2:] == u'ch':
             regex = ur'{{fr\-rég\|[^}\|]+k}}'
             if re.search(regex, pageContent):
-                pageContent = addCat(pageContent, u'fr', u'ch prononcés /k/ en français')
+                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
         if pageName[-3:] == u'chs':
             regex = ur'{{pron\|[^}\|]+k}}'
             if re.search(regex, pageContent):
-                pageContent = addCat(pageContent, u'fr', u'ch prononcés /k/ en français')
+                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
         if pageName[-3:] == u'chs':
             regex = ur'{{fr\-rég\|[^}\|]+k}}'
             if re.search(regex, pageContent):
-                pageContent = addCat(pageContent, u'fr', u'ch prononcés /k/ en français')
+                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
 
         if debugLevel > 1: print u'Formatage de la ligne de forme'
         pageContent = pageContent.replace(u'{{PAGENAME}}', u'{{subst:PAGENAME}}')
@@ -2086,6 +2086,7 @@ def treatPageByName(pageName):
 
         if debugLevel > 0: print u'Formatage des modèles'
         pageContent = pageContent.replace(u'\n {{', u'\n{{')
+        pageContent = pageContent.replace(u'{{verlan|fr}}', u'{{verlan}}')
 
         if debugLevel > 1: print u' Remplacements des anciens modèles de langue'
         pageContent = pageContent.replace(u'{{grc}}', u'grec ancien')
@@ -2320,19 +2321,31 @@ def treatPageByName(pageName):
         if debugLevel > 1: print u' Modèles à déplacer'
         if debugLevel > 0:
             etymTemplates = ['louchébem', 'verlan', 'abréviation', 'acronyme', 'sigle']
+            natures = [u'adjectif', u'adverbe', u'nom', u'nom propre', u'verbe']
             for etymTemplate in etymTemplates:
-                #TODO: retirer {{verlan}} et {{argot}} des définitions : getDefinitions()
-                regexCat = ur'(\n\[\[Catégorie:' + etymTemplate[:1].upper() + etymTemplate[1:] + ur'\]\])'
-                if re.search(regexCat, pageContent):
-                    French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
-                    etymology, sStart, sEnd = getSection(French, u'étymologie')
-                    if etymology != French:
-                        regexEtym = ur'(=\n):? *'
-                        if re.search(regexEtym, pageContent):
-                            etymology2 = re.sub(regexEtym, ur'\1: {{' + etymTemplate + ur'}} ', etymology)
-                            pageContent = pageContent.replace(etymology, etymology2)
-                            pageContent = re.sub(regexCat, ur'', pageContent)
-                            summary = summary + u', ajout de {{' + etymTemplate + ur'}}'
+                French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
+                if French is not None:
+                    regexCategory = ur'\n\[\[Catégorie:' + etymTemplate[:1].upper() + etymTemplate[1:] + ur'(\||\])'
+                    regexTemplate = ur"\n'''[^\n]+\n# *{{" + etymTemplate + ur'(\||})'
+                    if re.search(regexCategory, pageContent) or re.search(regexTemplate, pageContent):
+                        if debugLevel > 0: print u' Déplacement de ' + regexCategory
+                        pageContent, summary = removeCategory(pageContent, etymTemplate[:1].upper() + etymTemplate[1:], summary)
+                        pageContent, summary = removeTemplate(pageContent, etymTemplate, summary, language = 'fr', inSection = natures)
+                        French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
+                        #TODO generic addToLine(append, prepend)
+                        etymology, sStart, sEnd = getSection(French, u'étymologie')
+                        if etymology is not None:
+                            regexEtymology = ur'(=\n):? *'
+                            if re.search(regexEtymology, pageContent):
+                                etymology2 = re.sub(regexEtymology, ur'\1: {{' + etymTemplate + ur'}} ', etymology)
+                                pageContent = pageContent.replace(etymology, etymology2)
+                                if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+                                summary = summary + u', [[Wiktionnaire:Prise de décision/Déplacer les modèles de contexte' \
+                                + u' étymologiques dans la section « Étymologie »|ajout de {{' + etymTemplate + ur"}} dans l'étymologie]]"
+                    if etymTemplate in ['louchébem', 'verlan'] and countDefinitions(French) == 1:
+                        pageContent, summary = removeTemplate(pageContent, 'argot', summary, language = 'fr', inSection = natures)
+                    if etymTemplate in ['acronyme', 'sigle'] and countDefinitions(French) == 1:
+                        pageContent, summary = removeTemplate(pageContent, 'abréviation', summary, language = 'fr', inSection = natures)
 
         if pageContent.find(u'{{ru-conj') != -1:
             finalPageContent = pageContent[:pageContent.find(u'{{ru-conj')]
@@ -2553,7 +2566,7 @@ def treatPageByName(pageName):
             regex = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|apocope|aphérèse|ellipse|par ellipse|sigle|acronyme|abréviation|variante)[\|}]'
             regex2 = ur'([Vv]ariante[ ,]|[Ss]ynonyme[ ,]|[Aa]utre nom|fr\|flexion)'
             French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
-            if re.search(regex, French) is None and re.search(regex2, French) is None and countFirstDefinitionSize(French) > 2:
+            if French is not None and re.search(regex, French) is None and re.search(regex2, French) is None and countFirstDefinitionSize(French) > 2:
                 summary = summary + u', ajout de {{S|traductions}}'
                 pageContent = addLine(pageContent, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
             # Cosmetic hardfix
