@@ -1028,7 +1028,7 @@ Modele.append(u'p-us')
 Modele.append(u'palindrome')
 Modele.append(u'palmiers')
 Modele.append(u'paléo')
-Modele.append(u'paléographie')
+Modele.append(u'paléographite')
 Modele.append(u'paléontol')
 Modele.append(u'paléontologie')
 Modele.append(u'papeterie')
@@ -1604,16 +1604,6 @@ Genre.append(u'n')
 Genre.append(u'nplur')
 Genre.append(u'nsing')
 
-# https://fr.wiktionary.org/wiki/Module:types_de_mots/data
-natures = [u'adjectif', u'adverbe', u'article', u'conjonction', u'copule', u'déterminant', u'nom', u'patronyme', \
-    u'prénom', u'préposition', u'pronom', u'verbe', u'interjection', u'onomatopée', u'affixe', u'circonfixe' u'infixe', \
-    u'interfixe', u'particule', u'postposition', u'préfixe', u'radical', u'suffixe', u'pré-verbe' u'pré-nom', \
-    u'enclitique', u'proclitique', u'locution', u'proverbe', u'quantificateur', u'lettre', u'symbole', u'classificateur', \
-    'numéral', u'sinogramme', u'erreur', u'gismu', u'rafsi', u'nom propre']
-
-# https://fr.wiktionary.org/wiki/Catégorie:Modèles_de_définitions
-definitionTemplates = [u'abréviation de', u'comparatif de', u'exclamatif de', u'mutation de', u'superlatif de', \
-    u'variante de', u'variante ortho de', u'variante orthographique de']
 
 def treatPageByName(pageName):
     global natures, definitionTemplates, etymologyTemplates, etymologyTemplatesWithLanguageAtLang, \
@@ -2341,7 +2331,7 @@ def treatPageByName(pageName):
                 if pageLanguage == 'fr': etymTemplates = etymTemplates + ['louchébem', 'reverlanisation', 'verlan']
                 for etymTemplate in etymTemplates:
                     languageSection, lStart, lEnd = getLanguageSection(pageContent, pageLanguage)
-                    if languageSection is not None and languageSection.find(etymTemplate[1:]) != -1:
+                    if languageSection is not None and len(getNaturesSections(languageSection)) == 1 and languageSection.find(etymTemplate[1:]) != -1:
                         regexCategory = ur'\n\[\[Catégorie:' + etymTemplate[:1].upper() + etymTemplate[1:] + ur'(\||\])'
                         # Si le modèle à déplacer est sur la ligne de forme ou de définition
                         regexTemplate = ur"\n'''[^\n]+(\n#)? *{{" + etymTemplate + ur'(\||})'

@@ -91,6 +91,16 @@ flexionTemplatesFr.append(u'fr-accord-personne')
 flexionTemplatesFr.append(u'fr-accord-t-avant1835')
 flexionTemplatesFr.append(u'fr-inv')
 
+# https://fr.wiktionary.org/wiki/Module:types_de_mots/data
+natures = [u'adjectif', u'adverbe', u'article', u'conjonction', u'copule', u'déterminant', u'nom', u'patronyme', \
+    u'prénom', u'préposition', u'pronom', u'verbe', u'interjection', u'onomatopée', u'affixe', u'circonfixe' u'infixe', \
+    u'interfixe', u'particule', u'postposition', u'préfixe', u'radical', u'suffixe', u'pré-verbe' u'pré-nom', \
+    u'enclitique', u'proclitique', u'locution', u'proverbe', u'quantificateur', u'lettre', u'symbole', u'classificateur', \
+    'numéral', u'sinogramme', u'erreur', u'gismu', u'rafsi', u'nom propre']
+
+# https://fr.wiktionary.org/wiki/Catégorie:Modèles_de_définitions
+definitionTemplates = [u'abréviation de', u'comparatif de', u'exclamatif de', u'mutation de', u'superlatif de', \
+    u'variante de', u'variante ortho de', u'variante orthographique de']
 
 def setGlobalsWiktionary(myDebugLevel, mySite, myUsername):
     global debugLevel
@@ -217,7 +227,6 @@ def getFlexionTemplateFromLemma(pageName, language, nature):
 
 def getPageLanguages(pageContent):
     if debugLevel > 0: print u'\ngetPageLanguages()'
-    languages = []
     regex = ur'{{langue\|([^}]+)}}'
     s = re.findall(regex, pageContent, re.DOTALL)
     if s: return s
@@ -245,6 +254,24 @@ def getLanguageSection(pageContent, languageCode = 'fr'):
     if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
 
     return pageContent, startPosition, endPosition
+
+def getSections(pageContent):
+    if debugLevel > 0: print u'\ngetSections()'
+    regex = ur'{{S\|([^}\|]+)'
+    s = re.findall(regex, pageContent, re.DOTALL)
+    if s: return s
+    return []
+
+def getNotNaturesSections(pageContent):
+    if debugLevel > 0: print u'\ngetNaturesSections()'
+    sections = getSections(pageContent)
+    return [item for item in sections if item not in natures]
+
+def getNaturesSections(pageContent):
+    if debugLevel > 0: print u'\ngetNaturesSections()'
+    sections = getSections(pageContent)
+    notNaturesSections = getNotNaturesSections(pageContent)
+    return [item for item in sections if item not in notNaturesSections]
 
 def getSection(pageContent, sectionName):
     if debugLevel > 0: print u'\ngetSection(' + sectionName + u')'
@@ -446,7 +473,8 @@ def removeCategory(pageContent, category, summary):
 
 def removeTemplate(pageContent, template, summary, language = None, inSection = None):
     if debugLevel > 0: print u'\nremoveTemplate(' + template + u')'
-    regexTemplate = ur'( *{{' + template + ur'(\||})[^}]*}}?)'
+    #TODO: rattacher le bon template à la bonne ligne de l'étymologie, et s'il doit être déplacé plusieurs fois
+    regexTemplate = ur'(,?( et)? *{{' + template + ur'(\||})[^}]*}}?)'
     oldSection = pageContent
     if inSection is not None:
         if language is not None: oldSection, lStart, lEnd = getLanguageSection(oldSection, language)
