@@ -215,6 +215,14 @@ def getFlexionTemplateFromLemma(pageName, language, nature):
 
     return FlexionTemplate
 
+def getPageLanguages(pageContent):
+    if debugLevel > 0: print u'\ngetPageLanguages()'
+    languages = []
+    regex = ur'{{langue\|([^}]+)}}'
+    s = re.findall(regex, pageContent, re.DOTALL)
+    if s: return s
+    return []
+
 def getLanguageSection(pageContent, languageCode = 'fr'):
     if debugLevel > 0: print u'\ngetLanguageSection(' + languageCode + u')'
     startPosition = 0
@@ -229,7 +237,7 @@ def getLanguageSection(pageContent, languageCode = 'fr'):
     startPosition = s.start()
     pageContent = pageContent[s.start():]
     regex = ur'\n== *{{langue\|(?!' + languageCode + ur').*}} *='
-    s = re.search(regex, pageContent, re.MULTILINE)
+    s = re.search(regex, pageContent) #, re.MULTILINE
     if s:
         endPosition = s.start()
         pageContent = pageContent[:endPosition]
@@ -244,7 +252,7 @@ def getSection(pageContent, sectionName):
     endPosition = len(pageContent)
 
     regex = ur'=* *{{S\|' + sectionName + ur'(\||})'
-    s = re.search(regex, pageContent, re.DOTALL)
+    s = re.search(regex, pageContent) # , re.DOTALL
     if not s:
         if debugLevel > 0: print(' missing section!')
         return None, startPosition, endPosition
