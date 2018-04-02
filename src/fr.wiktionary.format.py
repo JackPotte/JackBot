@@ -345,6 +345,14 @@ Modele.append(u'caractère')
 Modele.append(u'langue')
 Modele.append(u'S')
 
+# https://fr.wiktionary.org/wiki/Catégorie:Modèles_étymologiques
+etymologyTemplates = [u'étcompcat', u'étyl', u'étylp', u'louchébem', u'reverlanisation', u'verlan']
+etymologyTemplatesWithLanguageAtLang = [u'compos', u'composé de', u'deet']
+etymologyTemplatesInSatelliteWords = [u'abréviation', u'acronyme', u'apocope', u'aphérèse', u'ellipse', u'par ellipse', u'sigle']
+etymologyTemplatesWithLanguageAtFirst = etymologyTemplatesInSatelliteWords + [u'agglutination', u'antonomase', \
+    u'déglutination', u'mot-valise', u'parataxe', u'syncope', u'univerbation']
+etymologyTemplatesWithLanguageAtSecond = [u'dénominal', u'dénominal de', u'déverbal', u'déverbal de', u'déverbal sans suffixe']
+
 # Modèles qui ne sont pas des titres de paragraphes
 Modele.append(u'?')
 Modele.append(u'doute')
@@ -367,11 +375,8 @@ Modele.append(u'trad-')
 Modele.append(u'trad+')
 Modele.append(u'trad')
 Modele.append(u'préciser')
-
 Modele.append(u'cf')
-Modele.append(u'compos')
-Modele.append(u'composé de')
-Modele.append(u'deet')
+Modele = Modele + etymologyTemplatesWithLanguageAtLang
 
 limit5 = len(Modele)
 Modele.append(u'comparatif')
@@ -413,22 +418,16 @@ Modele.append(u'Moyen Âge')
 Modele.append(u'Scrabble')
 Modele.append(u'ablat')
 Modele.append(u'ablatif')
-Modele.append(u'abrév')
-Modele.append(u'abréviation de')
-Modele.append(u'abréviation')
 Modele.append(u'accord genre ?')
 Modele.append(u'accus')
 Modele.append(u'accusatif')
 Modele.append(u'acoustique')
-Modele.append(u'acron')
-Modele.append(u'acronyme')
 Modele.append(u'admin')
 Modele.append(u'administration')
 Modele.append(u'adverbes de lieu')
 Modele.append(u'adverbes de temps')
 Modele.append(u'adverbes interrogatif')
 Modele.append(u'affectueux')
-Modele.append(u'agglutination')
 Modele.append(u'agri')
 Modele.append(u'agriculture')
 Modele.append(u'agronomie')
@@ -457,11 +456,8 @@ Modele.append(u'anthropologie')
 Modele.append(u'antilopes')
 Modele.append(u'antiq')
 Modele.append(u'antiquité')
-Modele.append(u'aphérèse')
 Modele.append(u'apiculture')
 Modele.append(u'apiculture')
-Modele.append(u'apocope familière')
-Modele.append(u'apocope')
 Modele.append(u'arboriculture')
 Modele.append(u'arbres')
 Modele.append(u'arch')
@@ -675,10 +671,8 @@ Modele.append(u'droit de propriété')
 Modele.append(u'droit du travail')
 Modele.append(u'droit féodal')
 Modele.append(u'droit')
-Modele.append(u'déglutination')
 Modele.append(u'dén')
 Modele.append(u'dénombrable')
-Modele.append(u'dénominal de')
 Modele.append(u'dépendant')
 Modele.append(u'déris')
 Modele.append(u'dérision')
@@ -686,10 +680,6 @@ Modele.append(u'dérision')
 Modele.append(u'déserts')
 Modele.append(u'désuet')
 Modele.append(u'détroits')
-Modele.append(u'déverbal de')
-Modele.append(u'déverbal sans suffixe')
-Modele.append(u'déverbal')
-Modele.append(u'ellipse')
 Modele.append(u'enclitique')
 Modele.append(u'enfantin')
 Modele.append(u'entom')
@@ -957,7 +947,6 @@ Modele.append(u'monarchie')
 Modele.append(u'monnaies')
 Modele.append(u'montagnes')
 Modele.append(u'morphologie végétale')
-Modele.append(u'mot-valise')
 Modele.append(u'motocyclisme')
 Modele.append(u'mouches')
 Modele.append(u'muscle')
@@ -1047,8 +1036,6 @@ Modele.append(u'papillons')
 Modele.append(u'papèterie')
 Modele.append(u'par analogie')
 Modele.append(u'par dérision')
-Modele.append(u'par ellipse')
-Modele.append(u'parataxe')
 Modele.append(u'parfumerie')
 Modele.append(u'passif')
 Modele.append(u'pathologie')
@@ -1207,7 +1194,6 @@ Modele.append(u'serru')
 Modele.append(u'serrurerie')
 Modele.append(u'sexe')
 Modele.append(u'sexualité')
-Modele.append(u'sigle')
 Modele.append(u'singes')
 Modele.append(u'singulare tantum')
 Modele.append(u'sinstrumental')
@@ -1389,7 +1375,12 @@ Modele.append(u'ébauche-exe')
 Modele.append(u'ébauche-pron')
 Modele.append(u'ébauche')
 Modele.append(u'...')
+
 limit8 = len(Modele)
+# Code langue si étymologie
+Modele = Modele + etymologyTemplatesWithLanguageAtFirst + etymologyTemplatesWithLanguageAtSecond
+
+limit9 = len(Modele)
 # Modèles régionaux, avec "nocat" pour les prononciations
 Modele.append(u'Acadie')
 Modele.append(u'Afrique')
@@ -1547,7 +1538,8 @@ Modele.append(u'NZ')
 Modele.append(u'IE')
 # Modèles de pronociation à synchroniser
 Modele.append(u'fr-verbe-flexion')
-limit9 = len(Modele) # Somme des modèles traités
+
+limit10 = len(Modele) # Somme des modèles traités
 '''
 # TODO : non traités
 
@@ -1611,7 +1603,20 @@ Genre.append(u'n')
 Genre.append(u'nplur')
 Genre.append(u'nsing')
 
+# https://fr.wiktionary.org/wiki/Module:types_de_mots/data
+natures = [u'adjectif', u'adverbe', u'article', u'conjonction', u'copule', u'déterminant', u'nom', u'patronyme', \
+    u'prénom', u'préposition', u'pronom', u'verbe', u'interjection', u'onomatopée', u'affixe', u'circonfixe' u'infixe', \
+    u'interfixe', u'particule', u'postposition', u'préfixe', u'radical', u'suffixe', u'pré-verbe' u'pré-nom', \
+    u'enclitique', u'proclitique', u'locution', u'proverbe', u'quantificateur', u'lettre', u'symbole', u'classificateur', \
+    'numéral', u'sinogramme', u'erreur', u'gismu', u'rafsi', u'nom propre']
+
+# https://fr.wiktionary.org/wiki/Catégorie:Modèles_de_définitions
+definitionTemplates = [u'abréviation de', u'comparatif de', u'exclamatif de', u'mutation de', u'superlatif de', \
+    u'variante de', u'variante ortho de', u'variante orthographique de']
+
 def treatPageByName(pageName):
+    global natures, definitionTemplates, etymologyTemplates, etymologyTemplatesWithLanguageAtLang, \
+        etymologyTemplatesInSatelliteWords, etymologyTemplatesWithLanguageAtFirst, etymologyTemplatesWithLanguageAtSecond
     summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
     if debugLevel > 0: print u'------------------------------------'
     print(pageName.encode(config.console_encoding, 'replace'))
@@ -2086,6 +2091,8 @@ def treatPageByName(pageName):
 
         if debugLevel > 0: print u'Formatage des modèles'
         pageContent = pageContent.replace(u'\n {{', u'\n{{')
+        pageContent = pageContent.replace(u'{{louchébem|fr}}', u'{{louchébem}}')
+        pageContent = pageContent.replace(u'{{reverlanisation|fr}}', u'{{reverlanisation}}')
         pageContent = pageContent.replace(u'{{verlan|fr}}', u'{{verlan}}')
 
         if debugLevel > 1: print u' Remplacements des anciens modèles de langue'
@@ -2278,6 +2285,10 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'{{vêtement|', u'{{vêtements|')
         pageContent = pageContent.replace(u'{{en-nom-rég-double|', u'{{en-nom-rég|')
         pageContent = pageContent.replace(u'{{Valence|ca}}', u'{{valencien}}')
+        pageContent = pageContent.replace(u'{{abrév|', u'{{abréviation|')
+        pageContent = pageContent.replace(u'{{acron|', u'{{acronyme|')
+
+        if debugLevel > 1: print u' Modèles trop longs'
         pageContent = pageContent.replace(u'{{boîte début', u'{{(')
         pageContent = pageContent.replace(u'{{boîte fin', u'{{)')
         pageContent = pageContent.replace(u'\n{{-}}', u'')
@@ -2318,15 +2329,17 @@ def treatPageByName(pageName):
         if pageContent.find(u'\n[[Catégorie:Gentilés en français]]') != -1 and pageContent.find(u'{{note-gentilé|fr}}') != -1:
             pageContent = pageContent.replace(u'\n[[Catégorie:Gentilés en français]]', u'')
 
-        if debugLevel > 1: print u' Modèles à déplacer'
-        if debugLevel > 0:
-            etymTemplates = ['louchébem', 'verlan', 'abréviation', 'acronyme', 'sigle']
-            natures = [u'adjectif', u'adverbe', u'nom', u'nom propre', u'verbe']
+        if debugLevel > 0: print u' Modèles à déplacer'
+        if debugLevel > 10:
+            #etymTemplates = ['louchébem', 'reverlanisation', 'verlan']
+            etymTemplates = ['abréviation', 'acronyme', 'sigle']
+            #TODO: adapter {{acronyme}} avec des parenthèses (ou |m=1) pour le coller en début d'étymologie (après (Nom)), rendre le traitement multilingue
             for etymTemplate in etymTemplates:
                 French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
-                if French is not None:
+                if French is not None and French.find(etymTemplate[1:]) != -1:
                     regexCategory = ur'\n\[\[Catégorie:' + etymTemplate[:1].upper() + etymTemplate[1:] + ur'(\||\])'
-                    regexTemplate = ur"\n'''[^\n]+\n# *{{" + etymTemplate + ur'(\||})'
+                    # Si le modèle à déplacer est sur la ligne de forme ou de définition
+                    regexTemplate = ur"\n'''[^\n]+(\n#)? *{{" + etymTemplate + ur'(\||})'
                     if re.search(regexCategory, pageContent) or re.search(regexTemplate, pageContent):
                         if debugLevel > 0: print u' Déplacement de ' + regexCategory
                         pageContent, summary = removeCategory(pageContent, etymTemplate[:1].upper() + etymTemplate[1:], summary)
@@ -2334,7 +2347,7 @@ def treatPageByName(pageName):
                         French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
                         #TODO generic addToLine(append, prepend)
                         etymology, sStart, sEnd = getSection(French, u'étymologie')
-                        if etymology is not None and etymology.find(u'{{' + etymTemplate + ur'}}') == -1:
+                        if etymology is not None and etymology.find(u'{{' + etymTemplate) == -1:
                             regexEtymology = ur'(=\n):? *'
                             if re.search(regexEtymology, pageContent):
                                 etymology2 = re.sub(regexEtymology, ur'\1: {{' + etymTemplate + ur'}} ', etymology)
@@ -2342,7 +2355,7 @@ def treatPageByName(pageName):
                                 if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
                                 summary = summary + u', [[Wiktionnaire:Prise de décision/Déplacer les modèles de contexte' \
                                 + u' étymologiques dans la section « Étymologie »|ajout de {{' + etymTemplate + ur"}} dans l'étymologie]]"
-                    if etymTemplate in ['louchébem', 'verlan'] and countDefinitions(French) == 1:
+                    if etymTemplate in ['louchébem', 'reverlanisation', 'verlan'] and countDefinitions(French) == 1:
                         pageContent, summary = removeTemplate(pageContent, 'argot', summary, language = 'fr', inSection = natures)
                     if etymTemplate in ['acronyme', 'sigle'] and countDefinitions(French) == 1:
                         pageContent, summary = removeTemplate(pageContent, 'abréviation', summary, language = 'fr', inSection = natures)
@@ -2562,11 +2575,14 @@ def treatPageByName(pageName):
                     summary = summary + u', déplacement des modèles de flexions'
 
 
-            if debugLevel > 0: print u'Traductions manquantes' # si la définition du mot ne renvoie pas vers un autre, les centralisant
-            regex = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|apocope|aphérèse|ellipse|par ellipse|sigle|acronyme|abréviation|variante)[\|}]'
-            regex2 = ur'([Vv]ariante[ ,]|[Ss]ynonyme[ ,]|[Aa]utre nom|fr\|flexion)'
+            if debugLevel > 0: print u'Traductions manquantes'
+            # Si la définition du mot (dit "satéllite") ne renvoie pas vers un autre, les centralisant
+            regex = ur'(fr\|flexion|[Vv]ariante[ ,]|[Ss]ynonyme[ ,]|[Aa]utre nom[ ,]|[Aa]utre orthographe[ ,])'
+            regex2 = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|' + \
+                u'|'.join(etymologyTemplatesInSatelliteWords) + ur')[\|}]'
             French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
-            if French is not None and re.search(regex, French) is None and re.search(regex2, French) is None and countFirstDefinitionSize(French) > 2:
+            if French is not None and re.search(regex, French) is None and re.search(regex2, French) is None and \
+                countFirstDefinitionSize(French) > 3:
                 summary = summary + u', ajout de {{S|traductions}}'
                 pageContent = addLine(pageContent, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
             # Cosmetic hardfix
@@ -2842,8 +2858,7 @@ def treatPageByName(pageName):
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
 
 # Templates with language code at second
-                elif currentTemplate in ( u'pron', u'phon', u'dénominal de', u'déverbal de', u'déverbal', \
-                    u'superlatif de', u'comparatif de', u'déverbal sans suffixe', u'abréviation de'):
+                elif currentTemplate in definitionTemplates + etymologyTemplatesWithLanguageAtSecond + [u'pron', u'phon']: # u'lien'
                     if languageCode != u'conv':
                         # Tri des lettres de l'API
                         if currentTemplate == u'pron':
@@ -2876,7 +2891,7 @@ def treatPageByName(pageName):
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
 
 # Templates with "lang="
-                elif currentTemplate in (u'écouter', u'cf', u'compos', u'composé de', u'deet'):
+                elif currentTemplate in [u'écouter', u'cf'] + etymologyTemplatesWithLanguageAtLang:
                     pageContent2 = pageContent[endPosition+1:len(pageContent)]
                     # Saut des modèles régionnaux
                     if pageContent2.find("lang=") == -1 or pageContent2.find("lang=") > pageContent2.find('}}'):
@@ -3453,6 +3468,16 @@ def treatPageByName(pageName):
                     else:
                        finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent, currentTemplate, 'nocat=1')
 
+                elif p < limit9:
+                    if debugLevel > 0: print u' limit9 : modèle catégorisé dans les étymologies'
+                    if currentTemplate == pageContent[:pageContent.find('}}')]:
+                        if addLanguageCode or section == u'étymologie':
+                            finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent, currentTemplate, languageCode)
+                        else:
+                            finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent, currentTemplate, 'nocat=1')
+                    else:
+                        finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
+
                 else:
                     if debugLevel > 0: print u' Modèle régional : non catégorisé dans la prononciation'
                     if finalPageContent.rfind('{{') != -1:
@@ -3833,12 +3858,13 @@ def main(*args):
             research = u'insource:"{{term|Lorraine}}"'
             if len(sys.argv) > 2: research = p.pagesBySearch(sys.argv[2])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:autres projets')
+            p.pagesByLink(u'Template:acronyme')
+            p.pagesByLink(u'Template:sigle')
+            p.pagesByLink(u'Template:abréviation')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Catégorie:Verlan', recursive = False)
-            #p.pagesByCat(u'Appels de modèles incorrects:deet', afterPage = afterPage, recursive = False, namespaces = [14])
+            p.pagesByCat(u'Appels de modèles incorrects:deet', afterPage = afterPage, recursive = False, namespaces = [14])
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
