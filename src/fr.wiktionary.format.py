@@ -2049,6 +2049,7 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u']] {{perf}}', u']] {{perf|nocat=1}}')
         pageContent = pageContent.replace(u'{{perf}} / \'\'\'', u'{{perf|nocat=1}} / \'\'\'')
         pageContent = pageContent.replace(u'{{term|Blason}}', u'{{héraldique}}')
+        pageContent = pageContent.replace(u'{{term|Art vétérinaire}}', u'{{vétérinaire}}')
 
         regex = ur'({{fr\-[^}]*\|[\'’]+=[^}]*)\|[\'’]+=[oui|1]'
         if re.search(regex, pageContent):
@@ -2327,33 +2328,28 @@ def treatPageByName(pageName):
         if debugLevel > 0:
             pageLanguages = getPageLanguages(pageContent)
             for pageLanguage in pageLanguages:
-                etymTemplates = ['abréviation', 'acronyme', 'sigle']
-                if pageLanguage == 'fr': etymTemplates = etymTemplates + ['louchébem', 'reverlanisation', 'verlan']
-                for etymTemplate in etymTemplates:
-                    languageSection, lStart, lEnd = getLanguageSection(pageContent, pageLanguage)
-                    if languageSection is not None and len(getNaturesSections(languageSection)) == 1 and languageSection.find(etymTemplate[1:]) != -1:
-                        regexCategory = ur'\n\[\[Catégorie:' + etymTemplate[:1].upper() + etymTemplate[1:] + ur'(\||\])'
-                        # Si le modèle à déplacer est sur la ligne de forme ou de définition
-                        regexTemplate = ur"\n'''[^\n]+(\n#)? *{{" + etymTemplate + ur'(\||})'
-                        if re.search(regexCategory, pageContent) or re.search(regexTemplate, pageContent):
-                            if debugLevel > 0: print u' Déplacement de ' + regexCategory
-                            pageContent, summary = removeCategory(pageContent, etymTemplate[:1].upper() + etymTemplate[1:], summary)
-                            pageContent, summary = removeTemplate(pageContent, etymTemplate, summary, language = pageLanguage, inSection = natures)
-                            languageSection, lStart, lEnd = getLanguageSection(pageContent, pageLanguage)
-                            #TODO generic addToEtymology = addToLine(languageCode, section, append, prepend) après (u'|'.join(natures))
-                            etymology, sStart, sEnd = getSection(languageSection, u'étymologie')
-                            if etymology is not None and etymology.find(u'{{' + etymTemplate) == -1:
-                                regexEtymology = ur'(=\n:* *(\'*\([^\)]*\)\'*)?) *'
-                                if re.search(regexEtymology, pageContent):
-                                    etymology2 = re.sub(regexEtymology, ur'\1 {{' + etymTemplate + ur'}} ', etymology)
-                                    pageContent = pageContent.replace(etymology, etymology2)
-                                    if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
-                                    summary = summary + u', [[Wiktionnaire:Prise de décision/Déplacer les modèles de contexte' \
-                                    + u' étymologiques dans la section « Étymologie »|ajout de {{' + etymTemplate + ur"}} dans l'étymologie]]"
-                        if etymTemplate in ['louchébem', 'reverlanisation', 'verlan'] and countDefinitions(languageSection) == 1:
-                            pageContent, summary = removeTemplate(pageContent, 'argot', summary, language = pageLanguage, inSection = natures)
-                        if etymTemplate in ['acronyme', 'sigle'] and countDefinitions(languageSection) == 1:
-                            pageContent, summary = removeTemplate(pageContent, 'abréviation', summary, language = pageLanguage, inSection = natures)
+                languageSection, lStart, lEnd = getLanguageSection(pageContent, pageLanguage)
+                if languageSection is not None and len(getNaturesSections(languageSection)) == 1: 
+                    etymTemplates = ['abréviation', 'acronyme', 'sigle']
+                    if pageLanguage == 'fr': etymTemplates = etymTemplates + ['louchébem', 'reverlanisation', 'verlan']
+                    for etymTemplate in etymTemplates:
+                        if languageSection.find(etymTemplate[1:]) != -1:
+                            # Si le modèle à déplacer est sur la ligne de forme ou de définition
+                            regexTemplate = ur"\n'''[^\n]+(\n#)? *{{" + etymTemplate + ur'(\||})'
+                            if re.search(regexTemplate, languageSection):
+                                newLanguageSection, summary = removeTemplate(languageSection, etymTemplate, summary, \
+                                    language = pageLanguage, inSection = natures)
+                                #TODO generic moveFromNatureToEtymology = remove après (u'|'.join(natures)) + addToEtymology, = addToLine(languageCode, section, append, prepend)
+                                etymology, sStart, sEnd = getSection(newLanguageSection, u'étymologie')
+                                if etymology is not None and etymology.find(u'{{' + etymTemplate) == -1:
+                                    regexEtymology = ur'(=\n:* *(\'*\([^\)]*\)\'*)?) *'
+                                    if re.search(regexEtymology, pageContent):
+                                        etymology2 = re.sub(regexEtymology, ur'\1 {{' + etymTemplate + ur'}} ', etymology)
+                                        newLanguageSection = newLanguageSection.replace(etymology, etymology2)
+                                        if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+                                        summary = summary + u', [[Wiktionnaire:Prise de décision/Déplacer les modèles de contexte' \
+                                        + u' étymologiques dans la section « Étymologie »|ajout de {{' + etymTemplate + ur"}} dans l'étymologie]]"
+                                pageContent = pageContent.replace(languageSection, newLanguageSection)
 
         if pageContent.find(u'{{ru-conj') != -1:
             finalPageContent = pageContent[:pageContent.find(u'{{ru-conj')]
@@ -3850,8 +3846,10 @@ def main(*args):
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
-            research = u'insource:"{{term|Lorraine}}"'
-            if len(sys.argv) > 2: research = p.pagesBySearch(sys.argv[2])
+            if len(sys.argv) > 2:
+                p.pagesBySearch(sys.argv[2])
+            else:
+                p.pagesBySearch(u'insource:"{{term|Art vétérinaire}}"')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:acronyme')
             p.pagesByLink(u'Template:sigle')
@@ -3872,7 +3870,7 @@ def main(*args):
         elif sys.argv[1] == u'-lint':
             p.pagesBySpecialLint()
         elif sys.argv[1] == u'-extlinks':
-            p. pagesBySpecialLinkSearch('www.dmoz.org')
+            p.pagesBySpecialLinkSearch('www.dmoz.org')
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
             try:
