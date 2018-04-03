@@ -474,7 +474,7 @@ def removeCategory(pageContent, category, summary):
 def removeTemplate(pageContent, template, summary, language = None, inSection = None):
     if debugLevel > 0: print u'\nremoveTemplate(' + template + u')'
     #TODO: rattacher le bon template à la bonne ligne de l'étymologie, et s'il doit être déplacé plusieurs fois
-    regexTemplate = ur'(,?( et)? *{{' + template + ur'(\||})[^}]*}}?)'
+    regexTemplate = ur'(,?( et| ou)? *{{' + template + ur'(\||})[^}]*}}?)'
     oldSection = pageContent
     if inSection is not None:
         if language is not None: oldSection, lStart, lEnd = getLanguageSection(oldSection, language)
