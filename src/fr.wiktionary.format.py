@@ -2143,6 +2143,7 @@ def treatPageByName(pageName):
             if re.search(regex, pageContent):
                 pageContent = re.sub(regex, ur'\1' + newTemplate[p] + ur'\2', pageContent)
         pageContent = pageContent.replace(u'{{WP|lang=sgs', u'{{WP|lang=bat-smg')
+        pageContent = pageContent.replace(u'{{Source-wikt|nan|', u'{{Source-wikt|zh-min-nan|')
 
         pageContent = re.sub(ur'{{régio *\| *', ur'{{région|', pageContent)
         pageContent = re.sub(ur'{{terme *\| *', ur'{{term|', pageContent)
@@ -2282,6 +2283,10 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'{{Valence|ca}}', u'{{valencien}}')
         pageContent = pageContent.replace(u'{{abrév|', u'{{abréviation|')
         pageContent = pageContent.replace(u'{{acron|', u'{{acronyme|')
+        regex = ur"(\n: *(?:'*\([^)]+\)'*)? *(?:{{[^)]+}})? *(?:{{[^)]+}})? *{{abréviation\|[^}]*)\|m=1}} de([ '])"
+        pageContent = re.sub(regex, ur'\1}} De\2', pageContent)
+        regex = ur"(\n: *(?:'*\([^)]+\)'*)? *(?:{{[^)]+}})? *(?:{{[^)]+}})? *{{abréviation)\|m=1(\|[^}]*)}} de([ '])"
+        pageContent = re.sub(regex, ur'\1\2}} De\3', pageContent)
 
         if debugLevel > 1: print u' Modèles trop longs'
         pageContent = pageContent.replace(u'{{boîte début', u'{{(')
@@ -2333,7 +2338,7 @@ def treatPageByName(pageName):
                 languageSection, lStart, lEnd = getLanguageSection(pageContent, pageLanguage)
                 if languageSection is not None and len(getNaturesSections(languageSection)) == 1 and languageSection.find(etymTemplate[1:]) != -1:
                     # Si le modèle à déplacer est sur la ligne de forme ou de définition
-                    regexTemplate = ur"\n'''[^\n]+(\n#)? *{{" + etymTemplate + ur'(\||})'
+                    regexTemplate = ur"\n'''[^\n]+(\n#)? *({{[^}]+}})? *({{[^}]+}})? *{{" + etymTemplate + ur'(\||})'
                     if re.search(regexTemplate, languageSection):
                         newLanguageSection, summary = removeTemplate(languageSection, etymTemplate, summary, inSection = natures)
                         #TODO generic moveFromNatureToEtymology = remove après (u'|'.join(natures)) + addToEtymology, = addToLine(languageCode, section, append, prepend)
@@ -3851,13 +3856,11 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:"{{term|Art vétérinaire}}"')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:acronyme', afterPage = u'GIRFT')
-            p.pagesByLink(u'Template:sigle')
             p.pagesByLink(u'Template:abréviation')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Appels de modèles incorrects:deet', afterPage = afterPage, recursive = False, namespaces = [14])
+            p.pagesByCat(u'Appels de modèles incorrects:abréviation', afterPage = afterPage, recursive = False, namespaces = [14])
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
