@@ -347,7 +347,7 @@ Modele.append(u'S')
 
 # https://fr.wiktionary.org/wiki/Catégorie:Modèles_étymologiques
 etymologyTemplates = [u'étcompcat', u'étyl', u'étylp', u'louchébem', u'reverlanisation', u'verlan']
-etymologyTemplatesWithLanguageAtLang = [u'compos', u'composé de', u'deet']
+etymologyTemplatesWithLanguageAtLang = [u'compos', u'composé de', u'deet', u'date'] #, u'siècle'
 etymologyTemplatesInSatelliteWords = [u'abréviation', u'acronyme', u'apocope', u'aphérèse', u'ellipse', u'par ellipse', u'sigle']
 etymologyTemplatesWithLanguageAtFirst = etymologyTemplatesInSatelliteWords + [u'agglutination', u'antonomase', \
     u'déglutination', u'mot-valise', u'parataxe', u'syncope', u'univerbation']
@@ -2582,8 +2582,6 @@ def treatPageByName(pageName):
                 summary = summary + u', ajout de {{S|traductions}}'
                 pageContent = addLine(pageContent, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
             # Cosmetic hardfix
-            pageContent = pageContent.replace(u'\n\n\n\n==== {{S|traductions}} ====', u'\n\n\n==== {{S|traductions}} ====')
-            pageContent = pageContent.replace(u'\n\n\n==== {{S|traductions}} ====', u'\n\n==== {{S|traductions}} ====')
             regex = ur'(==== {{S\|traductions}} ====\n)\n* *\n*({{trad\-début)'
             if re.search(regex, pageContent):
                 pageContent = re.sub(regex, ur'\1\2', pageContent)
@@ -3801,6 +3799,8 @@ def treatPageByName(pageName):
         if page.namespace() == 0 or username in pageName:
             # Modifications mineures, ne justifiant pas une édition à elles seules
             finalPageContent = finalPageContent.replace(u'  ', u' ')
+            regex = ur'\n+(\n\n=* {{S\|)'
+            finalPageContent = re.sub(regex, ur'\1', finalPageContent)
             finalPageContent = finalPageContent.replace(u'\n\n\n\n', u'\n\n\n')
             finalPageContent = finalPageContent.replace(u'.\n=', u'.\n\n=')
             regex = ur'(\])(\n== {{langue\|)'
