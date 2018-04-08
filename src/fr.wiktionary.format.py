@@ -3862,7 +3862,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:"{{S|dérivés autres langues}}"', afterPage = u'as')
+                p.pagesBySearch(u'insource:"{{S|dérivés autres langues}}"', afterPage = u'canal')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:abréviation')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
