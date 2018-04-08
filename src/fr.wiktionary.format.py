@@ -2894,7 +2894,7 @@ def treatPageByName(pageName):
                     pageContent2 = pageContent[endPosition+1:]
                     # Saut des modèles régionnaux
                     if (pageContent2.find('lang=') == -1 or pageContent2.find('lang=') > pageContent2.find('}}')) and \
-                        (currentTemplate != u'cf' or pageContent2.find(':') == -1 or pageContent2.find(':') > pageContent2.find('}}')):
+                        (currentTemplate != u'cf' or pageContent2.find('}}') > endPosition+1 and (pageContent2.find(':') == -1 or pageContent2.find(':') > pageContent2.find('}}'))):
                         while pageContent2.find('{{') < pageContent2.find('}}') and pageContent2.find('{{') != -1:
                             pageContent2 = pageContent2[pageContent2.find('}}')+2:]
                         if pageContent2.find('lang=') == -1 or pageContent2.find('lang=') > pageContent2.find('}}'):
@@ -3862,7 +3862,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:"{{S|dérivés autres langues}}"', afterPage = u'Dieu')
+                p.pagesBySearch(u'insource:"{{S|dérivés autres langues}}"', afterPage = u'as')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:abréviation')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
