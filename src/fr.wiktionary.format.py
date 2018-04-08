@@ -2287,6 +2287,9 @@ def treatPageByName(pageName):
         pageContent = re.sub(regex, ur'\1}} De\2', pageContent)
         regex = ur"(\n: *(?:'*\([^)]+\)'*)? *(?:{{[^)]+}})? *(?:{{[^)]+}})? *{{abréviation)\|m=1(\|[^}]*)}} de([ '])"
         pageContent = re.sub(regex, ur'\1\2}} De\3', pageContent)
+        regex = ur"(==== {{S\|dérivés autres langues}} ====" + ur"(:?\n\* *{{L\|[^\n]+)?"*10 + ur"\n\* *{{)T\|"
+        for i in range(10):
+            pageContent = re.sub(regex, ur'\1L|', pageContent)
 
         if debugLevel > 1: print u' Modèles trop longs'
         pageContent = pageContent.replace(u'{{boîte début', u'{{(')

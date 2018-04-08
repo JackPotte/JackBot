@@ -852,7 +852,7 @@ def sort_translations(pageContent, summary):
                 raw_input(finalPageContent[:finalPageContent.rfind(u'\n')].encode(config.console_encoding, 'replace'))
             if debugLevel > 1: print u' Langue 1 : ' + language1
             if len(language1) > 3 and language1.find(u'-') == -1:
-                langue = language1
+                language = language1
             else:
                 try:
                     language = defaultSort(languages[language1].decode('utf8'), 'UTF-8')
