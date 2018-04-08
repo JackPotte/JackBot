@@ -3844,10 +3844,12 @@ def main(*args):
                     print 'bon ko'
                 return
 
-            if len(sys.argv) > 2: regex = sys.argv[2]
-            #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex)
-            #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex, include = u'verbe|it|flexion', exclude = u'it-verbe-flexion')
-            p.pagesByXML(siteLanguage + siteFamily + '.*xml', exclude = u'{{clé de tri', titleInclude = u'’')
+            if len(sys.argv) > 2:
+                regex = sys.argv[2]
+            else:
+                regex = ur'{{trad\-fin}}\n*\*{{T\|'
+            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
+            #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex, include = u'verbe|it|flexion', exclude = u'it-verbe-flexion'
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
@@ -3873,7 +3875,7 @@ def main(*args):
         elif sys.argv[1] == u'-lint':
             p.pagesBySpecialLint()
         elif sys.argv[1] == u'-extlinks':
-            p.pagesBySpecialLinkSearch('www.dmoz.org')
+            p.pagesBySpecialLinkSearch(u'www.dmoz.org')
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
             try:

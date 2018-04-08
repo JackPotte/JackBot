@@ -843,59 +843,58 @@ def sort_translations(pageContent, summary):
                     pageContent[pageContent.find(u'\n')+pageContent2.find('{{')+2:]
 
         if debugLevel > 2: print u'Rangement de la ligne de la traduction par ordre alphabétique de la langue dans finalPageContent'
-        langue1 = pageContent[pageContent.find(u'{{T|')+4:pageContent.find(u'}')]
-        if langue1.find(u'|') != -1: langue1 = langue1[:langue1.find(u'|')]
+        language1 = pageContent[pageContent.find(u'{{T|')+4:pageContent.find(u'}')]
+        if language1.find(u'|') != -1: language1 = language1[:language1.find(u'|')]
         if debugLevel > 2: raw_input(finalPageContent.encode(config.console_encoding, 'replace'))
-        if langue1 != u'' and (finalPageContent.find(u'<!--') == -1 or finalPageContent.find(u'-->') != -1):
+        if language1 != u'' and (finalPageContent.find(u'<!--') == -1 or finalPageContent.find(u'-->') != -1):
             # Bug trop rare https://fr.wiktionary.org/w/index.php?title=User:JackBot/test&diff=15092317&oldid=15090227
             if debugLevel > 2 and finalPageContent.find(u'<!--') != -1:
                 raw_input(finalPageContent[:finalPageContent.rfind(u'\n')].encode(config.console_encoding, 'replace'))
-            if debugLevel > 1: print u' Langue 1 : ' + langue1
-            if len(langue1) > 3 and langue1.find(u'-') == -1:
-                langue = langue1
+            if debugLevel > 1: print u' Langue 1 : ' + language1
+            if len(language1) > 3 and language1.find(u'-') == -1:
+                langue = language1
             else:
                 try:
-                    langue = defaultSort(languages[langue1].decode('utf8'), 'UTF-8')
-                    if debugLevel > 1: print u' Nom de langue 1 : ' + langue
+                    language = defaultSort(languages[language1].decode('utf8'), 'UTF-8')
+                    if debugLevel > 1: print u' Nom de langue 1 : ' + language
                 except KeyError:
-                    if debugLevel > 0: print "KeyError l 2556"
+                    if debugLevel > 0: print u'KeyError l 2556'
                     break
                 except UnboundLocalError:
-                    if debugLevel > 0: print "UnboundLocalError l 2559"
+                    if debugLevel > 0: print u'UnboundLocalError l 2559'
                     break
-            langue2 = u'zzz'
+            language2 = u'zzz'
             if finalPageContent.rfind(u'\n') == -1 or pageContent.find(u'\n') == -1: break
-            TradCourante = finalPageContent[finalPageContent.rfind(u'\n'):len(finalPageContent)] + pageContent[:pageContent.find(u'\n')]
+            TradCourante = finalPageContent[finalPageContent.rfind(u'\n'):] + pageContent[:pageContent.find(u'\n')]
             TradSuivantes = u''
             finalPageContent = finalPageContent[:finalPageContent.rfind(u'\n')]
             pageContent = pageContent[pageContent.find(u'\n'):]
-            while finalPageContent.rfind('{{') != finalPageContent.rfind(u'{{S|traductions') \
+            while finalPageContent.rfind('{{') != finalPageContent.rfind(u'{{S|') and language2 > language \
              and finalPageContent.rfind('{{') != finalPageContent.rfind(u'{{trad-début') and finalPageContent.rfind('{{') != finalPageContent.rfind(u'{{trad-fin') \
-             and finalPageContent.rfind('{{') != finalPageContent.rfind(u'{{S|traductions à trier') and langue2 > langue \
              and finalPageContent.rfind(u'{{T') != finalPageContent.rfind(u'{{T|conv') and finalPageContent.rfind('{{') != finalPageContent.rfind(u'{{(') \
              and (finalPageContent.rfind('{{') > finalPageContent.rfind(u'|nocat') or finalPageContent.rfind(u'|nocat') == -1):
-                langue2 = finalPageContent[finalPageContent.rfind(u'{{T|')+len(u'{{T|'):len(finalPageContent)]
-                langue2 = langue2[:langue2.find('}}')]
-                if langue2.find(u'|') != -1: langue2 = langue2[:langue2.find(u'|')]
-                if debugLevel > 1: print u' Langue 2 : ' + langue2
-                if len(langue2) > 3 and langue2.find(u'-') == -1:
-                    langue = langue2
+                language2 = finalPageContent[finalPageContent.rfind(u'{{T|')+len(u'{{T|'):]
+                language2 = language2[:language2.find('}}')]
+                if language2.find(u'|') != -1: language2 = language2[:language2.find(u'|')]
+                if debugLevel > 1: print u' Langue 2 : ' + language2
+                if len(language2) > 3 and language2.find(u'-') == -1:
+                    language = language2
                 else:
                     try:
-                        langue2 = defaultSort(languages[langue2].decode('utf8'), 'UTF-8')
-                        if debugLevel > 1: print u' Nom de langue 2 : ' + langue2
+                        language2 = defaultSort(languages[language2].decode('utf8'), 'UTF-8')
+                        if debugLevel > 1: print u' Nom de langue 2 : ' + language2
                     except KeyError:
-                        if debugLevel > 0: print "KeyError l 2160"
+                        if debugLevel > 0: print u'KeyError l 2160'
                         break
-                if langue2 != u'' and langue2 > langue:
-                    if debugLevel > 0: langue2 + u' > ' + langue
+                if language2 != u'' and language2 > language:
+                    if debugLevel > 0: language2 + u' > ' + language
                     if finalPageContent.rfind(u'\n') > finalPageContent.rfind(u'trad-début'):
-                        TradSuivantes = finalPageContent[finalPageContent.rfind(u'\n'):len(finalPageContent)] + TradSuivantes
+                        TradSuivantes = finalPageContent[finalPageContent.rfind(u'\n'):] + TradSuivantes
                         finalPageContent = finalPageContent[:finalPageContent.rfind(u'\n')]
-                        if debugLevel > 0: summary = summary + ', traduction ' + langue2 + u' > ' + langue
+                        summary = summary + ', traduction ' + language2 + u' > ' + language
                     elif finalPageContent.rfind(u'\n') != -1:
                         # Cas de la première de la liste
-                        TradCourante = finalPageContent[finalPageContent.rfind(u'\n'):len(finalPageContent)] + TradCourante
+                        TradCourante = finalPageContent[finalPageContent.rfind(u'\n'):] + TradCourante
                         finalPageContent = finalPageContent[:finalPageContent.rfind(u'\n')]
                     #print finalPageContent[finalPageContent.rfind(u'\n'):len(finalPageContent)].encode(config.console_encoding, 'replace')
                 else:
@@ -920,98 +919,4 @@ def sort_translations(pageContent, summary):
     return pageContent, summary
 
 
-# TODO: Classement des sections modifiables
-"""
-def sort_sections(pageContent):
-    finalPageContent = u''
-    while pageContent.find(u'{{langue|') != -1:
-        finalPageContent = finalPageContent + pageContent[:pageContent.find(u'{{langue|')+len(u'{{langue|')]
-        pageContent = pageContent[pageContent.find(u'{{langue|')+len(u'{{langue|'):]
-        if pageContent.find(u'{{langue|') != -1:
-            # Rangement des paragraphes par ordre alphabétique de langue dans finalPageContent
-            langue1 = pageContent[:pageContent.find(u'}')]
-            if langue1.find(u'|') != -1: langue1 = langue1[:langue1.find(u'|')]
-            if langue1 != u'':
-                #print(langue1) # ca pt
-                Langue1 = Page(site,u'Template:' + langue1)
-                try: pageContent2 = Langue1.get()
-                except pywikibot.exceptions.NoPage:
-                    print "NoPage l 1521 : " + langue1
-                    return
-                except pywikibot.exceptions.IsRedirectPage:
-                    pageContent2 = Langue1.getRedirectTarget().title() + u'<noinclude>'
-                except pywikibot.exceptions.ServerError:
-                    print "ServerError l 1527 : " + langue1
-                    return
-                except pywikibot.exceptions.BadTitle:
-                    print "BadTitle l 1530 : " + langue1
-                    return
-                if pageContent2.find(u'<noinclude>') != -1:
-                    langue = defaultSort(pageContent2[:pageContent2.find(u'<noinclude>')])
-                    langue2 = u'zzz'
-                    if pageContent.find(u'\n== {{langue|') != -1:
-                        ParagCourant = finalPageContent[finalPageContent.rfind(u'\n'):len(finalPageContent)] + pageContent[:pageContent.find(u'\n== {{langue|')]
-                        pageContent = pageContent[pageContent.find(u'\n== {{langue|'):]
-                    elif pageContent.find(u'\n=={{langue|') != -1:
-                        ParagCourant = finalPageContent[finalPageContent.rfind(u'\n'):len(finalPageContent)] + pageContent[:pageContent.find(u'\n=={{langue|')]
-                        pageContent = pageContent[pageContent.find(u'\n=={{langue|'):]
-                    else:
-                        ParagCourant = finalPageContent[finalPageContent.rfind(u'\n'):len(finalPageContent)] + pageContent
-                        pageContent = u''
-                    finalPageContent = finalPageContent[:finalPageContent.rfind(u'\n')]
-                    ParagSuivants = u''
-                    #raw_input (ParagCourant.encode(config.console_encoding, 'replace'))
-                    # Comparaison du paragraphe courant avec le précédent, et rangement dans ParagSuivants de ce qui doit le suivre
-                    while finalPageContent.rfind(u'{{langue|') != -1  and finalPageContent.rfind(u'{{langue|') < finalPageContent.rfind('}}') \
-                        and finalPageContent.rfind(u'{{langue|') != finalPageContent.rfind(u'{{langue|fr'):
-                        langue2 = finalPageContent[finalPageContent.rfind(u'{{langue|')+len(u'{{langue|'):len(finalPageContent)]
-                        langue2 = langue2[:langue2.find('}}')]
-                        if langue2.find(u'|') != -1: langue2 = langue2[:langue2.find(u'|')]
-                        Langue2 = Page(site,u'Template:' + langue2)
-                        try: pageContent3 = Langue2.get()
-                        except pywikibot.exceptions.NoPage:
-                            print "NoPage l 1607 : " + langue2
-                            return
-                        except pywikibot.exceptions.ServerError:
-                            print "ServerError l 1610 : " + langue2
-                            return
-                        except pywikibot.exceptions.IsRedirectPage:
-                            print u'Redirection l 1613 : ' + langue2
-                            return
-                        except pywikibot.exceptions.BadTitle:
-                            print u'BadTitle l 1616 : ' + langue2
-                            return
-                        if pageContent3.find(u'<noinclude>') != -1:
-                            langue2 = defaultSort(pageContent3[:pageContent3.find(u'<noinclude>')])
-                            print langue2 # espagnol catalan
-                            if langue2 > langue:
-                                summary = summary + ', section ' + langue2 + u' > ' + langue
-                                print langue2 + u' > ' + langue
-                                ParagSuivants = finalPageContent[finalPageContent.rfind(u'{{langue|'):len(finalPageContent)] + ParagSuivants
-                                finalPageContent = finalPageContent[:finalPageContent.rfind(u'{{langue|')]
-                                ParagSuivants = finalPageContent[finalPageContent.rfind(u'\n'):len(finalPageContent)] + ParagSuivants
-                            else:
-                                ParagCourant = finalPageContent[finalPageContent.rfind(u'{{langue|'):len(finalPageContent)] + ParagCourant
-                                finalPageContent = finalPageContent[:finalPageContent.rfind(u'{{langue|')]
-                                ParagCourant = finalPageContent[finalPageContent.rfind(u'\n'):len(finalPageContent)] + ParagCourant
-                                #raw_input (ParagCourant.encode(config.console_encoding, 'replace')) catalan, espagnol, portugais
-                            finalPageContent = finalPageContent[:finalPageContent.rfind(u'\n')]
-                        else:
-                            print u'l 1629'
-                            return
-                    #raw_input (finalPageContent.encode(config.console_encoding, 'replace'))
-                    finalPageContent = finalPageContent + ParagCourant + ParagSuivants
-            else:
-                print u'l 1634'
-                return
-            finalPageContent = finalPageContent + pageContent[:pageContent.find(u'{{langue|')]
-            pageContent = pageContent[pageContent.find(u'{{langue|'):]
-            #raw_input (pageContent.encode(config.console_encoding, 'replace'))
-        else:
-            finalPageContent = finalPageContent + pageContent
-            pageContent = u''
-        #print(finalPageContent.encode(config.console_encoding, 'replace'))
-        #print(pageContent.encode(config.console_encoding, 'replace'))
-    pageContent = finalPageContent + pageContent
-    finalPageContent = u''
-"""
+# TODO: def sort_sections(pageContent):
