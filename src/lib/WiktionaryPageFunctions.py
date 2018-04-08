@@ -892,7 +892,7 @@ def sort_translations(pageContent, summary):
                     if finalPageContent.rfind(u'\n') > finalPageContent.rfind(u'trad-début'):
                         TradSuivantes = finalPageContent[finalPageContent.rfind(u'\n'):len(finalPageContent)] + TradSuivantes
                         finalPageContent = finalPageContent[:finalPageContent.rfind(u'\n')]
-                        summary = summary + ', traduction ' + langue2 + u' > ' + langue
+                        if debugLevel > 0: summary = summary + ', traduction ' + langue2 + u' > ' + langue
                     elif finalPageContent.rfind(u'\n') != -1:
                         # Cas de la première de la liste
                         TradCourante = finalPageContent[finalPageContent.rfind(u'\n'):len(finalPageContent)] + TradCourante
