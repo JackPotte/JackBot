@@ -188,11 +188,15 @@ class PageProvider:
                 modify = True
 
     # [[Special:Search]]
-    def pagesBySearch(self, pageName, namespaces = None, site = None):
+    def pagesBySearch(self, pageName, namespaces = None, site = None, afterPage = None):
         if site is None: site = self.site
+        modify = False
         gen = pagegenerators.SearchPageGenerator(pageName, site = site, namespaces = namespaces)
         for Page in pagegenerators.PreloadingGenerator(gen,100):
-            self.treatPage(Page.title())
+            if not afterPage or afterPage == u'' or modify:
+                self.treatPage(Page.title())
+            elif Page.title() == afterPage:
+                modify = True
 
     # [[Special:RecentChanges]]
     def pagesByRC(self, site = None):

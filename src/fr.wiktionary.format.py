@@ -2089,6 +2089,8 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'{{louchébem|fr}}', u'{{louchébem}}')
         pageContent = pageContent.replace(u'{{reverlanisation|fr}}', u'{{reverlanisation}}')
         pageContent = pageContent.replace(u'{{verlan|fr}}', u'{{verlan}}')
+        regex = ur"({{cf|)lang=[^\|}]+\|(:Catégorie:)"
+        pageContent = re.sub(regex, ur"\1\2", pageContent)
 
         if debugLevel > 1: print u' Remplacements des anciens modèles de langue'
         pageContent = pageContent.replace(u'{{grc}}', u'grec ancien')
@@ -2889,12 +2891,13 @@ def treatPageByName(pageName):
 
 # Templates with "lang="
                 elif currentTemplate in [u'écouter', u'cf'] + etymologyTemplatesWithLanguageAtLang:
-                    pageContent2 = pageContent[endPosition+1:len(pageContent)]
+                    pageContent2 = pageContent[endPosition+1:]
                     # Saut des modèles régionnaux
-                    if pageContent2.find("lang=") == -1 or pageContent2.find("lang=") > pageContent2.find('}}'):
+                    if (pageContent2.find('lang=') == -1 or pageContent2.find('lang=') > pageContent2.find('}}')) and \
+                        (currentTemplate != u'cf' or pageContent2.find(':') == -1 or pageContent2.find(':') > pageContent2.find('}}')):
                         while pageContent2.find('{{') < pageContent2.find('}}') and pageContent2.find('{{') != -1:
                             pageContent2 = pageContent2[pageContent2.find('}}')+2:]
-                        if pageContent2.find("lang=") == -1 or pageContent2.find("lang=") > pageContent2.find('}}'):
+                        if pageContent2.find('lang=') == -1 or pageContent2.find('lang=') > pageContent2.find('}}'):
                             finalPageContent = finalPageContent + currentTemplate + u'|lang=' + languageCode + pageContent[endPosition:pageContent.find('}}')+2]
                             pageContent = pageContent[pageContent.find('}}')+2:]
                         else:
@@ -3859,7 +3862,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:"{{term|Art vétérinaire}}"')
+                p.pagesBySearch(u'insource:"{{S|dérivés autres langues}}"', afterPage = u'Dieu')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:abréviation')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
