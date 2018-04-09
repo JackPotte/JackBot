@@ -99,8 +99,8 @@ natures = [u'adjectif', u'adverbe', u'article', u'conjonction', u'copule', u'dé
     'numéral', u'sinogramme', u'erreur', u'gismu', u'rafsi', u'nom propre']
 
 # https://fr.wiktionary.org/wiki/Catégorie:Modèles_de_définitions
-definitionTemplates = [u'abréviation de', u'comparatif de', u'exclamatif de', u'mutation de', u'superlatif de', \
-    u'variante de', u'variante ortho de', u'variante orthographique de']
+definitionTemplates = [u'abréviation de', u'comparatif de', u'exclamatif de', u'féminin de', u'mutation de', \
+    u'pluriel de', u'superlatif de', u'variante de', u'variante ortho de', u'variante orthographique de']
 
 def setGlobalsWiktionary(myDebugLevel, mySite, myUsername):
     global debugLevel
