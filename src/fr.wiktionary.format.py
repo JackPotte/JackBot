@@ -2335,6 +2335,9 @@ def treatPageByName(pageName):
             pageContent = pageContent.replace(u'\n[[Catégorie:Gentilés en français]]', u'')
 
         if debugLevel > 0: print u' Modèles à déplacer'
+        regex = ur'(==== {{S\|traductions}} ====)(\n{{ébauche\-trad[^}]*}})(\n{{trad-début}})'
+        pageContent = re.sub(regex, ur'\1\3\2', pageContent)
+
         pageLanguages = getPageLanguages(pageContent)
         for pageLanguage in pageLanguages:
             etymTemplates = ['abréviation', 'acronyme', 'sigle']
@@ -3853,7 +3856,8 @@ def main(*args):
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
-                regex = ur'{{trad\-fin}}\n*\*{{T\|'
+                #regex = ur'{{trad\-fin}}\n*\*{{T\|'
+                regex = ur'{{S\|traductions}} *=*\n{{ébauche\-trad'
             p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
             #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex, include = u'verbe|it|flexion', exclude = u'it-verbe-flexion'
         elif sys.argv[1] == u'-u':
