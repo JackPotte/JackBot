@@ -1606,7 +1606,7 @@ Genre.append(u'nsing')
 
 
 def treatPageByName(pageName):
-    global natures, definitionTemplates, etymologyTemplates, etymologyTemplatesWithLanguageAtLang, \
+    global natures, definitionTemplates, definitionSentences, etymologyTemplates, etymologyTemplatesWithLanguageAtLang, \
         etymologyTemplatesInSatelliteWords, etymologyTemplatesWithLanguageAtFirst, etymologyTemplatesWithLanguageAtSecond
     summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
     if debugLevel > 0: print u'------------------------------------'
@@ -2577,8 +2577,8 @@ def treatPageByName(pageName):
 
 
             if debugLevel > 0: print u'Traductions manquantes'
-            # Si la définition du mot (dit "satéllite") ne renvoie pas vers un autre, les centralisant
-            regex = ur'(fr\|flexion|[Vv]ariante[ ,]|[Ss]ynonyme[ ,]|[Aa]utre nom[ ,]|[Aa]utre orthographe[ ,])'
+            # Si la définition du mot (dit "satellite") ne renvoie pas vers un autre, les centralisant
+            regex = ur'(fr\|flexion|' + u'|'.join(definitionSentences) + u'|' + u'|'.join(map(unicode.capitalize, definitionSentences)) + ur')'
             regex2 = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|' + \
                 u'|'.join(etymologyTemplatesInSatelliteWords) + ur')[\|}]'
             French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
@@ -3862,7 +3862,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:"{{S|dérivés autres langues}}"', afterPage = u'canal')
+                p.pagesBySearch(u'insource:"{{S|dérivés autres langues}}"', afterPage = u'радъ')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:abréviation')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
