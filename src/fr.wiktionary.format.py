@@ -1840,21 +1840,21 @@ def treatPageByName(pageName):
                 if PagesCleTotal.find(u'-' + pageName[:1].lower() + pageName[1:]) == -1: PagesCleTotal = PagesCleTotal + u'|-' + pageName[:1].lower() + pageName[1:]
                 if PagesCleTotal.find(pageName[:1].lower() + pageName[1:] + u'-') == -1: PagesCleTotal = PagesCleTotal + u'|' + pageName[:1].lower() + pageName[1:] + u'-'
                 if PagesCleTotal.find(u'-') != -1: PagesCleTotal = PagesCleTotal + u'|' + PagesCleTotal.replace(u'-',u'')
-                LettresDiacritiques = []
-                LettresDiacritiques.append([u'a',u'á',u'à',u'ä',u'â',u'ã'])
-                LettresDiacritiques.append([u'c',u'ç'])
-                LettresDiacritiques.append([u'e',u'é',u'è',u'ë',u'ê'])
-                LettresDiacritiques.append([u'i',u'í',u'ì',u'ï',u'î'])
-                LettresDiacritiques.append([u'n',u'ñ'])
-                LettresDiacritiques.append([u'o',u'ó',u'ò',u'ö',u'ô',u'õ'])
-                LettresDiacritiques.append([u'u',u'ú',u'ù',u'ü',u'û'])
-                for l in range(0,len(LettresDiacritiques)):
-                    for d in range(0,len(LettresDiacritiques[l])):
-                        if pageName.find(LettresDiacritiques[l][d]) != -1:
-                            if debugLevel > 1: print u'Titre contenant : ' + LettresDiacritiques[l][d]
-                            Lettre = LettresDiacritiques[l][d]
-                            for d in range(0,len(LettresDiacritiques[l])):
-                                PagesCleTotal = PagesCleTotal + u'|' + pageName.replace(Lettre,LettresDiacritiques[l][d])
+                diacritics = []
+                diacritics.append([u'a',u'á',u'à',u'ä',u'â',u'ã'])
+                diacritics.append([u'c',u'ç'])
+                diacritics.append([u'e',u'é',u'è',u'ë',u'ê'])
+                diacritics.append([u'i',u'í',u'ì',u'ï',u'î'])
+                diacritics.append([u'n',u'ñ'])
+                diacritics.append([u'o',u'ó',u'ò',u'ö',u'ô',u'õ'])
+                diacritics.append([u'u',u'ú',u'ù',u'ü',u'û'])
+                for l in range(0,len(diacritics)):
+                    for d in range(0,len(diacritics[l])):
+                        if pageName.find(diacritics[l][d]) != -1:
+                            if debugLevel > 1: print u'Titre contenant : ' + diacritics[l][d]
+                            Lettre = diacritics[l][d]
+                            for d in range(0,len(diacritics[l])):
+                                PagesCleTotal = PagesCleTotal + u'|' + pageName.replace(Lettre,diacritics[l][d])
                 if PagesCleTotal.find(CleTri) == -1: PagesCleTotal = PagesCleTotal + u'|' + CleTri    # exception ? and pageContent.find(u'{{langue|eo}}') == -1
                 # Filtre des pages de la liste "à voir"
                 PagesCleRestant = PagesCleTotal + u'|'
@@ -2093,27 +2093,59 @@ def treatPageByName(pageName):
         pageContent = re.sub(regex, ur"\1\2", pageContent)
 
         if debugLevel > 1: print u' Remplacements des anciens modèles de langue'
-        pageContent = pageContent.replace(u'{{grc}}', u'grec ancien')
-        pageContent = pageContent.replace(u'{{la}}', u'latin')
-        pageContent = pageContent.replace(u'{{fro}}', u'ancien français')
-        pageContent = pageContent.replace(u'{{frm}}', u'moyen français')
-        pageContent = pageContent.replace(u'{{fr}}', u'français')
-        pageContent = pageContent.replace(u'{{ang}}', u'anglo-saxon')
-        pageContent = pageContent.replace(u'{{enm}}', u'moyen anglais')
-        pageContent = pageContent.replace(u'{{en}}', u'anglais')
-        pageContent = pageContent.replace(u'{{ru}}', u'russe')
-        pageContent = pageContent.replace(u'{{nl}}', u'néerlandais')
-        pageContent = pageContent.replace(u'{{pt}}', u'portugais')
-        pageContent = pageContent.replace(u'{{it}}', u'italien')
-        pageContent = pageContent.replace(u'{{nds}}', u'bas allemand')
-        pageContent = pageContent.replace(u'{{nds}}', u'bas allemand')
-        pageContent = pageContent.replace(u'{{lb}}', u'luxembourgeois')
-        pageContent = pageContent.replace(u'{{sq}}', u'albanais')
-        pageContent = pageContent.replace(u'{{kw}}', u'cornique')
-        pageContent = pageContent.replace(u'{{diq}}', u'dimli (zazaki du Sud)')
-        pageContent = pageContent.replace(u'{{lv}}', u'letton')
-        pageContent = pageContent.replace(u'{{oc}}', u'occitan')
-        pageContent = pageContent.replace(u'{{tr}}', u'turc')
+        languagesCodes = []
+        languagesNames = []
+        languagesCodes.append(u'ang')
+        languagesNames.append(u'anglo-saxon')
+        languagesCodes.append(u'bg')
+        languagesNames.append(u'bulgare')
+        languagesCodes.append(u'cs')
+        languagesNames.append(u'tchèque')
+        languagesCodes.append(u'ca')
+        languagesNames.append(u'catalan')
+        languagesCodes.append(u'enm')
+        languagesNames.append(u'moyen anglais')
+        languagesCodes.append(u'en')
+        languagesNames.append(u'anglais')
+        languagesCodes.append(u'frm')
+        languagesNames.append(u'moyen français')
+        languagesCodes.append(u'fro')
+        languagesNames.append(u'ancien français')
+        languagesCodes.append(u'fr')
+        languagesNames.append(u'français')
+        languagesCodes.append(u'grc')
+        languagesNames.append(u'grec ancien')
+        languagesCodes.append(u'it')
+        languagesNames.append(u'italien')
+        languagesCodes.append(u'ja')
+        languagesNames.append(u'japonais')
+        languagesCodes.append(u'la')
+        languagesNames.append(u'latin')
+        languagesCodes.append(u'lv')
+        languagesNames.append(u'letton')
+        languagesCodes.append(u'nl')
+        languagesNames.append(u'néerlandais')
+        languagesCodes.append(u'oc')
+        languagesNames.append(u'occitan')
+        languagesCodes.append(u'pl')
+        languagesNames.append(u'polonais')
+        languagesCodes.append(u'pt')
+        languagesNames.append(u'portugais')
+        languagesCodes.append(u'ru')
+        languagesNames.append(u'russe')
+        languagesCodes.append(u'sk')
+        languagesNames.append(u'slovaque')
+        languagesCodes.append(u'sl')
+        languagesNames.append(u'slovène')
+        languagesCodes.append(u'sq')
+        languagesNames.append(u'albanais')
+        languagesCodes.append(u'tr')
+        languagesNames.append(u'turc')
+        languagesCodes.append(u'zh')
+        languagesNames.append(u'chinois')
+        for p in range(1, len(languagesCodes)):
+            pageContent = pageContent.replace(u'{{' + languagesCodes[p] + u'}}', languagesNames[p])
+
         pageContent = pageContent.replace(u'|ko-hani}}', u'|ko-Hani}}')
         if debugLevel > 1: print u' Remplacements des anciens codes langue'
         oldTemplate = []
@@ -2337,6 +2369,12 @@ def treatPageByName(pageName):
         if debugLevel > 0: print u' Modèles à déplacer'
         regex = ur'(==== {{S\|traductions}} ====)(\n{{ébauche\-trad[^}]*}})(\n{{trad-début}})'
         pageContent = re.sub(regex, ur'\1\3\2', pageContent)
+
+        regex = ur'({{trad\-début}})\n*{{trad\-début}}'
+        pageContent = re.sub(regex, ur'\1', pageContent)
+
+        regex = ur'({{trad\-fin}})\n*{{trad\-fin}}'
+        pageContent = re.sub(regex, ur'\1', pageContent)
 
         pageLanguages = getPageLanguages(pageContent)
         for pageLanguage in pageLanguages:
@@ -2819,21 +2857,21 @@ def treatPageByName(pageName):
                             else:
                                 pageContent = pageContent[:pageContent.find('}}')] + u'|' + languageCode + pageContent[pageContent.find('}}'):]
 
-                        if section == 'traductions':
+                        if section == 'traductions' and languageCode == 'fr':
                             translationSection = True
-                            regex = ur'{{S\|traductions}} *=*\n:?\*? *({{cf|[Vv]oir)'
-                            regex2 = ur'{{S\|traductions}} *=*\n\n'
-                            if not re.search(regex, pageContent) and re.search(regex2, pageContent):
-                                # Ajout de {{trad-début}} si {{T| en français (pas {{L| car certains les trient par famille de langue)
-                                if pageContent.find('{{') == pageContent.find(u'{{T|') and languageCode == 'fr':
-                                    pageContent = pageContent[:pageContent.find(u'\n')] + u'\n{{trad-début}}' + pageContent[pageContent.find(u'\n'):]
-                                    pageContent2 = pageContent[pageContent.find(u'{{trad-début}}\n')+len(u'{{trad-début}}\n'):]
-                                    if pageContent2.find(u'\n') == -1:
-                                        pageContent = pageContent + u'\n'
-                                        pageContent2 = pageContent2 + u'\n'
-                                    while pageContent2.find(u'{{T|') < pageContent2.find(u'\n') and pageContent2.find(u'{{T|') != -1:
-                                        pageContent2 = pageContent2[pageContent2.find(u'\n')+1:]
-                                    pageContent = pageContent[:len(pageContent)-len(pageContent2)] + u'{{trad-fin}}\n' + pageContent[len(pageContent)-len(pageContent2):]
+                            regex = ur'{{S\|traductions}} *=*\n(\n|\:?\*? *({{cf|[Vv]oir))'
+                            if not re.search(regex, pageContent):
+                                # Ajout de {{trad-début}} si {{T| en français (mais pas {{L| car certains les trient par famille de langue)
+                                for t in [u'T', u'ébauche-trad']:
+                                    if pageContent.find('{{') == pageContent.find(u'{{' + t + u'|'):
+                                        pageContent = pageContent[:pageContent.find(u'\n')] + u'\n{{trad-début}}' + pageContent[pageContent.find(u'\n'):]
+                                        pageContent2 = pageContent[pageContent.find(u'{{trad-début}}\n')+len(u'{{trad-début}}\n'):]
+                                        if pageContent2.find(u'\n') == -1:
+                                            pageContent = pageContent + u'\n'
+                                            pageContent2 = pageContent2 + u'\n'
+                                        while pageContent2.find(u'{{' + t + u'|') < pageContent2.find(u'\n') and pageContent2.find(u'{{' + t + u'|') != -1:
+                                            pageContent2 = pageContent2[pageContent2.find(u'\n')+1:]
+                                        pageContent = pageContent[:len(pageContent)-len(pageContent2)] + u'{{trad-fin}}\n' + pageContent[len(pageContent)-len(pageContent2):]
                         elif section == u'traductions à trier':
                             translationSection = True
 
@@ -3856,8 +3894,10 @@ def main(*args):
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
+                #TODO
                 #regex = ur'{{trad\-fin}}\n*\*{{T\|'
-                regex = ur'{{S\|traductions}} *=*\n{{ébauche\-trad'
+                #regex = ur'{{S\|traductions}} *=*\n{{ébauche\-trad'
+                regex = ur'{{trad-début}}\n*{{trad-début}}'
             p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
             #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex, include = u'verbe|it|flexion', exclude = u'it-verbe-flexion'
         elif sys.argv[1] == u'-u':
@@ -3868,7 +3908,11 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:"{{S|dérivés autres langues}}"', afterPage = u'радъ')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:abréviation')
+            p.pagesByLink(u'Template:pl')
+            p.pagesByLink(u'Template:sk')
+            p.pagesByLink(u'Template:sl')
+            p.pagesByLink(u'Template:zh')
+            p.pagesByLink(u'Template:ja')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
