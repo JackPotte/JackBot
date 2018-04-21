@@ -44,6 +44,7 @@ username = config.usernames[siteFamily][siteLanguage]
 checkURL = False
 fixTags = False
 fixFiles = True
+fixOldTemplates = False
 addDefaultSortKey = True
 removeDefaultSort = True
 allNamespaces = False
@@ -3490,12 +3491,14 @@ def treatPageByName(pageName):
                     raw_input (pageContent.encode(config.console_encoding, 'replace'))
                     pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
             else:
-                if debugLevel > 0:
-                    print ' Recherche des modèles de langue désuets'
+                if fixOldTemplates:
+                    if debugLevel > 0: print ' Recherche des modèles de langue désuets'
                     templatePage = getContentFromPageName(u'Template:' + currentTemplate, allowedNamespaces = [u'Template:'])
                     if templatePage.find(u'{{modèle désuet de code langue}}') != -1:
                         if debugLevel > 0: print u' Remplacements de l\'ancien modèle de langue'
                         pageContent = u'subst:nom langue|' + currentTemplate + pageContent[pageContent.find(u'}}'):]
+                        pageContent = pageContent.replace(u'{{' + currentTemplate + u'}}', u'{{subst:nom langue|' + currentTemplate + u'}}')
+                        finalPageContent = finalPageContent.replace(u'{{' + currentTemplate + u'}}', u'{{subst:nom langue|' + currentTemplate + u'}}')
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
                 else:
                     if debugLevel > 0: pywikibot.output(u"\n\03{blue}Modèle inconnu\03{default} " + currentTemplate)
@@ -3820,7 +3823,7 @@ p = PageProvider(treatPageByName, site, debugLevel)
 setGlobals(debugLevel, site, username)
 setGlobalsWiktionary(debugLevel, site, username)
 def main(*args):
-    global waitAfterHumans
+    global waitAfterHumans, fixOldTemplates
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
         afterPage = u''
@@ -3856,12 +3859,8 @@ def main(*args):
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
-                #TODO
-                regex = ur'{{trad\-fin}}\n*\*{{T\|'
-                regex = ur'{{S\|traductions}} *=*\n{{ébauche\-trad'
-                regex = ur'{{trad-début}}\n*{{trad-début}}'
-            #p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
-            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = u'=== {{S\|adjectif\|en}} ===\n[^\n]*{{pluriel \?\|en}}')
+                regex = ur'{{langue\|(?!fr)}}.*{{S\|traductions}}'
+            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
             #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex, include = u'verbe|it|flexion', exclude = u'it-verbe-flexion'
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
@@ -3872,8 +3871,8 @@ def main(*args):
                 p.pagesBySearch(u'insource:"{{S|dérivés autres langues}}"', afterPage = u'радъ')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:hi', afterPage = afterPage)
-            p.pagesByLink(u'Template:ur', afterPage = afterPage)
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
+            fixOldTemplates = True
             p.pagesByCat(u'Modèles désuets de code langue', namespaces = [0, 14], linked = True)
             #p.pagesByCat(u'Appels de modèles incorrects:abréviation', afterPage = afterPage, recursive = False, namespaces = [14])
         elif sys.argv[1] == u'-redirects':
