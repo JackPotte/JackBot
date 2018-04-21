@@ -3496,6 +3496,7 @@ def treatPageByName(pageName):
                     if templatePage.find(u'{{modèle désuet de code langue}}') != -1:
                         if debugLevel > 0: print u' Remplacements de l\'ancien modèle de langue'
                         pageContent = u'subst:nom langue|' + currentTemplate + pageContent[pageContent.find(u'}}'):]
+                        pageContent = pageContent.replace(u'{{' + currentTemplate + u'}}', u'{{subst:nom langue|' + currentTemplate + u'}}')
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
                 else:
                     if debugLevel > 0: pywikibot.output(u"\n\03{blue}Modèle inconnu\03{default} " + currentTemplate)
