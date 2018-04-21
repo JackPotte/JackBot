@@ -22,6 +22,7 @@ def setGlobals(myDebugLevel, mySite, myUsername):
 def globalOperations(pageContent):
     pageContent = replaceDMOZ(pageContent)
     pageContent = replaceISBN(pageContent)
+    pageContent = replaceRFC(pageContent)
 
     # Retire les espaces dans {{FORMATNUM:}} qui empêche de les trier dans les tableaux
     pageContent = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', pageContent)
@@ -402,6 +403,10 @@ def replaceISBN(pageContent):
         pageContent = re.sub(regex, ur'\1}}-->', pageContent)
 
     if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+    return pageContent
+
+def replaceRFC(pageContent):
+    #TODO?
     return pageContent
 
 def searchDoubles(pageContent, parameter):

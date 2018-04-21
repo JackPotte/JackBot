@@ -2086,6 +2086,9 @@ def treatPageByName(pageName):
         if re.search(regex, pageContent):
             pageContent = re.sub(regex, ur"\1", pageContent)
 
+        regex = ur'(=== {{S\|adjectif\|en}} ===\n[^\n]*) *{{pluriel \?\|en}}'
+        pageContent = re.sub(regex, ur"\1", pageContent)
+
         if debugLevel > 0: print u'Formatage des modèles'
         pageContent = pageContent.replace(u'\n {{', u'\n{{')
         pageContent = pageContent.replace(u'{{louchébem|fr}}', u'{{louchébem}}')
@@ -2093,60 +2096,6 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'{{verlan|fr}}', u'{{verlan}}')
         regex = ur"({{cf|)lang=[^\|}]+\|(:Catégorie:)"
         pageContent = re.sub(regex, ur"\1\2", pageContent)
-
-        if debugLevel > 1: print u' Remplacements des anciens modèles de langue'
-        languagesCodes = []
-        languagesNames = []
-        languagesCodes.append(u'ang')
-        languagesNames.append(u'anglo-saxon')
-        languagesCodes.append(u'bg')
-        languagesNames.append(u'bulgare')
-        languagesCodes.append(u'cs')
-        languagesNames.append(u'tchèque')
-        languagesCodes.append(u'ca')
-        languagesNames.append(u'catalan')
-        languagesCodes.append(u'enm')
-        languagesNames.append(u'moyen anglais')
-        languagesCodes.append(u'en')
-        languagesNames.append(u'anglais')
-        languagesCodes.append(u'frm')
-        languagesNames.append(u'moyen français')
-        languagesCodes.append(u'fro')
-        languagesNames.append(u'ancien français')
-        languagesCodes.append(u'fr')
-        languagesNames.append(u'français')
-        languagesCodes.append(u'grc')
-        languagesNames.append(u'grec ancien')
-        languagesCodes.append(u'it')
-        languagesNames.append(u'italien')
-        languagesCodes.append(u'ja')
-        languagesNames.append(u'japonais')
-        languagesCodes.append(u'la')
-        languagesNames.append(u'latin')
-        languagesCodes.append(u'lv')
-        languagesNames.append(u'letton')
-        languagesCodes.append(u'nl')
-        languagesNames.append(u'néerlandais')
-        languagesCodes.append(u'oc')
-        languagesNames.append(u'occitan')
-        languagesCodes.append(u'pl')
-        languagesNames.append(u'polonais')
-        languagesCodes.append(u'pt')
-        languagesNames.append(u'portugais')
-        languagesCodes.append(u'ru')
-        languagesNames.append(u'russe')
-        languagesCodes.append(u'sk')
-        languagesNames.append(u'slovaque')
-        languagesCodes.append(u'sl')
-        languagesNames.append(u'slovène')
-        languagesCodes.append(u'sq')
-        languagesNames.append(u'albanais')
-        languagesCodes.append(u'tr')
-        languagesNames.append(u'turc')
-        languagesCodes.append(u'zh')
-        languagesNames.append(u'chinois')
-        for p in range(1, len(languagesCodes)):
-            pageContent = pageContent.replace(u'{{' + languagesCodes[p] + u'}}', languagesNames[p])
 
         pageContent = pageContent.replace(u'|ko-hani}}', u'|ko-Hani}}')
         if debugLevel > 1: print u' Remplacements des anciens codes langue'
@@ -2186,7 +2135,6 @@ def treatPageByName(pageName):
         pageContent = re.sub(ur'{{term *\|Registre neutre}} *', ur'', pageContent)
         pageContent = pageContent.replace(u'{{auxiliaire être}}', u'{{note-auxiliaire|fr|être}}')
         pageContent = pageContent.replace(u'{{Citation needed}}', u'{{réf ?}}')
-        pageContent = pageContent.replace(u'{{escrim|', u'{{escrime|')
         pageContent = pageContent.replace(u'{{f}} {{fsing}}', u'{{f}}')
         pageContent = pageContent.replace(u'{{m}} {{msing}}', u'{{m}}')
         pageContent = pageContent.replace(u'{{f}} {{p}}', u'{{fplur}}')
@@ -2763,7 +2711,7 @@ def treatPageByName(pageName):
                                 pageContent2 = pageContent2[re.compile(regex).search(pageContent2).end():]
                             pageContent = finalPageContent2 + pageContent[delta:]
 
-                    elif pageContent.find(u'S|erreur|' + languageCode) == -1 and pageContent.find(u'S|faute|' + languageCode) == -1 \
+                    elif debugLevel == 0 and pageContent.find(u'S|erreur|' + languageCode) == -1 and pageContent.find(u'S|faute|' + languageCode) == -1 \
                      and languageCode != u'conv' and pageName[:1] != u'-' and pageName[-1:] != u'-': #and pageName != u'six':
                         if debugLevel > 0: print u' Anagrammes pour ' + languageCode
                         if pageContent.find(u'{{S|anagr') == -1 and pageName.find(u' ') == -1 and len(pageName) <= anagramsMaxLength:
@@ -3542,8 +3490,16 @@ def treatPageByName(pageName):
                     raw_input (pageContent.encode(config.console_encoding, 'replace'))
                     pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
             else:
-                if debugLevel > 0: pywikibot.output(u"\n\03{blue}Modèle inconnu\03{default} " + currentTemplate)
-                finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
+                if debugLevel > 0:
+                    print ' Recherche des modèles de langue désuets'
+                    templatePage = getContentFromPageName(u'Template:' + currentTemplate, allowedNamespaces = [u'Template:'])
+                    if templatePage.find(u'{{modèle désuet de code langue}}') != -1:
+                        if debugLevel > 0: print u' Remplacements de l\'ancien modèle de langue'
+                        pageContent = u'subst:nom langue|' + currentTemplate + pageContent[pageContent.find(u'}}'):]
+                        finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
+                else:
+                    if debugLevel > 0: pywikibot.output(u"\n\03{blue}Modèle inconnu\03{default} " + currentTemplate)
+                    finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
 
             if not backward:
                 if debugLevel > 1:
@@ -3559,6 +3515,7 @@ def treatPageByName(pageName):
 
 
         if debugLevel > 0: print u'Formatage des flexions'
+        if debugLevel > 1: print u' fr'
         regex = ur"(=== {{S\|nom\|fr)\|flexion(}} ===\n(?:{{fr[^\n]*\n)*'''" + rePageName + ur"''' [^\n]*{{fsing}})"
         if re.search(regex, finalPageContent):
             finalPageContent = re.sub(regex, ur'\1\2', finalPageContent)
@@ -3631,7 +3588,7 @@ def treatPageByName(pageName):
 
             if debugLevel > 1: raw_input(finalPageContent.encode(config.console_encoding, 'replace'))
 
-            # Anglais
+            if debugLevel > 1: print u' en'
             if pageName[-2:] != 'ss' and pageName[-3:] != 'hes' and pageName[-3:] != 'ies' and pageName[-3:] != 'ses' and pageName[-3:] != 'ves':
                 regex = ur"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + pageName + ur"''' {{pron\|)([^\|}]*)([s|z]\|en}}\n# *'*'*Pluriel de *'*'* *\[\[)([^#\|\]]+)"
                 if re.search(regex, finalPageContent):
@@ -3866,6 +3823,9 @@ def main(*args):
     global waitAfterHumans
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
+        afterPage = u''
+        if len(sys.argv) > 2: afterPage = sys.argv[2]
+
         if sys.argv[1] == u'-test':
             treatPageByName(u'User:' + username + u'/test')
         elif sys.argv[1] == u'-test2':
@@ -3900,7 +3860,8 @@ def main(*args):
                 #regex = ur'{{trad\-fin}}\n*\*{{T\|'
                 #regex = ur'{{S\|traductions}} *=*\n{{ébauche\-trad'
                 regex = ur'{{trad-début}}\n*{{trad-début}}'
-            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
+            #p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
+            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = u'=== {{S\|adjectif\|en}} ===\n[^\n]*{{pluriel \?\|en}}')
             #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex, include = u'verbe|it|flexion', exclude = u'it-verbe-flexion'
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
@@ -3910,15 +3871,11 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:"{{S|dérivés autres langues}}"', afterPage = u'радъ')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:pl')
-            p.pagesByLink(u'Template:sk')
-            p.pagesByLink(u'Template:sl')
-            p.pagesByLink(u'Template:zh')
-            p.pagesByLink(u'Template:ja')
-        elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
-            afterPage = u''
-            if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Appels de modèles incorrects:abréviation', afterPage = afterPage, recursive = False, namespaces = [14])
+            p.pagesByLink(u'Template:hi', afterPage = afterPage)
+            p.pagesByLink(u'Template:ur', afterPage = afterPage)
+        elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
+            p.pagesByCat(u'Modèles désuets de code langue', namespaces = [0, 14], linked = True)
+            #p.pagesByCat(u'Appels de modèles incorrects:abréviation', afterPage = afterPage, recursive = False, namespaces = [14])
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':

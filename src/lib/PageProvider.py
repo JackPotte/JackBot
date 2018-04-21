@@ -56,15 +56,18 @@ class PageProvider:
         parser = dump.parse()
         for entry in parser:
             if not namespaces and entry.title.find(u':') == -1:
+                pageContent = entry.text
                 if titleInclude:
                     if re.search(titleInclude, entry.title):
-                        if exclude:
-                            if not re.search(exclude, entry.text):
-                                self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                        else:
+                        if include and exclude and include in pageContent and not exclude in pageContent:
+                            self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                        elif include and include in pageContent:
+                            self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                        elif exclude and not exclude in pageContent:
+                            self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                        elif not include and not exclude:
                             self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
                 else:
-                    pageContent = entry.text
                     if regex:
                         if re.search(regex, pageContent):
                             self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
@@ -118,7 +121,7 @@ class PageProvider:
                 modify = True
             elif afterPage is None or afterPage == u'' or modify:
                 if linked:
-                    gen2 = pagegenerators.ReferringPageGenerator(Page.title())
+                    gen2 = pagegenerators.ReferringPageGenerator(Page)
                     gen2 =  pagegenerators.NamespaceFilterPageGenerator(gen2, namespaces)
                     for LinkedPage in pagegenerators.PreloadingGenerator(gen2, 100):
                         if pagesList:
