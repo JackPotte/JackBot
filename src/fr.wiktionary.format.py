@@ -3496,7 +3496,6 @@ def treatPageByName(pageName):
                     if templatePage.find(u'{{modèle désuet de code langue}}') != -1:
                         if debugLevel > 0: print u' Remplacements de l\'ancien modèle de langue'
                         pageContent = u'subst:nom langue|' + currentTemplate + pageContent[pageContent.find(u'}}'):]
-                        pageContent = pageContent.replace(u'{{' + currentTemplate + u'}}', u'{{subst:nom langue|' + currentTemplate + u'}}')
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
                 else:
                     if debugLevel > 0: pywikibot.output(u"\n\03{blue}Modèle inconnu\03{default} " + currentTemplate)
@@ -3858,8 +3857,8 @@ def main(*args):
                 regex = sys.argv[2]
             else:
                 #TODO
-                #regex = ur'{{trad\-fin}}\n*\*{{T\|'
-                #regex = ur'{{S\|traductions}} *=*\n{{ébauche\-trad'
+                regex = ur'{{trad\-fin}}\n*\*{{T\|'
+                regex = ur'{{S\|traductions}} *=*\n{{ébauche\-trad'
                 regex = ur'{{trad-début}}\n*{{trad-début}}'
             #p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
             p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = u'=== {{S\|adjectif\|en}} ===\n[^\n]*{{pluriel \?\|en}}')
