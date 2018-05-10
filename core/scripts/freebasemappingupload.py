@@ -21,7 +21,7 @@ The script takes a single parameter:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: a7739710b11989a618ea8c0e57a7145033697ae8 $'
 #
 
 import gzip

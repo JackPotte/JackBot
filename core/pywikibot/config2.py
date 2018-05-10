@@ -39,7 +39,7 @@ build paths relative to base_dir:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 0d82f2dc567f5da2d26347c217f05bf326c0b05e $'
 #
 
 import collections

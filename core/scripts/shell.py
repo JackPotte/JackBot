@@ -20,7 +20,7 @@ The following parameters are supported:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 0969fedf8dc8595bbf595fc74fc26d434204756f $'
 #
 
 

@@ -15,7 +15,7 @@ This module requires socketIO_client to be installed:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: a235f90b844f1b597e5afa0b6e852897ef054322 $'
 #
 
 import sys

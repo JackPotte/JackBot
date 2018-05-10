@@ -94,7 +94,7 @@ Custom format can be applied to the following items extrapolated from a
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 7395e01c03cb5322006c9b112c0d20af56802936 $'
 #
 
 import os

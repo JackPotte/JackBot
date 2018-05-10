@@ -11,7 +11,7 @@ It imports the appropriate operating system specific implementation.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 428bdeb841ce9b224aaaac3f2c0bb8577da2de4e $'
 
 import sys
 

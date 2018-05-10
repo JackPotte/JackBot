@@ -7,7 +7,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 136fc221f027e86f2e4c7699478c12d90b9d8da6 $'
 
 import json
 import sys

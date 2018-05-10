@@ -33,7 +33,7 @@ In addition, these arguments can be used to restrict changes to some pages:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: b2ae02f9da0ece487303d58723721d6bf6f71d6a $'
 #
 
 import pywikibot

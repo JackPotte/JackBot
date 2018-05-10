@@ -18,7 +18,7 @@ the site commons should be given and not a Wikipedia or similar.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 4d46d7c157f7150d4d7c0e8589ae08bc0988cf8a $'
 #
 
 from datetime import timedelta

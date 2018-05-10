@@ -43,7 +43,7 @@ The image "Flag.svg" has been uploaded, making the old "Flag.jpg" obsolete:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: f39f16d81de058f63e083c679d5f2e739ca4af3e $'
 #
 import re
 

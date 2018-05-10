@@ -22,7 +22,7 @@ The following parameters are supported:
 
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 9f44acb3e00b7d121dacfe9fef225bad380f212c $'
 
 import datetime
 import sys

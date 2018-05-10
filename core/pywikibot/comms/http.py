@@ -19,7 +19,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Distributed under the terms of the MIT license.
 #
 
-__version__ = '$Id$'
+__version__ = '$Id: e889975ad5991d0d06ad515a382f1b5bb624fc92 $'
 __docformat__ = 'epytext'
 
 import atexit

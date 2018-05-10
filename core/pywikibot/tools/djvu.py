@@ -8,7 +8,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 36296119b27ab5bf36a54220aabf4362efb1b7d4 $'
 
 import os
 import re

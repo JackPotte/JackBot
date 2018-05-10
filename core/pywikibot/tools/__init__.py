@@ -6,7 +6,7 @@
 # Distributed under the terms of the MIT license.
 #
 from __future__ import absolute_import, unicode_literals
-__version__ = '$Id$'
+__version__ = '$Id: 7e1c9c15b0d121bbe9e36717aa3be86d42ac86c0 $'
 
 import collections
 import gzip

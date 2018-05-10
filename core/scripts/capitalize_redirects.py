@@ -33,7 +33,7 @@ Example:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 339a88f74b3ebd8e23caa79f4b87b4700d3a6c83 $'
 #
 
 import pywikibot

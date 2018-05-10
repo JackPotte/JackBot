@@ -11,7 +11,7 @@ import os.path
 
 from pywikibot import config
 
-__version__ = '$Id$'
+__version__ = '$Id: f62e78efd51268afb8665b7099fff1fbae203812 $'
 
 parameter_help = u"""
                   Currently available predefined fixes are:

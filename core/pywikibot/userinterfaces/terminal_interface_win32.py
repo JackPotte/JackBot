@@ -7,7 +7,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 45ea415c8b64b79c1ccfb688e8f56e19a82bad83 $'
 
 from pywikibot.userinterfaces import (
     terminal_interface_base,

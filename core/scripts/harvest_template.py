@@ -31,7 +31,7 @@ Examples:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 93ff8a3bae88175863d7693419e03fd36faf27c0 $'
 #
 
 import re

@@ -9,7 +9,7 @@ from __future__ import absolute_import, unicode_literals
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id$'
+__version__ = '$Id: 6d61f34dbd5fd684796f1fbaca61fe7188c2b8e5 $'
 #
 
 import codecs

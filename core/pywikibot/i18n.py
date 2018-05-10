@@ -23,7 +23,7 @@ messages. See L{twntranslate} for more information on the messages.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 51432d8bb39ea2ab2ebe152aa54ce3b72683df55 $'
 #
 
 import json

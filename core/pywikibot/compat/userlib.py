@@ -13,7 +13,7 @@ function/method instead.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: ad50038d99d54bf6e0283f3cb2102de8f3db7735 $'
 
 
 from pywikibot.page import User

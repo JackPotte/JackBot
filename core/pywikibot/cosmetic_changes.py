@@ -56,7 +56,7 @@ or by adding a list to the given one:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: c9af06f85824186c0cb688ffa057a2efc36101c3 $'
 #
 
 import re

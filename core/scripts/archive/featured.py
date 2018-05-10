@@ -63,7 +63,7 @@ This script understands various command-line arguments:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 5ae04e118cf15884e47443bde1e799580a2b2cc2 $'
 #
 
 import pickle

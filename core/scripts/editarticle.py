@@ -29,7 +29,7 @@ The following parameters are supported:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 44803f4f8c745402f360e78f8494c0076d9350d6 $'
 #
 
 import argparse

@@ -23,7 +23,7 @@ Command line options:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: dfdc6a80e5ce3be94ddc036706b67067c5297524 $'
 #
 
 import os

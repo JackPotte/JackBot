@@ -32,7 +32,7 @@ to create [[Category:Cultural heritage monuments in Hensies]].
 """
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 9701e7be7ad17546f552d20ee9d1cdd35ebd7379 $'
 #
 # (C) Multichill, 2011
 # (C) xqt, 2011-2016

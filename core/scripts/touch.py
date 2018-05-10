@@ -21,7 +21,7 @@ This script understands various command-line arguments:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 88d8b5f1e8673b91db10e308ffe3d1f9146ccc73 $'
 #
 
 import pywikibot

@@ -7,7 +7,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: b318281ab02e380e31e6d30a2692e66e76bd3925 $'
 
 import logging
 import os

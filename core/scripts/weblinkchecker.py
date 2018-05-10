@@ -105,7 +105,7 @@ Syntax examples:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 755c5fa295c686fb61e4a61c147dd64340cdbcd5 $'
 
 import codecs
 import datetime

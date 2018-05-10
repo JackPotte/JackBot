@@ -9,7 +9,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 68b8f70fc9db474a1baf050cd04840c324a91716 $'
 #
 
 import os

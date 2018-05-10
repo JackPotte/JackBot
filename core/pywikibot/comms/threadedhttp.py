@@ -3,7 +3,7 @@
 from __future__ import absolute_import, unicode_literals
 # (C) Pywikibot team, 2007-2015
 
-__version__ = '$Id$'
+__version__ = '$Id: 03386cfe5fe18d098b142dcbb3e7e451640168e6 $'
 __docformat__ = 'epytext'
 
 # standard python libraries

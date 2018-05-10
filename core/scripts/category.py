@@ -116,7 +116,7 @@ This will move all pages in the category US to the category United States.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: aec975dfc156e3f5b4f767e5bdc999719e159ac1 $'
 #
 
 import codecs

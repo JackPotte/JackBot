@@ -7,7 +7,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: cc68d67dc71ba094084181b66c1b00289c46e8eb $'
 #
 
 import json

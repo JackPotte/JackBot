@@ -18,7 +18,7 @@ This module includes objects:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 60546c47f11c5e6a9105332cba5c51b834651025 $'
 
 import json
 import re

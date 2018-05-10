@@ -7,7 +7,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 149454b5d7335e51a2c44fd9718d97da6a5ea65b $'
 
 import math
 

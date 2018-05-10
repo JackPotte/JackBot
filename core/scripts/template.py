@@ -112,7 +112,7 @@ pages:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: a68bf3a5ffa3c1fe20e8d2d511f5df9dc9bd5f6b $'
 #
 
 import re

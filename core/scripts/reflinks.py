@@ -43,7 +43,7 @@ See [[:en:User:DumZiBoT/refLinks]] for more information on the bot.
 # Distributed under the terms of the MIT license.
 #
 from __future__ import absolute_import, division, unicode_literals
-__version__ = '$Id$'
+__version__ = '$Id: c5a85ca67b0ab4b077c5c7aeed861b30f6d279f6 $'
 #
 
 import codecs

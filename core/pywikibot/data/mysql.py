@@ -6,7 +6,7 @@
 # Distributed under the terms of the MIT license.
 #
 from __future__ import absolute_import, unicode_literals
-__version__ = '$Id$'
+__version__ = '$Id: a0b03f9edb4afd3d47130eab5d2c33b347731152 $'
 
 # Requires oursql <https://pythonhosted.org/oursql/> or
 #  MySQLdb <https://sourceforge.net/projects/mysql-python/>

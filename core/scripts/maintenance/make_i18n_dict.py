@@ -38,7 +38,7 @@ instantiating the bot. It also calls C{bot.run()} to create the dictionaries:
 #
 from __future__ import absolute_import, print_function, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 828df81685709a283916dfc1b3fa42a87dc72215 $'
 #
 
 import codecs

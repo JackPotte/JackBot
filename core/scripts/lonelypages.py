@@ -40,7 +40,7 @@ Furthermore, the following command line parameters are supported:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 54ced1a6ff005cf5dd06ed18bee8787d1d4df65e $'
 #
 
 import re

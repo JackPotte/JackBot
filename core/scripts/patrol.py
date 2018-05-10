@@ -45,7 +45,7 @@ Commandline parameters
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 9c722851de67168b57161e8f0e1b1c1fb1518210 $'
 import time
 
 from collections import defaultdict

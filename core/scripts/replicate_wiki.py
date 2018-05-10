@@ -48,7 +48,7 @@ destination_wiki  destination wiki(s)
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 5a8ea133fd36e3082b44c8750631bced136b7fcd $'
 #
 
 import sys

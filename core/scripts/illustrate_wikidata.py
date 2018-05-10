@@ -21,7 +21,7 @@ Usage:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 81bd6ba102714dd763f01cee17ee78c129aac1d5 $'
 #
 
 import pywikibot

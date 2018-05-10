@@ -35,7 +35,7 @@ The following parameters are supported:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 2812027aedba625212711c593dc5c48b79790e82 $'
 #
 
 import os

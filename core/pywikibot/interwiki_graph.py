@@ -7,7 +7,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 29907d75b90ca76bd7cf50b9078208860ba01379 $'
 #
 
 import itertools

@@ -7,7 +7,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 1ff3d7f37b76fcdc8666f51386c33fbd20fcbbf6 $'
 #
 
 import collections

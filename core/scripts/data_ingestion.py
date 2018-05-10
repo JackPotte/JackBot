@@ -14,7 +14,7 @@ usage:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: f092829cf83a9cf41f28bab2f9af4628995124c6 $'
 #
 
 import base64

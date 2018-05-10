@@ -31,7 +31,7 @@ Todo:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: a941eb57a1bd43aa0392f503f704b255eee04c9e $'
 #
 
 import base64

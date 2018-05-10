@@ -29,7 +29,7 @@ Usage:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 8bb1915d09a57a65058cc380f39dd6a858375367 $'
 #
 import re
 import sys

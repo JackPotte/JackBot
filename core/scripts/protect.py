@@ -52,7 +52,7 @@ Unprotect all pages listed in text file 'unprotect.txt' without prompting.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: b9a6962561a6fcf1caeddd643ea623f404860df6 $'
 #
 
 import pywikibot

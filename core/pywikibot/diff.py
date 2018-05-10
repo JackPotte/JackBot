@@ -7,7 +7,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id$'
+__version__ = '$Id: 12fe49074a7a53de24c9b0f13dba9a8ea54c8f3f $'
 
 
 import difflib

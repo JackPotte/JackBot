@@ -64,7 +64,7 @@ Available output commands:
 # Distributed under the terms of the MIT license.
 #
 from __future__ import absolute_import, unicode_literals
-__version__ = '$Id$'
+__version__ = '$Id: ff75e0230f8b188a9c3939ab279e15c7fb2b8bac $'
 #
 
 import datetime
