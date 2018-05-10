@@ -715,6 +715,7 @@ Modele.append(u'figures')
 Modele.append(u'figuré')
 Modele.append(u'finan')
 Modele.append(u'finance')
+Modele.append(u'finances')
 Modele.append(u'fisc')
 Modele.append(u'fiscalité')
 Modele.append(u'flamants')
@@ -3673,8 +3674,10 @@ def treatPageByName(pageName):
                      (u'fr',u'er',u'er',u'ir',u'ir',u're',u'ar'),
                      (u'ru',u'',u'',u'',u'',u'',u'')
                    ]
-        if not ' ' in pageName and not pageName in [u'ça va', u'ché', u'estoufaresse', u'estoufarès', u'reco', u'rpz'] and finalPageContent.find(u'{{voir-conj') == -1 and finalPageContent.find(u'[[Image:') == -1:
-        # Sinon bugs (ex : https://fr.wiktionary.org/w/index.php?title=d%C3%A9finir&diff=10128404&oldid=10127687, https://fr.wiktionary.org/w/index.php?title=%C3%A7a_va&diff=next&oldid=21742913)
+        if not ' ' in pageName and finalPageContent.find(u'{{voir-conj') == -1 \
+            and finalPageContent.find(u'{{invar') == -1 and finalPageContent.find(u'{{verbe non standard') == -1 \
+            and finalPageContent.find(u'[[Image:') == -1:
+                # Sinon bug https://fr.wiktionary.org/w/index.php?title=d%C3%A9finir&diff=10128404&oldid=10127687
             if debugLevel > 0: print u'Ajout de {{conj}}'
             for l in LanguesC:
                 if not (l[0] == u'fr' and pageName[-3:] == u'ave'):
