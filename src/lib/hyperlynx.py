@@ -175,7 +175,7 @@ ParamEN.append(u'surname')
 ParamFR.append(u'nom')
 ParamEN.append(u'last')
 ParamFR.append(u'nom')
-for p in range(1,31):
+for p in range(1, 100):
     ParamEN.append(u'first'+str(p))
     ParamFR.append(u'prénom'+str(p))
     ParamEN.append(u'given'+str(p))
@@ -192,7 +192,7 @@ ParamEN.append(u'authorlink')
 ParamFR.append(u'lien auteur')
 ParamEN.append(u'author-link')
 ParamFR.append(u'lien auteur')
-for p in range(1,10):
+for p in range(1, 100):
     ParamEN.append(u'authorlink'+str(p))
     ParamFR.append(u'lien auteur'+str(p))
     ParamEN.append(u'author'+str(p)+u'link')
