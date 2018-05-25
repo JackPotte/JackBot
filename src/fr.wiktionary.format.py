@@ -1638,12 +1638,14 @@ def treatPageByName(pageName):
     if checkURL: pageContent = hyperlynx(pageContent)
 
     if page.namespace() == 14:
+        # Catégories
         if u'par caractère' in pageContent:
             pageContent = u'{{tableau han/cat}}'
 
         finalPageContent = pageContent
 
     elif treatTemplates and page.namespace() == 10:
+        # Modèles
         templates = [u'emploi', u'région', u'registre', u'term']
         for template in templates:
             if not u'{{{clé|' in pageContent and pageContent[:len(u'{{' + template)] == u'{{' + template and u'\n}}<noinclude>' in pageContent:
@@ -1657,7 +1659,59 @@ def treatPageByName(pageName):
 
         finalPageContent = pageContent
 
+    elif page.namespace() == 2:
+        # Utilisateurs
+        summary = u'[[Wiktionnaire:Bots/Requêtes]]'
+        old = []
+        new = []
+
+        old.append(u", error:")
+        new.append(u":")
+
+        old.append(u"u'Cannot change %s because of spam blacklist entry %s'")
+        new.append(u"u'Cannot change because of spam blacklist entry'")
+
+        old.append("u'\\03{lightblue}Cannot change %s because of '")
+        new.append(u"u'\\03{lightblue}Cannot change'")
+
+        old.append("u'entry %s\\03{default}' % (page.title(), error.url))")
+        new.append(u")")
+
+        old.append("u'%s\\03{default}' % (page.title(), error))")
+        new.append(u")")
+
+        old.append("% (page.title(), error.url))")
+        new.append(u")")
+        '''
+        old.append(u", error:")
+        new.append(u":")
+
+        old.append(u"u'Cannot change %s because of spam blacklist entry %s'")
+        new.append(u"u'Cannot change because of spam blacklist entry'")
+
+        old.append("u'\\03\{lightblue\}Cannot change %s because of '")
+        new.append(u"u'\03{lightblue}Cannot change'")
+
+        old.append("u'entry %s\\03\{default\}' % \(page\.title\(\), error\.url\)\)")
+        new.append(u"")
+
+        old.append("u'%s\\03\{default\}' % \(page\.title\(\), error\)\)")
+        new.append(u"")
+
+        old.append("% \(page\.title\(\), error\.url\)\)")
+        new.append(u"")
+        '''
+        for i in range(6):
+            if debugLevel > 1: print pageContent.find(old[i])
+            pageContent = pageContent.replace(old[i], new[i])
+
+            #regex = re.compile(old[i], re.UNICODE)
+            #if debugLevel > 0: print re.search(old[i], pageContent)
+            #pageContent = re.sub(regex, new[i], pageContent)
+        finalPageContent = pageContent
+
     elif page.namespace() == 0 or username in pageName:
+        # Articles
         regex = ur'{{=([a-z\-]+)=}}'
         if re.search(regex, pageContent):
             pageContent = re.sub(regex, ur'{{langue|\1}}', pageContent)
@@ -3797,13 +3851,14 @@ def treatPageByName(pageName):
                      finalPageContent, summary = removeFalseHomophones(finalPageContent, language, pageName, MSPageName, summary)
             if debugLevel > 2: raw_input(finalPageContent.encode(config.console_encoding, 'replace'))             
 
-    else:
-        finalPageContent = pageContent
+        regex = ur'([^\n=])(===?=? *{{S\|)'
+        if re.search(regex, finalPageContent):
+            finalPageContent = re.sub(regex, ur'\1\n\n\2', finalPageContent)
+        finalPageContent = finalPageContent.replace(u'===== {{S|note}} ===== =====', u'===== {{S|note}} =====')
 
-    regex = ur'([^\n=])(===?=? *{{S\|)'
-    if re.search(regex, finalPageContent):
-        finalPageContent = re.sub(regex, ur'\1\n\n\2', finalPageContent)
-    finalPageContent = finalPageContent.replace(u'===== {{S|note}} ===== =====', u'===== {{S|note}} =====')
+    else:
+        # Unknown namespace
+        finalPageContent = pageContent
 
     if debugLevel > 1 and username in pageName: finalPageContent = addLineTest(finalPageContent)
     if debugLevel > 0: pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
