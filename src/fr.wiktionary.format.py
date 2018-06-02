@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 # coding: utf-8
 '''
-Ce script formate les pages du Wiktionnaire, tous les jours après minuit depuis le labs Wikimedia :
-1) Crée les redirection d'apostrophe dactylographique vers apostrophe typographique
+Ce script formate les pages du Wiktionnaire, tous les jours après minuit depuis le serveur Toolforge de Wikimedia :
+1) Crée les redirection d'apostrophe dactylographique vers apostrophe typographique.
 2) Gère des modèles {{voir}} en début de page.
 3) Retire certains doublons de modèles et d'espaces.
-4) Remplace les modèles catégorisés comme obsolètes
+4) Remplace les modèles catégorisés comme obsolètes.
 5) Ajoute les prononciations sur la ligne de forme, et certains liens vers les conjugaisons.
 6) Met à jour les liens vers les traductions (modèles trad, trad+, trad-, trad-début et trad-fin), et les classe par ordre alphabétique.
 7) Détecte les modèles de contexte à ajouter, et ajoute leurs codes langues  ou "nocat=1"
 8) Complète la boite de flexions de verbes en français.
-9) Ajoute les anagrammes (pour les petits mots)
-10) Teste les URL et indique si elles sont brisées avec {{lien brisé}}, et les transforme en modèle s'il existe pour leur site
+9) Demande les pluriels et genres manquants quand les lemmes les éludent.
+10) Ajoute certaines sections traductions manquantes.
+11) Ajoute les anagrammes (pour les petits mots faute de vitesse réseau).
+etc.
 Tests sur http://fr.wiktionary.org/w/index.php?title=Utilisateur%3AJackBot%2Ftest&diff=14533806&oldid=14533695
 '''
 
@@ -584,6 +586,7 @@ Modele.append(u'cigognes')
 Modele.append(u'ciné')
 Modele.append(u'cinéma')
 Modele.append(u'cirque')
+Modele.append(u'cnidaires')
 Modele.append(u'cocktails')
 Modele.append(u'coiffure')
 Modele.append(u'colorimétrie')
@@ -1298,6 +1301,7 @@ Modele.append(u'télécom')
 Modele.append(u'télécommunications')
 Modele.append(u'téléphonie')
 Modele.append(u'télévision')
+Modele.append(u'typographie et informatique')
 Modele.append(u'ufologie')
 Modele.append(u'un os')
 Modele.append(u'unités')
@@ -1639,9 +1643,6 @@ def treatPageByName(pageName):
 
     if page.namespace() == 14:
         # Catégories
-        if u'par caractère' in pageContent:
-            pageContent = u'{{tableau han/cat}}'
-
         finalPageContent = pageContent
 
     elif treatTemplates and page.namespace() == 10:
@@ -1816,6 +1817,10 @@ def treatPageByName(pageName):
         pageContent = re.sub(ur'{{S\| ?vocabulaire apparenté\|?[a-z ]*}}', u'{{S|vocabulaire}}', pageContent)
         pageContent = re.sub(ur'{{S\| ?voir( aussi)?\|?[a-z ]*}}', u'{{S|voir aussi}}', pageContent)
         pageContent = pageContent.replace(u'==== {{S|phrases|fr}} ====', u'==== {{S|phrases}} ====')
+
+        #TODO: traiter tous les templates
+        if u'{{argot|fr}}' in pageContent:
+            pageContent = re.sub(ur'\n\[\[Catégorie:Argot en français\]\]', ur'', pageContent)
 
         regex = ur"= *({{langue\|[^}]+}}) *="
         if re.search(regex, pageContent):
@@ -3913,13 +3918,13 @@ def main(*args):
                 else:
                     print 'bon ko'
                 return
-
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
                 regex = ur'{{langue\|(?!fr)}}.*{{S\|traductions}}'
             p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
-            #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex, include = u'verbe|it|flexion', exclude = u'it-verbe-flexion'
+            #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{pron\|[^\|]*v[^\|]\|fr}}', titleInclude = u'w')
+
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
@@ -3931,8 +3936,11 @@ def main(*args):
             p.pagesByLink(u'Template:hi', afterPage = afterPage)
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             fixOldTemplates = True
-            p.pagesByCat(u'Modèles désuets de code langue', namespaces = [0, 14], linked = True)
-            #p.pagesByCat(u'Appels de modèles incorrects:abréviation', afterPage = afterPage, recursive = False, namespaces = [14])
+            if len(sys.argv) > 2:
+                p.pagesByCat(sys.argv[2].decode(config.console_encoding, 'replace'))
+            else:
+                p.pagesByCat(u'Modèles de domaine d’utilisation', namespaces = [10])
+                #p.pagesByCat(u'Appels de modèles incorrects:abréviation', afterPage = afterPage, recursive = False, namespaces = [14])
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':

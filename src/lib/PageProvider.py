@@ -59,7 +59,10 @@ class PageProvider:
                 pageContent = entry.text
                 if titleInclude:
                     if re.search(titleInclude, entry.title):
-                        if include and exclude and include in pageContent and not exclude in pageContent:
+                        if regex:
+                            if re.search(regex, pageContent, re.DOTALL):
+                                self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                        elif include and exclude and include in pageContent and not exclude in pageContent:
                             self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
                         elif include and include in pageContent:
                             self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
