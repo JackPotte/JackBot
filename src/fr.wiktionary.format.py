@@ -967,6 +967,8 @@ Modele.append(u'mycol')
 Modele.append(u'mycologie')
 Modele.append(u'mythol')
 Modele.append(u'mythologie')
+Modele.append(u'mythologie égyptienne')
+Modele.append(u'mythologie grecque')
 Modele.append(u'méca')
 Modele.append(u'mécanique')
 Modele.append(u'mécoupure')
@@ -1630,7 +1632,9 @@ def treatPageByName(pageName):
     if debugLevel == 0 and waitAfterHumans and not hasMoreThanTime(page): return
 
     currentPageContent = getContentFromPage(page, 'All')
-    if currentPageContent == 'KO': return
+    if currentPageContent == 'KO':
+        if debugLevel > 0: print u' Page vide'
+        return
     pageContent = currentPageContent
     finalPageContent = u''
     CleTri = defaultSort(pageName)
@@ -1660,57 +1664,6 @@ def treatPageByName(pageName):
 
         finalPageContent = pageContent
 
-    elif page.namespace() == 2:
-        # Utilisateurs
-        summary = u'[[Wiktionnaire:Bots/Requêtes]]'
-        old = []
-        new = []
-
-        old.append(u", error:")
-        new.append(u":")
-
-        old.append(u"u'Cannot change %s because of spam blacklist entry %s'")
-        new.append(u"u'Cannot change because of spam blacklist entry'")
-
-        old.append("u'\\03{lightblue}Cannot change %s because of '")
-        new.append(u"u'\\03{lightblue}Cannot change'")
-
-        old.append("u'entry %s\\03{default}' % (page.title(), error.url))")
-        new.append(u")")
-
-        old.append("u'%s\\03{default}' % (page.title(), error))")
-        new.append(u")")
-
-        old.append("% (page.title(), error.url))")
-        new.append(u")")
-        '''
-        old.append(u", error:")
-        new.append(u":")
-
-        old.append(u"u'Cannot change %s because of spam blacklist entry %s'")
-        new.append(u"u'Cannot change because of spam blacklist entry'")
-
-        old.append("u'\\03\{lightblue\}Cannot change %s because of '")
-        new.append(u"u'\03{lightblue}Cannot change'")
-
-        old.append("u'entry %s\\03\{default\}' % \(page\.title\(\), error\.url\)\)")
-        new.append(u"")
-
-        old.append("u'%s\\03\{default\}' % \(page\.title\(\), error\)\)")
-        new.append(u"")
-
-        old.append("% \(page\.title\(\), error\.url\)\)")
-        new.append(u"")
-        '''
-        for i in range(6):
-            if debugLevel > 1: print pageContent.find(old[i])
-            pageContent = pageContent.replace(old[i], new[i])
-
-            #regex = re.compile(old[i], re.UNICODE)
-            #if debugLevel > 0: print re.search(old[i], pageContent)
-            #pageContent = re.sub(regex, new[i], pageContent)
-        finalPageContent = pageContent
-
     elif page.namespace() == 0 or username in pageName:
         # Articles
         regex = ur'{{=([a-z\-]+)=}}'
@@ -1723,7 +1676,6 @@ def treatPageByName(pageName):
         if re.search(regex, pageContent):
             if debugLevel > 0: print u'Page en travaux : non traitée l 1409'
             return
-
         # Alias d'anciens titres de section
         pageContent = pageContent.replace(u'{{-car-}}', u'{{caractère}}')
         pageContent = pageContent.replace(u'{{-note-|s=s}}', u'{{-notes-}}')
@@ -2051,57 +2003,6 @@ def treatPageByName(pageName):
         if addDefaultSortKey:
             if debugLevel > 0: print u'Clés de tri'
             pageContent = addDefaultSort(pageName, pageContent)
-        if removeDefaultSort:
-            regex = ur'^[ 0-9a-zàçéèêëîôùûA-ZÀÇÉÈÊËÎÔÙÛ]+$'
-            if u'{{langue|fr}}' in pageContent and re.search(regex, pageName):
-                regex = ur"\n{{clé de tri([^}]*)}}"
-                if re.search(regex, pageContent):
-                    summary = summary + u', retrait de {{clé de tri}}'
-                    pageContent = re.sub(regex, '', pageContent)
-
-        if debugLevel > 0: print u'Catégories de prononciation'
-        if pageName[-2:] == u'um' and pageContent.find(u'ɔm|fr}}') != -1:
-            pageContent = addCategory(pageContent, u'fr', u'um prononcés /ɔm/ en français')
-        if pageName[:2] == u'qu':
-            regex = ur'{{pron\|kw[^}\|]+\|fr}}'
-            if re.search(regex, pageContent):
-                pageContent = addCategory(pageContent, u'fr', u'qu prononcés /kw/ en français')
-        if pageName[:2] == u'qu':
-            regex = ur'{{fr\-rég\|kw[^}\|]+}}'
-            if re.search(regex, pageContent):
-                pageContent = addCategory(pageContent, u'fr', u'qu prononcés /kw/ en français')
-        if pageName[:2] == u'ch':
-            regex = ur'{{pron\|k[^}\|]+\|fr}}'
-            if re.search(regex, pageContent):
-                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
-        if pageName[:2] == u'ch':
-            regex = ur'{{fr\-rég\|k[^}\|]+}}'
-            if re.search(regex, pageContent):
-                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
-        if pageName[:2] == u'Ch':
-            regex = ur'{{pron\|k[^}\|]+\|fr}}'
-            if re.search(regex, pageContent):
-                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
-        if pageName[:2] == u'Ch':
-            regex = ur'{{fr\-rég\|k[^}\|]+}}'
-            if re.search(regex, pageContent):
-                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
-        if pageName[-2:] == u'ch':
-            regex = ur'{{pron\|[^}\|]+k\|fr}}'
-            if re.search(regex, pageContent):
-                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
-        if pageName[-2:] == u'ch':
-            regex = ur'{{fr\-rég\|[^}\|]+k}}'
-            if re.search(regex, pageContent):
-                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
-        if pageName[-3:] == u'chs':
-            regex = ur'{{pron\|[^}\|]+k}}'
-            if re.search(regex, pageContent):
-                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
-        if pageName[-3:] == u'chs':
-            regex = ur'{{fr\-rég\|[^}\|]+k}}'
-            if re.search(regex, pageContent):
-                pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
 
         if debugLevel > 1: print u'Formatage de la ligne de forme'
         pageContent = pageContent.replace(u'{{PAGENAME}}', u'{{subst:PAGENAME}}')
@@ -2111,21 +2012,87 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u']] {{imperf}}', u']] {{imperf|nocat=1}}')
         pageContent = pageContent.replace(u']] {{perf}}', u']] {{perf|nocat=1}}')
         pageContent = pageContent.replace(u'{{perf}} / \'\'\'', u'{{perf|nocat=1}} / \'\'\'')
-        pageContent = pageContent.replace(u'{{term|Blason}}', u'{{héraldique}}')
-        pageContent = pageContent.replace(u'{{term|Art vétérinaire}}', u'{{vétérinaire}}')
 
-        regex = ur'({{fr\-[^}]*\|[\'’]+=[^}]*)\|[\'’]+=[oui|1]'
-        if re.search(regex, pageContent):
-            pageContent = re.sub(regex, ur'\1', pageContent)
-        regex = ur'({{fr\-[^}]*\|s=[^}]*)\|s=[^}\|]*'
-        if re.search(regex, pageContent):
-            pageContent = re.sub(regex, ur'\1', pageContent)
-        regex = ur'({{fr\-[^}]*\|ms=[^}]*)\|ms=[^}\|]*'
-        if re.search(regex, pageContent):
-            pageContent = re.sub(regex, ur'\1', pageContent)
-        regex = ur'({{fr\-[^}]*\|fs=[^}]*)\|fs=[^}\|]*'
-        if re.search(regex, pageContent):
-            pageContent = re.sub(regex, ur'\1', pageContent)
+        if u'{{langue|en}}' in pageContent:
+            regex = ur"({{S\|verbe\|en}} *=* *\n'*)to "
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur"\1", pageContent)
+
+            regex = ur'(=== {{S\|adjectif\|en}} ===\n[^\n]*) *{{pluriel \?\|en}}'
+            pageContent = re.sub(regex, ur"\1", pageContent)
+
+        if u'{{langue|fr}}' in pageContent:
+            if removeDefaultSort:
+                regex = ur'^[ 0-9a-zàçéèêëîôùûA-ZÀÇÉÈÊËÎÔÙÛ]+$'
+                if re.search(regex, pageName):
+                    regex = ur"\n{{clé de tri([^}]*)}}"
+                    if re.search(regex, pageContent):
+                        summary = summary + u', retrait de {{clé de tri}}'
+                        pageContent = re.sub(regex, '', pageContent)
+
+            if debugLevel > 0: print u'Catégories de prononciation'
+            if pageName[-2:] == u'um' and pageContent.find(u'ɔm|fr}}') != -1:
+                pageContent = addCategory(pageContent, u'fr', u'um prononcés /ɔm/ en français')
+            if pageName[:2] == u'qu':
+                regex = ur'{{pron\|kw[^}\|]+\|fr}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'qu prononcés /kw/ en français')
+            if pageName[:2] == u'qu':
+                regex = ur'{{fr\-rég\|kw[^}\|]+}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'qu prononcés /kw/ en français')
+            if pageName[:2] == u'ch':
+                regex = ur'{{pron\|k[^}\|]+\|fr}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
+            if pageName[:2] == u'ch':
+                regex = ur'{{fr\-rég\|k[^}\|]+}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
+            if pageName[:2] == u'Ch':
+                regex = ur'{{pron\|k[^}\|]+\|fr}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
+            if pageName[:2] == u'Ch':
+                regex = ur'{{fr\-rég\|k[^}\|]+}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
+            if pageName[-2:] == u'ch':
+                regex = ur'{{pron\|[^}\|]+k\|fr}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
+            if pageName[-2:] == u'ch':
+                regex = ur'{{fr\-rég\|[^}\|]+k}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
+            if pageName[-3:] == u'chs':
+                regex = ur'{{pron\|[^}\|]+k}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
+            if pageName[-3:] == u'chs':
+                regex = ur'{{fr\-rég\|[^}\|]+k}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
+
+            regex = ur'({{fr\-[^}]*\|[\'’]+=[^}]*)\|[\'’]+=[oui|1]'
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur'\1', pageContent)
+            regex = ur'({{fr\-[^}]*\|s=[^}]*)\|s=[^}\|]*'
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur'\1', pageContent)
+            regex = ur'({{fr\-[^}]*\|ms=[^}]*)\|ms=[^}\|]*'
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur'\1', pageContent)
+            regex = ur'({{fr\-[^}]*\|fs=[^}]*)\|fs=[^}\|]*'
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur'\1', pageContent)
+
+            pageContent = pageContent.replace(u'{{louchébem|fr}}', u'{{louchébem}}')
+            pageContent = pageContent.replace(u'{{reverlanisation|fr}}', u'{{reverlanisation}}')
+            pageContent = pageContent.replace(u'{{verlan|fr}}', u'{{verlan}}')
+
+            pageContent = pageContent.replace(u'mythologie|fr|myt=grecque', u'mythologie grecque|fr')
+
         while re.compile('{{T\|.*\n\n\*[ ]*{{T\|').search(pageContent):
             i1 = re.search(u'{{T\|.*\n\n\*[ ]*{{T\|', pageContent).end()
             pageContent = pageContent[:i1][:pageContent[:i1].rfind(u'\n')-1] + pageContent[:i1][pageContent[:i1].rfind(u'\n'):len(pageContent[:i1])] + pageContent[i1:]
@@ -2143,22 +2110,13 @@ def treatPageByName(pageName):
         #pageContent = re.sub(ur'«[  \t]*', ur'« ', pageContent) # pb &#160;
         #pageContent = re.sub(ur'[  \t]*»', ur' »', pageContent)
         pageContent = pageContent.replace(u'{|\n|}', u'')
-        regex = ur"({{S\|verbe\|en}} *=* *\n'*)to "
-        if re.search(regex, pageContent):
-            pageContent = re.sub(regex, ur"\1", pageContent)
-
-        regex = ur'(=== {{S\|adjectif\|en}} ===\n[^\n]*) *{{pluriel \?\|en}}'
-        pageContent = re.sub(regex, ur"\1", pageContent)
 
         if debugLevel > 0: print u'Formatage des modèles'
         pageContent = pageContent.replace(u'\n {{', u'\n{{')
-        pageContent = pageContent.replace(u'{{louchébem|fr}}', u'{{louchébem}}')
-        pageContent = pageContent.replace(u'{{reverlanisation|fr}}', u'{{reverlanisation}}')
-        pageContent = pageContent.replace(u'{{verlan|fr}}', u'{{verlan}}')
         regex = ur"({{cf|)lang=[^\|}]+\|(:Catégorie:)"
         pageContent = re.sub(regex, ur"\1\2", pageContent)
-
         pageContent = pageContent.replace(u'|ko-hani}}', u'|ko-Hani}}')
+
         if debugLevel > 1: print u' Remplacements des anciens codes langue'
         oldTemplate = []
         newTemplate = []
@@ -2188,13 +2146,11 @@ def treatPageByName(pageName):
             regex = ur'([\|{=])' + oldTemplate[p] + ur'([\|}])'
             if re.search(regex, pageContent):
                 pageContent = re.sub(regex, ur'\1' + newTemplate[p] + ur'\2', pageContent)
-        pageContent = pageContent.replace(u'{{WP|lang=sgs', u'{{WP|lang=bat-smg')
-        pageContent = pageContent.replace(u'{{Source-wikt|nan|', u'{{Source-wikt|zh-min-nan|')
 
+        pageContent = pageContent.replace(u'\n \n', u'\n\n')
         pageContent = re.sub(ur'{{régio *\| *', ur'{{région|', pageContent)
         pageContent = re.sub(ur'{{terme *\| *', ur'{{term|', pageContent)
         pageContent = re.sub(ur'{{term *\|Registre neutre}} *', ur'', pageContent)
-        pageContent = pageContent.replace(u'{{auxiliaire être}}', u'{{note-auxiliaire|fr|être}}')
         pageContent = pageContent.replace(u'{{Citation needed}}', u'{{réf ?}}')
         pageContent = pageContent.replace(u'{{f}} {{fsing}}', u'{{f}}')
         pageContent = pageContent.replace(u'{{m}} {{msing}}', u'{{m}}')
@@ -2207,38 +2163,14 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'{{prononciation|}}', u'{{prononciation}}')
         pageContent = pageContent.replace(u'{{pron-rég|', u'{{écouter|')
         pageContent = pageContent.replace(u'{{Référence nécessaire}}', u'{{référence nécessaire}}')
-        pageContent = pageContent.replace(u'religion|rel=chrétienne', u'christianisme')
-        pageContent = pageContent.replace(u'religion|rel=islamique', u'islam')
-        pageContent = pageContent.replace(u'religion|rel=musulmane', u'islam')
-        pageContent = pageContent.replace(u'religion|rel=boudhiste', u'boudhisme')
-        pageContent = pageContent.replace(u'religion|rel=juive', u'judaïsme')
-        pageContent = pageContent.replace(u'religion|spéc=chrétienne', u'christianisme')
-        pageContent = pageContent.replace(u'religion|spéc=islamique', u'islam')
-        pageContent = pageContent.replace(u'religion|spéc=musulmane', u'islam')
-        pageContent = pageContent.replace(u'religion|spéc=boudhiste', u'boudhisme')
-        pageContent = pageContent.replace(u'religion|spéc=juive', u'judaïsme')
-        pageContent = pageContent.replace(u'religion|fr|rel=chrétienne', u'christianisme|fr')
-        pageContent = pageContent.replace(u'religion|fr|rel=islamique', u'islam|fr')
-        pageContent = pageContent.replace(u'religion|fr|rel=musulmane', u'islam|fr')
-        pageContent = pageContent.replace(u'religion|fr|rel=boudhiste', u'boudhisme|fr')
-        pageContent = pageContent.replace(u'religion|fr|rel=juive', u'judaïsme|fr')
-        pageContent = pageContent.replace(u'religion|nocat=1|rel=chrétienne', u'christianisme|nocat=1')
-        pageContent = pageContent.replace(u'religion|nocat=1|rel=islamique', u'islam|nocat=1')
-        pageContent = pageContent.replace(u'religion|nocat=1|rel=musulmane', u'islam|nocat=1')
-        pageContent = pageContent.replace(u'religion|nocat=1|rel=boudhiste', u'boudhisme|nocat=1')
-        pageContent = pageContent.replace(u'religion|nocat=1|rel=juive', u'judaïsme|nocat=1')
-        pageContent = pageContent.replace(u'{{sexua|', u'{{sexe|')
         pageContent = pageContent.replace(u'— {{source|', u'{{source|')
         pageContent = pageContent.replace(u'- {{source|', u'{{source|')
-        pageContent = pageContent.replace(u'{{term|Antiquité grecque}}', u'{{antiquité|spéc=grecque}}')
-        pageContent = pageContent.replace(u'{{term|Antiquité romaine}}', u'{{antiquité|spéc=romaine}}')
-        pageContent = pageContent.replace(u'{{antiquité|fr}} {{term|grecque}}', u'{{antiquité|spéc=grecque}}')
-        pageContent = pageContent.replace(u'{{antiquité|fr}} {{term|romaine}}', u'{{antiquité|spéc=romaine}}')
         pageContent = pageContent.replace(u'#*: {{trad-exe|fr}}', u'')
         pageContent = pageContent.replace(u'\n{{WP', u'\n* {{WP')
-        pageContent = pageContent.replace(u'\n \n', u'\n\n')
+        pageContent = pageContent.replace(u'{{WP|lang=sgs', u'{{WP|lang=bat-smg')
+        pageContent = pageContent.replace(u'{{Source-wikt|nan|', u'{{Source-wikt|zh-min-nan|')
 
-        # Factorisation des citations
+        # TODO: Factorisation des citations
         #regex = ur"(?:— \(|{{source\|)Cirad/Gret/MAE, ''Mémento de l['’]Agronome'', 1 *692 p(?:\.|ages), p(?:\.|age) ([0-9 ]+), 2002, Paris, France, Cirad/Gret/Ministère des Affaires [EÉ]trangères \(\+ 2 cdroms\)(?:\)|}})"
         #if re.search(regex, pageContent):
         #    pageContent = re.sub(regex, ur"{{Citation/Cirad/Gret/MAE/Mémento de l’Agronome|\1}}", pageContent)
@@ -2283,8 +2215,6 @@ def treatPageByName(pageName):
         if debugLevel > 1: print u' Modèles trop courts'
         pageContent = pageContent.replace(u'{{fp}}', u'{{fplur}}')
         pageContent = pageContent.replace(u'{{mp}}', u'{{mplur}}')
-        pageContent = pageContent.replace(u'{{fp|fr}}', u'{{fplur}}')
-        pageContent = pageContent.replace(u'{{mp|fr}}', u'{{mplur}}')
         pageContent = pageContent.replace(u'{{np}}', u'{{nlur}}')
         pageContent = pageContent.replace(u'{{fs}}', u'{{fsing}}')
         pageContent = pageContent.replace(u'{{mascul}}', u'{{au masculin}}')
@@ -3879,7 +3809,7 @@ def treatPageByName(pageName):
             finalPageContent = re.sub(regex, ur'\1\n\2', finalPageContent)
         savePage(page, finalPageContent, summary)
     elif debugLevel > 0:
-        print "Aucun changement"
+        print u'Aucun changement après traitement'
 
 
 p = PageProvider(treatPageByName, site, debugLevel)
@@ -3896,9 +3826,10 @@ def main(*args):
             treatPageByName(u'User:' + username + u'/test')
         elif sys.argv[1] == u'-test2':
             treatPageByName(u'User:' + username + u'/test2')
+        elif sys.argv[1] == u'-tu':
+            treatPageByName(u'User:' + username + u'/test unitaire')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             waitAfterHumans = False
-            #treatPageByName(u'Utilisateur:JackBot/test unitaire')
             treatPageByName(u'à loilpé')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             waitAfterHumans = False
@@ -3931,7 +3862,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:"{{S|dérivés autres langues}}"', afterPage = u'радъ')
+                p.pagesBySearch(u'insource:"mythologie|fr|myt=grecque"')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:hi', afterPage = afterPage)
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
