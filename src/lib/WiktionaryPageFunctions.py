@@ -723,6 +723,7 @@ def addPronunciation(pageContent, CodeLangue, Section, lineContent):
                      + lineContent + u'\n' + lineContent3[lineContent3.find(u'\n=='):]
         if pageContent.find(u'\n* {{écouter|') != -1 and pageContent.find(u'=== {{S|prononciation}} ===') == -1:
             pageContent = pageContent.replace(u'\n* {{écouter|', u'\n\n=== {{S|prononciation}} ===\n* {{écouter|')    
+        pageContent = pageContent.replace(u'\n\n\n\n', u'\n\n\n')
     return pageContent
 
 def addLineIntoSection(pageContent, languageCode, Section, lineContent):
