@@ -676,7 +676,7 @@ def addPronunciation(pageContent, CodeLangue, Section, lineContent):
                 o = o - 1
                 if debugLevel > 1: print u' position O : ' + o
                 if debugLevel > 0:
-                    print u' ajout de ' + Section + u' avant ' + SectionLimite
+                    print u' ajout de "' + Section + u'" avant "' + SectionLimite + u'"'
                     print u'  (car ' + str(sectionNumber(SectionLimite)) + u' > ' + str(NumSection) + u')'
 
                 # Ajout après la section trouvée
@@ -686,12 +686,12 @@ def addPronunciation(pageContent, CodeLangue, Section, lineContent):
 
                 lineContent3 = lineContent2[lineContent2.find(u'{{S|' + sectionsInPage[o][0]):]
                 if sectionsInPage[o][0] != Section and Section != u'catégorie' and Section != u'clé de tri':
-                    if debugLevel > 0: print u' ajout de la section ' + sectionsInPage[o][0]
+                    if debugLevel > 0: print u' ajout de la section "' + Section + u'" après "'+ sectionsInPage[o][0] + u'"'
                     lineContent = u'\n' + Niveau[NumSection] + u' {{S|' + Section + u'}} ' + Niveau[NumSection] + u'\n' + lineContent
                 else:
                      if debugLevel > 0: print u' ajout dans la section existante'
+                if debugLevel > 1: raw_input(lineContent.encode(config.console_encoding, 'replace'))
 
-                # Ajout à la ligne
                 if lineContent3.find(u'\n==') == -1:
                     regex = ur'\n\[\[\w?\w?\w?:'
                     if re.compile(regex).search(pageContent):
@@ -700,26 +700,27 @@ def addPronunciation(pageContent, CodeLangue, Section, lineContent):
                         defaultSort = pageContent.find(u'\n{{clé de tri|')
 
                         if (interwikis < categories or categories == -1) and (interwikis < defaultSort or defaultSort == -1):
-                            if debugLevel > 0: print u' ajout avant les interwikis'
+                            if debugLevel > 0: print u'  ajout avant les interwikis'
                             try:
                                 pageContent = pageContent[:interwikis] + u'\n' + lineContent + u'\n' + pageContent[interwikis:]
                             except:
                                 print u' pb regex interwiki'
                         elif categories != -1 and (categories < defaultSort or defaultSort == -1):
-                            if debugLevel > 0: print u' ajout avant les catégories'
+                            if debugLevel > 0: print u'  ajout avant les catégories'
                             pageContent = pageContent[:pageContent.find(u'\n[[Catégorie:')] + lineContent + pageContent[pageContent.find(u'\n[[Catégorie:'):]
                         elif defaultSort != -1:
-                            if debugLevel > 0: print u' ajout avant la clé de tri'
+                            if debugLevel > 0: print u'  ajout avant la clé de tri'
                             pageContent = pageContent[:pageContent.find(u'\n{{clé de tri|')] + lineContent + pageContent[pageContent.find(u'\n{{clé de tri|'):]
                         else:
-                            if debugLevel > 0: print u' ajout en fin de page'
+                            if debugLevel > 0: print u'  ajout en fin de page'
                             pageContent = pageContent + lineContent
                     else:
-                        if debugLevel > 0: print u' ajout en fin de page'
+                        if debugLevel > 0: print u'  ajout en fin de page'
                         pageContent = pageContent + lineContent
                 else:
-                    pageContent = pageContent[:-len(lineContent2)] + lineContent2[:-len(lineContent3)] + lineContent3[:lineContent3.find(u'\n\n')] \
-                     + u'\n' + lineContent + u'\n' + lineContent3[lineContent3.find(u'\n\n'):]
+                    if debugLevel > 0: print u'  ajout standard'
+                    pageContent = pageContent[:-len(lineContent2)] + lineContent2[:-len(lineContent3)] + lineContent3[:lineContent3.find(u'\n==')] \
+                     + lineContent + u'\n' + lineContent3[lineContent3.find(u'\n=='):]
         if pageContent.find(u'\n* {{écouter|') != -1 and pageContent.find(u'=== {{S|prononciation}} ===') == -1:
             pageContent = pageContent.replace(u'\n* {{écouter|', u'\n\n=== {{S|prononciation}} ===\n* {{écouter|')    
     return pageContent

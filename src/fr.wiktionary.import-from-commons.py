@@ -45,10 +45,18 @@ def treatPageByName(pageName):
     if languageCode == 'LL':
         if debugLevel > 0: print u' Lingua Libre formats'
         # LL-<Qid de la langue> (<code iso 693-3>)-<Username>-<transcription> (<précision>).wav
+
+        if fileName.count('-') > 3:
+            if debugLevel > 0: print u' Compound word'
+            word = fileName
+            for i in range(3):
+                word = word[word.find(u'-')+1:]
+        else:
+            word = fileName[fileName.rfind(u'-')+1:]
+
         s = re.search(ur'\(([^\)]+)\)', fileName)
         if s:
             languageCode = s.group(1)[:2]
-            word = fileName[fileName.rfind(u'-')+1:]
         else:
             if debugLevel > 0: print u' No parenthesis found'
             s = re.search(ur'\-([^\-]+)\-[^\-]+$', fileName)
@@ -56,7 +64,7 @@ def treatPageByName(pageName):
                 if debugLevel > 0: print u' No language code found'
                 return
             languageCode = s.group(1)[:2]
-            word = fileName[fileName.rfind(u'-')+1:]
+
     else:
         languageCode = languageCode.lower()
         if languageCode == u'qc': languageCode = u'fr'
@@ -182,7 +190,7 @@ def main(*args):
         elif sys.argv[1] == u'-test2':
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'File:LL-Q150 (fra)-Jules78120-locotracteur.wav')
+            treatPageByName(u'File:LL-Q150 (fra)-Guilhelma-celui-là.wav')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
