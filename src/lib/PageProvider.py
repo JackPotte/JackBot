@@ -108,25 +108,26 @@ class PageProvider:
     def pagesByCat(self, category, recursive = False, afterPage = None, namespaces = [0], names = None, notNames = None,
         notCatNames = None, site = None, pagesList = False, linked = False
     ):
+        pageids = 50
         if site is None: site = self.site
         if self.debugLevel > 0:
             print category.encode(config.console_encoding, 'replace')
         cat = catlib.Category(self.site, category)
         pages = cat.articlesList(False)
         if namespaces == [0]:
-            # Filtre bien 0, 2, 12, mais pas 10 ni 100 ni 114, Namespace identifier(s) not recognised
+            # TODO: filtre bien 0, 2, 12, mais pas 10 ni 100 ni 114, Namespace identifier(s) not recognised
             gen =  pagegenerators.NamespaceFilterPageGenerator(pages, namespaces)
         else:
             gen =  pagegenerators.CategorizedPageGenerator(cat)
         modify = False
-        for Page in pagegenerators.PreloadingGenerator(gen, 100):
+        for Page in pagegenerators.PreloadingGenerator(gen, pageids):
             if Page.title() == afterPage:
                 modify = True
             elif afterPage is None or afterPage == u'' or modify:
                 if linked:
                     gen2 = pagegenerators.ReferringPageGenerator(Page)
                     gen2 =  pagegenerators.NamespaceFilterPageGenerator(gen2, namespaces)
-                    for LinkedPage in pagegenerators.PreloadingGenerator(gen2, 100):
+                    for LinkedPage in pagegenerators.PreloadingGenerator(gen2, pageids):
                         if pagesList:
                             self.outputFile.write((LinkedPage.title() + '\n').encode(config.console_encoding, 'replace'))
                         else:
@@ -149,7 +150,7 @@ class PageProvider:
                             modify = False
                 if modify:
                     pages = subcategory.articlesList(False)
-                    for Page in pagegenerators.PreloadingGenerator(pages,100):
+                    for Page in pagegenerators.PreloadingGenerator(pages, pageids):
                         self.treatPageIfName(Page.title(), names, notNames)
 
     def treatPageIfName(self, pageName, names = None, notNames = None):

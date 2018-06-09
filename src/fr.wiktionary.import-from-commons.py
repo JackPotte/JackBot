@@ -43,14 +43,20 @@ def treatPageByName(pageName):
 
     languageCode = fileName[:fileName.find(u'-')]
     if languageCode == 'LL':
-        if debugLevel > 0: print u' Lingua Libre format'
+        if debugLevel > 0: print u' Lingua Libre formats'
         # LL-<Qid de la langue> (<code iso 693-3>)-<Username>-<transcription> (<précision>).wav
         s = re.search(ur'\(([^\)]+)\)', fileName)
-        if not s:
+        if s:
+            languageCode = s.group(1)[:2]
+            word = fileName[fileName.rfind(u'-')+1:]
+        else:
             if debugLevel > 0: print u' No parenthesis found'
-            return
-        languageCode = s.group(1)[:2]
-        word = fileName[fileName.rfind(u'-')+1:]
+            s = re.search(ur'\-([^\-]+)\-[^\-]+$', fileName)
+            if not s:
+                if debugLevel > 0: print u' No language code found'
+                return
+            languageCode = s.group(1)[:2]
+            word = fileName[fileName.rfind(u'-')+1:]
     else:
         languageCode = languageCode.lower()
         if languageCode == u'qc': languageCode = u'fr'
@@ -61,7 +67,7 @@ def treatPageByName(pageName):
 
     if debugLevel > 0:
         print u' Language code: ' + languageCode
-        print u' Word: ' + word.encode(config.console_encoding, 'replace')
+        print u' Word: ' + word
 
     region = u''
     page1 = Page(siteDest, word)
@@ -192,7 +198,7 @@ def main(*args):
                 p.pagesBySearch(u'chinois')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:autres projets')
-        elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
+        elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
             p.pagesByCat(u'Lingua Libre pronounciation-fra', afterPage = afterPage, recursive = True, namespaces = None)
