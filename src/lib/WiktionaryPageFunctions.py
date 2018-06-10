@@ -608,26 +608,28 @@ def addLine(pageContent, languageCode, Section, lineContent):
                 else:
                     raw_input(' bug de section')
 
+            lineContent = u'\n' + trim(lineContent) + u'\n'
+
             regex = ur'\n==* *{{S\|'
             s = re.search(regex, finalSection)
             if s:
                 if debugLevel > d: print u' ajout avant la sous-section suivante'
                 pageContent = pageContent[:startPosition] + languageSection[:-len(finalSection)] + finalSection[:s.start()] \
-                 + lineContent + u'\n' + finalSection[s.start():] + pageContent[startPosition+endPosition:]
+                 + lineContent + finalSection[s.start():] + pageContent[startPosition+endPosition:]
             else:
                 categories = languageSection.find(u'\n[[Catégorie:')
                 defaultSort = languageSection.find(u'\n{{clé de tri|')
                 if categories != -1 and (categories < defaultSort or defaultSort == -1):
                     if debugLevel > d: print u' ajout avant les catégories'
-                    pageContent = pageContent[:startPosition] + languageSection[:languageSection.find(u'\n[[Catégorie:')] + u'\n' + lineContent \
-                     + languageSection[languageSection.find(u'\n[[Catégorie:'):] + pageContent[startPosition+endPosition:]
+                    pageContent = pageContent[:startPosition] + languageSection[:languageSection.find(u'\n[[Catégorie:')] \
+                        + lineContent + languageSection[languageSection.find(u'\n[[Catégorie:'):] + pageContent[startPosition+endPosition:]
                 elif defaultSort != -1:
                     if debugLevel > d: print u' ajout avant la clé de tri'
                     pageContent = pageContent[:startPosition] + languageSection[:languageSection.find(u'\n{{clé de tri|')] \
-                     + u'\n' + lineContent + languageSection[languageSection.find(u'\n{{clé de tri|'):] + pageContent[startPosition+endPosition:]
+                     + lineContent + languageSection[languageSection.find(u'\n{{clé de tri|'):] + pageContent[startPosition+endPosition:]
                 else:
                     if debugLevel > d: print u' ajout en fin de section langue'
-                    pageContent = pageContent[:startPosition] + languageSection + u'\n' + lineContent + u'\n' + pageContent[startPosition+endPosition:]
+                    pageContent = pageContent[:startPosition] + languageSection + lineContent + pageContent[startPosition+endPosition:]
 
     pageContent = pageContent.replace(u'\n\n* {{écouter|', u'\n* {{écouter|')
     if debugLevel > d: pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")

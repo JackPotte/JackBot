@@ -54,6 +54,8 @@ treatTemplates = False
 treatCategories = False
 fixGenders = True
 waitAfterHumans = True
+listHomophons = False
+outputFile = ''
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
 Modele = [] # Liste des modèles du site à traiter
@@ -1676,11 +1678,13 @@ def treatPageByName(pageName):
         if re.search(regex, pageContent):
             if debugLevel > 0: print u'Page en travaux : non traitée l 1409'
             return
-        # Alias d'anciens titres de section
-        pageContent = pageContent.replace(u'{{-car-}}', u'{{caractère}}')
-        pageContent = pageContent.replace(u'{{-note-|s=s}}', u'{{-notes-}}')
-        pageContent = pageContent.replace(u'{{-etym-}}', u'{{-étym-}}')
-        pageContent = pageContent.replace(u'{{-pronom-personnel-', u'{{-pronom-pers-')
+
+        if listHomophons:
+            languageSection, hStart, hEnd = getLanguageSection(pageContent, 'fr')
+            homophons, hStart, hEnd = getSection(languageSection, u'homophones')
+            if debugLevel > 1: raw_input(homophons.encode(config.console_encoding, 'replace'))
+            outputFile.write((homophons.replace(u'==== {{S|homophones|fr}} ====\n', u'').replace(u'=== {{S|homophones|fr}} ===\n', u'')).encode(config.console_encoding, 'replace'))
+            return
 
         if debugLevel > 0: print u'Conversion vers {{S}}'
         EgalSection = u'==='
@@ -3816,7 +3820,7 @@ p = PageProvider(treatPageByName, site, debugLevel)
 setGlobals(debugLevel, site, username)
 setGlobalsWiktionary(debugLevel, site, username)
 def main(*args):
-    global waitAfterHumans, fixOldTemplates
+    global waitAfterHumans, fixOldTemplates, listHomophons, outputFile, siteLanguage, siteFamily
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
         afterPage = u''
@@ -3852,8 +3856,9 @@ def main(*args):
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
-                regex = ur'{{langue\|(?!fr)}}.*{{S\|traductions}}'
-            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
+                # Homophones sans article ne contient pas {{S|homophones + homophones en plusieurs liens internes
+                regex = ur'{{S\|homophones\|fr}} ====\n(?:\* *\[\[([^\]]+)\]\]\n)*'
+            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex, findAll = True)
             #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{pron\|[^\|]*v[^\|]\|fr}}', titleInclude = u'w')
 
         elif sys.argv[1] == u'-u':
@@ -3870,7 +3875,10 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesByCat(sys.argv[2].decode(config.console_encoding, 'replace'))
             else:
-                p.pagesByCat(u'Modèles de domaine d’utilisation', namespaces = [10])
+                listHomophons = True
+                outputFile = open(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', 'a')
+                p.pagesByCat(u'Mots ayant des homophones en français', afterPage = afterPage, recursive = False)
+                outputFile.close()
                 #p.pagesByCat(u'Appels de modèles incorrects:abréviation', afterPage = afterPage, recursive = False, namespaces = [14])
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
