@@ -56,14 +56,14 @@ def treatPageByName(pageName):
 
         s = re.search(ur'\(([^\)]+)\)', fileName)
         if s:
-            languageCode = s.group(1)[:2]
+            languageCode = getLanguageCodeISO693_1FromISO693_3(s.group(1))
         else:
             if debugLevel > 0: print u' No parenthesis found'
             s = re.search(ur'\-([^\-]+)\-[^\-]+$', fileName)
             if not s:
                 if debugLevel > 0: print u' No language code found'
                 return
-            languageCode = s.group(1)[:2]
+            languageCode = getLanguageCodeISO693_1FromISO693_3(s.group(1))
 
     else:
         languageCode = languageCode.lower()
@@ -156,13 +156,15 @@ def treatPageByName(pageName):
         PageBegin = page1.get(get_redirect=True)
     # à faire : 3e tentative en retirant les suffixes numériques (ex : File:De-aber2.ogg)
 
+    prononciation = u''
+    '''
+    TODO: getPronunciationFromArticle()
     regex = ur'{{pron\|[^\}|]*\|' + languageCode + u'}}'
     if re.compile(regex).search(PageBegin):
-        prononciation = PageBegin[re.search(regex,PageBegin).start()+len(u'{{pron|'):re.search(regex,PageBegin).end()-len(u'|'+languageCode+u'}}')]
-    else:
-        prononciation = u''
+        prononciation = PageBegin[re.search(regex, PageBegin).start()+len(u'{{pron|'):re.search(regex,PageBegin).end()-len(u'|'+languageCode+u'}}')]
     if debugLevel > 1: print prononciation.encode(config.console_encoding, 'replace')
-    
+    '''
+
     if debugLevel > 1: print u' Mot du Wiktionnaire : ' + word.encode(config.console_encoding, 'replace')
     Son = pageName[len(u'File:'):]
     if PageBegin.find(Son) != -1 or PageBegin.find(Son[:1].lower() + Son[1:]) != -1 or PageBegin.find(Son.replace(u' ', u'_')) != -1 or PageBegin.find((Son[:1].lower() + Son[1:]).replace(u' ', u'_')) != -1:
