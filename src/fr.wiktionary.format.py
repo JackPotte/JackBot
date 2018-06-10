@@ -1681,9 +1681,10 @@ def treatPageByName(pageName):
 
         if listHomophons:
             languageSection, hStart, hEnd = getLanguageSection(pageContent, 'fr')
-            homophons, hStart, hEnd = getSection(languageSection, u'homophones')
-            if debugLevel > 1: raw_input(homophons.encode(config.console_encoding, 'replace'))
-            outputFile.write((homophons.replace(u'==== {{S|homophones|fr}} ====\n', u'').replace(u'=== {{S|homophones|fr}} ===\n', u'')).encode(config.console_encoding, 'replace'))
+            if languageSection is not None:
+                homophons, hStart, hEnd = getSection(languageSection, u'homophones')
+                if debugLevel > 1: raw_input(homophons.encode(config.console_encoding, 'replace'))
+                outputFile.write((homophons.replace(u'==== {{S|homophones|fr}} ====\n', u'').replace(u'=== {{S|homophones|fr}} ===\n', u'')).encode(config.console_encoding, 'replace'))
             return
 
         if debugLevel > 0: print u'Conversion vers {{S}}'
@@ -3869,7 +3870,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:"mythologie|fr|myt=grecque"')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:hi', afterPage = afterPage)
+            p.pagesByLink(u'Template:clé de tri', afterPage = afterPage)
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             fixOldTemplates = True
             if len(sys.argv) > 2:
@@ -3877,7 +3878,7 @@ def main(*args):
             else:
                 listHomophons = True
                 outputFile = open(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', 'a')
-                p.pagesByCat(u'Mots ayant des homophones en français', afterPage = afterPage, recursive = False)
+                p.pagesByCat(u'Mots ayant des homophones en français', afterPage = 'golgot', recursive = False)
                 outputFile.close()
                 #p.pagesByCat(u'Appels de modèles incorrects:abréviation', afterPage = afterPage, recursive = False, namespaces = [14])
         elif sys.argv[1] == u'-redirects':
