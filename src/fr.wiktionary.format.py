@@ -2708,7 +2708,7 @@ def treatPageByName(pageName):
                             pageContent = finalPageContent2 + pageContent[delta:]
 
                     elif debugLevel == 0 and pageContent.find(u'S|erreur|' + languageCode) == -1 and pageContent.find(u'S|faute|' + languageCode) == -1 \
-                     and languageCode != u'conv' and pageName[:1] != u'-' and pageName[-1:] != u'-': #and pageName != u'six':
+                     and languageCode != u'conv' and pageName[:1] != u'-' and pageName[-1:] != u'-' and not ':' in pageName:
                         if debugLevel > 0: print u' Anagrammes pour ' + languageCode
                         if pageContent.find(u'{{S|anagr') == -1 and pageName.find(u' ') == -1 and len(pageName) <= anagramsMaxLength:
                             anagrammes = anagram(pageName)
@@ -3857,9 +3857,8 @@ def main(*args):
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
-                # Homophones sans article ne contient pas {{S|homophones + homophones en plusieurs liens internes
-                regex = ur'{{S\|homophones\|fr}} ====\n(?:\* *\[\[([^\]]+)\]\]\n)*'
-            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex, findAll = True)
+                regex = ur'{{S\|homophones|fr}}^(?:\n=)+{{trad\-début'
+            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
             #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{pron\|[^\|]*v[^\|]\|fr}}', titleInclude = u'w')
 
         elif sys.argv[1] == u'-u':
