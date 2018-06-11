@@ -3870,7 +3870,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:"mythologie|fr|myt=grecque"')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = afterPage)
+            p.pagesByLink(u'Template:clé de tri', afterPage = 'τίγρη')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             fixOldTemplates = True
             if len(sys.argv) > 2:
@@ -3878,7 +3878,7 @@ def main(*args):
             else:
                 listHomophons = True
                 outputFile = open(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', 'a')
-                p.pagesByCat(u'Mots ayant des homophones en français', afterPage = 'golgot', recursive = False)
+                p.pagesByCat(u'Mots ayant des homophones en français', afterPage = '', recursive = False)
                 outputFile.close()
                 #p.pagesByCat(u'Appels de modèles incorrects:abréviation', afterPage = afterPage, recursive = False, namespaces = [14])
         elif sys.argv[1] == u'-redirects':
