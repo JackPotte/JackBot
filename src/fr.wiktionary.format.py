@@ -1379,6 +1379,7 @@ Modele.append(u'œnologie')
 
 limit7 = len(Modele)
 # Code langue quoi qu'il arrive
+Modele.append(u'...')
 Modele.append(u'ébauche-syn')
 Modele.append(u'non standard')
 Modele.append(u'ébauche-trans')
@@ -1388,7 +1389,7 @@ Modele.append(u'ébauche-déf')
 Modele.append(u'ébauche-exe')
 Modele.append(u'ébauche-pron')
 Modele.append(u'ébauche')
-Modele.append(u'...')
+Modele.append(u'Région ?')
 
 limit8 = len(Modele)
 # Code langue si étymologie
@@ -2278,6 +2279,8 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'{{Valence|ca}}', u'{{valencien}}')
         pageContent = pageContent.replace(u'{{abrév|', u'{{abréviation|')
         pageContent = pageContent.replace(u'{{acron|', u'{{acronyme|')
+        pageContent = pageContent.replace(u'{{cours d\'eau', u'{{cours d’eau')
+
         regex = ur"(\n: *(?:'*\([^)]+\)'*)? *(?:{{[^)]+}})? *(?:{{[^)]+}})? *{{abréviation\|[^}]*)\|m=1}} de([ '])"
         pageContent = re.sub(regex, ur'\1}} De\2', pageContent)
         regex = ur"(\n: *(?:'*\([^)]+\)'*)? *(?:{{[^)]+}})? *(?:{{[^)]+}})? *{{abréviation)\|m=1(\|[^}]*)}} de([ '])"
