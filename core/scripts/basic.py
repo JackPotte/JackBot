@@ -31,7 +31,7 @@ The following parameters are supported:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: c39804e71ee1822e78ea1c5e396d64f08228447c $'
+__version__ = '$Id$'
 #
 
 import pywikibot

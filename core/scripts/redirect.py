@@ -80,7 +80,7 @@ and arguments can be:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: c44ae5f81a69cdde3be9d2ba59165f4018186043 $'
+__version__ = '$Id$'
 #
 
 import datetime

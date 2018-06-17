@@ -14,7 +14,7 @@ from __future__ import absolute_import, unicode_literals
 #
 # Distributed under the terms of the MIT license.
 #
-__version__ = '$Id: 1cfe2dfb977a71cdd71e07ab4f625c13528ae4d7 $'
+__version__ = '$Id$'
 #
 
 import sys

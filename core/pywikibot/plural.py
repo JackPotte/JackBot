@@ -8,7 +8,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: f010125fabe2c03803f66e662c88170f3df0bd51 $'
+__version__ = '$Id$'
 #
 
 plural_rules = {

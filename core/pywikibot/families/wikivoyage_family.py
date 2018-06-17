@@ -10,7 +10,7 @@ from __future__ import absolute_import, unicode_literals
 
 from pywikibot import family
 
-__version__ = '$Id: 97b1e7aa360688ca7ef7a0ae3bcca2dff2d3d23f $'
+__version__ = '$Id$'
 
 
 class Family(family.SubdomainFamily, family.WikimediaFamily):

@@ -83,7 +83,7 @@ UserWarning: warnings targetted at users
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 921ce86ad010c7fa9f97439f16f180434c924318 $'
+__version__ = '$Id$'
 
 from pywikibot.tools import (
     # __ to avoid conflict with ModuleDeprecationWrapper._deprecated

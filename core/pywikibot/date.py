@@ -12,7 +12,7 @@
 # Distributed under the terms of the MIT license.
 #
 from __future__ import absolute_import, division, unicode_literals
-__version__ = '$Id: c1e2a49a732c01fc239fed956c0d9c75aa52ad31 $'
+__version__ = '$Id$'
 #
 
 import calendar

@@ -164,7 +164,7 @@ badwords at all but can be used for some bad-nickname.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 08b82047ff547caaad807bf2f47a6360a9854da0 $'
+__version__ = '$Id$'
 #
 
 import codecs

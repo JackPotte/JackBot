@@ -62,7 +62,7 @@ Furthermore, the following command line parameters are supported:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 73d3f27144103b238ca80a9790cff2aa2325064b $'
+__version__ = '$Id$'
 #
 
 import codecs

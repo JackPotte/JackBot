@@ -59,7 +59,7 @@ For example to go through all categories:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: fc710ae7e4cb68466e9528fade99b8d1552ec1e3 $'
+__version__ = '$Id$'
 #
 
 import re

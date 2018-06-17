@@ -343,7 +343,7 @@ that you have to break it off, use "-continue" next time.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: de2b3d803763caf8c2ceae245fce22d04d3b5078 $'
+__version__ = '$Id$'
 #
 
 import codecs

@@ -10,7 +10,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 59f34160335338712db5c56fc6f67c22cc2a7f04 $'
+__version__ = '$Id$'
 #
 
 import codecs

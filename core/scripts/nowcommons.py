@@ -52,7 +52,7 @@ Please fix these if you are capable and motivated:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 91f213db116a00f0869b8f8199cfc9fc9567fc37 $'
+__version__ = '$Id$'
 #
 
 import sys

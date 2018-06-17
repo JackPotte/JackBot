@@ -32,7 +32,7 @@ to show warnings about deprecated methods:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 8e3b9d434a033e479e62f169047be6ab3cde6076 $'
+__version__ = '$Id$'
 #
 
 import codecs

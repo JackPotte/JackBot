@@ -7,7 +7,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 07eda63d68846e9116bfebd6f55b600ce3e7983b $'
+__version__ = '$Id$'
 
 from pywikibot import family
 from pywikibot.tools import deprecated

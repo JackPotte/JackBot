@@ -67,7 +67,7 @@ Syntax example:
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 97cd2c8bb171fb73cbb8d057b7bc8e1ff427354d $'
+__version__ = '$Id$'
 #
 
 import datetime

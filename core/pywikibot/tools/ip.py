@@ -7,7 +7,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 0b2a99f04430f2ae3ff7a2c8eb0e356616f5f4d9 $'
+__version__ = '$Id$'
 
 import re
 import sys

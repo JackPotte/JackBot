@@ -62,7 +62,7 @@ character.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 509f6bb967710db783a1a8ee4fbd165af506a6cb $'
+__version__ = '$Id$'
 #
 
 import codecs

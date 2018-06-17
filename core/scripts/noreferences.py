@@ -40,7 +40,7 @@ a list of affected articles
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: ec98b799ea65fb2cd3883187a4683ac0d5989379 $'
+__version__ = '$Id$'
 #
 
 import re

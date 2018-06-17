@@ -95,7 +95,7 @@ Options (may be omitted):
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: e6c0ca46dc466f72ff50173d4d36614f5aec5725 $'
+__version__ = '$Id$'
 #
 import datetime
 import locale

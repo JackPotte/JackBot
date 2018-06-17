@@ -88,7 +88,7 @@ right parameter.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 7b22ade842fe243bb6876eaae5f4b75ca62fe426 $'
+__version__ = '$Id$'
 #
 
 import collections

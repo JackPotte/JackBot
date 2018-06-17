@@ -56,7 +56,7 @@ but 'p' must be included.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: e88259bccbbf4e9fee7055b03f0312a53bfcfdde $'
+__version__ = '$Id$'
 #
 
 import pywikibot

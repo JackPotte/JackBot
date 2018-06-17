@@ -7,7 +7,7 @@
 # Distributed under the terms of the MIT license.
 #
 from __future__ import absolute_import, unicode_literals
-__version__ = '$Id: 4de8a4768bb5b795ff542fb346b3a223cf34e5f7 $'
+__version__ = '$Id$'
 
 import codecs
 import os

@@ -46,7 +46,7 @@ Please check every article you change.
 #
 from __future__ import absolute_import, unicode_literals
 
-__version__ = '$Id: 82dba5bb319492c6149da928a411c128e59deddd $'
+__version__ = '$Id$'
 #
 
 import re

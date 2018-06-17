@@ -9,7 +9,7 @@ from __future__ import absolute_import, unicode_literals
 
 from pywikibot import family
 
-__version__ = '$Id: fa6cbf19a9457ee547e431962fca3dfe30b8a927 $'
+__version__ = '$Id$'
 
 
 # The Wikimedia family that is known as Wikinews

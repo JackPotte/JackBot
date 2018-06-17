@@ -1627,7 +1627,7 @@ def treatPageByName(pageName):
     if pageName[-3:] == '.js': return
     if pageName.find(u'’') != -1:
         page = Page(site, pageName.replace(u'’', u'\''))
-        if not page.exists():
+        if not page.exists() and page.namespace() == 0:
             if debugLevel > 0: print u'Création d\'une redirection apostrophe'
             savePage(page, u'#REDIRECT[[' + pageName + ']]', u'Redirection pour apostrophe')
 
@@ -2097,7 +2097,7 @@ def treatPageByName(pageName):
             pageContent = pageContent.replace(u'{{reverlanisation|fr}}', u'{{reverlanisation}}')
             pageContent = pageContent.replace(u'{{verlan|fr}}', u'{{verlan}}')
 
-        languageCodes = [u'fro', u'frm']
+        languageCodes = [u'fc', u'fro', u'frm', u'pt', u'pcd']
         for l in languageCodes:
             regex = ur'(\|' + l + ur'}} ===\n{{)fr(\-rég)'
             if re.search(regex, pageContent):
@@ -2105,9 +2105,13 @@ def treatPageByName(pageName):
         regex = ur'\n{{fro\-rég[^}]*}}'
         pageContent = re.sub(regex, ur'', pageContent)
 
-        regex = ur'(\|en}} ===\n{{)fr(\-rég)'
+        regex = ur'(\|en}} ===\n{{)fr\-rég'
         if re.search(regex, pageContent):
-            pageContent = re.sub(regex, ur'\1en-nom\2', pageContent)
+            pageContent = re.sub(regex, ur'\1en-nom-rég', pageContent)
+
+        regex = ur'(\|es}} ===\n{{)fr\-rég'
+        if re.search(regex, pageContent):
+            pageContent = re.sub(regex, ur'\1es-rég-voy', pageContent)
 
         while re.compile('{{T\|.*\n\n\*[ ]*{{T\|').search(pageContent):
             i1 = re.search(u'{{T\|.*\n\n\*[ ]*{{T\|', pageContent).end()
@@ -3879,7 +3883,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/\{\{fr-rég/ -incategory:français')
+                p.pagesBySearch(u'insource:/\{\{fr-rég/ -incategory:français', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:clé de tri', afterPage = 'τίγρη')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
