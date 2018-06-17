@@ -497,6 +497,7 @@ Modele.append(u'astronomie')
 Modele.append(u'astrophysique')
 Modele.append(u'athlé')
 Modele.append(u'athlétisme')
+Modele.append(u'atomes')
 Modele.append(u'audiovis')
 Modele.append(u'audiovisuel')
 Modele.append(u'automo')
@@ -2096,7 +2097,17 @@ def treatPageByName(pageName):
             pageContent = pageContent.replace(u'{{reverlanisation|fr}}', u'{{reverlanisation}}')
             pageContent = pageContent.replace(u'{{verlan|fr}}', u'{{verlan}}')
 
-            pageContent = pageContent.replace(u'mythologie|fr|myt=grecque', u'mythologie grecque|fr')
+        languageCodes = [u'fro', u'frm']
+        for l in languageCodes:
+            regex = ur'(\|' + l + ur'}} ===\n{{)fr(\-rég)'
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur'\1' + l + ur'\2', pageContent)
+        regex = ur'\n{{fro\-rég[^}]*}}'
+        pageContent = re.sub(regex, ur'', pageContent)
+
+        regex = ur'(\|en}} ===\n{{)fr(\-rég)'
+        if re.search(regex, pageContent):
+            pageContent = re.sub(regex, ur'\1en-nom\2', pageContent)
 
         while re.compile('{{T\|.*\n\n\*[ ]*{{T\|').search(pageContent):
             i1 = re.search(u'{{T\|.*\n\n\*[ ]*{{T\|', pageContent).end()
@@ -2769,10 +2780,11 @@ def treatPageByName(pageName):
                         translationSection = False
 
                         if languageCode is None:
-                            languageCode = pageContent[endPosition+1+len(section)+1:pageContent.find('}}')]
-                            if debugLevel > 0: print u'  ajout du {{langue|' + languageCode + u'}} manquant'
-                            pageContent = '== {{langue|' + languageCode + u'}} ==\n' + finalPageContent[finalPageContent.rfind('==='):] + pageContent
-                            finalPageContent = finalPageContent[:finalPageContent.rfind('===')]
+                            # TODO: gérer les {{S|étymologie}} en milieu d'article
+                            languageCode = pageContent[endPosition+1+len(section)+1:pageContent.find('}}')].replace(u'|flexion', u'') #TODO: num=, genre=...
+                            summary = summary + u' ajout du {{langue|' + languageCode + u'}} manquant'
+                            pageContent = '== {{langue|' + languageCode + u'}} ==\n' + finalPageContent[finalPageContent.find('==='):] + pageContent
+                            finalPageContent = finalPageContent[:finalPageContent.find('===')]
                             backward = True
                             break
 
@@ -3867,7 +3879,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:"mythologie|fr|myt=grecque"')
+                p.pagesBySearch(u'insource:/\{\{fr-rég/ -incategory:français')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:clé de tri', afterPage = 'τίγρη')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
