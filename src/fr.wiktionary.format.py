@@ -3888,7 +3888,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:/\{\{fr-rég/ -incategory:français', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = 'τίγρη')
+            p.pagesByLink(u'Template:clé de tri', afterPage = 'phrase-clé')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             fixOldTemplates = True
             if len(sys.argv) > 2:
