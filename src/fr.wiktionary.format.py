@@ -2044,7 +2044,7 @@ def treatPageByName(pageName):
                 regex = ur'{{pron\|kw[^}\|]+\|fr}}'
                 if re.search(regex, pageContent):
                     pageContent = addCategory(pageContent, u'fr', u'qu prononcés /kw/ en français')
-            if pageName[:2] == u'qu':
+            if pageName[:2] == u'qu' and pageName[:4] != u'quoi':
                 regex = ur'{{fr\-rég\|kw[^}\|]+}}'
                 if re.search(regex, pageContent):
                     pageContent = addCategory(pageContent, u'fr', u'qu prononcés /kw/ en français')
