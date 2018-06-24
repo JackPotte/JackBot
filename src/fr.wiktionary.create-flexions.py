@@ -90,9 +90,15 @@ def treatPageByName(pageName):
                 print template[m].encode(config.console_encoding, 'replace')
                 print pageContent.find(template[m])
                 
+            # Vérification que la langue en cours est bien la langue du modèle
+            pageContent_till_template = pageContent[:pageContent.find(template[m])]
+            currentLanguage = re.findall(ur'{{langue\|([^}]+)}}', pageContent)[-1]
+            if currentLanguage != languageCode:
+                if debugLevel > 0: print u' fr-xxx en section étrangère'
+                break
+                
             # Parcours de la page pour chaque occurence du modèle
-            nature = pageContent[:pageContent.find(template[m])]
-            nature = nature[nature.rfind(u'{{S|')+len(u'{{S|'):]
+            nature = pageContent_till_template[nature.rfind(u'{{S|')+len(u'{{S|'):]
             nature = nature[:nature.find(u'|')]
             if debugLevel > 0:
                 try:
