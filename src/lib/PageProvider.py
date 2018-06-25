@@ -36,7 +36,8 @@ class PageProvider:
                 self.treatPage(html2Unicode(pageName))
             pagesList.close()
 
-    def pagesByXML(self, source, regex = None, site = None, folder = 'dumps', include = None, exclude = None, titleInclude = None, titleExclude = None, namespaces = None):
+    def pagesByXML(self, source, regex = None, site = None, folder = 'dumps', include = None, exclude = None,
+        titleInclude = None, titleExclude = None, namespaces = None, listFalseTranslations = False):
         if site is None: site = self.site
         if self.debugLevel > 1: print u'pagesByXML'
         if not source:
@@ -55,6 +56,12 @@ class PageProvider:
         dump = xmlreader.XmlDump(folder + '/' + fileName)
         parser = dump.parse()
         for entry in parser:
+            if listFalseTranslations:
+                for l in [u'frm', u'fro']:
+                    sectionPosition = entry.text.find(u'{{langue|' + l + u'}}')
+                    if sectionPosition != -1 and sectionPosition < entry.text.find(u'{{S|traductions}}'):
+                        self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+
             if not namespaces and entry.title.find(u':') == -1:
                 pageContent = entry.text
                 if titleInclude:

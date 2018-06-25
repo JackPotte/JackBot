@@ -55,6 +55,7 @@ treatCategories = False
 fixGenders = True
 waitAfterHumans = True
 listHomophons = False
+listFalseTranslations = False
 outputFile = ''
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
@@ -1777,7 +1778,17 @@ def treatPageByName(pageName):
         pageContent = re.sub(ur'{{S\| ?voir( aussi)?\|?[a-z ]*}}', u'{{S|voir aussi}}', pageContent)
         pageContent = pageContent.replace(u'==== {{S|phrases|fr}} ====', u'==== {{S|phrases}} ====')
 
-        #TODO: traiter tous les templates
+        regex = ur'({{langue\|(?!fr}).*}[^€]*)\n=* *{{S\|traductions}} *=*\n*{{trad\-début}}\n{{ébauche\-trad}}\n{{trad\-fin}}'
+        if re.search(regex, pageContent):
+            pageContent = re.sub(regex, ur'\1', pageContent)
+            summary = summary + u', retrait de {{S|traductions}}'
+
+        regex = ur'({{langue\|(?!fr}).*}[^€]*)\n=* *{{S\|traductions}} *=*\n*{{\(}}\n{{ébauche\-trad}}\n{{\)}}'
+        if re.search(regex, pageContent):
+            pageContent = re.sub(regex, ur'\1', pageContent)
+            summary = summary + u', retrait de {{S|traductions}}'
+
+        #TODO: traiter toutes les paires catégorie / templates
         if u'{{argot|fr}}' in pageContent:
             pageContent = re.sub(ur'\n\[\[Catégorie:Argot en français\]\]', ur'', pageContent)
 
@@ -3840,7 +3851,7 @@ p = PageProvider(treatPageByName, site, debugLevel)
 setGlobals(debugLevel, site, username)
 setGlobalsWiktionary(debugLevel, site, username)
 def main(*args):
-    global waitAfterHumans, fixOldTemplates, listHomophons, outputFile, siteLanguage, siteFamily
+    global waitAfterHumans, fixOldTemplates, listHomophons, outputFile, siteLanguage, siteFamily, listFalseTranslations
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
         afterPage = u''
@@ -3876,8 +3887,8 @@ def main(*args):
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
-                regex = ur'{{S\|homophones|fr}}^(?:\n=)+{{trad\-début'
-            p.pagesByXML(siteLanguage + siteFamily + '.*xml', regex = regex)
+                #regex = ur'{{S\|homophones|fr}}^(?:\n=)+{{trad\-début'
+                p.pagesByXML(siteLanguage + siteFamily + '.*xml')
             #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{pron\|[^\|]*v[^\|]\|fr}}', titleInclude = u'w')
 
         elif sys.argv[1] == u'-u':
@@ -3888,17 +3899,18 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:/\{\{fr-rég/ -incategory:français', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = 'švédština')
+            p.pagesByLink(u'Template:clé de tri', afterPage = 'auto-réverteraient')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
-            fixOldTemplates = True
             if len(sys.argv) > 2:
-                p.pagesByCat(sys.argv[2].decode(config.console_encoding, 'replace'))
+                if sys.argv[2] == u'listFalseTranslations':
+                    listFalseTranslations = True
+                    p.pagesByCat(u'Catégorie:Wiktionnaire:Traductions manquantes sans langue précisée')
+                else:
+                    p.pagesByCat(sys.argv[2].decode(config.console_encoding, 'replace'))
             else:
-                listHomophons = True
-                outputFile = open(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', 'a')
-                p.pagesByCat(u'Mots ayant des homophones en français', afterPage = '', recursive = False)
-                outputFile.close()
-                #p.pagesByCat(u'Appels de modèles incorrects:abréviation', afterPage = afterPage, recursive = False, namespaces = [14])
+                fixOldTemplates = True
+                p.pagesByCat(u'Appels de modèles incorrects:abréviation', afterPage = afterPage, recursive = False, namespaces = [14])
+                
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
