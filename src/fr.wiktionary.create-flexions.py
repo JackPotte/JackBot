@@ -92,7 +92,7 @@ def treatPageByName(pageName):
                 
             # Vérification que la langue en cours est bien la langue du modèle
             pageContent_till_template = pageContent[:pageContent.find(template[m])]
-            currentLanguage = re.findall(ur'{{langue\|([^}]+)}}', pageContent)[-1]
+            currentLanguage = re.findall(ur'{{langue\|([^}]+)}}', pageContent_till_template)[-1]
             if currentLanguage != languageCode:
                 if debugLevel > 0: print u' fr-xxx en section étrangère'
                 break
