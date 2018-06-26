@@ -112,7 +112,7 @@ def treatPage(line):
     if definition.count(u'"') == 1: definition = definition.replace(u'"', u'')
     if definition[-1:] == '.': definition = definition[:-1]
     definition += reference + u'.\n'
-    if l[i['Exemples 1']] != '': definition += u"\n#* ''" + l[i['Exemples 1']] + u"''\n"
+    if l[i['Exemples 1']] != '': definition += u"#* ''" + l[i['Exemples 1']] + u"''\n"
 
     if l[i['Définition 2']] != '':
         definition += u'# ' + domain
@@ -122,7 +122,7 @@ def treatPage(line):
         if definition.count(u'"') == 1: definition = definition.replace(u'"', u'')
         if definition[-1:] == '.': definition = definition[:-1]
         definition += reference + u'.\n'
-        if l[i['Exemples 2']] != '': definition += u"\n#* ''" + l[i['Exemples 2']] + u"''\n"
+        if l[i['Exemples 2']] != '': definition += u"#* ''" + l[i['Exemples 2']] + u"''\n"
 
         if l[i['Définition 3']] != '':
             definition += u'# ' + domain
@@ -132,7 +132,7 @@ def treatPage(line):
             if definition.count(u'"') == 1: definition = definition.replace(u'"', u'')
             if definition[-1:] == '.': definition = definition[:-1]
             definition += reference + u'.\n'
-            if l[i['Exemples 3']] != '': definition += u"\n#* ''" + l[i['Exemples 3']] + u"''\n"
+            if l[i['Exemples 3']] != '': definition += u"#* ''" + l[i['Exemples 3']] + u"''\n"
 
     currentPageContent = getContentFromPage(page, 'All')
     pageContent = currentPageContent
@@ -152,18 +152,27 @@ def treatPage(line):
             pageContent += u' {{m}}'
         if l[i['Catégorie grammaticale']][-2:] == 'f.':
             pageContent += u' {{f}}'
-        pageContent += u'\n' + definition
+        pageContent += u'\n' + definition.replace(u'  ', u', ')
         if l[i['Synonymes 1']] != '':
             pageContent += u'\n==== {{S|synonymes}} ====\n'
-            pageContent += u'* [[' + l[i['Synonymes 1']] + u']]\n'
+            synonyms = l[i['Synonymes 1']].split(u';')
+            for s in synonyms:
+                pageContent += u'* [[' + trim(s) + u']]\n'
             if l[i['Synonymes 2']] != '':
-                pageContent += u'* [[' + l[i['Synonymes 2']] + u']] (2)\n'
+                synonyms = l[i['Synonymes 2']].split(u';')
+                for s in synonyms:
+                    pageContent += u'* [[' + trim(s) + u']] (2)\n'
         elif l[i['Synonymes 2']] != '':
-            pageContent += u'\n==== {{S|synonymes}} ====\n'
-            pageContent += u'* [[' + l[i['Synonymes 2']] + u']] (2)\n'
+            if l[i['Synonymes 2']] != '':
+                synonyms = l[i['Synonymes 2']].split(u';')
+                for s in synonyms:
+                    pageContent += u'* [[' + trim(s) + u']] (2)\n'
         if l[i['Termes associés 1']] != '': 
             pageContent += u'\n==== {{S|vocabulaire}} ====\n'
-            pageContent += u'* [[' + l[i['Termes associés 1']] + u']]\n'
+            terms = l[i['Termes associés 1']].split(u';')
+            for t in terms:
+                print t
+                pageContent += addLine(pageContent, languageCode, 'vocabulaire', u'* [[' + trim(t) + u']]')
         pageContent += u'\n==== {{S|traductions}} ====\n'
         pageContent += u'{{trad-début}}\n'
         pageContent += u'{{ébauche-trad}}\n'
@@ -174,15 +183,25 @@ def treatPage(line):
         savePage(page, pageContent, summary)
         return
 
-    if currentPageContent.find(domain) != -1:
+    if currentPageContent.find(domain) != -1 or currentPageContent.find(u'{{Import:CFC') != -1 or \
+        pageName in ['cahier', 'couleurs complémentaires', 'demi-teintes', 'droits d’auteur']:
         if debugLevel > 0: print u' Définition déjà présente'
         return
 
     if l[i['Sigle']] == 'O': pageContent = addLine(pageContent, languageCode, 'étymologie', etymology)
     pageContent = addLine(pageContent, languageCode, nature, definition)
-    if l[i['Synonymes 1']] != '': pageContent = addLine(pageContent, languageCode, 'synonymes', l[i['Synonymes 1']])
-    if l[i['Synonymes 2']] != '': pageContent = addLine(pageContent, languageCode, 'synonymes', l[i['Synonymes 2']])
-    if l[i['Termes associés 1']] != '': pageContent = addLine(pageContent, languageCode, 'vocabulaire', l[i['Termes associés 1']])
+    if l[i['Synonymes 1']] != '':
+        synonyms = l[i['Synonymes 1']].split(u';')
+        for s in synonyms:
+            pageContent = addLine(pageContent, languageCode, 'synonymes', u'* [[' + trim(s) + u']] {{cartographie|nocat=1}} (1)')
+    if l[i['Synonymes 2']] != '':
+        synonyms = l[i['Synonymes 2']].split(u';')
+        for s in synonyms:
+            pageContent = addLine(pageContent, languageCode, 'synonymes', u'* [[' + trim(s) + u']] {{cartographie|nocat=1}} (2)')
+    if l[i['Termes associés 1']] != '':
+        terms = l[i['Termes associés 1']].split(u';')
+        for t in terms:
+            pageContent = addLine(pageContent, languageCode, 'vocabulaire', u'* [[' + trim(t) + u']] {{cartographie|nocat=1}}')
     pageContent = addLine(pageContent, languageCode, 'références', u'{{Références}}')
 
     finalPageContent = pageContent
