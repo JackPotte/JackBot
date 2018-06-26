@@ -2111,9 +2111,9 @@ def treatPageByName(pageName):
 
         languageCodes = [u'fc', u'fro', u'frm', u'pt', u'pcd']
         for l in languageCodes:
-            regex = ur'(\|' + l + ur'}} ===\n{{)fr(\-rég)'
+            regex = ur'(\|' + l + ur'(:?\|num=[0-9])?}} ===\n{{)fr(\-rég)'
             if re.search(regex, pageContent):
-                pageContent = re.sub(regex, ur'\1' + l + ur'\2', pageContent)
+                pageContent = re.sub(regex, ur'\1' + l + ur'\3', pageContent)
         regex = ur'\n{{fro\-rég[^}]*}}'
         pageContent = re.sub(regex, ur'', pageContent)
 
@@ -2858,20 +2858,24 @@ def treatPageByName(pageName):
                     
                     rawTerm = pageContent[endPosition+1:pageContent.find('}}')]
                     term = trim(rawTerm.replace('[[', '').replace(']]', ''))
-                    if term.find('|') != -1: term = term[:term.find('|')]
-                    if debugLevel > 0: print " terminologie ou régionalisme 1 = " + term
-                    templatePage = getContentFromPageName(u'Template:' + term, allowedNamespaces = [u'Template:'])
-                    if templatePage.find(u'Catégorie:Modèles de domaine') == -1 and templatePage.find(u'{{région|') == -1 and term[:1] != term[:1].lower():
-                        term = term[:1].lower() + term[1:]
-                        if debugLevel > 0: print u' terminologie ou régionalisme 2 = ' + term
-                        templatePage = getContentFromPageName(u'Template:' + term, allowedNamespaces = [u'Template:'])
-                    if templatePage.find(u'Catégorie:Modèles de domaine') != -1 or templatePage.find(u'{{région|') != -1:
-                        if debugLevel > 0: print u'  substitution par le modèle existant'
-                        pageContent = '{{' + term + pageContent[endPosition+1+len(rawTerm):]
-                        finalPageContent = finalPageContent[:-2]
-                        backward = True
-                    else:
+                    if term.find('|') != -1: term = trim(term[:term.find('|')])
+                    if debugLevel > 0: print u' terminologie ou régionalisme'
+                    if term == u'':
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
+                    else:
+                        if debugLevel > 0: print "  1 = " + term
+                        templatePage = getContentFromPageName(u'Template:' + term, allowedNamespaces = [u'Template:'])
+                        if templatePage.find(u'Catégorie:Modèles de domaine') == -1 and templatePage.find(u'{{région|') == -1 and term[:1] != term[:1].lower():
+                            term = term[:1].lower() + term[1:]
+                            if debugLevel > 0: print u'  2 = ' + term
+                            templatePage = getContentFromPageName(u'Template:' + term, allowedNamespaces = [u'Template:'])
+                        if templatePage.find(u'Catégorie:Modèles de domaine') != -1 or templatePage.find(u'{{région|') != -1:
+                            if debugLevel > 0: print u'  substitution par le modèle existant'
+                            pageContent = '{{' + term + pageContent[endPosition+1+len(rawTerm):]
+                            finalPageContent = finalPageContent[:-2]
+                            backward = True
+                        else:
+                            finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
 
 # Templates with language code at second
                 elif currentTemplate in definitionTemplates + etymologyTemplatesWithLanguageAtSecond + [u'pron', u'phon']: # u'lien'
@@ -3897,7 +3901,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/\{\{fr-rég/ -incategory:français', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{S\|[^}]+\|fr[mo][^}]*\}\} ===.?\{\{fr-rég/', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:clé de tri', afterPage = 'auto-réverteraient')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':

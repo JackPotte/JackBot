@@ -80,7 +80,7 @@ def treatPageByName(pageName):
     region = u''
     page1 = Page(siteDest, word)
     try:
-        PageBegin = page1.get()
+        currentPageContent = page1.get()
     except pywikibot.exceptions.NoPage:
         # Retrait d'un éventuel article ou une région dans le nom du fichier
         word1 = word
@@ -143,42 +143,42 @@ def treatPageByName(pageName):
         if word != word1:
             page1 = Page(siteDest, word)
             try:
-                PageBegin = page1.get()
+                currentPageContent = page1.get()
             except pywikibot.exceptions.NoPage:
                 if debugLevel > 0: print u' Page introuvable 1'
                 return
             except pywikibot.exceptions.IsRedirectPage:
-                PageBegin = page1.get(get_redirect=True)
+                currentPageContent = page1.get(get_redirect=True)
         else:
             if debugLevel > 0: print u' Page introuvable 2'
             return
     except pywikibot.exceptions.IsRedirectPage:
-        PageBegin = page1.get(get_redirect=True)
+        currentPageContent = page1.get(get_redirect=True)
     # à faire : 3e tentative en retirant les suffixes numériques (ex : File:De-aber2.ogg)
 
     prononciation = u''
     '''
     TODO: getPronunciationFromArticle()
     regex = ur'{{pron\|[^\}|]*\|' + languageCode + u'}}'
-    if re.compile(regex).search(PageBegin):
-        prononciation = PageBegin[re.search(regex, PageBegin).start()+len(u'{{pron|'):re.search(regex,PageBegin).end()-len(u'|'+languageCode+u'}}')]
+    if re.compile(regex).search(currentPageContent):
+        prononciation = currentPageContent[re.search(regex, currentPageContent).start()+len(u'{{pron|'):re.search(regex,currentPageContent).end()-len(u'|'+languageCode+u'}}')]
     if debugLevel > 1: print prononciation.encode(config.console_encoding, 'replace')
     '''
 
     if debugLevel > 1: print u' Mot du Wiktionnaire : ' + word.encode(config.console_encoding, 'replace')
     Son = pageName[len(u'File:'):]
-    if PageBegin.find(Son) != -1 or PageBegin.find(Son[:1].lower() + Son[1:]) != -1 or PageBegin.find(Son.replace(u' ', u'_')) != -1 or PageBegin.find((Son[:1].lower() + Son[1:]).replace(u' ', u'_')) != -1:
+    if currentPageContent.find(Son) != -1 or currentPageContent.find(Son[:1].lower() + Son[1:]) != -1 or currentPageContent.find(Son.replace(u' ', u'_')) != -1 or currentPageContent.find((Son[:1].lower() + Son[1:]).replace(u' ', u'_')) != -1:
         if debugLevel > 0: print u' Son déjà présent'
         return
-    if PageBegin.find(u'{{langue|' + languageCode) == -1:
+    if currentPageContent.find(u'{{langue|' + languageCode) == -1:
         if debugLevel > 0: print u' Paragraphe absent'
         return
-    PageTemp = PageBegin
+    pageContent = currentPageContent
 
-    PageEnd = addPronunciation(PageTemp, languageCode, u'prononciation', u'* {{écouter|' + region + u'|' + prononciation + u'|lang=' + languageCode + u'|audio=' + Son + u'}}')
+    finalPageContent = addPronunciation(pageContent, languageCode, u'prononciation', u'* {{écouter|' + region + u'|' + prononciation + u'|lang=' + languageCode + u'|audio=' + Son + u'}}')
 
     # Sauvegarde
-    if PageEnd != PageBegin: savePage(page1, PageEnd, summary)
+    if finalPageContent != currentPageContent: savePage(page1, finalPageContent, summary)
 
 
 p = PageProvider(treatPageByName, site, debugLevel)

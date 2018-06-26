@@ -1,4 +1,0 @@
-== {{langue|fr}} ==
-
-=== {{S|&#233;tymologie}} ===
-: {{&#233;bauche-&#233;tym|fr}}
