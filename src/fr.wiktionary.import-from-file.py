@@ -76,6 +76,8 @@ natures[u'n.f.'] = u'nom'
 
 
 def treatPage(line):
+    regex = ur' *(\([^\)]*\)) *'
+    line = re.sub(regex, ur'', line)
     l = line.split(separator)
     l = map(unicode.strip, l)
     pageName = l[i['Terme']]
@@ -83,8 +85,6 @@ def treatPage(line):
     if pageName == '':
         if debugLevel > 0: print 'Ligne vide'
         return
-    regex = ur' *(\([^\)]*\)) *'
-    pageName = re.sub(regex, ur'', pageName)
     pageName = pageName.replace(u'\'', u'’')
     print(pageName.encode(config.console_encoding, 'replace'))
 
@@ -133,6 +133,7 @@ def treatPage(line):
             if definition[-1:] == '.': definition = definition[:-1]
             definition += reference + u'.\n'
             if l[i['Exemples 3']] != '': definition += u"#* ''" + l[i['Exemples 3']] + u"''\n"
+    definition = definition.replace(u'  ', u', ')
 
     currentPageContent = getContentFromPage(page, 'All')
     pageContent = currentPageContent
@@ -152,7 +153,7 @@ def treatPage(line):
             pageContent += u' {{m}}'
         if l[i['Catégorie grammaticale']][-2:] == 'f.':
             pageContent += u' {{f}}'
-        pageContent += u'\n' + definition.replace(u'  ', u', ')
+        pageContent += u' {{pluriel ?|fr}}\n' + definition
         if l[i['Synonymes 1']] != '':
             pageContent += u'\n==== {{S|synonymes}} ====\n'
             synonyms = l[i['Synonymes 1']].split(u';')
@@ -204,7 +205,7 @@ def treatPage(line):
             pageContent = addLine(pageContent, languageCode, 'vocabulaire', u'* [[' + trim(t) + u']] {{cartographie|nocat=1}}')
     pageContent = addLine(pageContent, languageCode, 'références', u'{{Références}}')
 
-    finalPageContent = pageContent
+    finalPageContent = pageContent.replace(u'\n\n\n', u'\n\n')
     if finalPageContent != currentPageContent: savePage(page, finalPageContent, summary)
 
 setGlobals(debugLevel, site, username)
