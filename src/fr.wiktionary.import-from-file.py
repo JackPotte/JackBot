@@ -28,7 +28,11 @@ site = pywikibot.Site(siteLanguage, siteFamily)
 
 languageCode = u'fr'
 domain = u'{{cartographie|' + languageCode + u'}} '
-reference = u'<ref>{{Import:CFC}}</ref>'
+etymology = u': {{cartographie|nocat=1}} {{sigle|fr}}'
+if debugLevel > 0: 
+    reference = u'<ref>{{Import:CFC}}</ref>'
+else:
+    reference = u'<ref>{{Import:CFC|relu=non}}</ref>'
 summary = u'Importation de définition CFC'
 separator = u','
 i = {}
@@ -48,22 +52,27 @@ i['Illustration 1'] = 11        # toujours vide
 i['Commentaires 1'] = 12        # maintenance
 
 i['Définition 2'] = 13
-i['Domaine 2'] = 14
+i['Domaine 2'] = 14         # toujours vide
 i['Section 2'] = 15
 i['Synonymes 2'] = 16
-i['Exemples 2'] = 17
-i['Termes associés 2'] = 18
-i['Illustration 2'] = 19
-i['Commentaires 2'] = 20
+i['Exemples 2'] = 17        # toujours vide
+i['Termes associés 2'] = 18 # brouillon
+i['Illustration 2'] = 19    # toujours vide
+i['Commentaires 2'] = 20    # toujours vide
 
 i['Définition 3'] = 21
-i['Domaine 3'] = 22
-i['Section 3'] = 23
-i['Synonymes 3'] = 24
-i['Exemples 3'] = 25
-i['Termes associés 3'] = 26
-i['Illustration 3'] = 27
-i['Commentaires 3'] = 28
+i['Domaine 3'] = 22         # toujours vide
+i['Section 3'] = 23         # toujours vide
+i['Synonymes 3'] = 24       # toujours vide
+i['Exemples 3'] = 25        # toujours vide
+i['Termes associés 3'] = 26 # toujours vide
+i['Illustration 3'] = 27    # toujours vide
+i['Commentaires 3'] = 28    # toujours vide
+
+natures = {}
+natures[u'adj.'] = u'adjectif'
+natures[u'n.m.'] = u'nom'
+natures[u'n.f.'] = u'nom'
 
 
 def treatPage(line):
@@ -76,43 +85,111 @@ def treatPage(line):
         return
     regex = ur' *(\([^\)]*\)) *'
     pageName = re.sub(regex, ur'', pageName)
+    pageName = pageName.replace(u'\'', u'’')
     print(pageName.encode(config.console_encoding, 'replace'))
-    return
 
     if l[i['Définition 1']] == '':
         if debugLevel > 0: print 'Définition vide'
         return
 
-    page = Page(site, pageName.replace(u'’', u'\''))
-    if not page.exists() and page.namespace() == 0:
-        if debugLevel > 0: print u'Création d\'une redirection apostrophe'
-        savePage(page, u'#REDIRECT[[' + pageName + ']]', u'Redirection pour apostrophe')
-    page = Page(site, pageName)
-    currentPageContent = getContentFromPage(page, 'All')
-    if currentPageContent == 'KO':
-        if debugLevel > 0: print u' Page vide'
+    if l[i['Catégorie grammaticale']] == '':
+        if debugLevel > 0: print 'Nature vide'
         return
+    nature = natures[l[i['Catégorie grammaticale']]]
+    natureTemplate = u'{{S|' + nature + u'|fr'
+
+    if pageName.find(u'’') != -1:
+        page = Page(site, pageName.replace(u'’', u'\''))
+        if not page.exists() and page.namespace() == 0:
+            if debugLevel > 0: print u'Création d\'une redirection apostrophe'
+            savePage(page, u'#REDIRECT[[' + pageName + ']]', u'Redirection pour apostrophe')
+    page = Page(site, pageName)
+
+    definition = u'# ' + domain
+    if l[i['Terme ancien']] == 'O': definition += u'{{vieilli|fr}} '
+    if l[i['Section 1']] != '': definition += u'{{term|' + l[i['Section 1']] + u'}} '
+    definition += l[i['Définition 1']]
+    if definition.count(u'"') == 1: definition = definition.replace(u'"', u'')
+    if definition[-1:] == '.': definition = definition[:-1]
+    definition += reference + u'.\n'
+    if l[i['Exemples 1']] != '': definition += u"\n#* ''" + l[i['Exemples 1']] + u"''\n"
+
+    if l[i['Définition 2']] != '':
+        definition += u'# ' + domain
+        if l[i['Terme ancien']] == 'O': definition += u'{{vieilli|fr}} '
+        if l[i['Section 2']] != '': definition += u'{{term|' + l[i['Section 2']] + u'}} '
+        definition += l[i['Définition 2']]
+        if definition.count(u'"') == 1: definition = definition.replace(u'"', u'')
+        if definition[-1:] == '.': definition = definition[:-1]
+        definition += reference + u'.\n'
+        if l[i['Exemples 2']] != '': definition += u"\n#* ''" + l[i['Exemples 2']] + u"''\n"
+
+        if l[i['Définition 3']] != '':
+            definition += u'# ' + domain
+            if l[i['Terme ancien']] == 'O': definition += u'{{vieilli|fr}} '
+            if l[i['Section 3']] != '': definition += u'{{term|' + l[i['Section 3']] + u'}} '
+            definition += l[i['Définition 3']]
+            if definition.count(u'"') == 1: definition = definition.replace(u'"', u'')
+            if definition[-1:] == '.': definition = definition[:-1]
+            definition += reference + u'.\n'
+            if l[i['Exemples 3']] != '': definition += u"\n#* ''" + l[i['Exemples 3']] + u"''\n"
+
+    currentPageContent = getContentFromPage(page, 'All')
     pageContent = currentPageContent
     finalPageContent = u''
+
+    if currentPageContent == 'KO':
+        if debugLevel > 0: print u' Page vide : création'
+        pageContent = u'== {{langue|fr}} ==\n'
+        pageContent += u'=== {{S|étymologie}} ===\n'
+        pageContent += u'{{ébauche-étym|fr}}\n'
+        if l[i['Sigle']] == 'O':
+            pageContent += etymology + u'\n'
+        pageContent += u'\n'
+        pageContent += u'=== ' + natureTemplate + u'}} ===\n'
+        pageContent += u"'''{{subst:PAGENAME}}'''"
+        if l[i['Catégorie grammaticale']][-2:] == 'm.':
+            pageContent += u' {{m}}'
+        if l[i['Catégorie grammaticale']][-2:] == 'f.':
+            pageContent += u' {{f}}'
+        pageContent += u'\n' + definition
+        if l[i['Synonymes 1']] != '':
+            pageContent += u'\n==== {{S|synonymes}} ====\n'
+            pageContent += u'* [[' + l[i['Synonymes 1']] + u']]\n'
+            if l[i['Synonymes 2']] != '':
+                pageContent += u'* [[' + l[i['Synonymes 2']] + u']] (2)\n'
+        elif l[i['Synonymes 2']] != '':
+            pageContent += u'\n==== {{S|synonymes}} ====\n'
+            pageContent += u'* [[' + l[i['Synonymes 2']] + u']] (2)\n'
+        if l[i['Termes associés 1']] != '': 
+            pageContent += u'\n==== {{S|vocabulaire}} ====\n'
+            pageContent += u'* [[' + l[i['Termes associés 1']] + u']]\n'
+        pageContent += u'\n==== {{S|traductions}} ====\n'
+        pageContent += u'{{trad-début}}\n'
+        pageContent += u'{{ébauche-trad}}\n'
+        pageContent += u'{{trad-fin}}\n'
+        pageContent += u'\n=== {{S|références}} ===\n'
+        pageContent += u'{{Références}}\n'
+
+        savePage(page, pageContent, summary)
+        return
 
     if currentPageContent.find(domain) != -1:
         if debugLevel > 0: print u' Définition déjà présente'
         return
 
-    definition = domain
-    if l[i['Sigle']] != '': definition += l[i['Sigle']] # O / N
-    if l[i['Catégorie grammaticale']] != '': definition += l[i['Catégorie grammaticale']] # adj. / n.m. / n.f
-    if l[i['Terme ancien']] != '': definition += l[i['Terme ancien']] # O / N
-    if l[i['Section 1']] != '': definition += l[i['Section 1']] # {{term|}}
-    if l[i['Définition 1']] != '': definition += l[i['Définition 1']]
-    if l[i['Exemples 1']] != '': definition += l[i['Exemples 1']]
-    if l[i['Synonymes 1']] != '': definition += l[i['Synonymes 1']]
-    if l[i['Termes associés 1']] != '': definition += l[i['Termes associés 1']]
+    if l[i['Sigle']] == 'O': pageContent = addLine(pageContent, languageCode, 'étymologie', etymology)
+    pageContent = addLine(pageContent, languageCode, nature, definition)
+    if l[i['Synonymes 1']] != '': pageContent = addLine(pageContent, languageCode, 'synonymes', l[i['Synonymes 1']])
+    if l[i['Synonymes 2']] != '': pageContent = addLine(pageContent, languageCode, 'synonymes', l[i['Synonymes 2']])
+    if l[i['Termes associés 1']] != '': pageContent = addLine(pageContent, languageCode, 'vocabulaire', l[i['Termes associés 1']])
+    pageContent = addLine(pageContent, languageCode, 'références', u'{{Références}}')
 
-    if debugLevel > 0: raw_input(definition)
+    finalPageContent = pageContent
+    if finalPageContent != currentPageContent: savePage(page, finalPageContent, summary)
 
-    # Sauvegarde
-    if finalPageContent != currentPageContent: savePage(page1, finalPageContent, summary)
+setGlobals(debugLevel, site, username)
+setGlobalsWiktionary(debugLevel, site, username)
 
 def main(*args):
     from lib import html2Unicode

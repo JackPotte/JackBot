@@ -176,8 +176,6 @@ def treatPageByName(pageName):
     pageContent = currentPageContent
 
     finalPageContent = addPronunciation(pageContent, languageCode, u'prononciation', u'* {{écouter|' + region + u'|' + prononciation + u'|lang=' + languageCode + u'|audio=' + Son + u'}}')
-
-    # Sauvegarde
     if finalPageContent != currentPageContent: savePage(page1, finalPageContent, summary)
 
 

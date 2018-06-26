@@ -501,7 +501,7 @@ def removeTemplate(pageContent, template, summary, language = None, inSection = 
     return pageContent, summary
 
 def addLine(pageContent, languageCode, Section, lineContent):
-    d = 1
+    d = 0
     if debugLevel > d:
         pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
         print u'\naddLine into "' + Section + '"'
@@ -522,7 +522,7 @@ def addLine(pageContent, languageCode, Section, lineContent):
             languageSection, startPosition, endPosition = getLanguageSection(pageContent, languageCode)
             if languageSection is None: return pageContent
             sectionsInPage = re.findall(ur"\n=+ *{{S\|?([^}/|]+)([^}]*)}}", languageSection)
-            if debugLevel > d: raw_input(str(sectionsInPage))
+            if debugLevel > d+1: raw_input(str(sectionsInPage))
             o = 0
             while o < len(sectionsInPage) and sectionNumber(sectionsInPage[o][0]) <= sectionToAddNumber:
                 if debugLevel > d: print ' ' + sectionsInPage[o][0] + ' ' + str(sectionNumber(sectionsInPage[o][0]))
@@ -540,8 +540,9 @@ def addLine(pageContent, languageCode, Section, lineContent):
                 return pageContent
 
             if limitSection == Section:
-                if debugLevel > d: print u' ajout dans la sous-section existante "' + Section.encode(config.console_encoding, 'replace') + u'"'
-                print u' (car ' + str(sectionNumber(limitSection)) + u' = ' + str(sectionToAddNumber) + u')\n'
+                if debugLevel > d:
+                    print u' ajout dans la sous-section existante "' + Section + u'"'
+                    print u' (car ' + str(sectionNumber(limitSection)) + u' = ' + str(sectionToAddNumber) + u')\n'
             elif not Section in [u'catégorie', u'clé de tri']:
                 sectionToAdd = u'\n\n' + Niveau[sectionToAddNumber] + u' {{S|' + Section + u'}} ' + Niveau[sectionToAddNumber] + u'\n'
                 if sectionToAddNumber >= sectionNumber(limitSection):
@@ -610,7 +611,7 @@ def addLine(pageContent, languageCode, Section, lineContent):
 
             lineContent = u'\n' + trim(lineContent) + u'\n'
 
-            regex = ur'\n==* *{{S\|'
+            regex = ur'\n?\n==* *{{S\|'
             s = re.search(regex, finalSection)
             if s:
                 if debugLevel > d: print u' ajout avant la sous-section suivante'
