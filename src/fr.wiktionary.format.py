@@ -2031,6 +2031,10 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u']] {{perf}}', u']] {{perf|nocat=1}}')
         pageContent = pageContent.replace(u'{{perf}} / \'\'\'', u'{{perf|nocat=1}} / \'\'\'')
 
+        # Nested template
+        regex = ur'({{écouter\|lang=([^\|]+)\|{{Région \?)}}'
+        pageContent = re.sub(regex, ur'\1|\2}}', pageContent)
+
         if u'{{langue|en}}' in pageContent:
             regex = ur"({{S\|verbe\|en}} *=* *\n'*)to "
             if re.search(regex, pageContent):
@@ -3855,7 +3859,7 @@ p = PageProvider(treatPageByName, site, debugLevel)
 setGlobals(debugLevel, site, username)
 setGlobalsWiktionary(debugLevel, site, username)
 def main(*args):
-    global waitAfterHumans, fixOldTemplates, listHomophons, outputFile, siteLanguage, siteFamily, listFalseTranslations
+    global waitAfterHumans, fixOldTemplates, listHomophons, outputFile, siteLanguage, siteFamily, fixTags, listFalseTranslations
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
         afterPage = u''
@@ -3869,7 +3873,7 @@ def main(*args):
             treatPageByName(u'User:' + username + u'/test unitaire')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             waitAfterHumans = False
-            treatPageByName(u'à loilpé')
+            treatPageByName(u'Aide:Modèles')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
@@ -3891,7 +3895,6 @@ def main(*args):
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
-                #regex = ur'{{S\|homophones|fr}}^(?:\n=)+{{trad\-début'
                 p.pagesByXML(siteLanguage + siteFamily + '.*xml')
             #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{pron\|[^\|]*v[^\|]\|fr}}', titleInclude = u'w')
 
@@ -3904,6 +3907,7 @@ def main(*args):
                 p.pagesBySearch(u'insource:/\{\{S\|[^}]+\|fr[mo][^}]*\}\} ===.?\{\{fr-rég/', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:clé de tri', afterPage = 'auto-réverteraient')
+            p.pagesByLink(u'Template:composé de')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
@@ -3939,8 +3943,8 @@ def main(*args):
                 print u' page à encoder'
                 treatPageByName(sys.argv[1].encode(config.console_encoding, 'replace'))
     else:
-        # Daily:
-        p.pagesByCat(u'Catégorie:Wiktionnaire:Terminologie sans langue précisée', recursive = True)
+        # Nightly treatment:
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Codes langue manquants', recursive = True)
         p.pagesByCat(u'Catégorie:Wiktionnaire:Flexions à vérifier', recursive = True)
         p.pagesByCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée')
         p.pagesByCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet')
