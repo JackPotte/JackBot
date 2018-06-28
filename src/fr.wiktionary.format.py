@@ -2928,12 +2928,12 @@ def treatPageByName(pageName):
                 elif currentTemplate in [u'écouter', u'cf'] + etymologyTemplatesWithLanguageAtLang:
                     if debugLevel > 0: pywikibot.output(u"  Template with lang=: \03{green}" + currentTemplate + u"\03{default}")
                     pageContent2 = pageContent[endPosition+1:]
-                    isTemplateInCodingSection = currentTemplate != u'cf' or (pageContent2.find('}}') > endPosition+1 \
+                    isCategory = currentTemplate != u'cf' or (pageContent2.find('}}') > endPosition+1 \
                         and (pageContent2.find(':') == -1 or pageContent2.find(':') > pageContent2.find('}}')))
-                    if debugLevel > 1: print '  isTemplateInCodingSection: ' + str(isTemplateInCodingSection)
+                    if debugLevel > 1: print '  isCategory: ' + str(isTemplateInCodingSection)
                     if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
                     if (pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}')) and \
-                        isTemplateInCodingSection:
+                        isCategory:
                         if debugLevel > 0: print u'   "lang=" addition'
                         while pageContent2.find('{{') < pageContent2.find('}}') and pageContent2.find('{{') != -1:
                             pageContent2 = pageContent2[pageContent2.find('}}')+2:]
@@ -3922,8 +3922,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:/\{\{S\|[^}]+\|fr[mo][^}]*\}\} ===.?\{\{fr-rég/', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = 'auto-réverteraient')
-            p.pagesByLink(u'Template:composé de')
+            p.pagesByLink(u'Template:clé de tri')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
