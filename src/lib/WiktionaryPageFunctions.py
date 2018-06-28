@@ -205,7 +205,7 @@ def getFlexionTemplate(pageName, language, nature = None):
             if not s.group(3) is None: print u' ' + s.group(3) # Number
             if not s.group(4) is None: print u' ' + s.group(4) # Template
         flexionTemplate = s.group(4)
-    if debugLevel > 0: pywikibot.output(u" flexionTemplate found: \03{red}" + flexionTemplate + "\03{default}")
+    if debugLevel > 0: pywikibot.output(u" flexionTemplate found: \03{green}" + flexionTemplate + "\03{default}")
     # TODO
     if flexionTemplate.find('{{') != -1: flexionTemplate = u''
     if flexionTemplate.find(u'-inv') != -1: flexionTemplate = u''
@@ -232,14 +232,14 @@ def getFlexionTemplateFromLemma(pageName, language, nature):
     return FlexionTemplate
 
 def getPageLanguages(pageContent):
-    if debugLevel > 0: print u'\ngetPageLanguages()'
+    if debugLevel > 1: print u'\ngetPageLanguages()'
     regex = ur'{{langue\|([^}]+)}}'
     s = re.findall(regex, pageContent, re.DOTALL)
     if s: return s
     return []
 
 def getLanguageSection(pageContent, languageCode = 'fr'):
-    if debugLevel > 0: print u'\ngetLanguageSection(' + languageCode + u')'
+    if debugLevel > 1: print u'\ngetLanguageSection(' + languageCode + u')'
     startPosition = 0
     endPosition = len(pageContent)
 
@@ -262,19 +262,19 @@ def getLanguageSection(pageContent, languageCode = 'fr'):
     return pageContent, startPosition, endPosition
 
 def getSections(pageContent):
-    if debugLevel > 0: print u'\ngetSections()'
+    if debugLevel > 1: print u'\ngetSections()'
     regex = ur'{{S\|([^}\|]+)'
     s = re.findall(regex, pageContent, re.DOTALL)
     if s: return s
     return []
 
 def getNotNaturesSections(pageContent):
-    if debugLevel > 0: print u'\ngetNaturesSections()'
+    if debugLevel > 1: print u'\ngetNaturesSections()'
     sections = getSections(pageContent)
     return [item for item in sections if item not in natures]
 
 def getNaturesSections(pageContent):
-    if debugLevel > 0: print u'\ngetNaturesSections()'
+    if debugLevel > 1: print u'\ngetNaturesSections()'
     sections = getSections(pageContent)
     notNaturesSections = getNotNaturesSections(pageContent)
     return [item for item in sections if item not in notNaturesSections]

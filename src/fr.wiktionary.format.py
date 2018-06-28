@@ -2893,6 +2893,7 @@ def treatPageByName(pageName):
 # Templates with language code at second
                 elif currentTemplate in definitionTemplates + etymologyTemplatesWithLanguageAtSecond + [u'pron', u'phon']: # u'lien'
                     if languageCode != u'conv':
+                        if debugLevel > 0: pywikibot.output(u"  Template with language code at second: \03{green}" + currentTemplate+ u"\03{default}")
                         # Tri des lettres de l'API
                         if currentTemplate == u'pron':
                             pageContent2 = pageContent[endPosition+1:pageContent.find('}}')]
@@ -2925,10 +2926,15 @@ def treatPageByName(pageName):
 
 # Templates with "lang="
                 elif currentTemplate in [u'écouter', u'cf'] + etymologyTemplatesWithLanguageAtLang:
+                    if debugLevel > 0: pywikibot.output(u"  Template with lang=: \03{green}" + currentTemplate + u"\03{default}")
                     pageContent2 = pageContent[endPosition+1:]
-                    # Saut des modèles régionnaux
-                    if (pageContent2.find('lang=') == -1 or pageContent2.find('lang=') > pageContent2.find('}}')) and \
-                        (currentTemplate != u'cf' or pageContent2.find('}}') > endPosition+1 and (pageContent2.find(':') == -1 or pageContent2.find(':') > pageContent2.find('}}'))):
+                    isTemplateInCodingSection = currentTemplate != u'cf' or (pageContent2.find('}}') > endPosition+1 \
+                        and (pageContent2.find(':') == -1 or pageContent2.find(':') > pageContent2.find('}}')))
+                    if debugLevel > 1: print '  isTemplateInCodingSection: ' + str(isTemplateInCodingSection)
+                    if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+                    if (pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}')) and \
+                        isTemplateInCodingSection:
+                        if debugLevel > 0: print u'   "lang=" addition'
                         while pageContent2.find('{{') < pageContent2.find('}}') and pageContent2.find('{{') != -1:
                             pageContent2 = pageContent2[pageContent2.find('}}')+2:]
                         if pageContent2.find('lang=') == -1 or pageContent2.find('lang=') > pageContent2.find('}}'):
@@ -2937,6 +2943,7 @@ def treatPageByName(pageName):
                         else:
                             finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
                     else:
+                        if debugLevel > 0: print u'   "lang=" already present'
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
 
                 elif currentTemplate in (u'référence nécessaire', u'réf?', u'réf ?', u'refnec', u'réfnéc', u'source?', \
