@@ -2045,7 +2045,7 @@ def treatPageByName(pageName):
 
         if u'{{langue|fr}}' in pageContent:
             if removeDefaultSort:
-                regex = ur'^[ 0-9a-zàçéèêëîôùûA-ZÀÇÉÈÊËÎÔÙÛ]+$'
+                regex = ur'^[ 0-9a-zàâçéèêëîôùûA-ZÀÂÇÉÈÊËÎÔÙÛ]+$'
                 if re.search(regex, pageName):
                     regex = ur"\n{{clé de tri([^}]*)}}"
                     if re.search(regex, pageContent):
