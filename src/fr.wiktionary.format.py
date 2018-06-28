@@ -2937,7 +2937,7 @@ def treatPageByName(pageName):
                         if debugLevel > 0: print u'   "lang=" addition'
                         while pageContent2.find('{{') < pageContent2.find('}}') and pageContent2.find('{{') != -1:
                             pageContent2 = pageContent2[pageContent2.find('}}')+2:]
-                        if pageContent2.find('lang=') == -1 or pageContent2.find('lang=') > pageContent2.find('}}'):
+                        if pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}'):
                             finalPageContent = finalPageContent + currentTemplate + u'|lang=' + languageCode + pageContent[endPosition:pageContent.find('}}')+2]
                             pageContent = pageContent[pageContent.find('}}')+2:]
                         else:
