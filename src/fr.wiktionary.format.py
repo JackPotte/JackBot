@@ -2590,17 +2590,17 @@ def treatPageByName(pageName):
                 if re.search(regex, pageContent):
                     pageContent = re.sub(regex, ur'\n\4\2}}\1\2\3', pageContent)
 
-                deplacement_modele_flexion = false
+                deplacement_modele_flexion = False
                 # On différencie les cas pas d'espace avant le modèle / espace avant le modèle
                 regex = ur'( ===\n)(\'\'\'[^\n]+[^ ])({{' + ModeleGent[l][1] + ur'\|[^}]*}})'
                 if re.search(regex, pageContent):
                     pageContent = re.sub(regex, ur'\1\3\n\2', pageContent)
-                    deplacement_modele_flexion = true
+                    deplacement_modele_flexion = True
                 # Espace avant le modèle
                 regex_space = ur'( ===\n)(\'\'\'[^\n]+) ({{' + ModeleGent[l][1] + ur'\|[^}]*}})'
                 if re.search(regex_space, pageContent):
                     pageContent = re.sub(regex_space, ur'\1\3\n\2', pageContent)
-                    deplacement_modele_flexion = true
+                    deplacement_modele_flexion = True
                 if deplacement_modele_flexion:
                     summary = summary + u', déplacement des modèles de flexions'
 
