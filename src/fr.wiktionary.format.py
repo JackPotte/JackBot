@@ -1396,6 +1396,7 @@ Modele.append(u'ébauche-exe')
 Modele.append(u'ébauche-pron')
 Modele.append(u'ébauche')
 Modele.append(u'Région ?')
+Modele.append(u'région ?')
 
 limit8 = len(Modele)
 # Code langue si étymologie
