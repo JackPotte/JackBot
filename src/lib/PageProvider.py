@@ -113,7 +113,7 @@ class PageProvider:
 
     # Traitement des pages d'une catégorie
     def pagesByCat(self, category, recursive = False, afterPage = None, namespaces = [0], names = None, notNames = None,
-        notCatNames = None, site = None, pagesList = False, linked = False
+        exclude = None, site = None, pagesList = False, linked = False
     ):
         pageids = 50
         if site is None: site = self.site
@@ -150,8 +150,8 @@ class PageProvider:
                 self.treatPageIfName(subcategory.title(), names, notNames)
             if recursive:
                 modify = True
-                if notCatNames is not None:
-                    for notCatName in notCatNames:
+                if exclude is not None:
+                    for notCatName in exclude:
                         if subcategory.title().find(notCatName) != -1:
                             if self.debugLevel > 0: print u' ' + notCatName + u' ignoré'
                             modify = False

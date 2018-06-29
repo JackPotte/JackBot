@@ -3967,13 +3967,13 @@ def main(*args):
                 treatPageByName(sys.argv[1].encode(config.console_encoding, 'replace'))
     else:
         # Nightly treatment:
-        p.pagesByCat(u'Catégorie:Wiktionnaire:Codes langue manquants', recursive = True)
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Codes langue manquants', recursive = True, exclude = [u'Catégorie:Wiktionnaire:Traductions manquantes sans langue précisée'])
         p.pagesByCat(u'Catégorie:Wiktionnaire:Flexions à vérifier', recursive = True)
         p.pagesByCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée')
         p.pagesByCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet')
         p.pagesByCat(u'Catégorie:Appels de modèles incorrects:deet')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Ébauches à compléter')
-        p.pagesByLink(u'Template:trad')
+        p.pagesByLink(u'Template:trad', namespaces = [0])
         p.pagesByLink(u'Template:1ergroupe')
         p.pagesByLink(u'Template:2egroupe')
         p.pagesByLink(u'Template:3egroupe')
