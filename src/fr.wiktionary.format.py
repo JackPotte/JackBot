@@ -119,6 +119,8 @@ Modele.append(u'-conj-')
 Section.append(u'conjonction')
 Modele.append(u'-copule-')
 Section.append(u'copule')
+Modele.append(u'-décl-')
+Section.append(u'déclinaison')
 Modele.append(u'-dét-')
 Section.append(u'déterminant')
 Modele.append(u'-erreur-')
@@ -2938,9 +2940,11 @@ def treatPageByName(pageName):
                         while pageContent2.find('{{') < pageContent2.find('}}') and pageContent2.find('{{') != -1:
                             pageContent2 = pageContent2[pageContent2.find('}}')+2:]
                         if pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}'):
+                            if debugLevel > 0: print u'    at ' + str(endPosition)
                             finalPageContent = finalPageContent + currentTemplate + u'|lang=' + languageCode + pageContent[endPosition:pageContent.find('}}')+2]
                             pageContent = pageContent[pageContent.find('}}')+2:]
                         else:
+                            if debugLevel > 0: print u'    "lang=" addition cancellation'
                             finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
                     else:
                         if debugLevel > 0: print u'   "lang=" already present'
