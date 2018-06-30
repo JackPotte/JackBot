@@ -173,7 +173,7 @@ def treatPage(line):
             terms = l[i['Termes associés 1']].split(u';')
             for t in terms:
                 print t
-                pageContent += addLine(pageContent, languageCode, 'vocabulaire', u'* [[' + trim(t) + u']]')
+                pageContent = addLine(pageContent, languageCode, 'vocabulaire', u'* [[' + trim(t) + u']]')
         pageContent += u'\n==== {{S|traductions}} ====\n'
         pageContent += u'{{trad-début}}\n'
         pageContent += u'{{ébauche-trad}}\n'

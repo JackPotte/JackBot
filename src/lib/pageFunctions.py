@@ -430,7 +430,7 @@ def stopRequired(username = username):
         pywikibot.output(u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
         exit(0)
 
-def savePage(currentPage, pageContent, summary):
+def savePage(currentPage, pageContent, summary, minorEdit = False):
     result = "ok"
     if debugLevel > 0:
         pywikibot.output(u"\n\03{blue}" + summary + u"\03{default}")
@@ -447,7 +447,7 @@ def savePage(currentPage, pageContent, summary):
         if currentPage.title().find(u'JackBot/') == -1: stopRequired()
         if not summary: summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
         try:
-            currentPage.put(pageContent, summary)
+            currentPage.put(pageContent, summary, minorEdit = minorEdit)
         except pywikibot.exceptions.NoPage:
             print "NoPage in savePage"
             return

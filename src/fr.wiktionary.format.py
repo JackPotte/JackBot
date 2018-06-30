@@ -56,6 +56,7 @@ fixGenders = True
 waitAfterHumans = True
 listHomophons = False
 listFalseTranslations = False
+testImport = False
 outputFile = ''
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
@@ -1637,7 +1638,7 @@ def treatPageByName(pageName):
         page = Page(site, pageName.replace(u'’', u'\''))
         if not page.exists() and page.namespace() == 0:
             if debugLevel > 0: print u'Création d\'une redirection apostrophe'
-            savePage(page, u'#REDIRECT[[' + pageName + ']]', u'Redirection pour apostrophe')
+            savePage(page, u'#REDIRECT[[' + pageName + ']]', u'Redirection pour apostrophe', minorEdit = True)
 
     page = Page(site, pageName)
     if debugLevel == 0 and waitAfterHumans and not hasMoreThanTime(page): return
@@ -1783,6 +1784,7 @@ def treatPageByName(pageName):
         pageContent = re.sub(ur'{{S\| ?vocabulaire apparenté\|?[a-z ]*}}', u'{{S|vocabulaire}}', pageContent)
         pageContent = re.sub(ur'{{S\| ?voir( aussi)?\|?[a-z ]*}}', u'{{S|voir aussi}}', pageContent)
         pageContent = pageContent.replace(u'==== {{S|phrases|fr}} ====', u'==== {{S|phrases}} ====')
+        pageContent = pageContent.replace(u'{{S|descendants}}', u'{{S|dérivés autres langues}}')
 
         regex = ur'({{langue\|(?!fr}).*}[^€]*)\n=* *{{S\|traductions}} *=*\n*{{trad\-début}}\n{{ébauche\-trad}}\n{{trad\-fin}}'
         if re.search(regex, pageContent):
@@ -3862,7 +3864,7 @@ def treatPageByName(pageName):
         # Unknown namespace
         finalPageContent = pageContent
 
-    if debugLevel > 1 and username in pageName: finalPageContent = addLineTest(finalPageContent)
+    if testImport and username in pageName: finalPageContent = addLineTest(finalPageContent)
     if debugLevel > 0: pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
     if finalPageContent != currentPageContent:
         if page.namespace() == 0 or username in pageName:
@@ -3883,7 +3885,8 @@ p = PageProvider(treatPageByName, site, debugLevel)
 setGlobals(debugLevel, site, username)
 setGlobalsWiktionary(debugLevel, site, username)
 def main(*args):
-    global waitAfterHumans, fixOldTemplates, listHomophons, outputFile, siteLanguage, siteFamily, fixTags, listFalseTranslations
+    global waitAfterHumans, fixOldTemplates, listHomophons, outputFile, siteLanguage, siteFamily, fixTags, \
+    listFalseTranslations, testImport
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
         afterPage = u''
@@ -3894,6 +3897,9 @@ def main(*args):
         elif sys.argv[1] == u'-test2':
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-tu':
+            treatPageByName(u'User:' + username + u'/test unitaire')
+        elif sys.argv[1] == u'-ti':
+            testImport = True
             treatPageByName(u'User:' + username + u'/test unitaire')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             waitAfterHumans = False
@@ -3919,9 +3925,9 @@ def main(*args):
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
-                p.pagesByXML(siteLanguage + siteFamily + '.*xml')
-            #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{pron\|[^\|]*v[^\|]\|fr}}', titleInclude = u'w')
-
+                # Frequent mistakes
+                #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{pron\|[^\|]*v[^\|]\|fr}}', titleInclude = u'w')
+                p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{langue\|fr\}[^$]+\{langue\|fr\}')
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
@@ -3967,7 +3973,8 @@ def main(*args):
                 treatPageByName(sys.argv[1].encode(config.console_encoding, 'replace'))
     else:
         # Nightly treatment:
-        p.pagesByCat(u'Catégorie:Wiktionnaire:Codes langue manquants', recursive = True, exclude = [u'Catégorie:Wiktionnaire:Traductions manquantes sans langue précisée'])
+        p.pagesByCat(u'Catégorie:Wiktionnaire:Codes langue manquants', recursive = True, \
+            exclude = [u'Catégorie:Wiktionnaire:Traductions manquantes sans langue précisée'])
         p.pagesByCat(u'Catégorie:Wiktionnaire:Flexions à vérifier', recursive = True)
         p.pagesByCat(u'Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée')
         p.pagesByCat(u'Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet')

@@ -8,52 +8,68 @@ import pywikibot
 from pywikibot import *
 from pywikibot import pagegenerators
 
+# https://fr.wiktionary.org/wiki/Module:types_de_mots/data
+natures = [u'adjectif', u'adverbe', u'article', u'conjonction', u'copule', u'déterminant', u'nom', u'patronyme', \
+    u'prénom', u'préposition', u'pronom', u'verbe', u'interjection', u'onomatopée', u'affixe', u'circonfixe' u'infixe', \
+    u'interfixe', u'particule', u'postposition', u'préfixe', u'radical', u'suffixe', u'pré-verbe' u'pré-nom', \
+    u'enclitique', u'proclitique', u'locution', u'proverbe', u'quantificateur', u'lettre', u'symbole', u'classificateur', \
+    'numéral', u'sinogramme', u'erreur', u'gismu', u'rafsi', u'nom propre']
+
+# https://fr.wiktionary.org/wiki/Catégorie:Modèles_de_définitions
+definitionTemplates = [u'abréviation de', u'comparatif de', u'exclamatif de', u'mutation de', u'superlatif de', \
+    u'variante de', u'variante ortho de', u'variante orthographique de']
+
+definitionSentences = [u'abréviation de', u'ancienne orthographe de', u'autre nom de', u'autre orthographe de', \
+    u'comparatif de', u'exclamatif de', u'féminin de', u'mutation de', u'nom scientifique de', u'pluriel de', \
+    u'superlatif de', u'synonyme de', u'variante de', u'variante ortho de', u'variante orthographique de']
+
 Sections = []
-Niveau = []
+sectionLevel = []
 Sections.append(u'étymologie')
-Niveau.append(u'===')
-Sections.append(u'nom')
-Niveau.append(u'===')
+sectionLevel.append(u'===')
+for nature in natures:
+    Sections.append(nature)
+    sectionLevel.append(u'===')
 Sections.append(u'variantes orthographiques')
-Niveau.append(u'====')
+sectionLevel.append(u'====')
 Sections.append(u'variantes')
-Niveau.append(u'====')
+sectionLevel.append(u'====')
 Sections.append(u'synonymes')
-Niveau.append(u'====')
+sectionLevel.append(u'====')
 Sections.append(u'antonymes')
-Niveau.append(u'====')
+sectionLevel.append(u'====')
 Sections.append(u'dérivés')
-Niveau.append(u'====')
+sectionLevel.append(u'====')
 Sections.append(u'apparentés')
-Niveau.append(u'====')
+sectionLevel.append(u'====')
 Sections.append(u'vocabulaire')
-Niveau.append(u'====')
+sectionLevel.append(u'====')
 Sections.append(u'hyperonymes')
-Niveau.append(u'====')
+sectionLevel.append(u'====')
 Sections.append(u'hyponymes')
-Niveau.append(u'====')
+sectionLevel.append(u'====')
 Sections.append(u'méronymes')
-Niveau.append(u'====')
+sectionLevel.append(u'====')
 Sections.append(u'holonymes')
-Niveau.append(u'====')
+sectionLevel.append(u'====')
 Sections.append(u'traductions')
-Niveau.append(u'====')
+sectionLevel.append(u'====')
 Sections.append(u'prononciation')
-Niveau.append(u'===')
+sectionLevel.append(u'===')
 Sections.append(u'homophones')
-Niveau.append(u'====')
+sectionLevel.append(u'====')
 Sections.append(u'paronymes')
-Niveau.append(u'====')
+sectionLevel.append(u'====')
 Sections.append(u'anagrammes')
-Niveau.append(u'===')
+sectionLevel.append(u'===')
 Sections.append(u'voir aussi')
-Niveau.append(u'===')
+sectionLevel.append(u'===')
 Sections.append(u'références')
-Niveau.append(u'===')
+sectionLevel.append(u'===')
 Sections.append(u'catégorie')
-Niveau.append(u'')
+sectionLevel.append(u'')
 Sections.append(u'clé de tri')
-Niveau.append(u'')
+sectionLevel.append(u'')
 
 # https://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Mod%C3%A8les_d%E2%80%99accord_en_fran%C3%A7ais
 flexionTemplatesFrWithMs = []
@@ -93,21 +109,6 @@ flexionTemplatesFr.append(u'fr-accord-personne')
 flexionTemplatesFr.append(u'fr-accord-t-avant1835')
 flexionTemplatesFr.append(u'fr-inv')
 
-# https://fr.wiktionary.org/wiki/Module:types_de_mots/data
-natures = [u'adjectif', u'adverbe', u'article', u'conjonction', u'copule', u'déterminant', u'nom', u'patronyme', \
-    u'prénom', u'préposition', u'pronom', u'verbe', u'interjection', u'onomatopée', u'affixe', u'circonfixe' u'infixe', \
-    u'interfixe', u'particule', u'postposition', u'préfixe', u'radical', u'suffixe', u'pré-verbe' u'pré-nom', \
-    u'enclitique', u'proclitique', u'locution', u'proverbe', u'quantificateur', u'lettre', u'symbole', u'classificateur', \
-    'numéral', u'sinogramme', u'erreur', u'gismu', u'rafsi', u'nom propre']
-
-# https://fr.wiktionary.org/wiki/Catégorie:Modèles_de_définitions
-definitionTemplates = [u'abréviation de', u'comparatif de', u'exclamatif de', u'mutation de', u'superlatif de', \
-    u'variante de', u'variante ortho de', u'variante orthographique de']
-
-definitionSentences = [u'abréviation de', u'ancienne orthographe de', u'autre nom de', u'autre orthographe de', \
-    u'comparatif de', u'exclamatif de', u'féminin de', u'mutation de', u'nom scientifique de', u'pluriel de', \
-    u'superlatif de', u'synonyme de', u'variante de', u'variante ortho de', u'variante orthographique de']
-
 def setGlobalsWiktionary(myDebugLevel, mySite, myUsername):
     global debugLevel
     global site
@@ -117,7 +118,7 @@ def setGlobalsWiktionary(myDebugLevel, mySite, myUsername):
     username    = myUsername 
     
 def getFirstLemmaFromLocution(pageName):
-    if debugLevel > 0: print u'\ngetFirstLemmaFromLocution'
+    if debugLevel > 1: print u'\ngetFirstLemmaFromLocution'
     lemmaPageName = ''
     if pageName.find(u' ') != -1:
         if debugLevel > 0: print u' lemme de locution trouvé : ' + lemmaPageName
@@ -125,7 +126,7 @@ def getFirstLemmaFromLocution(pageName):
     return lemmaPageName
 
 def getGenderFromPageName(pageName, languageCode = 'fr', nature = None):
-    if debugLevel > 0: print u'\ngetGenderFromPageName'
+    if debugLevel > 1: print u'\ngetGenderFromPageName'
     gender = u''
     pageContent = getContentFromPageName(pageName)
     if pageContent.find(u'|' + languageCode + '}} {{m}}') != -1:
@@ -140,13 +141,14 @@ def getGenderFromPageName(pageName, languageCode = 'fr', nature = None):
     return gender
 
 def getLemmaFromContent(pageContent, languageCode = 'fr'):
+    if debugLevel > 1: print u'\ngetLemmaFromContent'
     lemmaPageName = getLemmaFromPlural(pageContent, languageCode)
     if lemmaPageName == '':
         lemmaPageName = getLemmaFromConjugation(pageContent, languageCode)
     return lemmaPageName
 
 def getLemmaFromPlural(pageContent, languageCode = 'fr', natures = ['nom', 'adjectif', 'suffixe']):
-    if debugLevel > 0: print u'\ngetLemmaFromPlural'
+    if debugLevel > 1: print u'\ngetLemmaFromPlural'
     lemmaPageName = u''
     regex = ur"(=== {{S\|(" + '|'.join(natures) + ")\|" + languageCode + "\|flexion}} ===\n({{" + languageCode + \
      "\-[^}]*}}\n)?'''[^\n]+\n# *'* *([Mm]asculin|[Ff]éminin)* *'* *'*[P|p]luriel *'* *de'* *'* *(\[\[|{{li?e?n?\|))([^#\|\]}]+)"
@@ -162,7 +164,7 @@ def getLemmaFromPlural(pageContent, languageCode = 'fr', natures = ['nom', 'adje
     return lemmaPageName
 
 def getLemmaFromFeminine(pageContent, languageCode = 'fr', natures = ['nom', 'adjectif']):
-    if debugLevel > 0: print u'\ngetLemmaFromFeminine'
+    if debugLevel > 1: print u'\ngetLemmaFromFeminine'
     lemmaPageName = u''
     regex = ur"(=== {{S\|(" + '|'.join(natures) + ")\|" + languageCode + "\|flexion}} ===\n({{" + languageCode + \
      "\-[^}]*}}\n)?'''[^\n]+\n# *'* *[Ff]éminin *'* *'*(singulier|pluriel)? *'* *de'* *'* *(\[\[|{{li?e?n?\|))([^#\|\]}]+)"
@@ -178,7 +180,7 @@ def getLemmaFromFeminine(pageContent, languageCode = 'fr', natures = ['nom', 'ad
     return lemmaPageName  
 
 def getLemmaFromConjugation(pageContent, languageCode = 'fr'):
-    if debugLevel > 0: print u'\ngetLemmaFromConjugation'
+    if debugLevel > 1: print u'\ngetLemmaFromConjugation'
     lemmaPageName = u''
     regex = ur"(=== {{S\|verbe\|fr\|flexion}} ===\n({{fr\-[^}]*}}\n)*'''[^\n]+\n#[^\n\[{]+(\[\[|{{li?e?n?\|))([^#\|\]}]+)}*\]*'*\."
     s = re.search(regex, pageContent)
@@ -213,7 +215,7 @@ def getFlexionTemplate(pageName, language, nature = None):
     return flexionTemplate
 
 def getFlexionTemplateFromLemma(pageName, language, nature):
-    if debugLevel > 0: print u'\ngetFlexionTemplateFromLemma'
+    if debugLevel > 1: print u'\ngetFlexionTemplateFromLemma'
     FlexionTemplate = u''
     pageContent = getContentFromPageName(pageName)
     regex = ur"=== {{S\|" + nature + ur"\|" + language + ur"(\|num=[0-9])?}} ===\n{{(" + language + ur"\-[^}]+)}}"
@@ -280,7 +282,7 @@ def getNaturesSections(pageContent):
     return [item for item in sections if item not in notNaturesSections]
 
 def getSection(pageContent, sectionName):
-    if debugLevel > 0: print u'\ngetSection(' + sectionName + u')'
+    if debugLevel > 1: print u'\ngetSection(' + sectionName + u')'
     startPosition = 0
     endPosition = len(pageContent)
 
@@ -303,7 +305,7 @@ def getSection(pageContent, sectionName):
     return pageContent, startPosition, endPosition
 
 def getDefinitions(pageContent):
-    if debugLevel > 0: print u'\ngetDefinitions'
+    if debugLevel > 1: print u'\ngetDefinitions'
     if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
     regex = ur"\n'''[^\n]*\n(#.*?(\n\n|\n=|$))"
     s = re.search(regex, pageContent, re.DOTALL)
@@ -314,7 +316,7 @@ def getDefinitions(pageContent):
     return s.group(1)
 
 def countDefinitions(pageContent):
-    if debugLevel > 0: print u'\ncountDefinitions'
+    if debugLevel > 1: print u'\ncountDefinitions'
     definitions = getDefinitions(pageContent)
     if definitions is None: return 0
     definitions = definitions.split('\n')
@@ -325,8 +327,7 @@ def countDefinitions(pageContent):
     return total
 
 def countFirstDefinitionSize(pageContent):
-    if debugLevel > 0: print u'\ncountFirstDefinitionSize'
-    if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+    if debugLevel > 1: print u'\ncountFirstDefinitionSize'
 
     definition = getDefinitions(pageContent)
     if definition is None: return 0
@@ -350,6 +351,7 @@ def countFirstDefinitionSize(pageContent):
     return len(words)
 
 def getPronunciationFromContent(pageContent, languageCode, nature = None):
+    if debugLevel > 1: print u'\ngetPronunciationFromContent'
     regex = ur".*'''([^']+)'''.*"
     s = re.search(regex, pageContent, re.MULTILINE| re.DOTALL)
     if not s: return
@@ -446,6 +448,7 @@ def getPronunciationFromContent(pageContent, languageCode, nature = None):
     return pronunciation
 
 def getPronunciation(pageContent, languageCode, nature = None):
+    if debugLevel > 1: print u'\ngetPronunciation'
     pronunciation = getPronunciationFromContent(pageContent, languageCode, nature)
     #TODO: from other pages or wikis
     '''
@@ -459,6 +462,7 @@ def getPronunciation(pageContent, languageCode, nature = None):
     return pronunciation
 
 def addPronunciationFromContent(pageContent, languageCode, nature = None):
+    if debugLevel > 1: print u'\naddPronunciationFromContent'
     if pageContent.find(u'{{pron||' + languageCode + u'}}') != -1:
         pronunciation = getPronunciation(pageContent, languageCode, nature = None)
         if pronunciation != u'':
@@ -466,11 +470,12 @@ def addPronunciationFromContent(pageContent, languageCode, nature = None):
     return pageContent
 
 def addCategory(pageContent, languageCode, lineContent):
+    if debugLevel > 1: print u'\naddCategory'
     if lineContent.find(u'[[Catégorie:') == -1: lineContent = u'[[Catégorie:' + lineContent + u']]'
     return addLine(pageContent, languageCode, 'catégorie', lineContent)
 
 def removeCategory(pageContent, category, summary):
-    if debugLevel > 0: print u'\nremoveCategory(' + category + u')'
+    if debugLevel > 1: print u'\nremoveCategory(' + category + u')'
     regexCategory = ur'(\n\[\[Catégorie:' + category + ur'(\||\])[^\]]*\]\]?)'
     newPageContent = re.sub(regexCategory, ur'', pageContent)
     if newPageContent != pageContent:
@@ -478,7 +483,7 @@ def removeCategory(pageContent, category, summary):
     return newPageContent, summary
 
 def removeTemplate(pageContent, template, summary, language = None, inSection = None):
-    if debugLevel > 0: print u'\nremoveTemplate(' + template + u')'
+    if debugLevel > 1: print u'\nremoveTemplate(' + template + u')'
     #TODO: rattacher le bon template à la bonne ligne de l'étymologie, et s'il doit être déplacé plusieurs fois
     regexTemplate = ur'(,?( et| ou)? *{{' + template + ur'(\||})[^}]*}}?)'
     oldSection = pageContent
@@ -503,6 +508,7 @@ def removeTemplate(pageContent, template, summary, language = None, inSection = 
     return pageContent, summary
 
 def addLine(pageContent, languageCode, Section, lineContent):
+    if debugLevel > 1: print u'\naddLine(' + languageCode + u', ' + Section + u')'
     d = 0
     if debugLevel > d:
         pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
@@ -551,7 +557,7 @@ def addLine(pageContent, languageCode, Section, lineContent):
                         print u' ajout dans la sous-section existante "' + Section + u'"'
                         print u' (car ' + str(sectionNumber(limitSection)) + u' = ' + str(sectionToAddNumber) + u')\n'
                 elif not Section in [u'catégorie', u'clé de tri']:
-                    sectionToAdd = u'\n\n' + Niveau[sectionToAddNumber] + u' {{S|' + Section + u'}} ' + Niveau[sectionToAddNumber] + u'\n'
+                    sectionToAdd = u'\n\n' + sectionLevel[sectionToAddNumber] + u' {{S|' + Section + u'}} ' + sectionLevel[sectionToAddNumber] + u'\n'
                     if sectionToAddNumber >= sectionNumber(limitSection):
                         if debugLevel > d:
                             print u' ajout de la sous-section "' + Section + u'" après "' + limitSection + u'"'
@@ -575,10 +581,23 @@ def addLine(pageContent, languageCode, Section, lineContent):
                                 pageContent = pageContent[:startPosition] + languageSection + sectionToAdd + pageContent[startPosition+endPosition:]
                             if debugLevel > d+1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
                         else:
+                            if debugLevel > d+1:
+                                print u'   Saut des sections incluses dans la précédente (de niveau titre inférieur)'
+                                print u'   ' + str(sectionToAddNumber) + u' => ' + sectionLevel[sectionToAddNumber] + Section
+                                print u'   ' + str(Sections.index(sectionsInPage[o+1][0])) + u' => ' + sectionLevel[Sections.index(sectionsInPage[o+1][0])] + sectionsInPage[o+1][0]
+                            while o < len(sectionsInPage) and len(sectionLevel[sectionToAddNumber]) < len(sectionLevel[Sections.index(sectionsInPage[o+1][0])]):
+                                if debugLevel > d: print u' saut de ' + sectionsInPage[o+1][0]
+                                o += 1
+
                             if debugLevel > d: print u' ajout de la sous-section "' + Section + u'" avant "' + sectionsInPage[o+1][0] + u'"'
                             regex = ur'\n=* *{{S\|' + sectionsInPage[o+1][0]
                             s = re.search(regex, languageSection)
                             if s:
+                                if Section in natures:
+                                    sectionToAdd = sectionToAdd.replace(u'}}', u'|' + languageCode + u'}}')
+                                    if lineContent[:1] == u'#' or lineContent[:2] == u'\n#':
+                                        sectionToAdd += u"'''{{subst:PAGENAME}}''' {{genre ?|" + languageCode + \
+                                            u"}} {{pluriel ?|" + languageCode + u"}}\n"
                                 pageContent = pageContent[:startPosition] + languageSection[:s.start()] + \
                                     sectionToAdd + languageSection[s.start():] + pageContent[startPosition+endPosition:]
                             else:
@@ -644,11 +663,14 @@ def addLine(pageContent, languageCode, Section, lineContent):
     return pageContent
 
 def addLineTest(pageContent, languageCode = 'fr'):
-    pageContent = addCategory(pageContent, languageCode, u'Tests en français')
-    pageContent = addLine(pageContent, languageCode, u'prononciation', u'* {{écouter|||lang=fr|audio=test.ogg}}')
-    pageContent = addLine(pageContent, languageCode, u'prononciation', u'* {{écouter|||lang=fr|audio=test2.ogg}}')
-    pageContent = addLine(pageContent, languageCode, u'étymologie', u':{{étyl|test|fr}}')
-    pageContent = addLine(pageContent, languageCode, u'traductions', u'{{trad-début}}\n123\n{{trad-fin}}')
+    #pageContent = addCategory(pageContent, languageCode, u'Tests en français')
+    #pageContent = addLine(pageContent, languageCode, u'prononciation', u'* {{écouter|||lang=fr|audio=test.ogg}}')
+    #pageContent = addLine(pageContent, languageCode, u'prononciation', u'* {{écouter|||lang=fr|audio=test2.ogg}}')
+    #pageContent = addLine(pageContent, languageCode, u'étymologie', u':{{étyl|test|fr}}')
+    #pageContent = addLine(pageContent, languageCode, u'traductions', u'{{trad-début}}\n123\n{{trad-fin}}')
+    #pageContent = addLine(pageContent, languageCode, u'vocabulaire', u'* [[voc]]')
+    pageContent = addLine(pageContent, languageCode, u'nom', u'# Définition')
+    pageContent = addLine(pageContent, languageCode, u'nom', u'Note')
     return pageContent
 
 def addPronunciation(pageContent, CodeLangue, Section, lineContent):
@@ -697,7 +719,7 @@ def addPronunciation(pageContent, CodeLangue, Section, lineContent):
                 lineContent3 = lineContent2[lineContent2.find(u'{{S|' + sectionsInPage[o][0]):]
                 if sectionsInPage[o][0] != Section and Section != u'catégorie' and Section != u'clé de tri':
                     if debugLevel > 0: print u' ajout de la section "' + Section + u'" après "'+ sectionsInPage[o][0] + u'"'
-                    lineContent = u'\n' + Niveau[NumSection] + u' {{S|' + Section + u'}} ' + Niveau[NumSection] + u'\n' + lineContent
+                    lineContent = u'\n' + sectionLevel[NumSection] + u' {{S|' + Section + u'}} ' + sectionLevel[NumSection] + u'\n' + lineContent
                 else:
                      if debugLevel > 0: print u' ajout dans la section existante'
                 if debugLevel > 1: raw_input(lineContent.encode(config.console_encoding, 'replace'))
@@ -794,7 +816,7 @@ def nextTranslationTemplate(finalPageContent, currentPageContent, result = u'-')
     return finalPageContent, currentPageContent
 
 def removeFalseHomophones(pageContent, languageCode, pageName, relatedPageName, summary):
-    if debugLevel > 0: print u'\nremoveFalseHomophones(' + relatedPageName + u')'
+    if debugLevel > 1: print u'\nremoveFalseHomophones(' + relatedPageName + u')'
     regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *'''" + pageName + ur"''' *{{cf\|[^\|]*\|?" + relatedPageName + ur"[\|}][^\n]*\n"
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, "==== {{S|homophones|" + languageCode + u"}} ====\n", pageContent)
