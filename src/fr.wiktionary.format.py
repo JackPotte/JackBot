@@ -120,8 +120,6 @@ Modele.append(u'-conj-')
 Section.append(u'conjonction')
 Modele.append(u'-copule-')
 Section.append(u'copule')
-Modele.append(u'-décl-')
-Section.append(u'déclinaison')
 Modele.append(u'-dét-')
 Section.append(u'déterminant')
 Modele.append(u'-erreur-')
@@ -233,7 +231,7 @@ Section.append(u'onomatopée')
 Modele.append(u'-interjection-')
 Section.append(u'interjection')
 limit1 = len(Modele)
-# Paragraphes sans modèle catégorisant
+# Paragraphes sans code langue catégorisant, de niveau 3
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_contexte
 Modele.append(u'-réf-')
 Section.append(u'références')
@@ -255,11 +253,12 @@ Modele.append(u'-étym-')
 Section.append(u'étymologie')
 Modele.append(u'-pron-')
 Section.append(u'prononciation')
+Modele.append(u'-décl-')
+Section.append(u'déclinaison')
 limit2 = len(Modele)
+# De niveau 4
 Modele.append(u'-compos-')
 Section.append(u'composés')
-#Modele.append(u'-décl-')
-#Section.append(u'déclinaison')
 Modele.append(u'-dial-')
 Section.append(u'variantes dialectales')
 Modele.append(u'-faux-amis-')
@@ -280,8 +279,6 @@ Modele.append(u'-gent-')
 Section.append(u'gentilés')
 Modele.append(u'-hist-')
 Section.append(u'attestations')
-Modele.append(u'-homo-')
-Section.append(u'homophones')
 Modele.append(u'-holo-')
 Section.append(u'holonymes')
 Modele.append(u'-hyper-')
@@ -342,6 +339,9 @@ Modele.append(u'augmentatifs')
 Section.append(u'augmentatifs')
 Modele.append(u'diminutifs')
 Section.append(u'diminutifs')
+# Avec code langue
+Modele.append(u'-homo-')
+Section.append(u'homophones')
 limit3 = len(Modele)
 Modele.append(u'-notes-')
 Section.append(u'notes')
@@ -1706,11 +1706,18 @@ def treatPageByName(pageName):
 
             regex = ur'[= ]*{{[\-loc]*(' + Modele[p] + ur'|S\|'+ Section[p] + ur')([^}]*)}}[= ]*'
             if re.search(regex, pageContent):
+                if debugLevel > 1: print u' {{S| : check des niveaux de section'
                 pageContent = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'\2}} ' + EgalSection, pageContent)
 
             regex = ur'[= ]*{{\-flex[\-loc]*(' + Modele[p] + ur'|S\|' + Section[p] + ur')\|([^}]*)}}[= ]*'
             if re.search(regex, pageContent):
+                if debugLevel > 1: print u' {{S| : check des niveaux de section'
                 pageContent = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'|\2|flexion}} ' + EgalSection, pageContent)
+
+            if p > limit1 and p < limit3-1:
+                regex = ur'({{S\|'+ Section[p] + ur')\|[a-z]+}}'
+                if debugLevel > 0: print u' {{S| : retrait de code langue'
+                pageContent = re.sub(regex, ur'\1}}', pageContent)
 
         if debugLevel > 1:
             pywikibot.output(u"\n\03{red}---------------------------------------------------\03{default}")
