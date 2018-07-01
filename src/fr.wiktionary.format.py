@@ -3584,7 +3584,7 @@ def treatPageByName(pageName):
 
             if languageCode is not None and pageContent.find(u'}}') != -1 and pageContent.find(u'}}') < pageContent.find(u'{{'):
                 finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
-                regex = ur'({{' + currentTemplate + ur')\|lang=' + languageCode + '(\|[^}]*({{(.*?)}}|.)*[^}]*\|lang=' + languageCode + ')'
+                regex = ur'({{' + re.escape(currentTemplate) + ur')\|lang=' + languageCode + '(\|[^}]*({{(.*?)}}|.)*[^}]*\|lang=' + languageCode + u')'
                 if re.search(regex, finalPageContent):
                     if debugLevel > 0: print u'    remove duplicated "lang="'
                     finalPageContent = re.sub(regex, ur'\1\2', finalPageContent)
