@@ -2947,18 +2947,20 @@ def treatPageByName(pageName):
                         and (pageContent2.find(':') == -1 or pageContent2.find(':') > pageContent2.find('}}')))
                     if debugLevel > 1: print '  isCategory: ' + str(isTemplateInCodingSection)
                     if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+                    # TODO: this condition duplicates lang=fr when {{écouter| has already one after a subtemplate (patched below)
                     if (pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}')) and \
                         isCategory:
                         if debugLevel > 0: print u'   "lang=" addition'
                         while pageContent2.find('{{') < pageContent2.find('}}') and pageContent2.find('{{') != -1:
                             pageContent2 = pageContent2[pageContent2.find('}}')+2:]
                         if pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}'):
-                            if debugLevel > 0: print u'    at ' + str(endPosition)
+                            if debugLevel > 1: print u'    at ' + str(endPosition)
                             finalPageContent = finalPageContent + currentTemplate + u'|lang=' + languageCode + pageContent[endPosition:pageContent.find('}}')+2]
                             pageContent = pageContent[pageContent.find('}}')+2:]
                         else:
                             if debugLevel > 0: print u'    "lang=" addition cancellation'
                             finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
+
                     else:
                         if debugLevel > 0: print u'   "lang=" already present'
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
@@ -3579,6 +3581,13 @@ def treatPageByName(pageName):
                     pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
                     raw_input(pageContent.encode(config.console_encoding, 'replace'))
                     pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
+
+            if languageCode is not None and pageContent.find(u'}}') != -1 and pageContent.find(u'}}') < pageContent.find(u'{{'):
+                finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
+                regex = ur'({{' + currentTemplate + ur')\|lang=' + languageCode + '(\|[^}]*({{(.*?)}}|.)*[^}]*\|lang=' + languageCode + ')'
+                if re.search(regex, finalPageContent):
+                    if debugLevel > 0: print u'    remove duplicated "lang="'
+                    finalPageContent = re.sub(regex, ur'\1\2', finalPageContent)
 
         finalPageContent = finalPageContent + pageContent
 
