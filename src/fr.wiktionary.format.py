@@ -3952,7 +3952,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:/\{\{S\|[^}]+\|fr[mo][^}]*\}\} ===.?\{\{fr-rég/', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri')
+            p.pagesByLink(u'Template:clé de tri', afterPage = u'non-initiée')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
