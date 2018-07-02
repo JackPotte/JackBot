@@ -1962,7 +1962,7 @@ def treatPageByName(pageName):
                             pageContentCleBegin = getContentFromPage(pageCle)
                         else:
                             pageContentCleBegin = pageContent
-                        if pageContentCleBegin != u'KO' and not u':' in pageCle and not u'{' in pageCle:
+                        if pageContentCleBegin != u'KO' and not u':' in pageCle.title() and not u'{' in pageCle.title():
                             pageContentCle = pageContentCleBegin
                             if pageContentCle.find(u'{{voir/') != -1:
                                 if debugLevel > 0: print u' {{voir/ trouvé'
@@ -3957,7 +3957,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:/\{\{S\|[^}]+\|fr[mo][^}]*\}\} ===.?\{\{fr-rég/', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = u'-landa')
+            p.pagesByLink(u'Template:clé de tri', afterPage = u'adzɨ')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
