@@ -3583,7 +3583,6 @@ def treatPageByName(pageName):
                     pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
 
             if languageCode is not None and pageContent.find(u'}}') != -1 and (pageContent.find(u'}}') < pageContent.find(u'{{') or pageContent.find(u'{{') == -1):
-                print 'ok'
                 finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
                 regex = ur'({{' + re.escape(currentTemplate) + ur')\|lang=' + languageCode + '(\|[^}]*({{(.*?)}}|.)*[^}]*\|lang=' + languageCode + u')'
                 if re.search(regex, finalPageContent):
