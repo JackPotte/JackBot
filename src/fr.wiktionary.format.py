@@ -3582,7 +3582,8 @@ def treatPageByName(pageName):
                     raw_input(pageContent.encode(config.console_encoding, 'replace'))
                     pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
 
-            if languageCode is not None and pageContent.find(u'}}') != -1 and pageContent.find(u'}}') < pageContent.find(u'{{'):
+            if languageCode is not None and pageContent.find(u'}}') != -1 and (pageContent.find(u'}}') < pageContent.find(u'{{') or pageContent.find(u'{{') == -1):
+                print 'ok'
                 finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
                 regex = ur'({{' + re.escape(currentTemplate) + ur')\|lang=' + languageCode + '(\|[^}]*({{(.*?)}}|.)*[^}]*\|lang=' + languageCode + u')'
                 if re.search(regex, finalPageContent):
@@ -3958,12 +3959,14 @@ def main(*args):
                 if sys.argv[2] == u'listFalseTranslations':
                     listFalseTranslations = True
                     p.pagesByCat(u'Catégorie:Wiktionnaire:Traductions manquantes sans langue précisée')
+                elif sys.argv[2] == u'fixOldTemplates':
+                    fixOldTemplates = True
+                    p.pagesByCat(u'Appels de modèles incorrects:abréviation', afterPage = afterPage, recursive = False, namespaces = [14])
                 else:
                     p.pagesByCat(sys.argv[2].decode(config.console_encoding, 'replace'))
             else:
-                fixOldTemplates = True
-                p.pagesByCat(u'Appels de modèles incorrects:abréviation', afterPage = afterPage, recursive = False, namespaces = [14])
-                
+                p.pagesByCat(u'Pages utilisant des arguments dupliqués dans les appels de modèle')
+
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
