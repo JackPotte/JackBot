@@ -1716,7 +1716,7 @@ def treatPageByName(pageName):
 
             if p > limit1 and p < limit3-1:
                 regex = ur'({{S\|'+ Section[p] + ur')\|[a-z]+}}'
-                if debugLevel > 0: print u' {{S| : retrait de code langue'
+                if debugLevel > 1: print u' {{S| : retrait de code langue'
                 pageContent = re.sub(regex, ur'\1}}', pageContent)
 
         if debugLevel > 1:
@@ -2945,11 +2945,15 @@ def treatPageByName(pageName):
                     pageContent2 = pageContent[endPosition+1:]
                     isCategory = currentTemplate != u'cf' or (pageContent2.find('}}') > endPosition+1 \
                         and (pageContent2.find(':') == -1 or pageContent2.find(':') > pageContent2.find('}}')))
+                    isSubtemplatesIncluded = False
+                    regex = re.escape(currentTemplate) + ur'\|[^}]*({{(.*?)}}|.)+[^}]*\|lang=' + languageCode
+                    if re.search(regex, pageContent):
+                        isSubtemplatesIncluded = True
                     if debugLevel > 1: print '  isCategory: ' + str(isTemplateInCodingSection)
                     if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
-                    # TODO: this condition duplicates lang=fr when {{écouter| has already one after a subtemplate (patched below)
+                    # TODO: this condition duplicates lang=fr when {{écouter| has already one after a subtemplate
                     if (pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}')) and \
-                        isCategory:
+                        isCategory and not isSubtemplatesIncluded:
                         if debugLevel > 0: print u'   "lang=" addition'
                         while pageContent2.find('{{') < pageContent2.find('}}') and pageContent2.find('{{') != -1:
                             pageContent2 = pageContent2[pageContent2.find('}}')+2:]
@@ -3583,6 +3587,7 @@ def treatPageByName(pageName):
                     pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
 
             if languageCode is not None and pageContent.find(u'}}') != -1 and (pageContent.find(u'}}') < pageContent.find(u'{{') or pageContent.find(u'{{') == -1):
+                if debugLevel > 1: print u'    possible duplicated "lang="'
                 finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
                 regex = ur'({{' + re.escape(currentTemplate) + ur')\|lang=' + languageCode + '(\|[^}]*({{(.*?)}}|.)*[^}]*\|lang=' + languageCode + u')'
                 if re.search(regex, finalPageContent):
