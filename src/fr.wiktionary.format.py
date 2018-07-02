@@ -3981,6 +3981,7 @@ def main(*args):
         elif sys.argv[1] == u'-nocat':
             p.pagesBySpecialNotCategorized()
         elif sys.argv[1] == u'-lint':
+            fixTags = True
             p.pagesBySpecialLint()
         elif sys.argv[1] == u'-extlinks':
             p.pagesBySpecialLinkSearch(u'www.dmoz.org')

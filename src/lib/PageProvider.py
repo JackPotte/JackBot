@@ -309,11 +309,15 @@ class PageProvider:
         for Page in site.exturlusage(url = url, namespaces = namespaces):
             self.treatPage(Page.title())
 
-
-    #*** Tested methods ***
     # [[Special:LintErrors]]
-    def pagesBySpecialLint(self, site = None):
-        #TODO: impossible de parser une page spéciale ainsi (et pywikibot.site.BaseSite.postForm is deprecated)
+    def pagesBySpecialLint(self, namespaces = None, site = None, lintCategories = 'multiple-unclosed-formatting-tags'):
+        if site is None: site = self.site
+        for Page in site.linter_pages(lint_categories = lintCategories, namespaces = namespaces):
+            self.treatPage(Page.title())
+
+
+    #*** Tested methods *** TODO: impossible de parser une page spéciale ainsi (et pywikibot.site.BaseSite.postForm is deprecated)
+    def pagesByCustom(self, site = None):
         if site is None: site = self.site
         page = pywikibot.Page(site, u'Special:ApiSandbox')
         raw_input(page._get_parsed_page())  # WARNING: API error pagecannotexist: Namespace doesn't allow actual pages.
