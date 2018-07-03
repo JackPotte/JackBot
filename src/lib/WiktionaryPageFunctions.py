@@ -10,10 +10,10 @@ from pywikibot import pagegenerators
 
 # https://fr.wiktionary.org/wiki/Module:types_de_mots/data
 natures = [u'adjectif', u'adverbe', u'article', u'conjonction', u'copule', u'déterminant', u'nom', u'patronyme', \
-    u'prénom', u'préposition', u'pronom', u'verbe', u'interjection', u'onomatopée', u'affixe', u'circonfixe' u'infixe', \
-    u'interfixe', u'particule', u'postposition', u'préfixe', u'radical', u'suffixe', u'pré-verbe' u'pré-nom', \
+    u'prénom', u'préposition', u'pronom', u'verbe', u'interjection', u'onomatopée', u'affixe', u'circonfixe', u'infixe', \
+    u'interfixe', u'particule', u'postposition', u'préfixe', u'radical', u'suffixe', u'pré-verbe', u'pré-nom', \
     u'enclitique', u'proclitique', u'locution', u'proverbe', u'quantificateur', u'lettre', u'symbole', u'classificateur', \
-    'numéral', u'sinogramme', u'erreur', u'gismu', u'rafsi', u'nom propre']
+    u'numéral', u'sinogramme', u'erreur', u'gismu', u'rafsi', u'nom propre']
 
 # https://fr.wiktionary.org/wiki/Catégorie:Modèles_de_définitions
 definitionTemplates = [u'abréviation de', u'comparatif de', u'exclamatif de', u'mutation de', u'superlatif de', \
