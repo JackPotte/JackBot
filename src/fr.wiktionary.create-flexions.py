@@ -98,7 +98,7 @@ def treatPageByName(pageName):
                 break
                 
             # Parcours de la page pour chaque occurence du modèle
-            nature = pageContent_till_template[nature.rfind(u'{{S|')+len(u'{{S|'):]
+            nature = pageContent_till_template[pageContent_till_template.rfind(u'{{S|')+len(u'{{S|'):]
             nature = nature[:nature.find(u'|')]
             if debugLevel > 0:
                 try:
