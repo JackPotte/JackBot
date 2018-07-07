@@ -2152,7 +2152,7 @@ def treatPageByName(pageName):
             if debugLevel > 0: print u'Ajout du mot vedette'
             pageContent = re.sub(ur'([^d\-]+\-\|[a-z]+\}\}\n\{\{[^\n]*\n)\# *', ur"\1'''" + pageName + ur"''' {{pron}}\n# ", pageContent)
         pageContent = pageContent.replace(u'num=1|num=', u'num=1')
-        pageContent = pageContent.replace(u'&nbsp;', u' ')
+        #pageContent = pageContent.replace(u'&nbsp;', u' ') # TODO: à faire hors modèles
         pageContent = pageContent.replace(u'\n #*', u'\n#*')
         pageContent = pageContent.replace(u'\n #:', u'\n#:')
         pageContent = pageContent.replace(u' }}', '}}')
@@ -2622,6 +2622,7 @@ def treatPageByName(pageName):
 
             if debugLevel > 0: print u'Traductions manquantes'
             # Si la définition du mot (dit "satellite") ne renvoie pas vers un autre, les centralisant
+            #TODO: # Variante,
             regex = ur'(fr\|flexion|' + u'|'.join(definitionSentences) + u'|' + u'|'.join(map(unicode.capitalize, definitionSentences)) + ur')'
             regex2 = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|' + \
                 u'|'.join(etymologyTemplatesInSatelliteWords) + ur')[\|}]'
@@ -3957,7 +3958,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:/\{\{S\|[^}]+\|fr[mo][^}]*\}\} ===.?\{\{fr-rég/', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = u'adzɨ')
+            p.pagesByLink(u'Template:clé de tri', afterPage = u'vanneau d’Égypte')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
