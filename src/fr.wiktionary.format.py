@@ -2060,10 +2060,11 @@ def treatPageByName(pageName):
 
         if u'{{langue|fr}}' in pageContent:
             if removeDefaultSort:
-                regex = ur'^[ 0-9a-zàâçéèêëîôùûA-ZÀÂÇÉÈÊËÎÔÙÛ]+$'
+                regex = ur'^[ 0-9a-zàâçéèêëîôùûA-ZÀÂÇÉÈÊËÎÔÙÛ]+$' #/:
                 if re.search(regex, pageName):
                     regex = ur"\n{{clé de tri([^}]*)}}"
                     if re.search(regex, pageContent):
+                        if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
                         summary = summary + u', retrait de {{clé de tri}}'
                         pageContent = re.sub(regex, '', pageContent)
 
@@ -2442,6 +2443,7 @@ def treatPageByName(pageName):
                 pageContent = pageContent[:pageContent.find(u'{{écouter|' + ModRegion[m] + u'|')+len('{{écouter|')-1] \
                  + '{{' + ModRegion[m] + u'|nocat=1}}' + pageContent[pageContent.find(u'{{écouter|' + ModRegion[m] + u'|')+len(u'{{écouter|' + ModRegion[m]):]
 
+        if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))               
         if debugLevel > 1: print u' Modèles bandeaux' 
         while pageContent.find(u'\n{{colonnes|') != -1:
             if debugLevel > 0: pywikibot.output(u'\nTemplate: \03{blue}colonnes\03{default}')
@@ -2869,14 +2871,15 @@ def treatPageByName(pageName):
                                 # Ajout de {{trad-début}} si {{T| en français (mais pas {{L| car certains les trient par famille de langue)
                                 for t in [u'T', u'ébauche-trad']:
                                     if pageContent.find('{{') == pageContent.find(u'{{' + t + u'|'):
+                                        if debugLevel > 0: print u'  {{trad-début}} addition'
+                                        if pageContent.find(u'\n') == -1: pageContent = pageContent + u'\n'
                                         pageContent = pageContent[:pageContent.find(u'\n')] + u'\n{{trad-début}}' + pageContent[pageContent.find(u'\n'):]
                                         pageContent2 = pageContent[pageContent.find(u'{{trad-début}}\n')+len(u'{{trad-début}}\n'):]
-                                        if pageContent2.find(u'\n') == -1:
-                                            pageContent = pageContent + u'\n'
-                                            pageContent2 = pageContent2 + u'\n'
                                         while pageContent2.find(u'{{' + t + u'|') < pageContent2.find(u'\n') and pageContent2.find(u'{{' + t + u'|') != -1:
                                             pageContent2 = pageContent2[pageContent2.find(u'\n')+1:]
+                                        if debugLevel > 0: print u'  {{trad-fin}} addition'
                                         pageContent = pageContent[:len(pageContent)-len(pageContent2)] + u'{{trad-fin}}\n' + pageContent[len(pageContent)-len(pageContent2):]
+                            if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace')) 
                         elif section == u'traductions à trier':
                             translationSection = True
 
@@ -3958,7 +3961,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:/\{\{S\|[^}]+\|fr[mo][^}]*\}\} ===.?\{\{fr-rég/', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = u'vanneau d’Égypte')
+            p.pagesByLink(u'Template:clé de tri', afterPage = u'serre-cou')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
