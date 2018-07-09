@@ -2948,7 +2948,8 @@ def treatPageByName(pageName):
                     if debugLevel > 0: pywikibot.output(u"  Template with lang=: \03{green}" + currentTemplate + u"\03{default}")
                     pageContent2 = pageContent[endPosition+1:]
                     isCategory = currentTemplate != u'cf' or (pageContent2.find('}}') > endPosition+1 \
-                        and (pageContent2.find(':') == -1 or pageContent2.find(':') > pageContent2.find('}}')))
+                        and (pageContent2.find(':') == -1 or pageContent2.find(':') > pageContent2.find('}}')) \
+                        and pageContent2[:1] != '#')
                     isSubtemplatesIncluded = False
                     regex = re.escape(currentTemplate) + ur'\|[^}]*({{(.*?)}}|.)+[^}]*\|lang=' + languageCode
                     if re.search(regex, pageContent):
@@ -3961,7 +3962,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:/\{\{S\|[^}]+\|fr[mo][^}]*\}\} ===.?\{\{fr-rég/', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = u'serre-cou')
+            p.pagesByLink(u'Template:clé de tri', afterPage = u'Thành phố Panama')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
