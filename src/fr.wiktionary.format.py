@@ -2219,7 +2219,6 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'- {{source|', u'{{source|')
         pageContent = pageContent.replace(u'#*: {{trad-exe|fr}}', u'')
         pageContent = pageContent.replace(u'\n{{WP', u'\n* {{WP')
-        pageContent = pageContent.replace(u'{{WP|lang=sgs', u'{{WP|lang=bat-smg')
         pageContent = pageContent.replace(u'{{Source-wikt|nan|', u'{{Source-wikt|zh-min-nan|')
 
         # TODO: Factorisation des citations
