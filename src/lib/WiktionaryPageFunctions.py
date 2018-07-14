@@ -957,8 +957,8 @@ def sort_translations(pageContent, summary):
     return pageContent, summary
 
 def getLanguageCodeISO693_1FromISO693_3(code):
-    if code in ['fon', 'frp']:
-        return code
-    return code[:2]
+    if code in ['cat', 'deu', 'eng', 'eus', 'fra', 'oci', 'zho']:
+        return code[:2]
+    return code
 
 # TODO: def sort_sections(pageContent):
