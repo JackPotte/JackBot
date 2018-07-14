@@ -224,7 +224,7 @@ def main(*args):
         else:
             treatPageByName(sys.argv[1])
     else:
-        p.pagesByCat(u'Category:Pronunciation', recursive = True, notCatNames = ['spoken ', 'Wikipedia', 'Wikinews'])
+        p.pagesByCat(u'Category:Pronunciation', recursive = True, notNames = ['spoken ', 'Wikipedia', 'Wikinews'])
 
 if __name__ == "__main__":
     main(sys.argv)
