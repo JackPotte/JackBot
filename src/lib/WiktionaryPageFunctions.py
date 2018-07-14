@@ -817,15 +817,15 @@ def nextTranslationTemplate(finalPageContent, currentPageContent, result = u'-')
 
 def removeFalseHomophones(pageContent, languageCode, pageName, relatedPageName, summary):
     if debugLevel > 1: print u'\nremoveFalseHomophones(' + relatedPageName + u')'
-    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *'''" + pageName + ur"''' *{{cf\|[^\|]*\|?" + relatedPageName + ur"[\|}][^\n]*\n"
+    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *'''" + re.escape(pageName) + ur"''' *{{cf\|[^\|]*\|?" + re.escape(relatedPageName) + ur"[\|}][^\n]*\n"
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, "==== {{S|homophones|" + languageCode + u"}} ====\n", pageContent)
         summary = summary + u', homophone erroné'
-    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *\[\[[^}\n]+{{cf\|[^\|]*\|?" + relatedPageName + ur"[\|}][^\n]*\n?"
+    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *\[\[[^}\n]+{{cf\|[^\|]*\|?" + re.escape(relatedPageName) + ur"[\|}][^\n]*\n?"
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, "==== {{S|homophones|" + languageCode + u"}} ====\n", pageContent)
         summary = summary + u', homophone erroné'
-    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *\[\[" + relatedPageName + ur"\]\](\n|$)"
+    regex = ur"==== *{{S\|homophones\|" + languageCode + u"}} *====\n\* *\[\[" + re.escape(relatedPageName) + ur"\]\](\n|$)"
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, "==== {{S|homophones|" + languageCode + u"}} ====\n", pageContent)
         summary = summary + u', homophone erroné'

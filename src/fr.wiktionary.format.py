@@ -3928,7 +3928,7 @@ def main(*args):
             treatPageByName(u'User:' + username + u'/test unitaire')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             waitAfterHumans = False
-            treatPageByName(u'Aide:Modèles')
+            treatPageByName(u'p****n')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
@@ -3961,7 +3961,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:/\{\{S\|[^}]+\|fr[mo][^}]*\}\} ===.?\{\{fr-rég/', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = u'Thành phố Panama')
+            p.pagesByLink(u'Template:clé de tri', afterPage = u'p****n')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
