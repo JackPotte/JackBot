@@ -144,6 +144,7 @@ def main(*args):
             p.pagesBySpecialNotCategorized()
         elif sys.argv[1] == u'-lint':
             p.pagesBySpecialLint()
+            # TODO: https://en.wikibooks.org/wiki/Special:LintErrors/bogus-image-options
         elif sys.argv[1] == u'-extlinks':
             p. pagesBySpecialLinkSearch('www.dmoz.org')
         else:

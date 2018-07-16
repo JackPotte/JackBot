@@ -45,3 +45,5 @@
 #python core/pwb.py src/fr.wikipedia.format -cat
 #python core/pwb.py src/en.wiktionary.format -cat
 python core/pwb.py src/en.wikibooks.format -cat
+
+#TODO: updateDumps.sh by cron

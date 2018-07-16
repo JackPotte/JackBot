@@ -508,7 +508,8 @@ Modele.append(u'audiovisuel')
 Modele.append(u'automo')
 Modele.append(u'automobile')
 Modele.append(u'auxiliaire')
-Modele.append(u'auxiliaire')
+Modele.append(u'au pluriel uniquement')
+Modele.append(u'au singulier uniquement')
 Modele.append(u'aviat')
 Modele.append(u'aviation')
 Modele.append(u'avions')
@@ -3952,7 +3953,7 @@ def main(*args):
             else:
                 # Frequent mistakes
                 #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{pron\|[^\|]*v[^\|]\|fr}}', titleInclude = u'w')
-                p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{langue\|fr\}[^$]+\{langue\|fr\}')
+                p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'\{\{S\|prononciation\}\}/[^€]+\{\{trad\-début')
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':

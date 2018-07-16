@@ -663,12 +663,12 @@ def addLine(pageContent, languageCode, Section, lineContent):
     return pageContent
 
 def addLineTest(pageContent, languageCode = 'fr'):
-    #pageContent = addCategory(pageContent, languageCode, u'Tests en français')
-    #pageContent = addLine(pageContent, languageCode, u'prononciation', u'* {{écouter|||lang=fr|audio=test.ogg}}')
-    #pageContent = addLine(pageContent, languageCode, u'prononciation', u'* {{écouter|||lang=fr|audio=test2.ogg}}')
-    #pageContent = addLine(pageContent, languageCode, u'étymologie', u':{{étyl|test|fr}}')
-    #pageContent = addLine(pageContent, languageCode, u'traductions', u'{{trad-début}}\n123\n{{trad-fin}}')
-    #pageContent = addLine(pageContent, languageCode, u'vocabulaire', u'* [[voc]]')
+    pageContent = addCategory(pageContent, languageCode, u'Tests en français')
+    pageContent = addLine(pageContent, languageCode, u'prononciation', u'* {{écouter|||lang=fr|audio=test.ogg}}')
+    pageContent = addLine(pageContent, languageCode, u'prononciation', u'* {{écouter|||lang=fr|audio=test2.ogg}}')
+    pageContent = addLine(pageContent, languageCode, u'étymologie', u':{{étyl|test|fr}}')
+    pageContent = addLine(pageContent, languageCode, u'traductions', u'{{trad-début}}\n123\n{{trad-fin}}')
+    pageContent = addLine(pageContent, languageCode, u'vocabulaire', u'* [[voc]]')
     pageContent = addLine(pageContent, languageCode, u'nom', u'# Définition')
     pageContent = addLine(pageContent, languageCode, u'nom', u'Note')
     return pageContent
