@@ -1946,13 +1946,13 @@ def treatPageByName(pageName):
 
                 if PagesVoir != u'':
                     if debugLevel > 0: print u' Filtre des doublons...'
-                    print u'  avant : ' + PagesVoir.encode(config.console_encoding, 'replace')
+                    if debugLevel > 1: print u'  avant : ' + PagesVoir
                     PagesVoir = PagesVoir + u'|'
                     while PagesVoir.find(u'|') != -1:
                         if PagesCleTotal.find(PagesVoir[:PagesVoir.find(u'|')]) == -1:
                             PagesCleTotal = PagesCleTotal + u'|' + PagesVoir[:PagesVoir.find(u'|')]
                         PagesVoir = PagesVoir[PagesVoir.find(u'|')+1:]
-                    print u'  après : ' + PagesCleTotal.encode(config.console_encoding, 'replace')
+                    if debugLevel > 1: print u'  après : ' + PagesCleTotal
                 if debugLevel > 2: raw_input(PagesCleTotal.encode(config.console_encoding, 'replace'))
 
                 if debugLevel > 0: print u' Balayage de toutes les pages "à voir"...'
