@@ -1794,6 +1794,11 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'==== {{S|phrases|fr}} ====', u'==== {{S|phrases}} ====')
         pageContent = pageContent.replace(u'{{S|descendants}}', u'{{S|dérivés autres langues}}')
 
+        pageContent = pageContent.replace(u'Annexe:gaulois/*', u'Reconstruction:gaulois/*')
+        regex = ur'\[\[Annexe(\:[^\/\n]+\/\*[^\|\]\n]+\|[^\]\n]+\]\])'
+        if re.search(regex, pageContent):
+            pageContent = re.sub(regex, ur'[[Reconstruction\1', pageContent)
+
         regex = ur'({{langue\|(?!fr}).*}[^€]*)\n=* *{{S\|traductions}} *=*\n*{{trad\-début}}\n{{ébauche\-trad}}\n{{trad\-fin}}'
         if re.search(regex, pageContent):
             pageContent = re.sub(regex, ur'\1', pageContent)
@@ -1864,7 +1869,7 @@ def treatPageByName(pageName):
         if re.search(regex, pageContent):
             pageContent = re.sub(regex, u'}}\n{{trad-fin}}', pageContent)
 
-        if not username in pageName and debugLevel == 0:
+        if 1==1 or debugLevel == 0 and not username in pageName:
             if debugLevel > 0: print u'Ajout des {{voir}}'
             if pageContent.find(u'{{voir|{{lc:{{PAGENAME}}}}}}') != -1:
                 pageContent = pageContent[:pageContent.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[:1].lower() + pageName[1:] + pageContent[pageContent.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|{{lc:{{PAGENAME}}}}'):len(pageContent)]
@@ -1917,7 +1922,8 @@ def treatPageByName(pageName):
                     pageCle = Page(site, currentPage)
                     pageContentCle = getContentFromPage(pageCle)
                     if pageContentCle != u'KO':
-                        if PagesCleTotal.find(currentPage) == -1: PagesCleTotal = PagesCleTotal + u'|' + currentPage
+                        if debugLevel > 1: print PagesCleTotal.encode(config.console_encoding, 'replace')
+                        if PagesCleTotal.find(u'|' + currentPage) == -1: PagesCleTotal = PagesCleTotal + u'|' + currentPage
                         if pageContentCle.find(u'{{voir|') != -1:
                             pageContentCle2 = pageContentCle[pageContentCle.find(u'{{voir|')+len(u'{{voir|'):len(pageContentCle)]
                             PagesVoir = PagesVoir + u'|' + pageContentCle2[:pageContentCle2.find('}}')]
@@ -1938,12 +1944,15 @@ def treatPageByName(pageName):
                             PagesCleRestant = u''
                             break
 
-                if debugLevel > 0: print u' Filtre des doublons...'
                 if PagesVoir != u'':
+                    if debugLevel > 0: print u' Filtre des doublons...'
+                    print u'  avant : ' + PagesVoir.encode(config.console_encoding, 'replace')
                     PagesVoir = PagesVoir + u'|'
                     while PagesVoir.find(u'|') != -1:
-                        if PagesCleTotal.find(PagesVoir[:PagesVoir.find(u'|')]) == -1: PagesCleTotal = PagesCleTotal + u'|' + PagesVoir[:PagesVoir.find(u'|')]
-                        PagesVoir = PagesVoir[PagesVoir.find(u'|')+1:len(PagesVoir)]
+                        if PagesCleTotal.find(PagesVoir[:PagesVoir.find(u'|')]) == -1:
+                            PagesCleTotal = PagesCleTotal + u'|' + PagesVoir[:PagesVoir.find(u'|')]
+                        PagesVoir = PagesVoir[PagesVoir.find(u'|')+1:]
+                    print u'  après : ' + PagesCleTotal.encode(config.console_encoding, 'replace')
                 if debugLevel > 2: raw_input(PagesCleTotal.encode(config.console_encoding, 'replace'))
 
                 if debugLevel > 0: print u' Balayage de toutes les pages "à voir"...'
@@ -3929,7 +3938,7 @@ def main(*args):
             treatPageByName(u'User:' + username + u'/test unitaire')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             waitAfterHumans = False
-            treatPageByName(u'p****n')
+            treatPageByName(u'-obo')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
@@ -3960,9 +3969,10 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/\{\{S\|[^}]+\|fr[mo][^}]*\}\} ===.?\{\{fr-rég/', namespaces = [0])
+                p.pagesBySearch(u'insource:/Annexe:gaulois\/\*/', namespaces = [0])
+                p.pagesBySearch(u'insource:{{recons|[[Annexe:', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = u'p****n')
+            p.pagesByLink(u'Template:clé de tri', afterPage = u'trietaĝaj')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
