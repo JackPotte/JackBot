@@ -1794,11 +1794,6 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'==== {{S|phrases|fr}} ====', u'==== {{S|phrases}} ====')
         pageContent = pageContent.replace(u'{{S|descendants}}', u'{{S|dérivés autres langues}}')
 
-        pageContent = pageContent.replace(u'Annexe:gaulois/*', u'Reconstruction:gaulois/*')
-        regex = ur'\[\[Annexe(\:[^\/\n]+\/\*[^\|\]\n]+\|[^\]\n]+\]\])'
-        if re.search(regex, pageContent):
-            pageContent = re.sub(regex, ur'[[Reconstruction\1', pageContent)
-
         regex = ur'({{langue\|(?!fr}).*}[^€]*)\n=* *{{S\|traductions}} *=*\n*{{trad\-début}}\n{{ébauche\-trad}}\n{{trad\-fin}}'
         if re.search(regex, pageContent):
             pageContent = re.sub(regex, ur'\1', pageContent)
@@ -3969,10 +3964,9 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/Annexe:gaulois\/\*/', namespaces = [0])
-                p.pagesBySearch(u'insource:{{recons|[[Annexe:', namespaces = [0])
+                p.pagesBySearch(u'"Mauvaise orthographe de" insource:{{S|traductions}}', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = u'trietaĝaj')
+            p.pagesByLink(u'Template:clé de tri', afterPage = u'glycosyl-phosphatidylinositol')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
