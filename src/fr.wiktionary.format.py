@@ -32,6 +32,13 @@ for debugAlias in debugAliases:
         debugLevel= 1
         sys.argv.remove(debugAlias)
 
+waitAfterHumans = True
+forceAliases = ['-force', '-f']
+for forceAlias in forceAliases:
+    if forceAlias in sys.argv:
+        waitAfterHumans= False
+        sys.argv.remove(forceAlias)       
+
 fileName = __file__
 if debugLevel > 0: print fileName
 if fileName.rfind('/') != -1: fileName = fileName[fileName.rfind('/')+1:]
@@ -53,7 +60,6 @@ allNamespaces = False
 treatTemplates = False
 treatCategories = False
 fixGenders = True
-waitAfterHumans = True
 listHomophons = False
 listFalseTranslations = False
 testImport = False
@@ -1658,10 +1664,6 @@ def treatPageByName(pageName):
     if fixTags: pageContent = replaceDepretacedTags(pageContent)
     if checkURL: pageContent = hyperlynx(pageContent)
 
-    regex = ur'(\[\[|\|)Annexe(\:[^\/\n]+\/\*[^\|\]\n]+\|?[^\]\n]+(\]\]|\|))'
-    if re.search(regex, pageContent):
-        pageContent = re.sub(regex, ur'\1Reconstruction\2', pageContent)
-
     if page.namespace() == 14:
         # Catégories
         finalPageContent = pageContent
@@ -2149,8 +2151,6 @@ def treatPageByName(pageName):
             pageContent = pageContent.replace(u'{{louchébem|fr}}', u'{{louchébem}}')
             pageContent = pageContent.replace(u'{{reverlanisation|fr}}', u'{{reverlanisation}}')
             pageContent = pageContent.replace(u'{{verlan|fr}}', u'{{verlan}}')
-            pageContent = pageContent.replace(u"{{source|{{w|Gustave Flaubert}}, ''{{w|Madame Bovary}}'', 1867}}", \
-                u'{{Citation/Gustave Flaubert/Madame Bovary/1857}}')
 
         languageCodes = [u'fc', u'fro', u'frm', u'pt', u'pcd']
         for l in languageCodes:
@@ -3982,7 +3982,8 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'Madame Bovary', namespaces = [0])
+                p.pagesBySearch(u'insource:/[^=]=== \{\{S\|traductions/', namespaces = [0])
+                #p.pagesBySearch(u'insource:Citation/Gustave Flaubert/Madame Bovary/1857', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:clé de tri', afterPage = u'glycosyl-phosphatidylinositol')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
