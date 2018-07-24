@@ -1663,6 +1663,10 @@ def treatPageByName(pageName):
     if fixFiles: pageContent = replaceFilesErrors(pageContent)
     if fixTags: pageContent = replaceDepretacedTags(pageContent)
     if checkURL: pageContent = hyperlynx(pageContent)
+ 
+    regex = ur'(\[\[|\|[^=:]*=?)Annexe(\:[^\/\n]+\/\*[^\|\]\n]+\|?[^\]\n]+(\]\]|\|))'
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur'\1Reconstruction\2', pageContent)
 
     if page.namespace() == 14:
         # Catégories
@@ -3982,7 +3986,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/[^=]=== \{\{S\|traductions/', namespaces = [0])
+                p.pagesBySearch(u'insource:"[[Annexe:proto"', namespaces = [110])
                 #p.pagesBySearch(u'insource:Citation/Gustave Flaubert/Madame Bovary/1857', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:clé de tri', afterPage = u'glycosyl-phosphatidylinositol')
