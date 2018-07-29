@@ -72,6 +72,10 @@ def treatPageByName(pageName):
         PageTemp = re.sub(regex, ur'\1trad\2', PageTemp)
     PageTemp = PageTemp.replace(u'hhttp://', u'http://')
 
+    regex = ur'({{[Ll]ien brisé*\|[^}]*url *=[^\|\'}]*)\'\'(\| *titre *=[^\|\'}]*)\'\''
+    if re.search(regex, PageTemp):
+        PageTemp = re.sub(regex, ur'\1\2', PageTemp)
+
     #*** Traitement des modèles ***
     #https://fr.wikipedia.org/wiki/Catégorie:Page_utilisant_un_modèle_avec_un_paramètre_obsolète
     regex = ur' *{{[Rr]eflist([^}]*)}}'
@@ -150,7 +154,7 @@ def main(*args):
         if debugLevel > 1: print sys.argv
         if sys.argv[1] == u'-test':
             treatPageByName(u'User:' + username + u'/test')
-        elif sys.argv[1] == u'-test2':
+        elif sys.argv[1] == u'-test2' or sys.argv[1] == u'-tu':
             treatPageByName(u'User:' + username + u'/test unitaire')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             treatPageByName(u'Train (groupe)')
@@ -188,7 +192,7 @@ def main(*args):
         elif sys.argv[1] == u'-nocat':
             p.pagesBySpecialNotCategorized()
         elif sys.argv[1] == u'-lint':
-            p.pagesBySpecialLint()
+            p.pagesBySpecialLint(lintCategories = 'missing-end-tag', namespaces = [0])
         elif sys.argv[1] == u'-extlinks':
             p. pagesBySpecialLinkSearch('www.dmoz.org')
         else:

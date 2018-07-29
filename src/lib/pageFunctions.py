@@ -20,9 +20,10 @@ def setGlobals(myDebugLevel, mySite, myUsername):
     username    = myUsername 
 
 def globalOperations(pageContent):
-    pageContent = replaceDMOZ(pageContent)
-    pageContent = replaceISBN(pageContent)
-    pageContent = replaceRFC(pageContent)
+    # Dmoz a fermé et bug https://fr.wikipedia.org/w/index.php?title=Flup,_N%C3%A9nesse,_Poussette_et_Cochonnet&diff=150799141&oldid=150798957
+    #pageContent = replaceDMOZ(pageContent)
+    #pageContent = replaceISBN(pageContent)
+    #pageContent = replaceRFC(pageContent)
 
     # Retire les espaces dans {{FORMATNUM:}} qui empêche de les trier dans les tableaux
     pageContent = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', pageContent)
@@ -351,7 +352,7 @@ def replaceFilesErrors(pageContent):
     badFileParameters.append(u'')
     #badFileParameters.append(u'cadre')
     for badFileParameter in badFileParameters:
-        regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *' + badFileParameter + ur' *(\||\])'
+        regex = ur'(\[\[(Image|Fichier|File) *: *[^\]{]+)\| *' + badFileParameter + ur' *(\||\])'
         if debugLevel > 1: print regex
         pageContent = re.sub(regex, ur'\1\3', pageContent)
     # Doublons
