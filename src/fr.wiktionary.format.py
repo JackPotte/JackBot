@@ -1886,7 +1886,7 @@ def treatPageByName(pageName):
         if re.search(regex, pageContent):
             pageContent = re.sub(regex, u'}}\n{{trad-fin}}', pageContent)
 
-        if 1==1 or debugLevel == 0 and not username in pageName:
+        if debugLevel == 0 and not username in pageName:
             if debugLevel > 0: print u'Ajout des {{voir}}'
             if pageContent.find(u'{{voir|{{lc:{{PAGENAME}}}}}}') != -1:
                 pageContent = pageContent[:pageContent.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|')] + pageName[:1].lower() + pageName[1:] + pageContent[pageContent.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|{{lc:{{PAGENAME}}}}'):len(pageContent)]
@@ -1920,7 +1920,7 @@ def treatPageByName(pageName):
                 diacritics.append([u'o',u'ó',u'ò',u'ö',u'ô',u'õ'])
                 diacritics.append([u'u',u'ú',u'ù',u'ü',u'û'])
                 for l in range(0,len(diacritics)):
-                    for d in range(0,len(diacritics[l])):
+                    for d in range(0, len(diacritics[l])):
                         if pageName.find(diacritics[l][d]) != -1:
                             if debugLevel > 1: print u'Titre contenant : ' + diacritics[l][d]
                             Lettre = diacritics[l][d]
@@ -1940,24 +1940,29 @@ def treatPageByName(pageName):
                     pageContentCle = getContentFromPage(pageCle)
                     if pageContentCle != u'KO':
                         if debugLevel > 1: print PagesCleTotal.encode(config.console_encoding, 'replace')
-                        if PagesCleTotal.find(u'|' + currentPage) == -1: PagesCleTotal = PagesCleTotal + u'|' + currentPage
+                        if PagesCleTotal.find(u'|' + currentPage) == -1:
+                            PagesCleTotal = PagesCleTotal + u'|' + currentPage
                         if pageContentCle.find(u'{{voir|') != -1:
-                            pageContentCle2 = pageContentCle[pageContentCle.find(u'{{voir|')+len(u'{{voir|'):len(pageContentCle)]
+                            pageContentCle2 = pageContentCle[pageContentCle.find(u'{{voir|')+len(u'{{voir|'):]
                             PagesVoir = PagesVoir + u'|' + pageContentCle2[:pageContentCle2.find('}}')]
                         elif pageContentCle.find(u'{{voir/') != -1:
-                            pageContentCle2 = pageContentCle[pageContentCle.find(u'{{voir/')+len(u'{{voir/'):len(pageContentCle)]
+                            pageContentCle2 = pageContentCle[pageContentCle.find(u'{{voir/')+len(u'{{voir/'):]
                             pageContent = u'{{voir/' + pageContentCle2[:pageContentCle2.find('}}')+3] + pageContent
                             pageMod = Page(site, u'Template:voir/' + pageContentCle2[:pageContentCle2.find('}}')])
                             pageContentModBegin = getContentFromPage(pageMod)
                             if pageContentModBegin == 'KO': break
                             pageContentMod = pageContentModBegin
                             if pageContentMod.find(u'!') == -1:
-                                if pageContentMod.find(pageName) == -1: pageContentMod = pageContentMod[:pageContentMod.find('}}')] + u'|' + pageName + pageContentMod[pageContentMod.find('}}'):len(pageContentMod)]
-                                if pageContentMod.find(PageVoir) == -1: pageContentMod = pageContentMod[:pageContentMod.find('}}')] + u'|' + PageVoir + pageContentMod[pageContentMod.find('}}'):len(pageContentMod)]
+                                if pageContentMod.find(pageName) == -1:
+                                    pageContentMod = pageContentMod[:pageContentMod.find('}}')] + u'|' + pageName + \
+                                        pageContentMod[pageContentMod.find('}}'):len(pageContentMod)]
+                                if pageContentMod.find(PageVoir) == -1:
+                                    pageContentMod = pageContentMod[:pageContentMod.find('}}')] + u'|' + PageVoir + \
+                                        pageContentMod[pageContentMod.find('}}'):len(pageContentMod)]
                             if debugLevel > 0:
                                 print u'PagesCleRestant vide'
                             else:
-                                if pageContentMod != pageContentModBegin: savePage(pageMod,pageContentMod, summary)
+                                if pageContentMod != pageContentModBegin: savePage(pageMod, pageContentMod, summary)
                             PagesCleRestant = u''
                             break
 
@@ -1974,7 +1979,7 @@ def treatPageByName(pageName):
 
                 if debugLevel > 0: print u' Balayage de toutes les pages "à voir"...'
                 if PagesCleTotal != u'':
-                    while PagesCleTotal[:1] == u'|': PagesCleTotal = PagesCleTotal[1:len(PagesCleTotal)]
+                    while PagesCleTotal[:1] == u'|': PagesCleTotal = PagesCleTotal[1:]
                 if PagesCleTotal != pageName:
                     if debugLevel > 0: print u'  Différent de la page courante'
                     PagesCleRestant = PagesCleTotal + u'|'
@@ -1983,8 +1988,8 @@ def treatPageByName(pageName):
                         if currentPage == u'':
                             if debugLevel > 0: print u'currentPage vide'
                             break
-                        PagesCleRestant = PagesCleRestant[PagesCleRestant.find(u'|')+1:len(PagesCleRestant)]
-                        if currentPage != pageName:
+                        PagesCleRestant = PagesCleRestant[PagesCleRestant.find(u'|')+1:]
+                        if currentPage != pageName and currentPage.find(u'*') == -1:
                             pageCle = Page(site, currentPage)
                             pageContentCleBegin = getContentFromPage(pageCle)
                         else:
@@ -3979,7 +3984,7 @@ def main(*args):
             else:
                 # Frequent mistakes
                 #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{pron\|[^\|]*v[^\|]\|fr}}', titleInclude = u'w')
-                p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'\{\{S\|prononciation\}\}/[^€]+\{\{trad\-début')
+                p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'\{\{S\|traduction\}\}[^€]+\{\{S\|traduction\}\}')
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
@@ -3989,7 +3994,7 @@ def main(*args):
                 p.pagesBySearch(u'insource:"[[Annexe:proto"', namespaces = [110])
                 #p.pagesBySearch(u'insource:Citation/Gustave Flaubert/Madame Bovary/1857', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = u'glycosyl-phosphatidylinositol')
+            p.pagesByLink(u'Template:clé de tri', afterPage = u'ligá')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
