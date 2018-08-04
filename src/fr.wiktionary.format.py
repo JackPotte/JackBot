@@ -1803,6 +1803,8 @@ def treatPageByName(pageName):
         pageContent = re.sub(ur'{{S\| ?voir( aussi)?\|?[a-z ]*}}', u'{{S|voir aussi}}', pageContent)
         pageContent = pageContent.replace(u'==== {{S|phrases|fr}} ====', u'==== {{S|phrases}} ====')
         pageContent = pageContent.replace(u'{{S|descendants}}', u'{{S|dérivés autres langues}}')
+        pageContent = pageContent.replace(u'Du {{étyl|en|', u'De l’{{étyl|en|')
+        pageContent = pageContent.replace(u'du {{étyl|en|', u'de l’{{étyl|en|')
 
         regex = ur'({{langue\|(?!fr}).*}[^€]*)\n=* *{{S\|traductions}} *=*\n*{{trad\-début}}\n{{ébauche\-trad}}\n{{trad\-fin}}'
         if re.search(regex, pageContent):
@@ -3991,7 +3993,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:"[[Annexe:proto"', namespaces = [110])
+                p.pagesBySearch(u'insource:"Du {{étyl|en|"', namespaces = [0])
                 #p.pagesBySearch(u'insource:Citation/Gustave Flaubert/Madame Bovary/1857', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:clé de tri', afterPage = u'D-glucuronate')

@@ -72,10 +72,11 @@ def getNews(page):
 def doOnePage(tpl, page, site_src):
     pywikibot.output(page.aslink())
     txt = page.get().replace('_', ' ')
+    # Recherche dans [[w:Portail:Canada/Actualités/Wikinews]] du pattern avec {{Utilisateur:Wikinews Importer Bot/config|...}}
     rx = re.search(r'{{(%s\|.*?)}}' % (tpl.title()), txt)
     if not rx:
         return
- 
+
     config = {
             'page' : (None, False),
             'indent' : (u'*', False),
@@ -114,7 +115,7 @@ def doOnePage(tpl, page, site_src):
     #Ignore lead (timestamp etc.)
     rx = re.compile('^(.*)<noinclude>.*', re.DOTALL)
     oldtext = rx.sub(r'\1', oldtext).strip()
- 
+
     if text != oldtext:
         raw_config = '|'.join(u'%s = %s' % (v,k[0]) for v,k in config.items() if k[1])
         text = u'%(text)s<noinclude>\n{{%(tpl)s|%(config)s}}\nRetrieved by ~~~ from [[wikinews:%(lang)s:%(page)s|]] on ~~~~~\n</noinclude>' % {
@@ -138,8 +139,8 @@ def doOnePage(tpl, page, site_src):
         'ns'  : WPsite.namespace(page.namespace()),
         'dst' : page.title(),
         }
- 
- 
+
+
 def main(lang):
     pages_maintained = {}
     site_src = pywikibot.Site(code = lang, fam = 'wikinews')
