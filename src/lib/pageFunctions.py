@@ -463,14 +463,15 @@ def savePage(currentPage, pageContent, summary, minorEdit = False):
             return
         except pywikibot.exceptions.ServerError:
             print "ServerError in savePage"
+            time.sleep(100)
+            savePage(currentPage, pageContent, summary)
             return
         except pywikibot.exceptions.BadTitle:
             print "BadTitle in savePage"
             return
         except pywikibot.exceptions.OtherPageSaveError:
+            # Ex : [[SIMP J013656.5+093347]]
             print "OtherPageSaveError"
-            time.sleep(10)
-            savePage(currentPage, pageContent, summary)
             return
         except AttributeError:
             print "AttributeError in savePage"

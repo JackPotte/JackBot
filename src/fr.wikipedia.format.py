@@ -51,7 +51,9 @@ def treatPageByName(pageName):
     page = Page(site, pageName)
     if not page.exists(): return
     if not hasMoreThanTime(page): return
-    if not allNamespaces and page.namespace() != 0 and pageName.find(username) == -1 and pageName.find(u'Template:Cite pmid/') == -1: return
+    if not allNamespaces and page.namespace() != 0 and pageName.find(username) == -1 and \
+        pageName.find(u'Template:Cite pmid/') == -1:
+        return
     PageBegin = getContentFromPage(page, 'All')
     if PageBegin == 'KO':
         print 'Page illisible'
@@ -157,7 +159,8 @@ def main(*args):
         elif sys.argv[1] == u'-test2' or sys.argv[1] == u'-tu':
             treatPageByName(u'User:' + username + u'/test unitaire')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'Train (groupe)')
+            allNamespaces = True
+            treatPageByName(u'SIMP J013656.5+093347')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
