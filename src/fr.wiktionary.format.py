@@ -1056,6 +1056,7 @@ Modele.append(u'paléo')
 Modele.append(u'paléographite')
 Modele.append(u'paléontol')
 Modele.append(u'paléontologie')
+Modele.append(u'palmipèdes')
 Modele.append(u'papeterie')
 Modele.append(u'papillons')
 Modele.append(u'papèterie')
@@ -1803,8 +1804,11 @@ def treatPageByName(pageName):
         pageContent = re.sub(ur'{{S\| ?voir( aussi)?\|?[a-z ]*}}', u'{{S|voir aussi}}', pageContent)
         pageContent = pageContent.replace(u'==== {{S|phrases|fr}} ====', u'==== {{S|phrases}} ====')
         pageContent = pageContent.replace(u'{{S|descendants}}', u'{{S|dérivés autres langues}}')
+
         pageContent = pageContent.replace(u'Du {{étyl|en|', u'De l’{{étyl|en|')
         pageContent = pageContent.replace(u'du {{étyl|en|', u'de l’{{étyl|en|')
+        pageContent = pageContent.replace(u'Du {{étyl|fro|', u'De l’{{étyl|fro|')
+        pageContent = pageContent.replace(u'du {{étyl|fro|', u'de l’{{étyl|fro|')
 
         regex = ur'({{langue\|(?!fr}).*}[^€]*)\n=* *{{S\|traductions}} *=*\n*{{trad\-début}}\n{{ébauche\-trad}}\n{{trad\-fin}}'
         if re.search(regex, pageContent):
@@ -3993,7 +3997,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:"Du {{étyl|en|"', namespaces = [0])
+                p.pagesBySearch(u'insource:/[^=]=== \{\{S\|(synonymes|dérivés|variantes|apparentés|antonymes|vocabulaire)/', namespaces = [0])
                 #p.pagesBySearch(u'insource:Citation/Gustave Flaubert/Madame Bovary/1857', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:clé de tri', afterPage = u'D-glucuronate')
@@ -4066,7 +4070,7 @@ def main(*args):
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec titre inconnu')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias')
-        #p.pagesByLink(u'Template:clé de tri')
+        p.pagesBySearch(u'insource:/[^=]=== \{\{S\|(synonymes|dérivés|variantes|apparentés|antonymes|vocabulaire)/', namespaces = [0])
 
 if __name__ == "__main__":
     main(sys.argv)
