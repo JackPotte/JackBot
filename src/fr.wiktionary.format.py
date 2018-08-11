@@ -1748,6 +1748,7 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'{{S|adjectifs|', u'{{S|adjectif|')
         pageContent = pageContent.replace(u'{{S|adj-num|', u'{{S|adjectif numéral|')
         pageContent = pageContent.replace(u'{{S|adv|', u'{{S|adverbe|')
+        pageContent = pageContent.replace(u'{{S|class|', u'{{S|classificateur|')
         pageContent = pageContent.replace(u'{{S|drv}}', u'{{S|dérivés}}')
         pageContent = pageContent.replace(u'{{S|homo|', u'{{S|homophones|')
         pageContent = pageContent.replace(u'{{S|homo}}', u'{{S|homophones}}')
@@ -3966,7 +3967,7 @@ def main(*args):
             treatPageByName(u'User:' + username + u'/test unitaire')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             waitAfterHumans = False
-            treatPageByName(u'-obo')
+            treatPageByName(u'和')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )

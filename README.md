@@ -16,5 +16,5 @@ please at least avoid any line larger than 150 characters, to allow a quick revi
 * pip install regex
 * pip install requests
 * To accelerate the treatments:
-    * modify throttle.py:254 with time.sleep(0).
-    * and user-config.py:186
+    * vim user-config.py:186
+    * vim core/pywikibot/throttle.py:254, time.sleep(0).
