@@ -37,7 +37,7 @@ class PageProvider:
             pagesList.close()
 
     def pagesByXML(self, source, regex = None, site = None, folder = 'dumps', include = None, exclude = None,
-        titleInclude = None, titleExclude = None, namespaces = None, listFalseTranslations = False):
+        titleInclude = None, titleExclude = None, namespaces = None, listFalseTranslations = False, pageNameSubst = None):
         if site is None: site = self.site
         if self.debugLevel > 1: print u'pagesByXML'
         if not source:
@@ -67,7 +67,11 @@ class PageProvider:
                 if titleInclude:
                     if re.search(titleInclude, entry.title):
                         if regex:
-                            if re.search(regex, pageContent, re.DOTALL):
+                            #print re.escape(regex.replace('PAGENAME', entry.title[:pageNameSubst]))
+                            if pageNameSubst is None:
+                                if re.search(regex, pageContent, re.DOTALL):
+                                    self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                            elif re.search(re.escape(regex.replace('PAGENAME', entry.title[:pageNameSubst])), pageContent, re.DOTALL):
                                 self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
                         elif include and exclude and include in pageContent and not exclude in pageContent:
                             self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
@@ -79,7 +83,10 @@ class PageProvider:
                             self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
                 else:
                     if regex:
-                        if re.search(regex, pageContent, re.DOTALL):
+                        if pageNameSubst is None:
+                            if re.search(regex, pageContent, re.DOTALL):
+                                self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                        elif re.search(re.escape(regex.replace('PAGENAME', entry.title[:pageNameSubst])), pageContent, re.DOTALL):
                             self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
                     elif include and exclude:
                         if include in pageContent and not exclude in pageContent:

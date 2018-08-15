@@ -3991,7 +3991,7 @@ def main(*args):
             else:
                 # Frequent mistakes
                 #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{pron\|[^\|]*v[^\|]\|fr}}', titleInclude = u'w')
-                p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'\{\{S\|traduction\}\}[^€]+\{\{S\|traduction\}\}')
+                p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{pron|PAGENAME|fr}}', titleInclude = u'eur', pageNameSubst = -4)
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
