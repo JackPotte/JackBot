@@ -64,9 +64,11 @@ def treatPageByName(pageName):
     param.append(u's')
     template.append(u'fr-accord-cons')
     param.append(u'ms')
-    #TODO: ajouter Catégorie:Modèles d’accord en français
-    template.append(u'fr-accord-eur')
-    param.append(u'1')
+    # TODO: traiter le reste de [[Catégorie:Modèles d’accord en français]]
+    # TODO: 430 faux-positifs corrigés pour les prononciations et |rice=1 des -eur
+    #https://fr.wiktionary.org/w/index.php?title=anticonservateurs&type=revision&diff=25375891&oldid=24393947
+    #template.append(u'fr-accord-eur')
+    #param.append(u'1')
 
     for m in range(0, len(template)):
         if debugLevel > 1: print ' début du for ' + str(m) + u', recherche du modèle : ' + template[m]
