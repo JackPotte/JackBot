@@ -4001,7 +4001,7 @@ def main(*args):
                 p.pagesBySearch(u'insource:/[^=]=== \{\{S\|(synonymes|dérivés|variantes|apparentés|antonymes|vocabulaire)/', namespaces = [0])
                 #p.pagesBySearch(u'insource:Citation/Gustave Flaubert/Madame Bovary/1857', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = u'D-glucuronate')
+            p.pagesByLink(u'Template:clé de tri', afterPage = u'maître d’école')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
