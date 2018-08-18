@@ -64,58 +64,47 @@ class PageProvider:
 
             if not namespaces and entry.title.find(u':') == -1:
                 pageContent = entry.text
-                if titleInclude:
-                    if re.search(titleInclude, entry.title):
-                        if regex:
-                            #print re.escape(regex.replace('PAGENAME', entry.title[:pageNameSubst]))
-                            if pageNameSubst is None:
-                                if re.search(regex, pageContent, re.DOTALL):
-                                    self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                            elif re.search(re.escape(regex.replace('PAGENAME', entry.title[:pageNameSubst])), pageContent, re.DOTALL):
-                                self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                        elif include and exclude and include in pageContent and not exclude in pageContent:
-                            self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                        elif include and include in pageContent:
-                            self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                        elif exclude and not exclude in pageContent:
-                            self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                        elif not include and not exclude:
-                            self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                else:
+                i = titleInclude and re.search(titleInclude, entry.title)
+                e = titleExclude and not re.search(titleExclude, entry.title)
+                if (i and e) or (i and not titleExclude) or (not titleInclude and e):
                     if regex:
+                        #print re.escape(regex.replace('PAGENAME', entry.title[:pageNameSubst]))
                         if pageNameSubst is None:
                             if re.search(regex, pageContent, re.DOTALL):
                                 self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
                         elif re.search(re.escape(regex.replace('PAGENAME', entry.title[:pageNameSubst])), pageContent, re.DOTALL):
                             self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                    elif include and exclude:
-                        if include in pageContent and not exclude in pageContent:
+                    elif include and exclude and include in pageContent and not exclude in pageContent:
+                        self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                    elif include and include in pageContent and not exclude:
+                        self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                    elif exclude and not exclude in pageContent and not include:
+                        self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                    elif not include and not exclude:
+                        self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                    '''else:
+                    if self.debugLevel > 1: print u' Pluriels non flexion'
+                    if entry.title[-2:] == u'es':
+                        if self.debugLevel > 1: print entry.title
+                        regex = ur"=== {{S\|adjectif\|fr[^}]+}} ===\n[^\n]*\n*{{fr\-rég\|[^\n]+\n*'''" + re.escape(entry.title) + ur"'''[^\n]*\n# *'*'*(Masculin|Féminin)+ *[P|p]luriel de *'*'* *\[\["
+                        if re.search(regex, pageContent):
+                            if self.debugLevel > 0: print entry.title
+                            #pageContent = re.sub(regex, ur'\1|flexion\2', pageContent)
+                            #self.treatPage(html2Unicode(entry.title))
+
+                    if self.debugLevel > 1: print u' Ajout de la boite de flexion'
+                    if entry.title[-1:] == u's':
+                        if (pageContent.find(u'{{S|adjectif|fr|flexion}}') != -1 or pageContent.find(u'{{S|nom|fr|flexion}}') != -1) and pageContent.find(u'{{fr-') == -1:
+                            #print entry.title # limite de 8191 lignes dans le terminal.
+                            #self.treatPage(entry.title)
                             self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                    else:
-                        pass
-                        '''
-                        if self.debugLevel > 1: print u' Pluriels non flexion'
-                        if entry.title[-2:] == u'es':
-                            if self.debugLevel > 1: print entry.title
-                            regex = ur"=== {{S\|adjectif\|fr[^}]+}} ===\n[^\n]*\n*{{fr\-rég\|[^\n]+\n*'''" + re.escape(entry.title) + ur"'''[^\n]*\n# *'*'*(Masculin|Féminin)+ *[P|p]luriel de *'*'* *\[\["
-                            if re.search(regex, pageContent):
-                                if self.debugLevel > 0: print entry.title
-                                #pageContent = re.sub(regex, ur'\1|flexion\2', pageContent)
-                                #self.treatPage(html2Unicode(entry.title))
 
-                        if self.debugLevel > 1: print u' Ajout de la boite de flexion'
-                        if entry.title[-1:] == u's':
-                            if (pageContent.find(u'{{S|adjectif|fr|flexion}}') != -1 or pageContent.find(u'{{S|nom|fr|flexion}}') != -1) and pageContent.find(u'{{fr-') == -1:
-                                #print entry.title # limite de 8191 lignes dans le terminal.
-                                #self.treatPage(entry.title)
-                                self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-
-                        if self.debugLevel > 1: print u' balises HTML désuètes'
-                        from lib import *
-                        for deprecatedTag in deprecatedTags.keys():
-                            if pageContent.find(u'<' + deprecatedTag) != -1:
-                                self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                        '''
+                    if self.debugLevel > 1: print u' balises HTML désuètes'
+                    from lib import *
+                    for deprecatedTag in deprecatedTags.keys():
+                        if pageContent.find(u'<' + deprecatedTag) != -1:
+                            self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                    '''
         self.outputFile.close()
 
     # Traitement des pages d'une catégorie

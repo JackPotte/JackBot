@@ -3989,9 +3989,8 @@ def main(*args):
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
-                # Frequent mistakes
-                #p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{pron\|[^\|]*v[^\|]\|fr}}', titleInclude = u'w')
-                p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{pron|PAGENAME|fr}}', titleInclude = u'eur', pageNameSubst = -4)
+                # Frequent mistake
+                p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', include = ur'{{fr-accord-eur', exclude = ur'rice=', titleInclude = u'ateur|rice')
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
