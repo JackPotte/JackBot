@@ -2254,11 +2254,15 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'{{prononciation|}}', u'{{prononciation}}')
         pageContent = pageContent.replace(u'{{pron-rég|', u'{{écouter|')
         pageContent = pageContent.replace(u'{{Référence nécessaire}}', u'{{référence nécessaire}}')
-        pageContent = pageContent.replace(u'— {{source|', u'{{source|')
-        pageContent = pageContent.replace(u'- {{source|', u'{{source|')
         pageContent = pageContent.replace(u'#*: {{trad-exe|fr}}', u'')
         pageContent = pageContent.replace(u'\n{{WP', u'\n* {{WP')
         pageContent = pageContent.replace(u'{{Source-wikt|nan|', u'{{Source-wikt|zh-min-nan|')
+       
+        pageContent = pageContent.replace(u'— {{source|', u'{{source|')
+        pageContent = pageContent.replace(u'- {{source|', u'{{source|')
+        regex = ur"(\{\{source\|[^}]+ )p\. *([0-9])"
+        if re.search(regex, pageContent):
+            pageContent = re.sub(regex, ur"\1page \2", pageContent)
 
         # TODO: Factorisation des citations
         #regex = ur"(?:— \(|{{source\|)Cirad/Gret/MAE, ''Mémento de l['’]Agronome'', 1 *692 p(?:\.|ages), p(?:\.|age) ([0-9 ]+), 2002, Paris, France, Cirad/Gret/Ministère des Affaires [EÉ]trangères \(\+ 2 cdroms\)(?:\)|}})"
@@ -3997,8 +4001,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/[^=]=== \{\{S\|(synonymes|dérivés|variantes|apparentés|antonymes|vocabulaire)/', namespaces = [0])
-                #p.pagesBySearch(u'insource:Citation/Gustave Flaubert/Madame Bovary/1857', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{source\|[^}]+ p\.[0-9]/', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:clé de tri', afterPage = u'maître d’école')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
@@ -4070,7 +4073,7 @@ def main(*args):
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec titre inconnu')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections avec paramètres superflus')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias')
-        p.pagesBySearch(u'insource:/[^=]=== \{\{S\|(synonymes|dérivés|variantes|apparentés|antonymes|vocabulaire)/', namespaces = [0])
+        p.pagesBySearch(u'insource:/[^=]=== \{\{S\|(variantes|synonymes|antonymes|dérivés|apparentés|hyperonymes|hyponymes|méronymes|holonymes|vocabulaire|traductions)/', namespaces = [0])
 
 if __name__ == "__main__":
     main(sys.argv)
