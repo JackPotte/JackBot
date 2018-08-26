@@ -432,7 +432,7 @@ def stopRequired(username = username):
         pywikibot.output(u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
         exit(0)
 
-def savePage(currentPage, pageContent, summary, minorEdit = False):
+def savePage(currentPage, pageContent, summary, minorEdit = True):
     result = "ok"
     if debugLevel > 0:
         pywikibot.output(u"\n\03{blue}" + summary + u"\03{default}")
