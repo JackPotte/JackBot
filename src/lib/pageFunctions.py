@@ -219,9 +219,10 @@ def replaceDepretacedTags(pageContent):
     deprecatedTags = {}
     deprecatedTags['big'] = 'strong'
     deprecatedTags['center'] = 'div style="text-align: center;"'
-    deprecatedTags['font color *= *"?'] = 'span style="color:'
-    deprecatedTags['font face *= *"?'] = 'span style="font-family:'
-    deprecatedTags['font size *= *"?\+?\-?'] = 'span style="font-size:'
+    deprecatedTags['font *color *= *"?'] = 'span style="color:'
+    deprecatedTags['font *face *= *"?'] = 'span style="font-family:'
+    deprecatedTags['font *\-?size *= *"?\+?\-?'] = 'span style="font-size:'
+    deprecatedTags['font *style *= *"?\+?\-?'] = 'span style="'
     #deprecatedTags['font '] = 'span ' #TODO: ajouter des ";" entre plusieurs param
     deprecatedTags['strike'] = 's'
     deprecatedTags['tt'] = 'code'
@@ -280,7 +281,7 @@ def replaceDepretacedTags(pageContent):
             #pageContent = re.sub(regex, ur'<' + newTag + ur'\1>', pageContent)
             pattern = re.compile(regex, re.UNICODE)
             for match in pattern.finditer(pageContent):
-                if debugLevel > 0: print str(match.group(1))
+                if debugLevel > 1: print str(match.group(1))
                 if newTag.find(u'font-size') != -1:
                     size = match.group(1).replace('"', '')
                     try:

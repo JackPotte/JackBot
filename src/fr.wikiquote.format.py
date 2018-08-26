@@ -29,8 +29,8 @@ site = pywikibot.Site(siteLanguage, siteFamily)
 username = config.usernames[siteFamily][siteLanguage]
 
 checkURL = False
-fixTags = True
-fixFiles = True
+fixTags  = False
+fixFiles = False
 
 
 def treatPageByName(pageName):
@@ -45,6 +45,21 @@ def treatPageByName(pageName):
     if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
     if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
     if checkURL: PageTemp = hyperlynx(PageTemp)
+
+    PageTemp = PageTemp.replace(u'<small>([[User talk:Deadhoax|<span style="color:#800080;">Disc</span>]] | ' \
+        + u'[[Special:Contributions/Deadhoax|<span style="color:#800080;">Contr</span></small>]])', 
+        u'<small>([[User talk:Deadhoax|<span style="color:#800080;">Disc</span>]] | ' \
+        + u'[[Special:Contributions/Deadhoax|<span style="color:#800080;">Contr</span>]])</small>')
+
+    PageTemp = PageTemp.replace(u'<small>([[User talk:Fabrice Ferrer|<span style="color:#800080;">Disc</span>]] | ' \
+        + u'[[Special:Contributions/Fabrice Ferrer|<span style="color:#800080;">Contr</span></small>]])', 
+        u'<small>([[User talk:Fabrice Ferrer|<span style="color:#800080;">Disc</span>]] | ' \
+        + u'[[Special:Contributions/Fabrice Ferrer|<span style="color:#800080;">Contr</span>]])</small>')
+
+    PageTemp = PageTemp.replace(u'<small>([[Discussion Utilisateur:Fabrice Ferrer|<span style="color:#800080;">Disc</span>]] | ' \
+        + u'[[Special:Contributions/Fabrice Ferrer|<span style="color:#800080;">Contr</span></small>]])', 
+        u'<small>([[User talk:Fabrice Ferrer|<span style="color:#800080;">Disc</span>]] | ' \
+        + u'[[Special:Contributions/Fabrice Ferrer|<span style="color:#800080;">Contr</span>]])</small>')
 
     if page.namespace() == 0:
         # Traitement des modèles
@@ -65,11 +80,14 @@ def treatPageByName(pageName):
         PageTemp = PageTemp.replace(u'<references/>', u'{{Références}}')
         PageTemp = PageTemp.replace(u'<references />', u'{{Références}}')
         savePage(page, PageEnd, summary)
+    elif debugLevel > 0:
+        print u'No change'
 
 
 p = PageProvider(treatPageByName, site, debugLevel)
 setGlobals(debugLevel, site, username)
 def main(*args):
+    global fixTags, fixFiles
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
         if sys.argv[1] == u'-test':
@@ -77,7 +95,7 @@ def main(*args):
         elif sys.argv[1] == u'-test2':
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'Catégorie:Python')
+            treatPageByName(u'Wikiquote:Le Salon/janvier 2007')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
@@ -90,7 +108,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'chinois')
+                p.pagesBySearch(u'insource:"<font"')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
@@ -108,7 +126,9 @@ def main(*args):
         elif sys.argv[1] == u'-nocat':
             p.pagesBySpecialNotCategorized()
         elif sys.argv[1] == u'-lint':
-            p.pagesBySpecialLint()
+            fixTags = True
+            fixFiles = True
+            p.pagesBySpecialLint(lintCategories = 'obsolete-tag')
         elif sys.argv[1] == u'-extlinks':
             p. pagesBySpecialLinkSearch('www.dmoz.org')
         else:
