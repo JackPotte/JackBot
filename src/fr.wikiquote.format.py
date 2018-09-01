@@ -75,6 +75,11 @@ def treatPageByName(pageName):
         PageTemp = PageTemp.replace(u'{{reflist}}', u'{{Références}}')
         PageTemp = PageTemp.replace(u'{{Reflist}}', u'{{Références}}')
 
+        regex = ur'<div style *= *"text\-align: *center;">([^<]+)</div>'
+        if re.search(regex, PageTemp):
+            summary += ', [[Modèle:centrer]]'
+            PageTemp = re.sub(regex, ur'{{centrer|\1}}', PageTemp)
+
     PageEnd = PageEnd + PageTemp
     if PageEnd != PageBegin:
         PageTemp = PageTemp.replace(u'<references/>', u'{{Références}}')
@@ -108,7 +113,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:"<font"')
+                p.pagesBySearch(u'insource:text-align: center', namespaces = [11, 14])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:autres projets')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
