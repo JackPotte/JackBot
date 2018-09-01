@@ -176,6 +176,11 @@ def treatPageByName(pageName):
     pageContent = currentPageContent
 
     finalPageContent = addPronunciation(pageContent, languageCode, u'prononciation', u'* {{écouter|' + region + u'|' + prononciation + u'|lang=' + languageCode + u'|audio=' + Son + u'}}')
+    # Hardfix
+    regex = ur'{{S\|prononciation}} ===\*'
+    if re.search(regex, finalPageContent):
+        finalPageContent = re.sub(regex, ur'{{S|prononciation}} ===\n*', finalPageContent)
+
     if finalPageContent != currentPageContent: savePage(page1, finalPageContent, summary)
 
 

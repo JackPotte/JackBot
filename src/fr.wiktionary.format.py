@@ -2466,6 +2466,9 @@ def treatPageByName(pageName):
         regex = ur'\n *{{écouter\|'
         if re.search(regex, pageContent):
             pageContent = re.sub(regex, ur'\n* {{écouter|', pageContent)
+        regex = ur'{{S\|prononciation}} ===\*'
+        if re.search(regex, pageContent):
+            pageContent = re.sub(regex, ur'{{S|prononciation}} ===\n*', pageContent)
 
         limitReg = 13
         ModRegion = range(1, limitReg)
@@ -4001,7 +4004,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/\{\{source\|[^}]+ p\.[0-9]/', namespaces = [0])
+                p.pagesBySearch(u'insource:/===\* \{\{écouter/', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Template:clé de tri', afterPage = u'maître d’école')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
