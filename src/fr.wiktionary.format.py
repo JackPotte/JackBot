@@ -54,7 +54,7 @@ checkURL = False
 fixTags = False
 fixFiles = True
 fixOldTemplates = False
-addDefaultSortKey = True
+addDefaultSortKey = False
 removeDefaultSort = True
 allNamespaces = False
 treatTemplates = False
@@ -2074,7 +2074,7 @@ def treatPageByName(pageName):
         #TODO: uca-default gère af, am, ar, as, ast, az, be, be-tarask, bg, bn, bn@collation=traditional, bo, br, bs, bs-Cyrl, ca, chr, co, cs, cy, da, de, de-AT@collation=phonebook, dsb, ee, el, en, eo, es, et, eu, fa, fi, fil, fo, fr, fr-CA, fur, fy, ga, gd, gl, gu, ha, haw, he, hi, hr, hsb, hu, hy, id, ig, is, it, ka, kk, kl, km, kn, kok, ku, ky, la, lb, lkt, ln, lo, lt, lv, mk, ml, mn, mo, mr, ms, mt, nb, ne, nl, nn, no, oc, om, or, pa, pl, pt, rm, ro, ru, rup, sco, se, si, sk, sl, smn, sq, sr, sr-Latn, sv, sv@collation=standard, sw, ta, te, th, tk, tl, to, tr, tt, uk, uz, vi, vo, yi, yo, zu
         if addDefaultSortKey:
             if debugLevel > 0: print u'Clés de tri'
-            pageContent = addDefaultSort(pageName, pageContent)
+            pageContent = addDefaultSort(pageName, pageContent) #TODO: compare the Lua with ", empty = True"
 
         if debugLevel > 1: print u'Formatage de la ligne de forme'
         pageContent = pageContent.replace(u'{{PAGENAME}}', u'{{subst:PAGENAME}}')
@@ -2366,6 +2366,10 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'{{boîte début', u'{{(')
         pageContent = pageContent.replace(u'{{boîte fin', u'{{)')
         pageContent = pageContent.replace(u'\n{{-}}', u'')
+
+        regex = ur'({{S\|[^}]+)€'
+        while re.search(regex, pageContent):
+            pageContent = re.sub(regex, ur'\1⿕', pageContent)
 
         if debugLevel > 1: print u' Ajout des modèles de référence' # les URL ne contiennent pas les diacritiques des {{PAGENAME}}
         while pageContent.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=') != -1:
@@ -2836,23 +2840,23 @@ def treatPageByName(pageName):
                                 positionAnagr = pageContent.find(u'{{langue|' + languageCode + '}}')+len(u'{{langue|' + languageCode + '}}')
                                 pageContent2 = pageContent[positionAnagr:len(pageContent)]
                                 if pageContent2.find(u'\n=== {{S|voir') != -1 and ((pageContent2.find(u'{{langue|') != -1 and pageContent2.find(u'{{S|voir') < pageContent2.find(u'{{langue|')) or pageContent2.find(u'{{langue|') == -1):
-                                    pageContent = pageContent[:positionAnagr+pageContent2.find(u'\n=== {{S|voir')] + u'\n=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + pageContent[positionAnagr+pageContent2.find(u'\n=== {{S|voir'):len(pageContent)]
+                                    pageContent = pageContent[:positionAnagr+pageContent2.find(u'\n=== {{S|voir')] + u'\n=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + pageContent[positionAnagr+pageContent2.find(u'\n=== {{S|voir'):]
                                 elif pageContent2.find(u'\n=== {{S|références}}') != -1 and ((pageContent2.find(u'{{langue|') != -1 and pageContent2.find(u'\n=== {{S|références}}') < pageContent2.find(u'{{langue|')) or pageContent2.find(u'{{langue|') == -1):
                                     pageContent = pageContent[:positionAnagr+pageContent2.find(u'\n=== {{S|références}}')] +  u'\n=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + pageContent[positionAnagr+pageContent2.find(u'\n=== {{S|références}}'):]
                                 elif pageContent2.find(u'== {{langue|') != -1 and ((pageContent2.find(u'[[Catégorie:') != -1 and pageContent2.find(u'== {{langue|') < pageContent2.find(u'[[Catégorie:')) or pageContent2.find(u'[[Catégorie:') == -1):
-                                    pageContent = pageContent[:positionAnagr+pageContent2.find(u'== {{langue|')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + pageContent[positionAnagr+pageContent2.find(u'== {{langue|'):len(pageContent)]
+                                    pageContent = pageContent[:positionAnagr+pageContent2.find(u'== {{langue|')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + pageContent[positionAnagr+pageContent2.find(u'== {{langue|'):]
                                 elif pageContent2.find(u'=={{langue|') != -1 and ((pageContent2.find(u'[[Catégorie:') != -1 and pageContent2.find(u'=={{langue|') < pageContent2.find(u'[[Catégorie:')) or pageContent2.find(u'[[Catégorie:') == -1):
-                                    pageContent = pageContent[:positionAnagr+pageContent2.find(u'=={{langue|')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + pageContent[positionAnagr+pageContent2.find(u'=={{langue|'):len(pageContent)]        
+                                    pageContent = pageContent[:positionAnagr+pageContent2.find(u'=={{langue|')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + pageContent[positionAnagr+pageContent2.find(u'=={{langue|'):]        
                                 elif pageContent2.find(u'{{clé de tri') != -1:
-                                    pageContent = pageContent[:positionAnagr+pageContent2.find(u'{{clé de tri')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + pageContent[positionAnagr+pageContent2.find(u'{{clé de tri'):len(pageContent)]
+                                    pageContent = pageContent[:positionAnagr+pageContent2.find(u'{{clé de tri')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + pageContent[positionAnagr+pageContent2.find(u'{{clé de tri'):]
                                 elif pageContent2.find(u'[[Catégorie:') != -1:
-                                    pageContent = pageContent[:positionAnagr+pageContent2.find(u'[[Catégorie:')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + pageContent[positionAnagr+pageContent2.find(u'[[Catégorie:'):len(pageContent)]
+                                    pageContent = pageContent[:positionAnagr+pageContent2.find(u'[[Catégorie:')] + u'=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + pageContent[positionAnagr+pageContent2.find(u'[[Catégorie:'):]
                                 else:
                                     if debugLevel > 0: print " Ajout avant les interwikis"
                                     regex = ur'\n\[\[\w?\w?\w?:'
                                     if re.compile(regex).search(pageContent):
                                         try:
-                                            pageContent = pageContent[:re.search(regex,pageContent).start()] + u'\n=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + pageContent[re.search(regex,pageContent).start():]
+                                            pageContent = pageContent[:re.search(regex, pageContent).start()] + u'\n=== {{S|anagrammes}} ===\n' + ListeAnagrammes + u'\n' + pageContent[re.search(regex, pageContent).start():]
                                         except:
                                             if debugLevel > 0: print u'pb regex interwiki'
                                     else:
@@ -2896,7 +2900,7 @@ def treatPageByName(pageName):
                                 if debugLevel > 0: print u' ajout de "clé="'
                                 tempPageName = defaultSort(tempPageName)
                                 pageContent = pageContent[:pageContent.find('}}')] + u'|clé=' + tempPageName + pageContent[pageContent.find('}}'):]
-
+                            
                     else:
                         addLanguageCode = False # Paragraphe sans code langue dans les modèles lexicaux et les titres
                         translationSection = False
@@ -4004,9 +4008,9 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/===\* \{\{écouter/', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{S\|[^\}]+€/', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = u'maître d’école')
+            p.pagesByLink(u'Template:clé de tri', afterPage = u'avoir du retard à l’allumage')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
