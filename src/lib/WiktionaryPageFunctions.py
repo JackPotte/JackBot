@@ -971,7 +971,10 @@ def getLanguageCodeISO693_1FromISO693_3(code):
     return code
 
 def addSeeBanner(pageName, pageContent, summary):
+    if debugLevel == 1: return pageContent, summary
     if debugLevel > 0: print u'Ajout des {{voir}}'
+    CleTri = defaultSort(pageName)
+
     if pageContent.find(u'{{voir|{{lc:{{PAGENAME}}}}}}') != -1:
         pageContent = pageContent[:pageContent.find(u'{{voir|{{lc:{{PAGENAME}}}}}}')+len(u'{{voir|')] + \
             pageName[:1].lower() + pageName[1:] + \

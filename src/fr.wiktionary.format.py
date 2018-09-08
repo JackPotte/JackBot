@@ -62,6 +62,7 @@ allNamespaces = False
 treatTemplates = False
 treatCategories = False
 fixGenders = True
+fixFalseFlexions = False
 listHomophons = False
 listFalseTranslations = False
 testImport = False
@@ -1659,7 +1660,6 @@ def treatPageByName(pageName):
         return
     pageContent = currentPageContent
     finalPageContent = u''
-    CleTri = defaultSort(pageName)
     rePageName = re.escape(pageName)
 
     pageContent = globalOperations(pageContent)
@@ -3635,6 +3635,45 @@ def treatPageByName(pageName):
                         summary = summary + u', précision du genre ' + lemmaGender
                         if debugLevel > 1: print ' loc'
 
+            if fixFalseFlexions and pageName[-2:] == u'es':
+                if debugLevel > 0: ' Hardfix des flexions de noms féminins'
+                oldSuffix = []
+                newSuffix = []
+                oldSuffix.append(ur'eur')
+                newSuffix.append(ur'rice')
+                oldSuffix.append(ur'eur')
+                newSuffix.append(ur'euse')
+                oldSuffix.append(ur'er')
+                newSuffix.append(ur'ère')
+                oldSuffix.append(ur'n')
+                newSuffix.append(ur'nne')
+                sectionContent, startPosition, endPosition = getSection(finalPageContent, 'nom')
+                newSectionContent = sectionContent
+                i = 0
+                while i < len(newSuffix):
+                    if pageName[-len(newSuffix[i] + u's'):] == newSuffix[i] + u's':
+                        regex = ur"({{fr\-rég\|s=[^\|}]+)" + oldSuffix[i] + u"([\|}])"
+                        if re.search(regex, newSectionContent):
+                            newSectionContent = re.sub(regex, ur'\1' + newSuffix[i] + ur'\2', newSectionContent)
+                        regex = ur"({{f}}\n# ''Pluriel de'' \[\[[^\|\]#]+)" + oldSuffix[i] + u"(\])"
+                        if re.search(regex, newSectionContent):
+                            newSectionContent = re.sub(regex, ur'\1' + newSuffix[i] + ur'\2', newSectionContent)
+                        regex = ur"({{f}}\n# ''Pluriel de'' \[\[[^\|\]#]+)" + oldSuffix[i] + u"([\|#][^\]]+)" + oldSuffix[i] + u"(\])"
+                        if re.search(regex, newSectionContent):
+                            newSectionContent = re.sub(regex, ur'\1' + newSuffix[i] + ur'\2' + newSuffix[i] + ur'\3', newSectionContent)
+                    i = i + 1
+                regex = ur"({{fr\-rég\|s=[^\|}]+[^e\]}])([\|}])"
+                if re.search(regex, newSectionContent):
+                    newSectionContent = re.sub(regex, ur'\1e\2', newSectionContent)
+                regex = ur"({{f}}\n# ''Pluriel de'' \[\[[^\|\]#]+[^e\]])(\])"
+                if re.search(regex, newSectionContent):
+                    newSectionContent = re.sub(regex, ur'\1e\2', newSectionContent)
+                regex = ur"({{f}}\n# ''Pluriel de'' \[\[[^\|\]#]+[^e])([\|#][^\]]+[^e\]])(\])"
+                if re.search(regex, newSectionContent):
+                    newSectionContent = re.sub(regex, ur'\1e\2e\3', newSectionContent)
+
+                summary = summary + u', correction de flexion de nom féminin'
+                finalPageContent = finalPageContent.replace(sectionContent, newSectionContent)
 
         # Liens vers les annexes de conjugaisons
         LanguesC = [ (u'es',u'ar',u'arsi',u'er',u'ersi',u'ir',u'irsi'),
@@ -3846,7 +3885,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:/\{\{S\|[^\}]+€/', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = u'coefficients d’égalisation')
+            p.pagesByLink(u'Template:clé de tri', afterPage = u'sámildivččii')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
