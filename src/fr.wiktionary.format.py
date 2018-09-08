@@ -3643,37 +3643,51 @@ def treatPageByName(pageName):
                 newSuffix.append(ur'rice')
                 oldSuffix.append(ur'eur')
                 newSuffix.append(ur'euse')
+                oldSuffix.append(ur'eux')
+                newSuffix.append(ur'euse')
                 oldSuffix.append(ur'er')
                 newSuffix.append(ur'ère')
+                oldSuffix.append(ur'el')
+                newSuffix.append(ur'elle')
+                oldSuffix.append(ur'et')
+                newSuffix.append(ur'ette')
                 oldSuffix.append(ur'n')
                 newSuffix.append(ur'nne')
                 sectionContent, startPosition, endPosition = getSection(finalPageContent, 'nom')
-                newSectionContent = sectionContent
-                i = 0
-                while i < len(newSuffix):
-                    if pageName[-len(newSuffix[i] + u's'):] == newSuffix[i] + u's':
-                        regex = ur"({{fr\-rég\|s=[^\|}]+)" + oldSuffix[i] + u"([\|}])"
-                        if re.search(regex, newSectionContent):
-                            newSectionContent = re.sub(regex, ur'\1' + newSuffix[i] + ur'\2', newSectionContent)
-                        regex = ur"({{f}}\n# ''Pluriel de'' \[\[[^\|\]#]+)" + oldSuffix[i] + u"(\])"
-                        if re.search(regex, newSectionContent):
-                            newSectionContent = re.sub(regex, ur'\1' + newSuffix[i] + ur'\2', newSectionContent)
-                        regex = ur"({{f}}\n# ''Pluriel de'' \[\[[^\|\]#]+)" + oldSuffix[i] + u"([\|#][^\]]+)" + oldSuffix[i] + u"(\])"
-                        if re.search(regex, newSectionContent):
-                            newSectionContent = re.sub(regex, ur'\1' + newSuffix[i] + ur'\2' + newSuffix[i] + ur'\3', newSectionContent)
-                    i = i + 1
-                regex = ur"({{fr\-rég\|s=[^\|}]+[^e\]}])([\|}])"
-                if re.search(regex, newSectionContent):
-                    newSectionContent = re.sub(regex, ur'\1e\2', newSectionContent)
-                regex = ur"({{f}}\n# ''Pluriel de'' \[\[[^\|\]#]+[^e\]])(\])"
-                if re.search(regex, newSectionContent):
-                    newSectionContent = re.sub(regex, ur'\1e\2', newSectionContent)
-                regex = ur"({{f}}\n# ''Pluriel de'' \[\[[^\|\]#]+[^e])([\|#][^\]]+[^e\]])(\])"
-                if re.search(regex, newSectionContent):
-                    newSectionContent = re.sub(regex, ur'\1e\2e\3', newSectionContent)
+                if sectionContent is not None:
+                    newSectionContent = sectionContent
+                    i = 0
+                    while i < len(newSuffix):
+                        if pageName[-len(newSuffix[i] + u's'):] == newSuffix[i] + u's':
+                            regex = ur"({{fr\-rég\|s=[^\|}]+)" + oldSuffix[i] + u"([\|}])"
+                            if re.search(regex, newSectionContent):
+                                newSectionContent = re.sub(regex, ur'\1' + newSuffix[i] + ur'\2', newSectionContent)
 
-                summary = summary + u', correction de flexion de nom féminin'
-                finalPageContent = finalPageContent.replace(sectionContent, newSectionContent)
+                            regex = ur"({{f}}\n# *''(?:[fF]éminin )?[pP]luriel de'' \[\[[^\|\]#]+)" + oldSuffix[i] + u"([\|#][^\]]+)" + oldSuffix[i] + u"(\])"
+                            if re.search(regex, newSectionContent):
+                                newSectionContent = re.sub(regex, ur'\1' + newSuffix[i] + ur'\2' + newSuffix[i] + ur'\3', newSectionContent)
+
+                            regex = ur"({{f}}\n# *''(?:[fF]éminin )?[pP]luriel de'' \[\[[^\|\]#]+)" + oldSuffix[i] + u"([\|#])"
+                            if re.search(regex, newSectionContent):
+                                newSectionContent = re.sub(regex, ur'\1' + newSuffix[i] + ur'\2', newSectionContent)
+
+                            regex = ur"({{f}}\n# *''(?:[fF]éminin )?[pP]luriel de'' \[\[[^\|\]#]+)" + oldSuffix[i] + u"(\])"
+                            if re.search(regex, newSectionContent):
+                                newSectionContent = re.sub(regex, ur'\1' + newSuffix[i] + ur'\2', newSectionContent)
+                        i = i + 1
+                    regex = ur"({{fr\-rég\|s=[^\|}]+[^e\]}])([\|}])"
+                    if re.search(regex, newSectionContent):
+                        newSectionContent = re.sub(regex, ur'\1e\2', newSectionContent)
+                    regex = ur"({{f}}\n# ''(?:[fF]éminin )?[pP]luriel de'' \[\[[^\|\]#]+[^e\]])(\])"
+                    if re.search(regex, newSectionContent):
+                        newSectionContent = re.sub(regex, ur'\1e\2', newSectionContent)
+                    regex = ur"({{f}}\n# ''(?:[fF]éminin )?[pP]luriel de'' \[\[[^\|\]#]+[^e])([\|#][^\]]+[^e\]])(\])"
+                    if re.search(regex, newSectionContent):
+                        newSectionContent = re.sub(regex, ur'\1e\2e\3', newSectionContent)
+                    newSectionContent = newSectionContent.replace('|e}}', '|}}')
+
+                    summary = summary + u', correction de flexion de nom féminin'
+                    finalPageContent = finalPageContent.replace(sectionContent, newSectionContent)
 
         # Liens vers les annexes de conjugaisons
         LanguesC = [ (u'es',u'ar',u'arsi',u'er',u'ersi',u'ir',u'irsi'),
