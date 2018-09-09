@@ -49,7 +49,7 @@ bookCatTemplates.append(u'[[Category:{{FULLBOOKNAME}}]]')
 
 
 def treatPageByName(pageName):
-    if debugLevel > -1: print(u'\n' + pageName.encode(config.console_encoding, 'replace'))
+    if debugLevel > 0: print(u'\n' + pageName)
     page = Page(site, pageName)
     PageBegin = getContentFromPage(page, 'All')
     if not username in pageName and (PageBegin == 'KO' or pageName.find(u'/Print version') != -1): return
