@@ -1722,12 +1722,12 @@ def treatPageByName(pageName):
             if p == limit2: EgalSection = u'===='
             if p == limit3: EgalSection = u'====='
 
-            regex = ur'[= ]*{{[\-loc]*(' + Modele[p] + ur'|S\|'+ Section[p] + ur')([^}]*)}}[= ]*'
+            regex = ur'[= ]+{{[\-loc]*(' + Modele[p] + ur'|S\|'+ Section[p] + ur')([^}]*)}}[= ]+'
             if re.search(regex, pageContent):
                 if debugLevel > 1: print u' {{S| : check des niveaux de section'
                 pageContent = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'\2}} ' + EgalSection, pageContent)
 
-            regex = ur'[= ]*{{\-flex[\-loc]*(' + Modele[p] + ur'|S\|' + Section[p] + ur')\|([^}]*)}}[= ]*'
+            regex = ur'[= ]+{{\-flex[\-loc]*(' + Modele[p] + ur'|S\|' + Section[p] + ur')\|([^}]*)}}[= ]+'
             if re.search(regex, pageContent):
                 if debugLevel > 1: print u' {{S| : check des niveaux de section'
                 pageContent = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'|\2|flexion}} ' + EgalSection, pageContent)
@@ -2507,7 +2507,6 @@ def treatPageByName(pageName):
                     deplacement_modele_flexion = True
                 if deplacement_modele_flexion:
                     summary = summary + u', déplacement des modèles de flexions'
-
 
             if debugLevel > 0: print u'Traductions manquantes'
             # Si la définition du mot (dit "satellite") ne renvoie pas vers un autre, les centralisant
