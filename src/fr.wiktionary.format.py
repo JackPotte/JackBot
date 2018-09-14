@@ -352,10 +352,10 @@ Section.append(u'diminutifs')
 Modele.append(u'-homo-')
 Section.append(u'homophones')
 limit3 = len(Modele)
-Modele.append(u'-notes-')
-Section.append(u'notes')
-Modele.append(u'-note-')
-Section.append(u'note')
+#Modele.append(u'-notes-')
+#Section.append(u'notes')
+#Modele.append(u'-note-')
+#Section.append(u'note')
 Modele.append(u'trad-trier')
 Section.append(u'traductions à trier')
 limit4 = len(Modele)
@@ -1790,7 +1790,6 @@ def treatPageByName(pageName):
         pageContent = re.sub(ur'{{S\| ?hyper(onymes)?\|?[a-z ]*}}', u'{{S|hyperonymes}}', pageContent)
         pageContent = re.sub(ur'{{S\| ?hypo(nymes)?\|?[a-z ]*}}', u'{{S|hyponymes}}', pageContent)
         pageContent = re.sub(ur'{{S\| ?m(é|e)ro(nymes)?\|?[a-z ]*}}', u'{{S|méronymes}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?note\|?[a-z ]*}}', u'{{S|note}}', pageContent)
         pageContent = re.sub(ur'{{S\| ?notes\|?[a-z ]*}}', u'{{S|notes}}', pageContent)
         pageContent = re.sub(ur'{{S\| ?paro(nymes)?\|?[a-z ]*}}', u'{{S|paronymes}}', pageContent)
         pageContent = re.sub(ur'{{S\| ?phrases?\|?[a-z ]*}}', u'{{S|phrases}}', pageContent)
@@ -2705,8 +2704,9 @@ def treatPageByName(pageName):
                     section = trim(pageContent[endPosition+1:pageContent.find('}}')])
                     if section.find(u'|') != -1: section = trim(section[:section.find(u'|')])
                     if not section in Section:
-                        if debugLevel > 0: print u' Section introuvable : ' + section
-                        return
+                        if debugLevel > 0: print u' Section inconnue : ' + section
+                        finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
+                        break
                     if debugLevel > 0: print str(' ') + section.encode(config.console_encoding, 'replace')
 
                     if Section.index(section) < limit1:
@@ -3823,7 +3823,6 @@ def treatPageByName(pageName):
         regex = ur'([^\n=])(===?=? *{{S\|)'
         if re.search(regex, finalPageContent):
             finalPageContent = re.sub(regex, ur'\1\n\n\2', finalPageContent)
-        finalPageContent = finalPageContent.replace(u'===== {{S|note}} ===== =====', u'===== {{S|note}} =====')
 
     else:
         # Unknown namespace
