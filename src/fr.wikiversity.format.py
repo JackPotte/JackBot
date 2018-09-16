@@ -98,9 +98,10 @@ param.append(u'niveau')
 
 
 def treatPageByName(pageName):
+    if debugLevel > 0: print u'------------------------------------'
     print(pageName.encode(config.console_encoding, 'replace'))
     summary = u'Formatage'
-    page = Page(site,pageName)
+    page = Page(site, pageName)
     PageBegin = getContentFromPage(page, 'All')
     PageTemp = PageBegin
     PageEnd = '' # On sauvegarde la partie traitée d'une page provisoire dans une page finale jusqu'à disparition de la première
@@ -122,23 +123,29 @@ def treatPageByName(pageName):
 
     if page.namespace() == 0:
         # Remplacements consensuels (ex : numero -> numéro)
-        # Balises désuètes : center
-        '''regex = ur'<div *style *= *"? *text\-align: *center;? *"? *>((?!div).*)</div>'
+        if debugLevel > 1: print u' Balises désuètes <center>'
+        ''' Solution 1 : bug d'inclusion dans les modèles (qui demandent "|1=")
+        regex = ur'<div *style *= *"? *text\-align: *center;? *"? *>((?!div).*)</div>'
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, ur'{{centrer|1=\1}}', PageTemp)
         regex = ur'<div *style *= *"? *text\-align: *right;? *"? *>((?!div).*)</div>'
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, ur'{{droite|1=\1}}', PageTemp)
-        '''
-
+            Solution 2 : absconse
         regex = ur'<div *style *= *"? *text\-align: *center;? *"? *>({{[Ee]ncadre\|)((?!div).*)</div>'
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, ur'\1class=center|\2', PageTemp)
+            Solution 3 : modèle connu sur WP
+        '''
+        regex = ur'<div style *= *"text\-align: *center;">([^<]*(?:<(.*?)>|.)*[^<]*)</div>'
+        if re.search(regex, PageTemp):
+            summary += ', [[Modèle:centrer]]'
+            PageTemp = re.sub(regex, ur'{{centrer|\1}}', PageTemp)
 
+        # Fix parameters
         for p in range(1, len(oldParameters)-1):
             if PageTemp.find(u'{{' + temp[p] + u'|') != -1 or PageTemp.find(u'{{' + oldParameters[p] + u'}}') != -1:
                 PageTemp = PageTemp[0:PageTemp.find(temp[p])] + newParameters[p] + PageTemp[PageTemp.find(temp[p])+len(temp[p]):]
-
 
         # http://fr.wikiversity.org/wiki/Catégorie:Modèle_mal_utilisé
         if fixTemplates == True:
@@ -503,7 +510,7 @@ def main(*args):
         elif sys.argv[1] == u'-test2':
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'Fonctions d\'une variable réelle/Dérivabilité')
+            treatPageByName(u"Fonctions_d'une_variable_réelle/Continuité")
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
@@ -517,7 +524,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'chinois')
+                p.pagesBySearch(u'insource:text-align: center', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Modèle:Encadre')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
@@ -542,7 +549,7 @@ def main(*args):
             p. pagesBySpecialLinkSearch('www.dmoz.org')
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
-            treatPageByName(html2Unicode(sys.argv[1]))
+            treatPageByName(sys.argv[1])
     else:
         while 1:
             p.pagesByRC()
