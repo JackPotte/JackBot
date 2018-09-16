@@ -137,11 +137,11 @@ def treatPageByName(pageName):
             PageTemp = re.sub(regex, ur'\1class=center|\2', PageTemp)
             Solution 3 : modèle connu sur WP
         '''
-        includedTag = ur'[^<]*(?:<(.*?)>|.)*'
-        regex = ur'<div style *= *"text\-align: *center;">(' + includedTag*4 + ur'[^<]*)</div>'
+        nestedTag = ur'[^<]*(?:<(.*?)>|.)*[^<]*'
+        regex = ur'<div style *= *"text\-align: *center;">(' + nestedTag + ur')</div>'
         if re.search(regex, PageTemp):
             summary += ', [[Modèle:centrer]]'
-            PageTemp = re.sub(regex, ur'{{centrer|\1}}', PageTemp)
+            PageTemp = re.sub(regex, ur'{{centrer|\1}}', PageTemp, re.DOTALL)
 
         # Fix parameters
         for p in range(1, len(oldParameters)-1):
