@@ -5,7 +5,7 @@ Ce script formate les pages du Wiktionnaire, tous les jours après minuit depuis
 1) Crée les redirection d'apostrophe dactylographique vers apostrophe typographique.
 2) Gère des modèles {{voir}} en début de page.
 3) Retire certains doublons de modèles et d'espaces.
-4) Remplace les modèles catégorisés comme obsolètes.
+4) Remplace les modèles catégorisés comme désuets.
 5) Ajoute les prononciations sur la ligne de forme, et certains liens vers les conjugaisons.
 6) Met à jour les liens vers les traductions (modèles trad, trad+, trad-, trad-début et trad-fin), et les classe par ordre alphabétique.
 7) Détecte les modèles de contexte à ajouter, et ajoute leurs codes langues  ou "nocat=1"
@@ -2190,6 +2190,7 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'{{abrév|', u'{{abréviation|')
         pageContent = pageContent.replace(u'{{acron|', u'{{acronyme|')
         pageContent = pageContent.replace(u'{{cours d\'eau', u'{{cours d’eau')
+        pageContent = pageContent.replace(u'{{gaulois}}', u'{{forme reconstruite|gaulois}}')
 
         regex = ur"(\n: *(?:'*\([^)]+\)'*)? *(?:{{[^)]+}})? *(?:{{[^)]+}})? *{{abréviation\|[^}]*)\|m=1}} de([ '])"
         pageContent = re.sub(regex, ur'\1}} De\2', pageContent)
@@ -3899,7 +3900,7 @@ def main(*args):
             else:
                 p.pagesBySearch(u'insource:/\{\{S\|[^\}]+€/', namespaces = [0])
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:clé de tri', afterPage = u'sámildivččii')
+            p.pagesByLink(u'Template:gaulois', afterPage = u'')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
