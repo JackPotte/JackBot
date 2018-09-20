@@ -1673,7 +1673,11 @@ def treatPageByName(pageName):
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, ur'\1Reconstruction\2', pageContent)
 
-    if page.namespace() == 14:
+    if page.namespace() == 110:
+        pageContent = pageContent.replace(u'{{gaulois}}', u'{{forme reconstruite|gaulois}}')
+        finalPageContent = pageContent
+
+    elif page.namespace() == 14:
         # Catégories
         finalPageContent = pageContent
 
@@ -2190,7 +2194,6 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'{{abrév|', u'{{abréviation|')
         pageContent = pageContent.replace(u'{{acron|', u'{{acronyme|')
         pageContent = pageContent.replace(u'{{cours d\'eau', u'{{cours d’eau')
-        pageContent = pageContent.replace(u'{{gaulois}}', u'{{forme reconstruite|gaulois}}')
 
         regex = ur"(\n: *(?:'*\([^)]+\)'*)? *(?:{{[^)]+}})? *(?:{{[^)]+}})? *{{abréviation\|[^}]*)\|m=1}} de([ '])"
         pageContent = re.sub(regex, ur'\1}} De\2', pageContent)
