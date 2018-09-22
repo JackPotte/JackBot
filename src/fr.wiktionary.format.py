@@ -348,14 +348,14 @@ Modele.append(u'augmentatifs')
 Section.append(u'augmentatifs')
 Modele.append(u'diminutifs')
 Section.append(u'diminutifs')
+Modele.append(u'-notes-')
+Section.append(u'notes')
+Modele.append(u'-note-')
+Section.append(u'notes')
 # Avec code langue
 Modele.append(u'-homo-')
 Section.append(u'homophones')
 limit3 = len(Modele)
-#Modele.append(u'-notes-')
-#Section.append(u'notes')
-#Modele.append(u'-note-')
-#Section.append(u'note')
 Modele.append(u'trad-trier')
 Section.append(u'traductions à trier')
 limit4 = len(Modele)
@@ -1718,6 +1718,7 @@ def treatPageByName(pageName):
             return
 
         pageContent, summary = addSeeBanner(pageName, pageContent, summary)
+        pageContent = formatSections(pageContent)
 
         if debugLevel > 0: print u'Conversion vers {{S}}'
         EgalSection = u'==='
@@ -1726,94 +1727,20 @@ def treatPageByName(pageName):
             if p == limit2: EgalSection = u'===='
             if p == limit3: EgalSection = u'====='
 
-            regex = ur'[= ]+{{[\-loc]*(' + Modele[p] + ur'|S\|'+ Section[p] + ur')([^}]*)}}[= ]+'
+            regex = ur'[= ]*{{[\-loc]*(' + Modele[p] + ur'|S\|'+ Section[p] + ur')([^}]*)}}[= ]*\n'
             if re.search(regex, pageContent):
-                if debugLevel > 1: print u' {{S| : check des niveaux de section'
-                pageContent = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'\2}} ' + EgalSection, pageContent)
+                if debugLevel > 0: print u' {{S| : check des niveaux de section 1 : ' + Section[p] + u' ' + EgalSection
+                pageContent = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'\2}} ' + EgalSection + u'\n', pageContent)
 
-            regex = ur'[= ]+{{\-flex[\-loc]*(' + Modele[p] + ur'|S\|' + Section[p] + ur')\|([^}]*)}}[= ]+'
+            regex = ur'[= ]*{{\-flex[\-loc]*(' + Modele[p] + ur'|S\|' + Section[p] + ur')\|([^}]*)}}[= ]*\n'
             if re.search(regex, pageContent):
-                if debugLevel > 1: print u' {{S| : check des niveaux de section'
-                pageContent = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'|\2|flexion}} ' + EgalSection, pageContent)
+                if debugLevel > 1: print u' {{S| : check des niveaux de section 2 : ' + Section[p]
+                pageContent = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'|\2|flexion}} ' + EgalSection + u'\n', pageContent)
 
             if p > limit1 and p < limit3-1:
                 regex = ur'({{S\|'+ Section[p] + ur')\|[a-z]+}}'
                 if debugLevel > 1: print u' {{S| : retrait de code langue'
                 pageContent = re.sub(regex, ur'\1}}', pageContent)
-
-        if debugLevel > 1:
-            pywikibot.output(u"\n\03{red}---------------------------------------------------\03{default}")
-            raw_input(pageContent.encode(config.console_encoding, 'replace'))
-            pywikibot.output(u"\n\03{red}---------------------------------------------------\03{default}")
-        if pageContent.find(u'|===') != -1 or pageContent.find(u'{===') != -1:
-            if debugLevel > 0: print u' *==='
-            return
-
-        # Titres en minuscules
-        #pageContent = re.sub(ur'{{S\|([^}]+)}}', ur'{{S|' + ur'\1'.lower() + ur'}}', pageContent)
-        for f in re.findall("{{S\|([^}]+)}}", pageContent):
-            pageContent = pageContent.replace(f, f.lower())
-        # Alias peu intuitifs des sections avec langue
-        pageContent = pageContent.replace(u'{{S|adj|', u'{{S|adjectif|')
-        pageContent = pageContent.replace(u'{{S|adjectifs|', u'{{S|adjectif|')
-        pageContent = pageContent.replace(u'{{S|adj-num|', u'{{S|adjectif numéral|')
-        pageContent = pageContent.replace(u'{{S|adv|', u'{{S|adverbe|')
-        pageContent = pageContent.replace(u'{{S|class|', u'{{S|classificateur|')
-        pageContent = pageContent.replace(u'{{S|drv}}', u'{{S|dérivés}}')
-        pageContent = pageContent.replace(u'{{S|homo|', u'{{S|homophones|')
-        pageContent = pageContent.replace(u'{{S|homo}}', u'{{S|homophones}}')
-        pageContent = pageContent.replace(u'{{S|interj|', u'{{S|interjection|')
-        pageContent = pageContent.replace(u'{{S|locution adverbiale', u'{{S|adverbe')
-        pageContent = pageContent.replace(u'{{S|locution phrase|', u'{{S|locution-phrase|')
-        pageContent = pageContent.replace(u'{{S|nom commun|', u'{{S|nom|')
-        pageContent = pageContent.replace(u'{{S|nom-fam|', u'{{S|nom de famille|')
-        pageContent = pageContent.replace(u'{{S|nom-pr|', u'{{S|nom propre|')
-        pageContent = pageContent.replace(u'{{S|pron}}', u'{{S|prononciation}}')
-        pageContent = pageContent.replace(u'{{S|symb|', u'{{S|symbole|')
-        pageContent = pageContent.replace(u'{{S|verb|', u'{{S|verbe|')
-        pageContent = pageContent.replace(u'{{S|apparentés étymologiques', u'{{S|apparentés')
-        # Alias peu intuitifs des sections sans langue
-        pageContent = re.sub(ur'{{S\| ?abr(é|e)v(iations)?\|?[a-z ]*}}', u'{{S|abréviations}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?anagr(ammes)?\|?[a-z ]*}}', u'{{S|anagrammes}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?anciennes orthographes?\|?[a-z ]*}}', u'{{S|anciennes orthographes}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?ant(onymes)?\|?[a-z ]*}}', u'{{S|antonymes}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?app(arentés)?\|?[a-zé]*}}', u'{{S|apparentés}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?apr\|?[a-zé]*}}', u'{{S|apparentés}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?compos(és)?\|?[a-zé]*}}', u'{{S|composés}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?dial\|?[a-z ]*}}', u'{{S|variantes dialectales}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?dimin(inutifs)?\|?[a-z ]*}}', u'{{S|diminutifs}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?d(é|e)riv(é|e)s?(\|[a-z ]*}}|}})', u'{{S|dérivés}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?drv\|?[a-z ]*}}', u'{{S|dérivés}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?dérivés int\|?[a-z ]*}}', u'{{S|dérivés autres langues}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?drv\-int\|?[a-z ]*}}', u'{{S|dérivés autres langues}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?(é|e)tym(ologie)?\|?[a-z ]*}}', u'{{S|étymologie}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?exp(ressions)?\|?[a-z ]*}}', u'{{S|expressions}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?gent(ilés)?\|?[a-zé]*}}', u'{{S|gentilés}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?faux\-amis?\|?[a-zé]*}}', u'{{S|faux-amis}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?holo(nymes)?\|?[a-z ]*}}', u'{{S|holonymes}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?hyper(onymes)?\|?[a-z ]*}}', u'{{S|hyperonymes}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?hypo(nymes)?\|?[a-z ]*}}', u'{{S|hyponymes}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?m(é|e)ro(nymes)?\|?[a-z ]*}}', u'{{S|méronymes}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?notes\|?[a-z ]*}}', u'{{S|notes}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?paro(nymes)?\|?[a-z ]*}}', u'{{S|paronymes}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?phrases?\|?[a-z ]*}}', u'{{S|phrases}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?pron(onciation)?\|?[a-z ]*}}', u'{{S|prononciation}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?q\-syn\|?[a-z ]*}}', u'{{S|quasi-synonymes}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?quasi(\-| )syn(onymes)?\|?[a-z ]*}}', u'{{S|quasi-synonymes}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?r(é|e)f[a-zé]*\|?[a-z ]*}}', u'{{S|références}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?syn(onymes)?\|?[a-z ]*}}', u'{{S|synonymes}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?trad(uctions)?\|?[a-z]*}}', u'{{S|traductions}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?trad\-trier\|?[a-z ]*}}', u'{{S|traductions à trier}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?traductions à trier\|?[a-z ]*}}', u'{{S|traductions à trier}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?var(iantes)?\|?[a-z]*}}', u'{{S|variantes}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?variantes dial\|?[a-z ]*}}', u'{{S|variantes dialectales}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?variantes dialectales\|?[a-z ]*}}', u'{{S|variantes dialectales}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?var[a-z]*(\-| )ortho(graphiques)?\|?[a-z ]*}}', u'{{S|variantes orthographiques}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?voc(abulaire)?\|?[a-z ]*}}', u'{{S|vocabulaire}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?vocabulaire apparenté\|?[a-z ]*}}', u'{{S|vocabulaire}}', pageContent)
-        pageContent = re.sub(ur'{{S\| ?voir( aussi)?\|?[a-z ]*}}', u'{{S|voir aussi}}', pageContent)
-        pageContent = pageContent.replace(u'==== {{S|phrases|fr}} ====', u'==== {{S|phrases}} ====')
-        pageContent = pageContent.replace(u'{{S|descendants}}', u'{{S|dérivés autres langues}}')
 
         pageContent = pageContent.replace(u'Du {{étyl|en|', u'De l’{{étyl|en|')
         pageContent = pageContent.replace(u'du {{étyl|en|', u'de l’{{étyl|en|')
