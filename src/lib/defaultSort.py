@@ -3,8 +3,16 @@
 import html2Unicode
 
 debugLevel = 0
-
+'''TODO: uca-default gère af, am, ar, as, ast, az, be, be-tarask, bg, bn, bn@collation=traditional, bo, br, bs, 
+    bs-Cyrl, ca, chr, co, cs, cy, da, de, de-AT@collation=phonebook, dsb, ee, el, en, eo, es, et, eu, fa, fi, 
+    fil, fo, fr, fr-CA, fur, fy, ga, gd, gl, gu, ha, haw, he, hi, hr, hsb, hu, hy, id, ig, is, it, ka, kk, kl, 
+    km, kn, kok, ku, ky, la, lb, lkt, ln, lo, lt, lv, mk, ml, mn, mo, mr, ms, mt, nb, ne, nl, nn, no, oc, om, 
+    or, pa, pl, pt, rm, ro, ru, rup, sco, se, si, sk, sl, smn, sq, sr, sr-Latn, sv, sv@collation=standard, sw, 
+    ta, te, th, tk, tl, to, tr, tt, uk, uz, vi, vo, yi, yo, zu
+'''
 def defaultSort(pageName, encoding = 'uca-default'):
+    if debugLevel > 0: print u' defaultSort()'
+
     pageName = html2Unicode.html2Unicode(pageName)
     word_key = u''
     add_key = False

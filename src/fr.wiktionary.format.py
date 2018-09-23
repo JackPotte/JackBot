@@ -1645,7 +1645,7 @@ def treatPageByName(pageName):
         etymologyTemplatesInSatelliteWords, etymologyTemplatesWithLanguageAtFirst, etymologyTemplatesWithLanguageAtSecond
     summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
     if debugLevel > 0: print u'------------------------------------'
-    print(pageName.encode(config.console_encoding, 'replace'))
+    pywikibot.output(u"\n\03{blue}" + pageName.encode(config.console_encoding, 'replace') + u"\03{default}")
     if pageName[-3:] == '.js': return
     if pageName.find(u'’') != -1:
         page = Page(site, pageName.replace(u'’', u'\''))
@@ -1703,7 +1703,7 @@ def treatPageByName(pageName):
             pageContent = re.sub(regex, ur'{{langue|\1}}', pageContent)
 
         while pageContent.find(u'{{ ') != -1:
-            pageContent = pageContent[:pageContent.find(u'{{ ')+2] + pageContent[pageContent.find(u'{{ ')+3:len(pageContent)]
+            pageContent = pageContent[:pageContent.find(u'{{ ')+2] + pageContent[pageContent.find(u'{{ ')+3:]
         regex = ur'{{(formater|SI|supp|supprimer|PàS)[\|}]'
         if re.search(regex, pageContent):
             if debugLevel > 0: print u'Page en travaux : non traitée l 1409'
@@ -1720,7 +1720,11 @@ def treatPageByName(pageName):
         pageContent, summary = addSeeBanner(pageName, pageContent, summary)
         pageContent = formatSections(pageContent)
 
-        if debugLevel > 0: print u'Conversion vers {{S}}'
+        regex = ur"\n=* *({{langue\|[^}]+}}) *=*\n"
+        if re.search(regex, pageContent):
+            pageContent = re.sub(regex, ur"\n== \1 ==\n", pageContent)
+
+        if debugLevel > 0: print u' {{S}} conversion and formatting'
         EgalSection = u'==='
         for p in range(1, limit4):
             if debugLevel > 1: print Modele[p] + ur'|S\|'+ Section[p]
@@ -1729,7 +1733,7 @@ def treatPageByName(pageName):
 
             regex = ur'[= ]*{{[\-loc]*(' + Modele[p] + ur'|S\|'+ Section[p] + ur')([^}]*)}}[= ]*\n'
             if re.search(regex, pageContent):
-                if debugLevel > 0: print u' {{S| : check des niveaux de section 1 : ' + Section[p] + u' ' + EgalSection
+                if debugLevel > 1: print u' {{S| : check des niveaux de section 1 : ' + Section[p] + u' ' + EgalSection
                 pageContent = re.sub(regex, EgalSection + ur' {{S|' + Section[p] + ur'\2}} ' + EgalSection + u'\n', pageContent)
 
             regex = ur'[= ]*{{\-flex[\-loc]*(' + Modele[p] + ur'|S\|' + Section[p] + ur')\|([^}]*)}}[= ]*\n'
@@ -1742,90 +1746,53 @@ def treatPageByName(pageName):
                 if debugLevel > 1: print u' {{S| : retrait de code langue'
                 pageContent = re.sub(regex, ur'\1}}', pageContent)
 
-        pageContent = pageContent.replace(u'Du {{étyl|en|', u'De l’{{étyl|en|')
-        pageContent = pageContent.replace(u'du {{étyl|en|', u'de l’{{étyl|en|')
-        pageContent = pageContent.replace(u'Du {{étyl|fro|', u'De l’{{étyl|fro|')
-        pageContent = pageContent.replace(u'du {{étyl|fro|', u'de l’{{étyl|fro|')
+        regex = ur'({{S\|[^}]+)€'
+        while re.search(regex, pageContent):
+            pageContent = re.sub(regex, ur'\1⿕', pageContent)
 
-        regex = ur'({{langue\|(?!fr}).*}[^€]*)\n=* *{{S\|traductions}} *=*\n*{{trad\-début}}\n{{ébauche\-trad}}\n{{trad\-fin}}'
-        if re.search(regex, pageContent):
-            pageContent = re.sub(regex, ur'\1', pageContent)
-            summary = summary + u', retrait de {{S|traductions}}'
+        pageContent, summary = formatTranslations(pageContent, summary)
 
-        regex = ur'({{langue\|(?!fr}).*}[^€]*)\n=* *{{S\|traductions}} *=*\n*{{\(}}\n{{ébauche\-trad}}\n{{\)}}'
-        if re.search(regex, pageContent):
-            pageContent = re.sub(regex, ur'\1', pageContent)
-            summary = summary + u', retrait de {{S|traductions}}'
-
-        #TODO: traiter toutes les paires catégorie / templates
-        if u'{{argot|fr}}' in pageContent:
-            pageContent = re.sub(ur'\n\[\[Catégorie:Argot en français\]\]', ur'', pageContent)
 
         regex = ur'(\[\[|\|mot=)Annexe(\:[^\/\|\n]+\/\*[^\|\]\n]+\|?[^\]\|\n]+(\]\]|}}))'
         if re.search(regex, pageContent):
             pageContent = re.sub(regex, ur'\1Reconstruction\2', pageContent)
-
         regex = ur'(\[\[|\|)Annexe(\:[^\/\|\n]+\/\*[^\|\]\n]+\|?[^\]\|\n]+(\]\]|}}))'
         if re.search(regex, pageContent):
             pageContent = re.sub(regex, ur'\1Reconstruction\2', pageContent)
-
         regex = ur'(\[\[|\|fr=)Annexe(\:[^\/\|\n]+\/\*[^\|\]\n]+\|?[^\]\|\n]+(\]\]|}}))'
         if re.search(regex, pageContent):
             pageContent = re.sub(regex, ur'\1Reconstruction\2', pageContent)
 
-        regex = ur"= *({{langue\|[^}]+}}) *="
-        if re.search(regex, pageContent):
-            pageContent = re.sub(regex, ur"= \1 =", pageContent)
+        if debugLevel > 1: print u' Formatage de la ligne de forme'
+        pageContent = pageContent.replace(u'{{PAGENAME}}', u'{{subst:PAGENAME}}')
+        pageContent = re.sub(ur'([^d\-]+\-\|[a-z]+\}\}\n)\# *', ur"\1'''" + pageName + ur"''' {{pron}}\n# ", pageContent)
+        pageContent = pageContent.replace(u'[[' + pageName + u']]', u'\'\'\'' + pageName + u'\'\'\'')
+        pageContent = pageContent.replace(u'-rég}}\'\'\'', u'-rég}}\n\'\'\'')
+        pageContent = pageContent.replace(u']] {{imperf}}', u']] {{imperf|nocat=1}}')
+        pageContent = pageContent.replace(u']] {{perf}}', u']] {{perf|nocat=1}}')
+        pageContent = pageContent.replace(u'{{perf}} / \'\'\'', u'{{perf|nocat=1}} / \'\'\'')
 
-        # Formatage général des traductions
-        pageContent = pageContent.replace(u'{{trad|', u'{{trad-|')
-        pageContent = pageContent.replace(u'{{(}}\n{{ébauche-trad}}\n{{)}}', '')
-        pageContent = pageContent.replace(u'{{trad-début|{{trad-trier}}}}', u'{{trad-trier}}\n{{trad-début}}')
-        pageContent = pageContent.replace(u'{{trad-début|{{trad-trier|fr}}}}', u'{{trad-trier}}\n{{trad-début}}')
+        #pageContent = pageContent.replace(u'&nbsp;', u' ') # TODO: à faire hors modèles
+        pageContent = pageContent.replace(u' }}', '}}')
+        pageContent = pageContent.replace(u'|pinv= ', u'|pinv=')
+        pageContent = pageContent.replace(u'|pinv=. ', u'|pinv=.')
+        #pageContent = re.sub(ur'«[  \t]*', ur'« ', pageContent) # pb &#160;
+        #pageContent = re.sub(ur'[  \t]*»', ur' »', pageContent)
+        pageContent = pageContent.replace(u'{|\n|}', u'')
+        pageContent = pageContent.replace(u'\n {{', u'\n{{')
 
-            # 1) Suppression de {{ébauche-trad|fr}} (WT:PPS)
-        pageContent = pageContent.replace(ur'{{ébauche-trad|fr}}', u'{{ébauche-trad}}')     # bug ?
-        regex = ur'{{ébauche\-trad\|fr}}'
-        if re.search(regex, pageContent):
-            pageContent = re.sub(regex, u'{{ébauche-trad}}', pageContent)
-
-            # 2) Aucun modèle d'ébauche en dehors d'une boite déroulante
-        pageContent = pageContent.replace(ur'{{ébauche-trad}}\n{{trad-début}}', u'{{trad-début}}\n{{ébauche-trad}}') # bug ?
-        regex = ur'{{ébauche\-trad}}\n{{trad\-début}}'
-        if re.search(regex, pageContent):
-            pageContent = re.sub(regex, u'{{trad-début}}\n{{ébauche-trad}}', pageContent)
-
-        pageContent = pageContent.replace(ur'==== {{S|traductions}} ====\n{{ébauche-trad}}\n', u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n')     # bug ?
-        regex = ur'==== {{S\|traductions}} ====\n{{ébauche\-trad}}(\n<![^>]+>)*(\n|$)'
-        if re.search(regex, pageContent):
-            if debugLevel > 0: print ' ébauche sans boite'
-            pageContent = re.sub(regex, u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad|en}}\n{{trad-fin}}\n', pageContent)
-
-            # 3) Anciens commentaires d'aide à l'édition (tolérés avant l'éditeur visuel et editor.js)
-        pageContent = pageContent.replace(ur'<!--* {{T|en}} : {{trad|en|}}-->', '')     # bug ?
-        regex = ur'<!\-\-[^{>]*{{T\|[^>]+>\n?'
-        if re.search(regex, pageContent):
-            if debugLevel > 0: print ' Commentaire trouvé l 1517'
-            pageContent = re.sub(regex, u'', pageContent)
-        regex = ur'{{ébauche\-trad}}{{'
-        if re.search(regex, pageContent):
-            pageContent = re.sub(regex, u'{{ébauche-trad}}\n{{', pageContent)
-
-        while pageContent.find(u'{{trad-fin}}\n* {{T|') != -1:
-            pageContent2 = pageContent[pageContent.find(u'{{trad-fin}}\n* {{T|'):]
-            delta = pageContent2.find(u'\n')+1
-            pageContent2 = pageContent2[delta:]
-            if pageContent2.find(u'\n') != -1:
-                if debugLevel > 0: print pageContent2[:pageContent2.find(u'\n')+1].encode(config.console_encoding, 'replace')
-                if pageContent2[:pageContent2.find(u'\n')+1].find(u'trier') != -1: break
-                pageContent = pageContent[:pageContent.find(u'{{trad-fin}}\n* {{T|'):] + pageContent2[:pageContent2.find(u'\n')+1] + u'{{trad-fin}}\n' + pageContent[pageContent.find(u'{{trad-fin}}\n* {{T|')+delta+pageContent2.find(u'\n')+1:]
+        if debugLevel > 0: print u' #* or #:'
+        pageContent = pageContent.replace(u'\n #*', u'\n#*')
+        pageContent = pageContent.replace(u'\n #:', u'\n#:')
+        finalPageContent = u''
+        while pageContent.find(u'\n#:') != -1:
+            finalPageContent = finalPageContent + pageContent[:pageContent.find(u'\n#:')+2]
+            if finalPageContent.rfind(u'{{langue|') == finalPageContent.rfind(u'{{langue|fr}}'):
+                pageContent = u'*' + pageContent[pageContent.find(u'\n#:')+len(u'\n#:'):len(pageContent)]
             else:
-                if debugLevel > 0: print pageContent2.encode(config.console_encoding, 'replace')
-                if pageContent2[:len(pageContent2)].find(u'trier') != -1: break
-                pageContent = pageContent[:pageContent.find(u'{{trad-fin}}\n* {{T|'):] + pageContent2[:len(pageContent2)] + u'{{trad-fin}}\n' + pageContent[pageContent.find(u'{{trad-fin}}\n* {{T|')+delta+len(pageContent2):]
-        regex = ur'}}{{trad\-fin}}'
-        if re.search(regex, pageContent):
-            pageContent = re.sub(regex, u'}}\n{{trad-fin}}', pageContent)
+                pageContent = u':' + pageContent[pageContent.find(u'\n#:')+len(u'\n#:'):len(pageContent)]
+        pageContent = finalPageContent + pageContent
+        finalPageContent = u''
 
         if pageContent.find(u'{{vérifier création automatique}}') != -1:
             if debugLevel > 0: print u' {{vérifier création automatique}} trouvé'
@@ -1835,148 +1802,26 @@ def treatPageByName(pageName):
                 pageContent2 = pageContent2[pageContent2.find(u'{{langue|')+len(u'{{langue|'):]
                 LanguesV += u'|' + pageContent2[:pageContent2.find('}}')]
             if LanguesV != u'|':
-                pageContent = pageContent.replace(u'{{vérifier création automatique}}', u'{{vérifier création automatique' + LanguesV + '}}')
+                pageContent = pageContent.replace(u'{{vérifier création automatique}}', 
+                    u'{{vérifier création automatique' + LanguesV + '}}')
             if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
 
-        pageContent = pageContent.replace(u'{{clef de tri', u'{{clé de tri')
-        #TODO: uca-default gère af, am, ar, as, ast, az, be, be-tarask, bg, bn, bn@collation=traditional, bo, br, bs, bs-Cyrl, ca, chr, co, cs, cy, da, de, de-AT@collation=phonebook, dsb, ee, el, en, eo, es, et, eu, fa, fi, fil, fo, fr, fr-CA, fur, fy, ga, gd, gl, gu, ha, haw, he, hi, hr, hsb, hu, hy, id, ig, is, it, ka, kk, kl, km, kn, kok, ku, ky, la, lb, lkt, ln, lo, lt, lv, mk, ml, mn, mo, mr, ms, mt, nb, ne, nl, nn, no, oc, om, or, pa, pl, pt, rm, ro, ru, rup, sco, se, si, sk, sl, smn, sq, sr, sr-Latn, sv, sv@collation=standard, sw, ta, te, th, tk, tl, to, tr, tt, uk, uz, vi, vo, yi, yo, zu
-        if addDefaultSortKey:
-            if debugLevel > 0: print u'Clés de tri'
-            pageContent = addDefaultSort(pageName, pageContent) #TODO: compare the Lua with ", empty = True"
+        if debugLevel > 0: print u' {{étyl}}'
+        # TODO: regex pour toutes les langues concernées
+        pageContent = pageContent.replace(u'Du {{étyl|en|', u'De l’{{étyl|en|')
+        pageContent = pageContent.replace(u'du {{étyl|en|', u'de l’{{étyl|en|')
+        pageContent = pageContent.replace(u'Du {{étyl|fro|', u'De l’{{étyl|fro|')
+        pageContent = pageContent.replace(u'du {{étyl|fro|', u'de l’{{étyl|fro|')
 
-        if debugLevel > 1: print u'Formatage de la ligne de forme'
-        pageContent = pageContent.replace(u'{{PAGENAME}}', u'{{subst:PAGENAME}}')
-        pageContent = re.sub(ur'([^d\-]+\-\|[a-z]+\}\}\n)\# *', ur"\1'''" + pageName + ur"''' {{pron}}\n# ", pageContent)
-        pageContent = pageContent.replace(u'[[' + pageName + u']]', u'\'\'\'' + pageName + u'\'\'\'')
-        pageContent = pageContent.replace(u'-rég}}\'\'\'', u'-rég}}\n\'\'\'')
-        pageContent = pageContent.replace(u']] {{imperf}}', u']] {{imperf|nocat=1}}')
-        pageContent = pageContent.replace(u']] {{perf}}', u']] {{perf|nocat=1}}')
-        pageContent = pageContent.replace(u'{{perf}} / \'\'\'', u'{{perf|nocat=1}} / \'\'\'')
-
-        # Nested template
-        regex = ur'({{écouter\|lang=([^\|]+)\|{{Région \?)}}'
-        pageContent = re.sub(regex, ur'\1|\2}}', pageContent)
-
-        if u'{{langue|en}}' in pageContent:
-            regex = ur"({{S\|verbe\|en}} *=* *\n'*)to "
-            if re.search(regex, pageContent):
-                pageContent = re.sub(regex, ur"\1", pageContent)
-
-            regex = ur'(=== {{S\|adjectif\|en}} ===\n[^\n]*) *{{pluriel \?\|en}}'
-            pageContent = re.sub(regex, ur"\1", pageContent)
-
-        if u'{{langue|fr}}' in pageContent:
-            if removeDefaultSort:
-                regex = ur'^[ 0-9a-zàâçéèêëîôùûA-ZÀÂÇÉÈÊËÎÔÙÛ]+$' #/:
-                if re.search(regex, pageName):
-                    regex = ur"\n{{clé de tri([^}]*)}}"
-                    if re.search(regex, pageContent):
-                        if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
-                        summary = summary + u', retrait de {{clé de tri}}'
-                        pageContent = re.sub(regex, '', pageContent)
-
-            if debugLevel > 0: print u'Catégories de prononciation'
-            if pageName[-2:] == u'um' and pageContent.find(u'ɔm|fr}}') != -1:
-                pageContent = addCategory(pageContent, u'fr', u'um prononcés /ɔm/ en français')
-            if pageName[:2] == u'qu':
-                regex = ur'{{pron\|kw[^}\|]+\|fr}}'
-                if re.search(regex, pageContent):
-                    pageContent = addCategory(pageContent, u'fr', u'qu prononcés /kw/ en français')
-            if pageName[:2] == u'qu' and pageName[:4] != u'quoi':
-                regex = ur'{{fr\-rég\|kw[^}\|]+}}'
-                if re.search(regex, pageContent):
-                    pageContent = addCategory(pageContent, u'fr', u'qu prononcés /kw/ en français')
-            if pageName[:2] == u'ch':
-                regex = ur'{{pron\|k[^}\|]+\|fr}}'
-                if re.search(regex, pageContent):
-                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
-            if pageName[:2] == u'ch':
-                regex = ur'{{fr\-rég\|k[^}\|]+}}'
-                if re.search(regex, pageContent):
-                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
-            if pageName[:2] == u'Ch':
-                regex = ur'{{pron\|k[^}\|]+\|fr}}'
-                if re.search(regex, pageContent):
-                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
-            if pageName[:2] == u'Ch':
-                regex = ur'{{fr\-rég\|k[^}\|]+}}'
-                if re.search(regex, pageContent):
-                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
-            if pageName[-2:] == u'ch':
-                regex = ur'{{pron\|[^}\|]+k\|fr}}'
-                if re.search(regex, pageContent):
-                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
-            if pageName[-2:] == u'ch':
-                regex = ur'{{fr\-rég\|[^}\|]+k}}'
-                if re.search(regex, pageContent):
-                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
-            if pageName[-3:] == u'chs':
-                regex = ur'{{pron\|[^}\|]+k}}'
-                if re.search(regex, pageContent):
-                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
-            if pageName[-3:] == u'chs':
-                regex = ur'{{fr\-rég\|[^}\|]+k}}'
-                if re.search(regex, pageContent):
-                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
-
-            regex = ur'({{fr\-[^}]*\|[\'’]+=[^}]*)\|[\'’]+=[oui|1]'
-            if re.search(regex, pageContent):
-                pageContent = re.sub(regex, ur'\1', pageContent)
-            regex = ur'({{fr\-[^}]*\|s=[^}]*)\|s=[^}\|]*'
-            if re.search(regex, pageContent):
-                pageContent = re.sub(regex, ur'\1', pageContent)
-            regex = ur'({{fr\-[^}]*\|ms=[^}]*)\|ms=[^}\|]*'
-            if re.search(regex, pageContent):
-                pageContent = re.sub(regex, ur'\1', pageContent)
-            regex = ur'({{fr\-[^}]*\|fs=[^}]*)\|fs=[^}\|]*'
-            if re.search(regex, pageContent):
-                pageContent = re.sub(regex, ur'\1', pageContent)
-
-            pageContent = pageContent.replace(u'{{louchébem|fr}}', u'{{louchébem}}')
-            pageContent = pageContent.replace(u'{{reverlanisation|fr}}', u'{{reverlanisation}}')
-            pageContent = pageContent.replace(u'{{verlan|fr}}', u'{{verlan}}')
-
-        languageCodes = [u'fc', u'fro', u'frm', u'pt', u'pcd']
-        for l in languageCodes:
-            regex = ur'(\|' + l + ur'(:?\|num=[0-9])?}} ===\n{{)fr(\-rég)'
-            if re.search(regex, pageContent):
-                pageContent = re.sub(regex, ur'\1' + l + ur'\3', pageContent)
-        regex = ur'\n{{fro\-rég[^}]*}}'
-        pageContent = re.sub(regex, ur'', pageContent)
-
-        regex = ur'(\|en}} ===\n{{)fr\-rég'
-        if re.search(regex, pageContent):
-            pageContent = re.sub(regex, ur'\1en-nom-rég', pageContent)
-
-        regex = ur'(\|es}} ===\n{{)fr\-rég'
-        if re.search(regex, pageContent):
-            pageContent = re.sub(regex, ur'\1es-rég-voy', pageContent)
-
-        while re.compile('{{T\|.*\n\n\*[ ]*{{T\|').search(pageContent):
-            i1 = re.search(u'{{T\|.*\n\n\*[ ]*{{T\|', pageContent).end()
-            pageContent = pageContent[:i1][:pageContent[:i1].rfind(u'\n')-1] + pageContent[:i1][pageContent[:i1].rfind(u'\n'):len(pageContent[:i1])] + pageContent[i1:]
-        regex = u'{{(Latn|Grek|Cyrl|Armn|Geor|Hebr|Arab|Syrc|Thaa|Deva|Hang|Hira|Kana|Hrkt|Hani|Jpan|Hans|Hant|zh-mot|kohan|ko-nom|la-verb|grc-verb|polytonique|FAchar)[\|}]'
-        if not re.search(regex, pageContent):
-            if debugLevel > 0: print u'Ajout du mot vedette'
-            pageContent = re.sub(ur'([^d\-]+\-\|[a-z]+\}\}\n\{\{[^\n]*\n)\# *', ur"\1'''" + pageName + ur"''' {{pron}}\n# ", pageContent)
-        pageContent = pageContent.replace(u'num=1|num=', u'num=1')
-        #pageContent = pageContent.replace(u'&nbsp;', u' ') # TODO: à faire hors modèles
-        pageContent = pageContent.replace(u'\n #*', u'\n#*')
-        pageContent = pageContent.replace(u'\n #:', u'\n#:')
-        pageContent = pageContent.replace(u' }}', '}}')
-        pageContent = pageContent.replace(u'|pinv= ', u'|pinv=')
-        pageContent = pageContent.replace(u'|pinv=. ', u'|pinv=.')
-        #pageContent = re.sub(ur'«[  \t]*', ur'« ', pageContent) # pb &#160;
-        #pageContent = re.sub(ur'[  \t]*»', ur' »', pageContent)
-        pageContent = pageContent.replace(u'{|\n|}', u'')
-
-        if debugLevel > 0: print u'Formatage des modèles'
-        pageContent = pageContent.replace(u'\n {{', u'\n{{')
         regex = ur"({{cf|)lang=[^\|}]+\|(:Catégorie:)"
         pageContent = re.sub(regex, ur"\1\2", pageContent)
-        pageContent = pageContent.replace(u'|ko-hani}}', u'|ko-Hani}}')
+
+        pageContent = pageContent.replace(u'{{clef de tri', u'{{clé de tri')
+        if addDefaultSortKey:
+            pageContent = addDefaultSort(pageName, pageContent) #TODO: compare the Lua with ", empty = True"
 
         if debugLevel > 1: print u' Remplacements des anciens codes langue'
+        pageContent = pageContent.replace(u'|ko-hani}}', u'|ko-Hani}}')
         oldTemplate = []
         newTemplate = []
         oldTemplate.append(u'ko-hanja')
@@ -2032,10 +1877,17 @@ def treatPageByName(pageName):
         if re.search(regex, pageContent):
             pageContent = re.sub(regex, ur"\1page \2", pageContent)
 
+        regex = ur'({{écouter\|lang=([^\|]+)\|{{Région \?)}}'
+        pageContent = re.sub(regex, ur'\1|\2}}', pageContent)
+
         # TODO: Factorisation des citations
         #regex = ur"(?:— \(|{{source\|)Cirad/Gret/MAE, ''Mémento de l['’]Agronome'', 1 *692 p(?:\.|ages), p(?:\.|age) ([0-9 ]+), 2002, Paris, France, Cirad/Gret/Ministère des Affaires [EÉ]trangères \(\+ 2 cdroms\)(?:\)|}})"
         #if re.search(regex, pageContent):
         #    pageContent = re.sub(regex, ur"{{Citation/Cirad/Gret/MAE/Mémento de l’Agronome|\1}}", pageContent)
+
+        #TODO: retraiter toutes les paires catégorie / templates, dynamiquement
+        if u'{{argot|fr}}' in pageContent:
+            pageContent = re.sub(ur'\n\[\[Catégorie:Argot en français\]\]', ur'', pageContent)
 
         regex = ur"{{ *dés *([\|}])"
         if re.search(regex, pageContent):
@@ -2135,10 +1987,6 @@ def treatPageByName(pageName):
         pageContent = pageContent.replace(u'{{boîte fin', u'{{)')
         pageContent = pageContent.replace(u'\n{{-}}', u'')
 
-        regex = ur'({{S\|[^}]+)€'
-        while re.search(regex, pageContent):
-            pageContent = re.sub(regex, ur'\1⿕', pageContent)
-
         if debugLevel > 1: print u' Ajout des modèles de référence' # les URL ne contiennent pas les diacritiques des {{PAGENAME}}
         while pageContent.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=') != -1:
             pageContent2 = pageContent[pageContent.find(u'[http://www.sil.org/iso639-3/documentation.asp?id=')+len(u'[http://www.sil.org/iso639-3/documentation.asp?id='):]
@@ -2172,18 +2020,110 @@ def treatPageByName(pageName):
         if pageContent.find(u'\n[[Catégorie:Noms scientifiques]]') != -1 and pageContent.find(u'{{S|nom scientifique|conv}}') != -1:
             pageContent = pageContent.replace(u'\n[[Catégorie:Noms scientifiques]]', u'')
 
+        #TODO: tous les codes langues
         if pageContent.find(u'\n[[Catégorie:Gentilés en français]]') != -1 and pageContent.find(u'{{note-gentilé|fr}}') != -1:
             pageContent = pageContent.replace(u'\n[[Catégorie:Gentilés en français]]', u'')
 
-        if debugLevel > 0: print u' Modèles à déplacer'
-        regex = ur'(==== {{S\|traductions}} ====)(\n{{ébauche\-trad[^}]*}})(\n{{trad-début}})'
-        pageContent = re.sub(regex, ur'\1\3\2', pageContent)
+        if debugLevel > 0: print u' Templates by language'
+        if u'{{langue|fr}}' in pageContent:
+            if removeDefaultSort:
+                regex = ur'^[ 0-9a-zàâçéèêëîôùûA-ZÀÂÇÉÈÊËÎÔÙÛ]+$' #/:
+                if re.search(regex, pageName):
+                    regex = ur"\n{{clé de tri([^}]*)}}"
+                    if re.search(regex, pageContent):
+                        if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+                        summary = summary + u', retrait de {{clé de tri}}'
+                        pageContent = re.sub(regex, '', pageContent)
 
-        regex = ur'({{trad\-début}})\n*{{trad\-début}}'
-        pageContent = re.sub(regex, ur'\1', pageContent)
+            if debugLevel > 0: print u'Catégories de prononciation'
+            if pageName[-2:] == u'um' and pageContent.find(u'ɔm|fr}}') != -1:
+                pageContent = addCategory(pageContent, u'fr', u'um prononcés /ɔm/ en français')
+            if pageName[:2] == u'qu':
+                regex = ur'{{pron\|kw[^}\|]+\|fr}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'qu prononcés /kw/ en français')
+            if pageName[:2] == u'qu' and pageName[:4] != u'quoi':
+                regex = ur'{{fr\-rég\|kw[^}\|]+}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'qu prononcés /kw/ en français')
+            if pageName[:2] == u'ch':
+                regex = ur'{{pron\|k[^}\|]+\|fr}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
+            if pageName[:2] == u'ch':
+                regex = ur'{{fr\-rég\|k[^}\|]+}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
+            if pageName[:2] == u'Ch':
+                regex = ur'{{pron\|k[^}\|]+\|fr}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
+            if pageName[:2] == u'Ch':
+                regex = ur'{{fr\-rég\|k[^}\|]+}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
+            if pageName[-2:] == u'ch':
+                regex = ur'{{pron\|[^}\|]+k\|fr}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
+            if pageName[-2:] == u'ch':
+                regex = ur'{{fr\-rég\|[^}\|]+k}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
+            if pageName[-3:] == u'chs':
+                regex = ur'{{pron\|[^}\|]+k}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
+            if pageName[-3:] == u'chs':
+                regex = ur'{{fr\-rég\|[^}\|]+k}}'
+                if re.search(regex, pageContent):
+                    pageContent = addCategory(pageContent, u'fr', u'ch prononcés /k/ en français')
 
-        regex = ur'({{trad\-fin}})\n*{{trad\-fin}}'
-        pageContent = re.sub(regex, ur'\1', pageContent)
+            regex = ur'({{fr\-[^}]*\|[\'’]+=[^}]*)\|[\'’]+=[oui|1]'
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur'\1', pageContent)
+            regex = ur'({{fr\-[^}]*\|s=[^}]*)\|s=[^}\|]*'
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur'\1', pageContent)
+            regex = ur'({{fr\-[^}]*\|ms=[^}]*)\|ms=[^}\|]*'
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur'\1', pageContent)
+            regex = ur'({{fr\-[^}]*\|fs=[^}]*)\|fs=[^}\|]*'
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur'\1', pageContent)
+
+            pageContent = pageContent.replace(u'{{louchébem|fr}}', u'{{louchébem}}')
+            pageContent = pageContent.replace(u'{{reverlanisation|fr}}', u'{{reverlanisation}}')
+            pageContent = pageContent.replace(u'{{verlan|fr}}', u'{{verlan}}')
+
+        languageCodes = [u'fc', u'fro', u'frm', u'pt', u'pcd']
+        for l in languageCodes:
+            regex = ur'(\|' + l + ur'(:?\|num=[0-9])?}} ===\n{{)fr(\-rég)'
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur'\1' + l + ur'\3', pageContent)
+        regex = ur'\n{{fro\-rég[^}]*}}'
+        pageContent = re.sub(regex, ur'', pageContent)
+
+        regex = ur'(\|en}} ===\n{{)fr\-rég'
+        if re.search(regex, pageContent):
+            pageContent = re.sub(regex, ur'\1en-nom-rég', pageContent)
+
+        regex = ur'(\|es}} ===\n{{)fr\-rég'
+        if re.search(regex, pageContent):
+            pageContent = re.sub(regex, ur'\1es-rég-voy', pageContent)
+
+        regex = u'{{(Latn|Grek|Cyrl|Armn|Geor|Hebr|Arab|Syrc|Thaa|Deva|Hang|Hira|Kana|Hrkt|Hani|Jpan|Hans|Hant|zh-mot|kohan|ko-nom|la-verb|grc-verb|polytonique|FAchar)[\|}]'
+        if not re.search(regex, pageContent):
+            if debugLevel > 0: print u' Headword addition'
+            pageContent = re.sub(ur'([^d\-]+\-\|[a-z]+\}\}\n\{\{[^\n]*\n)\# *', ur"\1'''" + pageName + ur"''' {{pron}}\n# ", pageContent)
+
+        if u'{{langue|en}}' in pageContent:
+            regex = ur"({{S\|verbe\|en}} *=* *\n'*)to "
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur"\1", pageContent)
+
+            regex = ur'(=== {{S\|adjectif\|en}} ===\n[^\n]*) *{{pluriel \?\|en}}'
+            pageContent = re.sub(regex, ur"\1", pageContent)
 
         pageLanguages = getPageLanguages(pageContent)
         for pageLanguage in pageLanguages:
@@ -2337,17 +2277,6 @@ def treatPageByName(pageName):
             while pageContent.find(u'}}1=') != -1:
                 pageContent = pageContent[:pageContent.find(u'}}1=')] + pageContent[pageContent.find(u'}}1=')+len(u'}}1='):len(pageContent)]
 
-        if debugLevel > 0: print u'#* or #:'
-        finalPageContent = u''
-        while pageContent.find(u'\n#:') != -1:
-            finalPageContent = finalPageContent + pageContent[:pageContent.find(u'\n#:')+2]
-            if finalPageContent.rfind(u'{{langue|') == finalPageContent.rfind(u'{{langue|fr}}'):
-                pageContent = u'*' + pageContent[pageContent.find(u'\n#:')+len(u'\n#:'):len(pageContent)]
-            else:
-                pageContent = u':' + pageContent[pageContent.find(u'\n#:')+len(u'\n#:'):len(pageContent)]
-        pageContent = finalPageContent + pageContent
-        finalPageContent = u''
-
         
         if pageContent.find(u'{{langue|fr}}') != -1:
 
@@ -2489,13 +2418,13 @@ def treatPageByName(pageName):
 
         pageContent, summary = sort_translations(pageContent, summary)
 
-        if debugLevel > 0: print (u'Gestion des codes langues dans les modèles')
+        if debugLevel > 0: print (u' Languages in templates checking')
         addLanguageCode = False # Certaines sections interdisent les modèles de domaine catégorisant
-        if debugLevel > 0: print " addLanguageCode = " + str(addLanguageCode)
+        if debugLevel > 1: print '  addLanguageCode = ' + str(addLanguageCode)
         translationSection = False
         backward = False # Certains modèles nécessitent d'être déplacés puis retraités
         languageCode = None
-        if debugLevel > 0: print u' languageCode = None'
+        if debugLevel > 1: print u'  languageCode = None'
         startPosition = 1
         singularPageName = ''
         infinitive = ''
@@ -2541,7 +2470,7 @@ def treatPageByName(pageName):
 
                 # Missing language section
                 if not languageCode and (p < limit1 or p >= limit6) and currentTemplate != u'ébauche':
-                    if debugLevel > 0: print u' Page à formater manuellement'
+                    if debugLevel > 0: print u' Page to format manually'
                     finalPageContent = u'{{formater|Section de langue manquante, avant le modèle ' + currentTemplate + u' (au niveau du ' + str(len(finalPageContent)) + u'-ème caractère)}}\n' + finalPageContent + pageContent
                     summary = u'Page à formater manuellement'
                     savePage(page, finalPageContent, summary)
@@ -2550,21 +2479,21 @@ def treatPageByName(pageName):
                 elif currentTemplate == u'caractère':
                     languageCode = u'conv'
                     addLanguageCode = False
-                    if debugLevel > 0: print " addLanguageCode = " + str(addLanguageCode)
+                    if debugLevel > 0: print ' addLanguageCode = ' + str(addLanguageCode)
                     finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
 
                 elif currentTemplate == u'langue':
                     languageCode = pageContent[endPosition+1:pageContent.find('}}')]
                     if languageCode == u'':
-                        if debugLevel > 0: print u' code langue vide'
+                        if debugLevel > 0: print u'  empty language code'
                         return
-                    if debugLevel > 0: print u' code langue trouvé : ' + languageCode
+                    if debugLevel > 1: print u'  language found: ' + languageCode
                     regex = ur'[a-zA-Z\-]+'
                     if not re.search(regex, languageCode):
                         finalPageContent = u'{{formater|Code langue incorrect : ' + languageCode + u'}}\n' + finalPageContent + pageContent
                         summary = u'Page à formater manuellement'
                         savePage(page, finalPageContent, summary)
-                        if debugLevel > 1: print u'Page à formater manuellement'
+                        if debugLevel > 0: print u' Page to format manually'
                         return
                     addLanguageCode = True
 
@@ -2572,26 +2501,26 @@ def treatPageByName(pageName):
                     if languageCode == u'conv':
                         regex = ur'[= ]*{{S\|anagrammes}}[^}]+\|conv}}\n'
                         if re.compile(regex).search(pageContent):
-                            if debugLevel > 0: print u'Retrait d\'anagramme en conv'
+                            if debugLevel > 0: print u' No anagram for {{conv}}'
                             finalPageContent2 = pageContent[:re.compile(regex).search(pageContent).start()]
                             pageContent2 = pageContent[re.compile(regex).search(pageContent).end():]
                             delta = re.compile(regex).search(pageContent).end()
                             regex = ur'[^}]+\|conv}}\n'
                             while re.compile(regex).search(pageContent2):
-                                if debugLevel > 0: print u' autre anagramme en conv'
+                                if debugLevel > 0: print u' No anagram for {{conv}}'
                                 delta = delta + re.compile(regex).search(pageContent2).end()
                                 pageContent2 = pageContent2[re.compile(regex).search(pageContent2).end():]
                             pageContent = finalPageContent2 + pageContent[delta:]
 
                     elif debugLevel == 0 and pageContent.find(u'S|erreur|' + languageCode) == -1 and pageContent.find(u'S|faute|' + languageCode) == -1 \
                      and languageCode != u'conv' and pageName[:1] != u'-' and pageName[-1:] != u'-' and not ':' in pageName:
-                        if debugLevel > 0: print u' Anagrammes pour ' + languageCode
+                        if debugLevel > 0: print u' Anagrams for ' + languageCode
                         if pageContent.find(u'{{S|anagr') == -1 and pageName.find(u' ') == -1 and len(pageName) <= anagramsMaxLength:
-                            anagrammes = anagram(pageName)
+                            anagrams = anagram(pageName)
                             ListeAnagrammes = u''
-                            for anagramme in anagrammes:
+                            for anagramme in anagrams:
                                 if anagramme != pageName:
-                                    if debugLevel > 0: print anagramme.encode(config.console_encoding, 'replace')
+                                    if debugLevel > 0: print u' ' + anagramme.encode(config.console_encoding, 'replace')
                                     pageAnagr = Page(site,anagramme)
                                     if pageAnagr.exists():
                                         if pageAnagr.namespace() !=0 and anagramme != u'User:JackBot/test':
@@ -2635,13 +2564,13 @@ def treatPageByName(pageName):
                     section = trim(pageContent[endPosition+1:pageContent.find('}}')])
                     if section.find(u'|') != -1: section = trim(section[:section.find(u'|')])
                     if not section in Section:
-                        if debugLevel > 0: print u' Section inconnue : ' + section
+                        if debugLevel > 0: print u' Unknown section: ' + section
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
                         break
-                    if debugLevel > 0: print str(' ') + section.encode(config.console_encoding, 'replace')
+                    if debugLevel > 0: print u' Known section: ' + section.encode(config.console_encoding, 'replace')
 
                     if Section.index(section) < limit1:
-                        if debugLevel > 1: print u' Paragraphe définition'
+                        if debugLevel > 1: print u' Definition paragraph'
                         addLanguageCode = True # Paragraphe avec code langue dans les modèles lexicaux
                         translationSection = False
 
@@ -2665,7 +2594,7 @@ def treatPageByName(pageName):
 
                             tempPageName = defaultSortByLanguage(pageName, languageCode)
                             if tempPageName != pageName:
-                                if debugLevel > 0: print u' ajout de "clé="'
+                                if debugLevel > 0: print u' "|clé="'
                                 tempPageName = defaultSort(tempPageName)
                                 pageContent = pageContent[:pageContent.find('}}')] + u'|clé=' + tempPageName + pageContent[pageContent.find('}}'):]
                             
@@ -2674,7 +2603,7 @@ def treatPageByName(pageName):
                         translationSection = False
 
                         if section == u'homophones':
-                            if debugLevel > 0: print ' Catégorisation des homophones'
+                            if debugLevel > 0: print ' Homophons categorization'
                             sectionTitle = pageContent[:pageContent.find('}}')]
                             if sectionTitle.rfind('|') > len(section):
                                 pageContent = sectionTitle[:sectionTitle.rfind('|')] + u'|' + languageCode + pageContent[pageContent.find('}}'):]
@@ -2700,7 +2629,7 @@ def treatPageByName(pageName):
                         elif section == u'traductions à trier':
                             translationSection = True
 
-                    if debugLevel > 0: print " addLanguageCode = " + str(addLanguageCode)
+                    if debugLevel > 1: print '  addLanguageCode = ' + str(addLanguageCode)
                     finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
 
                 elif currentTemplate in [u'term', u'région']:
@@ -3395,7 +3324,7 @@ def treatPageByName(pageName):
                         finalPageContent = finalPageContent.replace(u'{{' + currentTemplate + u'}}', u'{{subst:nom langue|' + currentTemplate + u'}}')
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
                 else:
-                    if debugLevel > 0: pywikibot.output(u"\n\03{blue}Modèle inconnu\03{default} " + currentTemplate)
+                    if debugLevel > 0: pywikibot.output(u"\n\03{yellow} Unknown template\03{default} " + currentTemplate)
                     finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
 
             if not backward:
@@ -3419,8 +3348,8 @@ def treatPageByName(pageName):
         finalPageContent = finalPageContent + pageContent
 
 
-        if debugLevel > 0: print u'Formatage des flexions'
-        if debugLevel > 1: print u' fr'
+        if debugLevel > 0: print u' Flexions formatting'
+        if debugLevel > 1: print u'  fr'
         regex = ur"(=== {{S\|nom\|fr)\|flexion(}} ===\n(?:{{fr[^\n]*\n)*'''" + rePageName + ur"''' [^\n]*{{fsing}})"
         if re.search(regex, finalPageContent):
             finalPageContent = re.sub(regex, ur'\1\2', finalPageContent)
@@ -3491,9 +3420,9 @@ def treatPageByName(pageName):
                             finalPageContent = re.sub(regex, ur'\1{{' + language + ur'-rég|s=' + singularPageName + u'|}}\n\2\5', finalPageContent)
                             summary = summary + u', ajout de {{' + language + ur'-rég}}'
 
-            if debugLevel > 1: raw_input(finalPageContent.encode(config.console_encoding, 'replace'))
+            if debugLevel > 1:  raw_input(finalPageContent.encode(config.console_encoding, 'replace'))
 
-            if debugLevel > 1: print u' en'
+            if debugLevel > 1:  print u' en'
             if pageName[-2:] != 'ss' and pageName[-3:] != 'hes' and pageName[-3:] != 'ies' and pageName[-3:] != 'ses' and pageName[-3:] != 'ves':
                 regex = ur"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + pageName + ur"''' {{pron\|)([^\|}]*)([s|z]\|en}}\n# *'*'*Pluriel de *'*'* *\[\[)([^#\|\]]+)"
                 if re.search(regex, finalPageContent):
@@ -3523,13 +3452,13 @@ def treatPageByName(pageName):
             if re.search(regex, finalPageContent):
                 finalPageContent = re.sub(regex, ur'{{m}}\1', finalPageContent)
                 summary = summary + u', précision du genre m'
-                if debugLevel > 1: print ' m1'
+                if debugLevel > 1: print '  m1'
 
             regex = ur"{{genre *\?*\|fr}}(\n# *'* *[Ff]éminin)"
             if re.search(regex, finalPageContent):
                 finalPageContent = re.sub(regex, ur'{{f}}\1', finalPageContent)
                 summary = summary + u', précision du genre f'
-                if debugLevel > 1: print ' f1'
+                if debugLevel > 1: print '  f1'
 
             if finalPageContent.find(u'{{genre|fr}}') != -1 or finalPageContent.find(u'{{genre ?|fr}}') != -1:
                 mSuffixes = ['eur', 'eux', 'ant', 'age', 'ier', 'ien', 'ois', 'ais', 'isme', 'el', 'if', 'ment', 'ments'] # pas "é" : adaptabilité
@@ -3538,7 +3467,7 @@ def treatPageByName(pageName):
                         finalPageContent = finalPageContent.replace(u"{{genre|fr}}", u"{{m}}")
                         finalPageContent = finalPageContent.replace(u"{{genre ?|fr}}", u"{{m}}")
                         summary = summary + u', précision du genre m'
-                        if debugLevel > 1: print ' m2'
+                        if debugLevel > 1: print '  m2'
                         break
 
                 fSuffixes = ['euse', 'ante', 'ance', 'ette', 'ienne', 'rie', 'oise', 'aise', 'logie', 'tion', 'ité', 'elle', 'ive']
@@ -3547,7 +3476,7 @@ def treatPageByName(pageName):
                         finalPageContent = finalPageContent.replace(u"{{genre|fr}}", u"{{f}}")
                         finalPageContent = finalPageContent.replace(u"{{genre ?|fr}}", u"{{f}}")
                         summary = summary + u', précision du genre f'
-                        if debugLevel > 1: print ' f2'
+                        if debugLevel > 1: print '  f2'
                         break
 
                 mfSuffixes = ['iste']
@@ -3556,7 +3485,7 @@ def treatPageByName(pageName):
                         finalPageContent = finalPageContent.replace(u"{{genre|fr}}", u"{{mf}}")
                         finalPageContent = finalPageContent.replace(u"{{genre ?|fr}}", u"{{mf}}")
                         summary = summary + u', précision du genre mf'
-                        if debugLevel > 1: print ' mf1'
+                        if debugLevel > 1: print '  mf1'
                         break
 
                 if singularPageName != u'':
@@ -3565,7 +3494,7 @@ def treatPageByName(pageName):
                         finalPageContent = finalPageContent.replace(u'{{genre|fr}}', lemmaGender)
                         finalPageContent = finalPageContent.replace(u'{{genre ?|fr}}', lemmaGender)
                         summary = summary + u', précision du genre ' + lemmaGender
-                        if debugLevel > 1: print ' loc'
+                        if debugLevel > 1: print '  loc'
 
             if fixFalseFlexions and pageName[-2:] == u'es':
                 if debugLevel > 0: ' Hardfix des flexions de noms féminins'
@@ -3632,7 +3561,7 @@ def treatPageByName(pageName):
             and finalPageContent.find(u'{{invar') == -1 and finalPageContent.find(u'{{verbe non standard') == -1 \
             and finalPageContent.find(u'[[Image:') == -1:
                 # Sinon bug https://fr.wiktionary.org/w/index.php?title=d%C3%A9finir&diff=10128404&oldid=10127687
-            if debugLevel > 0: print u'Ajout de {{conj}}'
+            if debugLevel > 0: print u' {{conj}}'
             for l in LanguesC:
                 if not (l[0] == u'fr' and pageName[-3:] == u'ave'):
                     if re.compile(ur'{{S\|verbe\|'+l[0]+'}}').search(finalPageContent) and not re.compile(ur'{{S\|verbe\|'+l[0]+u'}}[= ]+\n+[^\n]*\n*[^\n]*\n*{{(conj[a-z1-3\| ]*|invar)').search(finalPageContent):
@@ -3835,7 +3764,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 if sys.argv[2] == u'listFalseTranslations':
                     listFalseTranslations = True
-                    p.pagesByCat(u'Catégorie:Wiktionnaire:Traductions manquantes sans langue précisée')
+                    p.pagesByCat(u'Catégorie:Pages "info" si réforme 1895 de l’espéranto')
                 elif sys.argv[2] == u'fixOldTemplates':
                     fixOldTemplates = True
                     p.pagesByCat(u'Appels de modèles incorrects:abréviation', afterPage = afterPage, recursive = False, namespaces = [14])

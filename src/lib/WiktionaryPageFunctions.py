@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+#TODO: common Wiktionaries interfaces
 
 from __future__ import absolute_import, unicode_literals
 import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
@@ -973,8 +974,8 @@ def getLanguageCodeISO693_1FromISO693_3(code):
     return code
 
 def addSeeBanner(pageName, pageContent, summary):
+    if debugLevel > 0: print u' {{voir}}'
     if debugLevel == 1: return pageContent, summary
-    if debugLevel > 0: print u'Ajout des {{voir}}'
     CleTri = defaultSort(pageName)
 
     if pageContent.find(u'{{voir|{{lc:{{PAGENAME}}}}}}') != -1:
@@ -1162,6 +1163,7 @@ def addSeeBanner(pageName, pageContent, summary):
     return pageContent, summary
 
 def formatSections(pageContent):
+    if debugLevel > 0: print u' formatSections()'
     # Titres en minuscules
     #pageContent = re.sub(ur'{{S\|([^}]+)}}', ur'{{S|' + ur'\1'.lower() + ur'}}', pageContent)
     for f in re.findall("{{S\|([^}]+)}}", pageContent):
@@ -1227,7 +1229,91 @@ def formatSections(pageContent):
     pageContent = re.sub(ur'{{S\| ?vocabulaire apparenté\|?[a-z ]*}}', u'{{S|vocabulaire}}', pageContent)
     pageContent = re.sub(ur'{{S\| ?voir( aussi)?\|?[a-z ]*}}', u'{{S|voir aussi}}', pageContent)
     pageContent = pageContent.replace(u'{{S|descendants}}', u'{{S|dérivés autres langues}}')
+    pageContent = pageContent.replace(u'num=1|num=', u'num=1')
 
     return pageContent
-
 # TODO: def sort_sections(pageContent):
+
+def formatTranslations(pageContent, summary):
+    if debugLevel > 0: print u' formatTranslations()'
+    regex = ur'({{langue\|(?!fr}).*}[^€]*)\n=* *{{S\|traductions}} *=*\n*{{trad\-début}}\n{{ébauche\-trad}}\n{{trad\-fin}}'
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur'\1', pageContent)
+        summary = summary + u', retrait de {{S|traductions}}'
+
+    regex = ur'({{langue\|(?!fr}).*}[^€]*)\n=* *{{S\|traductions}} *=*\n*{{\(}}\n{{ébauche\-trad}}\n{{\)}}'
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur'\1', pageContent)
+        summary = summary + u', retrait de {{S|traductions}}'
+
+    # Formatage général des traductions
+    pageContent = pageContent.replace(u'{{trad|', u'{{trad-|')
+    pageContent = pageContent.replace(u'{{(}}\n{{ébauche-trad}}\n{{)}}', '')
+    pageContent = pageContent.replace(u'{{trad-début|{{trad-trier}}}}', u'{{trad-trier}}\n{{trad-début}}')
+    pageContent = pageContent.replace(u'{{trad-début|{{trad-trier|fr}}}}', u'{{trad-trier}}\n{{trad-début}}')
+
+        # 1) Suppression de {{ébauche-trad|fr}} (WT:PPS)
+    pageContent = pageContent.replace(ur'{{ébauche-trad|fr}}', u'{{ébauche-trad}}')
+    regex = ur'{{ébauche\-trad\|fr}}'
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, u'{{ébauche-trad}}', pageContent)
+
+        # 2) Aucun modèle d'ébauche en dehors d'une boite déroulante
+    pageContent = pageContent.replace(ur'{{ébauche-trad}}\n{{trad-début}}', u'{{trad-début}}\n{{ébauche-trad}}')
+    regex = ur'{{ébauche\-trad}}\n{{trad\-début}}'
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, u'{{trad-début}}\n{{ébauche-trad}}', pageContent)
+
+    pageContent = pageContent.replace(ur'==== {{S|traductions}} ====\n{{ébauche-trad}}\n', 
+        u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n')
+    regex = ur'==== {{S\|traductions}} ====\n{{ébauche\-trad}}(\n<![^>]+>)*(\n|$)'
+    if re.search(regex, pageContent):
+        if debugLevel > 0: print ' ébauche sans boite'
+        pageContent = re.sub(regex, u'==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad|en}}\n{{trad-fin}}\n',
+            pageContent)
+
+        # 3) Anciens commentaires d'aide à l'édition (tolérés avant l'éditeur visuel et editor.js)
+    pageContent = pageContent.replace(ur'<!--* {{T|en}} : {{trad|en|}}-->', '')     # bug ?
+    regex = ur'<!\-\-[^{>]*{{T\|[^>]+>\n?'
+    if re.search(regex, pageContent):
+        if debugLevel > 0: print ' Commentaire trouvé l 1517'
+        pageContent = re.sub(regex, u'', pageContent)
+    regex = ur'{{ébauche\-trad}}{{'
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, u'{{ébauche-trad}}\n{{', pageContent)
+
+    while pageContent.find(u'{{trad-fin}}\n* {{T|') != -1:
+        pageContent2 = pageContent[pageContent.find(u'{{trad-fin}}\n* {{T|'):]
+        delta = pageContent2.find(u'\n')+1
+        pageContent2 = pageContent2[delta:]
+        if pageContent2.find(u'\n') != -1:
+            if debugLevel > 0: print pageContent2[:pageContent2.find(u'\n')+1].encode(config.console_encoding, 'replace')
+            if pageContent2[:pageContent2.find(u'\n')+1].find(u'trier') != -1: break
+            pageContent = pageContent[:pageContent.find(u'{{trad-fin}}\n* {{T|'):] + \
+                pageContent2[:pageContent2.find(u'\n')+1] + u'{{trad-fin}}\n' + \
+                pageContent[pageContent.find(u'{{trad-fin}}\n* {{T|')+delta+pageContent2.find(u'\n')+1:]
+        else:
+            if debugLevel > 0: print pageContent2.encode(config.console_encoding, 'replace')
+            if pageContent2[:len(pageContent2)].find(u'trier') != -1: break
+            pageContent = pageContent[:pageContent.find(u'{{trad-fin}}\n* {{T|'):] + \
+                pageContent2[:len(pageContent2)] + u'{{trad-fin}}\n' + \
+                pageContent[pageContent.find(u'{{trad-fin}}\n* {{T|')+delta+len(pageContent2):]
+    regex = ur'}}{{trad\-fin}}'
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, u'}}\n{{trad-fin}}', pageContent)
+
+    while re.compile('{{T\|.*\n\n\*[ ]*{{T\|').search(pageContent):
+        i1 = re.search(u'{{T\|.*\n\n\*[ ]*{{T\|', pageContent).end()
+        pageContent = pageContent[:i1][:pageContent[:i1].rfind(u'\n')-1] + pageContent[:i1][pageContent[:i1].rfind(u'\n'):len(pageContent[:i1])] + pageContent[i1:]
+
+    if debugLevel > 1: print u'  Modèles à déplacer'
+    regex = ur'(==== {{S\|traductions}} ====)(\n{{ébauche\-trad[^}]*}})(\n{{trad-début}})'
+    pageContent = re.sub(regex, ur'\1\3\2', pageContent)
+
+    regex = ur'({{trad\-début}})\n*{{trad\-début}}'
+    pageContent = re.sub(regex, ur'\1', pageContent)
+
+    regex = ur'({{trad\-fin}})\n*{{trad\-fin}}'
+    pageContent = re.sub(regex, ur'\1', pageContent)
+
+    return pageContent, summary

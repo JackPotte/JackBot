@@ -108,7 +108,7 @@ def getContentFromPageName(pageName, allowedNamespaces = None, site = site):
     return getContentFromPage(page, allowedNamespaces)
 
 def getContentFromPage(page, allowedNamespaces = None, username = username):
-    if debugLevel > 0: pywikibot.output(u' \03{blue}getContentFromPage : \03{default}' + page.title())
+    if debugLevel > 1: pywikibot.output(u' \03{blue}getContentFromPage : \03{default}' + page.title())
     PageBegin = u''
     try:
         get = page.exists()
