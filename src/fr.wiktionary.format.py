@@ -1752,6 +1752,9 @@ def treatPageByName(pageName):
 
         pageContent, summary = formatTranslations(pageContent, summary)
 
+        regex = ur"\n==== {{eo\-reftit\|ref=info}} ====\nLe pluriel aurait été : .*"
+        if re.search(regex, pageContent):
+            pageContent = re.sub(regex, ur'', pageContent)
 
         regex = ur'(\[\[|\|mot=)Annexe(\:[^\/\|\n]+\/\*[^\|\]\n]+\|?[^\]\|\n]+(\]\]|}}))'
         if re.search(regex, pageContent):
@@ -2096,6 +2099,114 @@ def treatPageByName(pageName):
             pageContent = pageContent.replace(u'{{reverlanisation|fr}}', u'{{reverlanisation}}')
             pageContent = pageContent.replace(u'{{verlan|fr}}', u'{{verlan}}')
 
+# Ajout des redirections des pronominaux
+            if pageContent.find(u'{{S|verbe|fr}}') != -1 and pageName[:3] != u'se' and pageName[:2] != u's’':
+                pageContent2 = pageContent[pageContent.find(u'{{S|verbe|fr}}'):]
+                regex = ur'(\n|\')s(e |’)\'\'\''
+                if re.search(regex, pageContent2) is not None:
+                    if re.search(regex, pageContent2) < pageContent2.find(u'{{S|') or pageContent2.find(u'{{S|') == -1:
+                        regex = ur'^[aeiouyàéèêôù]'
+                        if re.search(regex, pageName):    # ne pas prendre [:1] car = & si encodage ASCII du paramètre DOS / Unix
+                            pageName2 = u's’' + pageName
+                        else:
+                            pageName2 = u'se ' + pageName
+                        page2 = Page(site, pageName2)
+                        if not page2.exists():
+                            if debugLevel > 0: print u'Création de ' + defaultSort(pageName2)
+                            summary2 = u'Création d\'une redirection provisoire catégorisante du pronominal'
+                            savePage(page2, u'#REDIRECT[[' + pageName + u']]\n<!-- Redirection temporaire avant de créer le verbe pronominal -->\n[[Catégorie:Wiktionnaire:Verbes pronominaux à créer en français]]', summary2)
+
+            # Ajout de modèles pour les gentités et leurs adjectifs
+            if debugLevel > 0: print u'Gentilés'
+            regex = ur'({{fr\-[^}]+)\\'
+            while re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur'\1', pageContent)
+
+            ligne = 6
+            colonne = 4
+            # TODO : fusionner avec le tableau des modèles de flexion
+            ModeleGent = [[0] * (colonne+1) for _ in range(ligne+1)]
+            ModeleGent[1][1] = ur'fr-accord-mixte'
+            ModeleGent[1][2] = ur's'
+            ModeleGent[1][3] = ur'e'
+            ModeleGent[1][4] = ur'es'
+            ModeleGent[2][1] = ur'fr-accord-s'
+            ModeleGent[2][2] = ur''
+            ModeleGent[2][3] = ur'e'
+            ModeleGent[2][4] = ur'es'
+            ModeleGent[3][1] = ur'fr-accord-el'
+            ModeleGent[3][2] = ur's'
+            ModeleGent[3][3] = ur'le'
+            ModeleGent[3][4] = ur'les'
+            ModeleGent[4][1] = ur'fr-accord-en'
+            ModeleGent[4][2] = ur's'
+            ModeleGent[4][3] = ur'ne'
+            ModeleGent[4][4] = ur'nes'
+            ModeleGent[5][1] = ur'fr-accord-et'
+            ModeleGent[5][2] = ur's'
+            ModeleGent[5][3] = ur'te'
+            ModeleGent[5][4] = ur'tes'
+            ModeleGent[6][1] = ur'fr-rég'
+            ModeleGent[6][2] = ur's'
+            ModeleGent[6][3] = ur''
+            ModeleGent[6][4] = ur's'
+
+            for l in range(1, ligne + 1):
+                # Depuis un masculin
+                regex = ur'\({{p}} : [\[\']*' + rePageName + ModeleGent[l][2] + ur'[\]\']*, {{f}} : [\[\']*' + rePageName + ModeleGent[l][3] + ur'[\]\']*, {{fplur}} : [\[\']*' + rePageName + ModeleGent[l][4] + ur'[\]\']*\)'
+                if re.search(regex, pageContent):
+                    pageContent = re.sub(regex, '{{' + ModeleGent[l][1] + u'|pron=}}', pageContent)
+                    summary = summary + u', conversion des liens flexions en modèle boite'
+                # Depuis un féminin
+                if ModeleGent[l][1] == ur'fr-accord-s' and rePageName[-1:] == u'e' and rePageName[-2:-1] == u's':
+                    regex = ur'\({{p}} : [\[\']*' + rePageName + ur's[\]\']*, {{m}} : [\[\']*' + rePageName[:-1] + ur'[\]\']*\)'
+                    if re.search(regex, pageContent):
+                        pageContent = re.sub(regex, '{{' + ModeleGent[l][1] + u'|ms=' + rePageName[:-1].replace(u'\\', u'') + '}}', pageContent)
+                        summary = summary + u', conversion des liens flexions en modèle boite'
+                regex = ur'\({{f}} : [\[\']*' + rePageName + ModeleGent[l][3] + ur'[\]\']*, {{mplur}} : [\[\']*' + rePageName + ModeleGent[l][2] + ur'[\]\']*, {{fplur}} : [\[\']*' + rePageName + ModeleGent[l][4] + ur'[\]\']*\)'
+                if re.search(regex, pageContent):
+                    pageContent = re.sub(regex, '{{' + ModeleGent[l][1] + u'|pron=}}', pageContent)
+                    summary = summary + u', conversion des liens flexions en modèle boite'
+                if debugLevel > 1: print u' avec son'
+                regex = ur'(\n\'\'\'' + rePageName + u'\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + ModeleGent[l][1] + ur'\|[pron\=]*)}}'
+                if re.search(regex, pageContent):
+                    pageContent = re.sub(regex, ur'\n\4\2}}\1\2\3', pageContent)
+
+                deplacement_modele_flexion = False
+                # On différencie les cas pas d'espace avant le modèle / espace avant le modèle
+                regex = ur'( ===\n)(\'\'\'[^\n]+[^ ])({{' + ModeleGent[l][1] + ur'\|[^}]*}})'
+                if re.search(regex, pageContent):
+                    pageContent = re.sub(regex, ur'\1\3\n\2', pageContent)
+                    deplacement_modele_flexion = True
+                # Espace avant le modèle
+                regex_space = ur'( ===\n)(\'\'\'[^\n]+) ({{' + ModeleGent[l][1] + ur'\|[^}]*}})'
+                if re.search(regex_space, pageContent):
+                    pageContent = re.sub(regex_space, ur'\1\3\n\2', pageContent)
+                    deplacement_modele_flexion = True
+                if deplacement_modele_flexion:
+                    summary = summary + u', déplacement des modèles de flexions'
+
+            if debugLevel > 0: print u'Traductions manquantes'
+            # Si la définition du mot (dit "satellite") ne renvoie pas vers un autre, les centralisant
+            #TODO: # Variante,
+            regex = ur'(fr\|flexion|' + u'|'.join(definitionSentences) + u'|' + u'|'.join(map(unicode.capitalize, definitionSentences)) + ur')'
+            regex2 = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|' + \
+                u'|'.join(etymologyTemplatesInSatelliteWords) + ur')[\|}]'
+            French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
+            if French is not None and re.search(regex, French) is None and re.search(regex2, French) is None and \
+                countFirstDefinitionSize(French) > 3:
+                summary = summary + u', ajout de {{S|traductions}}'
+                pageContent = addLine(pageContent, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
+            # Cosmetic hardfix
+            regex = ur'(==== {{S\|traductions}} ====\n)\n* *\n*({{trad\-début)'
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur'\1\2', pageContent)
+            regex = ur'({{trad\-fin}}\n)([^\n])'
+            if re.search(regex, pageContent):
+                pageContent = re.sub(regex, ur'\1\n\2', pageContent)
+
+            # TODO: contrôle du nombre de paragraphes de traduction par rapport au nombre de sens
+
         languageCodes = [u'fc', u'fro', u'frm', u'pt', u'pcd']
         for l in languageCodes:
             regex = ur'(\|' + l + ur'(:?\|num=[0-9])?}} ===\n{{)fr(\-rég)'
@@ -2276,119 +2387,8 @@ def treatPageByName(pageName):
                     break
             while pageContent.find(u'}}1=') != -1:
                 pageContent = pageContent[:pageContent.find(u'}}1=')] + pageContent[pageContent.find(u'}}1=')+len(u'}}1='):len(pageContent)]
-
         
-        if pageContent.find(u'{{langue|fr}}') != -1:
-
-            # Ajout des redirections des pronominaux
-            if pageContent.find(u'{{S|verbe|fr}}') != -1 and pageName[:3] != u'se' and pageName[:2] != u's’':
-                pageContent2 = pageContent[pageContent.find(u'{{S|verbe|fr}}'):]
-                regex = ur'(\n|\')s(e |’)\'\'\''
-                if re.search(regex, pageContent2) is not None:
-                    if re.search(regex, pageContent2) < pageContent2.find(u'{{S|') or pageContent2.find(u'{{S|') == -1:
-                        regex = ur'^[aeiouyàéèêôù]'
-                        if re.search(regex, pageName):    # ne pas prendre [:1] car = & si encodage ASCII du paramètre DOS / Unix
-                            pageName2 = u's’' + pageName
-                        else:
-                            pageName2 = u'se ' + pageName
-                        page2 = Page(site, pageName2)
-                        if not page2.exists():
-                            if debugLevel > 0: print u'Création de ' + defaultSort(pageName2)
-                            summary2 = u'Création d\'une redirection provisoire catégorisante du pronominal'
-                            savePage(page2, u'#REDIRECT[[' + pageName + u']]\n<!-- Redirection temporaire avant de créer le verbe pronominal -->\n[[Catégorie:Wiktionnaire:Verbes pronominaux à créer en français]]', summary2)
-
-            # Ajout de modèles pour les gentités et leurs adjectifs
-            if debugLevel > 0: print u'Gentilés'
-            regex = ur'({{fr\-[^}]+)\\'
-            while re.search(regex, pageContent):
-                pageContent = re.sub(regex, ur'\1', pageContent)
-
-            ligne = 6
-            colonne = 4
-            # TODO : fusionner avec le tableau des modèles de flexion
-            ModeleGent = [[0] * (colonne+1) for _ in range(ligne+1)]
-            ModeleGent[1][1] = ur'fr-accord-mixte'
-            ModeleGent[1][2] = ur's'
-            ModeleGent[1][3] = ur'e'
-            ModeleGent[1][4] = ur'es'
-            ModeleGent[2][1] = ur'fr-accord-s'
-            ModeleGent[2][2] = ur''
-            ModeleGent[2][3] = ur'e'
-            ModeleGent[2][4] = ur'es'
-            ModeleGent[3][1] = ur'fr-accord-el'
-            ModeleGent[3][2] = ur's'
-            ModeleGent[3][3] = ur'le'
-            ModeleGent[3][4] = ur'les'
-            ModeleGent[4][1] = ur'fr-accord-en'
-            ModeleGent[4][2] = ur's'
-            ModeleGent[4][3] = ur'ne'
-            ModeleGent[4][4] = ur'nes'
-            ModeleGent[5][1] = ur'fr-accord-et'
-            ModeleGent[5][2] = ur's'
-            ModeleGent[5][3] = ur'te'
-            ModeleGent[5][4] = ur'tes'
-            ModeleGent[6][1] = ur'fr-rég'
-            ModeleGent[6][2] = ur's'
-            ModeleGent[6][3] = ur''
-            ModeleGent[6][4] = ur's'
-
-            for l in range(1, ligne + 1):
-                # Depuis un masculin
-                regex = ur'\({{p}} : [\[\']*' + rePageName + ModeleGent[l][2] + ur'[\]\']*, {{f}} : [\[\']*' + rePageName + ModeleGent[l][3] + ur'[\]\']*, {{fplur}} : [\[\']*' + rePageName + ModeleGent[l][4] + ur'[\]\']*\)'
-                if re.search(regex, pageContent):
-                    pageContent = re.sub(regex, '{{' + ModeleGent[l][1] + u'|pron=}}', pageContent)
-                    summary = summary + u', conversion des liens flexions en modèle boite'
-                # Depuis un féminin
-                if ModeleGent[l][1] == ur'fr-accord-s' and rePageName[-1:] == u'e' and rePageName[-2:-1] == u's':
-                    regex = ur'\({{p}} : [\[\']*' + rePageName + ur's[\]\']*, {{m}} : [\[\']*' + rePageName[:-1] + ur'[\]\']*\)'
-                    if re.search(regex, pageContent):
-                        pageContent = re.sub(regex, '{{' + ModeleGent[l][1] + u'|ms=' + rePageName[:-1].replace(u'\\', u'') + '}}', pageContent)
-                        summary = summary + u', conversion des liens flexions en modèle boite'
-                regex = ur'\({{f}} : [\[\']*' + rePageName + ModeleGent[l][3] + ur'[\]\']*, {{mplur}} : [\[\']*' + rePageName + ModeleGent[l][2] + ur'[\]\']*, {{fplur}} : [\[\']*' + rePageName + ModeleGent[l][4] + ur'[\]\']*\)'
-                if re.search(regex, pageContent):
-                    pageContent = re.sub(regex, '{{' + ModeleGent[l][1] + u'|pron=}}', pageContent)
-                    summary = summary + u', conversion des liens flexions en modèle boite'
-                if debugLevel > 1: print u' avec son'
-                regex = ur'(\n\'\'\'' + rePageName + u'\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + ModeleGent[l][1] + ur'\|[pron\=]*)}}'
-                if re.search(regex, pageContent):
-                    pageContent = re.sub(regex, ur'\n\4\2}}\1\2\3', pageContent)
-
-                deplacement_modele_flexion = False
-                # On différencie les cas pas d'espace avant le modèle / espace avant le modèle
-                regex = ur'( ===\n)(\'\'\'[^\n]+[^ ])({{' + ModeleGent[l][1] + ur'\|[^}]*}})'
-                if re.search(regex, pageContent):
-                    pageContent = re.sub(regex, ur'\1\3\n\2', pageContent)
-                    deplacement_modele_flexion = True
-                # Espace avant le modèle
-                regex_space = ur'( ===\n)(\'\'\'[^\n]+) ({{' + ModeleGent[l][1] + ur'\|[^}]*}})'
-                if re.search(regex_space, pageContent):
-                    pageContent = re.sub(regex_space, ur'\1\3\n\2', pageContent)
-                    deplacement_modele_flexion = True
-                if deplacement_modele_flexion:
-                    summary = summary + u', déplacement des modèles de flexions'
-
-            if debugLevel > 0: print u'Traductions manquantes'
-            # Si la définition du mot (dit "satellite") ne renvoie pas vers un autre, les centralisant
-            #TODO: # Variante,
-            regex = ur'(fr\|flexion|' + u'|'.join(definitionSentences) + u'|' + u'|'.join(map(unicode.capitalize, definitionSentences)) + ur')'
-            regex2 = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|' + \
-                u'|'.join(etymologyTemplatesInSatelliteWords) + ur')[\|}]'
-            French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
-            if French is not None and re.search(regex, French) is None and re.search(regex2, French) is None and \
-                countFirstDefinitionSize(French) > 3:
-                summary = summary + u', ajout de {{S|traductions}}'
-                pageContent = addLine(pageContent, u'fr', u'traductions', u'{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
-            # Cosmetic hardfix
-            regex = ur'(==== {{S\|traductions}} ====\n)\n* *\n*({{trad\-début)'
-            if re.search(regex, pageContent):
-                pageContent = re.sub(regex, ur'\1\2', pageContent)
-            regex = ur'({{trad\-fin}}\n)([^\n])'
-            if re.search(regex, pageContent):
-                pageContent = re.sub(regex, ur'\1\n\2', pageContent)
-
-            # TODO: contrôle du nombre de paragraphes de traduction par rapport au nombre de sens
-
-        if pageContent.find(u'{{langue|es}}') != -1:
+        if u'{{langue|es}}' in pageContent:
             ligne = 1
             colonne = 4
             ModeleGent = [[0] * (colonne+1) for _ in range(ligne+1)]
@@ -2441,7 +2441,7 @@ def treatPageByName(pageName):
                 else:
                     print u'Boucle langue : ' + languageCode
 
-# Recherche de chaque modèle
+# Recherche de chaque modèle de la page
             startPosition = pageContent.find('{{')
             if startPosition < 0: break
             finalPageContent = finalPageContent + pageContent[:startPosition + 2]
@@ -2567,7 +2567,7 @@ def treatPageByName(pageName):
                         if debugLevel > 0: print u' Unknown section: ' + section
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
                         break
-                    if debugLevel > 0: print u' Known section: ' + section.encode(config.console_encoding, 'replace')
+                    if debugLevel > 0: print u' Known section: ' + section
 
                     if Section.index(section) < limit1:
                         if debugLevel > 1: print u' Definition paragraph'
