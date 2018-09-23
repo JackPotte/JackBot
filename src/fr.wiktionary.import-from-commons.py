@@ -195,7 +195,8 @@ def main(*args):
         elif sys.argv[1] == u'-test2':
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'File:LL-Q150 (fra)-Guilhelma-celui-là.wav')
+            treatPageByName(u'File:en-us-augury.ogg')
+            treatPageByName(u'File:En-us-oracle.ogg')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
@@ -214,7 +215,7 @@ def main(*args):
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Lingua Libre pronounciation-fra', afterPage = afterPage, recursive = True, namespaces = None)
+            p.pagesByCat(u'U.S. English pronunciation', afterPage = afterPage, recursive = False, namespaces = None)
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':

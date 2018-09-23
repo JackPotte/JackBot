@@ -3734,7 +3734,7 @@ def main(*args):
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
-            regex = None
+            regex = '\{\{f\}\}\n# ''Pluriel de'' \[\[[^\|\]#]+[^e][\|\]#]'
             testPage = None
             if testPage is not None:
                 pageContent = getContentFromPageName(testPage)
