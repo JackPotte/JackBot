@@ -1752,9 +1752,11 @@ def treatPageByName(pageName):
 
         pageContent, summary = formatTranslations(pageContent, summary)
 
+        '''Specs ?
         regex = ur"\n==== {{eo\-reftit\|ref=info}} ====\nLe pluriel aurait été : .*"
         if re.search(regex, pageContent):
             pageContent = re.sub(regex, ur'', pageContent)
+        '''
 
         regex = ur'(\[\[|\|mot=)Annexe(\:[^\/\|\n]+\/\*[^\|\]\n]+\|?[^\]\|\n]+(\]\]|}}))'
         if re.search(regex, pageContent):
