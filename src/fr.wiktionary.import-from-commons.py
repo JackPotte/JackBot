@@ -208,8 +208,7 @@ def main(*args):
         elif sys.argv[1] == u'-test2' or sys.argv[1] == u'-tu':
             treatPageByName(u'User:' + username + u'/test unitaire')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'File:en-us-augury.ogg')
-            treatPageByName(u'File:En-us-oracle.ogg')
+            treatPageByName(u'File:en-us-rightly.ogg')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':

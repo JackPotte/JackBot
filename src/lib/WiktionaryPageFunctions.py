@@ -770,11 +770,11 @@ def addPronunciation(pageContent, languageCode, section, lineContent):
                     languageSection = languageSection[:-len(languageSection)] + languageSection[:-len(endOfLanguageSection)] + \
                         endOfLanguageSection[:endOfLanguageSection.find(u'\n==')] + lineContent + u'\n' + \
                         endOfLanguageSection[endOfLanguageSection.find(u'\n=='):]
-        if languageSection.find(u'\n* {{écouter|') != -1 and languageSection.find(u'=== {{S|prononciation}} ===') == -1:
-            languageSection = languageSection.replace(u'\n* {{écouter|', u'\n\n=== {{S|prononciation}} ===\n* {{écouter|')    
-        languageSection = languageSection.replace(u'\n\n\n\n', u'\n\n\n')
+            if languageSection.find(u'\n* {{écouter|') != -1 and languageSection.find(u'=== {{S|prononciation}} ===') == -1:
+                languageSection = languageSection.replace(u'\n* {{écouter|', u'\n\n=== {{S|prononciation}} ===\n* {{écouter|')    
+            languageSection = languageSection.replace(u'\n\n\n\n', u'\n\n\n')
 
-    pageContent = pageContent.replace(oldLanguageSection, languageSection)
+            pageContent = pageContent.replace(oldLanguageSection, languageSection)
 
     return pageContent
 
