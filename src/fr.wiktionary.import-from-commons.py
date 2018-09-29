@@ -32,34 +32,38 @@ summary = u'Ajout du son depuis [[commons:Category:Pronunciation]]'
 
 def treatPageByName(pageName):
     print(pageName.encode(config.console_encoding, 'replace'))
-    if pageName[-4:] != u'.ogg' and pageName[-4:] != u'.oga' and pageName[-4:] != u'.wav':
-        if debugLevel > 0: print u' No supported file format found'
-        return
+    if username in pageName:
+        fileName = u'LL-Q150 (fra)-0x010C-fonte.wav'
+    else:
+        if pageName[-4:] != u'.ogg' and pageName[-4:] != u'.oga' and pageName[-4:] != u'.wav':
+            if debugLevel > 0: print u' No supported file format found'
+            return
+        fileName = pageName[len(u'File:'):]
+    fileDesc = fileName[:-len(u'.ogg')]
 
-    fileName = pageName[len(u'File:'):-4]
-    if fileName.find(u'-') == -1:
+    if fileDesc.find(u'-') == -1:
         if debugLevel > 0: print u' No language code found'
         return
 
-    languageCode = fileName[:fileName.find(u'-')]
+    languageCode = fileDesc[:fileDesc.find(u'-')]
     if languageCode == 'LL':
         if debugLevel > 0: print u' Lingua Libre formats'
         # LL-<Qid de la langue> (<code iso 693-3>)-<Username>-<transcription> (<précision>).wav
 
-        if fileName.count('-') > 3:
+        if fileDesc.count('-') > 3:
             if debugLevel > 0: print u' Compound word'
-            word = fileName
+            word = fileDesc
             for i in range(3):
                 word = word[word.find(u'-')+1:]
         else:
-            word = fileName[fileName.rfind(u'-')+1:]
+            word = fileDesc[fileDesc.rfind(u'-')+1:]
 
-        s = re.search(ur'\(([^\)]+)\)', fileName)
+        s = re.search(ur'\(([^\)]+)\)', fileDesc)
         if s:
             languageCode = getLanguageCodeISO693_1FromISO693_3(s.group(1))
         else:
             if debugLevel > 0: print u' No parenthesis found'
-            s = re.search(ur'\-([^\-]+)\-[^\-]+$', fileName)
+            s = re.search(ur'\-([^\-]+)\-[^\-]+$', fileDesc)
             if not s:
                 if debugLevel > 0: print u' No language code found'
                 return
@@ -68,7 +72,7 @@ def treatPageByName(pageName):
     else:
         languageCode = languageCode.lower()
         if languageCode == u'qc': languageCode = u'fr'
-        word = fileName[fileName.find(u'-')+1:]
+        word = fileDesc[fileDesc.find(u'-')+1:]
         word = word.replace(u'-',' ')
         word = word.replace(u'_',' ')
         word = word.replace(u'\'',u'’')
@@ -78,7 +82,10 @@ def treatPageByName(pageName):
         print u' Word: ' + word
 
     region = u''
-    page1 = Page(siteDest, word)
+    if username in pageName:
+        page1 = Page(siteDest, pageName)
+    else:
+        page1 = Page(siteDest, word)
     try:
         currentPageContent = page1.get()
     except pywikibot.exceptions.NoPage:
@@ -145,12 +152,12 @@ def treatPageByName(pageName):
             try:
                 currentPageContent = page1.get()
             except pywikibot.exceptions.NoPage:
-                if debugLevel > 0: print u' Page introuvable 1'
+                if debugLevel > 0: print u' Page not found 1'
                 return
             except pywikibot.exceptions.IsRedirectPage:
                 currentPageContent = page1.get(get_redirect=True)
         else:
-            if debugLevel > 0: print u' Page introuvable 2'
+            if debugLevel > 0: print u' Page not found 2'
             return
     except pywikibot.exceptions.IsRedirectPage:
         currentPageContent = page1.get(get_redirect=True)
@@ -166,16 +173,22 @@ def treatPageByName(pageName):
     '''
 
     if debugLevel > 1: print u' Mot du Wiktionnaire : ' + word.encode(config.console_encoding, 'replace')
-    Son = pageName[len(u'File:'):]
-    if currentPageContent.find(Son) != -1 or currentPageContent.find(Son[:1].lower() + Son[1:]) != -1 or currentPageContent.find(Son.replace(u' ', u'_')) != -1 or currentPageContent.find((Son[:1].lower() + Son[1:]).replace(u' ', u'_')) != -1:
-        if debugLevel > 0: print u' Son déjà présent'
-        return
     if currentPageContent.find(u'{{langue|' + languageCode) == -1:
-        if debugLevel > 0: print u' Paragraphe absent'
+        if debugLevel > 0: print u' Language section absent'
         return
-    pageContent = currentPageContent
 
-    finalPageContent = addPronunciation(pageContent, languageCode, u'prononciation', u'* {{écouter|' + region + u'|' + prononciation + u'|lang=' + languageCode + u'|audio=' + Son + u'}}')
+    if fileName[:1].lower() == fileName[:1]:
+        fileNameCap = fileName[:1].upper() + fileName[1:]
+    else:
+        fileNameCap = fileName[:1].lower() + fileName[1:]
+    if fileName in currentPageContent or fileNameCap in currentPageContent or \
+        fileName.replace(u' ', u'_') in currentPageContent or fileNameCap.replace(u' ', u'_') in currentPageContent:
+        if debugLevel > 0: print u' File already present'
+        if debugLevel > 1: raw_input(currentPageContent.encode(config.console_encoding, 'replace'))
+        return
+
+    pageContent = currentPageContent
+    finalPageContent = addPronunciation(pageContent, languageCode, u'prononciation', u'* {{écouter|' + region + u'|' + prononciation + u'|lang=' + languageCode + u'|audio=' + fileName + u'}}')
     # Hardfix
     regex = ur'{{S\|prononciation}} ===\*'
     if re.search(regex, finalPageContent):
@@ -190,10 +203,10 @@ setGlobalsWiktionary(debugLevel, site, username)
 def main(*args):
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
-        if sys.argv[1] == u'-test':
+        if sys.argv[1] == u'-test' or sys.argv[1] == u'-t':
             treatPageByName(u'User:' + username + u'/test')
-        elif sys.argv[1] == u'-test2':
-            treatPageByName(u'User:' + username + u'/test2')
+        elif sys.argv[1] == u'-test2' or sys.argv[1] == u'-tu':
+            treatPageByName(u'User:' + username + u'/test unitaire')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
             treatPageByName(u'File:en-us-augury.ogg')
             treatPageByName(u'File:En-us-oracle.ogg')

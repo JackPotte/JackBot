@@ -3752,7 +3752,7 @@ def main(*args):
                 regex = sys.argv[2]
             else:
                 # Frequent mistake
-                p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', include = ur'{{fr-accord-eur', exclude = ur'rice=', titleInclude = u'ateur|rice')
+                p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{écouter\|[^{]+{{\(', titleInclude = u' ')
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
