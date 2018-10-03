@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Ce script importe les sons de Commons dans le Wiktionnaire
+# Ce script importe les sons de Commons dans le Wiktionnaire en français
 
 from __future__ import absolute_import, unicode_literals
 import re, sys
@@ -227,7 +227,7 @@ def main(*args):
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'U.S. English pronunciation', afterPage = afterPage, recursive = False, namespaces = None)
+            p.pagesByCat(u'Lingua Libre pronunciation', afterPage = afterPage, recursive = False, namespaces = None)
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
