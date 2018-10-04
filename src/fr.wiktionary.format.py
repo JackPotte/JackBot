@@ -3734,16 +3734,16 @@ def main(*args):
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
-            regex = '\{\{f\}\}\n# ''Pluriel de'' \[\[[^\|\]#]+[^e][\|\]#]'
+            regex = '^==='
             testPage = None
             if testPage is not None:
                 pageContent = getContentFromPageName(testPage)
-                if re.search(regex, pageContent, re.MULTILINE| re.DOTALL):
+                if re.search(regex, pageContent, re.DOTALL):
                     print 'bon ok'
                 else:
                     print 'ko'
                 pageContent = getContentFromPageName(u'Utilisateur:JackBot/test unitaire')
-                if re.search(regex, pageContent, re.MULTILINE| re.DOTALL):
+                if re.search(regex, pageContent, re.DOTALL):
                     print 'ok'
                 else:
                     print 'bon ko'
@@ -3752,7 +3752,7 @@ def main(*args):
                 regex = sys.argv[2]
             else:
                 # Frequent mistake
-                p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{écouter\|[^{]+{{\(', titleInclude = u' ')
+                p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex)
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':

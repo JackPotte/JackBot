@@ -64,8 +64,13 @@ class PageProvider:
 
             if not namespaces and entry.title.find(u':') == -1:
                 pageContent = entry.text
-                i = titleInclude and re.search(titleInclude, entry.title)
-                e = titleExclude and not re.search(titleExclude, entry.title)
+                i = titleInclude is None or re.search(titleInclude, entry.title)
+                e = titleExclude is None or not re.search(titleExclude, entry.title)
+                if self.debugLevel > 0:
+                    print i
+                    print e
+                    print titleExclude
+                    print titleInclude
                 if (i and e) or (i and not titleExclude) or (not titleInclude and e):
                     if regex:
                         #print re.escape(regex.replace('PAGENAME', entry.title[:pageNameSubst]))
