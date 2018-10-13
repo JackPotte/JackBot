@@ -1048,7 +1048,8 @@ def addSeeBanner(pageName, pageContent, summary):
         while PagesCleRestant != u'':
             if debugLevel > 1: print PagesCleRestant.encode(config.console_encoding, 'replace')
             currentPage = PagesCleRestant[:PagesCleRestant.find(u'|')]
-            PagesCleRestant = PagesCleRestant[PagesCleRestant.find(u'|')+1:len(PagesCleRestant)]
+            PagesCleRestant = PagesCleRestant[PagesCleRestant.find(u'|')+1:]
+            if currentPage == u'': continue
             pageCle = Page(site, currentPage)
             pageContentCle = getContentFromPage(pageCle)
             if pageContentCle != u'KO':
@@ -1329,3 +1330,178 @@ def formatTranslations(pageContent, summary):
     pageContent = re.sub(regex, ur'\1', pageContent)
 
     return pageContent, summary
+
+def renameTemplates(pageContent):
+    if debugLevel > 1: print u' Remplacements des anciens codes langue'
+    pageContent = pageContent.replace(u'|ko-hani}}', u'|ko-Hani}}')
+    oldTemplate = []
+    newTemplate = []
+    oldTemplate.append(u'ko-hanja')
+    newTemplate.append(u'ko-Hani')
+    oldTemplate.append(u'be-x-old')
+    newTemplate.append(u'be-tarask')
+    oldTemplate.append(u'zh-min-nan')
+    newTemplate.append(u'nan')
+    oldTemplate.append(u'lsf')
+    newTemplate.append(u'fsl')
+    oldTemplate.append(u'arg')
+    newTemplate.append(u'an')
+    oldTemplate.append(u'nav')
+    newTemplate.append(u'nv')
+    oldTemplate.append(u'prv')
+    newTemplate.append(u'oc')
+    oldTemplate.append(u'nds-NL')
+    newTemplate.append(u'nds-nl')
+    oldTemplate.append(u'gsw-FR')
+    newTemplate.append(u'gsw-fr')
+    oldTemplate.append(u'zh-sc')
+    newTemplate.append(u'zh-Hans')
+    oldTemplate.append(u'roa-rup')
+    newTemplate.append(u'rup')
+    for p in range(1, len(oldTemplate)):
+        regex = ur'([\|{=])' + oldTemplate[p] + ur'([\|}])'
+        if re.search(regex, pageContent):
+            pageContent = re.sub(regex, ur'\1' + newTemplate[p] + ur'\2', pageContent)
+
+    pageContent = pageContent.replace(u'{{clef de tri', u'{{clé de tri')
+    pageContent = re.sub(ur'{{régio *\| *', ur'{{région|', pageContent)
+    pageContent = re.sub(ur'{{terme *\| *', ur'{{term|', pageContent)
+    pageContent = re.sub(ur'{{term *\|Registre neutre}} *', ur'', pageContent)
+    pageContent = pageContent.replace(u'{{Citation needed}}', u'{{référence nécessaire}}')
+    pageContent = pageContent.replace(u'{{Référence nécessaire}}', u'{{référence nécessaire}}')
+    pageContent = pageContent.replace(u'{{pron-rég|', u'{{écouter|')
+    pageContent = pageContent.replace(u'{{f}} {{fsing}}', u'{{f}}')
+    pageContent = pageContent.replace(u'{{m}} {{msing}}', u'{{m}}')
+    pageContent = pageContent.replace(u'{{f}} {{p}}', u'{{fplur}}')
+    pageContent = pageContent.replace(u'{{m}} {{p}}', u'{{mplur}}')
+
+    if debugLevel > 1: print u' Modèles trop courts'
+    pageContent = pageContent.replace(u'{{fp}}', u'{{fplur}}')
+    pageContent = pageContent.replace(u'{{mp}}', u'{{mplur}}')
+    pageContent = pageContent.replace(u'{{np}}', u'{{nlur}}')
+    pageContent = pageContent.replace(u'{{fs}}', u'{{fsing}}')
+    pageContent = pageContent.replace(u'{{mascul}}', u'{{au masculin}}')
+    pageContent = pageContent.replace(u'{{fémin}}', u'{{au féminin}}')
+    pageContent = pageContent.replace(u'{{femin}}', u'{{au féminin}}')
+    pageContent = pageContent.replace(u'{{sing}}', u'{{au singulier}}')
+    pageContent = pageContent.replace(u'{{plur}}', u'{{au pluriel}}')
+    pageContent = pageContent.replace(u'{{pluri}}', u'{{au pluriel}}')
+    pageContent = pageContent.replace(u'{{mascul|', u'{{au masculin|')
+    pageContent = pageContent.replace(u'{{fémin|', u'{{au féminin|')
+    pageContent = pageContent.replace(u'{{femin|', u'{{au féminin|')
+    pageContent = pageContent.replace(u'{{sing|', u'{{au singulier|')
+    pageContent = pageContent.replace(u'{{plur|', u'{{au pluriel|')
+    pageContent = pageContent.replace(u'{{pluri|', u'{{au pluriel|')
+    pageContent = pageContent.replace(u'{{dét|', u'{{déterminé|')
+    pageContent = pageContent.replace(u'{{dén|', u'{{dénombrable|')
+    pageContent = pageContent.replace(u'{{pl-cour}}', u'{{plus courant}}')
+    pageContent = pageContent.replace(u'{{pl-rare}}', u'{{plus rare}}')
+    pageContent = pageContent.replace(u'{{mf?}}', u'{{mf ?}}')
+    pageContent = pageContent.replace(u'{{fm?}}', u'{{fm ?}}')
+
+    regex = ur"{{ *dés *([\|}])"
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur"{{désuet\1", pageContent)
+    regex = ur"{{ *fam *([\|}])"
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur"{{familier\1", pageContent)
+    regex = ur"{{ *péj *([\|}])"
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur"{{péjoratif\1", pageContent)
+    regex = ur"{{ *vx *([\|}])"
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur"{{vieilli\1", pageContent)
+
+    if debugLevel > 1: print u' Modèles alias en doublon'
+    regex = ur"(\{\{figuré\|[^}]*\}\}) ?\{\{métaphore\|[^}]*\}\}"
+    pattern = re.compile(regex)
+    pageContent = pattern.sub(ur"\1", pageContent)
+    regex = ur"(\{\{métaphore\|[^}]*\}\}) ?\{\{figuré\|[^}]*\}\}"
+    pattern = re.compile(regex)
+    pageContent = pattern.sub(ur"\1", pageContent)
+
+    regex = ur"(\{\{départements\|[^}]*\}\}) ?\{\{géographie\|[^}]*\}\}"
+    pattern = re.compile(regex)
+    pageContent = pattern.sub(ur"\1", pageContent)
+
+    regex = ur"(\{\{localités\|[^}]*\}\}) ?\{\{géographie\|[^}]*\}\}"
+    pattern = re.compile(regex)
+    pageContent = pattern.sub(ur"\1", pageContent)
+
+    regex = ur"(\{\{provinces\|[^}]*\}\}) ?\{\{géographie\|[^}]*\}\}"
+    pattern = re.compile(regex)
+    pageContent = pattern.sub(ur"\1", pageContent)
+
+    regex = ur"(\#\* {{ébauche\-exe\|[^}]*}})\n\#\*: {{trad\-exe\|[^}]*}}"
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur"\1", pageContent)
+
+    pageContent = pageContent.replace(u'{{arbre|', u'{{arbres|')
+    pageContent = pageContent.replace(u'{{arme|', u'{{armement|')
+    pageContent = pageContent.replace(u'{{astro|', u'{{astronomie|')
+    pageContent = pageContent.replace(u'{{bota|', u'{{botanique|')
+    pageContent = pageContent.replace(u'{{électro|', u'{{électronique|')
+    pageContent = pageContent.replace(u'{{équi|', u'{{équitation|')
+    pageContent = pageContent.replace(u'{{ex|', u'{{e|')
+    pageContent = pageContent.replace(u'{{gastro|', u'{{gastronomie|')
+    pageContent = pageContent.replace(u'{{légume|', u'{{légumes|')
+    pageContent = pageContent.replace(u'{{minéral|', u'{{minéralogie|')
+    pageContent = pageContent.replace(u'{{myth|', u'{{mythologie|')
+    pageContent = pageContent.replace(u'{{oiseau|', u'{{oiseaux|')
+    pageContent = pageContent.replace(u'{{péj|', u'{{péjoratif|')
+    pageContent = pageContent.replace(u'{{plante|', u'{{plantes|')
+    pageContent = pageContent.replace(u'{{psycho|', u'{{psychologie|')
+    pageContent = pageContent.replace(u'{{réseau|', u'{{réseaux|')
+    pageContent = pageContent.replace(u'{{typo|', u'{{typographie|')
+    pageContent = pageContent.replace(u'{{vêtement|', u'{{vêtements|')
+    pageContent = pageContent.replace(u'{{en-nom-rég-double|', u'{{en-nom-rég|')
+    pageContent = pageContent.replace(u'{{Valence|ca}}', u'{{valencien}}')
+    pageContent = pageContent.replace(u'{{abrév|', u'{{abréviation|')
+    pageContent = pageContent.replace(u'{{acron|', u'{{acronyme|')
+    pageContent = pageContent.replace(u'{{cours d\'eau', u'{{cours d’eau')
+
+    if debugLevel > 1: print u' Modèles trop longs'
+    pageContent = pageContent.replace(u'{{boîte début', u'{{(')
+    pageContent = pageContent.replace(u'{{boîte fin', u'{{)')
+    pageContent = pageContent.replace(u'\n{{-}}', u'')
+
+    if debugLevel > 1: print u' Modèles en doublon'
+    importedSites = ['DAF8', 'Littré']
+    for importedSite in importedSites:
+        regex = ur'\n\** *{{R:' + importedSite + ur'}} *\n\** *({{Import:' + importedSite + ur'}})'
+        if re.search(regex, pageContent):
+            summary = summary + u', doublon {{R:' + importedSite + ur'}}'
+            pageContent = re.sub(regex, ur'\n* \1', pageContent)
+        regex = ur'\n\** *({{Import:' + importedSite + ur'}}) *\n\** *{{R:' + importedSite + ur'}}'
+        if re.search(regex, pageContent):
+            summary = summary + u', doublon {{R:' + importedSite + ur'}}'
+            pageContent = re.sub(regex, ur'\n* \1', pageContent)
+
+    return pageContent
+
+def removeDoubleCategoryWhenTemplate(pageContent):
+    if debugLevel > 1: print u' Retrait des catégories contenues dans les modèles'
+
+    if u'{{info|conv}}' in pageContent and u'[[Catégorie:Noms de domaine internet]]' in pageContent:
+        pageContent = pageContent.replace(u'[[Catégorie:Noms de domaine internet]]', u'')
+        pageContent = pageContent.replace(u'{{info|conv}}', u'{{noms de domaine}}')
+
+    if pageContent.find(u'\n[[Catégorie:Noms scientifiques]]') != -1 and pageContent.find(u'{{S|nom scientifique|conv}}') != -1:
+        pageContent = pageContent.replace(u'\n[[Catégorie:Noms scientifiques]]', u'')
+
+    if pageContent.find(u'[[Catégorie:Villes') != -1 and pageContent.find(u'{{localités|') != -1:
+        summary = summary + u', {{villes}} -> {{localités}}'
+        pageContent = re.sub(ur'\n\[\[Catégorie:Villes[^\]]*\]\]', ur'', pageContent)
+
+    #TODO: retraiter toutes les paires catégorie / templates, dynamiquement, pour tous les codes langues
+    if u'{{argot|fr}}' in pageContent:
+        pageContent = re.sub(ur'\n\[\[Catégorie:Argot en français\]\]', ur'', pageContent)
+
+    if pageContent.find(u'\n[[Catégorie:Gentilés en français]]') != -1 and pageContent.find(u'{{note-gentilé|fr}}') != -1:
+        pageContent = pageContent.replace(u'\n[[Catégorie:Gentilés en français]]', u'')
+
+    return pageContent
+
+def uncategorizeDoubleTemplateWhenCategory(pageContent):
+
+    return pageContent

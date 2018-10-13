@@ -144,12 +144,13 @@ class PageProvider:
                     self.outputFile.write((Page.title() + '\n').encode(config.console_encoding, 'replace'))
                 else:
                     self.treatPageIfName(Page.title(), names, notNames)
-        subcat = cat.subcategories(recurse = recursive == True)
+        subcat = cat.subcategories(recurse = recursive != False)
         for subcategory in subcat:
             if self.debugLevel > 0: print u' ' + subcategory.title()
             if not namespaces is None and 14 in namespaces:
                 self.treatPageIfName(subcategory.title(), names, notNames)
-            if recursive:
+            if recursive != False:
+                # TODO: recurse depth
                 modify = True
                 if exclude is not None:
                     for notCatName in exclude:
@@ -159,7 +160,8 @@ class PageProvider:
                 if modify:
                     pages = subcategory.articlesList(False)
                     for Page in pagegenerators.PreloadingGenerator(pages, pageids):
-                        self.treatPageIfName(Page.title(), names, notNames)
+                        if namespaces is None or Page.namespace() in namespaces:
+                            self.treatPageIfName(Page.title(), names, notNames)
 
     def treatPageIfName(self, pageName, names = None, notNames = None):
         if names is None and notNames is None:
