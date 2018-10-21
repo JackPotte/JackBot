@@ -28,14 +28,14 @@ from pywikibot import pagegenerators
 
 # Global variables
 debugLevel = 0
-debugAliases = [u'-debug', u'-d']
+debugAliases = [str('-debug'), str('-d')]
 for debugAlias in debugAliases:
     if debugAlias in sys.argv:
         debugLevel= 1
         sys.argv.remove(debugAlias)
 
 waitAfterHumans = True
-forceAliases = [u'-force', u'-f']
+forceAliases = [str('-force'), str('-f')]
 for forceAlias in forceAliases:
     if forceAlias in sys.argv:
         waitAfterHumans= False
@@ -630,6 +630,7 @@ Modele.append(u'constr')
 Modele.append(u'construction')
 Modele.append(u'contemporain')
 Modele.append(u'copropriété')
+Modele.append(u'coquillages')
 Modele.append(u'cordonnerie')
 Modele.append(u'cosm')
 Modele.append(u'cosmétique')
@@ -1695,7 +1696,7 @@ def treatPageByName(pageName):
         regex = u'<includeonly> *\n*{{\#if(eq)?: *{{NAMESPACE}}[^<]+\[\[Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section[^<]+</includeonly>'
         if re.search(regex, pageContent):
             pageContent = re.sub(regex,  u'{{anciens modèles de section}}', pageContent, re.MULTILINE)
-        if debugLevel > 0: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+        if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
 
         finalPageContent = pageContent
 
@@ -2036,7 +2037,8 @@ def treatPageByName(pageName):
             if debugLevel > 0: print u'Traductions manquantes'
             # Si la définition du mot (dit "satellite") ne renvoie pas vers un autre, les centralisant
             #TODO: # Variante,
-            regex = ur'(fr\|flexion|' + u'|'.join(definitionSentences) + u'|' + u'|'.join(map(unicode.capitalize, definitionSentences)) + ur')'
+            regex = ur'(fr\|flexion|' + u'|'.join(definitionSentences) + u'|' + u'|'.join(map(unicode.capitalize, 
+                definitionSentences)) + ur')'
             regex2 = ur'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|' + \
                 u'|'.join(etymologyTemplatesInSatelliteWords) + ur')[\|}]'
             French, lStart, lEnd = getLanguageSection(pageContent, 'fr')
@@ -2544,7 +2546,7 @@ def treatPageByName(pageName):
                         and (pageContent2.find(':') == -1 or pageContent2.find(':') > pageContent2.find('}}')) \
                         and pageContent2[:1] != '#')
                     isSubtemplatesIncluded = False
-                    regex = re.escape(currentTemplate) + ur'\|[^}]*({{(.*?)}}|.)+[^}]*\|lang=' + languageCode
+                    regex = re.escape(currentTemplate) + ur'$\|[^}]*({{(.*?)}}|.)+[^}]*\|lang=' + languageCode
                     if re.search(regex, pageContent):
                         isSubtemplatesIncluded = True
                     if debugLevel > 1: print '  isCategory: ' + str(isTemplateInCodingSection)
@@ -3563,23 +3565,23 @@ def main(*args):
         afterPage = u''
         if len(sys.argv) > 2: afterPage = sys.argv[2]
 
-        if sys.argv[1] == u'-test':
+        if sys.argv[1] == str('-test'):
             treatPageByName(u'User:' + username + u'/test')
-        elif sys.argv[1] == u'-test2':
+        elif sys.argv[1] == str('-test2'):
             treatPageByName(u'User:' + username + u'/test2')
-        elif sys.argv[1] == u'-tu' or sys.argv[1] == u'-t':
+        elif sys.argv[1] == str(u'-tu') or sys.argv[1] == str('-t'):
             treatPageByName(u'User:' + username + u'/test unitaire')
-        elif sys.argv[1] == u'-ti':
+        elif sys.argv[1] == str('-ti'):
             testImport = True
             treatPageByName(u'User:' + username + u'/test unitaire')
-        elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
+        elif sys.argv[1] == str('-page') or sys.argv[1] == str('-p'):
             waitAfterHumans = False
             treatPageByName(u'Nguyễn')
-        elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
+        elif sys.argv[1] == str('-file') or sys.argv[1] == str('-txt'):
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
-        elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
-            regex = '=== {{S\|nom\|fr\|flexion}} ===.*=== {{S\|nom\|fr\|flexion}} ==='
+        elif sys.argv[1] == str('-dump') or sys.argv[1] == str('-xml'):
+            regex = '=== {{S\|adjectif\|fr\|flexion}} ===.*=== {{S\|adjectif\|fr\|flexion}} ==='
             testPage = None
             if testPage is not None:
                 pageContent = getContentFromPageName(testPage)
@@ -3598,22 +3600,23 @@ def main(*args):
             else:
                 # Frequent mistake
                 p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = regex)
-        elif sys.argv[1] == u'-u':
+        elif sys.argv[1] == str('-u'):
             p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
-        elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
+        elif sys.argv[1] == str('-search') or sys.argv[1] == str('-s') or sys.argv[1] == str('-r'):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
                 p.pagesBySearch(u'insource:/term\|physique des réacteurs/', namespaces = [0])
                 p.pagesBySearch(u'insource:/term\|technologie des réacteurs/', namespaces = [0])
-        elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
+        elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
+            sys.argv[1] == str('-m'):
             p.pagesByLink(u'Template:gaulois', namespaces = [110])
-        elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
+        elif sys.argv[1] == str('-category') or sys.argv[1] == str('-cat') or sys.argv[1] == str('-c'):
             if len(sys.argv) > 2:
-                if sys.argv[2] == u'listFalseTranslations':
+                if sys.argv[2] == str('listFalseTranslations'):
                     listFalseTranslations = True
                     p.pagesByCat(u'Catégorie:Pages "info" si réforme 1895 de l’espéranto')
-                elif sys.argv[2] == u'fixOldTemplates':
+                elif sys.argv[2] == str('fixOldTemplates'):
                     fixOldTemplates = True
                     p.pagesByCat(u'Appels de modèles incorrects:abréviation', afterPage = afterPage, recursive = False, namespaces = [14])
                 else:
@@ -3621,19 +3624,19 @@ def main(*args):
             else:
                 p.pagesByCat(u'Lexique en conventions internationales de l’informatique', recursive = 1, namespaces = [14])
 
-        elif sys.argv[1] == u'-redirects':
+        elif sys.argv[1] == str('-redirects'):
             p.pagesByRedirects()
-        elif sys.argv[1] == u'-all':
+        elif sys.argv[1] == str('-all'):
            p.pagesByAll()
-        elif sys.argv[1] == u'-RC':
+        elif sys.argv[1] == str('-RC'):
             while 1:
                 p.pagesByRCLastDay()
-        elif sys.argv[1] == u'-nocat':
+        elif sys.argv[1] == str('-nocat'):
             p.pagesBySpecialNotCategorized()
-        elif sys.argv[1] == u'-lint':
+        elif sys.argv[1] == str('-lint'):
             fixTags = True
             p.pagesBySpecialLint()
-        elif sys.argv[1] == u'-extlinks':
+        elif sys.argv[1] == str('-extlinks'):
             p.pagesBySpecialLinkSearch(u'www.dmoz.org')
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
@@ -3655,6 +3658,7 @@ def main(*args):
         p.pagesByCat(u'Catégorie:Appels de modèles incorrects:deet')
         p.pagesByCat(u'Catégorie:Wiktionnaire:Ébauches à compléter')
         p.pagesByLink(u'Template:trad', namespaces = [0])
+        p.pagesByLink(u'Template:clef de tri')
         p.pagesByLink(u'Template:1ergroupe')
         p.pagesByLink(u'Template:2egroupe')
         p.pagesByLink(u'Template:3egroupe')
