@@ -841,6 +841,7 @@ Modele.append(u'i')
 Modele.append(u'ibis')
 Modele.append(u'ichtyo')
 Modele.append(u'ichtyologie')
+Modele.append(u'idiomatique')
 Modele.append(u'idiotisme')
 Modele.append(u'illégalité')
 Modele.append(u'impers')
@@ -958,6 +959,7 @@ Modele.append(u'menuiserie')
 Modele.append(u'mercatique')
 Modele.append(u'mers')
 Modele.append(u'meuble')
+Modele.append(u'meuble héraldique')
 Modele.append(u'mf ?')
 Modele.append(u'mf ?')
 Modele.append(u'microbiologie')
@@ -3606,8 +3608,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/term\|physique des réacteurs/', namespaces = [0])
-                p.pagesBySearch(u'insource:/term\|technologie des réacteurs/', namespaces = [0])
+                p.pagesBySearch(u'"Attention : la clé de tri par défaut"', namespaces = [0])
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
             sys.argv[1] == str('-m'):
             p.pagesByLink(u'Template:gaulois', namespaces = [110])
