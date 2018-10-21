@@ -1485,6 +1485,9 @@ def removeDoubleCategoryWhenTemplate(pageContent):
     if u'{{info|conv}}' in pageContent and u'[[Catégorie:Noms de domaine internet]]' in pageContent:
         pageContent = pageContent.replace(u'[[Catégorie:Noms de domaine internet]]', u'')
         pageContent = pageContent.replace(u'{{info|conv}}', u'{{noms de domaine}}')
+    if u'{{informatique|conv}}' in pageContent and u'[[Catégorie:Noms de domaine internet]]' in pageContent:
+        pageContent = pageContent.replace(u'[[Catégorie:Noms de domaine internet]]', u'')
+        pageContent = pageContent.replace(u'{{informatique|conv}}', u'{{noms de domaine}}')
 
     if pageContent.find(u'\n[[Catégorie:Noms scientifiques]]') != -1 and pageContent.find(u'{{S|nom scientifique|conv}}') != -1:
         pageContent = pageContent.replace(u'\n[[Catégorie:Noms scientifiques]]', u'')
