@@ -1849,7 +1849,7 @@ def treatPageByName(pageName):
         #if re.search(regex, pageContent):
         #    pageContent = re.sub(regex, ur"{{Citation/Cirad/Gret/MAE/Mémento de l’Agronome|\1}}", pageContent)
 
-        pageContent = renameTemplates(pageContent)
+        pageContent, summary = renameTemplates(pageContent, summary)
         pageContent = removeDoubleCategoryWhenTemplate(pageContent)
         pageContent = uncategorizeDoubleTemplateWhenCategory(pageContent)
 

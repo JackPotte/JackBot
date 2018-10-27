@@ -1331,7 +1331,7 @@ def formatTranslations(pageContent, summary):
 
     return pageContent, summary
 
-def renameTemplates(pageContent):
+def renameTemplates(pageContent, summary):
     if debugLevel > 1: print u' Remplacements des anciens codes langue'
     pageContent = pageContent.replace(u'|ko-hani}}', u'|ko-Hani}}')
     oldTemplate = []
@@ -1477,7 +1477,7 @@ def renameTemplates(pageContent):
             summary = summary + u', doublon {{R:' + importedSite + ur'}}'
             pageContent = re.sub(regex, ur'\n* \1', pageContent)
 
-    return pageContent
+    return pageContent, summary
 
 def removeDoubleCategoryWhenTemplate(pageContent):
     if debugLevel > 1: print u' Retrait des catégories contenues dans les modèles'
