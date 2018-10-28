@@ -1889,7 +1889,7 @@ def treatPageByName(pageName):
                         summary = summary + u', retrait de {{clé de tri}}'
                         pageContent = re.sub(regex, '', pageContent)
 
-            if debugLevel > 0: print u'Catégories de prononciation'
+            if debugLevel > 0: print u' Catégories de prononciation'
             if pageName[-2:] == u'um' and pageContent.find(u'ɔm|fr}}') != -1:
                 pageContent = addCategory(pageContent, u'fr', u'um prononcés /ɔm/ en français')
             if pageName[:2] == u'qu':
@@ -1968,7 +1968,7 @@ def treatPageByName(pageName):
                             savePage(page2, u'#REDIRECT[[' + pageName + u']]\n<!-- Redirection temporaire avant de créer le verbe pronominal -->\n[[Catégorie:Wiktionnaire:Verbes pronominaux à créer en français]]', summary2)
 
             # Ajout de modèles pour les gentités et leurs adjectifs
-            if debugLevel > 0: print u'Gentilés'
+            if debugLevel > 0: print u' Gentilés'
             regex = ur'({{fr\-[^}]+)\\'
             while re.search(regex, pageContent):
                 pageContent = re.sub(regex, ur'\1', pageContent)
@@ -2037,7 +2037,7 @@ def treatPageByName(pageName):
                 if deplacement_modele_flexion:
                     summary = summary + u', déplacement des modèles de flexions'
 
-            if debugLevel > 0: print u'Traductions manquantes'
+            if debugLevel > 0: print u' Traductions manquantes'
             # Si la définition du mot (dit "satellite") ne renvoie pas vers un autre, les centralisant
             #TODO: # Variante,
             regex = ur'(fr\|flexion|' + u'|'.join(definitionSentences) + u'|' + u'|'.join(map(unicode.capitalize, 
@@ -2163,83 +2163,6 @@ def treatPageByName(pageName):
                 pageContent = pageContent[:pageContent.find(u'{{écouter|' + ModRegion[m] + u'|')+len('{{écouter|')-1] \
                  + '{{' + ModRegion[m] + u'|nocat=1}}' + pageContent[pageContent.find(u'{{écouter|' + ModRegion[m] + u'|')+len(u'{{écouter|' + ModRegion[m]):]
 
-        if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))               
-        if debugLevel > 1: print u' Modèles bandeaux' 
-        while pageContent.find(u'\n{{colonnes|') != -1:
-            if debugLevel > 0: pywikibot.output(u'\nTemplate: \03{blue}colonnes\03{default}')
-            pageContent2 = pageContent[:pageContent.find(u'\n{{colonnes|')]
-            if pageContent2.rfind('{{') != -1 and pageContent2.rfind('{{') == pageContent2.rfind(u'{{trad-début'):    # modèles impriqués dans trad
-                pageContent2 = pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(pageContent)]
-                if pageContent2.find(u'\n}}\n') != -1:
-                    if pageContent2[:len(u'titre=')] == u'titre=':
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')] \
-                         + u'\n{{trad-fin}}' + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')+len(u'\n}}'):len(pageContent)]
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')] + u'\n{{trad-début|' \
-                         + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|titre='):pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'|')] \
-                         + '}}' + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'|')+1:]
-                    else:
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')] \
-                         + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')+len(u'\n}}'):]
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')] + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(pageContent)]
-                else:
-                    if debugLevel > 0: print u'pb {{colonnes}} 1'
-                    break
-
-            elif pageContent2.rfind('{{') != -1 and pageContent2.rfind('{{') == pageContent2.rfind(u'{{('):    # modèles impriqués ailleurs
-                if debugLevel > 0: pywikibot.output(u'\nTemplate: \03{blue}(\03{default}')
-                pageContent2 = pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(pageContent)]
-                if pageContent2.find(u'\n}}\n') != -1:
-                    if pageContent2[:len(u'titre=')] == u'titre=':
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')] \
-                         + u'\n{{)}}' + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')+len(u'\n}}'):]
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')] + u'\n{{(|' \
-                         + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|titre='):pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'|')] + '}}' \
-                         + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'|')+1:]
-                    else:
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')] \
-                         + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')+len(u'\n}}'):]
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')] + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):]
-                else:
-                    if debugLevel > 0: print u'pb {{colonnes}} 2'
-                    break
-
-            elif pageContent2.rfind('{{') != -1 and (pageContent2.rfind('{{') == pageContent2.rfind(u'{{trad-fin') or pageContent2.rfind('{{') == pageContent2.rfind(u'{{S|trad')):
-                # modèle à utiliser dans {{S|trad
-                pageContent2 = pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):len(pageContent)]
-                if pageContent2.find(u'\n}}\n') != -1:
-                    if pageContent2[:len(u'titre=')] == u'titre=':
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')] \
-                         + u'\n{{trad-fin}}' + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')+len(u'\n}}'):]
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')] + u'\n{{trad-début|' \
-                         + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|titre='):pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'|')] + '}}' \
-                         + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'|')+1:]
-                    else:
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')] \
-                         + u'\n{{trad-fin}}' + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')+len(u'\n}}'):]
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')] + u'\n{{trad-début}}' + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):]
-                else:
-                    if debugLevel > 0: print u'pb {{colonnes}} 3'
-                    break
-
-            else:    # modèle ailleurs que {{S|trad
-                pageContent2 = pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):]
-                if pageContent2.find(u'\n}}\n') != -1:
-                    if pageContent2[:len(u'titre=')] == u'titre=':
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')] \
-                         + u'\n{{)}}' + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')+len(u'\n}}'):]
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')] + u'\n{{(|' \
-                         + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|titre='):pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'|')] \
-                         + '}}' + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'|')+1:]
-                    else:
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')] \
-                         + u'\n{{)}}' + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|')+pageContent2.find(u'\n}}\n')+len(u'\n}}'):]
-                        pageContent = pageContent[:pageContent.find(u'\n{{colonnes|')] + u'\n{{(}}' + pageContent[pageContent.find(u'\n{{colonnes|')+len(u'\n{{colonnes|'):]
-                else:
-                    if debugLevel > 0: print u'pb {{colonnes}} 4'
-                    break
-            while pageContent.find(u'}}1=') != -1:
-                pageContent = pageContent[:pageContent.find(u'}}1=')] + pageContent[pageContent.find(u'}}1=')+len(u'}}1='):len(pageContent)]
-        
         if u'{{langue|es}}' in pageContent:
             ligne = 1
             colonne = 4
@@ -3506,7 +3429,7 @@ def treatPageByName(pageName):
             #if debugLevel > 0: print u'\nSynchro des prononciations'
             #finalPageContent = addPronunciationFromContent(finalPageContent, language)  
 
-            if debugLevel > 0: print u'Faux homophones car lemme et sa flexion' # TODO: locutions
+            if debugLevel > 0: print u' Faux homophones car lemme et sa flexion' # TODO: locutions
             #TODO Doublon systématique ? singularPageName = getLemmaFromContent(finalPageContent, language)
             flexionPageName = ''
             if finalPageContent.find('|' + language + '|flexion}}') == -1:
@@ -3609,7 +3532,8 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'"Attention : la clé de tri par défaut"', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{\(\}\}nombre\=/', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{\(\}\}taille\=/', namespaces = [0])
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
             sys.argv[1] == str('-m'):
             p.pagesByLink(u'Template:gaulois', namespaces = [110])
