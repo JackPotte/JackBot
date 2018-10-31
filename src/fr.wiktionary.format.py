@@ -1680,6 +1680,11 @@ def treatPageByName(pageName):
 
     if page.namespace() == 110:
         pageContent = pageContent.replace(u'{{gaulois}}', u'{{forme reconstruite|gaulois}}')
+        pageContent = re.sub(ur'\n=+ *{{S\| ?notes?(\|?[a-z ]*)?}} *=+\n', u'\n==== {{S|notes}} ====\n', pageContent)
+        finalPageContent = pageContent
+
+    elif page.namespace() == 100:
+        pageContent = re.sub(ur'\n=+ *{{S\| ?notes?(\|?[a-z ]*)?}} *=+\n', u'\n==== {{S|notes}} ====\n', pageContent)
         finalPageContent = pageContent
 
     elif page.namespace() == 14:
@@ -2466,34 +2471,9 @@ def treatPageByName(pageName):
 
 # Templates with "lang="
                 elif currentTemplate in [u'écouter', u'cf'] + etymologyTemplatesWithLanguageAtLang:
-                    if debugLevel > 0: pywikibot.output(u"  Template with lang=: \03{green}" + currentTemplate + u"\03{default}")
-                    pageContent2 = pageContent[endPosition+1:]
-                    isCategory = currentTemplate != u'cf' or (pageContent2.find('}}') > endPosition+1 \
-                        and (pageContent2.find(':') == -1 or pageContent2.find(':') > pageContent2.find('}}')) \
-                        and pageContent2[:1] != '#')
-                    isSubtemplatesIncluded = False
-                    regex = re.escape(currentTemplate) + ur'$\|[^}]*({{(.*?)}}|.)+[^}]*\|lang=' + languageCode
-                    if re.search(regex, pageContent):
-                        isSubtemplatesIncluded = True
-                    if debugLevel > 1: print '  isCategory: ' + str(isTemplateInCodingSection)
-                    if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
-                    # TODO: this condition duplicates lang=fr when {{écouter| has already one after a subtemplate
-                    if (pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}')) and \
-                        isCategory and not isSubtemplatesIncluded:
-                        if debugLevel > 0: print u'   "lang=" addition'
-                        while pageContent2.find('{{') < pageContent2.find('}}') and pageContent2.find('{{') != -1:
-                            pageContent2 = pageContent2[pageContent2.find('}}')+2:]
-                        if pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}'):
-                            if debugLevel > 1: print u'    at ' + str(endPosition)
-                            finalPageContent = finalPageContent + currentTemplate + u'|lang=' + languageCode + pageContent[endPosition:pageContent.find('}}')+2]
-                            pageContent = pageContent[pageContent.find('}}')+2:]
-                        else:
-                            if debugLevel > 0: print u'    "lang=" addition cancellation'
-                            finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
-
-                    else:
-                        if debugLevel > 0: print u'   "lang=" already present'
-                        finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
+                    #TODO: https://fr.wiktionary.org/wiki/Discussion_utilisateur:JackPotte#JackBot_-_param%C3%A8tres_en_double_dans_compos
+                    # finalPageContent, pageContent = treatTemplate(finalPageContent, pageContent)
+                    finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
 
                 elif currentTemplate in (u'référence nécessaire', u'réf?', u'réf ?', u'refnec', u'réfnéc', u'source?', \
                     u'réfnéc'):
@@ -3548,7 +3528,7 @@ def main(*args):
                 else:
                     p.pagesByCat(sys.argv[2].decode(config.console_encoding, 'replace'))
             else:
-                p.pagesByCat(u'Lexique en conventions internationales de l’informatique', recursive = 1, namespaces = [14])
+                p.pagesByCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias', namespaces = None)
 
         elif sys.argv[1] == str('-redirects'):
             p.pagesByRedirects()

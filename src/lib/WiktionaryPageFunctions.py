@@ -821,7 +821,38 @@ def sectionNumber(section):
         print u' = ' + str(s)
         print u''
     return s
-    
+
+def treatTemplate(finalPageContent, currentPageContent, currentTemplate = None, languageCode = None):
+    if debugLevel > 0: pywikibot.output(u"  Template with lang=: \03{green}" + currentTemplate + u"\03{default}")
+    pageContent2 = pageContent[endPosition+1:]
+    isCategory = currentTemplate != u'cf' or (pageContent2.find('}}') > endPosition+1 \
+        and (pageContent2.find(':') == -1 or pageContent2.find(':') > pageContent2.find('}}')) \
+        and pageContent2[:1] != '#')
+    isSubtemplatesIncluded = False
+    regex = re.escape(currentTemplate) + ur'$\|[^}]*({{(.*?)}}|.)+[^}]*\|lang=' + languageCode
+    if re.search(regex, pageContent):
+        isSubtemplatesIncluded = True
+    if debugLevel > 1: print '  isCategory: ' + str(isTemplateInCodingSection)
+    if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+    # TODO: this condition duplicates lang=fr when {{écouter| has already one after a subtemplate
+    if (pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}')) and \
+        isCategory and not isSubtemplatesIncluded:
+        if debugLevel > 0: print u'   "lang=" addition'
+        while pageContent2.find('{{') < pageContent2.find('}}') and pageContent2.find('{{') != -1:
+            pageContent2 = pageContent2[pageContent2.find('}}')+2:]
+        if pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}'):
+            if debugLevel > 1: print u'    at ' + str(endPosition)
+            finalPageContent = finalPageContent + currentTemplate + u'|lang=' + languageCode + pageContent[endPosition:pageContent.find('}}')+2]
+            pageContent = pageContent[pageContent.find('}}')+2:]
+            return finalPageContent, pageContent
+        else:
+            if debugLevel > 0: print u'    "lang=" addition cancellation'
+            return nextTemplate(finalPageContent, pageContent)
+
+    else:
+        if debugLevel > 0: print u'   "lang=" already present'
+        return nextTemplate(finalPageContent, pageContent)
+                        
 def nextTemplate(finalPageContent, currentPageContent, currentTemplate = None, languageCode = None):
     if languageCode is None:
         finalPageContent = finalPageContent + currentPageContent[:currentPageContent.find('}}')+2]
