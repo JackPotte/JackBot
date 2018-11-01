@@ -822,21 +822,44 @@ def sectionNumber(section):
         print u''
     return s
 
-def treatTemplate(finalPageContent, currentPageContent, currentTemplate = None, languageCode = None):
+#TODO: def addLanguageCodeToTemplate(finalPageContent, pageContent, currentTemplate = None, languageCode = None):
+
+def addLanguageCodeWithNamedParameterToTemplate(
+    finalPageContent,
+    pageContent,
+    currentTemplate = None,
+    languageCode = None,
+    endPosition = 0
+):        
     if debugLevel > 0: pywikibot.output(u"  Template with lang=: \03{green}" + currentTemplate + u"\03{default}")
     pageContent2 = pageContent[endPosition+1:]
+
     isCategory = currentTemplate != u'cf' or (pageContent2.find('}}') > endPosition+1 \
         and (pageContent2.find(':') == -1 or pageContent2.find(':') > pageContent2.find('}}')) \
         and pageContent2[:1] != '#')
-    isSubtemplatesIncluded = False
-    regex = re.escape(currentTemplate) + ur'$\|[^}]*({{(.*?)}}|.)+[^}]*\|lang=' + languageCode
+
+    isSubtemplateIncluded = False
+    regex = ur'^' + re.escape(currentTemplate) + ur'\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang='
     if re.search(regex, pageContent):
-        isSubtemplatesIncluded = True
-    if debugLevel > 1: print '  isCategory: ' + str(isTemplateInCodingSection)
-    if debugLevel > 2: raw_input(pageContent.encode(config.console_encoding, 'replace'))
-    # TODO: this condition duplicates lang=fr when {{écouter| has already one after a subtemplate
+        isSubtemplateIncluded = True
+
+    areSubtemplatesIncluded = False
+    regex = ur'^' + re.escape(currentTemplate) + ur'\|[^{}]*({{(.*?)}}|.)+[^{}]*({{(.*?)}}|.)+[^{}]*\|lang='
+    if re.search(regex, pageContent):
+        areSubtemplatesIncluded = True
+
+    if debugLevel > 0:
+        print pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}')
+        print isCategory
+        print not isSubtemplateIncluded
+        print ' ' + regex
+        if isSubtemplateIncluded:
+            print ' ' + pageContent[re.search(regex, pageContent).start():re.search(regex, pageContent).end()]
+        print not areSubtemplatesIncluded
+        raw_input(pageContent.encode(config.console_encoding, 'replace'))
+
     if (pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}')) and \
-        isCategory and not isSubtemplatesIncluded:
+        isCategory and not isSubtemplateIncluded and not areSubtemplatesIncluded:
         if debugLevel > 0: print u'   "lang=" addition'
         while pageContent2.find('{{') < pageContent2.find('}}') and pageContent2.find('{{') != -1:
             pageContent2 = pageContent2[pageContent2.find('}}')+2:]

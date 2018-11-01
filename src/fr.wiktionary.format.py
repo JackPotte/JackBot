@@ -2471,9 +2471,13 @@ def treatPageByName(pageName):
 
 # Templates with "lang="
                 elif currentTemplate in [u'écouter', u'cf'] + etymologyTemplatesWithLanguageAtLang:
-                    #TODO: https://fr.wiktionary.org/wiki/Discussion_utilisateur:JackPotte#JackBot_-_param%C3%A8tres_en_double_dans_compos
-                    # finalPageContent, pageContent = treatTemplate(finalPageContent, pageContent)
-                    finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
+                    finalPageContent, pageContent = addLanguageCodeWithNamedParameterToTemplate(
+                        finalPageContent,
+                        pageContent,
+                        currentTemplate,
+                        languageCode,
+                        endPosition
+                    )
 
                 elif currentTemplate in (u'référence nécessaire', u'réf?', u'réf ?', u'refnec', u'réfnéc', u'source?', \
                     u'réfnéc'):
