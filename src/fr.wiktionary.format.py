@@ -1731,6 +1731,7 @@ def treatPageByName(pageName):
         pageContent, summary = formatTranslations(pageContent, summary)
         pageContent, summary = formatTemplates(pageContent, summary)
         pageContent, summary = formatWikicode(pageContent, summary, pageName)
+        pageContent, summary = addTemplates(pageContent, summary)
         pageContent, summary = renameTemplates(pageContent, summary)
         pageContent, summary = removeDoubleCategoryWhenTemplate(pageContent, summary)
         pageContent, summary = formatLanguagesTemplates(pageContent, summary, pageName)
@@ -2948,7 +2949,7 @@ def main(*args):
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
         elif sys.argv[1] == str('-dump') or sys.argv[1] == str('-xml'):
-            regex = '{{\([^}]*}} *[^\n]'
+            regex = '\n#\* *\'\'\n'
             testPage = None
             if testPage is not None:
                 pageContent = getContentFromPageName(testPage)

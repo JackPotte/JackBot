@@ -1394,6 +1394,14 @@ def formatTranslations(pageContent, summary):
 
     return pageContent, summary
 
+
+def addTemplates(pageContent, summary):
+    regex = ur'\n#\* *(?:\'\')?\n'
+    pageContent = re.sub(regex, ur'\n#* {{ébauche-exe}}\n', pageContent)
+
+    return pageContent, summary
+
+
 def renameTemplates(pageContent, summary):
     if debugLevel > 1: print u' Remplacements des anciens codes langue'
     pageContent = pageContent.replace(u'|ko-hani}}', u'|ko-Hani}}')
@@ -1693,6 +1701,9 @@ def formatTemplates(pageContent, summary):
     pageContent = pageContent.replace(u'du {{étyl|en|', u'de l’{{étyl|en|')
     pageContent = pageContent.replace(u'Du {{étyl|fro|', u'De l’{{étyl|fro|')
     pageContent = pageContent.replace(u'du {{étyl|fro|', u'de l’{{étyl|fro|')
+
+    pageContent = pageContent.replace(u'Du {{étyl|en|', u'De l’{{étyl|en|')
+    pageContent = pageContent.replace(u'Du {{étyl|it|', u'De l’{{étyl|it|')
 
     regex = ur"({{cf|)lang=[^\|}]+\|(:Catégorie:)"
     pageContent = re.sub(regex, ur"\1\2", pageContent)
