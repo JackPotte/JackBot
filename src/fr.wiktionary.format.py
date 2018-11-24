@@ -2129,9 +2129,11 @@ def treatPageByName(pageName):
 
                 elif currentTemplate in (u'référence nécessaire', u'réf?', u'réf ?', u'refnec', u'réfnéc', u'source?', \
                     u'réfnéc'):
-                    pageContent2 = pageContent[endPosition+1:len(pageContent)]
-                    if pageContent2.find("lang=") == -1 or pageContent2.find("lang=") > pageContent2.find('}}'):
-                        finalPageContent = finalPageContent + currentTemplate + u'|lang=' + languageCode + pageContent[endPosition:pageContent.find('}}')+2]
+                    pageContent2 = pageContent[endPosition+1:]
+                    #TODO regex = ur'lang *= *'
+                    if pageContent2.find(u'lang=') == -1 or pageContent2.find(u'lang=') > pageContent2.find('}}'):
+                        finalPageContent = finalPageContent + currentTemplate + u'|lang=' + languageCode + \
+                            pageContent[endPosition:pageContent.find('}}')+2]
                         pageContent = pageContent[pageContent.find('}}')+2:]
                     else:
                         finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
@@ -2745,11 +2747,16 @@ def treatPageByName(pageName):
                     pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
 
             if languageCode is not None and pageContent.find(u'}}') != -1 and (pageContent.find(u'}}') < pageContent.find(u'{{') or pageContent.find(u'{{') == -1):
-                if debugLevel > 1: print u'    possible duplicated "lang="'
+                if debugLevel > 1: print u'    possible duplicated "lang=" in ' + currentTemplate
                 finalPageContent, pageContent = nextTemplate(finalPageContent, pageContent)
-                regex = ur'({{' + re.escape(currentTemplate) + ur')\|lang=' + languageCode + '(\|[^}]*({{(.*?)}}|.)*[^}]*\|lang=' + languageCode + u')'
+                # TODO bug with nested templates: https://fr.wiktionary.org/w/index.php?title=Utilisateur:JackBot/test_unitaire&diff=prev&oldid=25811164
+                #regex = ur'({{' + re.escape(currentTemplate) + ur')\|lang=' + languageCode + '(\|[^{}]*({{(.*?)}}|.)*[^{}]*\|lang=' + languageCode + u')'
+                regex = ur'({{' + re.escape(currentTemplate) + ur')\|lang=' + languageCode + '(\|[^{}]*\|lang=' + languageCode + u')'
                 if re.search(regex, finalPageContent):
-                    if debugLevel > 0: print u'    remove duplicated "lang="'
+                    if debugLevel > 1:
+                        print u'    remove duplicated "lang="'
+                        print regex # ({{refnec)\|lang=pt(\|[^{}]*({{(.*?)}}|.)*[^{}]*\|lang=pt)
+                        raw_input(finalPageContent.encode(config.console_encoding, 'replace'))
                     finalPageContent = re.sub(regex, ur'\1\2', finalPageContent)
 
         finalPageContent = finalPageContent + pageContent

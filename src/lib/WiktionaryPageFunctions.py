@@ -843,11 +843,11 @@ def addLanguageCodeWithNamedParameterToTemplate(
     if re.search(regex, pageContent):
         isSubtemplateIncluded = True
 
-    if debugLevel > 0:
-        print pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}')
-        print isCategory
-        print not isSubtemplateIncluded
-        print ' ' + regex
+    if debugLevel > 1:
+        print u'  ' + pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}')
+        print u'  ' + isCategory
+        print u'  ' + (not isSubtemplateIncluded)
+        print u'   ' + regex
         if isSubtemplateIncluded:
             print ' ' + pageContent[re.search(regex, pageContent).start():re.search(regex, pageContent).end()]
         #raw_input(pageContent.encode(config.console_encoding, 'replace'))
