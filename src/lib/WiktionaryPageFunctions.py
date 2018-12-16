@@ -1528,6 +1528,7 @@ def renameTemplates(pageContent, summary):
     pageContent = pageContent.replace(u'{{en-nom-rég-double|', u'{{en-nom-rég|')
     pageContent = pageContent.replace(u'{{Valence|ca}}', u'{{valencien}}')
     pageContent = pageContent.replace(u'{{abrév|', u'{{abréviation|')
+    pageContent = pageContent.replace(u'{{abrév}}', u'{{abréviation}}')
     pageContent = pageContent.replace(u'{{acron|', u'{{acronyme|')
     pageContent = pageContent.replace(u'{{cours d\'eau', u'{{cours d’eau')
 
