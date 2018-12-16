@@ -853,7 +853,7 @@ def addLanguageCodeWithNamedParameterToTemplate(
         #raw_input(pageContent.encode(config.console_encoding, 'replace'))
 
     if (pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}')) and \
-        isCategory and not isSubtemplateIncluded:
+        isCategory and not isSubtemplateIncluded and languageCode is not None:
         if debugLevel > 0: print u'   "lang=" addition'
         while pageContent2.find('{{') < pageContent2.find('}}') and pageContent2.find('{{') != -1:
             pageContent2 = pageContent2[pageContent2.find('}}')+2:]
