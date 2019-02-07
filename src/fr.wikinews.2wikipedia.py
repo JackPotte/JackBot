@@ -27,7 +27,7 @@ site = pywikibot.Site(siteLanguage, siteFamily)
 username = config.usernames[siteFamily][siteLanguage]
 
 MONTHS = [u'January',u'February',u'March',u'April',u'May',u'June',u'July',u'August',u'September',u'October',u'November',u'December',
-    u'Janvier',u'Février',u'Mars',u'Avril',u'Mai',u'Juin',u'Juillet',u'Août',u'Septembre',u'Octobre',u'Novembre',u'Décembre'] #TODO: srsly...
+    u'Janvier',u'Février',u'Mars',u'Avril',u'Mai',u'Juin',u'Juillet',u'Août',u'Septembre',u'Octobre',u'Novembre',u'Décembre']
 date_rx = re.compile(r'(\d+) (%s) (\d\d\d\d)' % ('|'.join(MONTHS),), re.IGNORECASE)
 
 def getNewsOld(page):

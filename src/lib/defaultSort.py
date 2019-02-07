@@ -20,9 +20,8 @@ def defaultSort(pageName, encoding = 'uca-default'):
     for letter in pageName:
         letter_to_treat = False
         if letter in (u'’', u'\''): # u'ʼ' : pb en breton
-            word_key += ''
             add_key = True
-        elif letter in (u'\\', u'/', u'×', u'·', u'...', u'-', u'\'', u'.', u',', u'(', u')'):
+        elif letter in (u'\\', u'/', u'×', u'·', u'…', u'-', u'\'', u'.', u',', u'(', u')'):
             word_key += ' '
             add_key = True
         elif encoding != 'uca-default':
@@ -203,7 +202,7 @@ def defaultSort(pageName, encoding = 'uca-default'):
            word_key += letter
 
     if add_key:
-        return trim(word_key)
+        return trim(word_key.replace(u'  ', u' '))
     else:
         if debugLevel > 0: raw_input(pageName.encode(config.console_encoding, 'replace'))
         return pageName

@@ -2956,7 +2956,7 @@ def main(*args):
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
         elif sys.argv[1] == str('-dump') or sys.argv[1] == str('-xml'):
-            regex = '\n#\* *\'\'\n'
+            regex = '=== {{S\|prononciation}} ===[^=]+==== {{S\|synonymes}} ===='
             testPage = None
             if testPage is not None:
                 pageContent = getContentFromPageName(testPage)
