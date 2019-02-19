@@ -31,8 +31,22 @@ username = config.usernames[siteFamily][siteLanguage]
 summary = u'Autoarchivage de [[Wiktionnaire:Bot/Requêtes]]'
 
 # Modification du wiki
-def treatPageByName(pageName):
+'''
+@param waitingTimeBeforeArchiving nombre de jours d'inactivité requis avant archivage
+(utile pour permettre aux requêtes traitées d'être relues avant qu'elles soient enfouies
+en page d'archive)
+'''
+def treatPageByName(pageName, waitingTimeBeforeArchiving=3):
 	page = Page(site, pageName)
+	
+	# Ne pas archiver tout de suite si page très récemment modifiée
+	# (Idéalement, la date des dernières interventions devrait être checkée...)
+	latestRev = page.editTime()
+	now = datetime.datetime.now()
+	inactivityDuration = (now - latestrev).days
+	if inactivityDuration < waitingTimeBeforeArchiving:
+		return
+	
 	if page.exists():
 		if page.namespace() != 4 and page.title() != u'User:JackBot/test': 
 			return
