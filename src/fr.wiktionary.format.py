@@ -1654,7 +1654,7 @@ def treatPageByName(pageName):
     summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
     if debugLevel > 0: print u'------------------------------------'
     pywikibot.output(u"\n\03{blue}" + pageName + u"\03{default}")
-    if pageName[-3:] == '.js': return
+    if pageName[-3:] == u'.js' or pageName[-4:] == u'.css': return
     if pageName.find(u'’') != -1:
         page = Page(site, pageName.replace(u'’', u'\''))
         if not page.exists() and page.namespace() == 0:
