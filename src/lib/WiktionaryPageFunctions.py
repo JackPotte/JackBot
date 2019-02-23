@@ -1469,6 +1469,7 @@ def renameTemplates(pageContent, summary):
     pageContent = pageContent.replace(u'{{pl-rare}}', u'{{plus rare}}')
     pageContent = pageContent.replace(u'{{mf?}}', u'{{mf ?}}')
     pageContent = pageContent.replace(u'{{fm?}}', u'{{fm ?}}')
+    pageContent = pageContent.replace(u'{{coll}}', u'{{collectif}}')
 
     regex = ur"{{ *dés *([\|}])"
     if re.search(regex, pageContent):

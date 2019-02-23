@@ -1123,6 +1123,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
     PageEnd = PageEnd + PageTemp
 
     # TODO: avoid these fixes when: ModeleEN.append(u'lien mort')
+    PageEnd = PageEnd.replace(u'<ref></ref>',u'')
     PageEnd = PageEnd.replace(u'{{lien mortarchive',u'{{lien mort archive')
     PageEnd = PageEnd.replace(u'|langue=None', u'')
     if debugLevel > 0: print(u'Fin hyperlynx.py')

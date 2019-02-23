@@ -468,6 +468,7 @@ Modele.append(u'angl')
 Modele.append(u'anglicisme')
 Modele.append(u'anglicismes informatiques')
 Modele.append(u'animaux')
+Modele.append(u'animé')
 Modele.append(u'anthro')
 Modele.append(u'anthropologie')
 Modele.append(u'antilopes')
@@ -849,6 +850,7 @@ Modele.append(u'impersonnel')
 Modele.append(u'impr')
 Modele.append(u'imprimerie')
 Modele.append(u'improprement')
+Modele.append(u'inanimé')
 Modele.append(u'indus')
 Modele.append(u'industrie pétrolière')
 Modele.append(u'industrie')
@@ -2981,10 +2983,10 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/\{\{\(\}\}nombre\=/', namespaces = [0])
+                p.pagesBySearch(u'insource:/\|br\|clé=c€h/', namespaces = [0])
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
             sys.argv[1] == str('-m'):
-            p.pagesByLink(u'Template:gaulois', namespaces = [110])
+            p.pagesByLink(u'Template:coll', namespaces = [110])
         elif sys.argv[1] == str('-category') or sys.argv[1] == str('-cat') or sys.argv[1] == str('-c'):
             if len(sys.argv) > 2:
                 if sys.argv[2] == str('listFalseTranslations'):
