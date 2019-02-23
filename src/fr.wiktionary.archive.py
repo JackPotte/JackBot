@@ -43,7 +43,7 @@ def treatPageByName(pageName, waitingTimeBeforeArchiving=3):
 	# (Idéalement, la date des dernières interventions devrait être checkée...)
 	latestRev = page.editTime()
 	now = datetime.datetime.now()
-	inactivityDuration = (now - latestrev).days
+	inactivityDuration = (now - latestRev).days
 	if inactivityDuration < waitingTimeBeforeArchiving:
 		return
 	
