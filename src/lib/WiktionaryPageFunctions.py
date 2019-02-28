@@ -1714,6 +1714,10 @@ def formatTemplates(pageContent, summary):
     pageContent = pageContent.replace(u'myt=scandinave', u'myt=nordique')
     pageContent = pageContent.replace(u'{{pron|}}', u'{{pron}}')
     pageContent = pageContent.replace(u'{{prononciation|}}', u'{{prononciation}}')
+    regex = ur'({{pron\|[^\|}]*)g([^\|}]*)'
+    while re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur"\1ɡ\2", pageContent)
+
     pageContent = pageContent.replace(u'#*: {{trad-exe|fr}}', u'')
     pageContent = pageContent.replace(u'\n{{WP', u'\n* {{WP')
     pageContent = pageContent.replace(u'{{Source-wikt|nan|', u'{{Source-wikt|zh-min-nan|')
