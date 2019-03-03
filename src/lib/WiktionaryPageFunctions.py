@@ -21,7 +21,7 @@ definitionTemplates = [u'abréviation de', u'comparatif de', u'exclamatif de', u
     u'variante de', u'variante ortho de', u'variante orthographique de']
 
 definitionSentences = [u'abréviation de', u'ancienne orthographe de', u'autre nom de', u'autre orthographe de', \
-    u'comparatif de', u'exclamatif de', u'féminin de', u'mauvaise orthographe de', u'mutation de', \
+    u'comparatif de', u'exclamatif de', u'féminin de', u'graphie erronée', u'mauvaise orthographe de', u'mutation de', \
     u'nom scientifique de', u'pluriel de', u'superlatif de', u'synonyme de', u'variante de', u'variante ortho de', \
     u'variante orthographique de']
 
