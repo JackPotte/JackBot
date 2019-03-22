@@ -2985,10 +2985,11 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/\|br\|clé=c€h/', namespaces = [0])
+                p.pagesBySearch(u'insource:/\|gaul/', namespaces = [0])
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
             sys.argv[1] == str('-m'):
-            p.pagesByLink(u'Template:coll', namespaces = [0])
+            p.pagesByLink(u'Template:gaul', namespaces = [0])
+            p.pagesByLink(u'Template:gaulois', namespaces = [0])
         elif sys.argv[1] == str('-category') or sys.argv[1] == str('-cat') or sys.argv[1] == str('-c'):
             if len(sys.argv) > 2:
                 if sys.argv[2] == str('listFalseTranslations'):

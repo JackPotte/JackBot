@@ -1429,9 +1429,13 @@ def renameTemplates(pageContent, summary):
     newTemplate.append(u'zh-Hans')
     oldTemplate.append(u'roa-rup')
     newTemplate.append(u'rup')
+    oldTemplate.append(u'gaul')
+    newTemplate.append(u'xtg')
+    oldTemplate.append(u'gaulois')
+    newTemplate.append(u'xtg')
     for p in range(1, len(oldTemplate)):
-        regex = ur'([\|{=])' + oldTemplate[p] + ur'([\|}])'
-        if re.search(regex, pageContent):
+        regex = ur'((?!:voir).*[\|{=])' + oldTemplate[p] + ur'([\|}])'
+        while re.search(regex, pageContent):
             pageContent = re.sub(regex, ur'\1' + newTemplate[p] + ur'\2', pageContent)
 
     pageContent = pageContent.replace(u'{{clef de tri', u'{{clé de tri')
