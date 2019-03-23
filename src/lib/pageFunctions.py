@@ -181,13 +181,28 @@ def getWiki(language, family, site = site):
         #TODO: WARNING: src/fr.wiktionary.format.py:4145: UserWarning: Site wiktionary:ro instantiated using different code "mo"
     return wiki
 
+def getTemplateByName(pageContent, template):
+    regex = ur'{{[' + template[:1].lower() + template[:1].upper() + ur']' + template[1:] + ur'[^{}]+}}'
+    if re.search(regex, pageContent):
+        return pageContent[re.search(regex, pageContent).start():re.search(regex, pageContent).end()]
+    return ''
+
 def getParameter(pageContent, p):
-	if pageContent.find(p + u'=') == -1 or pageContent.find(u'}}') == -1 or pageContent.find(p + u'=') > pageContent.find(u'}}'): return u''
-	pageContent = pageContent[pageContent.find(p + u'=')+len(p + u'='):]
-	if pageContent.find(u'|') != -1 and pageContent.find(u'|') < pageContent.find(u'}}'):
-		return trim(pageContent[:pageContent.find(u'|')])
-	else:
-		return trim(pageContent[:pageContent.find(u'}')])
+    regex = ur'\| *' + p + ur' *='
+    if pageContent.find(u'}}') == -1 or not re.search(regex, pageContent) \
+        or re.search(regex, pageContent).start() > pageContent.find(u'}}'): return u''
+    parameter = pageContent[re.search(regex, pageContent).start()+1:]
+    parameterEnd = parameter
+    while parameterEnd.find(u'[') != -1 and parameterEnd.find(u'[') < parameterEnd.find(u'|') \
+        and parameterEnd.find(u'[') < parameterEnd.find(u'}') and parameterEnd.find(u'|') < parameterEnd.find(u'}'):
+        # The parameter contains a link like "[[ | ]]" 
+        parameterEnd = parameterEnd[parameterEnd.find(u']')+1:]
+
+    return parameter[:len(parameter) - len(parameterEnd) + re.search(ur'[\|{}]', parameterEnd).start()]
+
+def getParameterValue(pageContent, p):
+    parameter = getParameter(pageContent, p)
+    return trim(parameter[parameter.find(u'=')+1:])
 
 def addParameter(pageContent, parameter, content = None):
     finalPageContent = u''

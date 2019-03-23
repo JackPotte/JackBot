@@ -81,7 +81,7 @@ def treatPageByName(pageName):
             pageContent = PageSing
 
         languageCode = template[m][:2]
-        #TODO pronunciation = getParameter(template, 2) / class Flesion extends Word
+        #TODO pronunciation = getParameterValue(template, 2) / class Flexion extends Word
         if debugLevel > 1: pron = getPronunciationFromContent(pageContent, languageCode)
 
         while pageContent.find(template[m]) != -1:
@@ -114,8 +114,8 @@ def treatPageByName(pageName):
                 return
 
             pageContent = pageContent[pageContent.find(template[m])+len(template[m]):]
-            suffix = getParameter(pageContent, u'inv')
-            singular = getParameter(pageContent, u's')
+            suffix = getParameterValue(pageContent, u'inv')
+            singular = getParameterValue(pageContent, u's')
             plural = u''
             if suffix != u'':
                 if singular == u'':

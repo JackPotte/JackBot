@@ -1677,6 +1677,14 @@ def treatPageByName(pageName):
     if fixTags: pageContent = replaceDepretacedTags(pageContent)
     if checkURL: pageContent = hyperlynx(pageContent)
 
+    print (getParameterValue(u'{{fr-rég}}', 'p'))
+    print (getParameterValue(u'{{fr-rég|}}', 'p'))
+    print (getParameterValue(u'{{fr-rég| }}', 'p'))
+    print (getParameterValue(u'{{fr-rég|p=1}}', 'p'))
+    print (getParameterValue(u'{{fr-rég|p = 2}}', 'p'))
+    print (getParameterValue(u'{{fr-rég| p = 3 }}', 'p'))
+    raw_input('fin')
+
     if treatTemplates and page.namespace() == 10:
         # Modèle:
         templates = [u'emploi', u'région', u'registre', u'term']
@@ -2882,8 +2890,9 @@ def treatPageByName(pageName):
 
         language = 'fr' # TODO: intl
         if finalPageContent.find(u'{{langue|' + language + u'}}') != -1:
-            if debugLevel > 0: print u' Faux homophones car lemme et sa flexion' # TODO: locutions
-            #TODO Doublon systématique ? singularPageName = getLemmaFromContent(finalPageContent, language)
+            if debugLevel > 0: print u' Recherche des faux homophones car lemme et sa flexion'
+            #TODO : modèles des locutions
+            #TODO : doublon systématique ? singularPageName = getLemmaFromContent(finalPageContent, language)
             flexionPageName = ''
             if finalPageContent.find('|' + language + '|flexion}}') == -1:
                 # Recherche d'éventuelles flexions dans la page du lemme
@@ -2891,7 +2900,7 @@ def treatPageByName(pageName):
                 if flexionTemplate.find(u'inv=') == -1 and \
                  (flexionTemplate[:flexionTemplate.find('|')] in flexionTemplatesFrWithS \
                  or flexionTemplate[:flexionTemplate.find('|')] in flexionTemplatesFrWithMs):
-                    flexionPageName = getParameter(flexionTemplate, 'p')
+                    flexionPageName = getParameterValue(flexionTemplate, 'p')
                     if flexionPageName == '':
                         flexionPageName = pageName + 's'
                 #TODO: flexionTemplate = [conjugaisons]

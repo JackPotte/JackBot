@@ -101,7 +101,7 @@ def main(*args):
             p. pagesBySpecialLinkSearch('www.dmoz.org')
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
-            treatPageByName(html2Unicode(sys.argv[1]))
+            treatPageByName(sys.argv[1])
     else:
         while 1:
             p.pagesByRC()
