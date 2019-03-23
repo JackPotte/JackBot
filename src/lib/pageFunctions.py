@@ -58,7 +58,11 @@ def datePlusMonth(months):
 
 def timeAfterLastEdition(page, site = None):
     # Timestamp au format Zulu de la dernière version
-    lastEditTime = page.getVersionHistory()[0][1]
+    try:
+        lastEditTime = page.getVersionHistory()[0][1]
+    except:
+        pywikibot.exceptions.NoPage
+        return 0
     if debugLevel > 1: print lastEditTime   # 2017-07-29T21:57:34Z
     matchTime = re.match(r'(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})', str(lastEditTime))
     # Mise au format "datetime" du timestamp de la dernière version

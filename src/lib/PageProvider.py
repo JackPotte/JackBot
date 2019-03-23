@@ -221,7 +221,7 @@ class PageProvider:
         from lib import timeAfterLastEdition
         minimumTime = 30 # min
         gen = pagegenerators.RecentchangesPageGenerator(site = site)
-        for Page in pagegenerators.PreloadingGenerator(gen,100):
+        for Page in pagegenerators.PreloadingGenerator(gen, 50):
             if self.debugLevel > 1: print str(timeAfterLastEdition(Page)) + ' =? ' + str(minimumTime)
             if timeAfterLastEdition(Page) > minimumTime:
                 self.treatPage(Page.title())

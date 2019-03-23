@@ -95,7 +95,9 @@ def treatPageByName(pageName):
                 summary = summary + u', [[Special:UncategorizedPages]]'
 
     PageEnd = PageEnd + PageTemp
-    if PageEnd != PageBegin: savePage(page, PageEnd, summary)
+    if PageEnd != PageBegin:
+        if PageBegin.count('{{') - PageBegin.count('}}') != PageEnd.count('{{') - PageEnd.count('}}'):
+            savePage(page, PageEnd, summary)
 
 
 p = PageProvider(treatPageByName, site, debugLevel)
