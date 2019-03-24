@@ -1677,14 +1677,6 @@ def treatPageByName(pageName):
     if fixTags: pageContent = replaceDepretacedTags(pageContent)
     if checkURL: pageContent = hyperlynx(pageContent)
 
-    print (getParameterValue(u'{{fr-rég}}', 'p'))
-    print (getParameterValue(u'{{fr-rég|}}', 'p'))
-    print (getParameterValue(u'{{fr-rég| }}', 'p'))
-    print (getParameterValue(u'{{fr-rég|p=1}}', 'p'))
-    print (getParameterValue(u'{{fr-rég|p = 2}}', 'p'))
-    print (getParameterValue(u'{{fr-rég| p = 3 }}', 'p'))
-    raw_input('fin')
-
     if treatTemplates and page.namespace() == 10:
         # Modèle:
         templates = [u'emploi', u'région', u'registre', u'term']
@@ -2995,10 +2987,10 @@ def main(*args):
                 p.pagesBySearch(sys.argv[2])
             else:
                 p.pagesBySearch(u'insource:/\|gaul/', namespaces = [0])
+                p.pagesBySearch(u'insource:/\|xtg/', namespaces = [0])
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
             sys.argv[1] == str('-m'):
             p.pagesByLink(u'Template:gaul', namespaces = [0])
-            p.pagesByLink(u'Template:gaulois', namespaces = [0])
         elif sys.argv[1] == str('-category') or sys.argv[1] == str('-cat') or sys.argv[1] == str('-c'):
             if len(sys.argv) > 2:
                 if sys.argv[2] == str('listFalseTranslations'):
