@@ -62,8 +62,8 @@ def treatPageByName(pageName):
     param.append(u's')
     template.append(u'fr-rég')
     param.append(u's')
-    template.append(u'fr-accord-cons')
-    param.append(u'ms')
+    #template.append(u'fr-accord-cons') TODO https://fr.wiktionary.org/w/index.php?title=arnaudes&type=revision&diff=26192327&oldid=26191304
+    #param.append(u'ms')
     # TODO: traiter le reste de [[Catégorie:Modèles d’accord en français]]
     # TODO: 430 faux-positifs corrigés pour les prononciations et |rice=1 des -eur
     #https://fr.wiktionary.org/w/index.php?title=anticonservateurs&type=revision&diff=25375891&oldid=24393947
