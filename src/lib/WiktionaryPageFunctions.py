@@ -1640,6 +1640,8 @@ def renameTemplates(pageContent, summary):
         pageContent = re.sub(regex, ur'{{écouter|audio=\1}}', pageContent)
         summary = summary + u', conversion de modèle de son'
 
+    # TODO: replace {{fr-rég|ɔs vɛʁ.tɛ.bʁal|s=os vertébral|p=os vertébraux|pp=ɔs vɛʁ.tɛ.bʁo}} by {{fr-accord-mf-al|
+
     # Hotfix
     regex = ur'\n{{\(}}nombre= *[0-9]*\|\n'
     pageContent = re.sub(regex, ur'\n{{(}}\n', pageContent)

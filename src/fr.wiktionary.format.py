@@ -2961,7 +2961,9 @@ def main(*args):
             waitAfterHumans = False
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
         elif sys.argv[1] == str('-dump') or sys.argv[1] == str('-xml'):
-            regex = '{{pron\|[^\|}]*g[^\|}]*'
+            p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex = ur'{{fr-rég\|[^}]+(?!o\|).*[^}]+aux}}', titleInclude = 'aux$')
+            return
+            regex = ur'{{pron\|[^\|}]*g[^\|}]*'
             testPage = None
             if testPage is not None:
                 pageContent = getContentFromPageName(testPage)
@@ -2986,8 +2988,8 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/\|gaul/', namespaces = [0])
-                p.pagesBySearch(u'insource:/\|xtg/', namespaces = [0])
+                p.pagesBySearch(u'insource:/\|gaul\|/', namespaces = [0])
+                p.pagesBySearch(u'insource:/\|gaul\|}', namespaces = [0])
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
             sys.argv[1] == str('-m'):
             p.pagesByLink(u'Template:gaul', namespaces = [0])
