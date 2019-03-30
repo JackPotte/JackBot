@@ -837,23 +837,23 @@ def addLanguageCodeWithNamedParameterToTemplate(
     isCategory = currentTemplate != u'cf' or (pageContent2.find('}}') > endPosition+1 \
         and (pageContent2.find(':') == -1 or pageContent2.find(':') > pageContent2.find('}}')) \
         and pageContent2[:1] != '#')
-
-    isSubtemplateIncluded = False
-    regex = ur'^' + re.escape(currentTemplate) + ur'\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang='
-    if re.search(regex, pageContent):
-        isSubtemplateIncluded = True
-
+    hasSubtemplateIncluded = False
+    if pageContent.find('}}') > pageContent.find('{{') and pageContent.find('{{') != -1:
+        # Inifnite loop in [[tomme]] on ^date\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang=
+        regex = ur'^' + re.escape(currentTemplate) + ur'\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang='
+        if re.search(regex, pageContent):
+            hasSubtemplateIncluded = True
     if debugLevel > 1:
         print u'  ' + pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}')
         print u'  ' + isCategory
-        print u'  ' + (not isSubtemplateIncluded)
+        print u'  ' + (not hasSubtemplateIncluded)
         print u'   ' + regex
-        if isSubtemplateIncluded:
+        if hasSubtemplateIncluded:
             print ' ' + pageContent[re.search(regex, pageContent).start():re.search(regex, pageContent).end()]
         #raw_input(pageContent.encode(config.console_encoding, 'replace'))
 
     if (pageContent.find('lang=') == -1 or pageContent.find('lang=') > pageContent.find('}}')) and \
-        isCategory and not isSubtemplateIncluded and languageCode is not None:
+        isCategory and not hasSubtemplateIncluded and languageCode is not None:
         if debugLevel > 0: print u'   "lang=" addition'
         while pageContent2.find('{{') < pageContent2.find('}}') and pageContent2.find('{{') != -1:
             pageContent2 = pageContent2[pageContent2.find('}}')+2:]
