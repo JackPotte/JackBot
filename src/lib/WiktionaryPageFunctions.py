@@ -1399,9 +1399,9 @@ def addTemplates(pageContent, summary):
     regex = ur'\n#\* *(?:\'\')?\n'
     pageContent = re.sub(regex, ur'\n#* {{ébauche-exe}}\n', pageContent)
 
-    regex = ur'{{Ouvrage\|prénom1=Régis\|nom1=Auffray\|titre=Le petit Matao\|éditeur=Rue des Scribes\|année=2007\|isbn=978\-2\-906064\-64\-5\|passage=([0-9 ,et]*)}}'
+    regex = ur'{{Ouvrage\|prénom1=Régis\|nom1=Auffray\|titre=Le petit Matao\|éditeur=Rue des Scribes\|année=2007\|isbn=978\-2\-906064\-64\-5\|passage=([^\|{}]*)}}'
     pageContent = re.sub(regex, ur'{{R:PMatao|p=\1}}\n', pageContent)
-    regex = ur'{{Ouvrage\|prénom1=Régis\|nom1=Auffray\|titre=Chapè Chapiao\|format=Broché\|jour=2\|mois=novembre\|année=2007\|éditeur=Rue des Scribes\|isbn=\|passage=([0-9 ,et]*)}}'
+    regex = ur'{{Ouvrage\|prénom1=Régis\|nom1=Auffray\|titre=Chapè Chapiao\|format=Broché\|jour=2\|mois=novembre\|année=2007\|éditeur=Rue des Scribes\|isbn=\|passage=([^\|{}]*)}}'
     pageContent = re.sub(regex, ur'{{R:Chapè|p=\1}}', pageContent)
     regex = ur'{{Lien web\|titre=Dictionnaire des noms de lieux\|url=http://www\.chubri\-galo\.bzh/chubri\-galo_dictionnaire\-gallo\-francais_ChubEndret\-toponymie__fr\.htm\|site=Chubri}}'
     pageContent = re.sub(regex, ur'{{R:ChubEndret}}', pageContent)
@@ -1409,27 +1409,27 @@ def addTemplates(pageContent, summary):
     pageContent = re.sub(regex, ur'<nowiki>{{R:RDPG}}', pageContent)
     regex = ur'{{Lien web\|titre=Règles orthographiques du gallo\|auteur=Chubri\|url=http://www\.chubri\-galo\.bzh/docs/files/z\-ortograf/Regles\-orthograph\-gallo\-moga\-05\-2016\.pdf\|date=2016}}'
     pageContent = re.sub(regex, ur'{{R:ROGMOGA}}', pageContent)
-    regex = ur'{{Ouvrage\|prénom1=Jean\-Paul\|nom1=Savignac\|titre=Dictionnaire français\-gaulois\|éditeur=La Différence\|année=2004\|passage=([0-9 ,et]*)\|isbn=978\-2729115296}}'
+    regex = ur'{{Ouvrage\|prénom1=Jean\-Paul\|nom1=Savignac\|titre=Dictionnaire français\-gaulois\|éditeur=La Différence\|année=2004\|passage=([^\|{}]*)\|isbn=978\-2729115296}}'
     pageContent = re.sub(regex, ur'{{R:Savignac2004|p=\1}}', pageContent)
-    regex = ur'{{Ouvrage\|prénom1=Xavier\|nom1=Delamarre\|titre=Dictionnaire de la langue gauloise : une approche linguistique du vieux\-celtique continental\|préface=Pierre\-Yves Lambert\|éditeur=Errance\|lieu=Paris\|année=2003\|numéro d\'édition=2\|isbn=2\-87772\-237\-6\|issn=0982\-2720\|passage=([0-9 ,et]*)}}'
+    regex = ur'{{Ouvrage\|prénom1=Xavier\|nom1=Delamarre\|titre=Dictionnaire de la langue gauloise : une approche linguistique du vieux\-celtique continental\|préface=Pierre\-Yves Lambert\|éditeur=Errance\|lieu=Paris\|année=2003\|numéro d\'édition=2\|isbn=2\-87772\-237\-6\|issn=0982\-2720\|passage=([^\|{}]*)}}'
     pageContent = re.sub(regex, ur'{{R:Delamarre2003|p=\1}}', pageContent)
-    regex = ur'{{Ouvrage\|prénom1=Xavier\|nom1=Delamarre\|titre=Index de J\. Whatmough, The Dialects of Ancient Gaul\|éditeur=\|année=2004\|passage=([0-9 ,et]*)\|isbn=}}'
+    regex = ur'{{Ouvrage\|prénom1=Xavier\|nom1=Delamarre\|titre=Index de J\. Whatmough, The Dialects of Ancient Gaul\|éditeur=\|année=2004\|passage=([^\|{}]*)\|isbn=}}'
     pageContent = re.sub(regex, ur'{{R:Delamarre2004|p=\1}}', pageContent)
-    regex = ur'Pierre {{pc\|Gastal}}, \'\'Nos racines celtiques\'\', éd\. Désiris 2013, p\. ([0-9 ,et]*)\.'
+    regex = ur'Pierre {{pc\|Gastal}}, \'\'Nos racines celtiques\'\', éd\. Désiris 2013, p\. ([^\|{}]*)\.'
     pageContent = re.sub(regex, ur'{{R:Gastal|p=\1}}', pageContent)
     regex = ur'{{Ouvrage\|prénom1=Pierre\|nom1=Gastal\|titre=Nos racines celtiques, du gaulois au français\|éditeur=Désiris\|année=2013\|isbn=978\-2364030619}}'
     pageContent = re.sub(regex, ur'{{R:Gastal}}', pageContent)
-    regex = ur'Pierre Gastal, \'\'Nos racines celtiques, du gaulois au français\'\' (édition Désiris 2013), pages ([0-9 ,et]*)\.'
+    regex = ur'Pierre Gastal, \'\'Nos racines celtiques, du gaulois au français\'\' (édition Désiris 2013), pages ([^\|{}]*)\.'
     pageContent = re.sub(regex, ur'{{R:Gastal|p=\1}}', pageContent)
     regex = ur'{{Ouvrage\|prénom1=Daniel L\.\|nom1=Everett\|titre=Le monde ignoré des indiens pirahãs\|traducteur=Jean\-Luc Fidel\|éditeur=Flammarion\|lieu=Paris\|année=2010\|isbn=978\-2\-0812\-1146\-9}}'
     pageContent = re.sub(regex, ur'{{R:Everett2010}}', pageContent)
     regex = ur'{{Ouvrage\|prénom1=Daniel L\.\|nom1=Everett\|titre=Pirahã culture and grammar: A response to some criticisms\|mois=juin\|année=2009\|éditeur=Language}}'
     pageContent = re.sub(regex, ur'{{R:Everett2009}}', pageContent)
-    regex = ur'{{Ouvrage\|langue=en\|prénom1=Desmond C\.\|nom1=Derbyshire\|prénom2=Geoffrey K\. \|nom2=Pullum\|prénom3=Daniel L\.\|nom3=Everett\|titre=Handbook of Amazonian Languages\|volume=1\|éditeur=Walter de Gruyter\|année=1986\|pages totales=646\|passage=([0-9 ,et]*)\|isbn=9783110102574}}'
+    regex = ur'{{Ouvrage\|langue=en\|prénom1=Desmond C\.\|nom1=Derbyshire\|prénom2=Geoffrey K\. \|nom2=Pullum\|prénom3=Daniel L\.\|nom3=Everett\|titre=Handbook of Amazonian Languages\|volume=1\|éditeur=Walter de Gruyter\|année=1986\|pages totales=646\|passage=([^\|{}]*)\|isbn=9783110102574}}'
     pageContent = re.sub(regex, ur'{{R:HoAL1|p=\1}}', pageContent)
-    regex = ur'{{Ouvrage\|langue=pt\|prénom1=Daniel L\.\|nom1=Everett\|titre=A lingua pirahã et a teoria da sintaxe\|url=https://daneverettbooks\.com//wp\-content/uploads/2014/04/everett_90_A\-Lingua\-Pirah\.pdf\|passage=([0-9 ,et]*)\|pages totales=431\|année=1983\|éditeur=Unicamp}}'
+    regex = ur'{{Ouvrage\|langue=pt\|prénom1=Daniel L\.\|nom1=Everett\|titre=A lingua pirahã et a teoria da sintaxe\|url=https://daneverettbooks\.com//wp\-content/uploads/2014/04/everett_90_A\-Lingua\-Pirah\.pdf\|passage=([^\|{}]*)\|pages totales=431\|année=1983\|éditeur=Unicamp}}'
     pageContent = re.sub(regex, ur'{{R:Everett1983|p=\1}} ', pageContent)
-    regex = ur'{{Ouvrage\|prénom1=Ouma\|nom1=Geelmeid\|titre=Ouma Geelmeid ke kx\'u ǁxaǁxa Nǀuu\|url=http://open\.uct\.ac\.za/bitstream/handle/11427/17432/Shah_N%c7%80uu%20_CALDi_2016\.pdf?sequence=5\|année=2016\|éditeur=Centre for African Language Diversity\|passage=([0-9 ,et]*)}}'
+    regex = ur'{{Ouvrage\|prénom1=Ouma\|nom1=Geelmeid\|titre=Ouma Geelmeid ke kx\'u ǁxaǁxa Nǀuu\|url=http://open\.uct\.ac\.za/bitstream/handle/11427/17432/Shah_N%c7%80uu%20_CALDi_2016\.pdf?sequence=5\|année=2016\|éditeur=Centre for African Language Diversity\|passage=([^\|{}]*)}}'
     pageContent = re.sub(regex, ur'{{R:Geelmeid|p=\1}}', pageContent)
 
     return pageContent, summary
