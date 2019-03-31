@@ -1415,11 +1415,13 @@ def addTemplates(pageContent, summary):
     pageContent = re.sub(regex, ur'{{R:Delamarre2003|p=\1}}', pageContent)
     regex = ur'{{Ouvrage\|prénom1=Xavier\|nom1=Delamarre\|titre=Index de J\. Whatmough, The Dialects of Ancient Gaul\|éditeur=\|année=2004\|passage=([^\|{}]*)\|isbn=}}'
     pageContent = re.sub(regex, ur'{{R:Delamarre2004|p=\1}}', pageContent)
-    regex = ur'Pierre {{pc\|Gastal}}, \'\'Nos racines celtiques\'\', éd\. Désiris 2013, p\. ([^\|{}]*)\.'
+    regex = ur'Pierre {{pc\|Gastal}}, \'\'Nos racines celtiques\'\', éd\. Désiris 2013, p\. ([^\|{}]*)\.?'
+    pageContent = re.sub(regex, ur'{{R:Gastal|p=\1}}', pageContent)
+    regex = ur'Pierre {{pc\|Gastal}}, \'\'Nos racines celtiques, du gaulois au français\'\', 2013, page ([^\|{}]*)'
     pageContent = re.sub(regex, ur'{{R:Gastal|p=\1}}', pageContent)
     regex = ur'{{Ouvrage\|prénom1=Pierre\|nom1=Gastal\|titre=Nos racines celtiques, du gaulois au français\|éditeur=Désiris\|année=2013\|isbn=978\-2364030619}}'
     pageContent = re.sub(regex, ur'{{R:Gastal}}', pageContent)
-    regex = ur'Pierre Gastal, \'\'Nos racines celtiques, du gaulois au français\'\' (édition Désiris 2013), pages ([^\|{}]*)\.'
+    regex = ur'Pierre Gastal, \'\'Nos racines celtiques, du gaulois au français\'\' (édition Désiris 2013), pages ([^\|{}]*)\.?'
     pageContent = re.sub(regex, ur'{{R:Gastal|p=\1}}', pageContent)
     regex = ur'{{Ouvrage\|prénom1=Daniel L\.\|nom1=Everett\|titre=Le monde ignoré des indiens pirahãs\|traducteur=Jean\-Luc Fidel\|éditeur=Flammarion\|lieu=Paris\|année=2010\|isbn=978\-2\-0812\-1146\-9}}'
     pageContent = re.sub(regex, ur'{{R:Everett2010}}', pageContent)

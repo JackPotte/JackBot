@@ -2962,24 +2962,6 @@ def main(*args):
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
         elif sys.argv[1] == str('-dump') or sys.argv[1] == str('-xml'):
             dumpFile = siteLanguage + siteFamily + '\-.*xml'
-            p.pagesByXML(dumpFile, include = ur'{{Ouvrage|prénom1=Régis|nom1=Auffray|titre=Le petit Matao|éditeur=Rue des Scribes|année=2007|isbn=978-2-906064-64-5|passage=', namespaces = [0])
-            p.pagesByXML(dumpFile, include = ur'{{Ouvrage|prénom1=Régis|nom1=Auffray|titre=Chapè Chapiao|format=Broché|jour=2|mois=novembre|année=2007|éditeur=Rue des Scribes|isbn=|passage=', namespaces = [0])
-            p.pagesByXML(dumpFile, include = ur'{{Lien web|titre=Dictionnaire des noms de lieux|url=http://www.chubri-galo.bzh/chubri-galo_dictionnaire-gallo-francais_ChubEndret-toponymie__fr.htm|site=Chubri}}', namespaces = [0])
-            p.pagesByXML(dumpFile, include = ur'{{Ouvrage|titre=Répertoire dialectal des prénoms en gallo|url=http://www.chubri-galo.bzh/docs/files/z-motier/prenoms-bretons-gallo-haute-bretagne.pdf|éditeur=Le Temps, Chubri |prénom1=Vincent|nom1=Chassé|prénom2= Matlao |nom2=Ghiton|prénom3= Morgane|nom3=Houdemont|prénom4=Bèrtran|nom4=Ôbrée|jour=4|mois=décembre|année=2013}}', namespaces = [0])
-            p.pagesByXML(dumpFile, include = ur'{{Lien web|titre=Règles orthographiques du gallo|auteur=Chubri|url=http://www.chubri-galo.bzh/docs/files/z-ortograf/Regles-orthograph-gallo-moga-05-2016.pdf|date=2016}}', namespaces = [0])
-            p.pagesByXML(dumpFile, include = ur'{{Ouvrage|prénom1=Jean-Paul|nom1=Savignac|titre=Dictionnaire français-gaulois|éditeur=La Différence|année=2004|passage=', namespaces = [0])
-            p.pagesByXML(dumpFile, include = ur'{{Ouvrage|prénom1=Xavier|nom1=Delamarre|titre=Dictionnaire de la langue gauloise : une approche linguistique du vieux-celtique continental|préface=Pierre-Yves Lambert|éditeur=Errance|lieu=Paris|année=2003|numéro d\'édition=2|isbn=2-87772-237-6|issn=0982-2720|passage=', namespaces = [0])
-            p.pagesByXML(dumpFile, include = ur'{{Ouvrage|prénom1=Xavier|nom1=Delamarre|titre=Index de J. Whatmough, The Dialects of Ancient Gaul|éditeur=|année=2004|passage=', namespaces = [0])
-            p.pagesByXML(dumpFile, include = ur'Pierre {{pc|Gastal}}, \'\'Nos racines celtiques\'\', éd. Désiris 2013, p. 119.', namespaces = [0])
-            p.pagesByXML(dumpFile, include = ur'{{Ouvrage|prénom1=Pierre|nom1=Gastal|titre=Nos racines celtiques, du gaulois au français|éditeur=Désiris|année=2013|isbn=978-2364030619}}', namespaces = [0])
-            p.pagesByXML(dumpFile, include = ur'Pierre Gastal, \'\'Nos racines celtiques, du gaulois au français\'\' (édition Désiris 2013), pages 68, 89 et 155.', namespaces = [0])
-            p.pagesByXML(dumpFile, include = ur'{{Ouvrage|prénom1=Daniel L.|nom1=Everett|titre=Le monde ignoré des indiens pirahãs|traducteur=Jean-Luc Fidel|éditeur=Flammarion|lieu=Paris|année=2010|isbn=978-2-0812-1146-9}}', namespaces = [0])
-            p.pagesByXML(dumpFile, include = ur'{{Ouvrage|prénom1=Daniel L.|nom1=Everett|titre=Pirahã culture and grammar: A response to some criticisms|mois=juin|année=2009|éditeur=Language}}', namespaces = [0])
-            p.pagesByXML(dumpFile, include = ur'{{Ouvrage|langue=en|prénom1=Desmond C.|nom1=Derbyshire|prénom2=Geoffrey K. |nom2=Pullum|prénom3=Daniel L.|nom3=Everett|titre=Handbook of Amazonian Languages|volume=1|éditeur=Walter de Gruyter|année=1986|pages totales=646|passage=}}', namespaces = [0])
-            p.pagesByXML(dumpFile, include = ur'{{Ouvrage|langue=pt|prénom1=Daniel L.|nom1=Everett|titre=A lingua pirahã et a teoria da sintaxe|url=https://daneverettbooks.com//wp-content/uploads/2014/04/everett_90_A-Lingua-Pirah.pdf|passage=', namespaces = [0])
-            p.pagesByXML(dumpFile, include = ur'{{Ouvrage|prénom1=Ouma|nom1=Geelmeid|titre=Ouma Geelmeid ke kx\'u ǁxaǁxa Nǀuu|url=http://open.uct.ac.za/bitstream/handle/11427/17432/Shah_N%c7%80uu%20_CALDi_2016.pdf?sequence=5|année=2016|éditeur=Centre for African Language Diversity|passage=', namespaces = [0])
-            return
-
             regex = ur'{{pron\|[^\|}]*g[^\|}]*'
             testPage = None
             if testPage is not None:
@@ -3005,8 +2987,23 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/\|gaul\|/', namespaces = [0])
-                p.pagesBySearch(u'insource:/\|gaul\|}', namespaces = [0])
+                p.pagesBySearch(u'Pierre \{\{pc\|Gastal\}\}, \'\'Nos racines celtiques\'\'', namespaces = [0])
+                p.pagesBySearch(u'Pierre Gastal, \'\'Nos racines celtiques, du gaulois au français\'\'', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Régis\|nom1=Auffray\|titre=Le petit Matao', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Régis\|nom1=Auffray\|titre=Chapè Chapiao', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{[Ll]ien web\|titre=Dictionnaire des noms de lieux', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|titre=Répertoire dialectal des prénoms en gallo', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{[Ll]ien web\|titre=Règles orthographiques du gallo\|auteur=Chubri', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Jean\-Paul\|nom1=Savignac\|titre=Dictionnaire français\-gaulois', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Xavier\|nom1=Delamarre\|titre=Dictionnaire de la langue gauloise : une approche linguistique du vieux\-celtique continental', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Xavier\|nom1=Delamarre\|titre=Index de J\. Whatmough, The Dialects of Ancient Gaul', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Pierre\|nom1=Gastal\|titre=Nos racines celtiques, du gaulois au français', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Daniel L\.\|nom1=Everett\|titre=Le monde ignoré des indiens pirahãs', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Daniel L\.\|nom1=Everett\|titre=Pirahã culture and grammar: A response to some criticisms', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|langue=en\|prénom1=Desmond C\.\|nom1=Derbyshire\|prénom2=Geoffrey K\. \|nom2=Pullum\|prénom3=Daniel L\.\|nom3=Everett\|titre=Handbook of Amazonian Languages', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|langue=pt\|prénom1=Daniel L\.\|nom1=Everett\|titre=A lingua pirahã et a teoria da sintaxe', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Ouma\|nom1=Geelmeid\|titre=Ouma Geelmeid ke kx\'u ǁxaǁxa Nǀuu', namespaces = [0])
+
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
             sys.argv[1] == str('-m'):
             p.pagesByLink(u'Template:gaul', namespaces = [0])

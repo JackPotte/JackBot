@@ -205,10 +205,11 @@ class PageProvider:
                 modify = True
 
     # [[Special:Search]]
-    def pagesBySearch(self, pageName, namespaces = None, site = None, afterPage = None):
+    def pagesBySearch(self, searchString, namespaces = None, site = None, afterPage = None):
         if site is None: site = self.site
         modify = False
-        gen = pagegenerators.SearchPageGenerator(pageName, site = site, namespaces = namespaces)
+        #searchString = searchString[:300] TODO: API error cirrussearch-backend-error 
+        gen = pagegenerators.SearchPageGenerator(searchString, site = site, namespaces = namespaces)
         for Page in pagegenerators.PreloadingGenerator(gen,100):
             if not afterPage or afterPage == u'' or modify:
                 self.treatPage(Page.title())
