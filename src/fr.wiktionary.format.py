@@ -2987,22 +2987,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'Pierre \{\{pc\|Gastal\}\}, \'\'Nos racines celtiques\'\'', namespaces = [0])
-                p.pagesBySearch(u'Pierre Gastal, \'\'Nos racines celtiques, du gaulois au français\'\'', namespaces = [0])
-                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Régis\|nom1=Auffray\|titre=Le petit Matao', namespaces = [0])
-                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Régis\|nom1=Auffray\|titre=Chapè Chapiao', namespaces = [0])
-                p.pagesBySearch(u'insource:/\{\{[Ll]ien web\|titre=Dictionnaire des noms de lieux', namespaces = [0])
-                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|titre=Répertoire dialectal des prénoms en gallo', namespaces = [0])
-                p.pagesBySearch(u'insource:/\{\{[Ll]ien web\|titre=Règles orthographiques du gallo\|auteur=Chubri', namespaces = [0])
-                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Jean\-Paul\|nom1=Savignac\|titre=Dictionnaire français\-gaulois', namespaces = [0])
-                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Xavier\|nom1=Delamarre\|titre=Dictionnaire de la langue gauloise : une approche linguistique du vieux\-celtique continental', namespaces = [0])
-                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Xavier\|nom1=Delamarre\|titre=Index de J\. Whatmough, The Dialects of Ancient Gaul', namespaces = [0])
-                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Pierre\|nom1=Gastal\|titre=Nos racines celtiques, du gaulois au français', namespaces = [0])
-                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Daniel L\.\|nom1=Everett\|titre=Le monde ignoré des indiens pirahãs', namespaces = [0])
-                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Daniel L\.\|nom1=Everett\|titre=Pirahã culture and grammar: A response to some criticisms', namespaces = [0])
-                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|langue=en\|prénom1=Desmond C\.\|nom1=Derbyshire\|prénom2=Geoffrey K\. \|nom2=Pullum\|prénom3=Daniel L\.\|nom3=Everett\|titre=Handbook of Amazonian Languages', namespaces = [0])
-                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|langue=pt\|prénom1=Daniel L\.\|nom1=Everett\|titre=A lingua pirahã et a teoria da sintaxe', namespaces = [0])
-                p.pagesBySearch(u'insource:/\{\{[Oo]uvrage\|prénom1=Ouma\|nom1=Geelmeid\|titre=Ouma Geelmeid ke kx\'u ǁxaǁxa Nǀuu', namespaces = [0])
+                p.pagesBySearch(u'insource:"Nos racines celtiques, du gaulois au français"', namespaces = [0, 100, 106, 110])
 
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
             sys.argv[1] == str('-m'):
