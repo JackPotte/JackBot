@@ -241,7 +241,7 @@ def treatPageByName(pageName):
             if plural[-2:] == u'xs':
                 print u' Pluriel en xs : erreur'
                 return
-            elif plural[-2:] == u'ss':
+            elif plural[-2:] == u'ss' and pageName[-2:] != u'ss':
                 lemmaParam = u'|' + param[m] + u'=' + plural[:-2]
                 PageSing = PageSing[:PageSing.find(template[m])+len(template[m])] + lemmaParam + \
                     PageSing[PageSing.find(template[m])+len(template[m]):]
