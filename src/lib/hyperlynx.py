@@ -1126,6 +1126,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
     PageEnd = PageEnd.replace(u'<ref></ref>',u'')
     PageEnd = PageEnd.replace(u'{{lien mortarchive',u'{{lien mort archive')
     PageEnd = PageEnd.replace(u'|langue=None', u'')
+    PageEnd = PageEnd.replace(u'|langue=en|langue=en', u'|langue=en')
     if debugLevel > 0: print(u'Fin hyperlynx.py')
 
     return PageEnd
