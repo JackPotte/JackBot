@@ -1438,19 +1438,16 @@ def renameTemplates(pageContent, summary):
         while re.search(regex, pageContent):
             pageContent = re.sub(regex, ur'\1' + newTemplate[p] + ur'\2', pageContent)
 
-    pageContent = pageContent.replace(u'{{clef de tri', u'{{clé de tri')
-    pageContent = re.sub(ur'{{régio *\| *', ur'{{région|', pageContent)
-    pageContent = re.sub(ur'{{terme *\| *', ur'{{term|', pageContent)
-    pageContent = re.sub(ur'{{term *\|Registre neutre}} *', ur'', pageContent)
-    pageContent = pageContent.replace(u'{{Citation needed}}', u'{{référence nécessaire}}')
-    pageContent = pageContent.replace(u'{{Référence nécessaire}}', u'{{référence nécessaire}}')
-    pageContent = pageContent.replace(u'{{pron-rég|', u'{{écouter|')
+    if debugLevel > 1: print u' Modèles des étymologies'
+    regex = ur"(\n:? *(?:{{date[^}]*}})? *(?:\[\[calque\|)?[Cc]alque\]* d(?:u |e l['’]){{)étyl\|"
+    if re.search(regex, pageContent):
+        pageContent = re.sub(regex, ur"\1calque|", pageContent)
+
+    if debugLevel > 1: print u' Modèles trop courts'
     pageContent = pageContent.replace(u'{{f}} {{fsing}}', u'{{f}}')
     pageContent = pageContent.replace(u'{{m}} {{msing}}', u'{{m}}')
     pageContent = pageContent.replace(u'{{f}} {{p}}', u'{{fplur}}')
     pageContent = pageContent.replace(u'{{m}} {{p}}', u'{{mplur}}')
-
-    if debugLevel > 1: print u' Modèles trop courts'
     pageContent = pageContent.replace(u'{{fp}}', u'{{fplur}}')
     pageContent = pageContent.replace(u'{{mp}}', u'{{mplur}}')
     pageContent = pageContent.replace(u'{{np}}', u'{{nlur}}')
@@ -1474,6 +1471,11 @@ def renameTemplates(pageContent, summary):
     pageContent = pageContent.replace(u'{{mf?}}', u'{{mf ?}}')
     pageContent = pageContent.replace(u'{{fm?}}', u'{{fm ?}}')
     pageContent = pageContent.replace(u'{{coll}}', u'{{collectif}}')
+
+    if debugLevel > 1: print u' Modèles des définitions'
+    pageContent = re.sub(ur'{{régio *\| *', ur'{{région|', pageContent)
+    pageContent = re.sub(ur'{{terme *\| *', ur'{{term|', pageContent)
+    pageContent = re.sub(ur'{{term *\|Registre neutre}} *', ur'', pageContent)
 
     regex = ur"{{ *dés *([\|}])"
     if re.search(regex, pageContent):
@@ -1639,6 +1641,10 @@ def renameTemplates(pageContent, summary):
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, ur'{{écouter|audio=\1}}', pageContent)
         summary = summary + u', conversion de modèle de son'
+
+    pageContent = pageContent.replace(u'{{Citation needed}}', u'{{référence nécessaire}}')
+    pageContent = pageContent.replace(u'{{Référence nécessaire}}', u'{{référence nécessaire}}')
+    pageContent = pageContent.replace(u'{{clef de tri', u'{{clé de tri')
 
     # TODO: replace {{fr-rég|ɔs vɛʁ.tɛ.bʁal|s=os vertébral|p=os vertébraux|pp=ɔs vɛʁ.tɛ.bʁo}} by {{fr-accord-mf-al|
 

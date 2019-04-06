@@ -2987,7 +2987,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:"Nos racines celtiques, du gaulois au français"', namespaces = [0, 100, 106, 110])
+                p.pagesBySearch(u'insource:"Calque du {{étyl|"', namespaces = [0, 100, 106, 110])
 
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
             sys.argv[1] == str('-m'):
