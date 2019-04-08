@@ -478,6 +478,7 @@ def addPronunciationFromContent(pageContent, languageCode, nature = None):
 def addCategory(pageContent, languageCode, lineContent):
     if debugLevel > 1: print u'\naddCategory'
     if lineContent.find(u'[[Catégorie:') == -1: lineContent = u'[[Catégorie:' + lineContent + u']]'
+
     return addLine(pageContent, languageCode, 'catégorie', lineContent)
 
 def removeCategory(pageContent, category, summary):
@@ -486,7 +487,19 @@ def removeCategory(pageContent, category, summary):
     newPageContent = re.sub(regexCategory, ur'', pageContent)
     if newPageContent != pageContent:
         summary = summary + u', retrait de [[Catégorie:' + category + u']]'
+
     return newPageContent, summary
+
+def formatCategories(pageContent, summary):
+    if debugLevel > 1: print u'\nformatCategory'
+
+    regex = ur'([^\n])\[\[[Cc]atégorie:'
+    pageContent = re.sub(regex, ur'\1\n[[Catégorie:', pageContent)
+
+    regex = ur'(\[\[[Cc]atégorie:[^\n]+\n)\n+(\[\[[Cc]atégorie:)'
+    pageContent = re.sub(regex, ur'\1\2', pageContent)
+
+    return pageContent, summary
 
 def removeTemplate(pageContent, template, summary, language = None, inSection = None):
     if debugLevel > 1: print u'\nremoveTemplate(' + template + u')'
@@ -662,8 +675,12 @@ def addLine(pageContent, languageCode, Section, lineContent):
                     pageContent = pageContent[:startPosition] + languageSection[:languageSection.find(u'\n{{clé de tri|')] \
                      + lineContent + u'\n' + languageSection[languageSection.find(u'\n{{clé de tri|'):] + pageContent[startPosition+endPosition:]
                 else:
-                    if debugLevel > d: print u' ajout en fin de section langue'
-                    if languageSection[-1:] != u'\n': lineContent = u'\n' + lineContent
+                    if debugLevel > d: print u' ajout en fin de section langue (donc saut de ligne)'
+                    if languageSection[-1:] != u'\n':
+                        lineContent = u'\n\n' + lineContent
+                    elif languageSection[-2:] != u'\n\n':
+                        lineContent = u'\n' + lineContent
+
                     pageContent = pageContent[:startPosition] + languageSection + lineContent + u'\n' + pageContent[startPosition+endPosition:]
 
     pageContent = pageContent.replace(u'\n\n* {{écouter|', u'\n* {{écouter|')

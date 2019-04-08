@@ -1738,6 +1738,7 @@ def treatPageByName(pageName):
         pageContent, summary = addTemplates(pageContent, summary)
         pageContent, summary = renameTemplates(pageContent, summary)
         pageContent, summary = removeDoubleCategoryWhenTemplate(pageContent, summary)
+        pageContent, summary = formatCategories(pageContent, summary)
         pageContent, summary = formatLanguagesTemplates(pageContent, summary, pageName)
         pageContent, summary = sortTranslations(pageContent, summary)
         if addDefaultSortKey:
