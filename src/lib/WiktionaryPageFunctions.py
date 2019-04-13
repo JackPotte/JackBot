@@ -1976,6 +1976,10 @@ def formatLanguagesTemplates(pageContent, summary, pageName):
                 deplacement_modele_flexion = True
             if deplacement_modele_flexion:
                 summary = summary + u', déplacement des modèles de flexions'
+                
+        regex = ur'({{fr\-accord\-comp\-mf[^}]*\| *trait *=) *([\|}])'
+        if re.search(regex, pageContent):
+            pageContent = re.sub(regex, ur'\1&nbsp;\2', pageContent)
 
     elif u'{{langue|en}}' in pageContent:
         regex = ur'(\|en}} ===\n{{)fr\-rég'
@@ -2058,7 +2062,7 @@ def formatLanguagesTemplates(pageContent, summary, pageName):
     return pageContent, summary
 
 def formatWikicode(pageContent, summary, pageName):
-    #pageContent = pageContent.replace(u'&nbsp;', u' ') # TODO: à faire hors modèles
+    #pageContent = pageContent.replace(u'&nbsp;', u' ') # TODO: à faire hors modèles https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:fr-accord-comp-mf&oldid=prev&diff=26238109
     #pageContent = re.sub(ur'«[  \t]*', ur'« ', pageContent) # pb &#160;
     #pageContent = re.sub(ur'[  \t]*»', ur' »', pageContent)
     pageContent = pageContent.replace(u'{|\n|}', u'')
