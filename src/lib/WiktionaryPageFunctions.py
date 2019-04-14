@@ -730,8 +730,22 @@ def addPronunciation(pageContent, languageCode, section, lineContent):
                 o = o + 1
             if debugLevel > 0: print ' ' + str(len(sectionsInPage)) + ' >? ' + str(o)
             if o == len(sectionsInPage):
-                if debugLevel > 0: print ' section à ajouter en fin de page'
-                languageSection = languageSection + u'\n' + lineContent
+                if section == sectionsInPage[-1][0]:
+                    if debugLevel > 0: print ' section à ajouter dans le dernier paragraphe'
+                    if not section in [u'catégorie', u'clé de tri']:
+                        if languageSection.find('[[Catégorie:') != -1:
+                            if debugLevel > 0: print '  avant les catégories'
+                            languageSection = languageSection[:languageSection.find('[[Catégorie:')] + \
+                                lineContent + u'\n' + languageSection[languageSection.find('[[Catégorie:'):]
+                        elif languageSection.find('{{clé de tri') != -1:
+                            if debugLevel > 0: print '  avant la clé de tri'
+                        else:
+                            languageSection = languageSection + u'\n' + lineContent
+                    else:
+                        languageSection = languageSection + u'\n' + lineContent
+                else:
+                    if debugLevel > 0: print ' section à ajouter en fin de page'
+                    languageSection = languageSection + u'\n' + lineContent
             else:
                 sectionLimit = str(sectionsInPage[o][0].encode(config.console_encoding, 'replace'))
                 o = o - 1
@@ -747,7 +761,7 @@ def addPronunciation(pageContent, languageCode, section, lineContent):
 
                 endOfLanguageSection = languageSection[languageSection.rfind(u'{{S|' + sectionsInPage[o][0]):]
                 if debugLevel > 1: raw_input(endOfLanguageSection.encode(config.console_encoding, 'replace'))
-                if sectionsInPage[o][0] != section and section != u'catégorie' and section != u'clé de tri':
+                if sectionsInPage[o][0] != section and not section in [u'catégorie', u'clé de tri']:
                     if debugLevel > 0: print u' ajout de la section "' + section + u'" après "'+ sectionsInPage[o][0] + u'"'
                     lineContent = u'\n' + sectionLevel[NumSection] + u' {{S|' + section + u'}} ' + \
                         sectionLevel[NumSection] + u'\n' + lineContent
@@ -1046,7 +1060,17 @@ def sortTranslations(pageContent, summary):
     return pageContent, summary
 
 def getLanguageCodeISO693_1FromISO693_3(code):
-    if code in ['cat', 'deu', 'eng', 'eus', 'fra', 'oci', 'zho']:
+    if code == 'ben':
+        return 'bn'
+    elif code == 'epo':
+        return 'eo'
+    elif code == 'ori':
+        return 'or'
+    elif code == 'pol':
+        return 'pl'
+    elif code == 'por':
+        return 'pt'
+    elif code in ['afr', 'ara', 'cat', 'deu', 'eng', 'eus', 'fra', 'ita', 'nld', 'oci', 'rus', 'zho']:
         return code[:2]
     return code
 

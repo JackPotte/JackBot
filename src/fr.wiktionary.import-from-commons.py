@@ -33,7 +33,7 @@ summary = u'Ajout du son depuis [[commons:Category:Pronunciation]]'
 def treatPageByName(pageName):
     print(pageName.encode(config.console_encoding, 'replace'))
     if username in pageName:
-        fileName = u'LL-Q150 (fra)-0x010C-fonte.wav'
+        fileName = u'LL-Q1860 (eng)-Back ache-foot.wav'
     else:
         if pageName[-4:] != u'.ogg' and pageName[-4:] != u'.oga' and pageName[-4:] != u'.wav':
             if debugLevel > 0: print u' No supported file format found'
