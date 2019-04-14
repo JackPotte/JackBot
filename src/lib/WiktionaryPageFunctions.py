@@ -739,6 +739,8 @@ def addPronunciation(pageContent, languageCode, section, lineContent):
                                 lineContent + u'\n' + languageSection[languageSection.find('[[Catégorie:'):]
                         elif languageSection.find('{{clé de tri') != -1:
                             if debugLevel > 0: print '  avant la clé de tri'
+                            languageSection = languageSection[:languageSection.find('{{clé de tri')] + \
+                            lineContent + u'\n' + languageSection[languageSection.find('{{clé de tri'):]
                         else:
                             languageSection = languageSection + u'\n' + lineContent
                     else:
