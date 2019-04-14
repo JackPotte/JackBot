@@ -742,12 +742,12 @@ def addPronunciation(pageContent, languageCode, section, lineContent):
                             languageSection = languageSection[:languageSection.find('{{clé de tri')] + \
                             lineContent + u'\n' + languageSection[languageSection.find('{{clé de tri'):]
                         else:
-                            languageSection = languageSection + u'\n' + lineContent
+                            languageSection = languageSection + u'\n' + lineContent + u'\n'
                     else:
-                        languageSection = languageSection + u'\n' + lineContent
+                        languageSection = languageSection + u'\n' + lineContent + u'\n'
                 else:
-                    if debugLevel > 0: print ' section à ajouter en fin de page'
-                    languageSection = languageSection + u'\n' + lineContent
+                    if debugLevel > 0: print ' section à ajouter en fin de section langue'
+                    languageSection = languageSection + u'\n' + lineContent + u'\n'
             else:
                 sectionLimit = str(sectionsInPage[o][0].encode(config.console_encoding, 'replace'))
                 o = o - 1
@@ -793,11 +793,11 @@ def addPronunciation(pageContent, languageCode, section, lineContent):
                             languageSection = languageSection[:languageSection.find(u'\n{{clé de tri|')] + lineContent + \
                                 languageSection[languageSection.find(u'\n{{clé de tri|'):]
                         else:
-                            if debugLevel > 0: print u'  ajout en fin de page'
-                            languageSection = languageSection + lineContent
+                            if debugLevel > 0: print u'  ajout en fin de section langue'
+                            languageSection = languageSection + lineContent + u'\n'
                     else:
-                        if debugLevel > 0: print u'  ajout en fin de page'
-                        languageSection = languageSection + lineContent
+                        if debugLevel > 0: print u'  ajout en fin de section langue'
+                        languageSection = languageSection + lineContent + u'\n'
                 else:
                     if debugLevel > 0: print u'  ajout standard'
                     languageSection = languageSection[:-len(languageSection)] + languageSection[:-len(endOfLanguageSection)] + \
@@ -805,8 +805,8 @@ def addPronunciation(pageContent, languageCode, section, lineContent):
                         endOfLanguageSection[endOfLanguageSection.find(u'\n=='):]
             if languageSection.find(u'\n* {{écouter|') != -1 and languageSection.find(u'=== {{S|prononciation}} ===') == -1:
                 languageSection = languageSection.replace(u'\n* {{écouter|', u'\n\n=== {{S|prononciation}} ===\n* {{écouter|')    
-            languageSection = languageSection.replace(u'\n\n\n\n', u'\n\n\n')
 
+            languageSection = languageSection.replace(u'\n\n\n\n', u'\n\n\n')
             pageContent = pageContent.replace(oldLanguageSection, languageSection)
 
     return pageContent
