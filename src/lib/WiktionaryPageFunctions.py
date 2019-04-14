@@ -730,20 +730,19 @@ def addPronunciation(pageContent, languageCode, section, lineContent):
                 o = o + 1
             if debugLevel > 0: print ' ' + str(len(sectionsInPage)) + ' >? ' + str(o)
             if o == len(sectionsInPage):
-                if section == sectionsInPage[-1][0]:
-                    if debugLevel > 0: print ' section à ajouter dans le dernier paragraphe'
-                    if not section in [u'catégorie', u'clé de tri']:
-                        if languageSection.find('[[Catégorie:') != -1:
-                            if debugLevel > 0: print '  avant les catégories'
-                            languageSection = languageSection[:languageSection.find('[[Catégorie:')] + \
-                                lineContent + u'\n' + languageSection[languageSection.find('[[Catégorie:'):]
-                        elif languageSection.find('{{clé de tri') != -1:
-                            if debugLevel > 0: print '  avant la clé de tri'
-                            languageSection = languageSection[:languageSection.find('{{clé de tri')] + \
-                            lineContent + u'\n' + languageSection[languageSection.find('{{clé de tri'):]
-                        else:
-                            languageSection = languageSection + u'\n' + lineContent + u'\n'
+                if debugLevel > 0: print ' section à ajouter dans le dernier paragraphe'
+                # TODO if section == sectionsInPage[-1][0]?
+                if not section in [u'catégorie', u'clé de tri']:
+                    if languageSection.find('[[Catégorie:') != -1:
+                        if debugLevel > 0: print '  avant les catégories'
+                        languageSection = languageSection[:languageSection.find('[[Catégorie:')] + \
+                            lineContent + u'\n' + languageSection[languageSection.find('[[Catégorie:'):]
+                    elif languageSection.find('{{clé de tri') != -1:
+                        if debugLevel > 0: print '  avant la clé de tri'
+                        languageSection = languageSection[:languageSection.find('{{clé de tri')] + \
+                        lineContent + u'\n' + languageSection[languageSection.find('{{clé de tri'):]
                     else:
+                        if debugLevel > 0: print ' section à ajouter en fin de section langue'
                         languageSection = languageSection + u'\n' + lineContent + u'\n'
                 else:
                     if debugLevel > 0: print ' section à ajouter en fin de section langue'
