@@ -752,7 +752,7 @@ def addPronunciation(pageContent, languageCode, section, lineContent):
                 o = o - 1
                 if debugLevel > 1: print u' position O : ' + o
                 if debugLevel > 0:
-                    print u' ajout de "' + section + u'" avant "' + sectionLimit + u'"'
+                    print u' ajout de "' + section + u'" avant "' + repr(sectionLimit) + u'"'
                     print u'  (car ' + str(sectionNumber(sectionLimit)) + u' > ' + str(NumSection) + u')'
 
                 # Ajout après la section trouvée

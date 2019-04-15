@@ -38,7 +38,7 @@ def treatPageByName(pageName):
         if pageName[-4:] != u'.ogg' and pageName[-4:] != u'.oga' and pageName[-4:] != u'.wav':
             if debugLevel > 0: print u' No supported file format found'
             return
-        fileName = pageName[len(u'File:'):]
+        if pageName.find(u'File:') == 0: fileName = pageName[len(u'File:'):]
     fileDesc = fileName[:-len(u'.ogg')]
 
     if fileDesc.find(u'-') == -1:
