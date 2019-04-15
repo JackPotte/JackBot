@@ -33,12 +33,13 @@ summary = u'Ajout du son depuis [[commons:Category:Pronunciation]]'
 def treatPageByName(pageName):
     print(pageName.encode(config.console_encoding, 'replace'))
     if username in pageName:
-        fileName = u'LL-Q143 (epo)-Robin van der Vliet-kokcinelo.wav'
+        fileName = u'LL-Q143 (epo)-Robin van der Vliet-lipharoj.wav'
     else:
         if pageName[-4:] != u'.ogg' and pageName[-4:] != u'.oga' and pageName[-4:] != u'.wav':
             if debugLevel > 0: print u' No supported file format found'
             return
-        if pageName.find(u'File:') == 0: fileName = pageName[len(u'File:'):]
+        fileName = pageName
+        if pageName.find(u'File:') == 0: fileName = fileName[len(u'File:'):]
     fileDesc = fileName[:-len(u'.ogg')]
 
     if fileDesc.find(u'-') == -1:
@@ -191,10 +192,10 @@ def treatPageByName(pageName):
     finalPageContent = addPronunciation(pageContent, languageCode, u'prononciation', u'* {{écouter|' + region + u'|' + prononciation + u'|lang=' + languageCode + u'|audio=' + fileName + u'}}')
     # Hardfix
     regex = ur'{{S\|prononciation}} ===\*'
-    if re.search(regex, finalPageContent):
+    if finalPageContent is not None and re.search(regex, finalPageContent):
         finalPageContent = re.sub(regex, ur'{{S|prononciation}} ===\n*', finalPageContent)
 
-    if finalPageContent != currentPageContent: savePage(page1, finalPageContent, summary)
+    if finalPageContent is not None and finalPageContent != currentPageContent: savePage(page1, finalPageContent, summary)
 
 
 p = PageProvider(treatPageByName, site, debugLevel)
