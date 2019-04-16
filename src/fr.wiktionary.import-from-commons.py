@@ -31,7 +31,7 @@ summary = u'Ajout du son depuis [[commons:Category:Pronunciation]]'
 
 
 def treatPageByName(pageName):
-    print(pageName.encode(config.console_encoding, 'replace'))
+    print pageName.encode(config.console_encoding, 'replace')
     if username in pageName:
         fileName = u'LL-Q143 (epo)-Robin van der Vliet-lipharoj.wav'
     else:
@@ -190,12 +190,17 @@ def treatPageByName(pageName):
 
     pageContent = currentPageContent
     finalPageContent = addPronunciation(pageContent, languageCode, u'prononciation', u'* {{écouter|' + region + u'|' + prononciation + u'|lang=' + languageCode + u'|audio=' + fileName + u'}}')
-    # Hardfix
-    regex = ur'{{S\|prononciation}} ===\*'
-    if finalPageContent is not None and re.search(regex, finalPageContent):
-        finalPageContent = re.sub(regex, ur'{{S|prononciation}} ===\n*', finalPageContent)
+    if finalPageContent is not None:
+        # Hardfixes
+        regex = ur'{{S\|prononciation}} ===\*'
+        if re.search(regex, finalPageContent):
+            finalPageContent = re.sub(regex, ur'{{S|prononciation}} ===\n*', finalPageContent)
+        regex = ur'\n\n+(\* {{écouter\|)'
+        if re.search(regex, finalPageContent):
+            finalPageContent = re.sub(regex, ur'\n\1', finalPageContent)
 
-    if finalPageContent is not None and finalPageContent != currentPageContent: savePage(page1, finalPageContent, summary)
+        if finalPageContent != currentPageContent:
+            savePage(page1, finalPageContent, summary)
 
 
 p = PageProvider(treatPageByName, site, debugLevel)
@@ -209,7 +214,7 @@ def main(*args):
         elif sys.argv[1] == u'-test2' or sys.argv[1] == u'-tu':
             treatPageByName(u'User:' + username + u'/test unitaire')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'File:en-us-rightly.ogg')
+            treatPageByName(u'File:LL-Q150 (fra)-Pamputt-suivant.wav')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
