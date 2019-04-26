@@ -91,7 +91,7 @@ def treatPageByName(pageName):
             if debugLevel > 1: 
                 print template[m].encode(config.console_encoding, 'replace')
                 print pageContent.find(template[m])
-                
+
             # Vérification que la langue en cours est bien la langue du modèle
             pageContent_till_template = pageContent[:pageContent.find(template[m])]
             currentLanguage = re.findall(ur'{{langue\|([^}]+)}}', pageContent_till_template)[-1]
@@ -114,79 +114,10 @@ def treatPageByName(pageName):
                 return
 
             pageContent = pageContent[pageContent.find(template[m])+len(template[m]):]
-            suffix = getParameterValue(pageContent, u'inv')
-            singular = getParameterValue(pageContent, u's')
-            plural = u''
-            if suffix != u'':
-                if singular == u'':
-                    if debugLevel > 0: print u'  inv= sans s='
-                    break
-                plural = singular + u's ' + suffix
-                singular = singular + u' ' + suffix
-            elif singular != u'' and singular != pageName:
-                if debugLevel > 0:
-                    print u'  s= ne correspond pas'
-                    print singular.encode(config.console_encoding, 'replace')
-                break
-
-            if pageContent.find(u'|pp=') != -1 and pageContent.find(u'|pp=') < pageContent.find(u'}}'):
-                if debugLevel > 0: print ' pp='
-                pageContent2 = pageContent[pageContent.find(u'|pp=')+4:pageContent.find(u'}}')]
-                if pageContent2.find(u'|') != -1:
-                    pron = pageContent[pageContent.find(u'|pp=')+4:pageContent.find(u'|pp=')+4+pageContent2.find(u'|')]
-                else:
-                    pron = pageContent[pageContent.find(u'|pp=')+4:pageContent.find(u'}}')]
-            else:
-                if debugLevel > 1: print '  prononciation identique au singulier'
-                pron = pageContent[:pageContent.find(u'}}')]
-                if debugLevel > 1: print u'  pron avant while : ' + pron.encode(config.console_encoding, 'replace')
-                if pron.find(u'|pron=') != -1:
-                    pron = u'|' + pron[pron.find(u'|pron=')+len(u'|pron='):]
-                
-                TabPron = pron.split(u'|')
-                # {{fr-rég|a.kʁɔ.sɑ̃.tʁik|mf=oui}}
-                n = 0
-                while n < len(TabPron) and (TabPron[n] == '' or TabPron[n].find(u'=') != -1):
-                    if debugLevel > 1: print TabPron[n].find(u'=')
-                    n += 1
-                if n == len(TabPron):
-                    pron = u'|'
-                else:
-                    pron = u'|' + TabPron[n]
-                '''
-                while pron.find(u'=') != -1:
-                    pron2 = pron[:pron.find(u'=')]
-                    pron3 = pron[pron.find(u'='):]
-                    if debugLevel > 0: print u'  pron2 : ' + pron2.encode(config.console_encoding, 'replace')
-                    if pron2.find(u'|') == -1:
-                        pron = pron[pron.find(u'|')+1:]
-                        if debugLevel > 1: print u'  pron dans while1 : ' + pron.encode(config.console_encoding, 'replace')
-                    else:
-                        if debugLevel > 0: print u'  pron3 : ' + pron3.encode(config.console_encoding, 'replace')
-                        if pron3.rfind(u'|') == -1:
-                            limitPron = len(pron3)
-                        else:
-                            limitPron = pron3.rfind(u'|')
-                        if debugLevel > 0: print u'  limitPron : ' + str(limitPron)
-                        pron = pron[pron.find(u'=')+limitPron:]
-                        if debugLevel > 0: print u'  pron dans while2 : ' + pron.encode(config.console_encoding, 'replace')
-                '''
-                if debugLevel > 1: print u'  pron après while : ' + pron.encode(config.console_encoding, 'replace')
-            pron = trim(pron)
-            if pron.rfind(u'|') > 0:
-                pronM = pron[:pron.rfind(u'|')]
-                while pronM.rfind(u'|') > 0:
-                    pronM = pronM[:pronM.rfind(u'|')]
-            else:
-                pronM = pron
-            if pronM[:1] != u'|': pronM = u'|' + pronM
-            if debugLevel > 0:
-                try:
-                    print u'  Prononciation : ' + pronM
-                except UnicodeDecodeError:
-                    print u'  Prononciation à décoder'
-                except UnicodeEncodeError:
-                    print u'  Prononciation à encoder'
+            plural = getWordPlural(pageContent, template[m])
+            if plural is None: return
+            if debugLevel > 0: print u'  Pluriel : ' + plural
+            pronunciation = getWordPronunciation(pageContent)
 
             # h aspiré
             H = u''
@@ -194,7 +125,7 @@ def treatPageByName(pageName):
                 H = u'|prefpron={{h aspiré}}'
             if pageContent.find(u'|préfpron={{h aspiré') != -1 and pageContent.find(u'|préfpron={{h aspiré') < pageContent.find(u'}}'):
                 H = u'|préfpron={{h aspiré}}'
-            # gender
+
             gender = u''
             pageContent2 = pageContent[pageContent.find(u'\n')+1:len(pageContent)]
             while pageContent2[:1] == u'[' or pageContent2[:1] == u'\n' and len(pageContent2) > 1:
@@ -209,23 +140,7 @@ def treatPageByName(pageName):
                     PageSing = PageSing[:PageSing.find(template[m])+len(template[m])] + u'|mf=oui' + PageSing[PageSing.find(template[m])+len(template[m]):]
                     savePage(page, PageSing, u'|mf=oui')
             if pageContent.find(u'|mf=') != -1 and pageContent.find(u'|mf=') < pageContent.find(u'}}'): MF = u'|mf=oui' 
-            # Pluriel
-            summary = u'Création du pluriel de [[' + pageName + u']]'
-            if plural == u'':
-                if (pageContent.find(u'|p=') != -1 and pageContent.find(u'|p=') < pageContent.find(u'}}')):
-                    plural = pageContent[pageContent.find(u'|p=')+3:pageContent.find(u'}}')]
-                    if plural.find(u'|') != -1: plural = plural[:plural.find(u'|')]
-                if not plural:
-                    if template[m][-1:] == u'x':
-                        plural = pageName + u'x'
-                    else:
-                        plural = pageName + u's'
-                if (plural[-2:] == u'ss' or plural.find(u'{') != -1) and suffix == u'':
-                    print u' pluriel en -ss'
-                    return
-                if debugLevel > 1:
-                    print '  paramètre du modèle du lemme : ' + pageContent[:pageContent.find(u'}}')].encode(config.console_encoding, 'replace')
-            
+
             page2 = Page(site, plural)
             if page2.exists():
                 pluralPage = getContentFromPage(page2)
@@ -270,6 +185,8 @@ def treatPageByName(pageName):
                 if PageEnd.find(u'{{clé de tri') == -1 and CleTri != u'' and CleTri.lower() != plural.lower():
                     PageEnd = PageEnd +  u'\n{{clé de tri|' + CleTri + u'}}\n'
             PageEnd = html2Unicode(PageEnd)
+
+            summary = u'Création du pluriel de [[' + pageName + u']]'
             savePage(page2, PageEnd, summary)
 
             # TODO: pluriel n°2
@@ -402,6 +319,104 @@ def createPluralFromForeignWiki(Page2):
             u'.\n# \'\'Participe passé de\'\' ' + mot + u'.\n\n[[en:' + page2.title() + u']]\n'
         summary = u'Importation depuis [[en:' + page2.title() + u']]'
         savePage(page1, Page1, summary)
+
+
+def getWordPlural(pageContent, currentTemplate):
+    # TODO: getWordPluralByTemplate...
+    plural = getParameterValue(pageContent, u'p')
+    suffix = getParameterValue(pageContent, u'inv')
+    if suffix != u'':
+        plural = plural + u' ' + suffix
+
+    if plural == u'':
+        singular = getParameterValue(pageContent, u's')
+        if suffix != u'':
+            if singular == u'':
+                if debugLevel > 0: print u'  inv= sans s='
+                return None
+            plural = singular + u's ' + suffix
+            singular = singular + u' ' + suffix
+        elif singular != u'' and singular != pageName:
+            if debugLevel > 0:
+                print u'  s= ne correspond pas'
+                print singular.encode(config.console_encoding, 'replace')
+            return None
+        else:
+            if currentTemplate[-1:] == u'x':
+                plural = pageName + u'x'
+            else:
+                plural = pageName + u's'
+
+            if (plural[-2:] == u'ss' or plural.find(u'{') != -1) and suffix == u'':
+                print u' pluriel en -ss'
+                return
+            if debugLevel > 1:
+                print '  paramètre du modèle du lemme : ' + pageContent[:pageContent.find(u'}}')].encode(config.console_encoding, 'replace')
+
+    return plural
+
+
+def getWordPronunciation(pageContent):
+    if pageContent.find(u'|pp=') != -1 and pageContent.find(u'|pp=') < pageContent.find(u'}}'):
+        if debugLevel > 0: print ' pp='
+        pageContent2 = pageContent[pageContent.find(u'|pp=')+4:pageContent.find(u'}}')]
+        if pageContent2.find(u'|') != -1:
+            pron = pageContent[pageContent.find(u'|pp=')+4:pageContent.find(u'|pp=')+4+pageContent2.find(u'|')]
+        else:
+            pron = pageContent[pageContent.find(u'|pp=')+4:pageContent.find(u'}}')]
+    else:
+        if debugLevel > 1: print '  prononciation identique au singulier'
+        pron = pageContent[:pageContent.find(u'}}')]
+        if debugLevel > 1: print u'  pron avant while : ' + pron.encode(config.console_encoding, 'replace')
+        if pron.find(u'|pron=') != -1:
+            pron = u'|' + pron[pron.find(u'|pron=')+len(u'|pron='):]
+
+        TabPron = pron.split(u'|')
+        # {{fr-rég|a.kʁɔ.sɑ̃.tʁik|mf=oui}}
+        n = 0
+        while n < len(TabPron) and (TabPron[n] == '' or TabPron[n].find(u'=') != -1):
+            if debugLevel > 1: print TabPron[n].find(u'=')
+            n += 1
+        if n == len(TabPron):
+            pron = u'|'
+        else:
+            pron = u'|' + TabPron[n]
+        '''
+        while pron.find(u'=') != -1:
+            pron2 = pron[:pron.find(u'=')]
+            pron3 = pron[pron.find(u'='):]
+            if debugLevel > 0: print u'  pron2 : ' + pron2.encode(config.console_encoding, 'replace')
+            if pron2.find(u'|') == -1:
+                pron = pron[pron.find(u'|')+1:]
+                if debugLevel > 1: print u'  pron dans while1 : ' + pron.encode(config.console_encoding, 'replace')
+            else:
+                if debugLevel > 0: print u'  pron3 : ' + pron3.encode(config.console_encoding, 'replace')
+                if pron3.rfind(u'|') == -1:
+                    limitPron = len(pron3)
+                else:
+                    limitPron = pron3.rfind(u'|')
+                if debugLevel > 0: print u'  limitPron : ' + str(limitPron)
+                pron = pron[pron.find(u'=')+limitPron:]
+                if debugLevel > 0: print u'  pron dans while2 : ' + pron.encode(config.console_encoding, 'replace')
+        '''
+        if debugLevel > 1: print u'  pron après while : ' + pron.encode(config.console_encoding, 'replace')
+    pron = trim(pron)
+    if pron.rfind(u'|') > 0:
+        pronM = pron[:pron.rfind(u'|')]
+        while pronM.rfind(u'|') > 0:
+            pronM = pronM[:pronM.rfind(u'|')]
+    else:
+        pronM = pron
+    if pronM[:1] != u'|': pronM = u'|' + pronM
+    if debugLevel > 0:
+        try:
+            print u'  Prononciation : ' + pronM
+        except UnicodeDecodeError:
+            print u'  Prononciation à décoder'
+        except UnicodeEncodeError:
+            print u'  Prononciation à encoder'
+
+    return pronM
 
 
 p = PageProvider(treatPageByName, site, debugLevel)

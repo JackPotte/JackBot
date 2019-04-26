@@ -171,6 +171,8 @@ def treatPageByName(pageName):
     if re.compile(regex).search(currentPageContent):
         prononciation = currentPageContent[re.search(regex, currentPageContent).start()+len(u'{{pron|'):re.search(regex,currentPageContent).end()-len(u'|'+languageCode+u'}}')]
     if debugLevel > 1: print prononciation.encode(config.console_encoding, 'replace')
+    
+    TODO: getUserRegion()
     '''
 
     if debugLevel > 1: print u' Mot du Wiktionnaire : ' + word.encode(config.console_encoding, 'replace')
@@ -233,7 +235,7 @@ def main(*args):
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Lingua Libre pronunciation-fra', afterPage = afterPage, recursive = True, namespaces = [6])
+            p.pagesByCat(u'Lingua Libre pronunciation-fr', afterPage = afterPage, recursive = True, namespaces = [6])
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':
