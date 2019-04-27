@@ -167,14 +167,14 @@ def treatPageByName(pageName):
             else:
                 lemmaParam = '|' + param[m] + u'=' + pageName
 
-            flexionTemplate = u'{{' + template[m] + pronM + H + MF + lemmaParam
+            flexionTemplate = u'{{' + template[m] + pronunciation + H + MF + lemmaParam
             if plural != pageName + u's' and plural != pageName + u'x':
                 flexionTemplate += u'|p={{subst:PAGENAME}}'
             flexionTemplate += u'}}'
 
             PageEnd = u'== {{langue|' + languageCode + u'}} ==\n=== {{S|' + nature + u'|' + \
-                languageCode + u'|flexion}} ===\n' + flexionTemplate + u'\n\'\'\'' + plural + u'\'\'\' {{pron' + pronM + \
-                '|' + languageCode + u'}}' + gender + u'\n# \'\'Pluriel de\'\' [[' + pageName +']].\n'
+                languageCode + u'|flexion}} ===\n' + flexionTemplate + u'\n\'\'\'' + plural + u'\'\'\' {{pron' + \
+                pronunciation + '|' + languageCode + u'}}' + gender + u'\n# \'\'Pluriel de\'\' [[' + pageName +']].\n'
             while PageEnd.find(u'{{pron|' + languageCode + u'}}') != -1:
                 PageEnd = PageEnd[:PageEnd.find(u'{{pron|' + languageCode + u'}}')+7] + u'|' + \
                     PageEnd[PageEnd.find(u'{{pron|' + languageCode + u'}}')+7:]
