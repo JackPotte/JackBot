@@ -114,7 +114,7 @@ def treatPageByName(pageName):
                 return
 
             pageContent = pageContent[pageContent.find(template[m])+len(template[m]):]
-            plural = getWordPlural(pageContent, template[m])
+            plural = getWordPlural(pageContent, pageName, template[m])
             if plural is None: return
             if debugLevel > 0: print u'  Pluriel : ' + plural
             pronunciation = getWordPronunciation(pageContent)
@@ -321,7 +321,7 @@ def createPluralFromForeignWiki(Page2):
         savePage(page1, Page1, summary)
 
 
-def getWordPlural(pageContent, currentTemplate):
+def getWordPlural(pageContent, pageName, currentTemplate):
     # TODO: getWordPluralByTemplate...
     plural = getParameterValue(pageContent, u'p')
     suffix = getParameterValue(pageContent, u'inv')
