@@ -325,7 +325,7 @@ def getWordPlural(pageContent, pageName, currentTemplate):
     # TODO: getWordPluralByTemplate...
     plural = getParameterValue(pageContent, u'p')
     suffix = getParameterValue(pageContent, u'inv')
-    if suffix != u'':
+    if plural != u'' and suffix != u'':
         plural = plural + u' ' + suffix
 
     if plural == u'':
@@ -353,8 +353,8 @@ def getWordPlural(pageContent, pageName, currentTemplate):
             if debugLevel > 1:
                 print '  paramètre du modèle du lemme : ' + pageContent[:pageContent.find(u'}}')].encode(config.console_encoding, 'replace')
 
-    return plural
-
+    return trim(plural)
+    
 
 def getWordPronunciation(pageContent):
     if pageContent.find(u'|pp=') != -1 and pageContent.find(u'|pp=') < pageContent.find(u'}}'):
@@ -416,7 +416,7 @@ def getWordPronunciation(pageContent):
         except UnicodeEncodeError:
             print u'  Prononciation à encoder'
 
-    return pronM
+    return trim(pronM)
 
 
 p = PageProvider(treatPageByName, site, debugLevel)
@@ -430,7 +430,7 @@ def main(*args):
         elif sys.argv[1] == u'-test2':
             treatPageByName(u'User:' + username + u'/test2')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'Catégorie:Python')
+            treatPageByName(u'saisie de schéma')
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
