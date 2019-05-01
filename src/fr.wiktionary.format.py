@@ -2963,7 +2963,7 @@ def main(*args):
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
         elif sys.argv[1] == str('-dump') or sys.argv[1] == str('-xml'):
             dumpFile = siteLanguage + siteFamily + '\-.*xml'
-            regex = ur'\| *trait *= *\|'
+            regex = ur'=== \{\{S\|prononciation\}\} ===((?!\n=).)*\n\'\'\''
             testPage = None
             if testPage is not None:
                 pageContent = getContentFromPageName(testPage)
@@ -2971,12 +2971,6 @@ def main(*args):
                     print 'bon ok'
                 else:
                     print 'ko'
-                pageContent = getContentFromPageName(u'Utilisateur:JackBot/test unitaire')
-                if re.search(regex, pageContent, re.DOTALL):
-                    print 'ok'
-                else:
-                    print 'bon ko'
-                return
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
