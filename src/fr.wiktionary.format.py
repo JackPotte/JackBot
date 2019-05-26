@@ -2960,7 +2960,9 @@ def main(*args):
             treatPageByName(u'Nguyễn')
         elif sys.argv[1] == str('-file') or sys.argv[1] == str('-txt'):
             waitAfterHumans = False
-            p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt', )
+            fileName = u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt'
+            if debugLevel > 0: print fileName
+            p.pagesByFile(fileName)
         elif sys.argv[1] == str('-dump') or sys.argv[1] == str('-xml'):
             dumpFile = siteLanguage + siteFamily + '\-.*xml'
             regex = ur'=== \{\{S\|prononciation\}\} ===((?!\n=).)*\n\'\'\''
@@ -2997,7 +2999,7 @@ def main(*args):
                 else:
                     p.pagesByCat(sys.argv[2].decode(config.console_encoding, 'replace'))
             else:
-                p.pagesByCat(u'Catégorie:Wiktionnaire:Sections utilisant un alias', namespaces = None)
+                p.pagesByCat(u'Langues en anglais', namespaces = None)
 
         elif sys.argv[1] == str('-redirects'):
             p.pagesByRedirects()

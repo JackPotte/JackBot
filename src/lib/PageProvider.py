@@ -19,6 +19,7 @@ class PageProvider:
 
     # articles_list.txt may need to be formatted with format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
     def pagesByFile(self, source, site = None):
+        if self.debugLevel > 1: print u'pagesByFile'
         from lib import html2Unicode
         if site is None: site = self.site
         if source:
