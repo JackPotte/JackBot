@@ -160,7 +160,7 @@ def getContentFromPage(page, allowedNamespaces = None, username = username):
             if debugLevel > 0: print u' Forbidden namespace l 700'
             return 'KO'
     else:
-        if debugLevel > 0: print u' No page l 703'
+        if debugLevel > 0: print u' No page in '+__file__+':163: ' + page.title()
         return 'KO'
 
     return PageBegin

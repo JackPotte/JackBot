@@ -1448,6 +1448,7 @@ def addTemplates(pageContent, summary):
 def renameTemplates(pageContent, summary):
     if debugLevel > 1: print u' Remplacements des anciens codes langue'
     pageContent = pageContent.replace(u'|ko-hani}}', u'|ko-Hani}}')
+    ''' Bug https://fr.wiktionary.org/w/index.php?title=van&diff=prev&oldid=24107783&diffmode=source
     oldTemplate = []
     newTemplate = []
     oldTemplate.append(u'ko-hanja')
@@ -1480,6 +1481,7 @@ def renameTemplates(pageContent, summary):
         regex = ur'((?!:voir).*[\|{=])' + oldTemplate[p] + ur'([\|}])'
         while re.search(regex, pageContent):
             pageContent = re.sub(regex, ur'\1' + newTemplate[p] + ur'\2', pageContent)
+    '''
 
     if debugLevel > 1: print u' Modèles des étymologies'
     regex = ur"(\n:? *(?:{{date[^}]*}})? *(?:\[\[calque\|)?[Cc]alque\]* d(?:u |e l['’]){{)étyl\|"
