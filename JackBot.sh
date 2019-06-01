@@ -33,7 +33,7 @@
 #python core/pwb.py src/fr.wiktionary.create-flexions
 #python core/pwb.py src/fr.wiktionary.format
 #python core/pwb.py src/fr.wiktionary.import-from-commons
-
+#python core/pwb.py src/fr.wiktionary.format.py -u Escarbot revocation 1000
 
 #*** Current global operation ***
 #python core/pwb.py src/fr.wikibooks.format -cat

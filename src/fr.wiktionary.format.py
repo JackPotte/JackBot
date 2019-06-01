@@ -65,6 +65,7 @@ fixFalseFlexions = False
 listHomophons = False
 listFalseTranslations = False
 testImport = False
+cancelUser = {}
 outputFile = ''
 anagramsMaxLength = 4   # sinon trop long : 5 > 5 min, 8 > 1 h par page)
 
@@ -500,6 +501,7 @@ Modele.append(u'armes à feu')
 Modele.append(u'armes')
 Modele.append(u'arthropodes')
 Modele.append(u'artillerie')
+Modele.append(u'artistes')
 Modele.append(u'arts martiaux')
 Modele.append(u'arts')
 Modele.append(u'assurance')
@@ -835,6 +837,7 @@ Modele.append(u'horticulture')
 Modele.append(u'humour')
 Modele.append(u'hydraulique')
 Modele.append(u'hydrobiologie')
+Modele.append(u'hygiène')
 Modele.append(u'hyperb')
 Modele.append(u'hyperbole')
 Modele.append(u'hérald')
@@ -1668,6 +1671,14 @@ def treatPageByName(pageName):
     if currentPageContent == 'KO':
         if debugLevel > 0: print u' Page vide'
         return
+
+    if cancelUser != {}:
+        pageContent, summary = cancelEdition(page, cancelUser)
+        page = Page(site, pageName) # a page reset is needed to edit the last version
+        if pageContent != '' and pageContent != currentPageContent:
+            savePage(page, pageContent, summary)
+        return
+
     pageContent = currentPageContent
     finalPageContent = u''
     rePageName = re.escape(pageName)
@@ -2940,7 +2951,7 @@ setGlobals(debugLevel, site, username)
 setGlobalsWiktionary(debugLevel, site, username)
 def main(*args):
     global waitAfterHumans, fixOldTemplates, listHomophons, outputFile, siteLanguage, siteFamily, fixTags, \
-    listFalseTranslations, testImport
+    listFalseTranslations, testImport, cancelUser
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
         afterPage = u''
@@ -2978,7 +2989,18 @@ def main(*args):
             else:
                 p.pagesByXML(dumpFile, regex = regex)
         elif sys.argv[1] == str('-u'):
-            p.pagesByUser(u'User:' + username, numberOfPagesToTreat = 4000)
+            if len(sys.argv) > 2:
+                targetedUser = sys.argv[2]
+            else:
+                targetedUser = username
+            if len(sys.argv) > 3:
+                cancelUser['user'] = targetedUser
+                cancelUser['action'] = sys.argv[3]
+            if len(sys.argv) > 4:
+                number = sys.argv[4]
+            else:
+                number = 1000
+            p.pagesByUser(u'User:' + targetedUser, numberOfPagesToTreat = number)
         elif sys.argv[1] == str('-search') or sys.argv[1] == str('-s') or sys.argv[1] == str('-r'):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])

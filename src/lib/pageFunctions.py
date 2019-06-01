@@ -154,7 +154,7 @@ def getContentFromPage(page, allowedNamespaces = None, username = username):
                 if debugLevel > 0: print u' NoPage l 694'
                 return 'KO'
             except pywikibot.exceptions.ServerError:
-                if debugLevel > 0: print u' NoPage l 697'
+                if debugLevel > 0: print u' ServerError l 697'
                 return 'KO'
         else:
             if debugLevel > 0: print u' Forbidden namespace l 700'
@@ -512,3 +512,40 @@ def getLineNumber():
     from inspect import currentframe, getframeinfo
     frameinfo = getframeinfo(currentframe())
     return str(frameinfo.lineno)
+
+def cancelEdition(page, cancelUser):
+    oldPageContent = u''
+    userName = cancelUser['user']
+    if debugLevel > 1: print page.userName() + u' trouvé'
+
+    if cancelUser['action'].lower() in ['revocation' , 'révocation']:
+        summary = u'Révocation de ' + userName
+        if page.getCreator() == userName:
+            page.delete(reason = summary, prompt = False)
+            return ''
+        else:
+            i = 0
+            while page.getVersionHistory()[i][2] == userName:
+                i = i + 1
+                if debugLevel > 1: print i
+            if i > 0: 
+                oldPageContent = getOldPageContent(page, page.getVersionHistory()[i][0])
+        if debugLevel > 2: raw_input(oldPageContent.encode(config.console_encoding, 'replace'))
+    elif page.userName() == userName:
+        summary = u'Annulation de ' + userName
+        oldPageContent = getOldPageContent(page, page.previousRevision())
+
+    return oldPageContent, summary
+
+def getOldPageContent(page, revision):
+    try:
+        return page.getOldVersion(revision, get_redirect = True)
+    except pywikibot.exceptions.BadTitle:
+        if debugLevel > 0: print u' IsRedirect l 548'
+        return ''
+    except pywikibot.exceptions.NoPage:
+        if debugLevel > 0: print u' NoPage l 551'
+        return ''
+    except pywikibot.exceptions.ServerError:
+        if debugLevel > 0: print u' ServerError l 554'
+        return ''
