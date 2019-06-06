@@ -216,7 +216,11 @@ def main(*args):
         elif sys.argv[1] == u'-test2' or sys.argv[1] == u'-tu':
             treatPageByName(u'User:' + username + u'/test unitaire')
         elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'File:LL-Q150 (fra)-Pamputt-suivant.wav')
+            if len(sys.argv) > 2:
+                sound = sys.argv[2]
+            else:
+                sound = u'File:LL-Q150 (fra)-Pamputt-suivant.wav'
+            treatPageByName(sound)
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
@@ -235,7 +239,11 @@ def main(*args):
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat' or sys.argv[1] == u'-c':
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Lingua Libre pronunciation-fr', afterPage = afterPage, recursive = True, namespaces = [6])
+            p.pagesByCat(u'Canadian English pronunciation', afterPage = afterPage, recursive = True, namespaces = [6])
+            p.pagesByCat(u'Australian English pronunciation', afterPage = afterPage, recursive = True, namespaces = [6])
+            p.pagesByCat(u'British English pronunciation', afterPage = afterPage, recursive = True, namespaces = [6])
+            p.pagesByCat(u'U.S. English pronunciation‎', afterPage = afterPage, recursive = True, namespaces = [6])
+            #Bug: too long? p.pagesByCat(u'Lingua Libre pronunciation-fr', afterPage = afterPage, recursive = True, namespaces = [6])
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()
         elif sys.argv[1] == u'-all':

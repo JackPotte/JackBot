@@ -2974,18 +2974,22 @@ def main(*args):
             fileName = u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt'
             if debugLevel > 0: print fileName
             p.pagesByFile(fileName)
-        elif sys.argv[1] == str('-dump') or sys.argv[1] == str('-xml'):
+        elif sys.argv[1] == str('-dump') or sys.argv[1] == str('-xml') or sys.argv[1] == str('-regex'):
             dumpFile = siteLanguage + siteFamily + '\-.*xml'
-            regex = ur'=== \{\{S\|prononciation\}\} ===((?!\n=).)*\n\'\'\''
-            testPage = None
+            if len(sys.argv) > 2:
+                regex = sys.argv[2]
+            else:
+                regex = ur'=== \{\{S\|prononciation\}\} ===((?!\n=).)*\n\'\'\''
+            if len(sys.argv) > 3:
+                testPage = sys.argv[3]
+            else:
+                testPage = None
             if testPage is not None:
                 pageContent = getContentFromPageName(testPage)
                 if re.search(regex, pageContent, re.DOTALL):
-                    print 'bon ok'
+                    print 'OK'
                 else:
-                    print 'ko'
-            if len(sys.argv) > 2:
-                regex = sys.argv[2]
+                    print 'KO'
             else:
                 p.pagesByXML(dumpFile, regex = regex)
         elif sys.argv[1] == str('-u'):
