@@ -1442,10 +1442,10 @@ def addTemplates(pageContent, summary):
     regex = ur'\n#\* *(?:\'\')?\n'
     pageContent = re.sub(regex, ur'\n#* {{ébauche-exe}}\n', pageContent)
 
-    regex = ur"(\|en}}\n# *'*(?:Participe présent|Participe passé|Prétérit|Troisième personne du singulier du présent) de '* *)to "
+    regex = ur"(\|en}}\n# *'*(?:Participe présent|Participe passé|Prétérit|Troisième personne du singulier du présent) de *'* *)to "
     pageContent = re.sub(regex, ur'\1', pageContent, re.IGNORECASE)
-    regex = ur"(\|en}}\n# *'*(?:Participe présent|Participe passé|Prétérit|Troisième personne du singulier du présent) de '* *)([a-z \-]+)\."
-    pageContent = re.sub(regex, ur'\1{{l|\2|en}}.', pageContent, re.IGNORECASE)
+    regex = ur"(\|([a-z]+)}}\n# *'*(?:Participe présent|Participe passé|Prétérit|Troisième personne du singulier du présent) de *'* *)([a-z \-’']+)\."
+    pageContent = re.sub(regex, ur'\1{{l|\3|\2}}.', pageContent, re.IGNORECASE)
 
     return pageContent, summary
 
