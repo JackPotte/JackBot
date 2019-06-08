@@ -3009,7 +3009,15 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:"Calque du {{étyl|"', namespaces = [0, 100, 106, 110])
+                p.pagesBySearch(u'insource:/Participe présent de *\'* *[a-z]/')
+                p.pagesBySearch(u'insource:/Participe passé de *\'* *[a-z]/')
+                p.pagesBySearch(u'insource:/Prétérit de *\'* *[a-z]/')
+                p.pagesBySearch(u'insource:/Troisième personne du singulier du présent de *\'* *[a-z]/')
+
+                #p.pagesBySearch(u"'Participe présent de' + insource:/ed''' \{/")
+                #p.pagesBySearch(u"'Troisième personne du singulier du présent de' + insource:/s''' \{/")
+                #p.pagesBySearch(u"'Prétérit de' + insource:/ed''' \{/")
+                #p.pagesBySearch(u"'Participe passé de' + insource:/ed''' \{/")
 
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
             sys.argv[1] == str('-m'):
