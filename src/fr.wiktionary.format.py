@@ -3009,10 +3009,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/Participe présent de *\'* *[a-z]/')
-                p.pagesBySearch(u'insource:/Participe passé de *\'* *[a-z]/')
-                p.pagesBySearch(u'insource:/Prétérit de *\'* *[a-z]/')
-                p.pagesBySearch(u'insource:/Troisième personne du singulier du présent de *\'* *[a-z]/')
+                p.pagesBySearch(u'insource:/Participe passé de *\'* *[a-km-zçæéë]/', namespaces = [0])
 
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
             sys.argv[1] == str('-m'):

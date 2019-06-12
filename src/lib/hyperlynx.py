@@ -649,7 +649,9 @@ def hyperlynx(PageTemp, debugLevel = 0):
                 if ParamEN[p] == u'work':
                     if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1:
                         tradFr = u'périodique'
-                    elif currentTemplate.find(u'ien web') != -1 and currentTemplate.find(u'ien web') < currentTemplate.find(u'|'):
+                    elif currentTemplate.find(u'ien web') != -1 and currentTemplate.find(u'ien web') < currentTemplate.find(u'|') and currentTemplate.find(u'|site=') == -1 and currentTemplate.find(u'|website=') == -1:
+                        tradFr = u'site'
+                    else:
                         tradFr = u'série'
                 elif ParamEN[p] == u'publisher':
                     if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1 and currentTemplate.find(u'|work=') == -1:
