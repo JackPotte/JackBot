@@ -4,8 +4,7 @@
 Ce script vérifie toutes les URL des articles :
     1) de la forme http://, https:// et [//
     2) incluses dans certains modèles (pas tous étant donnée leur complexité, car certains incluent des {{{1}}} et {{{2}}} dans leurs URL)
-    3) il traduit les noms et paramètres de ces modèles en français (ex : {{cite web|title=}} par {{lien web|titre=}})
-    4) il ajoute ou retire {{lien brisé}} le cas échéant
+    3) il traduit les noms et paramètres de ces modèles en français (ex : {{cite web|title=}} par {{lien web|titre=}}) cf http://www.tradino.org/
 '''
 
 # Déclaration
@@ -17,12 +16,20 @@ import codecs, urllib, urllib2, httplib, json, pprint, urlparse, datetime, re, w
 import requests
 from lib import *
 
-language = "fr"
-family = "wiktionary"
-username = "JackBot"
-site = pywikibot.Site(language, family)
+debugLevel = 0
+username = 'JackBot'
+site = pywikibot.Site('fr', 'wiktionary')
 
-# Préférences
+#*** General functions ***
+def setGlobalsHL(myDebugLevel, mySite, myUsername):
+    global debugLevel
+    global site
+    global username
+    debugLevel  = myDebugLevel
+    site        = mySite
+    username    = myUsername 
+
+# Preferences
 semiauto = False
 retablirNonBrise = False    # Reteste les liens brisés
 checkURL = False
@@ -475,9 +482,9 @@ Format[50] = u'ts'
 Format[51] = u'flv'
 
 # Traduction des mois
-ligneM = 12
-colonneM = 2
-TradM = [[0] * (colonneM+1) for _ in range(ligneM+1)]
+monthLine = 12
+monthColumn = 2
+TradM = [[0] * (monthColumn + 1) for _ in range(monthLine + 1)]
 TradM[1][1] = u'January'
 TradM[1][2] = u'janvier'
 TradM[2][1] = u'February'
@@ -542,218 +549,45 @@ TradL[16][2] = u'hi'
 TradL[17][1] = u'Arabic'
 TradL[17][2] = u'ar'
 
-# Modification du wiki
-def hyperlynx(PageTemp, debugLevel = 0):
+def hyperlynx(currentPage):
     if debugLevel > 0:
         print u'------------------------------------'
         #print time.strftime('%d-%m-%Y %H:%m:%S')
     summary = u'Vérification des URL'
-    PageEnd = u''
     htmlSource = ''
     url = u''
-    PageTemp = PageTemp.replace(u'[//https://', u'[https://')
-    PageTemp = PageTemp.replace(u'[//http://', u'[http://')
-    PageTemp = PageTemp.replace(u'http://http://', u'http://')
-    PageTemp = PageTemp.replace(u'https://https://', u'https://')
-    PageTemp = PageTemp.replace(u'<ref>{{en}}} ', u'<ref>{{en}} ')
-    PageTemp = PageTemp.replace(u'<ref>{{{en}} ', u'<ref>{{en}} ')
-    PageTemp = PageTemp.replace(u'<ref>{{{en}}} ', u'<ref>{{en}} ')
+    currentPage = currentPage.replace(u'[//https://', u'[https://')
+    currentPage = currentPage.replace(u'[//http://', u'[http://')
+    currentPage = currentPage.replace(u'http://http://', u'http://')
+    currentPage = currentPage.replace(u'https://https://', u'https://')
+    currentPage = currentPage.replace(u'<ref>{{en}}} ', u'<ref>{{en}} ')
+    currentPage = currentPage.replace(u'<ref>{{{en}} ', u'<ref>{{en}} ')
+    currentPage = currentPage.replace(u'<ref>{{{en}}} ', u'<ref>{{en}} ')
+    currentPage = re.sub(u'[C|c]ita(tion)? *\n* *(\|[^}{]*title *=)', ur'ouvrage\2', currentPage)
+    currentPage = translateLinkTemplates(currentPage)
+    currentPage = translateDates(currentPage)
+    currentPage = translateLanguages(currentPage)
 
-    # Paramètre langue= si traduction
-    PageTemp = re.sub(u'[C|c]ita(tion)? *\n* *(\|[^}{]*title *=)', ur'ouvrage\2', PageTemp)
-    for m in range(0, limiteL):
-        # Formatage des anciens modèles
-        PageTemp = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:]).replace(u' ', u'_') + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
-        PageTemp = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:]).replace(u' ', u'  ') + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
-        PageTemp = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:]) + ur' *\|', ModeleEN[m] + ur'|', PageTemp)
-        # Traitement de chaque modèle à traduire
-        while re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]+', PageTemp):
-            if debugLevel > 1:
-                print(u'Modèle n°' + str(m))
-                print(PageTemp[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1:][:100].encode(config.console_encoding, 'replace'))
-            PageEnd = PageEnd + PageTemp[:re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1]
-            PageTemp = PageTemp[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', PageTemp).end()-1:]    
-            # Identification du code langue existant dans le modèle
-            languageCode = u''
-            if PageEnd.rfind(u'{{') != -1:
-                PageDebut = PageEnd[:PageEnd.rfind(u'{{')]
-                if PageDebut.rfind(u'{{') != -1 and PageDebut.rfind(u'}}') != -1 and (PageDebut[len(PageDebut)-2:] == u'}}' or PageDebut[len(PageDebut)-3:] == u'}} '):
-                    languageCode = PageDebut[PageDebut.rfind(u'{{')+2:PageDebut.rfind(u'}}')]
-                    if family == 'wikipedia' or family == 'wiktionary':
-                        # Recherche de validité mais tous les codes ne sont pas encore sur les sites francophones
-                        if languageCode.find('}}') != -1: languageCode = languageCode[:languageCode.find('}}')]
-                        if debugLevel > 1: print u'Modèle:' + languageCode
-                        page2 = Page(site, u'Modèle:' + languageCode)
-                        try:
-                            PageCode = page2.get()
-                        except pywikibot.exceptions.NoPage:
-                            print "NoPage l 425"
-                            PageCode = u''
-                        except pywikibot.exceptions.LockedPage: 
-                            print "Locked l 428"
-                            PageCode = u''
-                        except pywikibot.exceptions.IsRedirectPage: 
-                            PageCode = page2.get(get_redirect=True)
-                        if debugLevel > 0: print(PageCode.encode(config.console_encoding, 'replace'))
-                        if PageCode.find(u'Indication de langue') != -1:
-                            if len(languageCode) == 2:    # or len(languageCode) == 3: if languageCode == u'pdf': |format=languageCode, absent de {{lien web}}
-                                # Retrait du modèle de langue devenu inutile
-                                PageEnd = PageEnd[:PageEnd.rfind(u'{{' + languageCode + u'}}')] + PageEnd[PageEnd.rfind(u'{{' + languageCode + u'}}')+len(u'{{' + languageCode + u'}}'):]
-            if languageCode == u'':
-                if debugLevel > 0: print u' Code langue à remplacer une fois trouvé sur la page distante...'
-                languageCode = 'None'
-            # Ajout du code langue dans le modèle
-            if debugLevel > 0: print u'Modèle préalable : ' + languageCode
-            regex = ur'[^}]*lang(ue|uage)* *=[^}]*}}'
-            if not re.search(regex, PageTemp):
-                PageTemp = u'|langue=' + languageCode + PageTemp
-            elif re.search(regex, PageTemp).end() > PageTemp.find(u'}}')+2:
-                PageTemp = u'|langue=' + languageCode + PageTemp
-                
-        PageTemp = PageEnd + PageTemp
-        PageEnd = u''
-
-    for m in range(0, limiteM):
-        if debugLevel > 1: print(u' Traduction des noms du modèle ' + ModeleEN[m])
-        PageTemp = PageTemp.replace(u'{{' + ModeleEN[m] + u' ', u'{{' + ModeleEN[m] + u'')
-        PageTemp = re.sub(ur'({{[\n ]*)[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])] + ur'( *[\||\n\t|}])', ur'\1' +  ModeleFR[m] + ur'\2', PageTemp)
-        # Suppression des modèles vides
-        regex = u'{{ *[' + ModeleFR[m][:1] + ur'|' + ModeleFR[m][:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *}}'
-        while re.search(regex, PageTemp):
-            if debugLevel > 1: print(u' while1' + regex)
-            PageTemp = PageTemp[:re.search(regex, PageTemp).start()] + PageTemp[re.search(regex, PageTemp).end():]
-        # Traduction des paramètres de chaque modèle de la page
-        regex = u'{{ *[' + ModeleFR[m][:1] + ur'|' + ModeleFR[m][:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *[\||\n]'
-        while re.search(regex, PageTemp):
-            if debugLevel > 1: print(u' while2')
-            PageEnd = PageEnd + PageTemp[:re.search(regex, PageTemp).start()+2]
-            PageTemp = PageTemp[re.search(regex, PageTemp).start()+2:]
-            FinPageURL = PageTemp
-            FinModele = 0
-            # Gestion des modèles inclus dans le modèle de lien
-            while FinPageURL.find(u'{{') != -1 and FinPageURL.find(u'{{') < FinPageURL.find(u'}}'):
-                if debugLevel > 1: print(u'  while3')
-                FinModele = FinModele + FinPageURL.find(u'}}')+2
-                FinPageURL = FinPageURL[FinPageURL.find(u'}}')+2:]
-            FinModele = FinModele + FinPageURL.find(u'}}')+2
-            
-            currentTemplate = PageTemp[:FinModele]
-            if debugLevel > 1:
-                print(u'Modèle courant : ')
-                print(currentTemplate.encode(config.console_encoding, 'replace'))
-            for p in range(0, limiteP):
-                # Faux-amis variables selon les modèles
-                if debugLevel > 1: print ParamEN[p].encode(config.console_encoding, 'replace')
-                tradFr = ParamFR[p]
-
-                if ParamEN[p] == u'work':
-                    if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1:
-                        tradFr = u'périodique'
-                    elif currentTemplate.find(u'ien web') != -1 and currentTemplate.find(u'ien web') < currentTemplate.find(u'|') and currentTemplate.find(u'|site=') == -1 and currentTemplate.find(u'|website=') == -1:
-                        tradFr = u'site'
-                    else:
-                        tradFr = u'série'
-                elif ParamEN[p] == u'publisher':
-                    if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1 and currentTemplate.find(u'|work=') == -1:
-                        tradFr = u'périodique'
-                    else:
-                        tradFr = u'éditeur'
-                elif ParamEN[p] == u'agency':
-                    if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1 and currentTemplate.find(u'|work=') == -1:
-                        tradFr = u'périodique'
-                    else:
-                        tradFr = u'auteur institutionnel'
-
-                elif ParamEN[p] == u'language' and (currentTemplate.find(u'|langue=') != -1 and currentTemplate.find(u'|langue=') < currentTemplate.find(u'}}')):
-                    tradFr = u''
-                elif ParamEN[p] == u'issue' and (currentTemplate.find(u'|numéro=') != -1 and currentTemplate.find(u'|numéro=') < currentTemplate.find(u'}}')):
-                    tradFr = u'date'
-                elif ParamEN[p] == u'en ligne le':
-                    if currentTemplate.find(u'archiveurl') == -1 and currentTemplate.find(u'archive url') == -1 and currentTemplate.find(u'archive-url') == -1:
-                        continue
-                    elif currentTemplate.find(u'archivedate') != -1 or currentTemplate.find(u'archive date') != -1 or currentTemplate.find(u'archive-date') != -1:
-                            continue
-                    elif debugLevel > 0: u' archiveurl ' + u' archivedate'
-
-                currentTemplate = re.sub(ur'(\| *)' + ParamEN[p] + ur'( *=)', ur'\1' + tradFr + ur'\2', currentTemplate)
-                currentTemplate = currentTemplate.replace(u'|=',u'|')
-                currentTemplate = currentTemplate.replace(u'| =',u'|')
-                currentTemplate = currentTemplate.replace(u'|  =',u'|')
-                currentTemplate = currentTemplate.replace(u'|}}',u'}}')
-                currentTemplate = currentTemplate.replace(u'| }}',u'}}')
-                if currentTemplate.find(u'{{') == -1:    # Sans modèle inclus
-                    currentTemplate = currentTemplate.replace(u'||',u'|')
-            if debugLevel > 1: print FinModele
-            
-            PageTemp = currentTemplate + PageTemp[FinModele:]
-            
-        PageTemp = PageEnd + PageTemp
-        PageEnd = u''
-
-    
-    # Traduction des dates
-    limiteParamDate = 9
-    ParamDate = range(1, limiteParamDate +1)
-    ParamDate[1] = u'date'
-    ParamDate[2] = u'mois'
-    ParamDate[3] = u'consulté le'
-    ParamDate[4] = u'en ligne le'
-    # Modèle
-    ParamDate[5] = u'dts'
-    ParamDate[6] = u'Dts'
-    ParamDate[7] = u'date triable'
-    ParamDate[8] = u'Date triable'
-    for m in range(1, ligneM+1):
-        if debugLevel > 1:
-            print u'Mois ' + str(m)
-            print TradM[m][1]
-        for p in range(1, limiteParamDate):
-            if debugLevel > 1: print u'Recherche de ' + ParamDate[p] + u' *=[ ,0-9]*' + TradM[m][1]
-            if p > 4:
-                PageTemp = re.sub(ur'({{ *' + ParamDate[p] + ur'[^}]+)' + TradM[m][1] + ur'([^}]+}})', ur'\1' +  TradM[m][2] + ur'\2', PageTemp)
-                PageTemp = re.sub(ur'({{ *' + ParamDate[p] + ur'[^}]+)(\|[ 0-9][ 0-9][ 0-9][ 0-9])\|' + TradM[m][2] + ur'(\|[ 0-9][ 0-9])}}', ur'\1\3|' +  TradM[m][2] + ur'\2}}', PageTemp)
-            else:
-                PageTemp = re.sub(ur'(\| *' + ParamDate[p] + ur' *=[ ,0-9]*)' + TradM[m][1] + ur'([ ,0-9]*\.? *[<|\||\n\t|}])', ur'\1' +  TradM[m][2] + ur'\2', PageTemp)
-                PageTemp = re.sub(ur'(\| *' + ParamDate[p] + ur' *=[ ,0-9]*)' + TradM[m][1][:1].lower() + TradM[m][1][1:] + ur'([ ,0-9]*\.? *[<|\||\n\t|}])', ur'\1' +  TradM[m][2] + ur'\2', PageTemp)
-                
-                # Ordre des dates : jj mois aaaa'
-                if debugLevel > 1: print u'Recherche de ' + ParamDate[p] + u' *= *' + TradM[m][2] + u' *([0-9]+), '
-                PageTemp = re.sub(ur'(\| *' + ParamDate[p] + u' *= *)' + TradM[m][2] + ur' *([0-9]+), *([0-9]+)\.? *([<|\||\n\t|}])', ur'\1' + ur'\2' + ur' ' + TradM[m][2] + ur' ' + ur'\3' + ur'\4', PageTemp)    # trim(u'\3') ne fonctionne pas
-                
-    if debugLevel > 0: print u'Traduction des langues'
-    for l in range(1, ligneL+1):
-        if debugLevel > 1:
-            print u'Langue ' + str(l)
-            print TradL[l][1]
-        PageTemp = re.sub(ur'(\| *langue *= *)' + TradL[l][1] + ur'( *[<|\||\n\t|}])', ur'\1' +  TradL[l][2] + ur'\2', PageTemp)
-    
-        # Rustine suite à un imprévu censé être réglé ci-dessus, mais qui touche presque 10 % des pages.
-        PageTemp = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Aa]rticle\|langue=' + TradL[l][2] + ur'\|)', ur'\1', PageTemp)
-        PageTemp = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Ll]ien web\|langue=' + TradL[l][2] + ur'\|)', ur'\1', PageTemp)
-        PageTemp = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Oo]uvrage\|langue=' + TradL[l][2] + ur'\|)', ur'\1', PageTemp)
-    
-    # Suppression des paramètres vides en doublon
-    # à faire...
-    
     if debugLevel > 1:
         print u'Fin des traductions :'
-        raw_input(PageTemp.encode(config.console_encoding, 'replace'))
+        raw_input(currentPage.encode(config.console_encoding, 'replace'))
 
     # Recherche de chaque hyperlien en clair ------------------------------------------------------------------------------------------------------------------------------------
-    while PageTemp.find(u'//') != -1:
+    finalPage = u''
+    while currentPage.find(u'//') != -1:
         if debugLevel > 0: print u'-----------------------------------------------------------------'
         url = u''
         DebutURL = u''
         CharFinURL = u''
         titre = u''
-        FinModele = 0
+        templateEndPosition = 0
         isBrokenLink = False
         # Avant l'URL
-        PageDebut = PageTemp[:PageTemp.find(u'//')]
-        while PageTemp.find(u'//') > PageTemp.find(u'}}') and PageTemp.find(u'}}') != -1:
+        PageDebut = currentPage[:currentPage.find(u'//')]
+        while currentPage.find(u'//') > currentPage.find(u'}}') and currentPage.find(u'}}') != -1:
             if debugLevel > 0: print u'URL après un modèle'
-            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
-            PageTemp = PageTemp[PageTemp.find(u'}}')+2:]
+            finalPage = finalPage + currentPage[:currentPage.find(u'}}')+2]
+            currentPage = currentPage[currentPage.find(u'}}')+2:]
 
         # noTags interdisant la modification de l'URL
         ignoredLink = False
@@ -762,7 +596,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
                 ignoredLink = True
                 if debugLevel > 0: print u'URL non traitée, car dans ' + noTag[b][1]
                 break
-            if PageEnd.rfind(noTag[b][1]) != -1 and PageEnd.rfind(noTag[b][1]) > PageEnd.rfind(noTag[b][2]):
+            if finalPage.rfind(noTag[b][1]) != -1 and finalPage.rfind(noTag[b][1]) > finalPage.rfind(noTag[b][2]):
                 ignoredLink = True
                 if debugLevel > 0: print u'URL non traitée, car dans ' + noTag[b][1]
                 break
@@ -776,12 +610,12 @@ def hyperlynx(PageTemp, debugLevel = 0):
                 ignoredLink = True
                 if debugLevel > 0: print u'URL non traitée, car dans ' + noTemplate
                 break
-            if PageEnd.rfind(u'{{' + noTemplate + u'|') != -1 and PageEnd.rfind(u'{{' + noTemplate + u'|') > PageEnd.rfind(u'}}'):
+            if finalPage.rfind(u'{{' + noTemplate + u'|') != -1 and finalPage.rfind(u'{{' + noTemplate + u'|') > finalPage.rfind(u'}}'):
                 ignoredLink = True
                 if debugLevel > 0: print u'URL non traitée, car dans ' + noTemplate
                 break
-            if PageEnd.rfind(u'{{' + noTemplate[:1].upper() + noTemplate[1:] + u'|') != -1 and \
-                PageEnd.rfind(u'{{' + noTemplate[:1].upper() + noTemplate[1:] + u'|') > PageEnd.rfind(u'}}'):
+            if finalPage.rfind(u'{{' + noTemplate[:1].upper() + noTemplate[1:] + u'|') != -1 and \
+                finalPage.rfind(u'{{' + noTemplate[:1].upper() + noTemplate[1:] + u'|') > finalPage.rfind(u'}}'):
                 ignoredLink = True
                 if debugLevel > 0: print u'URL non traitée, car dans ' + noTemplate
                 break
@@ -789,18 +623,18 @@ def hyperlynx(PageTemp, debugLevel = 0):
         if ignoredLink == False:
             # titre=
             if PageDebut.rfind(u'titre=') != -1 and PageDebut.rfind(u'titre=') > PageDebut.rfind(u'{{') and PageDebut.rfind(u'titre=') > PageDebut.rfind(u'}}'):
-                PageTemp3 = PageDebut[PageDebut.rfind(u'titre=')+len(u'titre='):]
-                if PageTemp3.find(u'|') != -1 and (PageTemp3.find(u'|') < PageTemp3.find(u'}}') or PageTemp3.rfind(u'}}') == -1):
-                    titre = PageTemp3[:PageTemp3.find(u'|')]
+                currentPage3 = PageDebut[PageDebut.rfind(u'titre=')+len(u'titre='):]
+                if currentPage3.find(u'|') != -1 and (currentPage3.find(u'|') < currentPage3.find(u'}}') or currentPage3.rfind(u'}}') == -1):
+                    titre = currentPage3[:currentPage3.find(u'|')]
                 else:
-                    titre = PageTemp3
+                    titre = currentPage3
                 if debugLevel > 0: print u'Titre= avant URL : ' + titre
             elif PageDebut.rfind(u'titre =') != -1 and PageDebut.rfind(u'titre =') > PageDebut.rfind(u'{{') and PageDebut.rfind(u'titre =') > PageDebut.rfind(u'}}'):
-                PageTemp3 = PageDebut[PageDebut.rfind(u'titre =')+len(u'titre ='):]
-                if PageTemp3.find(u'|') != -1 and (PageTemp3.find(u'|') < PageTemp3.find(u'}}') or PageTemp3.rfind(u'}}') == -1):
-                    titre = PageTemp3[:PageTemp3.find(u'|')]
+                currentPage3 = PageDebut[PageDebut.rfind(u'titre =')+len(u'titre ='):]
+                if currentPage3.find(u'|') != -1 and (currentPage3.find(u'|') < currentPage3.find(u'}}') or currentPage3.rfind(u'}}') == -1):
+                    titre = currentPage3[:currentPage3.find(u'|')]
                 else:
-                    titre = PageTemp3
+                    titre = currentPage3
                 if debugLevel > 0: print u'Titre = avant URL : ' + titre
         
             # url=
@@ -821,7 +655,7 @@ def hyperlynx(PageTemp, debugLevel = 0):
                 DebutURL = 0
             if DebutURL != 0:
                 # Après l'URL
-                FinPageURL = PageTemp[PageTemp.find(u'//'):]
+                FinPageURL = currentPage[currentPage.find(u'//'):]
                 # url=    
                 CharFinURL = u' '
                 for l in range(1, limiteURL):
@@ -830,12 +664,12 @@ def hyperlynx(PageTemp, debugLevel = 0):
                 if debugLevel > 0: print u'*Caractère de fin URL : ' + CharFinURL
                 
                 if DebutURL == 1:
-                    url = u'http:' + PageTemp[PageTemp.find(u'//'):PageTemp.find(u'//')+FinPageURL.find(CharFinURL)]
+                    url = u'http:' + currentPage[currentPage.find(u'//'):currentPage.find(u'//')+FinPageURL.find(CharFinURL)]
                     if titre == u'':
-                        titre = PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL):]
+                        titre = currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL):]
                         titre = trim(titre[:titre.find(u']')])
                 else:
-                    url = PageTemp[PageTemp.find(u'//')-DebutURL:PageTemp.find(u'//')+FinPageURL.find(CharFinURL)]
+                    url = currentPage[currentPage.find(u'//')-DebutURL:currentPage.find(u'//')+FinPageURL.find(CharFinURL)]
                 if len(url) <= 10:
                     url = u''
                     htmlSource = u''
@@ -888,14 +722,14 @@ def hyperlynx(PageTemp, debugLevel = 0):
                 if debugLevel > 1: raw_input (htmlSource[:7000])
                 
                 # Modification du wiki en conséquence    
-                DebutPage = PageTemp[0:PageTemp.find(u'//')+2]
+                DebutPage = currentPage[0:currentPage.find(u'//')+2]
                 DebutURL = max(DebutPage.find(u'http://'),DebutPage.find(u'https://'),DebutPage.find(u'[//'))
                 
                 # Saut des modèles inclus dans un modèle de lien
                 while DebutPage.rfind(u'{{') != -1 and DebutPage.rfind(u'{{') < DebutPage.rfind(u'}}'):
                     # pb des multiples crochets fermants sautés : {{ ({{ }} }})
-                    PageTemp2 = DebutPage[DebutPage.rfind(u'{{'):]
-                    if PageTemp2.rfind(u'}}') == PageTemp2.rfind(u'{{'):
+                    currentPage2 = DebutPage[DebutPage.rfind(u'{{'):]
+                    if currentPage2.rfind(u'}}') == currentPage2.rfind(u'{{'):
                         DebutPage = DebutPage[:DebutPage.rfind(u'{{')]
                     else:
                         DebutPage = u''
@@ -926,53 +760,53 @@ def hyperlynx(PageTemp, debugLevel = 0):
                         
                     #if DebutPage[0:2] == u'{{': AncienModele = trim(DebutPage[2:DebutPage.find(u'|')])
                     
-                    FinModele = PageTemp.find(u'//')+2
-                    FinPageModele = PageTemp[FinModele:len(PageTemp)]
+                    templateEndPosition = currentPage.find(u'//')+2
+                    FinPageModele = currentPage[templateEndPosition:len(currentPage)]
                     # Calcul des modèles inclus dans le modèle de lien
                     while FinPageModele.find(u'}}') != -1 and FinPageModele.find(u'}}') > FinPageModele.find(u'{{') and FinPageModele.find(u'{{') != -1:
-                        FinModele = FinModele + FinPageModele.find(u'}}')+2
+                        templateEndPosition = templateEndPosition + FinPageModele.find(u'}}')+2
                         FinPageModele = FinPageModele[FinPageModele.find(u'}}')+2:len(FinPageModele)]
-                    FinModele = FinModele + FinPageModele.find(u'}}')+2
-                    currentTemplate = PageTemp[DebutModele:FinModele]
+                    templateEndPosition = templateEndPosition + FinPageModele.find(u'}}')+2
+                    currentTemplate = currentPage[DebutModele:templateEndPosition]
                     #if debugLevel > 0: print "*Modele : " + currentTemplate[:100].encode(config.console_encoding, 'replace')
                     
                     if AncienModele != u'':
                         if debugLevel > 0: print u'Ancien modèle à traiter : ' + AncienModele
                         if isBrokenLink:
                             try:
-                                PageTemp = PageTemp[:DebutModele] + u'{{lien brisé' + PageTemp[re.search(u'{{ *[' + AncienModele[:1] + u'|' + AncienModele[:1].upper() + u']' + AncienModele[1:] + u' *[\||\n]', PageTemp).end()-1:]
+                                currentPage = currentPage[:DebutModele] + u'{{lien brisé' + currentPage[re.search(u'{{ *[' + AncienModele[:1] + u'|' + AncienModele[:1].upper() + u']' + AncienModele[1:] + u' *[\||\n]', currentPage).end()-1:]
                             except AttributeError:
                                 raise "Regex introuvable ligne 811"
                                 
                         elif AncienModele == u'lien brisé':
                             if debugLevel > 0: print u'Rétablissement d\'un ancien lien brisé'
-                            PageTemp = PageTemp[:PageTemp.find(AncienModele)] + u'lien web' + PageTemp[PageTemp.find(AncienModele)+len(AncienModele):]
+                            currentPage = currentPage[:currentPage.find(AncienModele)] + u'lien web' + currentPage[currentPage.find(AncienModele)+len(AncienModele):]
                         '''
                         # titre=
                         if re.search(u'\| *titre *=', FinPageURL):
                             if debugLevel > 0: print u'Titre après URL'
                             if titre == u'' and re.search(u'\| *titre *=', FinPageURL).end() != -1 and re.search(u'\| *titre *=', FinPageURL).end() < FinPageURL.find(u'\n') and re.search(u'\| *titre *=', FinPageURL).end() < FinPageURL.find(u'}}'):
-                                PageTemp3 = FinPageURL[re.search(u'\| *titre *=', FinPageURL).end():]
+                                currentPage3 = FinPageURL[re.search(u'\| *titre *=', FinPageURL).end():]
                                 # Modèles inclus dans les titres
-                                while PageTemp3.find(u'{{') != -1 and PageTemp3.find(u'{{') < PageTemp3.find(u'}}') and PageTemp3.find(u'{{') < PageTemp3.find(u'|'):
-                                    titre = titre + PageTemp3[:PageTemp3.find(u'}}')+2]
-                                    PageTemp3 = PageTemp3[PageTemp3.find(u'}}')+2:]
-                                if PageTemp3.find(u'|') != -1 and (PageTemp3.find(u'|') < PageTemp3.find(u'}}') or PageTemp3.find(u'}}') == -1):
-                                    titre = titre + PageTemp3[0:PageTemp3.find(u'|')]
+                                while currentPage3.find(u'{{') != -1 and currentPage3.find(u'{{') < currentPage3.find(u'}}') and currentPage3.find(u'{{') < currentPage3.find(u'|'):
+                                    titre = titre + currentPage3[:currentPage3.find(u'}}')+2]
+                                    currentPage3 = currentPage3[currentPage3.find(u'}}')+2:]
+                                if currentPage3.find(u'|') != -1 and (currentPage3.find(u'|') < currentPage3.find(u'}}') or currentPage3.find(u'}}') == -1):
+                                    titre = titre + currentPage3[0:currentPage3.find(u'|')]
                                 else:
-                                    titre = titre + PageTemp3[0:PageTemp3.find(u'}}')]
-                        elif FinPageURL.find(u']') != -1 and (PageTemp.find(u'//') == PageTemp.find(u'[//')+1 or PageTemp.find(u'//') == PageTemp.find(u'[http://')+6 or PageTemp.find(u'//') == PageTemp.find(u'[https://')+7):
+                                    titre = titre + currentPage3[0:currentPage3.find(u'}}')]
+                        elif FinPageURL.find(u']') != -1 and (currentPage.find(u'//') == currentPage.find(u'[//')+1 or currentPage.find(u'//') == currentPage.find(u'[http://')+6 or currentPage.find(u'//') == currentPage.find(u'[https://')+7):
                             titre = FinPageURL[FinPageURL.find(CharFinURL)+len(CharFinURL):FinPageURL.find(u']')]
                         if debugLevel > 1: raw_input(FinPageURL.encode(config.console_encoding, 'replace'))    
                         
                         # En cas de modèles inclus le titre a pu ne pas être détecté précédemment
                         if titre == u'' and re.search(u'\| *titre *=', currentTemplate):
-                            PageTemp3 = currentTemplate[re.search(u'\| *titre *=', currentTemplate).end():]
+                            currentPage3 = currentTemplate[re.search(u'\| *titre *=', currentTemplate).end():]
                             # Modèles inclus dans les titres
-                            while PageTemp3.find(u'{{') != -1 and PageTemp3.find(u'{{') < PageTemp3.find(u'}}') and PageTemp3.find(u'{{') < PageTemp3.find(u'|'):
-                                titre = titre + PageTemp3[:PageTemp3.find(u'}}')+2]
-                                PageTemp3 = PageTemp3[PageTemp3.find(u'}}')+2:]
-                            titre = titre + PageTemp3[:re.search(u'[^\|}\n]*', PageTemp3).end()]
+                            while currentPage3.find(u'{{') != -1 and currentPage3.find(u'{{') < currentPage3.find(u'}}') and currentPage3.find(u'{{') < currentPage3.find(u'|'):
+                                titre = titre + currentPage3[:currentPage3.find(u'}}')+2]
+                                currentPage3 = currentPage3[currentPage3.find(u'}}')+2:]
+                            titre = titre + currentPage3[:re.search(u'[^\|}\n]*', currentPage3).end()]
                             if debugLevel > 0:
                                 print u'*Titre2 : '
                                 print titre.encode(config.console_encoding, 'replace')
@@ -981,12 +815,12 @@ def hyperlynx(PageTemp, debugLevel = 0):
                             summary = summary + u', remplacement de ' + AncienModele + u' par {{lien brisé}}'
                             if debugLevel > 0: print u', remplacement de ' + AncienModele + u' par {{lien brisé}}'
                             if titre == u'':
-                                PageTemp = PageTemp[0:DebutModele] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + PageTemp[FinModele:len(PageTemp)]
+                                currentPage = currentPage[0:DebutModele] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + currentPage[templateEndPosition:len(currentPage)]
                             else:
-                                PageTemp = PageTemp[0:DebutModele] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + PageTemp[FinModele:len(PageTemp)]
+                                currentPage = currentPage[0:DebutModele] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + currentPage[templateEndPosition:len(currentPage)]
                         elif isBrokenLink == False and (AncienModele == u'lien brisé' or AncienModele == u'Lien brisé'):
                             summary = summary + u', Retrait de {{lien brisé}}'
-                            PageTemp = PageTemp[0:DebutModele] + u'{{lien web' + PageTemp[DebutModele+len(u'lien brisé')+2:len(PageTemp)]
+                            currentPage = currentPage[0:DebutModele] + u'{{lien web' + currentPage[DebutModele+len(u'lien brisé')+2:len(currentPage)]
                         '''
                             
                         '''elif isBrokenLink:
@@ -994,17 +828,17 @@ def hyperlynx(PageTemp, debugLevel = 0):
                         if DebutURL == 1:
                             if debugLevel > 0: print u'Ajout de lien brisé entre crochets 1'
                             # Lien entre crochets
-                            PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(u']')+1:len(PageTemp)]
+                            currentPage = currentPage[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(u']')+1:len(currentPage)]
                         else:
                             if debugLevel > 0: print u'Ajout de lien brisé 1'
-                            if PageTemp[DebutURL-1:DebutURL] == u'[' and PageTemp[DebutURL-2:DebutURL] != u'[[': DebutURL = DebutURL -1
+                            if currentPage[DebutURL-1:DebutURL] == u'[' and currentPage[DebutURL-2:DebutURL] != u'[[': DebutURL = DebutURL -1
                             if CharFinURL == u' ' and FinPageURL.find(u']') != -1 and (FinPageURL.find(u'[') == -1 or FinPageURL.find(u']') < FinPageURL.find(u'[')): 
                                 # Présence d'un titre
-                                PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL)+1:PageTemp.find(u'//')+FinPageURL.find(u']')]  + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(u']')+1:len(PageTemp)]
+                                currentPage = currentPage[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL)+1:currentPage.find(u'//')+FinPageURL.find(u']')]  + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(u']')+1:len(currentPage)]
                             elif CharFinURL == u']':
-                                PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL):len(PageTemp)]
+                                currentPage = currentPage[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL):len(currentPage)]
                             else:
-                                PageTemp = PageTemp[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL):len(PageTemp)]
+                                currentPage = currentPage[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL):len(currentPage)]
                         '''
                     else:
                         if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " dans modèle non géré"
@@ -1016,45 +850,45 @@ def hyperlynx(PageTemp, debugLevel = 0):
                         if DebutURL == 1:
                             if debugLevel > 0: print u'Ajout de lien brisé entre crochets sans protocole'
                             if titre != u'':
-                                PageTemp = PageTemp[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL):]
+                                currentPage = currentPage[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL):]
                             else:
-                                PageTemp = PageTemp[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL):]
-                            #if debugLevel > 0: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
+                                currentPage = currentPage[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL):]
+                            #if debugLevel > 0: raw_input(currentPage.encode(config.console_encoding, 'replace'))
                         else:
                             if debugLevel > 0: print u'Ajout de lien brisé 2'
-                            if PageTemp[DebutURL-1:DebutURL] == u'[' and PageTemp[DebutURL-2:DebutURL] != u'[[':
+                            if currentPage[DebutURL-1:DebutURL] == u'[' and currentPage[DebutURL-2:DebutURL] != u'[[':
                                 if debugLevel > 0: print u'entre crochet'
                                 DebutURL = DebutURL -1
                                 if titre == u'' :
                                     if debugLevel > 0: "Titre vide"
                                     # Prise en compte des crochets inclus dans un titre
-                                    PageTemp2 = PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL):]
-                                    #if debugLevel > 0: raw_input(PageTemp2.encode(config.console_encoding, 'replace'))
-                                    if PageTemp2.find(u']]') != -1 and PageTemp2.find(u']]') < PageTemp2.find(u']'):
-                                        while PageTemp2.find(u']]') != -1 and PageTemp2.find(u'[[') != -1 and PageTemp2.find(u'[[') < PageTemp2.find(u']]'):
-                                            titre = titre + PageTemp2[:PageTemp2.find(u']]')+1]
-                                            PageTemp2 = PageTemp2[PageTemp2.find(u']]')+1:]
-                                        titre = trim(titre + PageTemp2[:PageTemp2.find(u']]')])
-                                        PageTemp2 = PageTemp2[PageTemp2.find(u']]'):]
-                                    while PageTemp2.find(u']') != -1 and PageTemp2.find(u'[') != -1 and PageTemp2.find(u'[') < PageTemp2.find(u']'):
-                                        titre = titre + PageTemp2[:PageTemp2.find(u']')+1]
-                                        PageTemp2 = PageTemp2[PageTemp2.find(u']')+1:]
-                                    titre = trim(titre + PageTemp2[:PageTemp2.find(u']')])
-                                    PageTemp2 = PageTemp2[PageTemp2.find(u']'):]
+                                    currentPage2 = currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL):]
+                                    #if debugLevel > 0: raw_input(currentPage2.encode(config.console_encoding, 'replace'))
+                                    if currentPage2.find(u']]') != -1 and currentPage2.find(u']]') < currentPage2.find(u']'):
+                                        while currentPage2.find(u']]') != -1 and currentPage2.find(u'[[') != -1 and currentPage2.find(u'[[') < currentPage2.find(u']]'):
+                                            titre = titre + currentPage2[:currentPage2.find(u']]')+1]
+                                            currentPage2 = currentPage2[currentPage2.find(u']]')+1:]
+                                        titre = trim(titre + currentPage2[:currentPage2.find(u']]')])
+                                        currentPage2 = currentPage2[currentPage2.find(u']]'):]
+                                    while currentPage2.find(u']') != -1 and currentPage2.find(u'[') != -1 and currentPage2.find(u'[') < currentPage2.find(u']'):
+                                        titre = titre + currentPage2[:currentPage2.find(u']')+1]
+                                        currentPage2 = currentPage2[currentPage2.find(u']')+1:]
+                                    titre = trim(titre + currentPage2[:currentPage2.find(u']')])
+                                    currentPage2 = currentPage2[currentPage2.find(u']'):]
                                 if titre != u'':
                                     if debugLevel > 0: "Ajout avec titre"
-                                    PageTemp = PageTemp[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + PageTemp[len(PageTemp)-len(PageTemp2)+1:len(PageTemp)]
+                                    currentPage = currentPage[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + currentPage[len(currentPage)-len(currentPage2)+1:len(currentPage)]
                                 else:
                                     if debugLevel > 0: "Ajout sans titre"
-                                    PageTemp = PageTemp[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(u']')+1:len(PageTemp)]
+                                    currentPage = currentPage[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(u']')+1:len(currentPage)]
                             else:    
                                 if titre != u'': 
                                     # Présence d'un titre
                                     if debugLevel > 0: print u'URL nue avec titre'
-                                    PageTemp = PageTemp[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL)+1:PageTemp.find(u'//')+FinPageURL.find(u']')]  + u'}}' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(u']')+1:len(PageTemp)]
+                                    currentPage = currentPage[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL)+1:currentPage.find(u'//')+FinPageURL.find(u']')]  + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(u']')+1:len(currentPage)]
                                 else:
                                     if debugLevel > 0: print u'URL nue sans titre'
-                                    PageTemp = PageTemp[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}} ' + PageTemp[PageTemp.find(u'//')+FinPageURL.find(CharFinURL):len(PageTemp)]
+                                    currentPage = currentPage[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}} ' + currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL):len(currentPage)]
                         
                     else:
                         if debugLevel > 0: print u'Aucun changement sur l\'URL http'
@@ -1064,74 +898,74 @@ def hyperlynx(PageTemp, debugLevel = 0):
             if debugLevel > 1: print u'URL entre balises sautée'
 
         # Lien suivant, en sautant les URL incluses dans l'actuelle, et celles avec d'autres protocoles que http(s)
-        if FinModele == 0 and isBrokenLink == False:
-            FinPageURL = PageTemp[PageTemp.find(u'//')+2:len(PageTemp)]
+        if templateEndPosition == 0 and isBrokenLink == False:
+            FinPageURL = currentPage[currentPage.find(u'//')+2:len(currentPage)]
             CharFinURL = u' '
             for l in range(1,limiteURL):
                 if FinPageURL.find(FinDURL[l]) != -1 and FinPageURL.find(FinDURL[l]) < FinPageURL.find(CharFinURL):
                     CharFinURL = FinDURL[l]
             if debugLevel > 0: print u'Saut après ' + CharFinURL
-            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'//')+2+FinPageURL.find(CharFinURL)]
-            PageTemp = PageTemp[PageTemp.find(u'//')+2+FinPageURL.find(CharFinURL):]
+            finalPage = finalPage + currentPage[:currentPage.find(u'//')+2+FinPageURL.find(CharFinURL)]
+            currentPage = currentPage[currentPage.find(u'//')+2+FinPageURL.find(CharFinURL):]
         else:
             # Saut du reste du modèle courant (contenant parfois d'autres URL à laisser)
             if debugLevel > 0: print u'Saut après }}'
-            PageEnd = PageEnd + PageTemp[:FinModele]
-            PageTemp = PageTemp[FinModele:]
-        if debugLevel > 1: raw_input(PageEnd.encode(config.console_encoding, 'replace'))
+            finalPage = finalPage + currentPage[:templateEndPosition]
+            currentPage = currentPage[templateEndPosition:]
+        if debugLevel > 1: raw_input(finalPage.encode(config.console_encoding, 'replace'))
 
-    if PageEnd.find(u'|langue=None') != -1:
+    if finalPage.find(u'|langue=None') != -1:
         if isBrokenLink == False:
             URLlanguage = getURLsiteLanguage(htmlSource)
             if URLlanguage != 'None':
                 try:
-                    PageEnd = PageEnd.replace(u'|langue=None', u'|langue=' + URLlanguage)
+                    finalPage = finalPage.replace(u'|langue=None', u'|langue=' + URLlanguage)
                 except UnicodeDecodeError:
                     if debugLevel > 0: print u'UnicodeEncodeError l 1038'
 
-    PageTemp = PageEnd + PageTemp
-    PageEnd = u''    
+    currentPage = finalPage + currentPage
+    finalPage = u''    
     if debugLevel > 0: print ("Fin des tests URL")
 
     # Recherche de chaque hyperlien de modèles ------------------------------------------------------------------------------------------------------------------------------------
-    if PageTemp.find(u'{{langue') != -1: # du Wiktionnaire
+    if currentPage.find(u'{{langue') != -1: # du Wiktionnaire
         if debugLevel > 0: print("Modèles Wiktionnaire")
         for m in range(1,ligne):
-            PageEnd = u''
-            while PageTemp.find(u'{{' + TabModeles[m][1] + u'|') != -1:
-                PageEnd =  PageEnd + PageTemp[:PageTemp.find(u'{{' + TabModeles[m][1] + u'|')+len(u'{{' + TabModeles[m][1] + u'|')]
-                PageTemp =  PageTemp[PageTemp.find(u'{{' + TabModeles[m][1] + u'|')+len(u'{{' + TabModeles[m][1] + u'|'):len(PageTemp)]
-                if PageTemp[0:PageTemp.find(u'}}')].find(u'|') != -1:
-                    Param1Encode = PageTemp[:PageTemp.find(u'|')].replace(u' ',u'_')
+            finalPage = u''
+            while currentPage.find(u'{{' + TabModeles[m][1] + u'|') != -1:
+                finalPage =  finalPage + currentPage[:currentPage.find(u'{{' + TabModeles[m][1] + u'|')+len(u'{{' + TabModeles[m][1] + u'|')]
+                currentPage =  currentPage[currentPage.find(u'{{' + TabModeles[m][1] + u'|')+len(u'{{' + TabModeles[m][1] + u'|'):len(currentPage)]
+                if currentPage[0:currentPage.find(u'}}')].find(u'|') != -1:
+                    Param1Encode = currentPage[:currentPage.find(u'|')].replace(u' ',u'_')
                 else:
-                    Param1Encode = PageTemp[:PageTemp.find(u'}}')].replace(u' ',u'_')
+                    Param1Encode = currentPage[:currentPage.find(u'}}')].replace(u' ',u'_')
                 htmlSource = testURL(TabModeles[m][2] + Param1Encode, debugLevel)
                 isBrokenLink = testURLPage(htmlSource, url)
-                if isBrokenLink: PageEnd = PageEnd[:PageEnd.rfind(u'{{' + TabModeles[m][1] + u'|')] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + TabModeles[m][2]
-            PageTemp = PageEnd + PageTemp
-            PageEnd = u''
-        PageTemp = PageEnd + PageTemp
-        PageEnd = u''
+                if isBrokenLink: finalPage = finalPage[:finalPage.rfind(u'{{' + TabModeles[m][1] + u'|')] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + TabModeles[m][2]
+            currentPage = finalPage + currentPage
+            finalPage = u''
+        currentPage = finalPage + currentPage
+        finalPage = u''
     if debugLevel > 0: print (u'Fin des tests modèle')
 
     # Paramètre inutile ?
-    '''while PageTemp.find(u'|deadurl=no|') != -1:
-        PageTemp = PageTemp[0:PageTemp.find(u'|deadurl=no|')+1] + PageTemp[PageTemp.find(u'|deadurl=no|')+len(u'|deadurl=no|'):len(PageTemp)]'''
+    '''while currentPage.find(u'|deadurl=no|') != -1:
+        currentPage = currentPage[0:currentPage.find(u'|deadurl=no|')+1] + currentPage[currentPage.find(u'|deadurl=no|')+len(u'|deadurl=no|'):len(currentPage)]'''
     # Si dans {{ouvrage}} "lire en ligne" est vide, cela bloque le paramètre "url"
-    PageTemp = re.sub(ur'{{(o|O)uvrage(\||\n[^}]*)\| *lire en ligne *= *([\||}|\n]+)', ur'{{\1uvrage\2\3', PageTemp)
+    currentPage = re.sub(ur'{{(o|O)uvrage(\||\n[^}]*)\| *lire en ligne *= *([\||}|\n]+)', ur'{{\1uvrage\2\3', currentPage)
     # Idem dans {{article}} : "éditeur" vide bloque "périodique", "journal" ou "revue"
-    PageTemp = re.sub(ur'{{(a|A)rticle(\||\n[^}]*)\| *éditeur *= *([\||}|\n]+)', ur'{{\1rticle\2\3', PageTemp)
+    currentPage = re.sub(ur'{{(a|A)rticle(\||\n[^}]*)\| *éditeur *= *([\||}|\n]+)', ur'{{\1rticle\2\3', currentPage)
 
-    PageEnd = PageEnd + PageTemp
+    finalPage = finalPage + currentPage
 
     # TODO: avoid these fixes when: ModeleEN.append(u'lien mort')
-    PageEnd = PageEnd.replace(u'<ref></ref>',u'')
-    PageEnd = PageEnd.replace(u'{{lien mortarchive',u'{{lien mort archive')
-    PageEnd = PageEnd.replace(u'|langue=None', u'')
-    PageEnd = PageEnd.replace(u'|langue=en|langue=en', u'|langue=en')
+    finalPage = finalPage.replace(u'<ref></ref>',u'')
+    finalPage = finalPage.replace(u'{{lien mortarchive',u'{{lien mort archive')
+    finalPage = finalPage.replace(u'|langue=None', u'')
+    finalPage = finalPage.replace(u'|langue=en|langue=en', u'|langue=en')
     if debugLevel > 0: print(u'Fin hyperlynx.py')
 
-    return PageEnd
+    return finalPage
 
 
 def getURLsiteLanguage(htmlSource, debugLevel = 0):
@@ -1807,8 +1641,192 @@ def testURLPage(htmlSource, url, debugLevel = 0):
         if debugLevel > 1: print u'Fin du test du contenu'
     return isBrokenLink
 
-# TODO:
-#   {{lien web|brisé le=}}
-#    i18n (pour Wikibooks en anglais)
-#    sauter les longs PDF comme dans [[w:Apollo 11]]
-#    gérer les timeout comme http://www.walkforlifewc.com/history2005.htm
+
+def getCurrentLinkTemplate(currentPage):
+    # Extraction du modèle de lien en tenant compte des modèles inclus dedans
+    currentPage2 = currentPage
+    templateEndPosition = 0
+    while currentPage2.find(u'{{') != -1 and currentPage2.find(u'{{') < currentPage2.find(u'}}'):
+        templateEndPosition = templateEndPosition + currentPage.find(u'}}')+2
+        currentPage2 = currentPage2[currentPage2.find(u'}}')+2:]
+    templateEndPosition = templateEndPosition + currentPage2.find(u'}}')+2
+    currentTemplate = currentPage[:templateEndPosition]
+
+    if debugLevel > 1:
+        print(u'  getCurrentLinkTemplate()')
+        print(templateEndPosition)
+        raw_input(currentTemplate.encode(config.console_encoding, 'replace'))
+
+    return currentTemplate, templateEndPosition
+
+
+def translateTemplateParameters(currentTemplate):
+    for p in range(0, limiteP):
+        # Faux-amis variables selon les modèles
+        if debugLevel > 1: print ParamEN[p].encode(config.console_encoding, 'replace')
+        frName = ParamFR[p]
+
+        if ParamEN[p] == u'work':
+            if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1:
+                frName = u'périodique'
+            elif currentTemplate.find(u'ien web') != -1 and currentTemplate.find(u'ien web') < currentTemplate.find(u'|') and currentTemplate.find(u'|site=') == -1 and currentTemplate.find(u'|website=') == -1:
+                frName = u'site'
+            else:
+                frName = u'série'
+        elif ParamEN[p] == u'publisher':
+            if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1 and currentTemplate.find(u'|work=') == -1:
+                frName = u'périodique'
+            else:
+                frName = u'éditeur'
+        elif ParamEN[p] == u'agency':
+            if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1 and currentTemplate.find(u'|work=') == -1:
+                frName = u'périodique'
+            else:
+                frName = u'auteur institutionnel'
+        elif ParamEN[p] == u'issue' and (currentTemplate.find(u'|numéro=') != -1 and currentTemplate.find(u'|numéro=') < currentTemplate.find(u'}}')):
+            frName = u'date'
+        elif ParamEN[p] == u'en ligne le':
+            if currentTemplate.find(u'archiveurl') == -1 and currentTemplate.find(u'archive url') == -1 and currentTemplate.find(u'archive-url') == -1:
+                continue
+            elif currentTemplate.find(u'archivedate') != -1 or currentTemplate.find(u'archive date') != -1 or currentTemplate.find(u'archive-date') != -1:
+                continue
+            elif debugLevel > 0: u' archiveurl ' + u' archivedate'
+
+        regex = ur'(\| *)' + ParamEN[p] + ur'( *=)'
+        currentTemplate = re.sub(regex, ur'\1' + frName + ur'\2', currentTemplate)
+        currentTemplate = currentTemplate.replace(u'|=',u'|')
+        currentTemplate = currentTemplate.replace(u'| =',u'|')
+        currentTemplate = currentTemplate.replace(u'|  =',u'|')
+        currentTemplate = currentTemplate.replace(u'|}}',u'}}')
+        currentTemplate = currentTemplate.replace(u'| }}',u'}}')
+        if currentTemplate.find(u'{{') == -1:    # Sans modèle inclus
+            currentTemplate = currentTemplate.replace(u'||',u'|')
+
+    return currentTemplate
+
+
+def translateLinkTemplates(currentPage):
+    finalPage = u''
+    for m in range(0, limiteL):
+        # Formatage des anciens modèles
+        currentPage = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:]).replace(u' ', u'_') + ur' *\|', ModeleEN[m] + ur'|', currentPage)
+        currentPage = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:]).replace(u' ', u'  ') + ur' *\|', ModeleEN[m] + ur'|', currentPage)
+        currentPage = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:]) + ur' *\|', ModeleEN[m] + ur'|', currentPage)
+        # Traitement de chaque modèle à traduire
+        while re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]+', currentPage):
+            if debugLevel > 1:
+                print(u'Modèle n°' + str(m))
+                print(currentPage[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', currentPage).end()-1:][:100].encode(config.console_encoding, 'replace'))
+            finalPage = finalPage + currentPage[:re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', currentPage).end()-1]
+            currentPage = currentPage[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', currentPage).end()-1:]    
+            # Identification du code langue existant dans le modèle
+            languageCode = u''
+            if finalPage.rfind(u'{{') != -1:
+                PageDebut = finalPage[:finalPage.rfind(u'{{')]
+                if PageDebut.rfind(u'{{') != -1 and PageDebut.rfind(u'}}') != -1 and (PageDebut[len(PageDebut)-2:] == u'}}' or PageDebut[len(PageDebut)-3:] == u'}} '):
+                    languageCode = PageDebut[PageDebut.rfind(u'{{')+2:PageDebut.rfind(u'}}')]
+                    if family == 'wikipedia' or family == 'wiktionary':
+                        # Recherche de validité mais tous les codes ne sont pas encore sur les sites francophones
+                        if languageCode.find('}}') != -1: languageCode = languageCode[:languageCode.find('}}')]
+                        if debugLevel > 1: print u'Modèle:' + languageCode
+                        page2 = Page(site, u'Modèle:' + languageCode)
+                        try:
+                            PageCode = page2.get()
+                        except pywikibot.exceptions.NoPage:
+                            print "NoPage l 425"
+                            PageCode = u''
+                        except pywikibot.exceptions.LockedPage: 
+                            print "Locked l 428"
+                            PageCode = u''
+                        except pywikibot.exceptions.IsRedirectPage: 
+                            PageCode = page2.get(get_redirect=True)
+                        if debugLevel > 0: print(PageCode.encode(config.console_encoding, 'replace'))
+                        if PageCode.find(u'Indication de langue') != -1:
+                            if len(languageCode) == 2:    # or len(languageCode) == 3: if languageCode == u'pdf': |format=languageCode, absent de {{lien web}}
+                                # Retrait du modèle de langue devenu inutile
+                                finalPage = finalPage[:finalPage.rfind(u'{{' + languageCode + u'}}')] + finalPage[finalPage.rfind(u'{{' + languageCode + u'}}')+len(u'{{' + languageCode + u'}}'):]
+            if languageCode == u'':
+                if debugLevel > 0: print u' Code langue à remplacer une fois trouvé sur la page distante...'
+                languageCode = 'None'
+            # Ajout du code langue dans le modèle
+            if debugLevel > 0: print u'Modèle préalable : ' + languageCode
+            regex = ur'[^}]*lang(ue|uage)* *=[^}]*}}'
+            if not re.search(regex, currentPage):
+                currentPage = u'|langue=' + languageCode + currentPage
+            elif re.search(regex, currentPage).end() > currentPage.find(u'}}')+2:
+                currentPage = u'|langue=' + languageCode + currentPage
+                
+        currentPage = finalPage + currentPage
+        finalPage = u''
+
+    for m in range(0, limiteM):
+        if debugLevel > 1: print(u' Traduction des noms du modèle ' + ModeleEN[m])
+        currentPage = currentPage.replace(u'{{' + ModeleEN[m] + u' ', u'{{' + ModeleEN[m] + u'')
+        currentPage = re.sub(ur'({{[\n ]*)[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])] + ur'( *[\||\n\t|}])', ur'\1' +  ModeleFR[m] + ur'\2', currentPage)
+        # Suppression des modèles vides
+        regex = u'{{ *[' + ModeleFR[m][:1] + ur'|' + ModeleFR[m][:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *}}'
+        while re.search(regex, currentPage):
+            currentPage = currentPage[:re.search(regex, currentPage).start()] + currentPage[re.search(regex, currentPage).end():]
+        # Traduction des paramètres de chaque modèle de la page
+        regex = u'{{ *[' + ModeleFR[m][:1] + ur'|' + ModeleFR[m][:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *[\||\n]'
+        while re.search(regex, currentPage):
+            finalPage = finalPage + currentPage[:re.search(regex, currentPage).start()+2]
+            currentPage = currentPage[re.search(regex, currentPage).start()+2:]
+            currentTemplate, templateEndPosition = getCurrentLinkTemplate(currentPage)
+            currentPage = translateTemplateParameters(currentTemplate) + currentPage[templateEndPosition:]
+
+        currentPage = finalPage + currentPage
+        finalPage = u''
+
+    return currentPage
+
+
+def translateDates(currentPage):
+    if debugLevel > 1: print(u'  translateDates()')
+    parametersLimit = 9
+    ParamDate = range(1, parametersLimit +1)
+    # Date parameters
+    ParamDate[1] = u'date'
+    ParamDate[2] = u'mois'
+    ParamDate[3] = u'consulté le'
+    ParamDate[4] = u'en ligne le'
+    # Date templates
+    ParamDate[5] = u'dts'
+    ParamDate[6] = u'Dts'
+    ParamDate[7] = u'date triable'
+    ParamDate[8] = u'Date triable'
+
+    for m in range(1, monthLine + 1):
+        if debugLevel > 1:
+            print u'Mois ' + str(m)
+            print TradM[m][1]
+        for p in range(1, parametersLimit):
+            if debugLevel > 1: print u'Recherche de ' + ParamDate[p] + u' *=[ ,0-9]*' + TradM[m][1]
+            if p > 4:
+                currentPage = re.sub(ur'({{ *' + ParamDate[p] + ur'[^}]+)' + TradM[m][1] + ur'([^}]+}})', ur'\1' +  TradM[m][2] + ur'\2', currentPage)
+                currentPage = re.sub(ur'({{ *' + ParamDate[p] + ur'[^}]+)(\|[ 0-9][ 0-9][ 0-9][ 0-9])\|' + TradM[m][2] + ur'(\|[ 0-9][ 0-9])}}', ur'\1\3|' +  TradM[m][2] + ur'\2}}', currentPage)
+            else:
+                currentPage = re.sub(ur'(\| *' + ParamDate[p] + ur' *=[ ,0-9]*)' + TradM[m][1] + ur'([ ,0-9]*\.? *[<|\||\n\t|}])', ur'\1' +  TradM[m][2] + ur'\2', currentPage)
+                currentPage = re.sub(ur'(\| *' + ParamDate[p] + ur' *=[ ,0-9]*)' + TradM[m][1][:1].lower() + TradM[m][1][1:] + ur'([ ,0-9]*\.? *[<|\||\n\t|}])', ur'\1' +  TradM[m][2] + ur'\2', currentPage)
+                
+                # Ordre des dates : jj mois aaaa'
+                if debugLevel > 1: print u'Recherche de ' + ParamDate[p] + u' *= *' + TradM[m][2] + u' *([0-9]+), '
+                currentPage = re.sub(ur'(\| *' + ParamDate[p] + u' *= *)' + TradM[m][2] + ur' *([0-9]+), *([0-9]+)\.? *([<|\||\n\t|}])', ur'\1' + ur'\2' + ur' ' + TradM[m][2] + ur' ' + ur'\3' + ur'\4', currentPage)    # trim(u'\3') ne fonctionne pas
+ 
+    return currentPage
+
+
+def translateLanguages(currentPage):
+    if debugLevel > 1: print(u'  translateLanguages()')
+    for l in range(1, ligneL+1):
+        if debugLevel > 1:
+            print u'Langue ' + str(l)
+            print TradL[l][1]
+        currentPage = re.sub(ur'(\| *langue *= *)' + TradL[l][1] + ur'( *[<|\||\n\t|}])', ur'\1' +  TradL[l][2] + ur'\2', currentPage)
+
+        # Rustine suite à un imprévu censé être réglé ci-dessus, mais qui touche presque 10 % des pages.
+        currentPage = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Aa]rticle\|langue=' + TradL[l][2] + ur'\|)', ur'\1', currentPage)
+        currentPage = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Ll]ien web\|langue=' + TradL[l][2] + ur'\|)', ur'\1', currentPage)
+        currentPage = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Oo]uvrage\|langue=' + TradL[l][2] + ur'\|)', ur'\1', currentPage)
+ 
+    return currentPage

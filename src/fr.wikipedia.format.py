@@ -58,100 +58,106 @@ def treatPageByName(pageName):
     if PageBegin == 'KO':
         print 'Page illisible'
         return
-    PageTemp = PageBegin
+    currentPage = PageBegin
 
 
     #*** Traitement des textes ***
     if debugLevel > 0: print u' Traitements généraux'
-    PageTemp = globalOperations(PageTemp)
-    if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
-    if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
+    currentPage = globalOperations(currentPage)
+    if fixFiles: currentPage = replaceFilesErrors(currentPage)
+    if fixTags: currentPage = replaceDepretacedTags(currentPage)
     if translateURL:
         if debugLevel > 0: print u'Test des URL'
-        PageTemp = hyperlynx(PageTemp, debugLevel)
+        currentPage = hyperlynx(currentPage)
     regex = ur'({{[Ll]ien *\|[^}]*)traducteur( *=)'
-    if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'\1trad\2', PageTemp)
-    PageTemp = PageTemp.replace(u'hhttp://', u'http://')
+    if re.search(regex, currentPage):
+        currentPage = re.sub(regex, ur'\1trad\2', currentPage)
+    currentPage = currentPage.replace(u'hhttp://', u'http://')
 
     regex = ur'({{[Ll]ien brisé*\|[^}]*url *=[^\|\'}]*)\'\'(\| *titre *=[^\|\'}]*)\'\''
-    if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'\1\2', PageTemp)
+    if re.search(regex, currentPage):
+        currentPage = re.sub(regex, ur'\1\2', currentPage)
 
     #*** Traitement des modèles ***
     #https://fr.wikipedia.org/wiki/Catégorie:Page_utilisant_un_modèle_avec_un_paramètre_obsolète
     regex = ur' *{{[Rr]eflist([^}]*)}}'
-    if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex,  ur'{{Références\1}}', PageTemp)
+    if re.search(regex, currentPage):
+        currentPage = re.sub(regex,  ur'{{Références\1}}', currentPage)
     #TODO: garder les paramètres non vides : pasdecol, group(e), références, mais quid de taille et colonnes ?
 
     # https://fr.wikipedia.org/wiki/Catégorie:Page_du_modèle_Article_comportant_une_erreur
     if fixArticle:
-        PageEnd = u''
-        while PageTemp.find(u'{{article') != -1:
-            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'{{article')+len(u'{{article')]
-            PageTemp = PageTemp[PageTemp.find(u'{{article')+len(u'{{article'):]
-            if PageTemp.find(u'éditeur=') != -1 and PageTemp.find(u'éditeur=') < PageTemp.find(u'}}') and (PageTemp.find(u'périodique=') == -1 or PageTemp.find(u'périodique=') > PageTemp.find(u'}}')) and (PageTemp.find(u'revue=') == -1 or PageTemp.find(u'revue=') > PageTemp.find(u'}}')) and (PageTemp.find(u'journal=') == -1 or PageTemp.find(u'journal=') > PageTemp.find(u'}}')):
-                PageEnd = PageEnd + PageTemp[:PageTemp.find(u'éditeur=')] + u'périodique='
-                PageTemp = PageTemp[PageTemp.find(u'éditeur=')+len(u'éditeur='):]
-        PageTemp = PageEnd + PageTemp
-        PageEnd = u''
-        while PageTemp.find(u'{{Article') != -1:
-            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'{{Article')+len(u'{{Article')]
-            PageTemp = PageTemp[PageTemp.find(u'{{Article')+len(u'{{Article'):]
-            if PageTemp.find(u'éditeur=') != -1 and PageTemp.find(u'éditeur=') < PageTemp.find(u'}}') and (PageTemp.find(u'périodique=') == -1 or PageTemp.find(u'périodique=') > PageTemp.find(u'}}')) and (PageTemp.find(u'revue=') == -1 or PageTemp.find(u'revue=') > PageTemp.find(u'}}')) and (PageTemp.find(u'journal=') == -1 or PageTemp.find(u'journal=') > PageTemp.find(u'}}')):
-                PageEnd = PageEnd + PageTemp[:PageTemp.find(u'éditeur=')] + u'périodique='
-                PageTemp = PageTemp[PageTemp.find(u'éditeur=')+len(u'éditeur='):]        
-        PageTemp = PageEnd + PageTemp
+        finalPage = u''
+        while currentPage.find(u'{{article') != -1:
+            finalPage = finalPage + currentPage[:currentPage.find(u'{{article')+len(u'{{article')]
+            currentPage = currentPage[currentPage.find(u'{{article')+len(u'{{article'):]
+            if currentPage.find(u'éditeur=') != -1 and currentPage.find(u'éditeur=') < currentPage.find(u'}}') and (currentPage.find(u'périodique=') == -1 or currentPage.find(u'périodique=') > currentPage.find(u'}}')) and (currentPage.find(u'revue=') == -1 or currentPage.find(u'revue=') > currentPage.find(u'}}')) and (currentPage.find(u'journal=') == -1 or currentPage.find(u'journal=') > currentPage.find(u'}}')):
+                finalPage = finalPage + currentPage[:currentPage.find(u'éditeur=')] + u'périodique='
+                currentPage = currentPage[currentPage.find(u'éditeur=')+len(u'éditeur='):]
+        currentPage = finalPage + currentPage
+        finalPage = u''
+        while currentPage.find(u'{{Article') != -1:
+            finalPage = finalPage + currentPage[:currentPage.find(u'{{Article')+len(u'{{Article')]
+            currentPage = currentPage[currentPage.find(u'{{Article')+len(u'{{Article'):]
+            if currentPage.find(u'éditeur=') != -1 and currentPage.find(u'éditeur=') < currentPage.find(u'}}') and (currentPage.find(u'périodique=') == -1 or currentPage.find(u'périodique=') > currentPage.find(u'}}')) and (currentPage.find(u'revue=') == -1 or currentPage.find(u'revue=') > currentPage.find(u'}}')) and (currentPage.find(u'journal=') == -1 or currentPage.find(u'journal=') > currentPage.find(u'}}')):
+                finalPage = finalPage + currentPage[:currentPage.find(u'éditeur=')] + u'périodique='
+                currentPage = currentPage[currentPage.find(u'éditeur=')+len(u'éditeur='):]        
+        currentPage = finalPage + currentPage
 
     if fixMissingTitles:
         # Titres manquants (TODO: en test)
-        PageEnd = u''
+        finalPage = u''
         regex = ur'{{[l|L]ien web *\|'
-        if re.search(regex, PageTemp):
-            PageEnd = PageTemp[:re.search(regex, PageTemp).start()]
-            PageTemp = PageTemp[re.search(regex, PageTemp).start():]
-            PageTemp = addParameter(PageTemp, u'titre')
-        PageTemp = PageEnd + PageTemp
+        if re.search(regex, currentPage):
+            finalPage = currentPage[:re.search(regex, currentPage).start()]
+            currentPage = currentPage[re.search(regex, currentPage).start():]
+            currentPage = addParameter(currentPage, u'titre')
+        currentPage = finalPage + currentPage
 
 
     #*** Traitement des Catégories ***
     if pageName.find(u'Template:Cite pmid/') != -1:
-        PageTemp = PageTemp.replace(u'Catégorie:Modèle de source‎', u'Catégorie:Modèle pmid')
-        PageTemp = PageTemp.replace(u'[[Catégorie:Modèle pmid]]', u'[[Catégorie:Modèle pmid‎|{{SUBPAGENAME}}]]')
+        currentPage = currentPage.replace(u'Catégorie:Modèle de source‎', u'Catégorie:Modèle pmid')
+        currentPage = currentPage.replace(u'[[Catégorie:Modèle pmid]]', u'[[Catégorie:Modèle pmid‎|{{SUBPAGENAME}}]]')
 
 
     # Analyse des crochets et accolades (à faire : hors LaTex)
-    if PageTemp.count('{') - PageTemp.count('}') != 0:
+    if currentPage.count('{') - currentPage.count('}') != 0:
         if pageName.find(u'User:JackBot/') == -1: log(u'*[[' + pageName + u']] : accolade cassée')
         #if debugLevel > 1: raise Exception(u'Accolade cassée')
-    if PageTemp.count('[') - PageTemp.count(']') != 0:
+    if currentPage.count('[') - currentPage.count(']') != 0:
         if pageName.find(u'User:JackBot/') == -1: log(u'*[[' + pageName + u']] : crochet cassé')
         #if debugLevel > 1: raise Exception(u'Crochet cassé')
-    if PageBegin.count('[[') - PageBegin.count(']]') != PageTemp.count('[[') - PageTemp.count(']]'):
+    if PageBegin.count('[[') - PageBegin.count(']]') != currentPage.count('[[') - currentPage.count(']]'):
         txtfile = codecs.open(output, 'a', 'utf-8')
-        txtfile.write(PageTemp + u'\n\n------------------------------------------------------------------------------------------------------------\n\n')
+        txtfile.write(currentPage + u'\n\n------------------------------------------------------------------------------------------------------------\n\n')
         txtfile.close()    
-        if debugLevel > 0: print u'Crochets cassés'    #raise Exception(u'Crochets cassés')
+        if debugLevel > 0:
+            print u'Crochets cassés'    #raise Exception(u'Crochets cassés')
+            raw_input(PageBegin.encode(config.console_encoding, 'replace'))
         if safeMode: return
-    if PageBegin.count('{{') - PageBegin.count('}}') != PageTemp.count('{{') - PageTemp.count('}}'):
+    if PageBegin.count('{{') - PageBegin.count('}}') != currentPage.count('{{') - currentPage.count('}}'):
         txtfile = codecs.open(output, 'a', 'utf-8')
-        txtfile.write(PageTemp + u'\n\n------------------------------------------------------------------------------------------------------------\n\n')
+        txtfile.write(currentPage + u'\n\n------------------------------------------------------------------------------------------------------------\n\n')
         txtfile.close()    
-        if debugLevel > 0: print u'Accolades cassées'    #raise Exception(u'Accolades cassées')
+        if debugLevel > 0:
+            print u'Accolades cassées'    #raise Exception(u'Accolades cassées')
+            raw_input(currentPage.encode(config.console_encoding, 'replace'))
         if safeMode: return
 
-    PageEnd = PageTemp
+    finalPage = currentPage
     if debugLevel > 0: print (u'--------------------------------------------------------------------------------------------')
-    if PageEnd != PageBegin and PageEnd != PageBegin.replace(u'{{chapitre |', u'{{chapitre|') and PageEnd != PageBegin.replace(u'{{Chapitre |', u'{{Chapitre|'):
+    if finalPage != PageBegin and finalPage != PageBegin.replace(u'{{chapitre |', u'{{chapitre|') and finalPage != PageBegin.replace(u'{{Chapitre |', u'{{Chapitre|'):
         summary = summary + u', [[Wikipédia:Bot/Requêtes/2012/12#Remplacer_les_.7B.7BCite_web.7D.7D_par_.7B.7BLien_web.7D.7D|traduction des modèles de liens]]'
-        PageEnd = PageEnd.replace(ur'</ref><ref>', ur'</ref>{{,}}<ref>')
-        savePage(page, PageEnd, summary)
+        finalPage = finalPage.replace(ur'</ref><ref>', ur'</ref>{{,}}<ref>')
+        savePage(page, finalPage, summary)
 
 
 p = PageProvider(treatPageByName, site, debugLevel)
 setGlobals(debugLevel, site, username)
+setGlobalsHL(debugLevel, site, username)
 def main(*args):
+    global allNamespaces
     if len(sys.argv) > 1:
         if debugLevel > 1: print sys.argv
         if sys.argv[1] == u'-test':
@@ -164,14 +170,14 @@ def main(*args):
         elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
             p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
         elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
-            regex = u'{{[iI]nfobox[^}]*\| *{{ISBN\|'
+            regex = u'\| *French *\|'
             if len(sys.argv) > 2: regex = sys.argv[2]
             p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex)
         elif sys.argv[1] == u'-u':
             p.pagesByUser(u'User:' + username)
         elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
             if len(sys.argv) > 2:
-                p.pagesBySearch(sys.argv[2])
+                p.pagesBySearch(sys.argv[2], namespaces = [0])
             else:
                 p.pagesBySearch(u'"hhttp://"')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
@@ -179,7 +185,6 @@ def main(*args):
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
             global translateURL
             translateURL = False
-            global allNamespaces
             allNamespaces = True
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
