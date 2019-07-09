@@ -2979,7 +2979,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
-                regex = ur'=== \{\{S\|prononciation\}\} ===((?!\n=).)*\n\'\'\''
+                regex = ur'{term[\n\|].*id *= *[^\n\|{}]+[\n\|]'
             if len(sys.argv) > 3:
                 testPage = sys.argv[3]
             else:
@@ -2991,7 +2991,7 @@ def main(*args):
                 else:
                     print 'KO'
             else:
-                p.pagesByXML(dumpFile, regex = regex)
+                p.pagesByXML(dumpFile, regex = regex, namespaces = 10)
         elif sys.argv[1] == str('-u'):
             if len(sys.argv) > 2:
                 targetedUser = sys.argv[2]
@@ -3004,12 +3004,12 @@ def main(*args):
                 number = sys.argv[4]
             else:
                 number = 1000
-            p.pagesByUser(u'User:' + targetedUser, numberOfPagesToTreat = number)
+            p.pagesByUser(u'User:' + targetedUser, numberOfPagesToTreat = number, namespaces = [0])
         elif sys.argv[1] == str('-search') or sys.argv[1] == str('-s') or sys.argv[1] == str('-r'):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/Participe passé de *\'* *[a-km-zçæéë]/', namespaces = [0])
+                p.pagesBySearch(u'insource:/\{term[\n\|][^\{]*id *= *[^\n\|\{]+[\n\|]/', namespaces = [10])
 
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
             sys.argv[1] == str('-m'):

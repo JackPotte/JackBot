@@ -250,11 +250,11 @@ class PageProvider:
             yield item[0]
 
     # [[Special:Contributions]]: the last pages touched by a user
-    def pagesByUser(self, username, numberOfPagesToTreat = None, afterPage = None, regex = None, notRegex = None, site = None):
+    def pagesByUser(self, username, numberOfPagesToTreat = None, afterPage = None, regex = None, notRegex = None, site = None, namespaces = None):
         if site is None: site = self.site
         modify = False
         numberOfPagesTreated = 0
-        gen = pagegenerators.UserContributionsGenerator(username, site = site)
+        gen = pagegenerators.UserContributionsGenerator(username, namespaces = namespaces, site = site)
         for Page in pagegenerators.PreloadingGenerator(gen,100):
             if not afterPage or afterPage == u'' or modify:
                 found = False
