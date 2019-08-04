@@ -953,7 +953,6 @@ def anagram(word):
     return rec_anagram(collections.Counter(word))
 
 def sortTranslations(pageContent, summary):
-    debugLevel = 0
     if debugLevel > 0: print u'Classement des traductions et ajout des modèles T'
     if debugLevel > 1: print u'Détection d\'une première traduction aux normes'
     regex = u'\* ?{{[a-z][a-z][a-z]?\-?[a-z]?[a-z]?[a-z]?}} :'
@@ -981,53 +980,27 @@ def sortTranslations(pageContent, summary):
                 pageContent = pageContent[:pageContent.find(u'\n')+pageContent2.find('{{')+2] + u'T|' + \
                     pageContent[pageContent.find(u'\n')+pageContent2.find('{{')+2:]
 
-        if debugLevel > 2: print u'Rangement de la ligne de la traduction par ordre alphabétique de la langue dans finalPageContent'
-        language1 = pageContent[pageContent.find(u'{{T|')+4:pageContent.find(u'}')]
-        if language1.find(u'|') != -1: language1 = language1[:language1.find(u'|')]
-        if debugLevel > 2: raw_input(finalPageContent.encode(config.console_encoding, 'replace'))
-        if language1 != u'' and (finalPageContent.find(u'<!--') == -1 or finalPageContent.find(u'-->') != -1):
-            # Bug trop rare https://fr.wiktionary.org/w/index.php?title=User:JackBot/test&diff=15092317&oldid=15090227
-            if debugLevel > 2 and finalPageContent.find(u'<!--') != -1:
-                raw_input(finalPageContent[:finalPageContent.rfind(u'\n')].encode(config.console_encoding, 'replace'))
-            if debugLevel > 1: print u' Langue 1 : ' + language1
-            if len(language1) > 3 and language1.find(u'-') == -1:
-                language = language1
-            else:
-                try:
-                    language = defaultSort(languages[language1].decode('utf8'), 'UTF-8')
-                    if debugLevel > 1: print u' Nom de langue 1 : ' + language
-                except KeyError:
-                    if debugLevel > 0: print u'KeyError l 2556'
-                    break
-                except UnboundLocalError:
-                    if debugLevel > 0: print u'UnboundLocalError l 2559'
-                    break
+        language = getTranslationCurrentLangage(pageContent)
+        if language != u'' and (finalPageContent.find(u'<!--') == -1 or finalPageContent.find(u'-->') != -1):
             language2 = u'zzz'
             if finalPageContent.rfind(u'\n') == -1 or pageContent.find(u'\n') == -1: break
             TradCourante = finalPageContent[finalPageContent.rfind(u'\n'):] + pageContent[:pageContent.find(u'\n')]
             TradSuivantes = u''
             finalPageContent = finalPageContent[:finalPageContent.rfind(u'\n')]
             pageContent = pageContent[pageContent.find(u'\n'):]
-            while finalPageContent.rfind('{{') != finalPageContent.rfind(u'{{S|') and language2 > language \
-                and finalPageContent.rfind('{{') != finalPageContent.rfind(u'{{trad-début') \
-                and finalPageContent.rfind('{{') != finalPageContent.rfind(u'{{trad-fin') \
+            while language2 > language \
+                and finalPageContent.rfind(u'{{') != finalPageContent.rfind(u'{{S|') \
+                and finalPageContent.rfind(u'{{') != finalPageContent.rfind(u'{{trad-début') \
+                and finalPageContent.rfind(u'{{') != finalPageContent.rfind(u'{{trad-fin') \
+                and finalPageContent.rfind(u'{{') != finalPageContent.rfind(u'{{(') \
                 and finalPageContent.rfind(u'{{T') != finalPageContent.rfind(u'{{T|conv') \
-                and finalPageContent.rfind('{{') != finalPageContent.rfind(u'{{(') \
-                and (finalPageContent.rfind('{{') > finalPageContent.rfind(u'|nocat') \
-                or finalPageContent.rfind(u'|nocat') == -1):
-                language2 = finalPageContent[finalPageContent.rfind(u'{{T|')+len(u'{{T|'):]
-                language2 = language2[:language2.find('}}')]
-                if language2.find(u'|') != -1: language2 = language2[:language2.find(u'|')]
-                if debugLevel > 1: print u' Langue 2 : ' + language2
-                if len(language2) > 3 and language2.find(u'-') == -1:
-                    language = language2
-                else:
-                    try:
-                        language2 = defaultSort(languages[language2].decode('utf8'), 'UTF-8')
-                        if debugLevel > 1: print u' Nom de langue 2 : ' + language2
-                    except KeyError:
-                        if debugLevel > 0: print u'KeyError l 2160'
-                        break
+            :
+
+                language2 = getTranslationNextLangage(finalPageContent)
+                if debugLevel > 0:
+                    print language
+                    print language2
+                    print language2 > language
                 if language2 != u'' and language2 > language:
                     if debugLevel > 0: language2 + u' > ' + language
                     if finalPageContent.rfind(u'\n') > finalPageContent.rfind(u'trad-début'):
@@ -1056,9 +1029,46 @@ def sortTranslations(pageContent, summary):
         if debugLevel > 2: print(pageContent.encode(config.console_encoding, 'replace'))
         if debugLevel > 0: print ''
     pageContent = finalPageContent + pageContent
-    if debugLevel > 0: raw_input(pageContent.encode(config.console_encoding, 'replace'))
+    if debugLevel > 0:
+        print ' fin du tri des traductions'
+        raw_input(pageContent.encode(config.console_encoding, 'replace'))
 
     return pageContent, summary
+
+
+def getTranslationCurrentLangage(pageContent):
+    language = ''
+    language1 = pageContent[pageContent.find(u'{{T|')+4:pageContent.find(u'}')]
+    if language1.find(u'|') != -1: language1 = language1[:language1.find(u'|')]
+    if language1 != u'':
+        if len(language1) > 3 and language1.find(u'-') == -1:
+            # TODO
+            language = language1
+        else:
+            try:
+                language = defaultSort(languages[language1].decode('utf8'), 'UTF-8')
+                if debugLevel > 1: print u' Nom de langue 1 : ' + language
+            except KeyError:
+                if debugLevel > 0: print u'KeyError l 2556'
+            except UnboundLocalError:
+                if debugLevel > 0: print u'UnboundLocalError l 2559'
+
+    return language
+
+
+def getTranslationNextLangage(finalPageContent):
+    language2 = finalPageContent[finalPageContent.rfind(u'{{T|')+len(u'{{T|'):]
+    language2 = language2[:language2.find('}}')]
+    if language2.find(u'|') != -1: language2 = language2[:language2.find(u'|')]
+    try:
+        language2 = defaultSort(languages[language2].decode('utf8'), 'UTF-8')
+        if debugLevel > 1: print u' Nom de langue 2 : ' + language2
+    except KeyError:
+        if debugLevel > 0: print u'KeyError l 2160'
+        language2 = ''
+
+    return language2
+
 
 def getLanguageCodeISO693_1FromISO693_3(code):
     if code == 'ben':
