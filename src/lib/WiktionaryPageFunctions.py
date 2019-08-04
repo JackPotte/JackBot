@@ -1048,10 +1048,12 @@ def getTranslationNextLangage(finalPageContent):
 
 
 def getLangageNameByCode(languageCode):
+    languageName = u''
     if languageCode.find(u'|') != -1: languageCode = languageCode[:languageCode.find(u'|')]
     if languageCode != u'':
         if len(languageCode) > 3 and languageCode.find(u'-') == -1:
             if debugLevel > 0: print u'No ISO code (ex: gallo)'
+            languageName = languageCode
         else:
             try:
                 languageName = defaultSort(languages[languageCode].decode('utf8'), 'UTF-8')
