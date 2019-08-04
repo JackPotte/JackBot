@@ -1029,45 +1029,39 @@ def sortTranslations(pageContent, summary):
         if debugLevel > 2: print(pageContent.encode(config.console_encoding, 'replace'))
         if debugLevel > 0: print ''
     pageContent = finalPageContent + pageContent
-    if debugLevel > 0:
-        print ' fin du tri des traductions'
-        raw_input(pageContent.encode(config.console_encoding, 'replace'))
+    if debugLevel > 0: raw_input(' fin du tri des traductions')
 
     return pageContent, summary
 
 
 def getTranslationCurrentLangage(pageContent):
-    language = ''
-    language1 = pageContent[pageContent.find(u'{{T|')+4:pageContent.find(u'}')]
-    if language1.find(u'|') != -1: language1 = language1[:language1.find(u'|')]
-    if language1 != u'':
-        if len(language1) > 3 and language1.find(u'-') == -1:
-            # TODO
-            language = language1
+    language = pageContent[pageContent.find(u'{{T|')+4:pageContent.find(u'}')]
+
+    return getLangageNameByCode(language)
+
+
+def getTranslationNextLangage(finalPageContent):
+    language = finalPageContent[finalPageContent.rfind(u'{{T|')+len(u'{{T|'):]
+    language = language[:language.find('}}')]
+
+    return getLangageNameByCode(language)
+
+
+def getLangageNameByCode(languageCode):
+    if languageCode.find(u'|') != -1: languageCode = languageCode[:languageCode.find(u'|')]
+    if languageCode != u'':
+        if len(languageCode) > 3 and languageCode.find(u'-') == -1:
+            if debugLevel > 0: print u'No ISO code (ex: gallo)'
         else:
             try:
-                language = defaultSort(languages[language1].decode('utf8'), 'UTF-8')
-                if debugLevel > 1: print u' Nom de langue 1 : ' + language
+                languageName = defaultSort(languages[languageCode].decode('utf8'), 'UTF-8')
+                if debugLevel > 1: print u' Language name: ' + languageName
             except KeyError:
                 if debugLevel > 0: print u'KeyError l 2556'
             except UnboundLocalError:
                 if debugLevel > 0: print u'UnboundLocalError l 2559'
 
-    return language
-
-
-def getTranslationNextLangage(finalPageContent):
-    language2 = finalPageContent[finalPageContent.rfind(u'{{T|')+len(u'{{T|'):]
-    language2 = language2[:language2.find('}}')]
-    if language2.find(u'|') != -1: language2 = language2[:language2.find(u'|')]
-    try:
-        language2 = defaultSort(languages[language2].decode('utf8'), 'UTF-8')
-        if debugLevel > 1: print u' Nom de langue 2 : ' + language2
-    except KeyError:
-        if debugLevel > 0: print u'KeyError l 2160'
-        language2 = ''
-
-    return language2
+    return languageName
 
 
 def getLanguageCodeISO693_1FromISO693_3(code):
