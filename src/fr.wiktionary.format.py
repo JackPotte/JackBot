@@ -3015,6 +3015,8 @@ def main(*args):
             sys.argv[1] == str('-m'):
             p.pagesByLink(u'Template:gaul', namespaces = [0])
         elif sys.argv[1] == str('-category') or sys.argv[1] == str('-cat') or sys.argv[1] == str('-c'):
+            p.pagesByCat(u'Catégorie:Traductions en créole haïtien', afterPage = u'il')
+            return
             if len(sys.argv) > 2:
                 if sys.argv[2] == str('listFalseTranslations'):
                     listFalseTranslations = True
