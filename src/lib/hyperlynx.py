@@ -1725,7 +1725,7 @@ def translateLinkTemplates(currentPage):
                 PageDebut = finalPage[:finalPage.rfind(u'{{')]
                 if PageDebut.rfind(u'{{') != -1 and PageDebut.rfind(u'}}') != -1 and (PageDebut[len(PageDebut)-2:] == u'}}' or PageDebut[len(PageDebut)-3:] == u'}} '):
                     languageCode = PageDebut[PageDebut.rfind(u'{{')+2:PageDebut.rfind(u'}}')]
-                    if family == 'wikipedia' or family == 'wiktionary':
+                    if site.family in ['wikipedia', 'wiktionary']:
                         # Recherche de validité mais tous les codes ne sont pas encore sur les sites francophones
                         if languageCode.find('}}') != -1: languageCode = languageCode[:languageCode.find('}}')]
                         if debugLevel > 1: print u'Modèle:' + languageCode
