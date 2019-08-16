@@ -904,12 +904,12 @@ def hyperlynx(currentPage):
             for l in range(1,limiteURL):
                 if FinPageURL.find(FinDURL[l]) != -1 and FinPageURL.find(FinDURL[l]) < FinPageURL.find(CharFinURL):
                     CharFinURL = FinDURL[l]
-            if debugLevel > 0: print u'Saut après ' + CharFinURL
+            if debugLevel > 0: print u'Saut après "' + CharFinURL + u'"'
             finalPage = finalPage + currentPage[:currentPage.find(u'//')+2+FinPageURL.find(CharFinURL)]
             currentPage = currentPage[currentPage.find(u'//')+2+FinPageURL.find(CharFinURL):]
         else:
             # Saut du reste du modèle courant (contenant parfois d'autres URL à laisser)
-            if debugLevel > 0: print u'Saut après }}'
+            if debugLevel > 0: print u'Saut après "}}"'
             finalPage = finalPage + currentPage[:templateEndPosition]
             currentPage = currentPage[templateEndPosition:]
         if debugLevel > 1: raw_input(finalPage.encode(config.console_encoding, 'replace'))

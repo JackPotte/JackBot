@@ -53,7 +53,7 @@ msg = {
     'fr': (u'<h1 style="border-bottom:none;margin-top:0;margin-bottom:0.8em;text-align:center;"> %d citations dans %d articles ',
            u'<small>(Le nombre d\'articles n\'inclut que les articles qui possèdent au moins une citation. Les citations en plusieurs exemplaires ne sont comptées qu\'une fois.)',
            u'== Répartion par article ==\n\n',
-           u'{| class="wikitable"\n|+\'\'\'Nombre de citations par article\'\'\'\n! align="center" | Article\n! align="center" | Nombre de citations\n',
+           u'{| class="wikitable sortable"\n|+\'\'\'Nombre de citations par article\'\'\'\n! align="center" | Article\n! align="center" | Nombre de citations\n',
            u'|- align="center" \n| \'\'\'Moyenne\'\'\' || %0.2f\n',
            u'<small>La moyenne exclut les articles ne contenant aucune citation.</small>\n\n',
            u'== Citations en plusieurs exemplaires ==\n',
