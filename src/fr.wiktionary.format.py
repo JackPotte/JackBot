@@ -2945,7 +2945,7 @@ def treatPageByName(pageName):
 
     # Fix
     finalPageContent = finalPageContent.replace(u'|lanɡ=', u'|lang=')
-    regex = ur'({{pron)(\|lang=[a-zA-Z]{2, 3})(\|[a-zA-Z]{2, 3}}})'
+    regex = ur'({{pron)(\|lang=[a-zA-Z]{2,3})(\|[a-zA-Z]{2,3}}})'
     if re.search(regex, finalPageContent):
         finalPageContent = re.sub(regex, ur'\1|\3', finalPageContent)
 
