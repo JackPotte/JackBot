@@ -1029,7 +1029,7 @@ def sortTranslations(pageContent, summary):
         if debugLevel > 2: print(pageContent.encode(config.console_encoding, 'replace'))
         if debugLevel > 0: print ''
     pageContent = finalPageContent + pageContent
-    if debugLevel > 0: raw_input(' fin du tri des traductions')
+    if debugLevel > 1: raw_input(' fin du tri des traductions')
 
     return pageContent, summary
 
@@ -1782,9 +1782,6 @@ def formatTemplates(pageContent, summary):
     pageContent = pageContent.replace(u'myt=scandinave', u'myt=nordique')
     pageContent = pageContent.replace(u'{{pron|}}', u'{{pron}}')
     pageContent = pageContent.replace(u'{{prononciation|}}', u'{{prononciation}}')
-    regex = ur'({{pron\|[^\|}]*)g([^\|}]*)'
-    while re.search(regex, pageContent):
-        pageContent = re.sub(regex, ur"\1ɡ\2", pageContent)
 
     pageContent = pageContent.replace(u'#*: {{trad-exe|fr}}', u'')
     pageContent = pageContent.replace(u'\n{{WP', u'\n* {{WP')

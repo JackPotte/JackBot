@@ -2106,12 +2106,26 @@ def treatPageByName(pageName):
                         # Tri des lettres de l'API
                         if currentTemplate == u'pron':
                             pageContent2 = pageContent[endPosition+1:pageContent.find('}}')]
-                            while pageContent2.find(u'\'') != -1 and pageContent2.find(u'\'') < pageContent2.find('}}') and (pageContent2.find(u'\'') < pageContent2.find(u'|') or pageContent2.find(u'|') == -1): pageContent = pageContent[:pageContent.find(u'\'')] + u'ˈ' + pageContent[pageContent.find(u'\'')+1:]
-                            while pageContent2.find(u'ˈˈˈ') != -1 and pageContent2.find(u'ˈˈˈ') < pageContent2.find('}}') and (pageContent2.find(u'ˈˈˈ') < pageContent2.find(u'|') or pageContent2.find(u'|') == -1): pageContent = pageContent[:pageContent.find(u'ˈˈˈ')] + u'\'\'\'' + pageContent[pageContent.find(u'ˈˈˈ')+3:]
-                            while pageContent2.find(u'ε') != -1 and pageContent2.find(u'ε') < pageContent2.find('}}') and (pageContent2.find(u'ε') < pageContent2.find(u'|') or pageContent2.find(u'|') == -1): pageContent = pageContent[:pageContent.find(u'ε')] + u'ɛ' + pageContent[pageContent.find(u'ε')+1:]
-                            while pageContent2.find(u'ε̃') != -1 and pageContent2.find(u'ε̃') < pageContent2.find('}}') and (pageContent2.find(u'ε̃') < pageContent2.find(u'|') or pageContent2.find(u'|') == -1): pageContent = pageContent[:pageContent.find(u'ε̃')] + u'ɛ̃' + pageContent[pageContent.find(u'ε̃')+1:]
-                            while pageContent2.find(u':') != -1 and pageContent2.find(u':') < pageContent2.find('}}') and (pageContent2.find(u':') < pageContent2.find(u'|') or pageContent2.find(u'|') == -1): pageContent = pageContent[:pageContent.find(u':')] + u'ː' + pageContent[pageContent.find(u':')+1:]
-                            while pageContent2.find(u'g') != -1 and pageContent2.find(u'g') < pageContent2.find('}}') and (pageContent2.find(u'g') < pageContent2.find(u'|') or pageContent2.find(u'|') == -1): pageContent = pageContent[:pageContent.find(u'g')] + u'ɡ' + pageContent[pageContent.find(u'g')+1:]
+                            while pageContent2.find(u'\'') != -1 and pageContent2.find(u'\'') < pageContent2.find('}}') \
+                                and (pageContent2.find(u'\'') < pageContent2.find(u'|') or pageContent2.find(u'|') == -1):
+                                pageContent = pageContent[:pageContent.find(u'\'')] + u'ˈ' + pageContent[pageContent.find(u'\'')+1:]
+                            while pageContent2.find(u'ˈˈˈ') != -1 and pageContent2.find(u'ˈˈˈ') < pageContent2.find('}}') \
+                                and (pageContent2.find(u'ˈˈˈ') < pageContent2.find(u'|') or pageContent2.find(u'|') == -1):
+                                pageContent = pageContent[:pageContent.find(u'ˈˈˈ')] + u'\'\'\'' + pageContent[pageContent.find(u'ˈˈˈ')+3:]
+                            while pageContent2.find(u'ε') != -1 and pageContent2.find(u'ε') < pageContent2.find('}}') \
+                                and (pageContent2.find(u'ε') < pageContent2.find(u'|') or pageContent2.find(u'|') == -1):
+                                pageContent = pageContent[:pageContent.find(u'ε')] + u'ɛ' + pageContent[pageContent.find(u'ε')+1:]
+                            while pageContent2.find(u'ε̃') != -1 and pageContent2.find(u'ε̃') < pageContent2.find('}}') \
+                                and (pageContent2.find(u'ε̃') < pageContent2.find(u'|') or pageContent2.find(u'|') == -1):
+                                pageContent = pageContent[:pageContent.find(u'ε̃')] + u'ɛ̃' + pageContent[pageContent.find(u'ε̃')+1:]
+                            while pageContent2.find(u':') != -1 and pageContent2.find(u':') < pageContent2.find('}}') \
+                                and (pageContent2.find(u':') < pageContent2.find(u'|') or pageContent2.find(u'|') == -1):
+                                pageContent = pageContent[:pageContent.find(u':')] + u'ː' + pageContent[pageContent.find(u':')+1:]
+                            while pageContent2.find(u'g') != -1 and pageContent2.find(u'g') < pageContent2.find('}}') \
+                                and (pageContent2.find(u'g') < pageContent2.find(u'|') or pageContent2.find(u'|') == -1) \
+                                and pageContent2.find(u'g') != pageContent2.find(u'lang=')+3:
+                                pageContent = pageContent[:pageContent.find(u'g')] + u'ɡ' + pageContent[pageContent.find(u'g')+1:]
+
                             #if languageCode == u'es': β/, /ð/ et /ɣ/ au lieu de de /b/, /d/ et /ɡ/
                         if pageContent[:8] == u'pron||}}':
                             finalPageContent = finalPageContent + pageContent[:pageContent.find('}}')] + languageCode + '}}'
@@ -2929,6 +2943,9 @@ def treatPageByName(pageName):
         # Unknown namespace
         finalPageContent = pageContent
 
+    # Fix
+    finalPageContent = finalPageContent.replace(u'|lanɡ=', u'|lang=')
+
     if testImport and username in pageName: finalPageContent = addLineTest(finalPageContent)
     if debugLevel > 0: pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
     if finalPageContent != currentPageContent:
@@ -3009,7 +3026,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:/\{term[\n\|][^\{]*id *= *[^\n\|\{]+[\n\|]/', namespaces = [10])
+                p.pagesBySearch(u'insource:/lanɡ=/', namespaces = [0])
 
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
             sys.argv[1] == str('-m'):
