@@ -2945,6 +2945,9 @@ def treatPageByName(pageName):
 
     # Fix
     finalPageContent = finalPageContent.replace(u'|lanɡ=', u'|lang=')
+    regex = ur'({{pron)(\|lang=[a-zA-Z]{2})(\|[a-zA-Z]{2}}})'
+    if re.search(regex, finalPageContent):
+        finalPageContent = re.sub(regex, ur'\1|\3', finalPageContent)
 
     if testImport and username in pageName: finalPageContent = addLineTest(finalPageContent)
     if debugLevel > 0: pywikibot.output(u"\n\03{red}---------------------------------------------\03{default}")
