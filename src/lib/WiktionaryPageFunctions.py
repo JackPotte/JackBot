@@ -499,6 +499,11 @@ def formatCategories(pageContent, summary):
     regex = ur'(\[\[[Cc]atégorie:[^\n]+\n)\n+(\[\[[Cc]atégorie:)'
     pageContent = re.sub(regex, ur'\1\2', pageContent)
 
+    regex = ur'([Cc]atégorie:Mots en occitan suffixés )en '
+    pageContent = re.sub(regex, ur'\1avec ', pageContent)
+    regex = ur'([Cc]atégorie:Verbes en occitan suffixés )en '
+    pageContent = re.sub(regex, ur'\1avec ', pageContent)
+
     return pageContent, summary
 
 def removeTemplate(pageContent, template, summary, language = None, inSection = None):
