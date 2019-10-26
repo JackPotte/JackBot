@@ -1306,6 +1306,8 @@ def formatSections(pageContent, summary):
     pageContent = pageContent.replace(u'{{S|symb|', u'{{S|symbole|')
     pageContent = pageContent.replace(u'{{S|verb|', u'{{S|verbe|')
     pageContent = pageContent.replace(u'{{S|apparentés étymologiques', u'{{S|apparentés')
+    pageContent = pageContent.replace(u'{{S|modphon}', u'{{S|modification phonétique}')
+    pageContent = pageContent.replace(u'{{S|mutation}', u'{{S|modification phonétique}')
     # Alias peu intuitifs des sections sans langue
     pageContent = re.sub(ur'{{S\| ?abr(é|e)v(iations)?\|?[a-z\- ]*}}', u'{{S|abréviations}}', pageContent)
     pageContent = re.sub(ur'{{S\| ?anagr(ammes)?\|?[a-z\- ]*}}', u'{{S|anagrammes}}', pageContent)
