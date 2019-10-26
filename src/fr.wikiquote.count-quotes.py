@@ -452,7 +452,7 @@ class Main(object):
 
     __output = None
     __outputprefix = None
-    __outputarticles = None
+    __outputarticles = 'Utilisateur:JackBot/NUMBEROFARTICLES'
     __outputquotes = None
 
     def parse(self):
