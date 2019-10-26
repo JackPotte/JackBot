@@ -625,7 +625,7 @@ class Main(object):
 		if self.__outputarticles:
 			pname = self.__outputarticles
 		else:
-			pname = "NUMBEROFARTICLES"
+			pname = "Utilisateur:JackBot/NUMBEROFARTICLES"
 		narticlespage = pywikibot.Page(site, u'%s%s' % (self.__outputprefix, pname))
 	else:
 		if self.__outputquotes:
