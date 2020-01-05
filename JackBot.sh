@@ -22,7 +22,7 @@
 
 #*** Maintained ***
 #python core/pwb.py src/fr.wikinews.2wikipedia
-#python core/pwb.py src/fr.wikiquote.count-quotes -family:wikiquote -output:"User:JackBot/statistiques" -outputarticles:"Template:NUMBEROFQARTICLES" -outputquotes:"Template:NUMBEROFQUOTES"
+#python core/pwb.py src/fr.wikiquote.count-quotes -family:wikiquote -output:"User:JackBot/statistiques"
 
 #*** Homemade ***
 #python core/pwb.py src/en.wikibooks.format -nocat

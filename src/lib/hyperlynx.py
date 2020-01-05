@@ -952,9 +952,13 @@ def hyperlynx(currentPage):
     '''while currentPage.find(u'|deadurl=no|') != -1:
         currentPage = currentPage[0:currentPage.find(u'|deadurl=no|')+1] + currentPage[currentPage.find(u'|deadurl=no|')+len(u'|deadurl=no|'):len(currentPage)]'''
     # Si dans {{ouvrage}} "lire en ligne" est vide, cela bloque le paramètre "url"
-    currentPage = re.sub(ur'{{(o|O)uvrage(\||\n[^}]*)\| *lire en ligne *= *([\||}|\n]+)', ur'{{\1uvrage\2\3', currentPage)
+    currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *lire en ligne *= *([\||}|\n]+)', ur'{{\1uvrage\2\3', currentPage)
     # Idem dans {{article}} : "éditeur" vide bloque "périodique", "journal" ou "revue"
-    currentPage = re.sub(ur'{{(a|A)rticle(\||\n[^}]*)\| *éditeur *= *([\||}|\n]+)', ur'{{\1rticle\2\3', currentPage)
+    currentPage = re.sub(ur'{{ *(a|A)rticle *((?:\||\n)[^}]*)\| *éditeur *= *([\||}|\n]+)', ur'{{\1rticle\2\3', currentPage)
+    # https://fr.wikipedia.org/w/index.php?title=Discussion_utilisateur:JackPotte&oldid=prev&diff=165491794#Suggestion_pour_JackBot_:_Signalement_param%C3%A8tre_obligatoire_manquant_+_Lien_web_vs_Article
+    currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *(?:ref|référence|référence simplifiée) *= *harv *([\|}\n]+)', ur'{{\1uvrage\2\3', currentPage)
+
+    currentPage = re.sub(ur'{{Références\| *colonnes *= *}}', ur'{{Références}}', currentPage)
 
     finalPage = finalPage + currentPage
 
