@@ -179,16 +179,15 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pagesBySearch(sys.argv[2], namespaces = [0])
             else:
-                p.pagesBySearch(u'"hhttp://"')
+                p.pagesBySearch(u'insource:/\| *display-authors *= *etal */')
         elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
             p.pagesByLink(u'Modèle:Dead link')
         elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
-            global translateURL
-            translateURL = False
-            allNamespaces = True
             afterPage = u''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Catégorie:Pages utilisant des liens magiques ISBN', namespaces = None, afterPage = afterPage)
+            p.pagesByCat(u'Catégorie:Page du modèle Ouvrage comportant une erreur', namespaces = None, afterPage = afterPage)
+            #allNamespaces = True
+            #p.pagesByCat(u'Catégorie:Pages utilisant des liens magiques ISBN', namespaces = None, afterPage = afterPage)
             #p.pagesByCat(u'Catégorie:Pages avec ISBN invalide', namespaces = None, afterPage = afterPage)
         elif sys.argv[1] == u'-redirects':
             p.pagesByRedirects()

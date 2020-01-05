@@ -948,17 +948,22 @@ def hyperlynx(currentPage):
         finalPage = u''
     if debugLevel > 0: print (u'Fin des tests modèle')
 
-    # Paramètre inutile ?
-    '''while currentPage.find(u'|deadurl=no|') != -1:
-        currentPage = currentPage[0:currentPage.find(u'|deadurl=no|')+1] + currentPage[currentPage.find(u'|deadurl=no|')+len(u'|deadurl=no|'):len(currentPage)]'''
-    # Si dans {{ouvrage}} "lire en ligne" est vide, cela bloque le paramètre "url"
-    currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *lire en ligne *= *([\||}|\n]+)', ur'{{\1uvrage\2\3', currentPage)
-    # Idem dans {{article}} : "éditeur" vide bloque "périodique", "journal" ou "revue"
+    # Paramètres inutiles
+    currentPage = re.sub(ur'{{ *Références *\| *colonnes *= *}}', ur'{{Références}}', currentPage)
+    # Dans {{article}}, "éditeur" vide bloque "périodique", "journal" ou "revue"
     currentPage = re.sub(ur'{{ *(a|A)rticle *((?:\||\n)[^}]*)\| *éditeur *= *([\||}|\n]+)', ur'{{\1rticle\2\3', currentPage)
+    # Dans {{ouvrage}}, "lire en ligne" vide bloque "url"
+    currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *lire en ligne *= *([\||}|\n]+)', ur'{{\1uvrage\2\3', currentPage)
     # https://fr.wikipedia.org/w/index.php?title=Discussion_utilisateur:JackPotte&oldid=prev&diff=165491794#Suggestion_pour_JackBot_:_Signalement_param%C3%A8tre_obligatoire_manquant_+_Lien_web_vs_Article
     currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *(?:ref|référence|référence simplifiée) *= *harv *([\|}\n]+)', ur'{{\1uvrage\2\3', currentPage)
-
-    currentPage = re.sub(ur'{{Références\| *colonnes *= *}}', ur'{{Références}}', currentPage)
+    # https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Bot/Requ%C3%AAtes/2020/01#Remplacement_automatique_d%27un_message_d%27erreur_du_mod%C3%A8le_%7B%7BOuvrage%7D%7D
+    currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *display\-authors *= *etal *([\|}\n]+)', ur'{{\1uvrage\2|et al.=oui\3', currentPage)
+    currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *display\-authors *= *[0-9]* *([\|}\n]+)', ur'{{\1uvrage\2\3', currentPage)
+    currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *df *= *(?:mdy\-all|dmy\-all)* *([\|}\n]+)', ur'{{\1uvrage\2\3', currentPage)
+    ''' TODO : à vérifier
+    while currentPage.find(u'|deadurl=no|') != -1:
+        currentPage = currentPage[:currentPage.find(u'|deadurl=no|')+1] + currentPage[currentPage.find(u'|deadurl=no|')+len(u'|deadurl=no|'):]
+    '''
 
     finalPage = finalPage + currentPage
 
