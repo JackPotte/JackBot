@@ -1784,11 +1784,7 @@ def formatTemplates(pageContent, summary):
 
     regex = ur"({{cf|)lang=[^\|}]+\|(:Catégorie:)"
     pageContent = re.sub(regex, ur"\1\2", pageContent)
-
     pageContent = pageContent.replace(u'\n \n', u'\n\n')
-    pageContent = pageContent.replace(u'myt=scandinave', u'myt=nordique')
-    pageContent = pageContent.replace(u'{{pron|}}', u'{{pron}}')
-    pageContent = pageContent.replace(u'{{prononciation|}}', u'{{prononciation}}')
 
     pageContent = pageContent.replace(u'#*: {{trad-exe|fr}}', u'')
     pageContent = pageContent.replace(u'\n{{WP', u'\n* {{WP')
@@ -1798,8 +1794,15 @@ def formatTemplates(pageContent, summary):
     regex = ur"(\{\{source\|[^}]+ )p\. *([0-9])"
     if re.search(regex, pageContent):
         pageContent = re.sub(regex, ur"\1page \2", pageContent)
+    pageContent = pageContent.replace(u'myt=scandinave', u'myt=nordique')
 
-    if debugLevel > 1: print u' Modèles de son'
+    if debugLevel > 1: print u' Modèles de prononciation'
+    pageContent = pageContent.replace(u'{{pron|}}', u'{{pron}}')
+    pageContent = pageContent.replace(u'{{prononciation|}}', u'{{prononciation}}')
+    pageContent = re.sub(ur'({{pron\|[^\|}]*)\|(}})', ur"\1\2", pageContent)
+    pageContent = re.sub(ur'({{pron\|[^\|}]*\|)\|([a-b]+}})', ur"\1\2", pageContent)
+
+    if debugLevel > 1: print u'  Modèles de son'
     regex = ur'({{écouter\|lang=([^\|]+)\|{{Région \?)}}'
     pageContent = re.sub(regex, ur'\1|\2}}', pageContent)
     regex = ur'\n *{{écouter\|'
