@@ -1801,6 +1801,7 @@ def formatTemplates(pageContent, summary):
     pageContent = pageContent.replace(u'{{prononciation|}}', u'{{prononciation}}')
     pageContent = re.sub(ur'({{pron\|[^\|}]*)\|(}})', ur"\1\2", pageContent)
     pageContent = re.sub(ur'({{pron\|[^\|}]*\|)\|([a-z\-]+}})', ur"\1\2", pageContent)
+    pageContent = re.sub(ur'({{pron\|[^\|}]*\|)\|nocat(?:=1)?(}})', ur"\1\2", pageContent)
 
     if debugLevel > 1: print u'  Modèles de son'
     regex = ur'({{écouter\|lang=([^\|]+)\|{{Région \?)}}'
