@@ -2080,9 +2080,15 @@ def formatLanguagesTemplates(pageContent, summary, pageName):
     regex = ur'\n{{fro\-rég[^}]*}}'
     pageContent = re.sub(regex, ur'', pageContent)
 
+    pageContent, summary = moveEtymologicalTemplates(pageContent, summary)
+
+    return pageContent, summary
+
+def moveEtymologicalTemplates(pageContent, summary):
+    if debugLevel > 0: print u' Move etymological templates'
     pageLanguages = getPageLanguages(pageContent)
     for pageLanguage in pageLanguages:
-        etymTemplates = ['abréviation', 'acronyme', 'sigle']
+        etymTemplates = ['abréviation', u'abréviation de', 'acronyme', 'sigle']
         if pageLanguage == 'fr': etymTemplates = etymTemplates + ['louchébem', 'reverlanisation', 'verlan']
         for etymTemplate in etymTemplates:
             languageSection, lStart, lEnd = getLanguageSection(pageContent, pageLanguage)

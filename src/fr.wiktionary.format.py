@@ -366,7 +366,7 @@ Modele.append(u'S')
 # https://fr.wiktionary.org/wiki/Catégorie:Modèles_étymologiques
 etymologyTemplates = [u'étcompcat', u'étyl', u'étylp', u'louchébem', u'reverlanisation', u'verlan']
 etymologyTemplatesWithLanguageAtLang = [u'compos', u'composé de', u'deet', u'date'] #, u'siècle'
-etymologyTemplatesInSatelliteWords = [u'abréviation', u'acronyme', u'apocope', u'aphérèse', u'ellipse', u'par ellipse', u'sigle']
+etymologyTemplatesInSatelliteWords = [u'abréviation', u'abréviation de', u'acronyme', u'apocope', u'aphérèse', u'ellipse', u'par ellipse', u'sigle']
 etymologyTemplatesWithLanguageAtFirst = etymologyTemplatesInSatelliteWords + [u'agglutination', u'antonomase', \
     u'déglutination', u'mot-valise', u'parataxe', u'syncope', u'univerbation']
 etymologyTemplatesWithLanguageAtSecond = [u'dénominal', u'dénominal de', u'déverbal', u'déverbal de', u'déverbal sans suffixe']
