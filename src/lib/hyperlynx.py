@@ -104,6 +104,9 @@ ModeleFR.append(u'ouvrage')
 # it
 ModeleEN.append(u'cita pubblicazione')
 ModeleFR.append(u'article')
+# sv
+ModeleEN.append(u'webbref')
+ModeleFR.append(u'lien web')
 limiteL = len(ModeleFR)    # Limite de la liste des modèles traduis de l'anglais (langue=en)
 
 # Modèle avec alias français
@@ -333,6 +336,32 @@ ParamEN.append(u'anno')
 ParamFR.append(u'année')
 ParamEN.append(u'pagine')
 ParamFR.append(u'page')
+
+# suédois
+ParamEN.append(u'författar')
+ParamFR.append(u'auteur')
+ParamEN.append(u'titel')
+ParamFR.append(u'titre')
+ParamEN.append(u'hämtdatum')
+ParamFR.append(u'consulté le')
+ParamEN.append(u'datum')
+ParamFR.append(u'date')
+ParamEN.append(u'förnamn')
+ParamFR.append(u'prénom')
+ParamEN.append(u'efternamn')
+ParamFR.append(u'nom')
+ParamEN.append(u'författarlänk')
+ParamFR.append(u'lien auteur')
+ParamEN.append(u'utgivare')
+ParamFR.append(u'éditeur')
+ParamEN.append(u'månad')
+ParamFR.append(u'mois')
+ParamEN.append(u'år')
+ParamFR.append(u'année')
+ParamEN.append(u'sida')
+ParamFR.append(u'page')
+ParamEN.append(u'verk')
+ParamFR.append(u'périodique')
 
 limiteP = len(ParamEN)
 if limiteP != len(ParamFR):
