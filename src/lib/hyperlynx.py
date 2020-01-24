@@ -278,7 +278,7 @@ ParamFR.append(u'conférence')
 ParamEN.append(u'conferenceurl')
 ParamFR.append(u'urlconférence')
 ParamEN.append(u'others')
-ParamFR.append(u'autres')
+ParamFR.append(u'champ libre')
 ParamEN.append(u'booktitle')
 ParamFR.append(u'titre livre')
 
