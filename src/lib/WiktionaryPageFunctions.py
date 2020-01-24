@@ -1351,6 +1351,10 @@ def formatSections(pageContent, summary):
     pageContent = re.sub(ur'{{S\| ?voir( aussi)?\|?[a-z\- ]*}}', u'{{S|voir aussi}}', pageContent)
     pageContent = pageContent.replace(u'{{S|descendants}}', u'{{S|dérivés autres langues}}')
     pageContent = pageContent.replace(u'num=1|num=', u'num=1')
+    regex = ur'({{trad\-fin}}[^={]+)(\n==== {{S\|homophones)'
+    s = re.search(regex, pageContent)
+    if s:
+        pageContent = pageContent.replace(s.group(1) + s.group(2), s.group(1) + u'\n=== {{S|prononciation}} ===' + s.group(2))
 
     regex = ur"(==== {{S\|dérivés autres langues}} ====" + ur"(:?\n\* *{{L\|[^\n]+)?"*10 + ur"\n\* *{{)T\|"
     for i in range(10):
