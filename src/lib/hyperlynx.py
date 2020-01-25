@@ -7,7 +7,6 @@ Ce script vérifie toutes les URL des articles :
     3) il traduit les noms et paramètres de ces modèles en français (ex : {{cite web|title=}} par {{lien web|titre=}}) cf http://www.tradino.org/
 '''
 
-# Déclaration
 from __future__ import absolute_import, unicode_literals
 import os.path
 import pywikibot
@@ -69,302 +68,310 @@ TabModeles[4][1] = u'R:Littré'
 TabModeles[4][2] = u'http://artflx.uchicago.edu/cgi-bin/dicos/pubdico1look.pl?strippedhw='
 
 # Modèles qui incluent des URL dans leurs paramètres
-ModeleEN = []
-ModeleFR = []
-ModeleEN.append(u'cite web')
-ModeleFR.append(u'lien web')
-ModeleEN.append(u'citeweb')
-ModeleFR.append(u'lien web')
-ModeleEN.append(u'cite news')
-ModeleFR.append(u'article')
-ModeleEN.append(u'cite journal')
-ModeleFR.append(u'article')
-ModeleEN.append(u'cite magazine')
-ModeleFR.append(u'article')
-ModeleEN.append(u'lien news')
-ModeleFR.append(u'article')
-ModeleEN.append(u'cite video')
-ModeleFR.append(u'lien vidéo')
-ModeleEN.append(u'cite episode')
-ModeleFR.append(u'citation épisode')
-ModeleEN.append(u'cite arXiv')
-ModeleFR.append(u'lien arXiv')
-ModeleEN.append(u'cite press release')
-ModeleFR.append(u'lien web')
-ModeleEN.append(u'cite press_release')
-ModeleFR.append(u'lien web')
-ModeleEN.append(u'cite conference')
-ModeleFR.append(u'lien conférence')
-ModeleEN.append(u'docu')
-ModeleFR.append(u'lien vidéo')
-ModeleEN.append(u'cite book')
-ModeleFR.append(u'ouvrage')
-#ModeleEN.append(u'cite')
-#ModeleFR.append(u'ouvrage')
+oldTemplate = []
+newTemplate = []
+oldTemplate.append(u'cite web')
+newTemplate.append(u'lien web')
+oldTemplate.append(u'citeweb')
+newTemplate.append(u'lien web')
+oldTemplate.append(u'cite news')
+newTemplate.append(u'article')
+oldTemplate.append(u'cite journal')
+newTemplate.append(u'article')
+oldTemplate.append(u'cite magazine')
+newTemplate.append(u'article')
+oldTemplate.append(u'lien news')
+newTemplate.append(u'article')
+oldTemplate.append(u'cite video')
+newTemplate.append(u'lien vidéo')
+oldTemplate.append(u'cite episode')
+newTemplate.append(u'citation épisode')
+oldTemplate.append(u'cite arXiv')
+newTemplate.append(u'lien arXiv')
+oldTemplate.append(u'cite press release')
+newTemplate.append(u'lien web')
+oldTemplate.append(u'cite press_release')
+newTemplate.append(u'lien web')
+oldTemplate.append(u'cite conference')
+newTemplate.append(u'lien conférence')
+oldTemplate.append(u'docu')
+newTemplate.append(u'lien vidéo')
+oldTemplate.append(u'cite book')
+newTemplate.append(u'ouvrage')
+#oldTemplate.append(u'cite')
+#newTemplate.append(u'ouvrage')
 # it
-ModeleEN.append(u'cita pubblicazione')
-ModeleFR.append(u'article')
+oldTemplate.append(u'cita pubblicazione')
+newTemplate.append(u'article')
 # sv
-ModeleEN.append(u'webbref')
-ModeleFR.append(u'lien web')
-limiteL = len(ModeleFR)    # Limite de la liste des modèles traduis de l'anglais (langue=en)
+oldTemplate.append(u'webbref')
+newTemplate.append(u'lien web')
+limiteL = len(newTemplate)    # Limite de la liste des modèles traduis de l'anglais (langue=en)
 
 # Modèle avec alias français
-ModeleEN.append(u'deadlink')
-ModeleFR.append(u'lien brisé')
-#ModeleEN.append(u'dead link') TODO: if previous template is {{lien brisé}} then remove else replace 
-#ModeleFR.append(u'lien brisé')
-ModeleEN.append(u'webarchive')
-ModeleFR.append(u'lien brisé')
-ModeleEN.append(u'lien brise')
-ModeleFR.append(u'lien brisé')
-ModeleEN.append(u'lien cassé')
-ModeleFR.append(u'lien brisé')
-ModeleEN.append(u'lien mort')
-ModeleFR.append(u'lien brisé')
-ModeleEN.append(u'lien web brisé')
-ModeleFR.append(u'lien brisé')
-ModeleEN.append(u'lien Web')
-ModeleFR.append(u'lien web')
-ModeleEN.append(u'cita web')
-ModeleFR.append(u'lien web')
-ModeleEN.append(u'cita noticia')
-ModeleFR.append(u'lien news')
-ModeleEN.append(u'web site')
-ModeleFR.append(u'lien web')
-ModeleEN.append(u'site web')
-ModeleFR.append(u'lien web')
-ModeleEN.append(u'périodique')
-ModeleFR.append(u'article')
-ModeleEN.append(u'quote')
-ModeleFR.append(u'citation bloc')
+oldTemplate.append(u'deadlink')
+newTemplate.append(u'lien brisé')
+#oldTemplate.append(u'dead link') TODO: if previous template is {{lien brisé}} then remove else replace 
+#newTemplate.append(u'lien brisé')
+oldTemplate.append(u'webarchive')
+newTemplate.append(u'lien brisé')
+oldTemplate.append(u'lien brise')
+newTemplate.append(u'lien brisé')
+oldTemplate.append(u'lien cassé')
+newTemplate.append(u'lien brisé')
+oldTemplate.append(u'lien mort')
+newTemplate.append(u'lien brisé')
+oldTemplate.append(u'lien web brisé')
+newTemplate.append(u'lien brisé')
+oldTemplate.append(u'lien Web')
+newTemplate.append(u'lien web')
+oldTemplate.append(u'cita web')
+newTemplate.append(u'lien web')
+oldTemplate.append(u'cita noticia')
+newTemplate.append(u'lien news')
+oldTemplate.append(u'web site')
+newTemplate.append(u'lien web')
+oldTemplate.append(u'site web')
+newTemplate.append(u'lien web')
+oldTemplate.append(u'périodique')
+newTemplate.append(u'article')
+oldTemplate.append(u'quote')
+newTemplate.append(u'citation bloc')
 
 # Modèles pour traduire leurs paramètres uniquement
-ModeleEN.append(u'lire en ligne')
-ModeleFR.append(u'lire en ligne')
-ModeleEN.append(u'dts')
-ModeleFR.append(u'dts')
-ModeleEN.append(u'Chapitre')
-ModeleFR.append(u'Chapitre')
-limiteM = len(ModeleFR)
+oldTemplate.append(u'lire en ligne')
+newTemplate.append(u'lire en ligne')
+oldTemplate.append(u'dts')
+newTemplate.append(u'dts')
+oldTemplate.append(u'Chapitre')
+newTemplate.append(u'Chapitre')
+limiteM = len(newTemplate)
 
 # Paramètres à remplacer
-ParamEN = []
-ParamFR = []
-ParamEN.append(u'author')
-ParamFR.append(u'auteur')
-ParamEN.append(u'authorlink1')
-ParamFR.append(u'lien auteur1')
-ParamEN.append(u'title')
-ParamFR.append(u'titre')
-ParamEN.append(u'publisher')
-ParamFR.append(u'éditeur')
-ParamEN.append(u'work')    # paramètre de {{lien web}} différent pour {{article}}
-ParamFR.append(u'périodique')
-ParamEN.append(u'newspaper')
-ParamFR.append(u'journal')
-ParamEN.append(u'day')
-ParamFR.append(u'jour')
-ParamEN.append(u'month')
-ParamFR.append(u'mois')
-ParamEN.append(u'year')
-ParamFR.append(u'année')
-ParamEN.append(u'accessdate')
-ParamFR.append(u'consulté le')
-ParamEN.append(u'access-date')
-ParamFR.append(u'consulté le')
-ParamEN.append(u'language')
-ParamFR.append(u'langue')
-ParamEN.append(u'lang')
-ParamFR.append(u'langue')
-ParamEN.append(u'quote')
-ParamFR.append(u'extrait')
-ParamEN.append(u'titre vo')
-ParamFR.append(u'titre original')
-ParamEN.append(u'first')
-ParamFR.append(u'prénom')
-ParamEN.append(u'surname')
-ParamFR.append(u'nom')
-ParamEN.append(u'last')
-ParamFR.append(u'nom')
+oldParam = []
+newParam = []
+oldParam.append(u'author')
+newParam.append(u'auteur')
+oldParam.append(u'authorlink1')
+newParam.append(u'lien auteur1')
+oldParam.append(u'title')
+newParam.append(u'titre')
+oldParam.append(u'publisher')
+newParam.append(u'éditeur')
+oldParam.append(u'work')    # paramètre de {{lien web}} différent pour {{article}}
+newParam.append(u'périodique')
+oldParam.append(u'newspaper')
+newParam.append(u'journal')
+oldParam.append(u'day')
+newParam.append(u'jour')
+oldParam.append(u'month')
+newParam.append(u'mois')
+oldParam.append(u'year')
+newParam.append(u'année')
+oldParam.append(u'accessdate')
+newParam.append(u'consulté le')
+oldParam.append(u'access-date')
+newParam.append(u'consulté le')
+oldParam.append(u'language')
+newParam.append(u'langue')
+oldParam.append(u'lang')
+newParam.append(u'langue')
+oldParam.append(u'quote')
+newParam.append(u'extrait')
+oldParam.append(u'titre vo')
+newParam.append(u'titre original')
+oldParam.append(u'first')
+newParam.append(u'prénom')
+oldParam.append(u'surname')
+newParam.append(u'nom')
+oldParam.append(u'last')
+newParam.append(u'nom')
 for p in range(1, 100):
-    ParamEN.append(u'first'+str(p))
-    ParamFR.append(u'prénom'+str(p))
-    ParamEN.append(u'given'+str(p))
-    ParamFR.append(u'prénom'+str(p))
-    ParamEN.append(u'last'+str(p))
-    ParamFR.append(u'nom'+str(p))
-    ParamEN.append(u'surname'+str(p))
-    ParamFR.append(u'nom'+str(p))
-    ParamEN.append(u'author'+str(p))
-    ParamFR.append(u'auteur'+str(p))
-ParamEN.append(u'issue')
-ParamFR.append(u'numéro')
-ParamEN.append(u'authorlink')
-ParamFR.append(u'lien auteur')
-ParamEN.append(u'author-link')
-ParamFR.append(u'lien auteur')
+    oldParam.append(u'first'+str(p))
+    newParam.append(u'prénom'+str(p))
+    oldParam.append(u'given'+str(p))
+    newParam.append(u'prénom'+str(p))
+    oldParam.append(u'last'+str(p))
+    newParam.append(u'nom'+str(p))
+    oldParam.append(u'surname'+str(p))
+    newParam.append(u'nom'+str(p))
+    oldParam.append(u'author'+str(p))
+    newParam.append(u'auteur'+str(p))
+oldParam.append(u'issue')
+newParam.append(u'numéro')
+oldParam.append(u'authorlink')
+newParam.append(u'lien auteur')
+oldParam.append(u'author-link')
+newParam.append(u'lien auteur')
 for p in range(1, 100):
-    ParamEN.append(u'authorlink'+str(p))
-    ParamFR.append(u'lien auteur'+str(p))
-    ParamEN.append(u'author'+str(p)+u'link')
-    ParamFR.append(u'lien auteur'+str(p))
-ParamEN.append(u'coauthorlink')
-ParamFR.append(u'lien coauteur')
-ParamEN.append(u'coauthor-link')
-ParamFR.append(u'lien coauteur')
-ParamEN.append(u'surname1')
-ParamFR.append(u'nom1')
-ParamEN.append(u'coauthors')
-ParamFR.append(u'coauteurs')
-ParamEN.append(u'co-auteurs')
-ParamFR.append(u'coauteurs')
-ParamEN.append(u'co-auteur')
-ParamFR.append(u'coauteur')
-ParamEN.append(u'given')
-ParamFR.append(u'prénom')
-ParamEN.append(u'trad')
-ParamFR.append(u'traducteur')
-ParamEN.append(u'at')
-ParamFR.append(u'passage')
-ParamEN.append(u'origyear')
-ParamFR.append(u'année première édition') # "année première impression" sur les projets frères
-ParamEN.append(u'année première impression')
-ParamFR.append(u'année première édition')
-ParamEN.append(u'location')
-ParamFR.append(u'lieu')
-ParamEN.append(u'place')
-ParamFR.append(u'lieu')
-ParamEN.append(u'publication-date')
-ParamFR.append(u'année')
-ParamEN.append(u'writers')
-ParamFR.append(u'scénario')
-ParamEN.append(u'episodelink')
-ParamFR.append(u'lien épisode')
-ParamEN.append(u'serieslink')
-ParamFR.append(u'lien série')
-ParamEN.append(u'titlelink')
-ParamFR.append(u'lien titre')
-ParamEN.append(u'credits')
-ParamFR.append(u'crédits')
-ParamEN.append(u'network')
-ParamFR.append(u'réseau')
-ParamEN.append(u'station')
-ParamFR.append(u'chaîne')
-ParamEN.append(u'city')
-ParamFR.append(u'ville')
-ParamEN.append(u'began')
-ParamFR.append(u'début')
-ParamEN.append(u'ended')
-ParamFR.append(u'fin')
-ParamEN.append(u'diffusion')
-ParamFR.append(u'airdate')
-ParamEN.append(u'number')
-ParamFR.append(u'numéro')
-ParamEN.append(u'season')
-ParamFR.append(u'saison')
-ParamEN.append(u'year2')
-ParamFR.append(u'année2')
-ParamEN.append(u'month2')
-ParamFR.append(u'mois2')
-ParamEN.append(u'time')
-ParamFR.append(u'temps')
-ParamEN.append(u'accessyear')
-ParamFR.append(u'année accès')
-ParamEN.append(u'accessmonth')
-ParamFR.append(u'mois accès')
-ParamEN.append(u'conference')
-ParamFR.append(u'conférence')
-ParamEN.append(u'conferenceurl')
-ParamFR.append(u'urlconférence')
-ParamEN.append(u'others')
-ParamFR.append(u'champ libre')
-ParamEN.append(u'booktitle')
-ParamFR.append(u'titre livre')
-
-ParamEN.append(u'en ligne le')
-ParamFR.append(u'archivedate')
+    oldParam.append(u'authorlink'+str(p))
+    newParam.append(u'lien auteur'+str(p))
+    oldParam.append(u'author'+str(p)+u'link')
+    newParam.append(u'lien auteur'+str(p))
+oldParam.append(u'coauthorlink')
+newParam.append(u'lien coauteur')
+oldParam.append(u'coauthor-link')
+newParam.append(u'lien coauteur')
+oldParam.append(u'surname1')
+newParam.append(u'nom1')
+oldParam.append(u'coauthors')
+newParam.append(u'coauteurs')
+oldParam.append(u'co-auteurs')
+newParam.append(u'coauteurs')
+oldParam.append(u'co-auteur')
+newParam.append(u'coauteur')
+oldParam.append(u'given')
+newParam.append(u'prénom')
+oldParam.append(u'trad')
+newParam.append(u'traducteur')
+oldParam.append(u'at')
+newParam.append(u'passage')
+oldParam.append(u'origyear')
+newParam.append(u'année première édition') # "année première impression" sur les projets frères
+oldParam.append(u'année première impression')
+newParam.append(u'année première édition')
+oldParam.append(u'location')
+newParam.append(u'lieu')
+oldParam.append(u'place')
+newParam.append(u'lieu')
+oldParam.append(u'publication-date')
+newParam.append(u'année')
+oldParam.append(u'writers')
+newParam.append(u'scénario')
+oldParam.append(u'episodelink')
+newParam.append(u'lien épisode')
+oldParam.append(u'serieslink')
+newParam.append(u'lien série')
+oldParam.append(u'titlelink')
+newParam.append(u'lien titre')
+oldParam.append(u'credits')
+newParam.append(u'crédits')
+oldParam.append(u'network')
+newParam.append(u'réseau')
+oldParam.append(u'station')
+newParam.append(u'chaîne')
+oldParam.append(u'city')
+newParam.append(u'ville')
+oldParam.append(u'began')
+newParam.append(u'début')
+oldParam.append(u'ended')
+newParam.append(u'fin')
+oldParam.append(u'diffusion')
+newParam.append(u'airdate')
+oldParam.append(u'number')
+newParam.append(u'numéro')
+oldParam.append(u'season')
+newParam.append(u'saison')
+oldParam.append(u'year2')
+newParam.append(u'année2')
+oldParam.append(u'month2')
+newParam.append(u'mois2')
+oldParam.append(u'time')
+newParam.append(u'temps')
+oldParam.append(u'accessyear')
+newParam.append(u'année accès')
+oldParam.append(u'accessmonth')
+newParam.append(u'mois accès')
+oldParam.append(u'conference')
+newParam.append(u'conférence')
+oldParam.append(u'conferenceurl')
+newParam.append(u'urlconférence')
+oldParam.append(u'booktitle')
+newParam.append(u'titre livre')
+oldParam.append(u'others')
+newParam.append(u'champ libre')
+# Fix
+oldParam.append(u'en ligne le')
+newParam.append(u'archivedate')
+oldParam.append(u'autres')
+newParam.append(u'champ libre')
+oldParam.append(u'Auteur')
+newParam.append(u'auteur')
+oldParam.append(u'auteur-')
+newParam.append(u'auteur')
+oldParam.append(u'editor')
+newParam.append(u'éditeur')
 
 # espagnol
-ParamEN.append(u'autor')
-ParamFR.append(u'auteur')
-ParamEN.append(u'título')
-ParamFR.append(u'titre')
-ParamEN.append(u'fechaacceso')
-ParamFR.append(u'consulté le')
-ParamEN.append(u'fecha')
-ParamFR.append(u'date')
-ParamEN.append(u'obra')
-ParamFR.append(u'série')
-ParamEN.append(u'idioma')
-ParamFR.append(u'langue')
-ParamEN.append(u'publicació')
-ParamFR.append(u'éditeur')
-ParamEN.append(u'editorial')
-ParamFR.append(u'journal')
-ParamEN.append(u'series')
-ParamFR.append(u'collection')
-ParamEN.append(u'agency')
-ParamFR.append(u'auteur institutionnel') # ou "périodique" si absent
-ParamEN.append(u'magazine')
-ParamFR.append(u'périodique')
+oldParam.append(u'autor')
+newParam.append(u'auteur')
+oldParam.append(u'título')
+newParam.append(u'titre')
+oldParam.append(u'fechaacceso')
+newParam.append(u'consulté le')
+oldParam.append(u'fecha')
+newParam.append(u'date')
+oldParam.append(u'obra')
+newParam.append(u'série')
+oldParam.append(u'idioma')
+newParam.append(u'langue')
+oldParam.append(u'publicació')
+newParam.append(u'éditeur')
+oldParam.append(u'editorial')
+newParam.append(u'journal')
+oldParam.append(u'series')
+newParam.append(u'collection')
+oldParam.append(u'agency')
+newParam.append(u'auteur institutionnel') # ou "périodique" si absent
+oldParam.append(u'magazine')
+newParam.append(u'périodique')
 
 # italien
-ParamEN.append(u'autore')
-ParamFR.append(u'auteur')
-ParamEN.append(u'titolo')
-ParamFR.append(u'titre')
-ParamEN.append(u'accesso')
-ParamFR.append(u'consulté le')
-ParamEN.append(u'data')
-ParamFR.append(u'date')
-ParamEN.append(u'nome')
-ParamFR.append(u'prénom')
-ParamEN.append(u'cognome')
-ParamFR.append(u'nom')
-ParamEN.append(u'linkautore')
-ParamFR.append(u'lien auteur')
-ParamEN.append(u'coautori')
-ParamFR.append(u'coauteurs')
-ParamEN.append(u'rivista')
-ParamFR.append(u'journal')
-ParamEN.append(u'giorno')
-ParamFR.append(u'jour')
-ParamEN.append(u'mese')
-ParamFR.append(u'mois')
-ParamEN.append(u'anno')
-ParamFR.append(u'année')
-ParamEN.append(u'pagine')
-ParamFR.append(u'page')
+oldParam.append(u'autore')
+newParam.append(u'auteur')
+oldParam.append(u'titolo')
+newParam.append(u'titre')
+oldParam.append(u'accesso')
+newParam.append(u'consulté le')
+oldParam.append(u'data')
+newParam.append(u'date')
+oldParam.append(u'nome')
+newParam.append(u'prénom')
+oldParam.append(u'cognome')
+newParam.append(u'nom')
+oldParam.append(u'linkautore')
+newParam.append(u'lien auteur')
+oldParam.append(u'coautori')
+newParam.append(u'coauteurs')
+oldParam.append(u'rivista')
+newParam.append(u'journal')
+oldParam.append(u'giorno')
+newParam.append(u'jour')
+oldParam.append(u'mese')
+newParam.append(u'mois')
+oldParam.append(u'anno')
+newParam.append(u'année')
+oldParam.append(u'pagine')
+newParam.append(u'page')
 
 # suédois
-ParamEN.append(u'författar')
-ParamFR.append(u'auteur')
-ParamEN.append(u'titel')
-ParamFR.append(u'titre')
-ParamEN.append(u'hämtdatum')
-ParamFR.append(u'consulté le')
-ParamEN.append(u'datum')
-ParamFR.append(u'date')
-ParamEN.append(u'förnamn')
-ParamFR.append(u'prénom')
-ParamEN.append(u'efternamn')
-ParamFR.append(u'nom')
-ParamEN.append(u'författarlänk')
-ParamFR.append(u'lien auteur')
-ParamEN.append(u'utgivare')
-ParamFR.append(u'éditeur')
-ParamEN.append(u'månad')
-ParamFR.append(u'mois')
-ParamEN.append(u'år')
-ParamFR.append(u'année')
-ParamEN.append(u'sida')
-ParamFR.append(u'page')
-ParamEN.append(u'verk')
-ParamFR.append(u'périodique')
+oldParam.append(u'författar')
+newParam.append(u'auteur')
+oldParam.append(u'titel')
+newParam.append(u'titre')
+oldParam.append(u'hämtdatum')
+newParam.append(u'consulté le')
+oldParam.append(u'datum')
+newParam.append(u'date')
+oldParam.append(u'förnamn')
+newParam.append(u'prénom')
+oldParam.append(u'efternamn')
+newParam.append(u'nom')
+oldParam.append(u'författarlänk')
+newParam.append(u'lien auteur')
+oldParam.append(u'utgivare')
+newParam.append(u'éditeur')
+oldParam.append(u'månad')
+newParam.append(u'mois')
+oldParam.append(u'år')
+newParam.append(u'année')
+oldParam.append(u'sida')
+newParam.append(u'page')
+oldParam.append(u'verk')
+newParam.append(u'périodique')
 
-limiteP = len(ParamEN)
-if limiteP != len(ParamFR):
+limiteP = len(oldParam)
+if limiteP != len(newParam):
     raw_input(u'Erreur l 227')
     
 # URL à remplacer
@@ -376,32 +383,32 @@ URLDeplace[2] = u'un2sg4.unige.ch/athena'
 # Caractères délimitant la fin des URL
 # http://tools.ietf.org/html/rfc3986
 # http://fr.wiktionary.org/wiki/Annexe:Titres_non_pris_en_charge
-limiteURL = 14
-FinDURL = range(1, limiteURL +1)
-FinDURL[1] = u' '
-FinDURL[2] = u'\n'
-FinDURL[3] = u'['
-FinDURL[4] = u']'
-FinDURL[5] = u'{'
-FinDURL[6] = u'}'
-FinDURL[7] = u'<'
-FinDURL[8] = u'>'    
-FinDURL[9] = u'|'
-FinDURL[10] = u'^'
-FinDURL[11] = u'\\'
-FinDURL[12] = u'`'
-FinDURL[13] = u'"'
-#FinDURL.append(u'~'    # dans 1ère RFC seulement
+UrlLimit = 14
+UrlEnd = range(1, UrlLimit +1)
+UrlEnd[1] = u' '
+UrlEnd[2] = u'\n'
+UrlEnd[3] = u'['
+UrlEnd[4] = u']'
+UrlEnd[5] = u'{'
+UrlEnd[6] = u'}'
+UrlEnd[7] = u'<'
+UrlEnd[8] = u'>'    
+UrlEnd[9] = u'|'
+UrlEnd[10] = u'^'
+UrlEnd[11] = u'\\'
+UrlEnd[12] = u'`'
+UrlEnd[13] = u'"'
+#UrlEnd.append(u'~'    # dans 1ère RFC seulement
 # Caractères qui ne peuvent pas être en dernière position d'une URL :
-limiteURL2 = 7
-FinDURL2 = range(1, limiteURL +1)
-FinDURL2[1] = u'.'
-FinDURL2[2] = u','
-FinDURL2[3] = u';'
-FinDURL2[4] = u'!'
-FinDURL2[5] = u'?'
-FinDURL2[6] = u')' # mais pas ( ou ) simple
-FinDURL2[7] = u"'"
+UrlLimit2 = 7
+UrlEnd2 = range(1, UrlLimit +1)
+UrlEnd2[1] = u'.'
+UrlEnd2[2] = u','
+UrlEnd2[3] = u';'
+UrlEnd2[4] = u'!'
+UrlEnd2[5] = u'?'
+UrlEnd2[6] = u')' # mais pas ( ou ) simple
+UrlEnd2[7] = u"'"
 
 ligneB = 6
 colonneB = 2
@@ -687,9 +694,9 @@ def hyperlynx(currentPage):
                 FinPageURL = currentPage[currentPage.find(u'//'):]
                 # url=    
                 CharFinURL = u' '
-                for l in range(1, limiteURL):
-                    if FinPageURL.find(CharFinURL) == -1 or (FinPageURL.find(FinDURL[l]) != -1 and FinPageURL.find(FinDURL[l]) < FinPageURL.find(CharFinURL)):
-                        CharFinURL = FinDURL[l]
+                for l in range(1, UrlLimit):
+                    if FinPageURL.find(CharFinURL) == -1 or (FinPageURL.find(UrlEnd[l]) != -1 and FinPageURL.find(UrlEnd[l]) < FinPageURL.find(CharFinURL)):
+                        CharFinURL = UrlEnd[l]
                 if debugLevel > 0: print u'*Caractère de fin URL : ' + CharFinURL
                 
                 if DebutURL == 1:
@@ -704,10 +711,10 @@ def hyperlynx(currentPage):
                     htmlSource = u''
                     isBrokenLink = False
                 else:
-                    for u in range(1,limiteURL2):
-                        while url[len(url)-1:] == FinDURL2[u]:
+                    for u in range(1,UrlLimit2):
+                        while url[len(url)-1:] == UrlEnd2[u]:
                             url = url[:len(url)-1]
-                            if debugLevel > 0: print u'Réduction de l\'URL de ' + FinDURL2[u]
+                            if debugLevel > 0: print u'Réduction de l\'URL de ' + UrlEnd2[u]
                     
                     Media = False
                     for f in range(1,limiteF):
@@ -775,7 +782,7 @@ def hyperlynx(currentPage):
                     AncienModele = u''
                     # Lien dans un modèle connu (consensus en cours pour les autres, atention aux infobox)
                     '''for m in range(1,limiteM):
-                        regex = u'{{ *[' + ModeleFR[m][0:1] + ur'|' + ModeleFR[m][0:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *[\||\n]'
+                        regex = u'{{ *[' + newTemplate[m][0:1] + ur'|' + newTemplate[m][0:1].upper() + ur']' + newTemplate[m][1:len(newTemplate[m])] + ur' *[\||\n]'
                     ''' 
                     if re.search(u'{{ *[L|l]ien web *[\||\n]', DebutPage):
                         AncienModele = u'lien web'
@@ -930,9 +937,9 @@ def hyperlynx(currentPage):
         if templateEndPosition == 0 and isBrokenLink == False:
             FinPageURL = currentPage[currentPage.find(u'//')+2:len(currentPage)]
             CharFinURL = u' '
-            for l in range(1,limiteURL):
-                if FinPageURL.find(FinDURL[l]) != -1 and FinPageURL.find(FinDURL[l]) < FinPageURL.find(CharFinURL):
-                    CharFinURL = FinDURL[l]
+            for l in range(1,UrlLimit):
+                if FinPageURL.find(UrlEnd[l]) != -1 and FinPageURL.find(UrlEnd[l]) < FinPageURL.find(CharFinURL):
+                    CharFinURL = UrlEnd[l]
             if debugLevel > 0: print u'Saut après "' + CharFinURL + u'"'
             finalPage = finalPage + currentPage[:currentPage.find(u'//')+2+FinPageURL.find(CharFinURL)]
             currentPage = currentPage[currentPage.find(u'//')+2+FinPageURL.find(CharFinURL):]
@@ -996,7 +1003,7 @@ def hyperlynx(currentPage):
 
     finalPage = finalPage + currentPage
 
-    # TODO: avoid these fixes when: ModeleEN.append(u'lien mort')
+    # TODO: avoid these fixes when: oldTemplate.append(u'lien mort')
     finalPage = finalPage.replace(u'<ref></ref>',u'')
     finalPage = finalPage.replace(u'{{lien mortarchive',u'{{lien mort archive')
     finalPage = finalPage.replace(u'|langue=None', u'')
@@ -1701,36 +1708,36 @@ def getCurrentLinkTemplate(currentPage):
 def translateTemplateParameters(currentTemplate):
     for p in range(0, limiteP):
         # Faux-amis variables selon les modèles
-        if debugLevel > 1: print ParamEN[p].encode(config.console_encoding, 'replace')
-        frName = ParamFR[p]
+        if debugLevel > 1: print oldParam[p].encode(config.console_encoding, 'replace')
+        frName = newParam[p]
 
-        if ParamEN[p] == u'work':
+        if oldParam[p] == u'work':
             if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1:
                 frName = u'périodique'
             elif currentTemplate.find(u'ien web') != -1 and currentTemplate.find(u'ien web') < currentTemplate.find(u'|') and currentTemplate.find(u'|site=') == -1 and currentTemplate.find(u'|website=') == -1:
                 frName = u'site'
             else:
                 frName = u'série'
-        elif ParamEN[p] == u'publisher':
+        elif oldParam[p] == u'publisher':
             if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1 and currentTemplate.find(u'|work=') == -1:
                 frName = u'périodique'
             else:
                 frName = u'éditeur'
-        elif ParamEN[p] == u'agency':
+        elif oldParam[p] == u'agency':
             if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1 and currentTemplate.find(u'|work=') == -1:
                 frName = u'périodique'
             else:
                 frName = u'auteur institutionnel'
-        elif ParamEN[p] == u'issue' and (currentTemplate.find(u'|numéro=') != -1 and currentTemplate.find(u'|numéro=') < currentTemplate.find(u'}}')):
+        elif oldParam[p] == u'issue' and (currentTemplate.find(u'|numéro=') != -1 and currentTemplate.find(u'|numéro=') < currentTemplate.find(u'}}')):
             frName = u'date'
-        elif ParamEN[p] == u'en ligne le':
+        elif oldParam[p] == u'en ligne le':
             if currentTemplate.find(u'archiveurl') == -1 and currentTemplate.find(u'archive url') == -1 and currentTemplate.find(u'archive-url') == -1:
                 continue
             elif currentTemplate.find(u'archivedate') != -1 or currentTemplate.find(u'archive date') != -1 or currentTemplate.find(u'archive-date') != -1:
                 continue
             elif debugLevel > 0: u' archiveurl ' + u' archivedate'
 
-        regex = ur'(\| *)' + ParamEN[p] + ur'( *=)'
+        regex = ur'(\| *)' + oldParam[p] + ur'( *=)'
         currentTemplate = re.sub(regex, ur'\1' + frName + ur'\2', currentTemplate)
         currentTemplate = currentTemplate.replace(u'|=',u'|')
         currentTemplate = currentTemplate.replace(u'| =',u'|')
@@ -1747,16 +1754,16 @@ def translateLinkTemplates(currentPage):
     finalPage = u''
     for m in range(0, limiteL):
         # Formatage des anciens modèles
-        currentPage = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:]).replace(u' ', u'_') + ur' *\|', ModeleEN[m] + ur'|', currentPage)
-        currentPage = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:]).replace(u' ', u'  ') + ur' *\|', ModeleEN[m] + ur'|', currentPage)
-        currentPage = re.sub((u'(Modèle:)?[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:]) + ur' *\|', ModeleEN[m] + ur'|', currentPage)
+        currentPage = re.sub((u'(Modèle:)?[' + oldTemplate[m][:1] + ur'|' + oldTemplate[m][:1].upper() + ur']' + oldTemplate[m][1:]).replace(u' ', u'_') + ur' *\|', oldTemplate[m] + ur'|', currentPage)
+        currentPage = re.sub((u'(Modèle:)?[' + oldTemplate[m][:1] + ur'|' + oldTemplate[m][:1].upper() + ur']' + oldTemplate[m][1:]).replace(u' ', u'  ') + ur' *\|', oldTemplate[m] + ur'|', currentPage)
+        currentPage = re.sub((u'(Modèle:)?[' + oldTemplate[m][:1] + ur'|' + oldTemplate[m][:1].upper() + ur']' + oldTemplate[m][1:]) + ur' *\|', oldTemplate[m] + ur'|', currentPage)
         # Traitement de chaque modèle à traduire
-        while re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]+', currentPage):
+        while re.search(u'{{[\n ]*' + oldTemplate[m] + u' *[\||\n]+', currentPage):
             if debugLevel > 1:
                 print(u'Modèle n°' + str(m))
-                print(currentPage[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', currentPage).end()-1:][:100].encode(config.console_encoding, 'replace'))
-            finalPage = finalPage + currentPage[:re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', currentPage).end()-1]
-            currentPage = currentPage[re.search(u'{{[\n ]*' + ModeleEN[m] + u' *[\||\n]', currentPage).end()-1:]    
+                print(currentPage[re.search(u'{{[\n ]*' + oldTemplate[m] + u' *[\||\n]', currentPage).end()-1:][:100].encode(config.console_encoding, 'replace'))
+            finalPage = finalPage + currentPage[:re.search(u'{{[\n ]*' + oldTemplate[m] + u' *[\||\n]', currentPage).end()-1]
+            currentPage = currentPage[re.search(u'{{[\n ]*' + oldTemplate[m] + u' *[\||\n]', currentPage).end()-1:]    
             # Identification du code langue existant dans le modèle
             languageCode = u''
             if finalPage.rfind(u'{{') != -1:
@@ -1798,15 +1805,15 @@ def translateLinkTemplates(currentPage):
         finalPage = u''
 
     for m in range(0, limiteM):
-        if debugLevel > 1: print(u' Traduction des noms du modèle ' + ModeleEN[m])
-        currentPage = currentPage.replace(u'{{' + ModeleEN[m] + u' ', u'{{' + ModeleEN[m] + u'')
-        currentPage = re.sub(ur'({{[\n ]*)[' + ModeleEN[m][:1] + ur'|' + ModeleEN[m][:1].upper() + ur']' + ModeleEN[m][1:len(ModeleEN[m])] + ur'( *[\||\n\t|}])', ur'\1' +  ModeleFR[m] + ur'\2', currentPage)
+        if debugLevel > 1: print(u' Traduction des noms du modèle ' + oldTemplate[m])
+        currentPage = currentPage.replace(u'{{' + oldTemplate[m] + u' ', u'{{' + oldTemplate[m] + u'')
+        currentPage = re.sub(ur'({{[\n ]*)[' + oldTemplate[m][:1] + ur'|' + oldTemplate[m][:1].upper() + ur']' + oldTemplate[m][1:len(oldTemplate[m])] + ur'( *[\||\n\t|}])', ur'\1' +  newTemplate[m] + ur'\2', currentPage)
         # Suppression des modèles vides
-        regex = u'{{ *[' + ModeleFR[m][:1] + ur'|' + ModeleFR[m][:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *}}'
+        regex = u'{{ *[' + newTemplate[m][:1] + ur'|' + newTemplate[m][:1].upper() + ur']' + newTemplate[m][1:len(newTemplate[m])] + ur' *}}'
         while re.search(regex, currentPage):
             currentPage = currentPage[:re.search(regex, currentPage).start()] + currentPage[re.search(regex, currentPage).end():]
         # Traduction des paramètres de chaque modèle de la page
-        regex = u'{{ *[' + ModeleFR[m][:1] + ur'|' + ModeleFR[m][:1].upper() + ur']' + ModeleFR[m][1:len(ModeleFR[m])] + ur' *[\||\n]'
+        regex = u'{{ *[' + newTemplate[m][:1] + ur'|' + newTemplate[m][:1].upper() + ur']' + newTemplate[m][1:len(newTemplate[m])] + ur' *[\||\n]'
         while re.search(regex, currentPage):
             finalPage = finalPage + currentPage[:re.search(regex, currentPage).start()+2]
             currentPage = currentPage[re.search(regex, currentPage).start()+2:]
