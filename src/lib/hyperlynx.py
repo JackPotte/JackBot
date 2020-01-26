@@ -997,9 +997,9 @@ def hyperlynx(currentPage):
     currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *display\-authors *= *[0-9]* *([\|}\n]+)', ur'{{\1uvrage\2\3', currentPage)
     currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *df *= *(?:mdy\-all|dmy\-all)* *([\|}\n]+)', ur'{{\1uvrage\2\3', currentPage)
     # Empty 1=
-    currentPage = re.sub(ur'{{ *(a|A)rticle *((?:\||\n)[^}]*)\| *([\|}\n]+)', ur'{{\1rticle\2\3', currentPage)
-    currentPage = re.sub(ur'{{ *(l|L)ien web *((?:\||\n)[^}]*)\| *([\|}\n]+)', ur'{{\1ien web\2\3', currentPage)
-    #currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *([\|}\n]+)', ur'{{\1uvrage\2\3', currentPage)
+    currentPage = re.sub(ur'{{ *(a|A)rticle *((?:\|)[^}]*)\|[ \t]*([\|}]+)', ur'{{\1rticle\2\3', currentPage)
+    currentPage = re.sub(ur'{{ *(l|L)ien web *((?:\|)[^}]*)\|[ \t]*([\|}]+)', ur'{{\1ien web\2\3', currentPage)
+    #currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\|)[^}]*)\|[ \t]*([\|}]+)', ur'{{\1uvrage\2\3', currentPage)
     ''' TODO : à vérifier
     while currentPage.find(u'|deadurl=no|') != -1:
         currentPage = currentPage[:currentPage.find(u'|deadurl=no|')+1] + currentPage[currentPage.find(u'|deadurl=no|')+len(u'|deadurl=no|'):]
