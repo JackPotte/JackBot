@@ -256,8 +256,8 @@ oldParam.append(u'began')
 newParam.append(u'début')
 oldParam.append(u'ended')
 newParam.append(u'fin')
-oldParam.append(u'diffusion')
-newParam.append(u'airdate')
+oldParam.append(u'airdate')
+newParam.append(u'diffusion')
 oldParam.append(u'number')
 newParam.append(u'numéro')
 oldParam.append(u'season')
@@ -988,8 +988,9 @@ def hyperlynx(currentPage):
     currentPage = re.sub(ur'{{ *Références *\| *colonnes *= *}}', ur'{{Références}}', currentPage)
     # Dans {{article}}, "éditeur" vide bloque "périodique", "journal" ou "revue"
     currentPage = re.sub(ur'{{ *(a|A)rticle *((?:\||\n)[^}]*)\| *éditeur *= *([\||}|\n]+)', ur'{{\1rticle\2\3', currentPage)
-    # Dans {{ouvrage}}, "lire en ligne" vide bloque "url"
-    currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *lire en ligne *= *([\||}|\n]+)', ur'{{\1uvrage\2\3', currentPage)
+    # Dans {{ouvrage}}, "lire en ligne" vide bloque "url" TODO: ouvrage|url= & lire en ligne|url=
+    currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*\| *url *=[^}]*)\| *lire en ligne *= *([\||}|\n]+)', ur'{{\1uvrage\2\3', currentPage)
+    #currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *lire en ligne *= *([\||}|\n]+[^}]*\| *url *=)', ur'{{\1uvrage\2\3', currentPage)
     # https://fr.wikipedia.org/w/index.php?title=Discussion_utilisateur:JackPotte&oldid=prev&diff=165491794#Suggestion_pour_JackBot_:_Signalement_param%C3%A8tre_obligatoire_manquant_+_Lien_web_vs_Article
     currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *(?:ref|référence|référence simplifiée) *= *harv *([\|}\n]+)', ur'{{\1uvrage\2\3', currentPage)
     # https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Bot/Requ%C3%AAtes/2020/01#Remplacement_automatique_d%27un_message_d%27erreur_du_mod%C3%A8le_%7B%7BOuvrage%7D%7D
@@ -999,7 +1000,7 @@ def hyperlynx(currentPage):
     # Empty 1=
     currentPage = re.sub(ur'{{ *(a|A)rticle *((?:\|)[^}]*)\|[ \t]*([\|}]+)', ur'{{\1rticle\2\3', currentPage)
     currentPage = re.sub(ur'{{ *(l|L)ien web *((?:\|)[^}]*)\|[ \t]*([\|}]+)', ur'{{\1ien web\2\3', currentPage)
-    #currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\|)[^}]*)\|[ \t]*([\|}]+)', ur'{{\1uvrage\2\3', currentPage)
+    # 1= exists: currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\|)[^}]*)\|[ \t]*([\|}]+)', ur'{{\1uvrage\2\3', currentPage)
     ''' TODO : à vérifier
     while currentPage.find(u'|deadurl=no|') != -1:
         currentPage = currentPage[:currentPage.find(u'|deadurl=no|')+1] + currentPage[currentPage.find(u'|deadurl=no|')+len(u'|deadurl=no|'):]
