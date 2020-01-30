@@ -291,6 +291,8 @@ oldParam.append(u'auteur-')
 newParam.append(u'auteur')
 oldParam.append(u'editor')
 newParam.append(u'éditeur')
+oldParam.append(u'editor2')
+newParam.append(u'auteur2')
 
 # espagnol
 oldParam.append(u'autor')
@@ -988,9 +990,6 @@ def hyperlynx(currentPage):
     currentPage = re.sub(ur'{{ *Références *\| *colonnes *= *}}', ur'{{Références}}', currentPage)
     # Dans {{article}}, "éditeur" vide bloque "périodique", "journal" ou "revue"
     currentPage = re.sub(ur'{{ *(a|A)rticle *((?:\||\n)[^}]*)\| *éditeur *= *([\||}|\n]+)', ur'{{\1rticle\2\3', currentPage)
-    # Dans {{ouvrage}}, "lire en ligne" vide bloque "url" TODO: ouvrage|url= & lire en ligne|url=
-    currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*\| *url *=[^}]*)\| *lire en ligne *= *([\||}|\n]+)', ur'{{\1uvrage\2\3', currentPage)
-    #currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *lire en ligne *= *([\||}|\n]+[^}]*\| *url *=)', ur'{{\1uvrage\2\3', currentPage)
     # https://fr.wikipedia.org/w/index.php?title=Discussion_utilisateur:JackPotte&oldid=prev&diff=165491794#Suggestion_pour_JackBot_:_Signalement_param%C3%A8tre_obligatoire_manquant_+_Lien_web_vs_Article
     currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *(?:ref|référence|référence simplifiée) *= *harv *([\|}\n]+)', ur'{{\1uvrage\2\3', currentPage)
     # https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Bot/Requ%C3%AAtes/2020/01#Remplacement_automatique_d%27un_message_d%27erreur_du_mod%C3%A8le_%7B%7BOuvrage%7D%7D
@@ -1711,30 +1710,32 @@ def getCurrentLinkTemplate(currentPage):
 
 
 def translateTemplateParameters(currentTemplate):
+    if debugLevel > 1: print 'Remplacement des anciens paramètres, en tenant compte des doublons et des variables selon les modèles'
     for p in range(0, limiteP):
-        # Faux-amis variables selon les modèles
         if debugLevel > 1: print oldParam[p].encode(config.console_encoding, 'replace')
         frName = newParam[p]
-
         if oldParam[p] == u'work':
-            if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1:
+            if isTemplate(currentTemplate, u'article') and not hasParameter(currentTemplate, u'périodique'):
                 frName = u'périodique'
-            elif currentTemplate.find(u'ien web') != -1 and currentTemplate.find(u'ien web') < currentTemplate.find(u'|') and currentTemplate.find(u'|site=') == -1 and currentTemplate.find(u'|website=') == -1:
+            elif isTemplate(currentTemplate, u'lien web') and not hasParameter(currentTemplate, u'site') and not hasParameter(currentTemplate, u'website'):
                 frName = u'site'
             else:
                 frName = u'série'
         elif oldParam[p] == u'publisher':
-            if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1 and currentTemplate.find(u'|work=') == -1:
+            if isTemplate(currentTemplate, u'article') and not hasParameter(currentTemplate, u'périodique') and not hasParameter(currentTemplate, u'work'):
                 frName = u'périodique'
             else:
                 frName = u'éditeur'
         elif oldParam[p] == u'agency':
-            if (currentTemplate.find(u'rticle') != -1 and currentTemplate.find(u'rticle') < currentTemplate.find(u'|')) and currentTemplate.find(u'ériodique') == -1 and currentTemplate.find(u'|work=') == -1:
+            if isTemplate(currentTemplate, u'article') and not hasParameter(currentTemplate, u'périodique') and not hasParameter(currentTemplate, u'work'):
                 frName = u'périodique'
             else:
                 frName = u'auteur institutionnel'
-        elif oldParam[p] == u'issue' and (currentTemplate.find(u'|numéro=') != -1 and currentTemplate.find(u'|numéro=') < currentTemplate.find(u'}}')):
-            frName = u'date'
+        elif oldParam[p] == u'issue' and hasParameter(currentTemplate, u'numéro'):
+            frName = u'date' 
+        elif oldParam[p] == u'editor':
+            if hasParameter(currentTemplate, u'éditeur'):
+                frName = u'auteur'
         elif oldParam[p] == u'en ligne le':
             if currentTemplate.find(u'archiveurl') == -1 and currentTemplate.find(u'archive url') == -1 and currentTemplate.find(u'archive-url') == -1:
                 continue
@@ -1880,3 +1881,11 @@ def translateLanguages(currentPage):
         currentPage = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Oo]uvrage\|langue=' + TradL[l][2] + ur'\|)', ur'\1', currentPage)
  
     return currentPage
+
+def isTemplate(string, template):
+    regex = ur'^(' + template[:1].upper() + ur'|' + template[:1].lower() + ur')' + template[1:]
+    return re.search(regex, string)
+
+def hasParameter(string, param):
+    regex = ur'\| *' + param + ur' *='
+    return re.search(regex, string)
