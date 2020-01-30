@@ -230,6 +230,7 @@ def main(*args):
         p.pagesByLink(u'Template:Cite magazine')
         p.pagesByLink(u'Template:Cite')
         p.pagesByLink(u'Template:Cite book')
+        p.pagesByLink(u'Template:Cita libro')
         p.pagesByLink(u'Template:Webbref')
         #p.pagesByLink(u'Template:Reflist') Interblocages quotidients
 

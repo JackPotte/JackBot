@@ -103,6 +103,8 @@ newTemplate.append(u'ouvrage')
 # it
 oldTemplate.append(u'cita pubblicazione')
 newTemplate.append(u'article')
+oldTemplate.append(u'cita libro')
+newTemplate.append(u'ouvrage')
 # sv
 oldTemplate.append(u'webbref')
 newTemplate.append(u'lien web')
@@ -345,6 +347,8 @@ oldParam.append(u'anno')
 newParam.append(u'année')
 oldParam.append(u'pagine')
 newParam.append(u'page')
+oldParam.append(u'editore')
+newParam.append(u'éditeur')
 
 # suédois
 oldParam.append(u'författar')
