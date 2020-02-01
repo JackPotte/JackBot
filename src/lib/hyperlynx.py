@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 '''
-Ce script vérifie toutes les URL des articles :
-    1) de la forme http://, https:// et [//
-    2) incluses dans certains modèles (pas tous étant donnée leur complexité, car certains incluent des {{{1}}} et {{{2}}} dans leurs URL)
-    3) il traduit les noms et paramètres de ces modèles en français (ex : {{cite web|title=}} par {{lien web|titre=}}) cf http://www.tradino.org/
+Ce script traduit les noms et paramètres de ces modèles en français (ex : {{cite web|title=}} par {{lien web|titre=}}) cf http://www.tradino.org/
+Optionellement, il vérifie toutes les URL des articles de la forme http://, https:// et [// ou incluses dans certains modèles
+(pas tous étant donnée leur complexité, car certains incluent des {{{1}}} et {{{2}}} dans leurs URL)
 '''
 
 from __future__ import absolute_import, unicode_literals
@@ -1715,6 +1714,7 @@ def getCurrentLinkTemplate(currentPage):
 
 def translateTemplateParameters(currentTemplate):
     if debugLevel > 1: print 'Remplacement des anciens paramètres, en tenant compte des doublons et des variables selon les modèles'
+    # TODO rendre plus générique pour éviter les doublons d'alias en cascade
     for p in range(0, limiteP):
         if debugLevel > 1: print oldParam[p].encode(config.console_encoding, 'replace')
         frName = newParam[p]
@@ -1839,34 +1839,33 @@ def translateLinkTemplates(currentPage):
 def translateDates(currentPage):
     if debugLevel > 1: print(u'  translateDates()')
     parametersLimit = 9
-    ParamDate = range(1, parametersLimit +1)
-    # Date parameters
-    ParamDate[1] = u'date'
-    ParamDate[2] = u'mois'
-    ParamDate[3] = u'consulté le'
-    ParamDate[4] = u'en ligne le'
+    dateParameters = range(1, parametersLimit +1)
+    dateParameters[1] = u'date'
+    dateParameters[2] = u'mois'
+    dateParameters[3] = u'consulté le'
+    dateParameters[4] = u'en ligne le'
     # Date templates
-    ParamDate[5] = u'dts'
-    ParamDate[6] = u'Dts'
-    ParamDate[7] = u'date triable'
-    ParamDate[8] = u'Date triable'
+    dateParameters[5] = u'dts'
+    dateParameters[6] = u'Dts'
+    dateParameters[7] = u'date triable'
+    dateParameters[8] = u'Date triable'
 
     for m in range(1, monthLine + 1):
         if debugLevel > 1:
             print u'Mois ' + str(m)
             print TradM[m][1]
         for p in range(1, parametersLimit):
-            if debugLevel > 1: print u'Recherche de ' + ParamDate[p] + u' *=[ ,0-9]*' + TradM[m][1]
+            if debugLevel > 1: print u'Recherche de ' + dateParameters[p] + u' *=[ ,0-9]*' + TradM[m][1]
             if p > 4:
-                currentPage = re.sub(ur'({{ *' + ParamDate[p] + ur'[^}]+)' + TradM[m][1] + ur'([^}]+}})', ur'\1' +  TradM[m][2] + ur'\2', currentPage)
-                currentPage = re.sub(ur'({{ *' + ParamDate[p] + ur'[^}]+)(\|[ 0-9][ 0-9][ 0-9][ 0-9])\|' + TradM[m][2] + ur'(\|[ 0-9][ 0-9])}}', ur'\1\3|' +  TradM[m][2] + ur'\2}}', currentPage)
+                currentPage = re.sub(ur'({{ *' + dateParameters[p] + ur'[^}]+)' + TradM[m][1] + ur'([^}]+}})', ur'\1' +  TradM[m][2] + ur'\2', currentPage)
+                currentPage = re.sub(ur'({{ *' + dateParameters[p] + ur'[^}]+)(\|[ 0-9][ 0-9][ 0-9][ 0-9])\|' + TradM[m][2] + ur'(\|[ 0-9][ 0-9])}}', ur'\1\3|' +  TradM[m][2] + ur'\2}}', currentPage)
             else:
-                currentPage = re.sub(ur'(\| *' + ParamDate[p] + ur' *=[ ,0-9]*)' + TradM[m][1] + ur'([ ,0-9]*\.? *[<|\||\n\t|}])', ur'\1' +  TradM[m][2] + ur'\2', currentPage)
-                currentPage = re.sub(ur'(\| *' + ParamDate[p] + ur' *=[ ,0-9]*)' + TradM[m][1][:1].lower() + TradM[m][1][1:] + ur'([ ,0-9]*\.? *[<|\||\n\t|}])', ur'\1' +  TradM[m][2] + ur'\2', currentPage)
+                currentPage = re.sub(ur'(\| *' + dateParameters[p] + ur' *=[ ,0-9]*)' + TradM[m][1] + ur'([ ,0-9]*\.? *[<|\||\n\t|}])', ur'\1' +  TradM[m][2] + ur'\2', currentPage)
+                currentPage = re.sub(ur'(\| *' + dateParameters[p] + ur' *=[ ,0-9]*)' + TradM[m][1][:1].lower() + TradM[m][1][1:] + ur'([ ,0-9]*\.? *[<|\||\n\t|}])', ur'\1' +  TradM[m][2] + ur'\2', currentPage)
                 
-                # Ordre des dates : jj mois aaaa'
-                if debugLevel > 1: print u'Recherche de ' + ParamDate[p] + u' *= *' + TradM[m][2] + u' *([0-9]+), '
-                currentPage = re.sub(ur'(\| *' + ParamDate[p] + u' *= *)' + TradM[m][2] + ur' *([0-9]+), *([0-9]+)\.? *([<|\||\n\t|}])', ur'\1' + ur'\2' + ur' ' + TradM[m][2] + ur' ' + ur'\3' + ur'\4', currentPage)    # trim(u'\3') ne fonctionne pas
+                # Ordre des dates : jj mois aaaa
+                if debugLevel > 1: print u'Recherche de ' + dateParameters[p] + u' *= *' + TradM[m][2] + u' *([0-9]+), '
+                currentPage = re.sub(ur'(\| *' + dateParameters[p] + u' *= *)' + TradM[m][2] + ur' *([0-9]+), *([0-9]+)\.? *([<|\||\n\t|}])', ur'\1' + ur'\2' + ur' ' + TradM[m][2] + ur' ' + ur'\3' + ur'\4', currentPage)    # trim(u'\3') ne fonctionne pas
  
     return currentPage
 
@@ -1879,7 +1878,7 @@ def translateLanguages(currentPage):
             print TradL[l][1]
         currentPage = re.sub(ur'(\| *langue *= *)' + TradL[l][1] + ur'( *[<|\||\n\t|}])', ur'\1' +  TradL[l][2] + ur'\2', currentPage)
 
-        # Rustine suite à un imprévu censé être réglé ci-dessus, mais qui touche presque 10 % des pages.
+        # TODO rustine suite à un imprévu censé être réglé ci-dessus, mais qui touche presque 10 % des pages.
         currentPage = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Aa]rticle\|langue=' + TradL[l][2] + ur'\|)', ur'\1', currentPage)
         currentPage = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Ll]ien web\|langue=' + TradL[l][2] + ur'\|)', ur'\1', currentPage)
         currentPage = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Oo]uvrage\|langue=' + TradL[l][2] + ur'\|)', ur'\1', currentPage)
