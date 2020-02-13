@@ -1714,7 +1714,6 @@ def getCurrentLinkTemplate(currentPage):
 
 def translateTemplateParameters(currentTemplate):
     if debugLevel > 1: print 'Remplacement des anciens paramètres, en tenant compte des doublons et des variables selon les modèles'
-    # TODO rendre plus générique pour éviter les doublons d'alias en cascade
     for p in range(0, limiteP):
         if debugLevel > 1: print oldParam[p].encode(config.console_encoding, 'replace')
         frName = newParam[p]
@@ -1747,15 +1746,19 @@ def translateTemplateParameters(currentTemplate):
                 continue
             elif debugLevel > 0: u' archiveurl ' + u' archivedate'
 
-        regex = ur'(\| *)' + oldParam[p] + ur'( *=)'
-        currentTemplate = re.sub(regex, ur'\1' + frName + ur'\2', currentTemplate)
-        currentTemplate = currentTemplate.replace(u'|=',u'|')
-        currentTemplate = currentTemplate.replace(u'| =',u'|')
-        currentTemplate = currentTemplate.replace(u'|  =',u'|')
-        currentTemplate = currentTemplate.replace(u'|}}',u'}}')
-        currentTemplate = currentTemplate.replace(u'| }}',u'}}')
-        if currentTemplate.find(u'{{') == -1:    # Sans modèle inclus
-            currentTemplate = currentTemplate.replace(u'||',u'|')
+        regex = ur'(\| *)' + newParam[p] + ur'( *=)'
+        hasDouble = re.search(regex, currentTemplate)
+        if not hasDouble:
+            regex = ur'(\| *)' + oldParam[p] + ur'( *=)'
+            currentTemplate = re.sub(regex, ur'\1' + frName + ur'\2', currentTemplate)
+    currentTemplate = currentTemplate.replace(u'|=',u'|')
+    currentTemplate = currentTemplate.replace(u'| =',u'|')
+    currentTemplate = currentTemplate.replace(u'|  =',u'|')
+    currentTemplate = currentTemplate.replace(u'|}}',u'}}')
+    currentTemplate = currentTemplate.replace(u'| }}',u'}}')
+    hasIncludedTemplate = currentTemplate.find(u'{{') != -1
+    if not hasIncludedTemplate:
+        currentTemplate = currentTemplate.replace(u'||',u'|')
 
     return currentTemplate
 
