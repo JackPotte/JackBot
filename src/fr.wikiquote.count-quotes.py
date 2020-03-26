@@ -37,11 +37,8 @@ This script understands various command-line arguments:
     -output:       used as -output:pagename, generate report to pagename.
     -outputprefix: used as -output:pagename, create NUMBEROFQUOTES and
                    NUMBEROFARTICLES as subpages of pagename
-    -outputquotes: used as -outputquotes:pagename, put the number of quotes
-		   on pagename
-    -outputarticles: used as -outputarticles:pagename, put the number of
-                   articles containing quotes on pagename
-		   
+    -outputquotes: used as -outputquotes:pagename, put the number of quotes on pagename
+    -outputarticles: used as -outputarticles:pagename, put the number of articles containing quotes on pagename
 """
 import pywikibot
 from pywikibot import *
@@ -50,50 +47,57 @@ import sys, re, string, time, locale, operator
 
 site = pywikibot.Site('fr', 'wikiquote')
 msg = {
-    'fr': (u'<h1 style="border-bottom:none;margin-top:0;margin-bottom:0.8em;text-align:center;"> %d citations dans %d articles ',
-           u'<small>(Le nombre d\'articles n\'inclut que les articles qui possèdent au moins une citation. Les citations en plusieurs exemplaires ne sont comptées qu\'une fois.)',
-           u'== Répartion par article ==\n\n',
-           u'{| class="wikitable sortable"\n|+\'\'\'Nombre de citations par article\'\'\'\n! align="center" | Article\n! align="center" | Nombre de citations\n',
-           u'|- align="center" \n| \'\'\'Moyenne\'\'\' || %0.2f\n',
-           u'<small>La moyenne exclut les articles ne contenant aucune citation.</small>\n\n',
-           u'== Citations en plusieurs exemplaires ==\n',
-           u'<small>(Ce tableau recense le nombre de citations qui figurent dans plusieurs articles. Ainsi, si le premier champ vaut N et le second M, cela signifie que M citations figurent en N exemplaires (dans N articles))</small>\n\n',
-           u'{| class="wikitable" style="width: 40%%"\n|+\'\'\'Nombre d\'exemplaires de la citation\'\'\'\n! align="center" | Article\n! align="center" | Nombre de citations\n',
-           u'Mise à jour des statistiques'),
-    'is': (u'<h1 style="border-bottom:none;margin-top:0;margin-bottom:0.8em;text-align:center;"> %d tilvitnanir ÃƒÂ­ %d greinum ',
-           u'<small>(ÃƒÂ fjÃƒÂ¶lda greina eru greinar meÃƒÂ° engum tilvitnunum ekki taldar meÃƒÂ°. TvÃƒÂ¶faldaÃƒÂ°ar tilvitnanir eru taldar sem ein.)',
-           u'== Eftir greinum ==\n\n',
-           u'{| class="wikitable"\n|+\'\'\'FjÃƒÂ¶ldi tilvitnana eftir greinum\'\'\'\n! align="center" | Grein\n! align="center" | FjÃƒÂ¶ldi tilvitna\n',
-           u'|- align="center" \n| \'\'\'MeÃƒÂ°altal\'\'\' || %0.2f\n',
-           u'<small>MeÃƒÂ°altaliÃƒÂ° telur ekki meÃƒÂ° greinar sem innihalda engar tilvitnanir.</small>\n\n',
-           u'== TvÃƒÂ¶faldar tilvitnanir ==\n',
-           u'<small>(ÃƒÅ¾essi tafla sÃƒÂ½nir fjÃƒÂ¶lda tilvitnana sem koma fram ÃƒÂ­ fleirum en einni grein. If the first field is N and the second M, it means M quotes appear N times (in N articles))</small>\n\n',
-           u'{| class="wikitable" style="width: 40%%"\n|+\'\'\'FjÃƒÂ¶ldi greina sem tilvitnunin kemur fyrir\'\'\n! align="center" | Greinar\n! align="center" | FjÃƒÂ¶ldi tilvitnana\n',
-           u'Updated statistics'),
-    'en': (u'<h1 style="border-bottom:none;margin-top:0;margin-bottom:0.8em;text-align:center;"> %d quotes in %d articles ',
-           u'<small>(The number of articles does not include articles without quotes. Duplicated quotes are counted only once.)',
-           '== By article ==\n\n',
-           '{| class="wikitable"\n|+\'\'\'Number of quotes by article\'\'\'\n! align="center" | Article\n! align="center" | Number of quotes\n',
-           '|- align="center" \n| \'\'\'Mean\'\'\' || %0.2f\n',
-           '<small>Mean excludes articles without quotes.</small>\n\n',
-           '== Duplicated quotes ==\n',
-           '<small>(This table gives the number of quotes that appear in more than one article. If the first field is N and the second M, it means M quotes appear N times (in N articles))</small>\n\n',
-           '{| class="wikitable" style="width: 40%%"\n|+\'\'\'Number of articles where the quote appears\'\'\n! align="center" | Articlse\n! align="center" | Number of quotes\n',
-           'Updated statistics')
-    }
+    'fr': (
+        u'<h1 style="border-bottom:none;margin-top:0;margin-bottom:0.8em;text-align:center;"> %d citations dans %d articles ',
+        u'<small>(Le nombre d\'articles n\'inclut que les articles qui possèdent au moins une citation. Les citations en plusieurs exemplaires ne sont comptées qu\'une fois.)',
+        u'== Répartion par article ==\n\n',
+        u'{| class="wikitable sortable"\n|+\'\'\'Nombre de citations par article\'\'\'\n! align="center" | Article\n! align="center" | Nombre de citations\n',
+        u'|- align="center" \n| \'\'\'Moyenne\'\'\' || %0.2f\n',
+        u'<small>La moyenne exclut les articles ne contenant aucune citation.</small>\n\n',
+        u'== Citations en plusieurs exemplaires ==\n',
+        u'<small>(Ce tableau recense le nombre de citations qui figurent dans plusieurs articles. Ainsi, si le premier champ vaut N et le second M, cela signifie que M citations figurent en N exemplaires (dans N articles))</small>\n\n',
+        u'{| class="wikitable" style="width: 40%%"\n|+\'\'\'Nombre d\'exemplaires de la citation\'\'\'\n! align="center" | Article\n! align="center" | Nombre de citations\n',
+        u'Mise à jour des statistiques'),
+    'is': (
+        u'<h1 style="border-bottom:none;margin-top:0;margin-bottom:0.8em;text-align:center;"> %d tilvitnanir ÃƒÂ­ %d greinum ',
+        u'<small>(ÃƒÂ fjÃƒÂ¶lda greina eru greinar meÃƒÂ° engum tilvitnunum ekki taldar meÃƒÂ°. TvÃƒÂ¶faldaÃƒÂ°ar tilvitnanir eru taldar sem ein.)',
+        u'== Eftir greinum ==\n\n',
+        u'{| class="wikitable"\n|+\'\'\'FjÃƒÂ¶ldi tilvitnana eftir greinum\'\'\'\n! align="center" | Grein\n! align="center" | FjÃƒÂ¶ldi tilvitna\n',
+        u'|- align="center" \n| \'\'\'MeÃƒÂ°altal\'\'\' || %0.2f\n',
+        u'<small>MeÃƒÂ°altaliÃƒÂ° telur ekki meÃƒÂ° greinar sem innihalda engar tilvitnanir.</small>\n\n',
+        u'== TvÃƒÂ¶faldar tilvitnanir ==\n',
+        u'<small>(ÃƒÅ¾essi tafla sÃƒÂ½nir fjÃƒÂ¶lda tilvitnana sem koma fram ÃƒÂ­ fleirum en einni grein. If the first field is N and the second M, it means M quotes appear N times (in N articles))</small>\n\n',
+        u'{| class="wikitable" style="width: 40%%"\n|+\'\'\'FjÃƒÂ¶ldi greina sem tilvitnunin kemur fyrir\'\'\n! align="center" | Greinar\n! align="center" | FjÃƒÂ¶ldi tilvitnana\n',
+        u'Updated statistics'),
+    'en': (
+        u'<h1 style="border-bottom:none;margin-top:0;margin-bottom:0.8em;text-align:center;"> %d quotes in %d articles ',
+        u'<small>(The number of articles does not include articles without quotes. Duplicated quotes are counted only once.)',
+        '== By article ==\n\n',
+        '{| class="wikitable"\n|+\'\'\'Number of quotes by article\'\'\'\n! align="center" | Article\n! align="center" | Number of quotes\n',
+        '|- align="center" \n| \'\'\'Mean\'\'\' || %0.2f\n',
+        '<small>Mean excludes articles without quotes.</small>\n\n',
+        '== Duplicated quotes ==\n',
+        '<small>(This table gives the number of quotes that appear in more than one article. If the first field is N and the second M, it means M quotes appear N times (in N articles))</small>\n\n',
+        '{| class="wikitable" style="width: 40%%"\n|+\'\'\'Number of articles where the quote appears\'\'\n! align="center" | Articlse\n! align="center" | Number of quotes\n',
+        'Updated statistics')
+}
+
 
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
+
 
 def replace_citation(piece):
     for p in piece['parts']:
         if trim(p[0].lower()) == globalvar.quote_arg or trim(p[0]) == '1' or trim(p[0]) == '':
             return p[1]
 
+
 def replace_lang(piece):
     # Return second argument.
     return piece['parts'][1][1]
-        
+
+
 def replace_template(piece):
     # Return title if no arg. 
     if len(piece['parts']) == 0:
@@ -101,6 +105,7 @@ def replace_template(piece):
 
     # Else : return first arg.
     return piece['parts'][0][1]
+
 
 class Global(object):
     """Container class for global settings.
@@ -115,18 +120,22 @@ class Global(object):
     quiet = False
     debug = False
 
-def outputq(s, newline = True):
+
+def outputq(s, newline=True):
     if not globalvar.quiet:
-        pywikibot.output(u'%s' % s, newline = newline)
+        pywikibot.output(u'%s' % s, newline=newline)
+
 
 def debug(s):
     if globalvar.debug:
         pywikibot.output(u'%s' % s)
 
+
 def error(s):
     # Output errors to ... stdout, because pywikipedia uses stderr for "normal"
     # output. *sigh*
-    pywikibot.output(u'ERROR: %s' % s, toStdout = True)
+    pywikibot.output(u'ERROR: %s' % s, toStdout=True)
+
 
 def parse_templates(text):
     """Parse text (should be the beginning of a quote template) to get the
@@ -144,9 +153,9 @@ def parse_templates(text):
 
     debug(u'Parsing templates')
     debug('Showing first 200 chars from text')
-#    debug(u'%s' % text[:200])
+    #    debug(u'%s' % text[:200])
 
-    i = 0 
+    i = 0
     # End when the first found template ends, i.e. when stack is empty and
     # we're not at the beginning 
     while (stack != [] or i == 0) and i < len(text):
@@ -165,7 +174,6 @@ def parse_templates(text):
 
         i += m.start()
         span = m.end() - m.start()
-        
 
         debug(u'%s (%d, %d)' % (m.group(), m.start(), m.end()))
         debug(u'%s' % text[i:])
@@ -194,7 +202,7 @@ def parse_templates(text):
                 sep = part.find('=')
                 if sep != -1:
                     argname = part[:sep]
-                    arg = part[sep+1:]
+                    arg = part[sep + 1:]
                 else:
                     argname = ''
                     arg = part
@@ -221,9 +229,9 @@ def parse_templates(text):
 
                 debug("template %s replaced by %s" % (stack[lastOpeningBrace]['title'], piece))
 
-            if piece == None:
+            if piece is None:
                 error("Found a null piece: probably unterminated %s template!" % title)
-                
+
             start = stack[lastOpeningBrace]['start']
             text = text[:start] + piece + text[i:]
             i = start + len(piece)
@@ -240,7 +248,8 @@ def parse_templates(text):
 
 
 def prepare_text(text):
-    wikilinksR = re.compile(r"^([ %!\"$&'()*,\\\-.\\/0-9:;=?@A-Z\\\\^_`a-z~\\x80-\\xFF+#]+)(?:\|(.+?))?]](.*)", re.DOTALL)
+    wikilinksR = re.compile(r"^([ %!\"$&'()*,\\\-.\\/0-9:;=?@A-Z\\\\^_`a-z~\\x80-\\xFF+#]+)(?:\|(.+?))?]](.*)",
+                            re.DOTALL)
     links = text.split('[[')
     # All texts before the first link.
     text = links.pop(0)
@@ -258,18 +267,20 @@ def prepare_text(text):
         else:
             add += '[[' + l
         text += add
-#        debug(u"Add: %s" % add) 
-#    debug(u'After :')
-#    debug(u'%s' % text)
+    #        debug(u"Add: %s" % add)
+    #    debug(u'After :')
+    #    debug(u'%s' % text)
 
     # Remove tags.
     tagsR = re.compile(r'<[^>]*>')
     text = tagsR.sub('', text)
     return text
 
+
 def parse_quote(text):
     # Subst templates.
     return parse_templates(text)
+
 
 def workon(page):
     if page.title() == globalvar.mainpagename:
@@ -285,10 +296,11 @@ def workon(page):
     text = prepare_text(text)
 
     if not site.nocapitalize:
-        pattern = '[' + re.escape(globalvar.quote_template[0].upper()) + re.escape(globalvar.quote_template[0].lower()) + ']' + re.escape(globalvar.quote_template[1:])
+        pattern = '[' + re.escape(globalvar.quote_template[0].upper()) + re.escape(
+            globalvar.quote_template[0].lower()) + ']' + re.escape(globalvar.quote_template[1:])
     else:
         pattern = re.escape(globalvar.quote_template)
-                        
+
     r = re.compile(r'\{\{ *(?:[Tt]emplate:|[mM][sS][gG]:)?' + pattern)
 
     alnum = re.compile('\W')
@@ -298,16 +310,18 @@ def workon(page):
     nquotes = 0
 
     for m in matches:
-        debug(u'match (200) : %s' % text[m.start():m.start()+200])
+        debug(u'match (200) : %s' % text[m.start():m.start() + 200])
         debug(u'offset: %d' % offset)
-       # Real start of the match.
+        # Real start of the match.
         nquotes += 1
         start = m.start() - offset
 
+        if trim(text[start:]) == '':
+            return
         try:
             [endtext, qlen] = parse_quote(text[start:])
         except TypeError:
-            raw_input(u'Unclosed template!')
+            print (u'Unclosed template: ' + text[start:100])
             return
 
         offset += (len(text[start:]) - len(endtext))
@@ -331,11 +345,10 @@ def workon(page):
 
             globalvar.quotes[h][1].append([quote, page])
 
-
     if nquotes == 0:
         outputq(u"no quotes in %s" % page.title())
         globalvar.noquotes.append(page)
-    
+
 
 def generate_output(quotes):
     # We want to compute :
@@ -354,7 +367,7 @@ def generate_output(quotes):
         # Unique quotes.
         uquotes = {}
         [operator.setitem(uquotes, i[0], []) for i in quotes[h][1] if not uquotes.has_key(i[0])]
-        #outputq(u'uquotes : %s' % uquotes)
+        # outputq(u'uquotes : %s' % uquotes)
 
         # Get associated pages.
         for q in quotes[h][1]:
@@ -375,17 +388,17 @@ def generate_output(quotes):
         articles = 0
         for q in uquotes:
             if pr:
-                outputq(u'\t%s (on:' % q, newline = False)
+                outputq(u'\t%s (on:' % q, newline=False)
             for a in uquotes[q]:
                 if pr:
-                    outputq(u' %s' % trim(a.title()), newline = False)
+                    outputq(u' %s' % trim(a.title()), newline=False)
                 if a in acount:
                     acount[a] += 1
                 else:
                     acount[a] = 1;
                 articles += 1
             if pr:
-               outputq(u')')
+                outputq(u')')
 
         if articles in dupcount:
             dupcount[articles] += 1
@@ -394,24 +407,25 @@ def generate_output(quotes):
 
     outputq(u'TOTAL NUMBER OF QUOTES : %d' % tcount)
     output = msg[globalvar.lang][0] % (tcount, len(acount))
-    output += '<small style="font-size: 70%%">(%s)</small></h1>\n' 
+    output += '<small style="font-size: 70%%">(%s)</small></h1>\n'
     output += msg[globalvar.lang][1]
     output += '\n\n'
 
-#    locale.setlocale(locale.LC_ALL, "fr_FR@euro")
-#    for l in sorted(acount.items(), lambda x,y: locale.strcoll(x[0].title().lower(), y[0].title().lower())):
-#        pywikibot.output(u'%s' % l[0].title())
+    #    locale.setlocale(locale.LC_ALL, "fr_FR@euro")
+    #    for l in sorted(acount.items(), lambda x,y: locale.strcoll(x[0].title().lower(), y[0].title().lower())):
+    #        pywikibot.output(u'%s' % l[0].title())
 
     # Sort by number of quotes (return list of tuples, not dict)
-    acount = sorted(acount.items(), lambda x,y: cmp(y[1], x[1]) or locale.strcoll(x[0].title().lower(), y[0].title().lower()))
-    
-    output += msg[globalvar.lang][2] 
+    acount = sorted(acount.items(),
+                    lambda x, y: cmp(y[1], x[1]) or locale.strcoll(x[0].title().lower(), y[0].title().lower()))
+
+    output += msg[globalvar.lang][2]
     output += msg[globalvar.lang][3]
 
     # Make it Unicode because the titles will be Unicode.
 
     for a in acount:
-	outputq(u'adding to table: %s' % a[0].title())
+        outputq(u'adding to table: %s' % a[0].title())
         output += '|-\n| [[%s]] || %d\n' % (a[0].title(), a[1])
     for p in globalvar.noquotes:
         output += '|-\n| [[%s]] || 0\n' % p.title()
@@ -436,6 +450,7 @@ def generate_output(quotes):
     output += '|}\n\n'
 
     return [output, tcount, len(acount)]
+
 
 class Main(object):
     # Options
@@ -503,12 +518,12 @@ class Main(object):
                     self.__outputprefix = pywikibot.input(u'Which page to save templates to: ')
                 else:
                     self.__outputprefix = arg[13:]
-	    elif arg.startswith('-outputquotes:'):
+            elif arg.startswith('-outputquotes:'):
                 if len(arg) == 12:
                     self.__outputquotes = pywikibot.input(u'Which page to save number of quotes to: ')
                 else:
                     self.__outputquotes = arg[13:]
-	    elif arg.startswith('-outputarticles:'):
+            elif arg.startswith('-outputarticles:'):
                 if len(arg) == 14:
                     self.__outputarticles = pywikibot.input(u'Which page to save number of quotes to: ')
                 else:
@@ -538,8 +553,8 @@ class Main(object):
         if self.__workonnew:
             if not self.__number:
                 self.__number = config.special_page_limit
-            pagegen = pagegenerators.NewpagesPageGenerator(number = self.__number)
-                
+            pagegen = pagegenerators.NewpagesPageGenerator(number=self.__number)
+
         elif self.__refpagetitle:
             refpage = pywikibot.Page(site, self.__refpagetitle)
             pagegen = pagegenerators.ReferringPageGenerator(refpage)
@@ -552,9 +567,9 @@ class Main(object):
             cat = catlib.Category(site, 'Category:%s' % self.__catname)
 
             if self.__start:
-                pagegen = pagegenerators.CategorizedPageGenerator(cat, recurse = self.__catrecurse, start = self.__start)
+                pagegen = pagegenerators.CategorizedPageGenerator(cat, recurse=self.__catrecurse, start=self.__start)
             else:
-                pagegen = pagegenerators.CategorizedPageGenerator(cat, recurse = self.__catrecurse)
+                pagegen = pagegenerators.CategorizedPageGenerator(cat, recurse=self.__catrecurse)
 
         elif self.__textfile:
             pagegen = pagegenerators.TextfilePageGenerator(self.__textfile)
@@ -564,9 +579,8 @@ class Main(object):
                 self.__start = '!'
             namespace = pywikibot.Page(site, self.__start).namespace()
             start = pywikibot.Page(site, self.__start).title(withNamespace=False)
-            pagegen = pagegenerators.AllpagesPageGenerator(start, namespace, includeredirects=False, site = site)
+            pagegen = pagegenerators.AllpagesPageGenerator(start, namespace, includeredirects=False, site=site)
         return pagegen
-
 
     def main(self):
         # Parse command line options
@@ -588,7 +602,8 @@ class Main(object):
             for p in self.__pagetitles:
                 try:
                     pages.append(pywikibot.Page(site, p))
-                except pywikibot.NoPage: pass
+                except pywikibot.NoPage:
+                    pass
             generator = pagegenerators.PreloadingGenerator(iter(pages))
         else:
             generator = pagegenerators.PreloadingGenerator(pagegen)
@@ -598,51 +613,51 @@ class Main(object):
 
         [output, nquotes, npages] = generate_output(globalvar.quotes)
         if self.__output:
-	    try:
-	        outputpage = pywikibot.Page(site, self.__output)
+            try:
+                outputpage = pywikibot.Page(site, self.__output)
                 if outputpage.exists():
-           	    oldtext = outputpage.get()
+                    oldtext = outputpage.get()
                 else:
-		     oldtext = u''
+                    oldtext = u''
 
-            	if oldtext != output:
+                if oldtext != output:
                     output = output % time.strftime('%d/%m/%y / %H:00')
-	            outputpage.put(output, comment = msg[globalvar.lang][9])
-	    except:
+                    outputpage.put(output, comment=msg[globalvar.lang][9])
+            except:
                 error(u'Getting/Modifying page %s failed, generated output was:\n%s' % (outputpage, output))
         else:
             pywikibot.output(output)
 
-	nquotespage = None
-	narticlespage = None
-	if self.__outputprefix: 
-		if self.__outputquotes:
-			pname = self.__outputquotes
-		else:
-			pname = "NUMBEROFQUOTES"
-		nquotespage = pywikibot.Page(site, u'%s%s' % (self.__outputprefix, pname))
+        nquotespage = None
+        narticlespage = None
+        if self.__outputprefix:
+            if self.__outputquotes:
+                pname = self.__outputquotes
+            else:
+                pname = "NUMBEROFQUOTES"
+            nquotespage = pywikibot.Page(site, u'%s%s' % (self.__outputprefix, pname))
 
-		if self.__outputarticles:
-			pname = self.__outputarticles
-		else:
-			pname = "Utilisateur:JackBot/NUMBEROFARTICLES"
-		narticlespage = pywikibot.Page(site, u'%s%s' % (self.__outputprefix, pname))
-	else:
-		if self.__outputquotes:
-			nquotespage = pywikibot.Page(site, u'%s' % self.__outputquotes)
-		if self.__outputarticles:
-			narticlespage = pywikibot.Page(site, u'%s' % self.__outputarticles)
+            if self.__outputarticles:
+                pname = self.__outputarticles
+            else:
+                pname = "Utilisateur:JackBot/NUMBEROFARTICLES"
+            narticlespage = pywikibot.Page(site, u'%s%s' % (self.__outputprefix, pname))
+        else:
+            if self.__outputquotes:
+                nquotespage = pywikibot.Page(site, u'%s' % self.__outputquotes)
+            if self.__outputarticles:
+                narticlespage = pywikibot.Page(site, u'%s' % self.__outputarticles)
 
-	if nquotespage:
-	    # April fool (replace %d by %s too)
-	    #nquotes = hex(nquotes)
-            nquotespage.put("%d" % nquotes, comment = msg[globalvar.lang][9])
+        if nquotespage:
+            # April fool (replace %d by %s too)
+            # nquotes = hex(nquotes)
+            nquotespage.put("%d" % nquotes, comment=msg[globalvar.lang][9])
 
-	if narticlespage:
-	    # Same as above
-	    #npages = hex(npages)
-            narticlespage.put("%d" % npages, comment = msg[globalvar.lang][9])
-		
+        if narticlespage:
+            # Same as above
+            # npages = hex(npages)
+            narticlespage.put("%d" % npages, comment=msg[globalvar.lang][9])
+
 
 globalvar = Global()
 try:
