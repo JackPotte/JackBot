@@ -1,249 +1,256 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Ce script formate Wikivoyage
-
+"""
+Ce script formate Wikivoyage
+"""
 from __future__ import absolute_import, unicode_literals
-import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
-from lib import *
+import sys
 import pywikibot
 from pywikibot import *
-from pywikibot import pagegenerators
+try:
+    from src.lib import *
+except ImportError:
+    from lib import *
 
 # Global variables
-debugLevel = 0
-debugAliases = ['-debug', '-d']
-for debugAlias in debugAliases:
+debug_level = 0
+debug_aliases = ['-debug', '-d']
+for debugAlias in debug_aliases:
     if debugAlias in sys.argv:
-        debugLevel= 1
+        debug_level= 1
         sys.argv.remove(debugAlias)
 
-fileName = __file__
-if debugLevel > 0: print fileName
-if fileName.rfind('/') != -1: fileName = fileName[fileName.rfind('/')+1:]
-siteLanguage = fileName[:2]
-if debugLevel > 1: print siteLanguage
-siteFamily = fileName[3:]
-siteFamily = siteFamily[:siteFamily.find('.')]
-if debugLevel > 1: print siteFamily
-site = pywikibot.Site(siteLanguage, siteFamily)
-username = config.usernames[siteFamily][siteLanguage]
+file_name = __file__
+if debug_level > 0: print(file_name)
+if file_name.rfind('/') != -1: file_name = file_name[file_name.rfind('/')+1:]
+site_language = file_name[:2]
+if debug_level > 1: print(site_language)
+site_family = file_name[3:]
+site_family = site_family[:site_family.find('.')]
+if debug_level > 1: print(site_family)
+site = pywikibot.Site(site_language, site_family)
+username = config.usernames[site_family][site_language]
 
 checkURL = False
-fixTags = False
+fix_tags = False
 fixFiles = True
 
 
-def treatPageByName(pageName):
-    print(pageName.encode(config.console_encoding, 'replace'))
-    summary = u'Formatage'
-    page = Page(site, pageName)
-    PageBegin = getContentFromPage(page, 'All')
-    PageTemp = PageBegin
-    PageEnd = u''
+def treat_page_by_name(page_name):
+    print(page_name)
+    summary = 'Formatage'
+    page = Page(site, page_name)
+    current_page_content = get_content_from_page(page, 'All')
+    PageTemp = current_page_content
+    PageEnd = ''
 
-    PageTemp = globalOperations(PageTemp)
-    if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
-    if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
-    if checkURL: PageTemp = hyperlynx(PageTemp)
+    PageTemp = global_operations(PageTemp)
+    if fixFiles: PageTemp = replace_files_errors(PageTemp)
+    if fix_tags: PageTemp = replace_deprecated_tags(PageTemp)
+    if checkURL: PageTemp = hyper_lynx(PageTemp)
 
     PageTemp = PageTemp.replace('\n,', ',')
 
     # Traitements des modèles
-    templates = [u'Aller', u'Circuler', u'Voir', u'Faire', u'Acheter', u'Manger', u'Sortir', u'Se loger', u'Destination',
-        u'Listing', u'Représentation diplomatique', u'Marqueur', u'Ville'
+    templates = ['Aller', 'Circuler', 'Voir', 'Faire', 'Acheter', 'Manger', 'Sortir', 'Se loger', 'Destination',
+        'Listing', 'Représentation diplomatique', 'Marqueur', 'Ville'
     ]
     parameters = [
-        [u'handicap', u'description', u'Handicap'],
-        [u'wifi', u'description', u'Wi-Fi'],
-        #[u'numéro gratuit', u'téléphone'],
-        #[u'téléphone portable', u'téléphone'],
+        ['handicap', 'description', 'Handicap'],
+        ['wifi', 'description', 'Wi-Fi'],
+        #['numéro gratuit', 'téléphone'],
+        #['téléphone portable', 'téléphone'],
     ]
     #for template in templates:
     for parameter in parameters:
         #PageTemp = mergeParameters(PageTemp, template, parameter)
-        PageTemp = searchDoubles(PageTemp, parameter)
+        PageTemp = search_doubles(PageTemp, parameter)
 
     # Analyse des crochets et accolades (à faire : hors LaTex)
     if PageTemp.count('{') - PageTemp.count('}') != 0:
-        if pageName.find(u'User:JackBot/') == -1: log(u'*[[' + pageName + u']] : accolade cassée')
-        #if debugLevel > 1: raise Exception(u'Accolade cassée')
+        if page_name.find('User:JackBot/') == -1: log('*[[' + page_name + ']] : accolade cassée')
+        #if debug_level > 1: raise Exception('Accolade cassée')
     if PageTemp.count('[') - PageTemp.count(']') != 0:
-        if pageName.find(u'User:JackBot/') == -1: log(u'*[[' + pageName + u']] : crochet cassé')
-        #if debugLevel > 1: raise Exception(u'Crochet cassé')
-    if PageBegin.count('[[') - PageBegin.count(']]') != PageTemp.count('[[') - PageTemp.count(']]'):
+        if page_name.find('User:JackBot/') == -1: log('*[[' + page_name + ']] : crochet cassé')
+        #if debug_level > 1: raise Exception('Crochet cassé')
+    if current_page_content.count('[[') - current_page_content.count(']]') != PageTemp.count('[[') - PageTemp.count(']]'):
         txtfile = codecs.open(output, 'a', 'utf-8')
-        txtfile.write(PageTemp + u'\n\n------------------------------------------------------------------------------------------------------------\n\n')
+        txtfile.write(PageTemp + '\n\n------------------------------------------------------------------------------------------------------------\n\n')
         txtfile.close()    
-        if debugLevel > 0: print u'Crochets cassés'    #raise Exception(u'Crochets cassés')
+        if debug_level > 0: print('Crochets cassés')    #raise Exception('Crochets cassés')
         return
-    if PageBegin.count('{{') - PageBegin.count('}}') != PageTemp.count('{{') - PageTemp.count('}}'):
+    if current_page_content.count('{{') - current_page_content.count('}}') != PageTemp.count('{{') - PageTemp.count('}}'):
         txtfile = codecs.open(output, 'a', 'utf-8')
-        txtfile.write(PageTemp + u'\n\n------------------------------------------------------------------------------------------------------------\n\n')
+        txtfile.write(PageTemp + '\n\n------------------------------------------------------------------------------------------------------------\n\n')
         txtfile.close()    
-        if debugLevel > 0: print u'Accolades cassées'    #raise Exception(u'Accolades cassées')
+        if debug_level > 0: print('Accolades cassées')    #raise Exception('Accolades cassées')
         return
 
     # Sauvegarde
     PageEnd = PageTemp
-    if PageEnd != PageBegin:
-        savePage(page,PageEnd,summary)
+    if PageEnd != current_page_content:
+        save_page(page, PageEnd, summary)
 
 
 def mergeParameters(PageTemp, template, parameter):
-    if debugLevel > 1: print template + u' : ' + parameter[0] + u' => ' + parameter[1]
-    PageEnd = u''
+    if debug_level > 1:
+        print(template + ' : ' + parameter[0] + ' => ' + parameter[1])
+    PageEnd = ''
 
-    tRegex = ur'{{[' + template[:1].lower() + u'|' + template[:1].upper() + u']' + template[1:] + ur'([^\|}]*\|)'
-    if debugLevel > 1: print str(len(re.findall(tRegex, PageTemp))) + u' ' + template
+    tRegex = r'{{[' + template[:1].lower() + '|' + template[:1].upper() + ']' + template[1:] + r'([^\|}]*\|)'
+    if debug_level > 1:
+        print(str(len(re.findall(tRegex, PageTemp))) + ' ' + template)
     while re.search(tRegex, PageTemp):
         # Positionnement au premier paramètre du modèle à modifier
-        PageEnd = PageEnd + PageTemp[:re.search(tRegex, PageTemp).end()+len(u'{{' + template)]
-        PageTemp = PageTemp[re.search(tRegex, PageTemp).end()+len(u'{{' + template):]
+        PageEnd = PageEnd + PageTemp[:re.search(tRegex, PageTemp).end()+len('{{' + template)]
+        PageTemp = PageTemp[re.search(tRegex, PageTemp).end()+len('{{' + template):]
 
         # Recherche du paramètre dans le modèle courant
-        pRegex = ur'\| *' + parameter[0] + ur' *=[^}\|]*'
-        nRegex = ur' *' + parameter[0] + ur' *='
+        pRegex = r'\| *' + parameter[0] + r' *=[^}\|]*'
+        nRegex = r' *' + parameter[0] + r' *='
         while not re.match(pRegex, PageTemp, re.MULTILINE) and ( \
-            (PageTemp.find(u'{{') < PageTemp.find(u'}}') and PageTemp.find(u'{{') != -1) or \
-            (PageTemp.find(u'|') < PageTemp.find(u'}}') and PageTemp.find(u'|') != -1) \
+            (PageTemp.find('{{') < PageTemp.find('}}') and PageTemp.find('{{') != -1) or \
+            (PageTemp.find('|') < PageTemp.find('}}') and PageTemp.find('|') != -1) \
         ) :
-            #if template == 'Se loger': raw_input(PageTemp[:PageTemp.find(u'}}')].encode(config.console_encoding, 'replace'))
-            if PageTemp.find(u'}}') < PageTemp.find(u'|') or (PageTemp.find(u'{{') < PageTemp.find(u'|') and PageTemp.find(u'{{') != -1):
-                PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
-                PageTemp = PageTemp[PageTemp.find(u'}}')+2:]
+            #if template == 'Se loger': input(PageTemp[:PageTemp.find('}}')])
+            if PageTemp.find('}}') < PageTemp.find('|') or (PageTemp.find('{{') < PageTemp.find('|') and PageTemp.find('{{') != -1):
+                PageEnd = PageEnd + PageTemp[:PageTemp.find('}}')+2]
+                PageTemp = PageTemp[PageTemp.find('}}')+2:]
             else:
-                PageEnd = PageEnd + PageTemp[:PageTemp.find(u'|')+1]
-                PageTemp = PageTemp[PageTemp.find(u'|')+1:]
+                PageEnd = PageEnd + PageTemp[:PageTemp.find('|')+1]
+                PageTemp = PageTemp[PageTemp.find('|')+1:]
 
                 if re.match(nRegex, PageTemp, re.MULTILINE):
                     PageEnd = PageEnd[:-1]
-                    PageTemp = u'|' + PageTemp
+                    PageTemp = '|' + PageTemp
 
         if re.match(pRegex, PageTemp, re.MULTILINE):
-            if debugLevel > 0: print u' ' + parameter[0] + u' trouvé dans ' + template + u' en ' + str(re.match(pRegex, PageTemp, re.MULTILINE).start())
+            if debug_level > 0:
+                print(' ' + parameter[0] + ' trouvé dans ' + template + ' en ' + str(re.match(pRegex, PageTemp, re.MULTILINE).start()))
 
             # Capitalisation des modèles
-            PageEnd = re.sub(tRegex, ur'{{' + template + ur'\1', PageEnd)
-            PageTemp = re.sub(tRegex, ur'{{' + template + ur'\1', PageTemp)
+            PageEnd = re.sub(tRegex, r'{{' + template + r'\1', PageEnd)
+            PageTemp = re.sub(tRegex, r'{{' + template + r'\1', PageTemp)
 
             modele = PageTemp[re.match(pRegex, PageTemp, re.MULTILINE).start():re.match(pRegex, PageTemp, re.MULTILINE).end()]
-            if debugLevel > 1: print u' retrait de : ' + modele
+            if debug_level > 1: print(' retrait de : ') + modele
             PageTemp = PageTemp[:re.match(pRegex, PageTemp, re.MULTILINE).start()] + PageTemp[re.match(pRegex, PageTemp, re.MULTILINE).end():]
-            modele = trim(modele[modele.find(u'=')+1:])
+            modele = trim(modele[modele.find('=')+1:])
 
             # Fusion de l'ancien paramètre trouvé
-            if modele != u'' and len(parameter) > 1:
+            if modele != '' and len(parameter) > 1:
                 # Dans le modèle courant, après les modèles imbriqués, voire parameter[1] s'il n'existe pas
-                #regex = ur'\| *' + parameter[1] + ur' *=({{.*?}}|.)*$' + re.search = modèle précédent
-                #regex = ur'\| *' + parameter[1] + ur' *=[^{}]*$' + re.match = modèle suivant
-                regex = ur'\| *' + parameter[1] + ur' *=[^{}]*$'    # Si rien, tél dans mdl suivant, sinon mdl précédent, d'où le rfind à la place
+                #regex = r'\| *' + parameter[1] + r' *=({{.*?}}|.)*$' + re.search = modèle précédent
+                #regex = r'\| *' + parameter[1] + r' *=[^{}]*$' + re.match = modèle suivant
+                regex = r'\| *' + parameter[1] + r' *=[^{}]*$'    # Si rien, tél dans mdl suivant, sinon mdl précédent, d'où le rfind à la place
                 if re.search(regex, PageEnd, re.MULTILINE):
-                    if debugLevel > 0: print ' paramètre : ' + parameter[1] + u'= situé avant ' + parameter[0] + u'='
-                    if debugLevel > 1: raw_input(PageEnd[re.search(regex, PageEnd, re.MULTILINE).end():].encode(config.console_encoding, 'replace'))
+                    if debug_level > 0: print(' paramètre : ') + parameter[1] + '= situé avant ' + parameter[0] + '='
+                    if debug_level > 1: input(PageEnd[re.search(regex, PageEnd, re.MULTILINE).end():])
                     if PageEnd.rfind(template) != -1:
                         PageTemp = PageEnd[PageEnd.rfind(template):] + PageTemp
                         PageEnd = PageEnd[:PageEnd.rfind(template)]
                     else:
                         return PageEnd + PageTemp
 
-                regex = ur'^({{.*?}}|.)*\| *' + parameter[1] + ur' *='
-                while PageTemp.find(u'{{') != -1 and PageTemp.find(u'}}') != -1 and PageTemp.find(u'{{') < PageTemp.find(u'}}') \
-                    and (not re.search(regex, PageTemp, re.MULTILINE) or re.search(regex, PageTemp, re.MULTILINE).end() > PageTemp.find(u'}}')):
-                    PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')+2]
-                    PageTemp = PageTemp[PageTemp.find(u'}}')+2:]
+                regex = r'^({{.*?}}|.)*\| *' + parameter[1] + r' *='
+                while PageTemp.find('{{') != -1 and PageTemp.find('}}') != -1 and PageTemp.find('{{') < PageTemp.find('}}') \
+                    and (not re.search(regex, PageTemp, re.MULTILINE) or re.search(regex, PageTemp, re.MULTILINE).end() > PageTemp.find('}}')):
+                    PageEnd = PageEnd + PageTemp[:PageTemp.find('}}')+2]
+                    PageTemp = PageTemp[PageTemp.find('}}')+2:]
 
                 if not re.search(regex, PageTemp, re.MULTILINE):
                     # BUG
-                    if debugLevel > 1: print ' ajout du paramètre : ' + parameter[1]
-                    PageEnd = PageEnd + PageTemp[:PageTemp.find(u'}}')]
-                    PageTemp = u'| ' + parameter[1] + u' = ' + PageTemp[PageTemp.find(u'}}'):]
+                    if debug_level > 1: print(' ajout du paramètre : ') + parameter[1]
+                    PageEnd = PageEnd + PageTemp[:PageTemp.find('}}')]
+                    PageTemp = '| ' + parameter[1] + ' = ' + PageTemp[PageTemp.find('}}'):]
                 else:
-                    if debugLevel > 1: print ' paramètre ' + parameter[1] + u' existant'
+                    if debug_level > 1: print(' paramètre ') + parameter[1] + ' existant'
                     PageEnd = PageEnd + PageTemp[:re.search(regex, PageTemp, re.MULTILINE).end()]
                     PageTemp = PageTemp[re.search(regex, PageTemp, re.MULTILINE).end():]
 
                 if len(parameter) > 2:
-                    # à proposer ? if modele == 'non défini': parameter[2] = u''
-                    newTemplate = u'{{' + parameter[2] + u'|' + modele + u'}} '
+                    # à proposer ? if modele == 'non défini': parameter[2] = ''
+                    newTemplate = '{{' + parameter[2] + '|' + modele + '}} '
                 else:
-                    if modele.find(u'(') != -1:
+                    if modele.find('(') != -1:
                         newTemplate = modele
                     else:
-                        newTemplate = modele + u' (' + parameter[0] + u')'
+                        newTemplate = modele + ' (' + parameter[0] + ')'
 
                     # Après le contenu du paramètre
-                    regex = ur'[^\|}]*'
+                    regex = r'[^\|}]*'
                     if re.match(regex, PageTemp, re.MULTILINE):
                         PageEnd = PageEnd + PageTemp[:re.match(regex, PageTemp, re.MULTILINE).end()]
                         PageTemp = PageTemp[re.match(regex, PageTemp, re.MULTILINE).end():]
 
-                    while PageEnd[-1:] == u' ':
+                    while PageEnd[-1:] == ' ':
                         PageEnd = PageEnd[:-1]
-                    if PageEnd[-1:] != u'=':
-                        newTemplate = u', ' + newTemplate
+                    if PageEnd[-1:] != '=':
+                        newTemplate = ', ' + newTemplate
                 # Ajout de parameter[0] en début de parameter[1]
-                if debugLevel > 1: print u' ajout de : ' + newTemplate
+                if debug_level > 1: print(' ajout de : ') + newTemplate
                 PageEnd = PageEnd + newTemplate
 
-            if debugLevel > 1:
-                #print template
-                raw_input(PageTemp[:PageTemp.find(u'=')].encode(config.console_encoding, 'replace'))
+            if debug_level > 1:
+                #print(template)
+                input(PageTemp[:PageTemp.find('=')])
 
-        elif debugLevel > 1: print parameter[0] + u' non trouvé dans ' + template + u' ' + str(len(PageEnd))
+        elif debug_level > 1:
+            print(parameter[0] + ' non trouvé dans ' + template + ' ' + str(len(PageEnd)))
 
     return PageEnd + PageTemp
 
 
-p = PageProvider(treatPageByName, site, debugLevel)
-setGlobals(debugLevel, site, username)
+p = PageProvider(treat_page_by_name, site, debug_level)
+set_globals(debug_level, site, username)
 def main(*args):
     if len(sys.argv) > 1:
-        if debugLevel > 1: print sys.argv
-        if sys.argv[1] == u'-test':
-            treatPageByName(u'User:' + username + u'/test')
-        elif sys.argv[1] == u'-test2':
-            treatPageByName(u'User:' + username + u'/test2')
-        elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'Catégorie:Python')
-        elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
-            p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
-        elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
+        if debug_level > 1: print(sys.argv)
+        if sys.argv[1] == '-test':
+            treat_page_by_name('User:' + username + '/test')
+        elif sys.argv[1] == '-test2':
+            treat_page_by_name('User:' + username + '/test2')
+        elif sys.argv[1] == '-page' or sys.argv[1] == '-p':
+            treat_page_by_name('Catégorie:Python')
+        elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
+            p.pages_by_file('src/lists/articles_' + site_language + '_' + site_family + '.txt')
+        elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
             regex = '\n[ \t]*,'
             if len(sys.argv) > 2: regex = sys.argv[2]
-            p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex)
-        elif sys.argv[1] == u'-u':
-            p.pagesByUser(u'User:' + username)
-        elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
+            p.page_by_xml(site_language + site_family + '\-.*xml', regex)
+        elif sys.argv[1] == '-u':
+            p.pages_by_user('User:' + username)
+        elif sys.argv[1] == '-search' or sys.argv[1] == '-s' or sys.argv[1] == '-r':
             if len(sys.argv) > 2:
-                p.pagesBySearch(sys.argv[2])
+                p.pages_by_search(sys.argv[2])
             else:
-                p.pagesBySearch(u'chinois')
-        elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:autres projets')
-        elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
-            afterPage = u''
+                p.pages_by_search('chinois')
+        elif sys.argv[1] == '-link' or sys.argv[1] == '-l' or sys.argv[1] == '-template' or sys.argv[1] == '-m':
+            p.pages_by_link('Template:autres projets')
+        elif sys.argv[1] == '-category' or sys.argv[1] == '-cat':
+            afterPage = ''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Catégorie:Pages utilisant des liens magiques ISBN', namespaces = None, afterPage = afterPage)
-            p.pagesByCat(u'Catégorie:Pages avec ISBN invalide', namespaces = None, afterPage = afterPage)
-        elif sys.argv[1] == u'-redirects':
-            p.pagesByRedirects()
-        elif sys.argv[1] == u'-all':
-           p.pagesByAll()
-        elif sys.argv[1] == u'-RC':
+            p.pages_by_cat('Catégorie:Pages utilisant des liens magiques ISBN', namespaces = None, afterPage = afterPage)
+            p.pages_by_cat('Catégorie:Pages avec ISBN invalide', namespaces = None, afterPage = afterPage)
+        elif sys.argv[1] == '-redirects':
+            p.pages_by_redirects()
+        elif sys.argv[1] == '-all':
+           p.pages_by_all()
+        elif sys.argv[1] == '-RC':
             while 1:
-                p.pagesByRCLastDay()
-        elif sys.argv[1] == u'-nocat':
-            p.pagesBySpecialNotCategorized()
-        elif sys.argv[1] == u'-lint':
-            p.pagesBySpecialLint()
-        elif sys.argv[1] == u'-extlinks':
-            p. pagesBySpecialLinkSearch('www.dmoz.org')
+                p.pages_by_rc_last_day()
+        elif sys.argv[1] == '-nocat':
+            p.pages_by_special_not_categorized()
+        elif sys.argv[1] == '-lint':
+            p.pages_by_special_lint()
+        elif sys.argv[1] == '-extlinks':
+            p. pages_by_special_link_search('www.dmoz.org')
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
-            treatPageByName(html2Unicode(sys.argv[1]))
+            treat_page_by_name(html2unicode(sys.argv[1]))
     else:
         while 1:
-            p.pagesByRC()
+            p.pages_by_rc()
 
 if __name__ == "__main__":
     main(sys.argv)
