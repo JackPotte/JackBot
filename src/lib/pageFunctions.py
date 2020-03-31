@@ -2,148 +2,171 @@
 # coding: utf-8
 
 from __future__ import absolute_import, unicode_literals
-import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
-from lib import *
+import codecs
+import re
+import time
+try:
+    from src.lib import *
+except ImportError:
+    from lib import *
 import pywikibot
 from pywikibot import *
-from pywikibot import pagegenerators
 
-debugLevel = 0
+debug_level = 0
 
-#*** General functions ***
-def setGlobals(myDebugLevel, mySite, myUsername):
-    global debugLevel
+
+# *** General functions ***
+def set_globals(mydebug_level, mySite, myUsername):
+    global debug_level
     global site
     global username
-    debugLevel  = myDebugLevel
-    site        = mySite
-    username    = myUsername 
+    debug_level = mydebug_level
+    site = mySite
+    username = myUsername
 
-def globalOperations(pageContent):
+
+def global_operations(page_content):
     # Dmoz a fermé et bug https://fr.wikipedia.org/w/index.php?title=Flup,_N%C3%A9nesse,_Poussette_et_Cochonnet&diff=150799141&oldid=150798957
-    #pageContent = replaceDMOZ(pageContent)
-    #pageContent = replaceISBN(pageContent)
-    #pageContent = replaceRFC(pageContent)
+    # page_content = replaceDMOZ(page_content)
+    # page_content = replaceISBN(page_content)
+    # page_content = replaceRFC(page_content)
 
     # Retire les espaces dans {{FORMATNUM:}} qui empêche de les trier dans les tableaux
-    pageContent = re.sub(ur'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', ur'{{\1:\2\3}}', pageContent)
-    return pageContent
+    page_content = re.sub(r'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', r'{{\1:\2\3}}', page_content)
+    return page_content
+
 
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
 
-def datePlusMonth(months):
-	year, month, day = datetime.date.today().timetuple()[:3]
-	new_month = month + months
-	if new_month == 0:
-		new_month = 12
-		year = year - 1
-	elif new_month == -1:
-		new_month = 11
-		year = year - 1
-	elif new_month == -2:
-		new_month = 10
-		year = year - 1
-	elif new_month == -3:
-		new_month = 9
-		year = year - 1
-	elif new_month == -4:
-		new_month = 8
-		year = year - 1
-	elif new_month == -5:
-		new_month = 7
-		year = year - 1
-	if new_month == 2 and day > 28: day = 28
-	return datetime.date(year, new_month, day)
 
-def timeAfterLastEdition(page, site = None):
-    # Timestamp au format Zulu de la dernière version
+def date_plus_month(months):
+    year, month, day = datetime.date.today().timetuple()[:3]
+    new_month = month + months
+    if new_month == 0:
+        new_month = 12
+        year = year - 1
+    elif new_month == -1:
+        new_month = 11
+        year = year - 1
+    elif new_month == -2:
+        new_month = 10
+        year = year - 1
+    elif new_month == -3:
+        new_month = 9
+        year = year - 1
+    elif new_month == -4:
+        new_month = 8
+        year = year - 1
+    elif new_month == -5:
+        new_month = 7
+        year = year - 1
+    if new_month == 2 and day > 28: day = 28
+    return datetime.date(year, new_month, day)
+
+
+def time_after_last_edition(page):
     try:
-        lastEditTime = page.getVersionHistory()[0][1]
-    except:
-        pywikibot.exceptions.NoPage
+        last_edit_time = page.getVersionHistory()[0][1]
+    except pywikibot.exceptions.NoPage as e:
         return 0
-    if debugLevel > 1: print lastEditTime   # 2017-07-29T21:57:34Z
-    matchTime = re.match(r'(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})', str(lastEditTime))
-    # Mise au format "datetime" du timestamp de la dernière version
-    dateLastEditTime = datetime.datetime(int(matchTime.group(1)), int(matchTime.group(2)), int(matchTime.group(3)),
-        int(matchTime.group(4)), int(matchTime.group(5)), int(matchTime.group(6)))
+    if debug_level > 1:
+        print(last_edit_time)  # Zulu format, ex: 2017-07-29T21:57:34Z
+    match_time = re.match(r'(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})', str(last_edit_time))
+    date_last_edit_time = datetime.datetime(int(match_time.group(1)), int(match_time.group(2)),
+                                            int(match_time.group(3)), int(match_time.group(4)),
+                                            int(match_time.group(5)), int(match_time.group(6)))
     datetime_now = datetime.datetime.utcnow()
-    diff_last_edit_time = datetime_now - dateLastEditTime
+    diff_last_edit_time = datetime_now - date_last_edit_time
+    return diff_last_edit_time.seconds / 60 + diff_last_edit_time.days * 24 * 60
 
-    # Ecart en minutes entre l'horodotage actuelle et l'horodotage de la dernière version
-    return diff_last_edit_time.seconds/60 + diff_last_edit_time.days*24*60
 
-def hasMoreThanTime(page, timeAfterLastEdition = 60): # minutes
+def has_more_than_time(page, time_after_last_edition=60):  # minutes
     if page.exists():
         version = page.getLatestEditors(1)
-        dateNow = datetime.datetime.utcnow()
-        maxDate = dateNow - datetime.timedelta(minutes=timeAfterLastEdition)
-        if debugLevel > 1:
-            print maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')
-            print version[0]['timestamp']
-            print version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ')   
-        if version[0]['timestamp'] < maxDate.strftime('%Y-%m-%dT%H:%M:%SZ') or username in page.title() or page.contributors(total=1).keys()[0] == 'JackPotte':
+        date_now = datetime.datetime.utcnow()
+        max_date = date_now - datetime.timedelta(minutes=time_after_last_edition)
+        if debug_level > 1:
+            print(max_date.strftime('%Y-%m-%dT%H:%M:%SZ'))
+            print(version[0]['timestamp'])
+            print(version[0]['timestamp']) < max_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+        if version[0]['timestamp'] < max_date.strftime('%Y-%m-%dT%H:%M:%SZ') or username in page.title() or \
+                page.contributors(total=1).keys()[0] == 'JackPotte':
             return True
-        if debugLevel > 0: pywikibot.output(u' \03{red}the last edition is too recent to edit: \03{default}' + version[0]['timestamp'])
+        if debug_level > 0: pywikibot.output(
+            ' \03{red}the last edition is too recent to edit: \03{default}' + version[0]['timestamp'])
     return False
 
-def isTrustedVersion(page, site = site):
-    firstEditor = page.oldest_revision['user']
-    lastEditor = page.contributors(total=1).keys()[0]
-    if firstEditor == lastEditor:
-        if debugLevel > 0: pywikibot.output(u' \03{green} the page belongs to its last edition user: \03{default}' + lastEditor)
+
+def is_trusted_version(page, site=site):
+    first_editor = page.oldest_revision['user']
+    last_editor = page.contributors(total=1).keys()[0]
+    if first_editor == last_editor:
+        if debug_level > 0:
+            pywikibot.output(' \03{green} the page belongs to its last edition user: \03{default}' + last_editor)
         return True
-    userPage = u' user: ' + lastEditor
-    page = Page(site, userPage)
-    user = User(page)
-    if u'autoconfirmed' in user.groups():
-        if debugLevel > 0: pywikibot.output(u' \03{green} the last edition user can be trusted: \03{default}' + lastEditor)
+    user_page_name = ' user: ' + last_editor
+    user_page = Page(site, user_page_name)
+    user = User(user_page)
+    if 'autoconfirmed' in user.groups():
+        if debug_level > 0:
+            pywikibot.output(' \03{green} the last edition user can be trusted: \03{default}' + last_editor)
         return True
     if user.isAnonymous():
-        if debugLevel > 0: pywikibot.output(u' \03{red}the last edition user cannot be trusted: \03{default}' + lastEditor)
-        pywikibot.output(u' \03{red}to check manually\03{default}')
+        if debug_level > 0:
+            pywikibot.output(' \03{red}the last edition user cannot be trusted: \03{default}' + last_editor)
+        pywikibot.output(' \03{red}The page needs to be categorized manually\03{default}: ' +
+             'https://' + page.site.hostname() + '/wiki/' + page.title().replace(' ', '_'))
         return False
-    if debugLevel > 0: pywikibot.output(u' \03{green} the last edition user could be trusted: \03{default}' + lastEditor)
+    if debug_level > 0:
+        pywikibot.output(' \03{green} the last edition user could be trusted: \03{default}' + last_editor)
     return True
 
-def getContentFromPageName(pageName, allowedNamespaces = None, site = site):
-    page = Page(site, pageName)
-    return getContentFromPage(page, allowedNamespaces)
 
-def getContentFromPage(page, allowedNamespaces = None, username = username):
-    if debugLevel > 1: pywikibot.output(u' \03{blue}getContentFromPage : \03{default}' + page.title())
-    PageBegin = u''
+def get_content_from_page_name(page_name, allowedNamespaces=None, site=site):
+    page = Page(site, page_name)
+    return get_content_from_page(page, allowedNamespaces)
+
+
+def get_content_from_page(page, allowed_namespaces=None, username=username):
+    if debug_level > 1:
+        pywikibot.output(' \03{blue}get_content_from_page : \03{default}' + page.title())
+    current_page_content = ''
     try:
         get = page.exists()
-    except:
-        pywikibot.exceptions.InvalidTitle
-        return PageBegin
+    except pywikibot.exceptions.InvalidTitle as e:
+        return current_page_content
     if get:
-        if type(allowedNamespaces) == type([]): #'list'
-            if debugLevel > 1: print u' namespace : ' + str(page.namespace())
-            condition = page.namespace() in allowedNamespaces
-        elif allowedNamespaces == 'All':
-            if debugLevel > 1: print u' all namespaces'
+        if isinstance(allowed_namespaces, list):
+            if debug_level > 1:
+                print(' namespace : ') + str(page.namespace())
+            condition = page.namespace() in allowed_namespaces
+        elif allowed_namespaces == 'All':
+            if debug_level > 1:
+                print(' all namespaces')
             condition = True
         else:
-            if debugLevel > 1: print u' content namespaces'
+            if debug_level > 1:
+                print(' content namespaces')
             condition = page.namespace() in [0, 12, 14, 100] or page.title().find(username) != -1
         if condition:
             try:
-                PageBegin = page.get()
+                current_page_content = page.get()
             except pywikibot.exceptions.BadTitle:
-                if debugLevel > 0: print u' IsRedirect l 676'
+                if debug_level > 0:
+                    print(' IsRedirect l 676')
                 return 'KO'
             except pywikibot.exceptions.IsRedirectPage:
-                if debugLevel > 0: print u' IsRedirect l 679'
+                if debug_level > 0:
+                    print(' IsRedirect l 679')
                 if page.namespace() == 'Template:':
-                    PageBegin = page.get(get_redirect=True)
-                    if PageBegin[:len(u'#REDIRECT')] == u'#REDIRECT':
-                        regex = ur'\[\[([^\]]+)\]\]'
-                        s = re.search(regex, PageBegin)
+                    current_page_content = page.get(get_redirect=True)
+                    if current_page_content[:len('#REDIRECT')] == '#REDIRECT':
+                        regex = r'\[\[([^\]]+)\]\]'
+                        s = re.search(regex, current_page_content)
                         if s:
-                            PageBegin = getContentFromPageName(s.group(1), allowedNamespaces = allowedNamespaces)
+                            current_page_content = get_content_from_page_name(s.group(1),
+                                                                              allowedNamespaces=allowed_namespaces)
                         else:
                             return 'KO'
                     else:
@@ -151,401 +174,445 @@ def getContentFromPage(page, allowedNamespaces = None, username = username):
                 else:
                     return 'KO'
             except pywikibot.exceptions.NoPage:
-                if debugLevel > 0: print u' NoPage l 694'
+                if debug_level > 0:
+                    print(' NoPage l 694')
                 return 'KO'
             except pywikibot.exceptions.ServerError:
-                if debugLevel > 0: print u' ServerError l 697'
+                if debug_level > 0:
+                    print(' ServerError l 697')
                 return 'KO'
         else:
-            if debugLevel > 0: print u' Forbidden namespace l 700'
+            if debug_level > 0:
+                print(' Forbidden namespace l 700')
             return 'KO'
     else:
-        if debugLevel > 0: print u' No page in '+__file__+':163: ' + page.title()
+        if debug_level > 0:
+            print(' No page in ') + __file__ + ':163: ' + page.title()
         return 'KO'
+    return current_page_content
 
-    return PageBegin
 
-def getWiki(language, family, site = site):
+def get_wiki(language, family, site=site):
     if family is None:
         return site
     else:
-        wiki = u'KO'
+        wiki = 'KO'
         try:
             wiki = pywikibot.Site(language, family)
         except pywikibot.exceptions.ServerError:
-            if debugLevel > 1: print u'  ServerError in getWiki'
+            if debug_level > 1:
+                print('  ServerError in getWiki')
         except pywikibot.exceptions.NoSuchSite:
-            if debugLevel > 1: print u'  NoSuchSite in getWiki'
+            if debug_level > 1:
+                print('  NoSuchSite in getWiki')
         except UnicodeEncodeError:
-            if debugLevel > 1: print u'  UnicodeEncodeError in getWiki'
-        #TODO: WARNING: src/fr.wiktionary.format.py:4145: UserWarning: Site wiktionary:ro instantiated using different code "mo"
+            if debug_level > 1:
+                print('  UnicodeEncodeError in getWiki')
+        # TODO: WARNING: src/fr.wiktionary.format.py:4145: UserWarning: Site wiktionary:ro instantiated using different code "mo"
     return wiki
 
-def getTemplateByName(pageContent, template):
-    regex = ur'{{[' + template[:1].lower() + template[:1].upper() + ur']' + template[1:] + ur'[^{}]+}}'
-    if re.search(regex, pageContent):
-        return pageContent[re.search(regex, pageContent).start():re.search(regex, pageContent).end()]
+
+def get_template_by_name(page_content, template):
+    regex = r'{{[' + template[:1].lower() + template[:1].upper() + r']' + template[1:] + r'[^{}]+}}'
+    if re.search(regex, page_content):
+        return page_content[re.search(regex, page_content).start():re.search(regex, page_content).end()]
     return ''
 
-def getParameter(pageContent, p):
-    regex = ur'\| *' + p + ur' *='
-    if pageContent.find(u'}}') == -1 or not re.search(regex, pageContent) \
-        or re.search(regex, pageContent).start() > pageContent.find(u'}}'): return u''
-    parameter = pageContent[re.search(regex, pageContent).start()+1:]
+
+def get_parameter(page_content, p):
+    regex = r'\| *' + p + r' *='
+    if page_content.find('}}') == -1 or not re.search(regex, page_content) \
+            or re.search(regex, page_content).start() > page_content.find('}}'): return ''
+    parameter = page_content[re.search(regex, page_content).start() + 1:]
     parameterEnd = parameter
-    while parameterEnd.find(u'[') != -1 and parameterEnd.find(u'[') < parameterEnd.find(u'|') \
-        and parameterEnd.find(u'[') < parameterEnd.find(u'}') and parameterEnd.find(u'|') < parameterEnd.find(u'}'):
+    while parameterEnd.find('[') != -1 and parameterEnd.find('[') < parameterEnd.find('|') \
+            and parameterEnd.find('[') < parameterEnd.find('}') and parameterEnd.find('|') < parameterEnd.find('}'):
         # The parameter contains a link like "[[ | ]]" 
-        parameterEnd = parameterEnd[parameterEnd.find(u']')+1:]
+        parameterEnd = parameterEnd[parameterEnd.find(']') + 1:]
 
-    return parameter[:len(parameter) - len(parameterEnd) + re.search(ur'[\|{}]', parameterEnd).start()]
+    return parameter[:len(parameter) - len(parameterEnd) + re.search(r'[\|{}]', parameterEnd).start()]
 
-def getParameterValue(pageContent, p):
-    parameter = getParameter(pageContent, p)
-    return trim(parameter[parameter.find(u'=')+1:])
 
-def addParameter(pageContent, parameter, content = None):
-    finalPageContent = u''
-    if parameter == u'titre' and content is None:
+def get_parameter_value(page_content, p):
+    parameter = get_parameter(page_content, p)
+    return trim(parameter[parameter.find('=') + 1:])
+
+
+def add_parameter(page_content, parameter, content=None):
+    final_page_content = ''
+    if parameter == 'titre' and content is None:
         # Détermination du titre d'un site web
-        URL = getParameter(u'url')
-        finalPageContent = pageContent
+        #URL = get_parameter('url')
+        final_page_content = page_content
 
     else:
-        print 'en travaux'
-    return finalPageContent
+        # TODO
+        print('TODO')
+    return final_page_content
 
-def replaceParameterValue(pageContent, template, parameterKey, oldValue, newValue):
-    regex = ur'({{ *(' + template[:1].lower() + ur'|' + template[:1].upper() + ur')' + template[1:] + ur' *\n* *\|[^}]*' + parameterKey + ur' *= *)' + oldValue
-    if debugLevel > 0: print regex
-    pageContent = re.sub(regex, ur'\1' + newValue, pageContent)
 
-    return pageContent
+def replace_parameter_value(page_content, template, parameter_key, old_value, new_value):
+    regex = r'({{ *(' + template[:1].lower() + r'|' + template[:1].upper() + r')' + \
+            template[1:] + r' *\n* *\|[^}]*' + parameter_key + r' *= *)' + old_value
+    if debug_level > 0:
+        print(regex)
+    page_content = re.sub(regex, r'\1' + new_value, page_content)
+    return page_content
 
-def replaceTemplate(pageContent, oldTemplate, newTemplate = ''):
-    if debugLevel > 0: print u'\nreplaceTemplate : ' + oldTemplate
-    regex = ur'({{[ \n]*)' + oldTemplate + ur'([ \n]*[{}\|][^{}]*}}?)'
-    if re.search(regex, pageContent):
-        if debugLevel > 0: print u' trouvé'
-        result = ur''
-        if newTemplate != '': result = ur'\1' + newTemplate + ur'\2'
-        pageContent = re.sub(regex, result, pageContent)
-    return pageContent
 
-def replaceDepretacedTags(pageContent):
-    if debugLevel > 0: print u'Remplacements des balises HTML'
+def replace_template(page_content, old_template, new_template=''):
+    if debug_level > 0:
+        print('\nreplaceTemplate : ' + old_template)
+    regex = r'({{[ \n]*)' + old_template + r'([ \n]*[{}\|][^{}]*}}?)'
+    if re.search(regex, page_content):
+        if debug_level > 0:
+            print(' trouvé')
+        result = r''
+        if new_template != '':
+            result = r'\1' + new_template + r'\2'
+        page_content = re.sub(regex, result, page_content)
+    return page_content
 
-    deprecatedTags = {}
-    deprecatedTags['big'] = 'strong'
-    deprecatedTags['center'] = 'div style="text-align: center;"'
-    deprecatedTags['font *color *= *"?'] = 'span style="color:'
-    deprecatedTags['font *face *= *"?'] = 'span style="font-family:'
-    deprecatedTags['font *\-?size *= *"?\+?\-?'] = 'span style="font-size:'
-    deprecatedTags['font *style *= *"?\+?\-?'] = 'span style="'
-    #deprecatedTags['font '] = 'span ' #TODO: ajouter des ";" entre plusieurs param
-    deprecatedTags['strike'] = 's'
-    deprecatedTags['tt'] = 'code'
-    deprecatedTags['BIG'] = 'strong'
-    deprecatedTags['CENTER'] = 'div style="text-align: center;"'
-    deprecatedTags['FONT COLOR *= *"?'] = 'span style="color:'
-    deprecatedTags['FONT SIZE *= *"?\+?'] = 'span style="font-size:'
-    deprecatedTags['STRIKE'] = 's'
-    deprecatedTags['TT'] = 'code'
-    fontSize = {}
-    fontSize[1] = 0.63
-    fontSize[2] = 0.82
-    fontSize[3] = 1.0
-    fontSize[4] = 1.13
-    fontSize[5] = 1.5
-    fontSize[6] = 2.0
-    fontSize[7] = 3.0
-    fontColor = []
-    fontColor.append('black')
-    fontColor.append('blue')
-    fontColor.append('green')
-    fontColor.append('orange')
-    fontColor.append('red')
-    fontColor.append('white')
-    fontColor.append('yellow')
-    fontColor.append('#808080')
 
-    pageContent = pageContent.replace(u'</br>', u'<br/>')
-    pageContent = pageContent.replace(u'<source lang="html4strict">', u'<source lang="html">')
+def replace_deprecated_tags(page_content):
+    if debug_level > 0:
+        print('Remplacements des balises HTML')
 
-    #TODO: {{citation}} https://fr.wikiversity.org/w/index.php?title=Matrice%2FD%C3%A9terminant&action=historysubmit&type=revision&diff=669911&oldid=664849
-    #TODO: multiparamètre
-    pageContent = pageContent.replace('<font size="+1" color="red">', ur'<span style="font-size:0.63em; color:red;>')
-    regex = ur'<font color="?([^>"]*)"?>'
+    deprecated_tags = {}
+    deprecated_tags['big'] = 'strong'
+    deprecated_tags['center'] = 'div style="text-align: center;"'
+    deprecated_tags['font *color *= *"?'] = 'span style="color:'
+    deprecated_tags['font *face *= *"?'] = 'span style="font-family:'
+    deprecated_tags['font *\-?size *= *"?\+?\-?'] = 'span style="font-size:'
+    deprecated_tags['font *style *= *"?\+?\-?'] = 'span style="'
+    # deprecated_tags['font '] = 'span ' #TODO: ajouter des ";" entre plusieurs param
+    deprecated_tags['strike'] = 's'
+    deprecated_tags['tt'] = 'code'
+    deprecated_tags['BIG'] = 'strong'
+    deprecated_tags['CENTER'] = 'div style="text-align: center;"'
+    deprecated_tags['FONT COLOR *= *"?'] = 'span style="color:'
+    deprecated_tags['FONT SIZE *= *"?\+?'] = 'span style="font-size:'
+    deprecated_tags['STRIKE'] = 's'
+    deprecated_tags['TT'] = 'code'
+    font_size = {}
+    font_size[1] = 0.63
+    font_size[2] = 0.82
+    font_size[3] = 1.0
+    font_size[4] = 1.13
+    font_size[5] = 1.5
+    font_size[6] = 2.0
+    font_size[7] = 3.0
+    font_color = []
+    font_color.append('black')
+    font_color.append('blue')
+    font_color.append('green')
+    font_color.append('orange')
+    font_color.append('red')
+    font_color.append('white')
+    font_color.append('yellow')
+    font_color.append('#808080')
+
+    page_content = page_content.replace('</br>', '<br/>')
+    page_content = page_content.replace('<source lang="html4strict">', '<source lang="html">')
+
+    # TODO: {{citation}} https://fr.wikiversity.org/w/index.php?title=Matrice%2FD%C3%A9terminant&action=historysubmit&type=revision&diff=669911&oldid=664849
+    # TODO: multiparamètre
+    page_content = page_content.replace('<font size="+1" color="red">', r'<span style="font-size:0.63em; color:red;>')
+    regex = r'<font color="?([^>"]*)"?>'
     pattern = re.compile(regex, re.UNICODE)
-    for match in pattern.finditer(pageContent):
-        if debugLevel > 1: print u'Remplacement de ' + match.group(0) + u' par <span style="color:' + match.group(1) + u'">'
-        pageContent = pageContent.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
-        pageContent = pageContent.replace('</font>', u'</span>')
+    for match in pattern.finditer(page_content):
+        if debug_level > 1:
+            print('Remplacement de ') + match.group(0) + ' par <span style="color:' + match.group(
+            1) + '">'
+        page_content = page_content.replace(match.group(0), '<span style="color:' + match.group(1) + '">')
+        page_content = page_content.replace('</font>', '</span>')
 
-    for oldTag, newTag in deprecatedTags.items():
-        if debugLevel > 1: print "Clé : %s, valeur : %s." % (oldTag, newTag)
-        if oldTag.find(u' ') == -1:
-            closingOldTag = oldTag
+    for old_tag, new_tag in deprecated_tags.items():
+        if debug_level > 1:
+            print("Clé : %s, valeur : %s." % (old_tag, new_tag))
+        if old_tag.find(' ') == -1:
+            closing_old_tag = old_tag
         else:
-            closingOldTag = oldTag[:oldTag.find(u' ')]
-        if newTag.find(u' ') == -1:
-            closingNewTag = newTag
+            closing_old_tag = old_tag[:old_tag.find(' ')]
+        if new_tag.find(' ') == -1:
+            closing_new_tag = new_tag
         else:
-            closingNewTag = newTag[:newTag.find(u' ')]
-        #regex = ur'<' + oldTag + ur'([^>]*)>([^\n]*)</' + closingOldTag + '>'
+            closing_new_tag = new_tag[:new_tag.find(' ')]
+        # regex = r'<' + old_tag + r'([^>]*)>([^\n]*)</' + closing_old_tag + '>'
         # bug https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:-flex-nom-fam-/Documentation&diff=prev&oldid=24027702
-        regex = ur'< *' + oldTag + ur'([^>]*) *>'
-        if re.search(regex, pageContent):
-            #summary = summary + u', ajout de ' + newTag
-            #pageContent = re.sub(regex, ur'<' + newTag + ur'\1>', pageContent)
+        regex = r'< *' + old_tag + r'([^>]*) *>'
+        if re.search(regex, page_content):
+            # summary = summary + ', ajout de ' + new_tag
+            # page_content = re.sub(regex, r'<' + new_tag + r'\1>', page_content)
             pattern = re.compile(regex, re.UNICODE)
-            for match in pattern.finditer(pageContent):
-                if debugLevel > 1: print str(match.group(1))
-                if newTag.find(u'font-size') != -1:
+            for match in pattern.finditer(page_content):
+                if debug_level > 1: print(str(match.group(1)))
+                if new_tag.find('font-size') != -1:
                     size = match.group(1).replace('"', '')
                     try:
                         size = int(size)
-                        if size > 7: size = 7
-                        openingTag = newTag + str(fontSize[size]) + ur'em"'
+                        if size > 7:
+                            size = 7
+                        opening_tag = new_tag + str(font_size[size]) + r'em"'
                     except ValueError:
-                        openingTag = newTag + size + '"'
+                        opening_tag = new_tag + size + '"'
                 else:
-                    openingTag = newTag + match.group(1)
-                pageContent = pageContent.replace(match.group(0), ur'<' + openingTag + ur'>')
+                    opening_tag = new_tag + match.group(1)
+                page_content = page_content.replace(match.group(0), r'<' + opening_tag + r'>')
 
-        regex = ur'</ *' + closingOldTag + ' *>'
-        pageContent = re.sub(regex, ur'</' + closingNewTag + '>', pageContent)
-    pageContent = pageContent.replace('<strong">', ur'<strong>')
-    pageContent = pageContent.replace('<s">', ur'<s>')
-    pageContent = pageContent.replace('<code">', ur'<code>')
-    pageContent = pageContent.replace(';"">', ur';">')
+        regex = r'</ *' + closing_old_tag + ' *>'
+        page_content = re.sub(regex, r'</' + closing_new_tag + '>', page_content)
+    page_content = page_content.replace('<strong">', r'<strong>')
+    page_content = page_content.replace('<s">', r'<s>')
+    page_content = page_content.replace('<code">', r'<code>')
+    page_content = page_content.replace(';"">', r';">')
 
     # Fix
-    regex = ur'<span style="font\-size:([a-z]+)>'
+    regex = r'<span style="font\-size:([a-z]+)>'
     pattern = re.compile(regex, re.UNICODE)
-    for match in pattern.finditer(pageContent):
-        #summary = summary + u', correction de color'
-        pageContent = pageContent.replace(match.group(0), u'<span style="color:' + match.group(1) + u'">')
-    pageContent = pageContent.replace('</font>', u'</span>')
-    pageContent = pageContent.replace('</font>'.upper(), u'</span>')
+    for match in pattern.finditer(page_content):
+        # summary = summary + ', correction de color'
+        page_content = page_content.replace(match.group(0), '<span style="color:' + match.group(1) + '">')
+    page_content = page_content.replace('</font>', '</span>')
+    page_content = page_content.replace('</font>'.upper(), '</span>')
 
-    regex = ur'<span style="font\-size:(#[0-9]+)"?>'
-    s = re.search(regex, pageContent)
+    regex = r'<span style="font\-size:(#[0-9]+)"?>'
+    s = re.search(regex, page_content)
     if s:
-        #summary = summary + u', correction de color'
-        pageContent = re.sub(regex, ur'<span style="color:' + s.group(1) + ur'">', pageContent)
+        # summary = summary + ', correction de color'
+        page_content = re.sub(regex, r'<span style="color:' + s.group(1) + r'">', page_content)
 
-    regex = ur'<span style="text\-size:([0-9]+)"?>'
-    s = re.search(regex, pageContent)
+    regex = r'<span style="text\-size:([0-9]+)"?>'
+    s = re.search(regex, page_content)
     if s:
-        #summary = summary + u', correction de font-size'
-        pageContent = re.sub(regex, ur'<span style="font-size:' + str(fontSize[int(s.group(1))]) + ur'em">', pageContent)
+        # summary = summary + ', correction de font-size'
+        page_content = re.sub(regex, r'<span style="font-size:' + str(font_size[int(s.group(1))]) + r'em">',
+                              page_content)
 
     # Fix :
-    regex = ur'(<span style="font\-size:[0-9]+px;">)[0-9]+px</span>([^<]*)</strong></strong>'
-    if re.search(regex, pageContent):
-        pageContent = re.sub(regex, ur'\1 \2</span>', pageContent)
+    regex = r'(<span style="font\-size:[0-9]+px;">)[0-9]+px</span>([^<]*)</strong></strong>'
+    if re.search(regex, page_content):
+        page_content = re.sub(regex, r'\1 \2</span>', page_content)
 
-    pageContent = pageContent.replace(u'<strong><strong><strong><strong><strong><strong>', u'<span style="font-size:75px;">')
-    pageContent = pageContent.replace(u'<strong><strong><strong><strong><strong>', u'<span style="font-size:50px;">')
-    pageContent = pageContent.replace(u'<strong><strong><strong><strong>', u'<span style="font-size:40px;">')
-    pageContent = pageContent.replace(u'<strong><strong><strong>', u'<span style="font-size:25px;">')
-    pageContent = pageContent.replace(u'<strong><strong>', u'<span style="font-size:20px;">')
-    pageContent = re.sub(ur'</strong></strong></strong></strong></strong></strong>', ur'</span>', pageContent)
-    pageContent = re.sub(ur'</strong></strong></strong></strong></strong>', ur'</span>', pageContent)
-    pageContent = re.sub(ur'</strong></strong></strong></strong>', ur'</span>', pageContent)
-    pageContent = re.sub(ur'</strong></strong></strong>', ur'</span>', pageContent)
-    pageContent = re.sub(ur'</strong></strong>', ur'</span>', pageContent)
-    regex = ur'<strong>([^<]*)</span>'
-    if re.search(regex, pageContent):
-        pageContent = re.sub(regex, ur'<strong>\1</strong>', pageContent)
-    regex = ur'<strong><span ([^<]*)</span></span>'
-    if re.search(regex, pageContent):
-        pageContent = re.sub(regex, ur'<strong><span \1</span></strong>', pageContent)
-    #pageContent = re.sub(ur'</span></span>', ur'</span>', pageContent)
+    page_content = page_content.replace('<strong><strong><strong><strong><strong><strong>',
+                                        '<span style="font-size:75px;">')
+    page_content = page_content.replace('<strong><strong><strong><strong><strong>', '<span style="font-size:50px;">')
+    page_content = page_content.replace('<strong><strong><strong><strong>', '<span style="font-size:40px;">')
+    page_content = page_content.replace('<strong><strong><strong>', '<span style="font-size:25px;">')
+    page_content = page_content.replace('<strong><strong>', '<span style="font-size:20px;">')
+    page_content = re.sub(r'</strong></strong></strong></strong></strong></strong>', r'</span>', page_content)
+    page_content = re.sub(r'</strong></strong></strong></strong></strong>', r'</span>', page_content)
+    page_content = re.sub(r'</strong></strong></strong></strong>', r'</span>', page_content)
+    page_content = re.sub(r'</strong></strong></strong>', r'</span>', page_content)
+    page_content = re.sub(r'</strong></strong>', r'</span>', page_content)
+    regex = r'<strong>([^<]*)</span>'
+    if re.search(regex, page_content):
+        page_content = re.sub(regex, r'<strong>\1</strong>', page_content)
+    regex = r'<strong><span ([^<]*)</span></span>'
+    if re.search(regex, page_content):
+        page_content = re.sub(regex, r'<strong><span \1</span></strong>', page_content)
+    # page_content = re.sub(r'</span></span>', r'</span>', page_content)
+    return page_content
 
-    return pageContent
 
-def replaceFilesErrors(pageContent):
-    #https://fr.wiktionary.org/wiki/Sp%C3%A9cial:LintErrors/bogus-image-options
+def replace_files_errors(page_content):
+    # https://fr.wiktionary.org/wiki/Sp%C3%A9cial:LintErrors/bogus-image-options
     badFileParameters = []
-    badFileParameters.append(u'')
-    #badFileParameters.append(u'cadre')
+    badFileParameters.append('')
+    # badFileParameters.append('cadre')
     for badFileParameter in badFileParameters:
-        regex = ur'(\[\[(Image|Fichier|File) *: *[^\]{]+)\| *' + badFileParameter + ur' *(\||\])'
-        if debugLevel > 1: print regex
-        pageContent = re.sub(regex, ur'\1\3', pageContent)
+        regex = r'(\[\[(Image|Fichier|File) *: *[^\]{]+)\| *' + badFileParameter + r' *(\||\])'
+        if debug_level > 1: print(regex)
+        page_content = re.sub(regex, r'\1\3', page_content)
     # Doublons
-    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *thumb *[\|\]])'
-    pageContent = re.sub(regex, ur'\1\3', pageContent)
-    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *vignette *[\|\]])'
-    pageContent = re.sub(regex, ur'\1\3', pageContent)
-    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *vignette *[\|\]])'
-    pageContent = re.sub(regex, ur'\1\3', pageContent)
-    regex = ur'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *thumb *[\|\]])'
-    pageContent = re.sub(regex, ur'\1\3', pageContent)
-    return pageContent
+    regex = r'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *thumb *[\|\]])'
+    page_content = re.sub(regex, r'\1\3', page_content)
+    regex = r'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *vignette *[\|\]])'
+    page_content = re.sub(regex, r'\1\3', page_content)
+    regex = r'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *vignette *[\|\]])'
+    page_content = re.sub(regex, r'\1\3', page_content)
+    regex = r'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *vignette *(\| *thumb *[\|\]])'
+    page_content = re.sub(regex, r'\1\3', page_content)
+    return page_content
 
-def replaceDMOZ(pageContent):
+
+def replaceDMOZ(page_content):
     # http://www.dmoz.org => http://dmoztools.net
     URLend = ' \\n\[\]}{<>\|\^`\\"\''
-    if pageContent.find('dmoz.org/search?') == -1 and pageContent.find('dmoz.org/license.html') == -1:
-        if debugLevel > 1: print regex
-        regex = ur'\[http://(www\.)?dmoz\.org/([^' + URLend + ur']*)([^\]]*)\]'
-        pageContent = re.sub(regex, ur'[[dmoz:\2|\3]]', pageContent)
-        regex =   ur'http://(www\.)?dmoz\.org/([^' + URLend + ur']*)'
-        pageContent = re.sub(regex, ur'[[dmoz:\2]]', pageContent)
-    return pageContent
+    if page_content.find('dmoz.org/search?') == -1 and page_content.find('dmoz.org/license.html') == -1:
+        if debug_level > 1:
+            print(URLend)
+        regex = r'\[http://(www\.)?dmoz\.org/([^' + URLend + r']*)([^\]]*)\]'
+        page_content = re.sub(regex, r'[[dmoz:\2|\3]]', page_content)
+        regex = r'http://(www\.)?dmoz\.org/([^' + URLend + r']*)'
+        page_content = re.sub(regex, r'[[dmoz:\2]]', page_content)
+    return page_content
 
-def replaceISBN(pageContent):
-    #TODO: out of <source> <nowiki> <pre>
-    pageContent = pageContent.replace('ISBN&#160;', 'ISBN ')
-    regex = ur'\(*ISBN +([0-9Xx\- ]+)\)*( [^0-9Xx\- ])'
-    if debugLevel > 1: print regex
-    if re.search(regex, pageContent):
-        if debugLevel > 0: u'ISBN'
-        pageContent = re.sub(regex, ur'{{ISBN|\1}}\2', pageContent)
-    regex = ur'\(*ISBN +([0-9Xx\- ]+)\)*'
-    if debugLevel > 1: print regex
-    if re.search(regex, pageContent):
-        if debugLevel > 0: u'ISBN'
-        pageContent = re.sub(regex, ur'{{ISBN|\1}}', pageContent)
 
-    #TODO: no hardfix anymore
-    regex = ur'{{ISBN *\|([0-9X\- ]+)}}([Xx]?)'
-    if re.search(regex, pageContent):
-        pageContent = re.sub(regex, ur'{{ISBN|\1\2}}', pageContent)
-    regex = ur'{{ISBN *\| *(1[03]) *}}'
-    if re.search(regex, pageContent):
-        pageContent = re.sub(regex, ur'ISBN \1', pageContent)
+def replaceISBN(page_content):
+    # TODO: out of <source> <nowiki> <pre>
+    page_content = page_content.replace('ISBN&#160;', 'ISBN ')
+    regex = r'\(*ISBN +([0-9Xx\- ]+)\)*( [^0-9Xx\- ])'
+    if debug_level > 1: print(regex)
+    if re.search(regex, page_content):
+        if debug_level > 0: 'ISBN'
+        page_content = re.sub(regex, r'{{ISBN|\1}}\2', page_content)
+    regex = r'\(*ISBN +([0-9Xx\- ]+)\)*'
+    if debug_level > 1: print(regex)
+    if re.search(regex, page_content):
+        if debug_level > 0: 'ISBN'
+        page_content = re.sub(regex, r'{{ISBN|\1}}', page_content)
 
-    regex = ur'({{ISBN *\|.*)\-\-}}>'
-    if re.search(regex, pageContent):
-        pageContent = re.sub(regex, ur'\1}}-->', pageContent)
+    # TODO: no hardfix anymore
+    regex = r'{{ISBN *\|([0-9X\- ]+)}}([Xx]?)'
+    if re.search(regex, page_content):
+        page_content = re.sub(regex, r'{{ISBN|\1\2}}', page_content)
+    regex = r'{{ISBN *\| *(1[03]) *}}'
+    if re.search(regex, page_content):
+        page_content = re.sub(regex, r'ISBN \1', page_content)
 
-    if debugLevel > 1: raw_input(pageContent.encode(config.console_encoding, 'replace'))
-    return pageContent
+    regex = r'({{ISBN *\|.*)\-\-}}>'
+    if re.search(regex, page_content):
+        page_content = re.sub(regex, r'\1}}-->', page_content)
 
-def replaceRFC(pageContent):
-    #TODO?
-    return pageContent
+    if debug_level > 1: input(page_content)
+    return page_content
 
-def searchDoubles(pageContent, parameter):
-    if debugLevel > 0: u' Recherche de doublons dans le modèle : ' + parameter[1]
-    finalPageContent = u''
-    regex = ur'{{' + parameter[1] + ur'[^\n]*{{' + parameter[1]
-    while re.search(regex, pageContent):
-        #TODO: finalPageContent = pageContent[:], pageContent = pageContent[:]
-        print(pageContent[re.search(regex, pageContent).start():re.search(regex, pageContent).end()].encode(config.console_encoding, 'replace'))
-    return finalPageContent + pageContent
 
-def log(source):        
-    txtfile = codecs.open(u'JackBot.log', 'a', 'utf-8')
-    txtfile.write(u'\n' + source + u'\n')
+def replaceRFC(page_content):
+    # TODO?
+    return page_content
+
+
+def search_doubles(page_content, parameter):
+    if debug_level > 0:
+        ' Recherche de doublons dans le modèle : ' + parameter[1]
+    final_page_content = ''
+    regex = r'{{' + parameter[1] + r'[^\n]*{{' + parameter[1]
+    while re.search(regex, page_content):
+        # TODO: final_page_content = page_content[:], page_content = page_content[:]
+        print(page_content[re.search(regex, page_content).start():re.search(regex, page_content).end()].encode(
+            config.console_encoding, 'replace'))
+    return final_page_content + page_content
+
+
+def log(source):
+    txtfile = codecs.open('JackBot.log', 'a', 'utf-8')
+    txtfile.write('\n' + source + '\n')
     txtfile.close()
 
-def stopRequired(username = username):
-    pageContent = getContentFromPageName(u'User talk:' + username)
-    if pageContent == 'KO': return
-    if pageContent != u"{{/Stop}}":
+
+def stop_required(username=username):
+    page_content = get_content_from_page_name('User talk:' + username)
+    if page_content == 'KO':
+        return
+    if page_content != u"{{/Stop}}":
         pywikibot.output(u"\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
         exit(0)
 
-def savePage(currentPage, pageContent, summary, minorEdit = True):
+
+def save_page(current_page, page_content, summary, minor_edit=True):
     result = "ok"
-    if debugLevel > 0:
+    if debug_level > 0:
         pywikibot.output(u"\n\03{blue}" + summary + u"\03{default}")
         pywikibot.output(u"\n\03{red}---------------------------------------------------\03{default}")
-        if len(pageContent) < 6000:
-            print(pageContent.encode(config.console_encoding, 'replace'))
+        if len(page_content) < 6000:
+            print(page_content)
         else:
-            taille = 3000
-            print(pageContent[:taille].encode(config.console_encoding, 'replace'))
-            print u'\n[...]\n'
-            print(pageContent[len(pageContent)-taille:].encode(config.console_encoding, 'replace'))
-        result = raw_input((u'\nSauvegarder [[' + currentPage.title() + u']] ? (o/n) ').encode('utf-8'))
-    if result != "n" and result != "no" and result != "non":
-        if currentPage.title().find(u'JackBot/') == -1: stopRequired()
-        if not summary: summary = u'[[Wiktionnaire:Structure des articles|Autoformatage]]'
+            page_size = 3000
+            print(page_content[:page_size])
+            print('\n[...]\n')
+            print(page_content[len(page_content) - page_size:])
+        result = input('\nSauvegarder [[' + current_page.title() + ']] ? (o/n) ')
+    if str(result) not in ['n', 'no', 'non']:
+        if current_page.title().find('JackBot/') == -1:
+            stop_required()
+        if not summary:
+            summary = '[[Wiktionnaire:Structure des articles|Autoformatage]]'
         try:
-            currentPage.put(pageContent, summary, minorEdit = minorEdit)
+            current_page.put(page_content, summary, minorEdit=minor_edit)
         except pywikibot.exceptions.NoPage:
-            print "NoPage in savePage"
+            print("NoPage in savePage")
             return
         except pywikibot.exceptions.IsRedirectPage:
-            print "IsRedirectPage in savePage"
+            print("IsRedirectPage in savePage")
             return
         except pywikibot.exceptions.LockedPage:
-            print "LockedPage in savePage"
+            print("LockedPage in savePage")
             return
         except pywikibot.EditConflict:
-            print "EditConflict in savePage"
+            print("EditConflict in savePage")
             return
         except pywikibot.exceptions.ServerError:
-            print "ServerError in savePage"
+            print("ServerError in savePage")
             time.sleep(100)
-            savePage(currentPage, pageContent, summary)
+            save_page(current_page, page_content, summary)
             return
         except pywikibot.exceptions.BadTitle:
-            print "BadTitle in savePage"
+            print("BadTitle in savePage")
             return
         except pywikibot.exceptions.OtherPageSaveError:
             # Ex : [[SIMP J013656.5+093347]]
-            print "OtherPageSaveError"
+            print("OtherPageSaveError")
             return
         except AttributeError:
-            print "AttributeError in savePage"
+            print("AttributeError in savePage")
             return
 
 
-#*** Tested functions ***
-def isPatrolled(version):
-    #TODO: extensions Patrolled Edits & Flagged Revisions
-    if debugLevel > 1: print version  #eg: [{u'timestamp': u'2017-07-25T02:26:15Z', u'user': u'27.34.18.159'}]
-    if debugLevel > 0: print ' user: ' + version[0]['user']
+def is_patrolled(version):
+    # TODO: extensions Patrolled Edits & Flagged Revisions
+    if debug_level > 1: print(version)  # eg: [{'timestamp': '2017-07-25T02:26:15Z', 'user': '27.34.18.159'}]
+    if debug_level > 0: print(' user: ') + version[0]['user']
     return False
-    #admins = site.allusers(group='sysop')  #<pywikibot.data.api.ListGenerator object at 0x7f6ebc521fd0>
-    #patrollers = site.allusers(group='patrollers')
+    # admins = site.allusers(group='sysop')  #<pywikibot.data.api.ListGenerator object at 0x7f6ebc521fd0>
+    # patrollers = site.allusers(group='patrollers')
 
-def getLineNumber():
-    # Bug des n° de lignes auto
+
+def get_line_number():
+    # TODO magic word
     from inspect import currentframe, getframeinfo
-    frameinfo = getframeinfo(currentframe())
-    return str(frameinfo.lineno)
+    frame_info = getframeinfo(currentframe())
+    return str(frame_info.lineno)
 
-def cancelEdition(page, cancelUser):
-    oldPageContent = u''
-    userName = cancelUser['user']
-    if debugLevel > 1: print page.userName() + u' trouvé'
 
-    if cancelUser['action'].lower() in ['revocation' , 'révocation']:
-        summary = u'Révocation de ' + userName
-        if page.getCreator() == userName:
-            page.delete(reason = summary, prompt = False)
+def cancel_edition(page, cancel_user, summary=''):
+    old_page_content = ''
+    user_name = cancel_user['user']
+    if debug_level > 1:
+        print(page.userName()) + ' trouvé'
+
+    if cancel_user['action'].lower() in ['revocation', 'révocation']:
+        summary = 'Révocation de ' + user_name
+        if page.getCreator() == user_name:
+            page.delete(reason=summary, prompt=False)
             return ''
         else:
             i = 0
-            while page.getVersionHistory()[i][2] == userName:
+            while page.getVersionHistory()[i][2] == user_name:
                 i = i + 1
-                if debugLevel > 1: print i
-            if i > 0: 
-                oldPageContent = getOldPageContent(page, page.getVersionHistory()[i][0])
-        if debugLevel > 2: raw_input(oldPageContent.encode(config.console_encoding, 'replace'))
-    elif page.userName() == userName:
-        summary = u'Annulation de ' + userName
-        oldPageContent = getOldPageContent(page, page.previousRevision())
+                if debug_level > 1:
+                    print(i)
+            if i > 0:
+                old_page_content = get_old_page_content(page, page.getVersionHistory()[i][0])
+        if debug_level > 2:
+            input(old_page_content)
+    elif page.userName() == user_name:
+        summary = 'Annulation de ' + user_name
+        old_page_content = get_old_page_content(page, page.previousRevision())
+    return old_page_content, summary
 
-    return oldPageContent, summary
 
-def getOldPageContent(page, revision):
+def get_old_page_content(page, revision):
     try:
-        return page.getOldVersion(revision, get_redirect = True)
+        return page.getOldVersion(revision, get_redirect=True)
     except pywikibot.exceptions.BadTitle:
-        if debugLevel > 0: print u' IsRedirect l 548'
-        return ''
+        if debug_level > 0:
+            print(' IsRedirect l 548')
     except pywikibot.exceptions.NoPage:
-        if debugLevel > 0: print u' NoPage l 551'
-        return ''
+        if debug_level > 0:
+            print(' NoPage l 551')
     except pywikibot.exceptions.ServerError:
-        if debugLevel > 0: print u' ServerError l 554'
-        return ''
+        if debug_level > 0:
+            print(' ServerError l 554')
+    return ''

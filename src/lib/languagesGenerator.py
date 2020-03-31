@@ -1,24 +1,30 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import os, re, sys
-import languages
+from __future__ import absolute_import, unicode_literals
+import re
+import sys
+try:
+    import src.lib.languages
+except ImportError:
+    import languages
+
 
 def main(*args):
     # TODO
     # 1) get https://fr.wiktionary.org/wiki/Module:langues/data 
     # 2) Regex
-    #   ur"\n *\t*l\['([^']+)'\] = \{ nom = '([^']+)'[^\n]+" 
-    #   ur"\n    '$1': '$2',"
+    #   r"\n *\t*l\['([^']+)'\] = \{ nom = '([^']+)'[^\n]+" 
+    #   r"\n    '$1': '$2',"
     # 4) sorting
 
     # 3) Treat commented redirections
     file = open('src/lib/languages.py','r+b')
     list = file.read()
 
-    regex = ur"\n *\t*l\['([^']+)'\] = l\['([^']+)'\]"
+    regex = r"\n *\t*l\['([^']+)'\] = l\['([^']+)'\]"
     redirects = re.findall(regex, list)
-    print str(len(redirects)) + u' redirections found'
+    print(str(len(redirects)) + ' redirections found')
 
     redirectNames = ''
     for redirect in redirects:

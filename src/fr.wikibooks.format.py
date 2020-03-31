@@ -1,166 +1,169 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Ce script formate les articles de Wikilivres
-
+"""
+Ce script formate les articles de Wikilivres
+"""
 from __future__ import absolute_import, unicode_literals
-import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
-from lib import *
+import sys
 import pywikibot
 from pywikibot import *
-from pywikibot import pagegenerators
+try:
+    from src.lib import *
+except ImportError:
+    from lib import *
 
 # Global variables
-debugLevel = 0
-debugAliases = ['debug', 'd', '-d']
-for debugAlias in debugAliases:
+debug_level = 0
+debug_aliases = ['debug', 'd', '-d']
+for debugAlias in debug_aliases:
     if debugAlias in sys.argv:
-        debugLevel= 1
+        debug_level= 1
         sys.argv.remove(debugAlias)
 
-fileName = __file__
-if debugLevel > 0: print fileName
-if fileName.rfind('/') != -1: fileName = fileName[fileName.rfind('/')+1:]
-siteLanguage = fileName[:2]
-if debugLevel > 1: print siteLanguage
-siteFamily = fileName[3:]
-siteFamily = siteFamily[:siteFamily.find('.')]
-if debugLevel > 1: print siteFamily
-site = pywikibot.Site(siteLanguage, siteFamily)
-username = config.usernames[siteFamily][siteLanguage]
+file_name = __file__
+if debug_level > 0: print(file_name)
+if file_name.rfind('/') != -1: file_name = file_name[file_name.rfind('/')+1:]
+site_language = file_name[:2]
+if debug_level > 1: print(site_language)
+site_family = file_name[3:]
+site_family = site_family[:site_family.find('.')]
+if debug_level > 1: print(site_family)
+site = pywikibot.Site(site_language, site_family)
+username = config.usernames[site_family][site_language]
 
 checkURL = False
-fixTags = False
+fix_tags = False
 fixFiles = True
 addCategory = False
 oldTemplates = False
 
-def treatPageByName(pageName):
-    if debugLevel > -1: print(pageName.encode(config.console_encoding, 'replace'))
-    summary = u'Formatage'
-    page = Page(site, pageName)
-    PageBegin = getContentFromPage(page, 'All')
-    if PageBegin == 'KO' or PageBegin.find(u'{{en travaux') != -1 or PageBegin.find(u'{{En travaux') != -1: return
-    PageTemp = PageBegin
-    PageEnd = u''
+def treat_page_by_name(page_name):
+    if debug_level > -1: print(page_name)
+    summary = 'Formatage'
+    page = Page(site, page_name)
+    current_page_content = get_content_from_page(page, 'All')
+    if current_page_content == 'KO' or current_page_content.find('{{en travaux') != -1 or current_page_content.find('{{En travaux') != -1: return
+    PageTemp = current_page_content
+    PageEnd = ''
 
-    PageTemp = globalOperations(PageTemp)
-    if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
-    if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
-    if checkURL: PageTemp = hyperlynx(PageTemp)
+    PageTemp = global_operations(PageTemp)
+    if fixFiles: PageTemp = replace_files_errors(PageTemp)
+    if fix_tags: PageTemp = replace_deprecated_tags(PageTemp)
+    if checkURL: PageTemp = hyper_lynx(PageTemp)
 
     # Templates
     if PageTemp.find('{{AutoCat}}') == -1:
         # Présence de {{bas de page}} par inclusion
         oldTemplates = []
-        oldTemplates.append(u'lienDePage')
-        oldTemplates.append(u'NavTitre')
-        oldTemplates.append(u'NavChapitre')
+        oldTemplates.append('lienDePage')
+        oldTemplates.append('NavTitre')
+        oldTemplates.append('NavChapitre')
         for oldTemplate in oldTemplates:
-            PageTemp = replaceTemplate(PageTemp, oldTemplate)
-        regex = ur'<noinclude>[ \n\-]*</noinclude>\n?'
+            PageTemp = replace_template(PageTemp, oldTemplate)
+        regex = r'<noinclude>[ \n\-]*</noinclude>\n?'
         if re.search(regex, PageTemp):
             PageTemp = re.sub(regex, '', PageTemp)
 
-    regex = ur'({{[a|A]utres projets[^}]*)\|noclear *= *1'
+    regex = r'({{[a|A]utres projets[^}]*)\|noclear *= *1'
     if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'\1', PageTemp)
-    if debugLevel > 1: raw_input(PageTemp.encode(config.console_encoding, 'replace'))
+        PageTemp = re.sub(regex, r'\1', PageTemp)
+    if debug_level > 1: input(PageTemp)
 
     if page.namespace() == 0:
         # Traitement des modèles
-        regex = ur'\{\{[P|p]ortail([^\}]*)\}\}'
+        regex = r'\{\{[P|p]ortail([^\}]*)\}\}'
         if re.search(regex, PageTemp):
             summary += ', retrait des portails'
-            PageTemp = re.sub(regex, ur'', PageTemp)
-        regex = ur'\{\{[P|p]alette([^\}]*)\}\}'
+            PageTemp = re.sub(regex, r'', PageTemp)
+        regex = r'\{\{[P|p]alette([^\}]*)\}\}'
         if re.search(regex, PageTemp):
             summary += ', retrait des palettes'
-            PageTemp = re.sub(regex, ur'', PageTemp)
-        PageTemp = PageTemp.replace(u'{{PDC}}', u'profondeur de champ')
-        PageTemp = PageTemp.replace(u'{{reflist}}', u'{{Références}}')
-        PageTemp = PageTemp.replace(u'{{Reflist}}', u'{{Références}}')
+            PageTemp = re.sub(regex, r'', PageTemp)
+        PageTemp = PageTemp.replace('{{PDC}}', 'profondeur de champ')
+        PageTemp = PageTemp.replace('{{reflist}}', '{{Références}}')
+        PageTemp = PageTemp.replace('{{Reflist}}', '{{Références}}')
 
-        PageTemp = PageTemp.replace(u'[[Catégorie:{{PAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
-        PageTemp = PageTemp.replace(u'[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', u'{{AutoCat}}')
-        PageTemp = PageTemp.replace(u'{{BookCat}}', u'{{AutoCat}}')
+        PageTemp = PageTemp.replace('[[Catégorie:{{PAGENAME}}|{{SUBPAGENAME}}]]', '{{AutoCat}}')
+        PageTemp = PageTemp.replace('[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', '{{AutoCat}}')
+        PageTemp = PageTemp.replace('{{BookCat}}', '{{AutoCat}}')
         if addCategory:
-            if trim(PageTemp) != '' and PageTemp.find(u'[[Catégorie:') == -1 and PageTemp.find(u'{{AutoCat}}') == -1 and PageTemp.find(u'{{imprimable') == -1:
-                PageTemp = PageTemp + u'\n\n{{AutoCat}}'
-                summary = summary + u', [[Spécial:Pages non catégorisées]]'
+            if trim(PageTemp) != '' and PageTemp.find('[[Catégorie:') == -1 and PageTemp.find('{{AutoCat}}') == -1 and PageTemp.find('{{imprimable') == -1:
+                PageTemp = PageTemp + '\n\n{{AutoCat}}'
+                summary = summary + ', [[Spécial:Pages non catégorisées]]'
 
         # Clés de tri pour les noms propres
-        if PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') != -1:
-            PageEnd = PageEnd + PageTemp[:PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')]
-            PageTemp = PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'):PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie')] + PageTemp[PageTemp.find(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len(u'[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}'):]
+        if PageTemp.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') != -1:
+            PageEnd = PageEnd + PageTemp[:PageTemp.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')]
+            PageTemp = PageTemp[PageTemp.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'):PageTemp.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len('[[Catégorie:Personnalités de la photographie')] + PageTemp[PageTemp.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}'):]
         '''ne convient pas pour les biographies https://fr.wikibooks.org/w/index.php?title=Photographie/Personnalit%C3%A9s/B/Pierre_Berdoy&diff=prev&oldid=526479
-        regex = ur'()\n{{DEFAULTSORT[^}]*}}'
+        regex = r'()\n{{DEFAULTSORT[^}]*}}'
         if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur'\1', PageTemp)
-        regex = ur'()\n{{defaultsort[^}]*}}'
+            PageTemp = re.sub(regex, r'\1', PageTemp)
+        regex = r'()\n{{defaultsort[^}]*}}'
         if re.search(regex, PageTemp):
-            PageTemp = re.sub(regex, ur'\1', PageTemp)
+            PageTemp = re.sub(regex, r'\1', PageTemp)
         '''
 
     PageEnd = PageEnd + PageTemp
-    if PageEnd != PageBegin:
-        PageTemp = PageTemp.replace(u'<references/>', u'{{Références}}')
-        PageTemp = PageTemp.replace(u'<references />', u'{{Références}}')
-        savePage(page, PageEnd, summary)
+    if PageEnd != current_page_content:
+        PageTemp = PageTemp.replace('<references/>', '{{Références}}')
+        PageTemp = PageTemp.replace('<references />', '{{Références}}')
+        save_page(page, PageEnd, summary)
 
 
-p = PageProvider(treatPageByName, site, debugLevel)
-setGlobals(debugLevel, site, username)
+p = PageProvider(treat_page_by_name, site, debug_level)
+set_globals(debug_level, site, username)
 def main(*args):
     if len(sys.argv) > 1:
-        if debugLevel > 1: print sys.argv
-        if sys.argv[1] == u'-test':
-            treatPageByName(u'User:' + username + u'/test')
-        elif sys.argv[1] == u'-test2':
-            treatPageByName(u'User:' + username + u'/test2')
-        elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'Catégorie:Python')
-        elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
-            p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
-        elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
-            regex = u'{{[Mm]éta-étiquette *\|[^}]*text-align: center'
+        if debug_level > 1: print(sys.argv)
+        if sys.argv[1] == '-test':
+            treat_page_by_name('User:' + username + '/test')
+        elif sys.argv[1] == '-test2':
+            treat_page_by_name('User:' + username + '/test2')
+        elif sys.argv[1] == '-page' or sys.argv[1] == '-p':
+            treat_page_by_name('Catégorie:Python')
+        elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
+            p.pages_by_file('src/lists/articles_' + site_language + '_' + site_family + '.txt')
+        elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
+            regex = '{{[Mm]éta-étiquette *\|[^}]*text-align: center'
             if len(sys.argv) > 2: regex = sys.argv[2]
-            p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex)
-        elif sys.argv[1] == u'-u':
-            p.pagesByUser(u'User:' + username)
-        elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
+            p.page_by_xml(site_language + site_family + '\-.*xml', regex)
+        elif sys.argv[1] == '-u':
+            p.pages_by_user('User:' + username)
+        elif sys.argv[1] == '-search' or sys.argv[1] == '-s' or sys.argv[1] == '-r':
             if len(sys.argv) > 2:
-                p.pagesBySearch(sys.argv[2])
+                p.pages_by_search(sys.argv[2])
             else:
-                p.pagesBySearch(u'chinois')
-        elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:autres projets')
-        elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
-            afterPage = u''
+                p.pages_by_search('chinois')
+        elif sys.argv[1] == '-link' or sys.argv[1] == '-l' or sys.argv[1] == '-template' or sys.argv[1] == '-m':
+            p.pages_by_link('Template:autres projets')
+        elif sys.argv[1] == '-category' or sys.argv[1] == '-cat':
+            afterPage = ''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Programmation Java (livre)')
-            p.pagesByCat(u'Programmation PHP (livre)')
-            p.pagesByCat(u'Programmation Python (livre)')
-        elif sys.argv[1] == u'-redirects':
-            p.pagesByRedirects()
-        elif sys.argv[1] == u'-all':
-           p.pagesByAll()
-        elif sys.argv[1] == u'-RC':
+            p.pages_by_cat('Programmation Java (livre)')
+            p.pages_by_cat('Programmation PHP (livre)')
+            p.pages_by_cat('Programmation Python (livre)')
+        elif sys.argv[1] == '-redirects':
+            p.pages_by_redirects()
+        elif sys.argv[1] == '-all':
+           p.pages_by_all()
+        elif sys.argv[1] == '-RC':
             while 1:
-                p.pagesByRCLastDay()
-        elif sys.argv[1] == u'-nocat':
+                p.pages_by_rc_last_day()
+        elif sys.argv[1] == '-nocat':
             global addCategory
             addCategory = True
-            p.pagesBySpecialNotCategorized()
-        elif sys.argv[1] == u'-lint':
-            p.pagesBySpecialLint()
-        elif sys.argv[1] == u'-extlinks':
-            p. pagesBySpecialLinkSearch('www.dmoz.org')
+            p.pages_by_special_not_categorized()
+        elif sys.argv[1] == '-lint':
+            p.pages_by_special_lint()
+        elif sys.argv[1] == '-extlinks':
+            p. pages_by_special_link_search('www.dmoz.org')
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
-            treatPageByName(html2Unicode(sys.argv[1]))
+            treat_page_by_name(html2unicode(sys.argv[1]))
     else:
         while 1:
-            p.pagesByRC()
+            p.pages_by_rc()
 
 if __name__ == "__main__":
     main(sys.argv)

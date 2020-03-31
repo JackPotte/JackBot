@@ -1,115 +1,118 @@
 #!/usr/bin/env python
 # coding: utf-8
-# This script formats the Wikibooks pages
-
+"""
+This script formats the Wikibooks pages
+"""
 from __future__ import absolute_import, unicode_literals
-import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
-from lib import *
+import sys
 import pywikibot
 from pywikibot import *
-from pywikibot import pagegenerators
-from pywikibot.data import api
+try:
+    from src.lib import *
+except ImportError:
+    from lib import *
 
 # Global variables
-debugLevel = 0
-debugAliases = ['-debug', '-d']
-for debugAlias in debugAliases:
+debug_level = 0
+debug_aliases = ['-debug', '-d']
+for debugAlias in debug_aliases:
     if debugAlias in sys.argv:
-        debugLevel= 1
+        debug_level= 1
         sys.argv.remove(debugAlias)
 
-fileName = __file__
-if debugLevel > 0: print fileName
-if fileName.rfind('/') != -1: fileName = fileName[fileName.rfind('/')+1:]
-siteLanguage = fileName[:2]
-if debugLevel > 1: print siteLanguage
-siteFamily = fileName[3:]
-siteFamily = siteFamily[:siteFamily.find('.')]
-if debugLevel > 1: print siteFamily
-site = pywikibot.Site(siteLanguage, siteFamily)
-username = config.usernames[siteFamily][siteLanguage]
+file_name = __file__
+if debug_level > 0: print(file_name)
+if file_name.rfind('/') != -1: file_name = file_name[file_name.rfind('/')+1:]
+site_language = file_name[:2]
+if debug_level > 1: print(site_language)
+site_family = file_name[3:]
+site_family = site_family[:site_family.find('.')]
+if debug_level > 1: print(site_family)
+site = pywikibot.Site(site_language, site_family)
+username = config.usernames[site_family][site_language]
 
 checkURL = False # TODO: translate hyperlynx.py by adding content{} at the top
-fixTags = False
+fix_tags = False
 fixFiles = True
 addCategory = False
 
-def treatPageByName(pageName):
-    if debugLevel > -1: print(pageName.encode(config.console_encoding, 'replace'))
-    page = Page(site, pageName)
-    PageBegin = getContentFromPage(page, 'All')
-    if not username in pageName and (PageBegin == 'KO' or pageName.find(u'/Print version') != -1): return
-    summary = u'Formato'
-    PageTemp = PageBegin
-    PageEnd = u''
+def treat_page_by_name(page_name):
+    if debug_level > -1: print(page_name)
+    page = Page(site, page_name)
+    current_page_content = get_content_from_page(page, 'All')
+    if not username in page_name and (current_page_content == 'KO' or page_name.find('/print version') != -1):
+        return
+    summary = 'Formato'
+    PageTemp = current_page_content
+    PageEnd = ''
 
-    PageTemp = globalOperations(PageTemp)
-    if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
-    if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
-    if checkURL: PageTemp = hyperlynx(PageTemp)
+    PageTemp = global_operations(PageTemp)
+    if fixFiles: PageTemp = replace_files_errors(PageTemp)
+    if fix_tags: PageTemp = replace_deprecated_tags(PageTemp)
+    if checkURL: PageTemp = hyper_lynx(PageTemp)
 
-    regex = ur'^{{Software[ _]e[ _]didattica}}\n'
+    regex = r'^{{Software[ _]e[ _]didattica}}\n'
     if re.search(regex, PageTemp):
-        PageTemp = re.sub(regex, ur'<noinclude>{{Software e didattica}}</noinclude>\n', PageTemp)
+        PageTemp = re.sub(regex, r'<noinclude>{{Software e didattica}}</noinclude>\n', PageTemp)
 
     PageEnd = PageEnd + PageTemp
-    if PageEnd != PageBegin: savePage(page, PageEnd, summary)
+    if PageEnd != current_page_content: save_page(page, PageEnd, summary)
 
 
-p = PageProvider(treatPageByName, site, debugLevel)
-setGlobals(debugLevel, site, username)
+p = PageProvider(treat_page_by_name, site, debug_level)
+set_globals(debug_level, site, username)
 def main(*args):
     if len(sys.argv) > 1:
-        if debugLevel > 1: print sys.argv
-        if sys.argv[1] == u'-test':
-            treatPageByName(u'User:' + username + u'/test')
-        elif sys.argv[1] == u'-test2':
-            treatPageByName(u'User:' + username + u'/test2')
-        elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'Python')
-        elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
-            p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
-        elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
-            regex = u''
+        if debug_level > 1: print(sys.argv)
+        if sys.argv[1] == '-test':
+            treat_page_by_name('User:' + username + '/test')
+        elif sys.argv[1] == '-test2':
+            treat_page_by_name('User:' + username + '/test2')
+        elif sys.argv[1] == '-page' or sys.argv[1] == '-p':
+            treat_page_by_name('Python')
+        elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
+            p.pages_by_file('src/lists/articles_' + site_language + '_' + site_family + '.txt')
+        elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
+            regex = ''
             if len(sys.argv) > 2: regex = sys.argv[2]
-            p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex)
-        elif sys.argv[1] == u'-u':
+            p.page_by_xml(site_language + site_family + '\-.*xml', regex)
+        elif sys.argv[1] == '-u':
             user = username
             if len(sys.argv) > 2: user = sys.argv[2]
-            p.pagesByUser(u'User:' + user, numberOfPagesToTreat = 10000)
-        elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
-            research = u'insource:"Quantum theory of observation/ "'
+            p.pages_by_user('User:' + user, numberOfPagesToTreat = 10000)
+        elif sys.argv[1] == '-search' or sys.argv[1] == '-s' or sys.argv[1] == '-r':
+            research = 'insource:"Quantum theory of observation/ "'
             if len(sys.argv) > 2: research = sys.argv[2]
-            p.pagesBySearch(research)
-        elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Category:Side Dish recipes', namespaces = None)
-        elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
-            afterPage = u''
+            p.pages_by_search(research)
+        elif sys.argv[1] == '-link' or sys.argv[1] == '-l' or sys.argv[1] == '-template' or sys.argv[1] == '-m':
+            p.pages_by_link('Category:Side Dish recipes', namespaces = None)
+        elif sys.argv[1] == '-category' or sys.argv[1] == '-cat':
+            afterPage = ''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Software e didattica')
-            #p.pagesByCat(u'Category:Pages using ISBN magic links', namespaces = None, afterPage = afterPage)
-            #p.pagesByCat(u'Category:Pages with ISBN errors', namespaces = None, afterPage = afterPage)
-        elif sys.argv[1] == u'-redirects':
-            p.pagesByRedirects()
-        elif sys.argv[1] == u'-all':
-           p.pagesByAll()
-        elif sys.argv[1] == u'-RC':
+            p.pages_by_cat('Software e didattica')
+            #p.pagesByCat('Category:Pages using ISBN magic links', namespaces = None, afterPage = afterPage)
+            #p.pagesByCat('Category:Pages with ISBN errors', namespaces = None, afterPage = afterPage)
+        elif sys.argv[1] == '-redirects':
+            p.pages_by_redirects()
+        elif sys.argv[1] == '-all':
+           p.pages_by_all()
+        elif sys.argv[1] == '-RC':
             while 1:
-                p.pagesByRCLastDay()
-        elif sys.argv[1] == u'-nocat':
+                p.pages_by_rc_last_day()
+        elif sys.argv[1] == '-nocat':
             global addCategory
             addCategory = True
-            p.pagesBySpecialNotCategorized()
-        elif sys.argv[1] == u'-lint':
-            p.pagesBySpecialLint()
-        elif sys.argv[1] == u'-extlinks':
-            p. pagesBySpecialLinkSearch('www.dmoz.org')
+            p.pages_by_special_not_categorized()
+        elif sys.argv[1] == '-lint':
+            p.pages_by_special_lint()
+        elif sys.argv[1] == '-extlinks':
+            p. pages_by_special_link_search('www.dmoz.org')
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
-            treatPageByName(html2Unicode(sys.argv[1]))
+            treat_page_by_name(html2unicode(sys.argv[1]))
     else:
         while 1:
-            p.pagesByRC()
+            p.pages_by_rc()
 
 if __name__ == "__main__":
     main(sys.argv)

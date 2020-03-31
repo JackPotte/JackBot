@@ -1,147 +1,150 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Ce script formate les articles de Wikiquote
-
+"""
+Ce script formate les articles de Wikiquote
+"""
 from __future__ import absolute_import, unicode_literals
-import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
-from lib import *
+import sys
 import pywikibot
 from pywikibot import *
-from pywikibot import pagegenerators
+try:
+    from src.lib import *
+except ImportError:
+    from lib import *
 
 # Global variables
-debugLevel = 0
-debugAliases = ['-debug', '-d']
-for debugAlias in debugAliases:
+debug_level = 0
+debug_aliases = ['-debug', '-d']
+for debugAlias in debug_aliases:
     if debugAlias in sys.argv:
-        debugLevel= 1
+        debug_level= 1
         sys.argv.remove(debugAlias)
 
-fileName = __file__
-if debugLevel > 0: print fileName
-if fileName.rfind('/') != -1: fileName = fileName[fileName.rfind('/')+1:]
-siteLanguage = fileName[:2]
-if debugLevel > 1: print siteLanguage
-siteFamily = fileName[3:]
-siteFamily = siteFamily[:siteFamily.find('.')]
-if debugLevel > 1: print siteFamily
-site = pywikibot.Site(siteLanguage, siteFamily)
-username = config.usernames[siteFamily][siteLanguage]
+file_name = __file__
+if debug_level > 0: print(file_name)
+if file_name.rfind('/') != -1: file_name = file_name[file_name.rfind('/')+1:]
+site_language = file_name[:2]
+if debug_level > 1: print(site_language)
+site_family = file_name[3:]
+site_family = site_family[:site_family.find('.')]
+if debug_level > 1: print(site_family)
+site = pywikibot.Site(site_language, site_family)
+username = config.usernames[site_family][site_language]
 
 checkURL = False
-fixTags  = False
+fix_tags  = False
 fixFiles = False
 
 
-def treatPageByName(pageName):
-    print(pageName.encode(config.console_encoding, 'replace'))
-    summary = u'Formatage'
-    page = Page(site, pageName)
-    PageBegin = getContentFromPage(page, 'All')
-    PageTemp = PageBegin
-    PageEnd = u''
+def treat_page_by_name(page_name):
+    print(page_name)
+    summary = 'Formatage'
+    page = Page(site, page_name)
+    current_page_content = get_content_from_page(page, 'All')
+    PageTemp = current_page_content
+    PageEnd = ''
 
-    PageTemp = globalOperations(PageTemp)
-    if fixFiles: PageTemp = replaceFilesErrors(PageTemp)
-    if fixTags: PageTemp = replaceDepretacedTags(PageTemp)
-    if checkURL: PageTemp = hyperlynx(PageTemp)
+    PageTemp = global_operations(PageTemp)
+    if fixFiles: PageTemp = replace_files_errors(PageTemp)
+    if fix_tags: PageTemp = replace_deprecated_tags(PageTemp)
+    if checkURL: PageTemp = hyper_lynx(PageTemp)
 
-    PageTemp = PageTemp.replace(u'<small>([[User talk:Deadhoax|<span style="color:#800080;">Disc</span>]] | ' \
-        + u'[[Special:Contributions/Deadhoax|<span style="color:#800080;">Contr</span></small>]])', 
-        u'<small>([[User talk:Deadhoax|<span style="color:#800080;">Disc</span>]] | ' \
-        + u'[[Special:Contributions/Deadhoax|<span style="color:#800080;">Contr</span>]])</small>')
+    PageTemp = PageTemp.replace('<small>([[User talk:Deadhoax|<span style="color:#800080;">Disc</span>]] | ' \
+        + '[[Special:Contributions/Deadhoax|<span style="color:#800080;">Contr</span></small>]])', 
+        '<small>([[User talk:Deadhoax|<span style="color:#800080;">Disc</span>]] | ' \
+        + '[[Special:Contributions/Deadhoax|<span style="color:#800080;">Contr</span>]])</small>')
 
-    PageTemp = PageTemp.replace(u'<small>([[User talk:Fabrice Ferrer|<span style="color:#800080;">Disc</span>]] | ' \
-        + u'[[Special:Contributions/Fabrice Ferrer|<span style="color:#800080;">Contr</span></small>]])', 
-        u'<small>([[User talk:Fabrice Ferrer|<span style="color:#800080;">Disc</span>]] | ' \
-        + u'[[Special:Contributions/Fabrice Ferrer|<span style="color:#800080;">Contr</span>]])</small>')
+    PageTemp = PageTemp.replace('<small>([[User talk:Fabrice Ferrer|<span style="color:#800080;">Disc</span>]] | ' \
+        + '[[Special:Contributions/Fabrice Ferrer|<span style="color:#800080;">Contr</span></small>]])', 
+        '<small>([[User talk:Fabrice Ferrer|<span style="color:#800080;">Disc</span>]] | ' \
+        + '[[Special:Contributions/Fabrice Ferrer|<span style="color:#800080;">Contr</span>]])</small>')
 
-    PageTemp = PageTemp.replace(u'<small>([[Discussion Utilisateur:Fabrice Ferrer|<span style="color:#800080;">Disc</span>]] | ' \
-        + u'[[Special:Contributions/Fabrice Ferrer|<span style="color:#800080;">Contr</span></small>]])', 
-        u'<small>([[User talk:Fabrice Ferrer|<span style="color:#800080;">Disc</span>]] | ' \
-        + u'[[Special:Contributions/Fabrice Ferrer|<span style="color:#800080;">Contr</span>]])</small>')
+    PageTemp = PageTemp.replace('<small>([[Discussion Utilisateur:Fabrice Ferrer|<span style="color:#800080;">Disc</span>]] | ' \
+        + '[[Special:Contributions/Fabrice Ferrer|<span style="color:#800080;">Contr</span></small>]])', 
+        '<small>([[User talk:Fabrice Ferrer|<span style="color:#800080;">Disc</span>]] | ' \
+        + '[[Special:Contributions/Fabrice Ferrer|<span style="color:#800080;">Contr</span>]])</small>')
 
     if page.namespace() == 0:
         # Traitement des modèles
-        regex = ur'\{\{[P|p]ortail([^\}]*)\}\}'
+        regex = r'\{\{[P|p]ortail([^\}]*)\}\}'
         if re.search(regex, PageTemp):
             summary += ', retrait des portails'
-            PageTemp = re.sub(regex, ur'', PageTemp)
-        regex = ur'\{\{[P|p]alette([^\}]*)\}\}'
+            PageTemp = re.sub(regex, r'', PageTemp)
+        regex = r'\{\{[P|p]alette([^\}]*)\}\}'
         if re.search(regex, PageTemp):
             summary += ', retrait des palettes'
-            PageTemp = re.sub(regex, ur'', PageTemp)
-        PageTemp = PageTemp.replace(u'{{BookCat}}', u'{{AutoCat}}')
-        PageTemp = PageTemp.replace(u'{{reflist}}', u'{{Références}}')
-        PageTemp = PageTemp.replace(u'{{Reflist}}', u'{{Références}}')
+            PageTemp = re.sub(regex, r'', PageTemp)
+        PageTemp = PageTemp.replace('{{BookCat}}', '{{AutoCat}}')
+        PageTemp = PageTemp.replace('{{reflist}}', '{{Références}}')
+        PageTemp = PageTemp.replace('{{Reflist}}', '{{Références}}')
 
-        regex = ur'<div style *= *"text\-align: *center;">([^<]+)</div>'
+        regex = r'<div style *= *"text\-align: *center;">([^<]+)</div>'
         if re.search(regex, PageTemp):
             summary += ', [[Modèle:centrer]]'
-            PageTemp = re.sub(regex, ur'{{centrer|\1}}', PageTemp)
+            PageTemp = re.sub(regex, r'{{centrer|\1}}', PageTemp)
 
     PageEnd = PageEnd + PageTemp
-    if PageEnd != PageBegin:
-        PageTemp = PageTemp.replace(u'<references/>', u'{{Références}}')
-        PageTemp = PageTemp.replace(u'<references />', u'{{Références}}')
-        savePage(page, PageEnd, summary)
-    elif debugLevel > 0:
-        print u'No change'
+    if PageEnd != current_page_content:
+        PageTemp = PageTemp.replace('<references/>', '{{Références}}')
+        PageTemp = PageTemp.replace('<references />', '{{Références}}')
+        save_page(page, PageEnd, summary)
+    elif debug_level > 0:
+        print('No change')
 
 
-p = PageProvider(treatPageByName, site, debugLevel)
-setGlobals(debugLevel, site, username)
+p = PageProvider(treat_page_by_name, site, debug_level)
+set_globals(debug_level, site, username)
 def main(*args):
-    global fixTags, fixFiles
+    global fix_tags, fixFiles
     if len(sys.argv) > 1:
-        if debugLevel > 1: print sys.argv
-        if sys.argv[1] == u'-test':
-            treatPageByName(u'User:' + username + u'/test')
-        elif sys.argv[1] == u'-test2':
-            treatPageByName(u'User:' + username + u'/test2')
-        elif sys.argv[1] == u'-page' or sys.argv[1] == u'-p':
-            treatPageByName(u'Wikiquote:Le Salon/janvier 2007')
-        elif sys.argv[1] == u'-file' or sys.argv[1] == u'-txt':
-            p.pagesByFile(u'src/lists/articles_' + siteLanguage + u'_' + siteFamily + u'.txt')
-        elif sys.argv[1] == u'-dump' or sys.argv[1] == u'-xml':
-            regex = u''
+        if debug_level > 1: print(sys.argv)
+        if sys.argv[1] == '-test':
+            treat_page_by_name('User:' + username + '/test')
+        elif sys.argv[1] == '-test2':
+            treat_page_by_name('User:' + username + '/test2')
+        elif sys.argv[1] == '-page' or sys.argv[1] == '-p':
+            treat_page_by_name('Wikiquote:Le Salon/janvier 2007')
+        elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
+            p.pages_by_file('src/lists/articles_' + site_language + '_' + site_family + '.txt')
+        elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
+            regex = ''
             if len(sys.argv) > 2: regex = sys.argv[2]
-            p.pagesByXML(siteLanguage + siteFamily + '\-.*xml', regex)
-        elif sys.argv[1] == u'-u':
-            p.pagesByUser(u'User:' + username)
-        elif sys.argv[1] == u'-search' or sys.argv[1] == u'-s' or sys.argv[1] == u'-r':
+            p.page_by_xml(site_language + site_family + '\-.*xml', regex)
+        elif sys.argv[1] == '-u':
+            p.pages_by_user('User:' + username)
+        elif sys.argv[1] == '-search' or sys.argv[1] == '-s' or sys.argv[1] == '-r':
             if len(sys.argv) > 2:
-                p.pagesBySearch(sys.argv[2])
+                p.pages_by_search(sys.argv[2])
             else:
-                p.pagesBySearch(u'insource:text-align: center', namespaces = [11, 14])
-        elif sys.argv[1] == u'-link' or sys.argv[1] == u'-l' or sys.argv[1] == u'-template' or sys.argv[1] == u'-m':
-            p.pagesByLink(u'Template:autres projets')
-        elif sys.argv[1] == u'-category' or sys.argv[1] == u'-cat':
-            afterPage = u''
+                p.pages_by_search('insource:text-align: center', namespaces = [11, 14])
+        elif sys.argv[1] == '-link' or sys.argv[1] == '-l' or sys.argv[1] == '-template' or sys.argv[1] == '-m':
+            p.pages_by_link('Template:autres projets')
+        elif sys.argv[1] == '-category' or sys.argv[1] == '-cat':
+            afterPage = ''
             if len(sys.argv) > 2: afterPage = sys.argv[2]
-            p.pagesByCat(u'Catégorie:Pages utilisant des liens magiques ISBN', namespaces = None, afterPage = afterPage)
-            p.pagesByCat(u'Catégorie:Pages avec ISBN invalide', namespaces = None, afterPage = afterPage)
-        elif sys.argv[1] == u'-redirects':
-            p.pagesByRedirects()
-        elif sys.argv[1] == u'-all':
-           p.pagesByAll()
-        elif sys.argv[1] == u'-RC':
+            p.pages_by_cat('Catégorie:Pages utilisant des liens magiques ISBN', namespaces = None, afterPage = afterPage)
+            p.pages_by_cat('Catégorie:Pages avec ISBN invalide', namespaces = None, afterPage = afterPage)
+        elif sys.argv[1] == '-redirects':
+            p.pages_by_redirects()
+        elif sys.argv[1] == '-all':
+           p.pages_by_all()
+        elif sys.argv[1] == '-RC':
             while 1:
-                p.pagesByRCLastDay()
-        elif sys.argv[1] == u'-nocat':
-            p.pagesBySpecialNotCategorized()
-        elif sys.argv[1] == u'-lint':
+                p.pages_by_rc_last_day()
+        elif sys.argv[1] == '-nocat':
+            p.pages_by_special_not_categorized()
+        elif sys.argv[1] == '-lint':
             fixTags = True
             fixFiles = True
-            p.pagesBySpecialLint(lintCategories = 'obsolete-tag')
-        elif sys.argv[1] == u'-extlinks':
-            p. pagesBySpecialLinkSearch('www.dmoz.org')
+            p.pages_by_special_lint(lintCategories ='obsolete-tag')
+        elif sys.argv[1] == '-extlinks':
+            p. pages_by_special_link_search('www.dmoz.org')
         else:
             # Format: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
-            treatPageByName(html2Unicode(sys.argv[1]))
+            treat_page_by_name(html2unicode(sys.argv[1]))
     else:
         while 1:
-            p.pagesByRC()
+            p.pages_by_rc()
 
 if __name__ == "__main__":
     main(sys.argv)
