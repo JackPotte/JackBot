@@ -3,18 +3,31 @@ JackBot
 
 This wiki bot has performed thousands of modifications on several wikis: https://meta.wikimedia.org/wiki/User:JackBot
 
-**Pull requesters:** if you don't use https://www.python.org/dev/peps/pep-0008/, 
-please at least avoid any line larger than 150 characters, to allow a quick review.
-
 ![Logo](https://upload.wikimedia.org/wikipedia/commons/f/f2/Pywikibot-logo-suggestion-mediawiki.svg)
 
 
 # Installation
 
-* Download Pywikibot on http://tools.wmflabs.org/pywikibot/ and put it in JackBot/core.
-* Follow https://www.mediawiki.org/wiki/Manual:Pywikibot/i18n/fr to achieve the installation.
-* pip install regex
-* pip install requests
-* To accelerate the treatments:
-    * vim user-config.py:186
-    * vim core/pywikibot/throttle.py:254, time.sleep(0).
+Clone, download Pywikibot and put it in JackBot/core.
+For its old versions, you need to follow in addition
+https://www.mediawiki.org/wiki/Manual:Pywikibot/i18n/fr to achieve the installation.
+```
+pip install regex
+pip install requests
+
+git clone https://github.com/JackPotte/JackBot.git
+cd JackBot
+./updatePywikibot.sh
+```
+
+
+# Optimization
+To accelerate the treatments:
+* vim user-config.py: maxthrottle & put_throttle = 0
+* vim core/pywikibot/throttle.py, time.sleep(0).
+
+
+# Pull requests
+
+If you don't use https://www.python.org/dev/peps/pep-0008/, 
+please at least avoid any line larger than 150 characters, to allow a quick review.

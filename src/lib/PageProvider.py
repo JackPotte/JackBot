@@ -2,202 +2,229 @@
 # coding: utf-8
 
 from __future__ import absolute_import, unicode_literals
-import catlib, codecs, collections, datetime, os, re, socket, sys, urllib
+import datetime
+import inspect
+import os
+import re
 import pywikibot
 from pywikibot import *
 from pywikibot import pagegenerators
 
+try:
+    from src.lib import html2Unicode
+except ImportError:
+    from lib import html2Unicode
+
+
 class PageProvider:
-    debugLevel = None
+    debug_level = None
     site = None
 
-    def __init__(self, treatPage, site, debugLevel):
+    def __init__(self, treatPage, site, debug_level):
         self.treatPage = treatPage
         self.site = site
-        self.debugLevel = debugLevel
-        self.outputFile = open(u'src/lists/articles_' + str(site.lang) + u'_' + str(site.family) + u'.txt', 'a')
+        self.debug_level = debug_level
+        self.outputFile = open('src/lists/articles_' + str(site.lang) + '_' + str(site.family) + '.txt', 'a')
 
-    # articles_list.txt may need to be formatted with format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
-    def pagesByFile(self, source, site = None):
-        if self.debugLevel > 1: print u'pagesByFile'
-        from lib import html2Unicode
-        if site is None: site = self.site
+    # .txt may need to be formatted with format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
+    def pages_by_file(self, source, site=None):
+        if self.debug_level > 1:
+            print(inspect.currentframe())
+        if site is None:
+            site = self.site
         if source:
-            pagesList = open(source, 'r')
+            pages_list = open(source, 'r')
             while 1:
-                pageName = pagesList.readline().decode(config.console_encoding, 'replace')
-                fin = pageName.find("\t")
-                pageName = pageName[:fin]
-                if pageName == '': break
-                if pageName.find(u'[[') != -1:
-                    pageName = pageName[pageName.find(u'[[')+2:]
-                if pageName.find(u']]') != -1:
-                    pageName = pageName[:pageName.find(u']]')]
+                page_name = pages_list.readline().decode(config.console_encoding, 'replace')
+                fin = page_name.find("\t")
+                page_name = page_name[:fin]
+                if page_name == '':
+                    break
+                if page_name.find('[[') != -1:
+                    page_name = page_name[page_name.find('[[') + 2:]
+                if page_name.find(']]') != -1:
+                    page_name = page_name[:page_name.find(']]')]
                 # Conversion ASCII => Unicode (pour les .txt)
-                self.treatPage(html2Unicode(pageName))
-            pagesList.close()
+                self.treatPage(html2unicode(page_name))
+            pages_list.close()
 
-    def pagesByXML(self, source, regex = None, site = None, folder = 'dumps', include = None, exclude = None,
-        titleInclude = None, titleExclude = None, namespaces = None, listFalseTranslations = False, pageNameSubst = None):
-        if site is None: site = self.site
-        if self.debugLevel > 1: print u'pagesByXML'
+    def page_by_xml(self, source, regex=None, site=None, folder='dumps', include=None, exclude=None,
+                    title_include=None, title_exclude=None, namespaces=None, list_false_translations=False,
+                    page_name_subst=None
+                    ):
+        if self.debug_level > 1:
+            print(inspect.currentframe())
+        if site is None:
+            site = self.site
         if not source:
-            print ' Dump non précisé'
+            print(' Dump non précisé')
             return
         source = source.replace('wikipedia', 'wiki')
+        file_name = ''
         if source.find('*') != -1:
-            fileName = [f for f in os.listdir(folder) if re.match(source, f)]
-        if len(fileName) == 0:
-            print ' Dump introubable : ' + source
+            file_name = [f for f in os.listdir(folder) if re.match(source, f)]
+        if len(file_name) == 0:
+            print(' Dump introubable : ') + source
             return
-        fileName = fileName[0]
-        if self.debugLevel > 0:
-            print ' Dump trouvé : ' + fileName
+        file_name = file_name[0]
+        if self.debug_level > 0:
+            print(' Dump trouvé : ') + file_name
         from pywikibot import xmlreader
-        dump = xmlreader.XmlDump(folder + '/' + fileName)
+        dump = xmlreader.XmlDump(folder + '/' + file_name)
         parser = dump.parse()
         for entry in parser:
-            if listFalseTranslations:
-                for l in [u'frm', u'fro']:
-                    sectionPosition = entry.text.find(u'{{langue|' + l + u'}}')
-                    if sectionPosition != -1 and sectionPosition < entry.text.find(u'{{S|traductions}}'):
-                        self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+            if list_false_translations:
+                for lang in ['frm', 'fro']:
+                    section_position = entry.text.find('{{langue|' + lang + '}}')
+                    if section_position != -1 and section_position < entry.text.find('{{S|traductions}}'):
+                        self.outputFile.write((entry.title + '\n'))
 
-            if not namespaces and entry.title.find(u':') == -1:
-                pageContent = entry.text
-                i = titleInclude is None or re.search(titleInclude, entry.title)
-                e = titleExclude is None or not re.search(titleExclude, entry.title)
-                if self.debugLevel > 0:
-                    print i
-                    print e
-                    print titleExclude
-                    print titleInclude
-                if (i and e) or (i and not titleExclude) or (not titleInclude and e):
+            if not namespaces and entry.title.find(':') == -1:
+                page_content = entry.text
+                i = title_include is None or re.search(title_include, entry.title)
+                e = title_exclude is None or not re.search(title_exclude, entry.title)
+                if self.debug_level > 0:
+                    print(i)
+                    print(e)
+                    print(title_exclude)
+                    print(title_include)
+                if (i and e) or (i and not title_exclude) or (not title_include and e):
                     if regex:
-                        #print re.escape(regex.replace('PAGENAME', entry.title[:pageNameSubst]))
-                        if pageNameSubst is None:
-                            if re.search(regex, pageContent, re.DOTALL):
-                                self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                        elif re.search(re.escape(regex.replace('PAGENAME', entry.title[:pageNameSubst])), pageContent, re.DOTALL):
-                            self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                    elif include and exclude and include in pageContent and not exclude in pageContent:
-                        self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                    elif include and include in pageContent and not exclude:
-                        self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
-                    elif exclude and not exclude in pageContent and not include:
-                        self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                        # print(re.escape(regex.replace('PAGENAME', entry.title[:page_nameSubst])))
+                        if page_name_subst is None:
+                            if re.search(regex, page_content, re.DOTALL):
+                                self.outputFile.write((entry.title + '\n'))
+                        elif re.search(re.escape(regex.replace('PAGENAME', entry.title[:page_name_subst])),
+                                       page_content, re.DOTALL):
+                            self.outputFile.write((entry.title + '\n'))
+                    elif include and exclude and include in page_content and not exclude in page_content:
+                        self.outputFile.write((entry.title + '\n'))
+                    elif include and include in page_content and not exclude:
+                        self.outputFile.write((entry.title + '\n'))
+                    elif exclude and not exclude in page_content and not include:
+                        self.outputFile.write((entry.title + '\n'))
                     elif not include and not exclude:
-                        self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                        self.outputFile.write((entry.title + '\n'))
                     '''else:
-                    if self.debugLevel > 1: print u' Pluriels non flexion'
-                    if entry.title[-2:] == u'es':
-                        if self.debugLevel > 1: print entry.title
-                        regex = ur"=== {{S\|adjectif\|fr[^}]+}} ===\n[^\n]*\n*{{fr\-rég\|[^\n]+\n*'''" + re.escape(entry.title) + ur"'''[^\n]*\n# *'*'*(Masculin|Féminin)+ *[P|p]luriel de *'*'* *\[\["
-                        if re.search(regex, pageContent):
-                            if self.debugLevel > 0: print entry.title
-                            #pageContent = re.sub(regex, ur'\1|flexion\2', pageContent)
+                    if self.debug_level > 1: print(' Pluriels non flexion')
+                    if entry.title[-2:] == 'es':
+                        if self.debug_level > 1: print(entry.title)
+                        regex = r"=== {{S\|adjectif\|fr[^}]+}} ===\n[^\n]*\n*{{fr\-rég\|[^\n]+\n*'''" + re.escape(entry.title) + r"'''[^\n]*\n# *'*'*(Masculin|Féminin)+ *[P|p]luriel de *'*'* *\[\["
+                        if re.search(regex, page_content):
+                            if self.debug_level > 0: print(entry.title)
+                            #page_content = re.sub(regex, r'\1|flexion\2', page_content)
                             #self.treatPage(html2Unicode(entry.title))
 
-                    if self.debugLevel > 1: print u' Ajout de la boite de flexion'
-                    if entry.title[-1:] == u's':
-                        if (pageContent.find(u'{{S|adjectif|fr|flexion}}') != -1 or pageContent.find(u'{{S|nom|fr|flexion}}') != -1) and pageContent.find(u'{{fr-') == -1:
-                            #print entry.title # limite de 8191 lignes dans le terminal.
+                    if self.debug_level > 1: print(' Ajout de la boite de flexion')
+                    if entry.title[-1:] == 's':
+                        if (page_content.find('{{S|adjectif|fr|flexion}}') != -1 or page_content.find('{{S|nom|fr|flexion}}') != -1) and page_content.find('{{fr-') == -1:
+                            #print(entry.title) # limite de 8191 lignes dans le terminal.
                             #self.treatPage(entry.title)
-                            self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                            self.outputFile.write((entry.title + '\n'))
 
-                    if self.debugLevel > 1: print u' balises HTML désuètes'
-                    from lib import *
+                    if self.debug_level > 1: print(' balises HTML désuètes')
+                    try:
+    from src.lib import *
+except ImportError:
+    from lib import *
                     for deprecatedTag in deprecatedTags.keys():
-                        if pageContent.find(u'<' + deprecatedTag) != -1:
-                            self.outputFile.write((entry.title + '\n').encode(config.console_encoding, 'replace'))
+                        if page_content.find('<' + deprecatedTag) != -1:
+                            self.outputFile.write((entry.title + '\n'))
                     '''
         self.outputFile.close()
 
-    # Traitement des pages d'une catégorie
-    def pagesByCat(self, category, recursive = False, afterPage = None, namespaces = [0], names = None, notNames = None,
-        exclude = None, site = None, pagesList = False, linked = False
-    ):
+    def pages_by_cat(self, category, recursive=False, afterPage=None, namespaces=[0], names=None, not_names=None,
+                     exclude=None, site=None, pagesList=False, linked=False
+                     ):
         pageids = 50
-        if site is None: site = self.site
-        if self.debugLevel > 0:
-            print category.encode(config.console_encoding, 'replace')
-        cat = catlib.Category(self.site, category)
+        if site is None:
+            site = self.site
+        if self.debug_level > 0:
+            print(category)
+        cat = pywikibot.Category(self.site, category)
         pages = cat.articlesList(False)
         if namespaces == [0]:
             # TODO: filtre bien 0, 2, 12, mais pas 10 ni 100 ni 114, Namespace identifier(s) not recognised
-            gen =  pagegenerators.NamespaceFilterPageGenerator(pages, namespaces)
+            gen = pagegenerators.NamespaceFilterPageGenerator(pages, namespaces)
         else:
-            gen =  pagegenerators.CategorizedPageGenerator(cat)
+            gen = pagegenerators.CategorizedPageGenerator(cat)
         modify = False
         for Page in pagegenerators.PreloadingGenerator(gen, pageids):
             if Page.title() == afterPage:
                 modify = True
-            elif afterPage is None or afterPage == u'' or modify:
+            elif afterPage is None or afterPage == '' or modify:
                 if linked:
                     gen2 = pagegenerators.ReferringPageGenerator(Page)
-                    gen2 =  pagegenerators.NamespaceFilterPageGenerator(gen2, namespaces)
+                    gen2 = pagegenerators.NamespaceFilterPageGenerator(gen2, namespaces)
                     for LinkedPage in pagegenerators.PreloadingGenerator(gen2, pageids):
                         if pagesList:
-                            self.outputFile.write((LinkedPage.title() + '\n').encode(config.console_encoding, 'replace'))
+                            self.outputFile.write(
+                                (LinkedPage.title() + '\n'))
                         else:
                             self.treatPage(LinkedPage.title())
                 elif pagesList:
-                    self.outputFile.write((Page.title() + '\n').encode(config.console_encoding, 'replace'))
+                    self.outputFile.write((Page.title() + '\n'))
                 else:
-                    self.treatPageIfName(Page.title(), names, notNames)
-        subcat = cat.subcategories(recurse = recursive != False)
+                    self.treat_page_if_name(Page.title(), names, not_names)
+        subcat = cat.subcategories(recurse=recursive != False)
         for subcategory in subcat:
-            if self.debugLevel > 0: print u' ' + subcategory.title()
-            if not namespaces is None and 14 in namespaces:
-                self.treatPageIfName(subcategory.title(), names, notNames)
-            if recursive != False:
+            if self.debug_level > 0:
+                print(' ' + subcategory.title())
+            if namespaces is not None and 14 in namespaces:
+                self.treat_page_if_name(subcategory.title(), names, not_names)
+            if recursive:
                 # TODO: recurse depth
                 modify = True
                 if exclude is not None:
                     for notCatName in exclude:
                         if subcategory.title().find(notCatName) != -1:
-                            if self.debugLevel > 0: print u' ' + notCatName + u' ignoré'
+                            if self.debug_level > 0:
+                                print(' ' + notCatName + ' ignoré')
                             modify = False
                 if modify:
                     pages = subcategory.articlesList(False)
                     for Page in pagegenerators.PreloadingGenerator(pages, pageids):
                         if namespaces is None or Page.namespace() in namespaces:
-                            self.treatPageIfName(Page.title(), names, notNames)
+                            self.treat_page_if_name(Page.title(), names, not_names)
 
-    def treatPageIfName(self, pageName, names = None, notNames = None):
-        if names is None and notNames is None:
-            self.treatPage(pageName)
+    def treat_page_if_name(self, page_name, names=None, not_names=None):
+        if names is None and not_names is None:
+            self.treatPage(page_name)
         elif names is not None:
             for name in names:
-                if self.debugLevel > 1: print u' ' + name + u' trouvé'
-                if pageName.find(name) != -1:
-                    self.treatPage(pageName)
+                if self.debug_level > 1:
+                    print(' ' + name + ' trouvé')
+                if page_name.find(name) != -1:
+                    self.treatPage(page_name)
                     return
-        elif notNames is not None:
-            for notName in notNames:
-                if self.debugLevel > 1: print u' ' + notName + u' ignoré'
-                if pageName.find(notName) == -1:
-                    self.treatPage(pageName)
+        elif not_names is not None:
+            for notName in not_names:
+                if self.debug_level > 1: print(' ' + notName + ' ignoré')
+                if page_name.find(notName) == -1:
+                    self.treatPage(page_name)
                     return
         else:
             for name in names:
-                for notName in notNames:
-                    if pageName.find(name) != -1 and pageName.find(notName) == -1:
-                        self.treatPage(pageName)
+                for notName in not_names:
+                    if page_name.find(name) != -1 and page_name.find(notName) == -1:
+                        self.treatPage(page_name)
                         return
 
     # [[Special:WhatLinksHere]]
-    def pagesByLink(self, pageName, afterPage = None, site = None, namespaces = [0, 10], linked = False, onlyTemplateInclusion = True):
-        if site is None: site = self.site
+    def pages_by_link(self, page_name, afterPage=None, site=None, namespaces=[0, 10], linked=False,
+                      onlyTemplateInclusion=True):
+        if site is None:
+            site = self.site
         modify = False
-        page = pywikibot.Page(site, pageName)
-        gen =  pagegenerators.ReferringPageGenerator(page, onlyTemplateInclusion=True)
+        page = pywikibot.Page(site, page_name)
+        gen = pagegenerators.ReferringPageGenerator(page, onlyTemplateInclusion=True)
         gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
         for Page in pagegenerators.PreloadingGenerator(gen, 100):
-            if not afterPage or afterPage == u'' or modify:
+            if not afterPage or afterPage == '' or modify:
                 if linked:
-                    gen2 = pagegenerators.ReferringPageGenerator(Page.title(), onlyTemplateInclusion = onlyTemplateInclusion)
-                    gen2 =  pagegenerators.NamespaceFilterPageGenerator(gen2, namespaces)
+                    gen2 = pagegenerators.ReferringPageGenerator(Page.title(),
+                                                                 onlyTemplateInclusion=onlyTemplateInclusion)
+                    gen2 = pagegenerators.NamespaceFilterPageGenerator(gen2, namespaces)
                     for LinkedPage in pagegenerators.PreloadingGenerator(gen2, 100):
                         self.treatPage(LinkedPage.title())
                 else:
@@ -206,33 +233,37 @@ class PageProvider:
                 modify = True
 
     # [[Special:Search]]
-    def pagesBySearch(self, searchString, namespaces = None, site = None, afterPage = None):
-        if site is None: site = self.site
+    def pages_by_search(self, searchString, namespaces=None, site=None, afterPage=None):
+        if site is None:
+            site = self.site
         modify = False
-        #searchString = searchString[:300] TODO: API error cirrussearch-backend-error 
-        gen = pagegenerators.SearchPageGenerator(searchString, site = site, namespaces = namespaces)
-        for Page in pagegenerators.PreloadingGenerator(gen,100):
-            if not afterPage or afterPage == u'' or modify:
+        # searchString = searchString[:300] TODO: API error cirrussearch-backend-error
+        gen = pagegenerators.SearchPageGenerator(searchString, site=site, namespaces=namespaces)
+        for Page in pagegenerators.PreloadingGenerator(gen, 100):
+            if not afterPage or afterPage == '' or modify:
                 self.treatPage(Page.title())
             elif Page.title() == afterPage:
                 modify = True
 
     # [[Special:RecentChanges]]
-    def pagesByRC(self, site = None):
-        if site is None: site = self.site
+    def pages_by_rc(self, site=None):
+        if site is None:
+            site = self.site
         from lib import timeAfterLastEdition
-        minimumTime = 30 # min
-        gen = pagegenerators.RecentchangesPageGenerator(site = site)
+        minimumTime = 30  # min
+        gen = pagegenerators.RecentchangesPageGenerator(site=site)
         for Page in pagegenerators.PreloadingGenerator(gen, 50):
-            if self.debugLevel > 1: print str(timeAfterLastEdition(Page)) + ' =? ' + str(minimumTime)
+            if self.debug_level > 1:
+                print(str(timeAfterLastEdition(Page) + ' =? ' + str(minimumTime)))
             if timeAfterLastEdition(Page) > minimumTime:
                 self.treatPage(Page.title())
 
     # [[Special:RecentChanges]]
-    def pagesByRCLastDay(self, nobots = True, ns = '0', site = None):
-        if site is None: site = self.site
+    def pages_by_rc_last_day(self, nobots=True, ns='0', site=None):
+        if site is None:
+            site = self.site
         # Génère les self.treatPages récentes de la dernière journée
-        timeAfterLastEdition = 30 # minutes
+        timeAfterLastEdition = 30  # minutes
 
         date_now = datetime.datetime.utcnow()
         # Date de la plus récente self.treatPage à récupérer
@@ -244,86 +275,96 @@ class PageProvider:
         end_timestamp = date_end.strftime('%Y%m%d%H%M%S')
 
         for item in site.recentchanges(number=5000, rcstart=start_timestamp, rcend=end_timestamp, rcshow=None,
-                        rcdir='older', rctype='edit|new', namespace = ns,
-                        includeredirects=True, repeat=False, user=None,
-                        returndict=False, nobots=nobots):
+                                       rcdir='older', rctype='edit|new', namespace=ns,
+                                       includeredirects=True, repeat=False, user=None,
+                                       returndict=False, nobots=nobots):
             yield item[0]
 
     # [[Special:Contributions]]: the last pages touched by a user
-    def pagesByUser(self, username, numberOfPagesToTreat = None, afterPage = None, regex = None, notRegex = None, site = None, namespaces = None):
-        if site is None: site = self.site
+    def pages_by_user(self, username, numberOfPagesToTreat=None, afterPage=None, regex=None, notRegex=None, site=None,
+                      namespaces=None):
+        if site is None:
+            site = self.site
         modify = False
         numberOfPagesTreated = 0
-        gen = pagegenerators.UserContributionsGenerator(username, namespaces = namespaces, site = site)
-        for Page in pagegenerators.PreloadingGenerator(gen,100):
-            if not afterPage or afterPage == u'' or modify:
+        gen = pagegenerators.UserContributionsGenerator(username, namespaces=namespaces, site=site)
+        for Page in pagegenerators.PreloadingGenerator(gen, 100):
+            if not afterPage or afterPage == '' or modify:
                 found = False
                 if regex is not None and notRegex is None:
                     if re.search(regex, Page.title()): found = True
                 elif regex is None and notRegex is not None:
                     if not re.search(notRegex, Page.title()): found = True
                 elif regex is not None and notRegex is not None:
-                    if re.search(regex, Page.title()) or not re.search(notRegex, Page.title()): found = True  
+                    if re.search(regex, Page.title()) or not re.search(notRegex, Page.title()): found = True
                 else:
                     found = True
 
                 if found:
                     self.treatPage(Page.title())
-                    #self.outputFile.write((Page.title() + '\n').encode(config.console_encoding, 'replace'))
+                    # self.outputFile.write((Page.title() + '\n'))
                 numberOfPagesTreated += 1
                 if numberOfPagesToTreat is not None and numberOfPagesTreated > numberOfPagesToTreat: break
             elif Page.title() == afterPage:
                 modify = True
 
     # [[Special:AllPages]]
-    def pagesByAll(self, start = u'', ns = 0, site = None):
-        if site is None: site = self.site
-        gen = pagegenerators.AllpagesPageGenerator(start, namespace = ns, includeredirects = False, site = site)
+    def pages_by_all(self, start=u'', ns=0, site=None):
+        if site is None:
+            site = self.site
+        gen = pagegenerators.AllpagesPageGenerator(start, namespace=ns, includeredirects=False, site=site)
         for Page in pagegenerators.PreloadingGenerator(gen, 100):
             self.treatPage(Page.title())
 
     # [[Special:ListRedirects]]
-    def pagesByRedirects(self, start = u'', site = None):
-        if site is None: site = self.site
-        for Page in site.allpages(start, namespace = 0, includeredirects = 'only'):
+    def pages_by_redirects(self, start=u'', site=None):
+        if site is None:
+            site = self.site
+        for Page in site.allpages(start, namespace=0, includeredirects='only'):
             self.treatPage(Page.title())
 
     # [[Special:UncategorizedPages]]
-    def pagesBySpecialNotCategorized(self, site = None):
-        if site is None: site = self.site
+    def pages_by_special_not_categorized(self, site=None):
+        if site is None:
+            site = self.site
         global addCategory
         addCategory = True
         for Page in site.uncategorizedpages():
             self.treatPage(Page.title())
 
     # [[Special:WantedCategories]]
-    def pagesBySpecialWantedCategories(self, site = None):
-        if site is None: site = self.site
+    def pages_by_special_wanted_categories(self, site=None):
+        if site is None:
+            site = self.site
         for Page in site.wantedcategories():
             self.treatPage(Page.title())
 
     # [[Special:WantedPages]]
-    def pagesBySpecialWantedPages(self, site = None):
-        if site is None: site = self.site
+    def pages_by_special_wanted_pages(self, site=None):
+        if site is None:
+            site = self.site
         for Page in site.wantedpages():
             self.treatPage(Page.title())
 
     # [[Special:LinkSearch]]
-    def pagesBySpecialLinkSearch(self, url, namespaces = [0], site = None):
-        if site is None: site = self.site
-        for Page in site.exturlusage(url = url, namespaces = namespaces):
+    def pages_by_special_link_search(self, url, namespaces=[0], site=None):
+        if site is None:
+            site = self.site
+        for Page in site.exturlusage(url=url, namespaces=namespaces):
             self.treatPage(Page.title())
 
     # [[Special:LintErrors]]
-    def pagesBySpecialLint(self, namespaces = None, site = None, lintCategories = 'multiple-unclosed-formatting-tags'):
-        if site is None: site = self.site
-        for Page in site.linter_pages(lint_categories = lintCategories, namespaces = namespaces):
+    def pages_by_special_lint(self, namespaces=None, site=None, lintCategories='multiple-unclosed-formatting-tags'):
+        if site is None:
+            site = self.site
+        for Page in site.linter_pages(lint_categories=lintCategories, namespaces=namespaces):
             self.treatPage(Page.title())
 
-
-    #*** Tested methods *** TODO: impossible de parser une page spéciale ainsi (et pywikibot.site.BaseSite.postForm is deprecated)
-    def pagesByCustom(self, site = None):
-        if site is None: site = self.site
-        page = pywikibot.Page(site, u'Special:ApiSandbox')
-        raw_input(page._get_parsed_page())  # WARNING: API error pagecannotexist: Namespace doesn't allow actual pages.
-        #self.treatPage(Page.title())
+    # *** Tested methods ***
+    # TODO: impossible de parser une page spéciale ainsi (et pywikibot.site.BaseSite.postForm is deprecated)
+    def pages_by_custom(self, site=None):
+        if site is None:
+            site = self.site
+        page = pywikibot.Page(site, 'Special:ApiSandbox')
+        # input(page._get_parsed_page())  # TODO WARNING: API error pagecannotexist: Namespace doesn't allow actual pages.
+        # self.treatPage(Page.title())
