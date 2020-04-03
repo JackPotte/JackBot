@@ -1,1897 +1,1864 @@
 #!/usr/bin/env python
 # coding: utf-8
-'''
+"""
 Ce script traduit les noms et paramètres de ces modèles en français (ex : {{cite web|title=}} par {{lien web|titre=}}) cf http://www.tradino.org/
 Optionellement, il vérifie toutes les URL des articles de la forme http://, https:// et [// ou incluses dans certains modèles
 (pas tous étant donnée leur complexité, car certains incluent des {{{1}}} et {{{2}}} dans leurs URL)
-'''
+
+TODO: split in two modules, check and translate
+"""
 
 from __future__ import absolute_import, unicode_literals
-import os.path
+import re
+import ssl
+import urllib
+import webbrowser
+import requests
 import pywikibot
 from pywikibot import *
-import codecs, urllib, urllib2, httplib, json, pprint, urlparse, datetime, re, webbrowser, cookielib, socket, time, ssl
-import requests
-from lib import *
+try:
+    import urllib.request as urllib2
+except ImportError:
+    import urllib2
+try:
+    import http.client as httplib
+except ImportError:
+    import httplib
+try:
+    import urllib.parse as urlparse
+except ImportError:
+    import urlparse
+try:
+    import http.cookiejar as cookielib
+except ImportError:
+    import cookielib
+try:
+    from src.lib import *
+except ImportError:
+    from lib import *
 
-debugLevel = 0
+debug_level = 0
 username = 'JackBot'
 site = pywikibot.Site('fr', 'wiktionary')
 
-#*** General functions ***
-def setGlobalsHL(myDebugLevel, mySite, myUsername):
-    global debugLevel
+
+# *** General functions ***
+def setGlobalsHL(my_debug_level, my_site, my_username):
+    global debug_level
     global site
     global username
-    debugLevel  = myDebugLevel
-    site        = mySite
-    username    = myUsername 
+    debug_level = my_debug_level
+    site = my_site
+    username = my_username
 
-# Preferences
-semiauto = False
-retablirNonBrise = False    # Reteste les liens brisés
-checkURL = False
 
-brokenDomains = []
-#brokenDomains.append('marianne2.fr')    # Site remplacé par marianne.net en mai 2017
+is_semi_auto = False
+do_retest_broken_links = False
+check_url = False
 
-blockedDomains = [] # à cause des popovers ou Node.js ?
-blockedDomains.append(u'bbc.co.uk')
-blockedDomains.append(u'biodiversitylibrary.org')
-blockedDomains.append(u'charts.fi')
-blockedDomains.append(u'cia.gov')
-blockedDomains.append(u'finnishcharts.com')
-blockedDomains.append(u'history.navy.mil') # IP Free bloquée en lecture
-blockedDomains.append(u'itunes.apple.com')
-blockedDomains.append(u'nytimes.com')
-blockedDomains.append(u'psaworldtour.com')
-blockedDomains.append(u'rottentomatoes.com')
-blockedDomains.append(u'soundcloud.com')
-blockedDomains.append(u'twitter.com')
-blockedDomains.append(u'w-siberia.ru')
+broken_domains = []
+# broken_domains.append('marianne2.fr')  # Site remplacé par marianne.net en mai 2017
 
-authorizedFiles = []
-authorizedFiles.append(u'.pdf')
+blocked_domains = []  # à cause des popovers ou Node.js ?
+blocked_domains.append('bbc.co.uk')
+blocked_domains.append('biodiversitylibrary.org')
+blocked_domains.append('charts.fi')
+blocked_domains.append('cia.gov')
+blocked_domains.append('finnishcharts.com')
+blocked_domains.append('history.navy.mil') # IP Free bloquée en lecture
+blocked_domains.append('itunes.apple.com')
+blocked_domains.append('nytimes.com')
+blocked_domains.append('psaworldtour.com')
+blocked_domains.append('rottentomatoes.com')
+blocked_domains.append('soundcloud.com')
+blocked_domains.append('twitter.com')
+blocked_domains.append('w-siberia.ru')
 
-# Modèles qui incluent des URL dans leurs pages
-ligne = 4
-colonne = 2
-TabModeles = [[0] * (colonne+1) for _ in range(ligne+1)]
-TabModeles[1][1] = u'Import:DAF8'
-TabModeles[1][2] = u'http://www.cnrtl.fr/definition/academie8/'
-TabModeles[2][1] = u'R:DAF8'
-TabModeles[2][2] = u'http://www.cnrtl.fr/definition/academie8/'
-TabModeles[3][1] = u'Import:Littré'
-TabModeles[3][2] = u'http://artflx.uchicago.edu/cgi-bin/dicos/pubdico1look.pl?strippedhw='
-TabModeles[4][1] = u'R:Littré'
-TabModeles[4][2] = u'http://artflx.uchicago.edu/cgi-bin/dicos/pubdico1look.pl?strippedhw='
+authorized_files = []
+authorized_files.append('.pdf')
+
+templates_with_url_line = 4
+templates_with_url_column = 2
+templates_with_url = [[0] * (templates_with_url_column + 1) for _ in range(templates_with_url_line + 1)]
+templates_with_url[1][1] = 'Import:DAF8'
+templates_with_url[1][2] = 'http://www.cnrtl.fr/definition/academie8/'
+templates_with_url[2][1] = 'R:DAF8'
+templates_with_url[2][2] = 'http://www.cnrtl.fr/definition/academie8/'
+templates_with_url[3][1] = 'Import:Littré'
+templates_with_url[3][2] = 'http://artflx.uchicago.edu/cgi-bin/dicos/pubdico1look.pl?strippedhw='
+templates_with_url[4][1] = 'R:Littré'
+templates_with_url[4][2] = 'http://artflx.uchicago.edu/cgi-bin/dicos/pubdico1look.pl?strippedhw='
 
 # Modèles qui incluent des URL dans leurs paramètres
-oldTemplate = []
-newTemplate = []
-oldTemplate.append(u'cite web')
-newTemplate.append(u'lien web')
-oldTemplate.append(u'citeweb')
-newTemplate.append(u'lien web')
-oldTemplate.append(u'cite news')
-newTemplate.append(u'article')
-oldTemplate.append(u'cite journal')
-newTemplate.append(u'article')
-oldTemplate.append(u'cite magazine')
-newTemplate.append(u'article')
-oldTemplate.append(u'lien news')
-newTemplate.append(u'article')
-oldTemplate.append(u'cite video')
-newTemplate.append(u'lien vidéo')
-oldTemplate.append(u'cite episode')
-newTemplate.append(u'citation épisode')
-oldTemplate.append(u'cite arXiv')
-newTemplate.append(u'lien arXiv')
-oldTemplate.append(u'cite press release')
-newTemplate.append(u'lien web')
-oldTemplate.append(u'cite press_release')
-newTemplate.append(u'lien web')
-oldTemplate.append(u'cite conference')
-newTemplate.append(u'lien conférence')
-oldTemplate.append(u'docu')
-newTemplate.append(u'lien vidéo')
-oldTemplate.append(u'cite book')
-newTemplate.append(u'ouvrage')
-#oldTemplate.append(u'cite')
-#newTemplate.append(u'ouvrage')
+old_template = []
+new_template = []
+old_template.append('cite web')
+new_template.append('lien web')
+old_template.append('citeweb')
+new_template.append('lien web')
+old_template.append('cite news')
+new_template.append('article')
+old_template.append('cite journal')
+new_template.append('article')
+old_template.append('cite magazine')
+new_template.append('article')
+old_template.append('lien news')
+new_template.append('article')
+old_template.append('cite video')
+new_template.append('lien vidéo')
+old_template.append('cite episode')
+new_template.append('citation épisode')
+old_template.append('cite arXiv')
+new_template.append('lien arXiv')
+old_template.append('cite press release')
+new_template.append('lien web')
+old_template.append('cite press_release')
+new_template.append('lien web')
+old_template.append('cite conference')
+new_template.append('lien conférence')
+old_template.append('docu')
+new_template.append('lien vidéo')
+old_template.append('cite book')
+new_template.append('ouvrage')
+# old_template.append('cite')
+# new_template.append('ouvrage')
 # it
-oldTemplate.append(u'cita pubblicazione')
-newTemplate.append(u'article')
-oldTemplate.append(u'cita libro')
-newTemplate.append(u'ouvrage')
+old_template.append('cita pubblicazione')
+new_template.append('article')
+old_template.append('cita libro')
+new_template.append('ouvrage')
 # sv
-oldTemplate.append(u'webbref')
-newTemplate.append(u'lien web')
-limiteL = len(newTemplate)    # Limite de la liste des modèles traduis de l'anglais (langue=en)
+old_template.append('webbref')
+new_template.append('lien web')
+translated_templates_limit = len(new_template)
 
 # Modèle avec alias français
-oldTemplate.append(u'deadlink')
-newTemplate.append(u'lien brisé')
-#oldTemplate.append(u'dead link') TODO: if previous template is {{lien brisé}} then remove else replace 
-#newTemplate.append(u'lien brisé')
-oldTemplate.append(u'webarchive')
-newTemplate.append(u'lien brisé')
-oldTemplate.append(u'lien brise')
-newTemplate.append(u'lien brisé')
-oldTemplate.append(u'lien cassé')
-newTemplate.append(u'lien brisé')
-oldTemplate.append(u'lien mort')
-newTemplate.append(u'lien brisé')
-oldTemplate.append(u'lien web brisé')
-newTemplate.append(u'lien brisé')
-oldTemplate.append(u'lien Web')
-newTemplate.append(u'lien web')
-oldTemplate.append(u'cita web')
-newTemplate.append(u'lien web')
-oldTemplate.append(u'cita noticia')
-newTemplate.append(u'lien news')
-oldTemplate.append(u'web site')
-newTemplate.append(u'lien web')
-oldTemplate.append(u'site web')
-newTemplate.append(u'lien web')
-oldTemplate.append(u'périodique')
-newTemplate.append(u'article')
-oldTemplate.append(u'quote')
-newTemplate.append(u'citation bloc')
+old_template.append('deadlink')
+new_template.append('lien brisé')
+# old_template.append('dead link') TODO: if previous template is {{lien brisé}} then remove else replace
+# new_template.append('lien brisé')
+old_template.append('webarchive')
+new_template.append('lien brisé')
+old_template.append('lien brise')
+new_template.append('lien brisé')
+old_template.append('lien cassé')
+new_template.append('lien brisé')
+old_template.append('lien mort')
+new_template.append('lien brisé')
+old_template.append('lien web brisé')
+new_template.append('lien brisé')
+old_template.append('lien Web')
+new_template.append('lien web')
+old_template.append('cita web')
+new_template.append('lien web')
+old_template.append('cita noticia')
+new_template.append('lien news')
+old_template.append('web site')
+new_template.append('lien web')
+old_template.append('site web')
+new_template.append('lien web')
+old_template.append('périodique')
+new_template.append('article')
+old_template.append('quote')
+new_template.append('citation bloc')
 
 # Modèles pour traduire leurs paramètres uniquement
-oldTemplate.append(u'lire en ligne')
-newTemplate.append(u'lire en ligne')
-oldTemplate.append(u'dts')
-newTemplate.append(u'dts')
-oldTemplate.append(u'Chapitre')
-newTemplate.append(u'Chapitre')
-limiteM = len(newTemplate)
+old_template.append('lire en ligne')
+new_template.append('lire en ligne')
+old_template.append('dts')
+new_template.append('dts')
+old_template.append('Chapitre')
+new_template.append('Chapitre')
+templates_limit = len(new_template)
 
 # Paramètres à remplacer
-oldParam = []
-newParam = []
-oldParam.append(u'author')
-newParam.append(u'auteur')
-oldParam.append(u'authorlink1')
-newParam.append(u'lien auteur1')
-oldParam.append(u'title')
-newParam.append(u'titre')
-oldParam.append(u'publisher')
-newParam.append(u'éditeur')
-oldParam.append(u'work')    # paramètre de {{lien web}} différent pour {{article}}
-newParam.append(u'périodique')
-oldParam.append(u'newspaper')
-newParam.append(u'journal')
-oldParam.append(u'day')
-newParam.append(u'jour')
-oldParam.append(u'month')
-newParam.append(u'mois')
-oldParam.append(u'year')
-newParam.append(u'année')
-oldParam.append(u'accessdate')
-newParam.append(u'consulté le')
-oldParam.append(u'access-date')
-newParam.append(u'consulté le')
-oldParam.append(u'language')
-newParam.append(u'langue')
-oldParam.append(u'lang')
-newParam.append(u'langue')
-oldParam.append(u'quote')
-newParam.append(u'extrait')
-oldParam.append(u'titre vo')
-newParam.append(u'titre original')
-oldParam.append(u'first')
-newParam.append(u'prénom')
-oldParam.append(u'surname')
-newParam.append(u'nom')
-oldParam.append(u'last')
-newParam.append(u'nom')
+old_param = []
+new_param = []
+old_param.append('author')
+new_param.append('auteur')
+old_param.append('authorlink1')
+new_param.append('lien auteur1')
+old_param.append('title')
+new_param.append('titre')
+old_param.append('publisher')
+new_param.append('éditeur')
+old_param.append('work')  # TODO write here those parameters, translated differently between {{lien web}} & {{article}}
+new_param.append('périodique')
+old_param.append('newspaper')
+new_param.append('journal')
+old_param.append('day')
+new_param.append('jour')
+old_param.append('month')
+new_param.append('mois')
+old_param.append('year')
+new_param.append('année')
+old_param.append('accessdate')
+new_param.append('consulté le')
+old_param.append('access-date')
+new_param.append('consulté le')
+old_param.append('language')
+new_param.append('langue')
+old_param.append('lang')
+new_param.append('langue')
+old_param.append('quote')
+new_param.append('extrait')
+old_param.append('titre vo')
+new_param.append('titre original')
+old_param.append('first')
+new_param.append('prénom')
+old_param.append('surname')
+new_param.append('nom')
+old_param.append('last')
+new_param.append('nom')
 for p in range(1, 100):
-    oldParam.append(u'first'+str(p))
-    newParam.append(u'prénom'+str(p))
-    oldParam.append(u'given'+str(p))
-    newParam.append(u'prénom'+str(p))
-    oldParam.append(u'last'+str(p))
-    newParam.append(u'nom'+str(p))
-    oldParam.append(u'surname'+str(p))
-    newParam.append(u'nom'+str(p))
-    oldParam.append(u'author'+str(p))
-    newParam.append(u'auteur'+str(p))
-oldParam.append(u'issue')
-newParam.append(u'numéro')
-oldParam.append(u'authorlink')
-newParam.append(u'lien auteur')
-oldParam.append(u'author-link')
-newParam.append(u'lien auteur')
+    old_param.append('first' + str(p))
+    new_param.append('prénom' + str(p))
+    old_param.append('given' + str(p))
+    new_param.append('prénom' + str(p))
+    old_param.append('last' + str(p))
+    new_param.append('nom' + str(p))
+    old_param.append('surname' + str(p))
+    new_param.append('nom' + str(p))
+    old_param.append('author' + str(p))
+    new_param.append('auteur' + str(p))
+old_param.append('issue')
+new_param.append('numéro')
+old_param.append('authorlink')
+new_param.append('lien auteur')
+old_param.append('author-link')
+new_param.append('lien auteur')
 for p in range(1, 100):
-    oldParam.append(u'authorlink'+str(p))
-    newParam.append(u'lien auteur'+str(p))
-    oldParam.append(u'author'+str(p)+u'link')
-    newParam.append(u'lien auteur'+str(p))
-oldParam.append(u'coauthorlink')
-newParam.append(u'lien coauteur')
-oldParam.append(u'coauthor-link')
-newParam.append(u'lien coauteur')
-oldParam.append(u'surname1')
-newParam.append(u'nom1')
-oldParam.append(u'coauthors')
-newParam.append(u'coauteurs')
-oldParam.append(u'co-auteurs')
-newParam.append(u'coauteurs')
-oldParam.append(u'co-auteur')
-newParam.append(u'coauteur')
-oldParam.append(u'given')
-newParam.append(u'prénom')
-oldParam.append(u'trad')
-newParam.append(u'traducteur')
-oldParam.append(u'at')
-newParam.append(u'passage')
-oldParam.append(u'origyear')
-newParam.append(u'année première édition') # "année première impression" sur les projets frères
-oldParam.append(u'année première impression')
-newParam.append(u'année première édition')
-oldParam.append(u'location')
-newParam.append(u'lieu')
-oldParam.append(u'place')
-newParam.append(u'lieu')
-oldParam.append(u'publication-date')
-newParam.append(u'année')
-oldParam.append(u'writers')
-newParam.append(u'scénario')
-oldParam.append(u'episodelink')
-newParam.append(u'lien épisode')
-oldParam.append(u'serieslink')
-newParam.append(u'lien série')
-oldParam.append(u'titlelink')
-newParam.append(u'lien titre')
-oldParam.append(u'credits')
-newParam.append(u'crédits')
-oldParam.append(u'network')
-newParam.append(u'réseau')
-oldParam.append(u'station')
-newParam.append(u'chaîne')
-oldParam.append(u'city')
-newParam.append(u'ville')
-oldParam.append(u'began')
-newParam.append(u'début')
-oldParam.append(u'ended')
-newParam.append(u'fin')
-oldParam.append(u'airdate')
-newParam.append(u'diffusion')
-oldParam.append(u'number')
-newParam.append(u'numéro')
-oldParam.append(u'season')
-newParam.append(u'saison')
-oldParam.append(u'year2')
-newParam.append(u'année2')
-oldParam.append(u'month2')
-newParam.append(u'mois2')
-oldParam.append(u'time')
-newParam.append(u'temps')
-oldParam.append(u'accessyear')
-newParam.append(u'année accès')
-oldParam.append(u'accessmonth')
-newParam.append(u'mois accès')
-oldParam.append(u'conference')
-newParam.append(u'conférence')
-oldParam.append(u'conferenceurl')
-newParam.append(u'urlconférence')
-oldParam.append(u'booktitle')
-newParam.append(u'titre livre')
-oldParam.append(u'others')
-newParam.append(u'champ libre')
+    old_param.append('authorlink' + str(p))
+    new_param.append('lien auteur' + str(p))
+    old_param.append('author' + str(p) + 'link')
+    new_param.append('lien auteur' + str(p))
+old_param.append('coauthorlink')
+new_param.append('lien coauteur')
+old_param.append('coauthor-link')
+new_param.append('lien coauteur')
+old_param.append('surname1')
+new_param.append('nom1')
+old_param.append('coauthors')
+new_param.append('coauteurs')
+old_param.append('co-auteurs')
+new_param.append('coauteurs')
+old_param.append('co-auteur')
+new_param.append('coauteur')
+old_param.append('given')
+new_param.append('prénom')
+old_param.append('trad')
+new_param.append('traducteur')
+old_param.append('at')
+new_param.append('passage')
+old_param.append('origyear')
+new_param.append('année première édition')  # TODO "année première impression" on sister projects
+old_param.append('année première impression')
+new_param.append('année première édition')
+old_param.append('location')
+new_param.append('lieu')
+old_param.append('place')
+new_param.append('lieu')
+old_param.append('publication-date')
+new_param.append('année')
+old_param.append('writers')
+new_param.append('scénario')
+old_param.append('episodelink')
+new_param.append('lien épisode')
+old_param.append('serieslink')
+new_param.append('lien série')
+old_param.append('titlelink')
+new_param.append('lien titre')
+old_param.append('credits')
+new_param.append('crédits')
+old_param.append('network')
+new_param.append('réseau')
+old_param.append('station')
+new_param.append('chaîne')
+old_param.append('city')
+new_param.append('ville')
+old_param.append('began')
+new_param.append('début')
+old_param.append('ended')
+new_param.append('fin')
+old_param.append('airdate')
+new_param.append('diffusion')
+old_param.append('number')
+new_param.append('numéro')
+old_param.append('season')
+new_param.append('saison')
+old_param.append('year2')
+new_param.append('année2')
+old_param.append('month2')
+new_param.append('mois2')
+old_param.append('time')
+new_param.append('temps')
+old_param.append('accessyear')
+new_param.append('année accès')
+old_param.append('accessmonth')
+new_param.append('mois accès')
+old_param.append('conference')
+new_param.append('conférence')
+old_param.append('conferenceurl')
+new_param.append('urlconférence')
+old_param.append('booktitle')
+new_param.append('titre livre')
+old_param.append('others')
+new_param.append('champ libre')
 # Fix
-oldParam.append(u'en ligne le')
-newParam.append(u'archivedate')
-oldParam.append(u'autres')
-newParam.append(u'champ libre')
-oldParam.append(u'Auteur')
-newParam.append(u'auteur')
-oldParam.append(u'auteur-')
-newParam.append(u'auteur')
-oldParam.append(u'editor')
-newParam.append(u'éditeur')
-oldParam.append(u'editor2')
-newParam.append(u'auteur2')
+old_param.append('en ligne le')
+new_param.append('archivedate')
+old_param.append('autres')
+new_param.append('champ libre')
+old_param.append('Auteur')
+new_param.append('auteur')
+old_param.append('auteur-')
+new_param.append('auteur')
+old_param.append('editor')
+new_param.append('éditeur')
+old_param.append('editor2')
+new_param.append('auteur2')
 
 # espagnol
-oldParam.append(u'autor')
-newParam.append(u'auteur')
-oldParam.append(u'título')
-newParam.append(u'titre')
-oldParam.append(u'fechaacceso')
-newParam.append(u'consulté le')
-oldParam.append(u'fecha')
-newParam.append(u'date')
-oldParam.append(u'obra')
-newParam.append(u'série')
-oldParam.append(u'idioma')
-newParam.append(u'langue')
-oldParam.append(u'publicació')
-newParam.append(u'éditeur')
-oldParam.append(u'editorial')
-newParam.append(u'journal')
-oldParam.append(u'series')
-newParam.append(u'collection')
-oldParam.append(u'agency')
-newParam.append(u'auteur institutionnel') # ou "périodique" si absent
-oldParam.append(u'magazine')
-newParam.append(u'périodique')
+old_param.append('autor')
+new_param.append('auteur')
+old_param.append('título')
+new_param.append('titre')
+old_param.append('fechaacceso')
+new_param.append('consulté le')
+old_param.append('fecha')
+new_param.append('date')
+old_param.append('obra')
+new_param.append('série')
+old_param.append('idioma')
+new_param.append('langue')
+old_param.append('publicació')
+new_param.append('éditeur')
+old_param.append('editorial')
+new_param.append('journal')
+old_param.append('series')
+new_param.append('collection')
+old_param.append('agency')
+new_param.append('auteur institutionnel')  # TODO write here the alternatives when absent ("périodique")
+old_param.append('magazine')
+new_param.append('périodique')
 
 # italien
-oldParam.append(u'autore')
-newParam.append(u'auteur')
-oldParam.append(u'titolo')
-newParam.append(u'titre')
-oldParam.append(u'accesso')
-newParam.append(u'consulté le')
-oldParam.append(u'data')
-newParam.append(u'date')
-oldParam.append(u'nome')
-newParam.append(u'prénom')
-oldParam.append(u'cognome')
-newParam.append(u'nom')
-oldParam.append(u'linkautore')
-newParam.append(u'lien auteur')
-oldParam.append(u'coautori')
-newParam.append(u'coauteurs')
-oldParam.append(u'rivista')
-newParam.append(u'journal')
-oldParam.append(u'giorno')
-newParam.append(u'jour')
-oldParam.append(u'mese')
-newParam.append(u'mois')
-oldParam.append(u'anno')
-newParam.append(u'année')
-oldParam.append(u'pagine')
-newParam.append(u'page')
-oldParam.append(u'editore')
-newParam.append(u'éditeur')
+old_param.append('autore')
+new_param.append('auteur')
+old_param.append('titolo')
+new_param.append('titre')
+old_param.append('accesso')
+new_param.append('consulté le')
+old_param.append('data')
+new_param.append('date')
+old_param.append('nome')
+new_param.append('prénom')
+old_param.append('cognome')
+new_param.append('nom')
+old_param.append('linkautore')
+new_param.append('lien auteur')
+old_param.append('coautori')
+new_param.append('coauteurs')
+old_param.append('rivista')
+new_param.append('journal')
+old_param.append('giorno')
+new_param.append('jour')
+old_param.append('mese')
+new_param.append('mois')
+old_param.append('anno')
+new_param.append('année')
+old_param.append('pagine')
+new_param.append('page')
+old_param.append('editore')
+new_param.append('éditeur')
 
 # suédois
-oldParam.append(u'författar')
-newParam.append(u'auteur')
-oldParam.append(u'titel')
-newParam.append(u'titre')
-oldParam.append(u'hämtdatum')
-newParam.append(u'consulté le')
-oldParam.append(u'datum')
-newParam.append(u'date')
-oldParam.append(u'förnamn')
-newParam.append(u'prénom')
-oldParam.append(u'efternamn')
-newParam.append(u'nom')
-oldParam.append(u'författarlänk')
-newParam.append(u'lien auteur')
-oldParam.append(u'utgivare')
-newParam.append(u'éditeur')
-oldParam.append(u'månad')
-newParam.append(u'mois')
-oldParam.append(u'år')
-newParam.append(u'année')
-oldParam.append(u'sida')
-newParam.append(u'page')
-oldParam.append(u'verk')
-newParam.append(u'périodique')
+old_param.append('författar')
+new_param.append('auteur')
+old_param.append('titel')
+new_param.append('titre')
+old_param.append('hämtdatum')
+new_param.append('consulté le')
+old_param.append('datum')
+new_param.append('date')
+old_param.append('förnamn')
+new_param.append('prénom')
+old_param.append('efternamn')
+new_param.append('nom')
+old_param.append('författarlänk')
+new_param.append('lien auteur')
+old_param.append('utgivare')
+new_param.append('éditeur')
+old_param.append('månad')
+new_param.append('mois')
+old_param.append('år')
+new_param.append('année')
+old_param.append('sida')
+new_param.append('page')
+old_param.append('verk')
+new_param.append('périodique')
 
-limiteP = len(oldParam)
-if limiteP != len(newParam):
-    raw_input(u'Erreur l 227')
-    
-# URL à remplacer
-limiteU = 3
-URLDeplace = range(1, limiteU +1)
-URLDeplace[1] = u'athena.unige.ch/athena'
-URLDeplace[2] = u'un2sg4.unige.ch/athena'
+param_limit = len(old_param)
+if param_limit != len(new_param):
+    input('Fatal error: unbalanced new and old parameters')
 
-# Caractères délimitant la fin des URL
+url_to_replace = ['athena.unige.ch/athena', 'un2sg4.unige.ch/athena']
+url_to_replace_limit = len(url_to_replace)
+
 # http://tools.ietf.org/html/rfc3986
 # http://fr.wiktionary.org/wiki/Annexe:Titres_non_pris_en_charge
-UrlLimit = 14
-UrlEnd = range(1, UrlLimit +1)
-UrlEnd[1] = u' '
-UrlEnd[2] = u'\n'
-UrlEnd[3] = u'['
-UrlEnd[4] = u']'
-UrlEnd[5] = u'{'
-UrlEnd[6] = u'}'
-UrlEnd[7] = u'<'
-UrlEnd[8] = u'>'    
-UrlEnd[9] = u'|'
-UrlEnd[10] = u'^'
-UrlEnd[11] = u'\\'
-UrlEnd[12] = u'`'
-UrlEnd[13] = u'"'
-#UrlEnd.append(u'~'    # dans 1ère RFC seulement
+url_ends = [' ', '\n', '[', ']', '{', '}', '<', '>', '|', '^', '\\', '`', '"']
+# url_ends.append('~'    # dans 1ère RFC seulement
+url_limit = len(url_ends)
 # Caractères qui ne peuvent pas être en dernière position d'une URL :
-UrlLimit2 = 7
-UrlEnd2 = range(1, UrlLimit +1)
-UrlEnd2[1] = u'.'
-UrlEnd2[2] = u','
-UrlEnd2[3] = u';'
-UrlEnd2[4] = u'!'
-UrlEnd2[5] = u'?'
-UrlEnd2[6] = u')' # mais pas ( ou ) simple
-UrlEnd2[7] = u"'"
+url_ends2 = ['.', ',', ';', '!', '?', ')', u"'"]
+url_limit2 = len(url_ends2)
 
-ligneB = 6
-colonneB = 2
-noTag = [[0] * (colonneB+1) for _ in range(ligneB+1)]
-noTag[1][1] = u'<pre>'
-noTag[1][2] = u'</pre>'
-noTag[2][1] = u'<nowiki>'
-noTag[2][2] = u'</nowiki>'
-noTag[3][1] = u'<ref name='
-noTag[3][2] = u'>'
-noTag[4][1] = u'<rdf'
-noTag[4][2] = u'>'
-noTag[5][1] = u'<source'
-noTag[5][2] = u'</source' + u'>'
-noTag[6][1] = u'\n '
-noTag[6][2] = u'\n'
+tag_line = 6
+tag_column = 2
+tags_without_url = [[0] * (tag_column + 1) for _ in range(tag_line + 1)]
+tags_without_url[1][1] = '<pre>'
+tags_without_url[1][2] = '</pre>'
+tags_without_url[2][1] = '<nowiki>'
+tags_without_url[2][2] = '</nowiki>'
+tags_without_url[3][1] = '<ref name='
+tags_without_url[3][2] = '>'
+tags_without_url[4][1] = '<rdf'
+tags_without_url[4][2] = '>'
+tags_without_url[5][1] = '<source'
+tags_without_url[5][2] = '</source' + '>'
+tags_without_url[6][1] = '\n '
+tags_without_url[6][2] = '\n'
 '''
-    ligneB = ligneB + 1
-    noTag[ligneB-1][1] = u'<!--'
-    noTag[ligneB-1][2] = u'-->'
+TODO '<!--' '-->'?
 '''
-noTemplates = []
-if not retablirNonBrise: noTemplates.append('lien brisé')
 
-limiteE = 20
-Erreur = []
-Erreur.append("403 Forbidden")
-Erreur.append("404 – File not found")
-Erreur.append("404 error")
-Erreur.append("404 Not Found")
-Erreur.append("404. That’s an error.")
-Erreur.append("Error 404 - Not found")
-Erreur.append("Error 404 (Not Found)")
-Erreur.append("Error 503 (Server Error)")
-Erreur.append("Page not found")    # bug avec http://www.ifpi.org/content/section_news/plat2000.html et http://www.edinburgh.gov.uk/trams/include/uploads/story_so_far/Tram_Factsheets_2.pdf
-Erreur.append("Runtime Error")
-Erreur.append("server timedout")
-Erreur.append("Sorry, no matching records for query")
-Erreur.append("The page you requested cannot be found")
-Erreur.append("this page can't be found")
-Erreur.append("The service you requested is not available at this time")
-Erreur.append("There is currently no text in this page.") # wiki
-Erreur.append("500 Internal Server Error")
-# En français
-Erreur.append("Cette forme est introuvable !")
-Erreur.append("Soit vous avez mal &#233;crit le titre")
-Erreur.append(u'Soit vous avez mal écrit le titre')
-Erreur.append(u'Terme introuvable')
-Erreur.append(u"nom de domaine demandé n'est plus actif")
-Erreur.append("Il n'y a pour l'instant aucun texte sur cette page.")
-    
-# Média trop volumineux    
-limiteF = 52
-Format = range(1, limiteF +1)
-# Audio
-Format[1] = u'RIFF'
-Format[2] = u'WAV'
-Format[3] = u'BWF'
-Format[4] = u'Ogg'
-Format[5] = u'AIFF'
-Format[6] = u'CAF'
-Format[7] = u'PCM'
-Format[8] = u'RAW'
-Format[9] = u'CDA'
-Format[10] = u'FLAC'
-Format[11] = u'ALAC'
-Format[12] = u'AC3'
-Format[13] = u'MP3'
-Format[14] = u'mp3PRO'
-Format[15] = u'Ogg Vorbis'
-Format[16] = u'VQF'
-Format[17] = u'TwinVQ'
-Format[18] = u'WMA'
-Format[19] = u'AU'
-Format[20] = u'ASF'
-Format[21] = u'AA'
-Format[22] = u'AAC'
-Format[23] = u'MPEG-2 AAC'
-Format[24] = u'ATRAC'
-Format[25] = u'iKlax'
-Format[26] = u'U-MYX'
-Format[27] = u'MXP4'
-# Vidéo
-Format[28] = u'avi'
-Format[29] = u'mpg'
-Format[30] = u'mpeg'
-Format[31] = u'mkv'
-Format[32] = u'mka'
-Format[33] = u'mks'
-Format[34] = u'asf'
-Format[35] = u'wmv'
-Format[36] = u'wma'
-Format[37] = u'mov'
-Format[38] = u'ogv'
-Format[39] = u'oga'
-Format[40] = u'ogx'
-Format[41] = u'ogm'
-Format[42] = u'3gp'
-Format[43] = u'3g2'
-Format[44] = u'webm'
-Format[45] = u'weba'
-Format[46] = u'nut'
-Format[47] = u'rm'
-Format[48] = u'mxf'
-Format[49] = u'asx'
-Format[50] = u'ts'
-Format[51] = u'flv'
+broken_link_templates = []
+if not do_retest_broken_links:
+    broken_link_templates.append('lien brisé')
 
-# Traduction des mois
-monthLine = 12
-monthColumn = 2
-TradM = [[0] * (monthColumn + 1) for _ in range(monthLine + 1)]
-TradM[1][1] = u'January'
-TradM[1][2] = u'janvier'
-TradM[2][1] = u'February'
-TradM[2][2] = u'février'
-TradM[3][1] = u'March'
-TradM[3][2] = u'mars'
-TradM[4][1] = u'April'
-TradM[4][2] = u'avril'
-TradM[5][1] = u'May'
-TradM[5][2] = u'mai'
-TradM[6][1] = u'June'
-TradM[6][2] = u'juin'
-TradM[7][1] = u'July'
-TradM[7][2] = u'juillet'
-TradM[8][1] = u'August'
-TradM[8][2] = u'août'
-TradM[9][1] = u'September'
-TradM[9][2] = u'septembre'
-TradM[10][1] = u'October'
-TradM[10][2] = u'octobre'
-TradM[11][1] = u'November'
-TradM[11][2] = u'novembre'
-TradM[12][1] = u'December'
-TradM[12][2] = u'décembre'
+sites_errors = ["403 Forbidden", "404 – File not found", "404 error", "404 Not Found", "404. That’s an error.",
+          "Error 404 - Not found", "Error 404 (Not Found)", "Error 503 (Server Error)", "page_content not found",
+          "Runtime Error", "server timedout", "Sorry, no matching records for query",
+          "The page you requested cannot be found", "this page can't be found",
+          "The service you requested is not available at this time", "There is currently no text in this page.",
+          "500 Internal Server Error", "Cette forme est introuvable !", "Soit vous avez mal &#233;crit le titre",
+          'Soit vous avez mal écrit le titre', 'Terme introuvable', "nom de domaine demandé n'est plus actif",
+          "Il n'y a pour l'instant aucun texte sur cette page."]
+errors_limit = len(sites_errors)
 
-# Traduction des langues
-ligneL = 17
-colonneL = 2
-TradL = [[0] * (colonneL+1) for _ in range(ligneL+1)]
-TradL[1][1] = u'French'
-TradL[1][2] = u'fr'
-TradL[2][1] = u'English'
-TradL[2][2] = u'en'
-TradL[3][1] = u'German'
-TradL[3][2] = u'de'
-TradL[4][1] = u'Spanish'
-TradL[4][2] = u'es'
-TradL[5][1] = u'Italian'
-TradL[5][2] = u'it'
-TradL[6][1] = u'Portuguese'
-TradL[6][2] = u'pt'
-TradL[7][1] = u'Dutch'
-TradL[7][2] = u'nl'
-TradL[8][1] = u'Russian'
-TradL[8][2] = u'ru'
-TradL[9][1] = u'Chinese'
-TradL[9][2] = u'zh'
-TradL[10][1] = u'Japanese'
-TradL[10][2] = u'ja'
-TradL[11][1] = u'Polish'
-TradL[11][2] = u'pl'
-TradL[12][1] = u'Norwegian'
-TradL[12][2] = u'no'
-TradL[13][1] = u'Swedish'
-TradL[13][2] = u'sv'
-TradL[14][1] = u'Finnish'
-TradL[14][2] = u'fi'
-TradL[15][1] = u'Indonesian'
-TradL[15][2] = u'id'
-TradL[16][1] = u'Hindi'
-TradL[16][2] = u'hi'
-TradL[17][1] = u'Arabic'
-TradL[17][2] = u'ar'
+# Too large media to ignore
+large_media = ['RIFF', 'WAV', 'BWF', 'Ogg', 'AIFF', 'CAF', 'PCM', 'RAW', 'CDA', 'FLAC', 'ALAC', 'AC3', 'MP3', 'mp3PRO',
+          'Ogg Vorbis', 'VQF', 'TwinVQ', 'WMA', 'AU', 'ASF', 'AA', 'AAC', 'MPEG-2 AAC', 'ATRAC', 'iKlax', 'U-MYX',
+          'MXP4', 'avi', 'mpg', 'mpeg', 'mkv', 'mka', 'mks', 'asf', 'wmv', 'wma', 'mov', 'ogv', 'oga', 'ogx', 'ogm',
+          '3gp', '3g2', 'webm', 'weba', 'nut', 'rm', 'mxf', 'asx', 'ts', 'flv']
+large_media_limit = len(large_media)
 
-def hyperlynx(currentPage):
-    if debugLevel > 0:
-        print u'------------------------------------'
-        #print time.strftime('%d-%m-%Y %H:%m:%S')
-    summary = u'Vérification des URL'
-    htmlSource = ''
-    url = u''
-    currentPage = currentPage.replace(u'[//https://', u'[https://')
-    currentPage = currentPage.replace(u'[//http://', u'[http://')
-    currentPage = currentPage.replace(u'http://http://', u'http://')
-    currentPage = currentPage.replace(u'https://https://', u'https://')
-    currentPage = currentPage.replace(u'<ref>{{en}}} ', u'<ref>{{en}} ')
-    currentPage = currentPage.replace(u'<ref>{{{en}} ', u'<ref>{{en}} ')
-    currentPage = currentPage.replace(u'<ref>{{{en}}} ', u'<ref>{{en}} ')
-    currentPage = re.sub(u'[C|c]ita(tion)? *\n* *(\|[^}{]*title *=)', ur'ouvrage\2', currentPage)
-    currentPage = translateLinkTemplates(currentPage)
-    currentPage = translateDates(currentPage)
-    currentPage = translateLanguages(currentPage)
+month_line = 12
+month_column = 2
+months_translations = [[0] * (month_column + 1) for _ in range(month_line + 1)]
+months_translations[1][1] = 'January'
+months_translations[1][2] = 'janvier'
+months_translations[2][1] = 'February'
+months_translations[2][2] = 'février'
+months_translations[3][1] = 'March'
+months_translations[3][2] = 'mars'
+months_translations[4][1] = 'April'
+months_translations[4][2] = 'avril'
+months_translations[5][1] = 'May'
+months_translations[5][2] = 'mai'
+months_translations[6][1] = 'June'
+months_translations[6][2] = 'juin'
+months_translations[7][1] = 'July'
+months_translations[7][2] = 'juillet'
+months_translations[8][1] = 'August'
+months_translations[8][2] = 'août'
+months_translations[9][1] = 'September'
+months_translations[9][2] = 'septembre'
+months_translations[10][1] = 'October'
+months_translations[10][2] = 'octobre'
+months_translations[11][1] = 'November'
+months_translations[11][2] = 'novembre'
+months_translations[12][1] = 'December'
+months_translations[12][2] = 'décembre'
 
-    if debugLevel > 1:
-        print u'Fin des traductions :'
-        raw_input(currentPage.encode(config.console_encoding, 'replace'))
+languages_line = 17
+languages_column = 2
+languages_translations = [[0] * (languages_column + 1) for _ in range(languages_line + 1)]
+languages_translations[1][1] = 'French'
+languages_translations[1][2] = 'fr'
+languages_translations[2][1] = 'English'
+languages_translations[2][2] = 'en'
+languages_translations[3][1] = 'German'
+languages_translations[3][2] = 'de'
+languages_translations[4][1] = 'Spanish'
+languages_translations[4][2] = 'es'
+languages_translations[5][1] = 'Italian'
+languages_translations[5][2] = 'it'
+languages_translations[6][1] = 'Portuguese'
+languages_translations[6][2] = 'pt'
+languages_translations[7][1] = 'Dutch'
+languages_translations[7][2] = 'nl'
+languages_translations[8][1] = 'Russian'
+languages_translations[8][2] = 'ru'
+languages_translations[9][1] = 'Chinese'
+languages_translations[9][2] = 'zh'
+languages_translations[10][1] = 'Japanese'
+languages_translations[10][2] = 'ja'
+languages_translations[11][1] = 'Polish'
+languages_translations[11][2] = 'pl'
+languages_translations[12][1] = 'Norwegian'
+languages_translations[12][2] = 'no'
+languages_translations[13][1] = 'Swedish'
+languages_translations[13][2] = 'sv'
+languages_translations[14][1] = 'Finnish'
+languages_translations[14][2] = 'fi'
+languages_translations[15][1] = 'Indonesian'
+languages_translations[15][2] = 'id'
+languages_translations[16][1] = 'Hindi'
+languages_translations[16][2] = 'hi'
+languages_translations[17][1] = 'Arabic'
+languages_translations[17][2] = 'ar'
 
-    # Recherche de chaque hyperlien en clair ------------------------------------------------------------------------------------------------------------------------------------
-    finalPage = u''
-    while currentPage.find(u'//') != -1:
-        if debugLevel > 0: print u'-----------------------------------------------------------------'
-        url = u''
-        DebutURL = u''
-        CharFinURL = u''
-        titre = u''
-        templateEndPosition = 0
-        isBrokenLink = False
+
+def hyper_lynx(current_page):
+    if debug_level > 0:
+        print('------------------------------------')
+    summary = 'Vérification des URL'
+    html_source = ''
+    url = ''
+    current_page = current_page.replace('[//https://', '[https://')
+    current_page = current_page.replace('[//http://', '[http://')
+    current_page = current_page.replace('http://http://', 'http://')
+    current_page = current_page.replace('https://https://', 'https://')
+    current_page = current_page.replace('<ref>{{en}}} ', '<ref>{{en}} ')
+    current_page = current_page.replace('<ref>{{{en}} ', '<ref>{{en}} ')
+    current_page = current_page.replace('<ref>{{{en}}} ', '<ref>{{en}} ')
+    current_page = re.sub('[C|c]ita(tion)? *\n* *(\|[^}{]*title *=)', r'ouvrage\2', current_page)
+    current_page = translateLinkTemplates(current_page)
+    current_page = translateDates(current_page)
+    current_page = translateLanguages(current_page)
+
+    if debug_level > 1:
+        print('Fin des traductions :')
+        input(current_page)
+
+    # Recherche de chaque hyperlien en clair -------------------------------------------------------------------------
+    final_page = ''
+    while current_page.find('//') != -1:
+        if debug_level > 0:
+            print('-----------------------------------------------------------------')
+        url = ''
+        url_start = ''
+        url_end_char = ''
+        titre = ''
+        template_end_position = 0
+        is_broken_link = False
         # Avant l'URL
-        PageDebut = currentPage[:currentPage.find(u'//')]
-        while currentPage.find(u'//') > currentPage.find(u'}}') and currentPage.find(u'}}') != -1:
-            if debugLevel > 0: print u'URL après un modèle'
-            finalPage = finalPage + currentPage[:currentPage.find(u'}}')+2]
-            currentPage = currentPage[currentPage.find(u'}}')+2:]
+        PageDebut = current_page[:current_page.find('//')]
+        while current_page.find('//') > current_page.find('}}') != -1:
+            if debug_level > 0:
+                print('URL après un modèle')
+            final_page = final_page + current_page[:current_page.find('}}')+2]
+            current_page = current_page[current_page.find('}}')+2:]
 
         # noTags interdisant la modification de l'URL
-        ignoredLink = False
-        for b in range(1, ligneB):
-            if PageDebut.rfind(noTag[b][1]) != -1 and PageDebut.rfind(noTag[b][1]) > PageDebut.rfind(noTag[b][2]):
-                ignoredLink = True
-                if debugLevel > 0: print u'URL non traitée, car dans ' + noTag[b][1]
+        ignored_link = False
+        for b in range(1, tag_line):
+            if PageDebut.rfind(tags_without_url[b][1]) != -1 and PageDebut.rfind(tags_without_url[b][1]) > \
+                    PageDebut.rfind(tags_without_url[b][2]):
+                ignored_link = True
+                if debug_level > 0:
+                    print('URL non traitée, car dans ') + tags_without_url[b][1]
                 break
-            if finalPage.rfind(noTag[b][1]) != -1 and finalPage.rfind(noTag[b][1]) > finalPage.rfind(noTag[b][2]):
-                ignoredLink = True
-                if debugLevel > 0: print u'URL non traitée, car dans ' + noTag[b][1]
+            if final_page.rfind(tags_without_url[b][1]) != -1 and final_page.rfind(tags_without_url[b][1]) > \
+                    final_page.rfind(tags_without_url[b][2]):
+                ignored_link = True
+                if debug_level > 0:
+                    print('URL non traitée, car dans ') + tags_without_url[b][1]
                 break
-        for noTemplate in noTemplates:
-            if PageDebut.rfind(u'{{' + noTemplate + u'|') != -1 and PageDebut.rfind(u'{{' + noTemplate + u'|') > PageDebut.rfind(u'}}'):
-                ignoredLink = True
-                if debugLevel > 0: print u'URL non traitée, car dans ' + noTemplate
+        for noTemplate in broken_link_templates:
+            if PageDebut.rfind('{{' + noTemplate + '|') != -1 and PageDebut.rfind('{{' + noTemplate + '|') > \
+                    PageDebut.rfind('}}'):
+                ignored_link = True
+                if debug_level > 0:
+                    print('URL non traitée, car dans ') + noTemplate
                 break
-            if PageDebut.rfind(u'{{' + noTemplate[:1].upper() + noTemplate[1:] + u'|') != -1 and \
-                PageDebut.rfind(u'{{' + noTemplate[:1].upper() + noTemplate[1:] + u'|') > PageDebut.rfind(u'}}'):
-                ignoredLink = True
-                if debugLevel > 0: print u'URL non traitée, car dans ' + noTemplate
+            if PageDebut.rfind('{{' + noTemplate[:1].upper() + noTemplate[1:] + '|') != -1 and \
+                PageDebut.rfind('{{' + noTemplate[:1].upper() + noTemplate[1:] + '|') > PageDebut.rfind('}}'):
+                ignored_link = True
+                if debug_level > 0: print('URL non traitée, car dans ') + noTemplate
                 break
-            if finalPage.rfind(u'{{' + noTemplate + u'|') != -1 and finalPage.rfind(u'{{' + noTemplate + u'|') > finalPage.rfind(u'}}'):
-                ignoredLink = True
-                if debugLevel > 0: print u'URL non traitée, car dans ' + noTemplate
+            if final_page.rfind('{{' + noTemplate + '|') != -1 and final_page.rfind('{{' + noTemplate + '|') > \
+                    final_page.rfind('}}'):
+                ignored_link = True
+                if debug_level > 0:
+                    print('URL non traitée, car dans ') + noTemplate
                 break
-            if finalPage.rfind(u'{{' + noTemplate[:1].upper() + noTemplate[1:] + u'|') != -1 and \
-                finalPage.rfind(u'{{' + noTemplate[:1].upper() + noTemplate[1:] + u'|') > finalPage.rfind(u'}}'):
-                ignoredLink = True
-                if debugLevel > 0: print u'URL non traitée, car dans ' + noTemplate
+            if final_page.rfind('{{' + noTemplate[:1].upper() + noTemplate[1:] + '|') != -1 and \
+                final_page.rfind('{{' + noTemplate[:1].upper() + noTemplate[1:] + '|') > final_page.rfind('}}'):
+                ignored_link = True
+                if debug_level > 0:
+                    print('URL non traitée, car dans ') + noTemplate
                 break
 
-        if ignoredLink == False:
+        if not ignored_link:
             # titre=
-            if PageDebut.rfind(u'titre=') != -1 and PageDebut.rfind(u'titre=') > PageDebut.rfind(u'{{') and PageDebut.rfind(u'titre=') > PageDebut.rfind(u'}}'):
-                currentPage3 = PageDebut[PageDebut.rfind(u'titre=')+len(u'titre='):]
-                if currentPage3.find(u'|') != -1 and (currentPage3.find(u'|') < currentPage3.find(u'}}') or currentPage3.rfind(u'}}') == -1):
-                    titre = currentPage3[:currentPage3.find(u'|')]
+            if PageDebut.rfind('titre=') != -1 and PageDebut.rfind('titre=') > PageDebut.rfind('{{') \
+                    and PageDebut.rfind('titre=') > PageDebut.rfind('}}'):
+                current_page3 = PageDebut[PageDebut.rfind('titre=')+len('titre='):]
+                if current_page3.find('|') != -1 and (current_page3.find('|') < current_page3.find('}}')
+                                                      or current_page3.rfind('}}') == -1):
+                    titre = current_page3[:current_page3.find('|')]
                 else:
-                    titre = currentPage3
-                if debugLevel > 0: print u'Titre= avant URL : ' + titre
-            elif PageDebut.rfind(u'titre =') != -1 and PageDebut.rfind(u'titre =') > PageDebut.rfind(u'{{') and PageDebut.rfind(u'titre =') > PageDebut.rfind(u'}}'):
-                currentPage3 = PageDebut[PageDebut.rfind(u'titre =')+len(u'titre ='):]
-                if currentPage3.find(u'|') != -1 and (currentPage3.find(u'|') < currentPage3.find(u'}}') or currentPage3.rfind(u'}}') == -1):
-                    titre = currentPage3[:currentPage3.find(u'|')]
+                    titre = current_page3
+                if debug_level > 0: print('Titre= avant URL : ') + titre
+            elif PageDebut.rfind('titre =') != -1 and PageDebut.rfind('titre =') > PageDebut.rfind('{{') \
+                    and PageDebut.rfind('titre =') > PageDebut.rfind('}}'):
+                current_page3 = PageDebut[PageDebut.rfind('titre =')+len('titre ='):]
+                if current_page3.find('|') != -1 and (current_page3.find('|') < current_page3.find('}}')
+                                                      or current_page3.rfind('}}') == -1):
+                    titre = current_page3[:current_page3.find('|')]
                 else:
-                    titre = currentPage3
-                if debugLevel > 0: print u'Titre = avant URL : ' + titre
+                    titre = current_page3
+                if debug_level > 0:
+                    print('Titre = avant URL : ') + titre
         
             # url=
-            if PageDebut[-1:] == u'[':
-                if debugLevel > 0: print u'URL entre crochets sans protocole'
-                DebutURL = 1
-            elif PageDebut[-5:] == u'http:':
-                if debugLevel > 0: print u'URL http'
-                DebutURL = 5
-            elif PageDebut[-6:] == u'https:':
-                if debugLevel > 0: print u'URL https'
-                DebutURL = 6
-            elif PageDebut[-2:] == u'{{':
-                if debugLevel > 0: print u"URL d'un modèle"
+            if PageDebut[-1:] == '[':
+                if debug_level > 0:
+                    print('URL entre crochets sans protocole')
+                url_start = 1
+            elif PageDebut[-5:] == 'http:':
+                if debug_level > 0:
+                    print('URL http')
+                url_start = 5
+            elif PageDebut[-6:] == 'https:':
+                if debug_level > 0:
+                    print('URL https')
+                url_start = 6
+            elif PageDebut[-2:] == '{{':
+                if debug_level > 0:
+                    print("URL d'un modèle")
                 break
             else:
-                if debugLevel > 0: print u'URL sans http ni crochet'
-                DebutURL = 0
-            if DebutURL != 0:
+                if debug_level > 0:
+                    print('URL sans http ni crochet')
+                url_start = 0
+            if url_start != 0:
                 # Après l'URL
-                FinPageURL = currentPage[currentPage.find(u'//'):]
+                url_page_end = current_page[current_page.find('//'):]
                 # url=    
-                CharFinURL = u' '
-                for l in range(1, UrlLimit):
-                    if FinPageURL.find(CharFinURL) == -1 or (FinPageURL.find(UrlEnd[l]) != -1 and FinPageURL.find(UrlEnd[l]) < FinPageURL.find(CharFinURL)):
-                        CharFinURL = UrlEnd[l]
-                if debugLevel > 0: print u'*Caractère de fin URL : ' + CharFinURL
+                url_end_char = ' '
+                for l in range(1, url_limit):
+                    if url_page_end.find(url_end_char) == -1 or (url_page_end.find(url_ends[l]) != -1
+                         and url_page_end.find(url_ends[l]) < url_page_end.find(url_end_char)):
+                        url_end_char = url_ends[l]
+                if debug_level > 0: print('*Caractère de fin URL : ') + url_end_char
                 
-                if DebutURL == 1:
-                    url = u'http:' + currentPage[currentPage.find(u'//'):currentPage.find(u'//')+FinPageURL.find(CharFinURL)]
-                    if titre == u'':
-                        titre = currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL):]
-                        titre = trim(titre[:titre.find(u']')])
+                if url_start == 1:
+                    url = 'http:' + current_page[current_page.find('//'):current_page.find('//')+url_page_end.find(url_end_char)]
+                    if titre == '':
+                        titre = current_page[current_page.find('//')+url_page_end.find(url_end_char):]
+                        titre = trim(titre[:titre.find(']')])
                 else:
-                    url = currentPage[currentPage.find(u'//')-DebutURL:currentPage.find(u'//')+FinPageURL.find(CharFinURL)]
+                    url = current_page[current_page.find('//')-url_start:current_page.find('//')+url_page_end.find(url_end_char)]
                 if len(url) <= 10:
-                    url = u''
-                    htmlSource = u''
-                    isBrokenLink = False
+                    url = ''
+                    html_source = ''
+                    is_broken_link = False
                 else:
-                    for u in range(1,UrlLimit2):
-                        while url[len(url)-1:] == UrlEnd2[u]:
+                    for u in range(1, url_limit2):
+                        while url[len(url)-1:] == url_ends2[u]:
                             url = url[:len(url)-1]
-                            if debugLevel > 0: print u'Réduction de l\'URL de ' + UrlEnd2[u]
+                            if debug_level > 0:
+                                print('Réduction de l\'URL de ' + url_ends2[u])
                     
-                    Media = False
-                    for f in range(1,limiteF):
-                        if url[len(url)-len(Format[f])-1:].lower() == u'.' + Format[f].lower():
-                            if debugLevel > 0:
-                                print url.encode(config.console_encoding, 'replace')
-                                print u'Média détecté (memory error potentielle)'
-                            Media = True
-                    if Media == False:
-                        if debugLevel > 0: print(u'Recherche de la page distante : ' + url)
-                        htmlSource = testURL(url, debugLevel)
-                        if debugLevel > 0: print(u'Recherche dans son contenu')
-                        isBrokenLink = testURLPage(htmlSource, url)
+                    is_large_media = False
+                    for f in range(1, large_media_limit):
+                        if url[len(url) - len(large_media[f]) - 1:].lower() == '.' + large_media[f].lower():
+                            if debug_level > 0:
+                                print(url)
+                                print('Média détecté (memory error potentielle)')
+                            is_large_media = True
+                    if not is_large_media:
+                        if debug_level > 0:
+                            print('Recherche de la page distante : ' + url)
+                        html_source = testURL(url, debug_level)
+                        if debug_level > 0:
+                            print('Recherche dans son contenu')
+                        is_broken_link = testURLPage(html_source, url)
                 
-                # Site réputé HS, mais invisible car ses sous-pages ont toutes été déplacées, et renvoient vers l'accueil
-                for u in range(1,limiteU):
-                    if url.find(URLDeplace[u]) != -1 and len(url) > len(URLDeplace[u]) + 8:    #http://.../
-                        isBrokenLink = True
+                # Site réputé HS mais invisible car ses sous-pages ont toutes été déplacées, et renvoient vers l'accueil
+                for u in range(1, url_to_replace_limit):
+                    if url.find(url_to_replace[u]) != -1 and len(url) > len(url_to_replace[u]) + 8:  # http://.../
+                        is_broken_link = True
                 
                 # Confirmation manuelle
-                if semiauto == True:
+                if is_semi_auto:
                     webbrowser.open_new_tab(url)
-                    if isBrokenLink:
-                        result = raw_input("Lien brisé ? (o/n) ")
+                    if is_broken_link:
+                        result = input("Lien brisé ? (o/n) ")
                     else:
-                        result = raw_input("Lien fonctionnel ? (o/n) ")
+                        result = input("Lien fonctionnel ? (o/n) ")
                     if result != "n" and result != "no" and result != "non":
-                        isBrokenLink = True
+                        is_broken_link = True
                     else:
-                        isBrokenLink = False
+                        is_broken_link = False
                         
-                if debugLevel > 0:
+                if debug_level > 0:
                     # Compte-rendu des URL détectées
                     try:
-                        print u'*URL : ' + url.encode(config.console_encoding, 'replace')
-                        print u'*Titre : ' + titre.encode(config.console_encoding, 'replace')
-                        print u'*HS : ' + str(isBrokenLink)
+                        print('*URL : ') + url
+                        print('*Titre : ') + titre
+                        print('*HS : ') + str(is_broken_link)
                     except UnicodeDecodeError:
-                        print u'*HS : ' + str(isBrokenLink)
-                        print "UnicodeDecodeError l 466"
-                if debugLevel > 1: raw_input (htmlSource[:7000])
+                        print('*HS : ') + str(is_broken_link)
+                        print("UnicodeDecodeError l 466")
+                if debug_level > 1: input(html_source[:7000])
                 
                 # Modification du wiki en conséquence    
-                DebutPage = currentPage[0:currentPage.find(u'//')+2]
-                DebutURL = max(DebutPage.find(u'http://'),DebutPage.find(u'https://'),DebutPage.find(u'[//'))
+                page_start = current_page[:current_page.find('//')+2]
+                url_start = max(page_start.find('http://'), page_start.find('https://'), page_start.find('[//'))
                 
                 # Saut des modèles inclus dans un modèle de lien
-                while DebutPage.rfind(u'{{') != -1 and DebutPage.rfind(u'{{') < DebutPage.rfind(u'}}'):
+                while page_start.rfind('{{') != -1 and page_start.rfind('{{') < page_start.rfind('}}'):
                     # pb des multiples crochets fermants sautés : {{ ({{ }} }})
-                    currentPage2 = DebutPage[DebutPage.rfind(u'{{'):]
-                    if currentPage2.rfind(u'}}') == currentPage2.rfind(u'{{'):
-                        DebutPage = DebutPage[:DebutPage.rfind(u'{{')]
+                    current_page2 = page_start[page_start.rfind('{{'):]
+                    if current_page2.rfind('}}') == current_page2.rfind('{{'):
+                        page_start = page_start[:page_start.rfind('{{')]
                     else:
-                        DebutPage = u''
+                        page_start = ''
                         break
-                    if debugLevel > 1: raw_input(DebutPage[-100:].encode(config.console_encoding, 'replace'))
+                    if debug_level > 1:
+                        input(page_start[-100:])
                     
                 
                 # Détection si l'hyperlien est dans un modèle (si aucun modèle n'est fermé avant eux)
-                if (DebutPage.rfind(u'{{') != -1 and DebutPage.rfind(u'{{') > DebutPage.rfind(u'}}')) or \
-                    (DebutPage.rfind(u'url=') != -1 and DebutPage.rfind(u'url=') > DebutPage.rfind(u'}}')) or \
-                    (DebutPage.rfind(u'url =') != -1 and DebutPage.rfind(u'url =') > DebutPage.rfind(u'}}')):
-                    DebutModele = DebutPage.rfind(u'{{')
-                    DebutPage = DebutPage[DebutPage.rfind(u'{{'):len(DebutPage)]
-                    AncienModele = u''
+                if (page_start.rfind('{{') != -1 and page_start.rfind('{{') > page_start.rfind('}}')) or \
+                    (page_start.rfind('url=') != -1 and page_start.rfind('url=') > page_start.rfind('}}')) or \
+                    (page_start.rfind('url =') != -1 and page_start.rfind('url =') > page_start.rfind('}}')):
+                    template_start = page_start.rfind('{{')
+                    page_start = page_start[page_start.rfind('{{'):len(page_start)]
+                    replaced_template = ''
                     # Lien dans un modèle connu (consensus en cours pour les autres, atention aux infobox)
-                    '''for m in range(1,limiteM):
-                        regex = u'{{ *[' + newTemplate[m][0:1] + ur'|' + newTemplate[m][0:1].upper() + ur']' + newTemplate[m][1:len(newTemplate[m])] + ur' *[\||\n]'
+                    '''for m in range(1,templates_limit):
+                        regex = '{{ *[' + new_template[m][0:1] + r'|' + new_template[m][0:1].upper() + r']' + new_template[m][1:len(new_template[m])] + r' *[\||\n]'
                     ''' 
-                    if re.search(u'{{ *[L|l]ien web *[\||\n]', DebutPage):
-                        AncienModele = u'lien web'
-                        if debugLevel > 0: print u'Détection de ' + AncienModele
-                    elif re.search('{{ *[L|l]ire en ligne *[\||\n]', DebutPage):
-                        AncienModele = u'lire en ligne'
-                        if debugLevel > 0: print u'Détection de ' + AncienModele
-                    elif retablirNonBrise == True and re.search(u'{{ *[L|l]ien brisé *[\||\n]', DebutPage):
-                        AncienModele = u'lien brisé'
-                        if debugLevel > 0: print u'Détection de ' + AncienModele
+                    if re.search('{{ *[L|l]ien web *[\||\n]', page_start):
+                        replaced_template = 'lien web'
+                        if debug_level > 0:
+                            print('Détection de ') + replaced_template
+                    elif re.search('{{ *[L|l]ire en ligne *[\||\n]', page_start):
+                        replaced_template = 'lire en ligne'
+                        if debug_level > 0:
+                            print('Détection de ') + replaced_template
+                    elif do_retest_broken_links == True and re.search('{{ *[L|l]ien brisé *[\||\n]', page_start):
+                        replaced_template = 'lien brisé'
+                        if debug_level > 0:
+                            print('Détection de ') + replaced_template
                         
-                    #if DebutPage[0:2] == u'{{': AncienModele = trim(DebutPage[2:DebutPage.find(u'|')])
+                    # if page_start[0:2] == '{{': replaced_template = trim(page_start[2:page_start.find('|')])
                     
-                    templateEndPosition = currentPage.find(u'//')+2
-                    FinPageModele = currentPage[templateEndPosition:len(currentPage)]
+                    template_end_position = current_page.find('//')+2
+                    template_page_end = current_page[template_end_position:]
                     # Calcul des modèles inclus dans le modèle de lien
-                    while FinPageModele.find(u'}}') != -1 and FinPageModele.find(u'}}') > FinPageModele.find(u'{{') and FinPageModele.find(u'{{') != -1:
-                        templateEndPosition = templateEndPosition + FinPageModele.find(u'}}')+2
-                        FinPageModele = FinPageModele[FinPageModele.find(u'}}')+2:len(FinPageModele)]
-                    templateEndPosition = templateEndPosition + FinPageModele.find(u'}}')+2
-                    currentTemplate = currentPage[DebutModele:templateEndPosition]
-                    #if debugLevel > 0: print "*Modele : " + currentTemplate[:100].encode(config.console_encoding, 'replace')
+                    while template_page_end.find('}}') != -1 and template_page_end.find('}}') > \
+                            template_page_end.find('{{') and template_page_end.find('{{') != -1:
+                        template_end_position = template_end_position + template_page_end.find('}}')+2
+                        template_page_end = template_page_end[template_page_end.find('}}')+2:len(template_page_end)]
+                    template_end_position = template_end_position + template_page_end.find('}}')+2
+                    currentTemplate = current_page[template_start:template_end_position]
+                    # if debug_level > 0: print(")*Modele : " + current_template[:100]
                     
-                    if AncienModele != u'':
-                        if debugLevel > 0: print u'Ancien modèle à traiter : ' + AncienModele
-                        if isBrokenLink:
+                    if replaced_template != '':
+                        if debug_level > 0:
+                            print('Ancien modèle à traiter : ') + replaced_template
+                        if is_broken_link:
                             try:
-                                currentPage = currentPage[:DebutModele] + u'{{lien brisé' + currentPage[re.search(u'{{ *[' + AncienModele[:1] + u'|' + AncienModele[:1].upper() + u']' + AncienModele[1:] + u' *[\||\n]', currentPage).end()-1:]
+                                current_page = current_page[:template_start] + '{{lien brisé' \
+                                    + current_page[re.search('{{ *[' + replaced_template[:1] + '|'
+                                    + replaced_template[:1].upper() + ']'
+                                    + replaced_template[1:] + ' *[\||\n]', current_page).end()-1:]
                             except AttributeError:
-                                raise "Regex introuvable ligne 811"
+                                raise Exception("Regex introuvable ligne 811")
                                 
-                        elif AncienModele == u'lien brisé':
-                            if debugLevel > 0: print u'Rétablissement d\'un ancien lien brisé'
-                            currentPage = currentPage[:currentPage.find(AncienModele)] + u'lien web' + currentPage[currentPage.find(AncienModele)+len(AncienModele):]
-                        '''
-                        # titre=
-                        if re.search(u'\| *titre *=', FinPageURL):
-                            if debugLevel > 0: print u'Titre après URL'
-                            if titre == u'' and re.search(u'\| *titre *=', FinPageURL).end() != -1 and re.search(u'\| *titre *=', FinPageURL).end() < FinPageURL.find(u'\n') and re.search(u'\| *titre *=', FinPageURL).end() < FinPageURL.find(u'}}'):
-                                currentPage3 = FinPageURL[re.search(u'\| *titre *=', FinPageURL).end():]
-                                # Modèles inclus dans les titres
-                                while currentPage3.find(u'{{') != -1 and currentPage3.find(u'{{') < currentPage3.find(u'}}') and currentPage3.find(u'{{') < currentPage3.find(u'|'):
-                                    titre = titre + currentPage3[:currentPage3.find(u'}}')+2]
-                                    currentPage3 = currentPage3[currentPage3.find(u'}}')+2:]
-                                if currentPage3.find(u'|') != -1 and (currentPage3.find(u'|') < currentPage3.find(u'}}') or currentPage3.find(u'}}') == -1):
-                                    titre = titre + currentPage3[0:currentPage3.find(u'|')]
-                                else:
-                                    titre = titre + currentPage3[0:currentPage3.find(u'}}')]
-                        elif FinPageURL.find(u']') != -1 and (currentPage.find(u'//') == currentPage.find(u'[//')+1 or currentPage.find(u'//') == currentPage.find(u'[http://')+6 or currentPage.find(u'//') == currentPage.find(u'[https://')+7):
-                            titre = FinPageURL[FinPageURL.find(CharFinURL)+len(CharFinURL):FinPageURL.find(u']')]
-                        if debugLevel > 1: raw_input(FinPageURL.encode(config.console_encoding, 'replace'))    
-                        
-                        # En cas de modèles inclus le titre a pu ne pas être détecté précédemment
-                        if titre == u'' and re.search(u'\| *titre *=', currentTemplate):
-                            currentPage3 = currentTemplate[re.search(u'\| *titre *=', currentTemplate).end():]
-                            # Modèles inclus dans les titres
-                            while currentPage3.find(u'{{') != -1 and currentPage3.find(u'{{') < currentPage3.find(u'}}') and currentPage3.find(u'{{') < currentPage3.find(u'|'):
-                                titre = titre + currentPage3[:currentPage3.find(u'}}')+2]
-                                currentPage3 = currentPage3[currentPage3.find(u'}}')+2:]
-                            titre = titre + currentPage3[:re.search(u'[^\|}\n]*', currentPage3).end()]
-                            if debugLevel > 0:
-                                print u'*Titre2 : '
-                                print titre.encode(config.console_encoding, 'replace')
-                            
-                        if isBrokenLink == True and AncienModele != u'lien brisé' and AncienModele != u'Lien brisé':
-                            summary = summary + u', remplacement de ' + AncienModele + u' par {{lien brisé}}'
-                            if debugLevel > 0: print u', remplacement de ' + AncienModele + u' par {{lien brisé}}'
-                            if titre == u'':
-                                currentPage = currentPage[0:DebutModele] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + currentPage[templateEndPosition:len(currentPage)]
-                            else:
-                                currentPage = currentPage[0:DebutModele] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + currentPage[templateEndPosition:len(currentPage)]
-                        elif isBrokenLink == False and (AncienModele == u'lien brisé' or AncienModele == u'Lien brisé'):
-                            summary = summary + u', Retrait de {{lien brisé}}'
-                            currentPage = currentPage[0:DebutModele] + u'{{lien web' + currentPage[DebutModele+len(u'lien brisé')+2:len(currentPage)]
-                        '''
-                            
-                        '''elif isBrokenLink:
-                        summary = summary + u', ajout de {{lien brisé}}'
-                        if DebutURL == 1:
-                            if debugLevel > 0: print u'Ajout de lien brisé entre crochets 1'
-                            # Lien entre crochets
-                            currentPage = currentPage[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(u']')+1:len(currentPage)]
-                        else:
-                            if debugLevel > 0: print u'Ajout de lien brisé 1'
-                            if currentPage[DebutURL-1:DebutURL] == u'[' and currentPage[DebutURL-2:DebutURL] != u'[[': DebutURL = DebutURL -1
-                            if CharFinURL == u' ' and FinPageURL.find(u']') != -1 and (FinPageURL.find(u'[') == -1 or FinPageURL.find(u']') < FinPageURL.find(u'[')): 
-                                # Présence d'un titre
-                                currentPage = currentPage[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL)+1:currentPage.find(u'//')+FinPageURL.find(u']')]  + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(u']')+1:len(currentPage)]
-                            elif CharFinURL == u']':
-                                currentPage = currentPage[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL):len(currentPage)]
-                            else:
-                                currentPage = currentPage[0:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL):len(currentPage)]
-                        '''
+                        elif replaced_template == 'lien brisé':
+                            if debug_level > 0:
+                                print('Rétablissement d\'un ancien lien brisé')
+                            current_page = current_page[:current_page.find(replaced_template)] + 'lien web' \
+                                           + current_page[current_page.find(replaced_template)+len(replaced_template):]
                     else:
-                        if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " dans modèle non géré"
-                    
+                        if debug_level > 0:
+                            print(url + " dans modèle non géré")
+
                 else:
-                    if debugLevel > 0: print u'URL hors modèle'
-                    if isBrokenLink:
-                        summary = summary + u', ajout de {{lien brisé}}'
-                        if DebutURL == 1:
-                            if debugLevel > 0: print u'Ajout de lien brisé entre crochets sans protocole'
-                            if titre != u'':
-                                currentPage = currentPage[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL):]
+                    if debug_level > 0:
+                        print('URL hors modèle')
+                    if is_broken_link:
+                        summary = summary + ', ajout de {{lien brisé}}'
+                        if url_start == 1:
+                            if debug_level > 0:
+                                print('Ajout de lien brisé entre crochets sans protocole')
+                            if titre != '':
+                                current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
+                                               + time.strftime('%Y-%m-%d') + '|url=' + url + '|titre=' + titre + '}}' \
+                                               + current_page[current_page.find('//')+url_page_end.find(url_end_char):]
                             else:
-                                currentPage = currentPage[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL):]
-                            #if debugLevel > 0: raw_input(currentPage.encode(config.console_encoding, 'replace'))
+                                current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
+                                               + time.strftime('%Y-%m-%d') + '|url=' + url + '}}' \
+                                               + current_page[current_page.find('//')+url_page_end.find(url_end_char):]
+                            # if debug_level > 0: input(current_page)
                         else:
-                            if debugLevel > 0: print u'Ajout de lien brisé 2'
-                            if currentPage[DebutURL-1:DebutURL] == u'[' and currentPage[DebutURL-2:DebutURL] != u'[[':
-                                if debugLevel > 0: print u'entre crochet'
-                                DebutURL = DebutURL -1
-                                if titre == u'' :
-                                    if debugLevel > 0: "Titre vide"
+                            if debug_level > 0:
+                                print('Ajout de lien brisé 2')
+                            if current_page[url_start-1:url_start] == '[' and current_page[url_start-2:url_start] != '[[':
+                                if debug_level > 0:
+                                    print('entre crochet')
+                                url_start = url_start -1
+                                if titre == '' :
+                                    if debug_level > 0:
+                                        print("Titre vide")
                                     # Prise en compte des crochets inclus dans un titre
-                                    currentPage2 = currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL):]
-                                    #if debugLevel > 0: raw_input(currentPage2.encode(config.console_encoding, 'replace'))
-                                    if currentPage2.find(u']]') != -1 and currentPage2.find(u']]') < currentPage2.find(u']'):
-                                        while currentPage2.find(u']]') != -1 and currentPage2.find(u'[[') != -1 and currentPage2.find(u'[[') < currentPage2.find(u']]'):
-                                            titre = titre + currentPage2[:currentPage2.find(u']]')+1]
-                                            currentPage2 = currentPage2[currentPage2.find(u']]')+1:]
-                                        titre = trim(titre + currentPage2[:currentPage2.find(u']]')])
-                                        currentPage2 = currentPage2[currentPage2.find(u']]'):]
-                                    while currentPage2.find(u']') != -1 and currentPage2.find(u'[') != -1 and currentPage2.find(u'[') < currentPage2.find(u']'):
-                                        titre = titre + currentPage2[:currentPage2.find(u']')+1]
-                                        currentPage2 = currentPage2[currentPage2.find(u']')+1:]
-                                    titre = trim(titre + currentPage2[:currentPage2.find(u']')])
-                                    currentPage2 = currentPage2[currentPage2.find(u']'):]
-                                if titre != u'':
-                                    if debugLevel > 0: "Ajout avec titre"
-                                    currentPage = currentPage[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + titre + u'}}' + currentPage[len(currentPage)-len(currentPage2)+1:len(currentPage)]
+                                    current_page2 = current_page[current_page.find('//')+url_page_end.find(url_end_char):]
+                                    # if debug_level > 0: input(current_page2)
+                                    if current_page2.find(']]') != -1 and current_page2.find(']]') < current_page2.find(']'):
+                                        while current_page2.find(']]') != -1 and current_page2.find('[[') != -1 \
+                                                and current_page2.find('[[') < current_page2.find(']]'):
+                                            titre = titre + current_page2[:current_page2.find(']]')+1]
+                                            current_page2 = current_page2[current_page2.find(']]')+1:]
+                                        titre = trim(titre + current_page2[:current_page2.find(']]')])
+                                        current_page2 = current_page2[current_page2.find(']]'):]
+                                    while current_page2.find(']') != -1 and current_page2.find('[') != -1 \
+                                            and current_page2.find('[') < current_page2.find(']'):
+                                        titre = titre + current_page2[:current_page2.find(']')+1]
+                                        current_page2 = current_page2[current_page2.find(']')+1:]
+                                    titre = trim(titre + current_page2[:current_page2.find(']')])
+                                    current_page2 = current_page2[current_page2.find(']'):]
+                                if titre != '':
+                                    if debug_level > 0: "Ajout avec titre"
+                                    current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
+                                                   + time.strftime('%Y-%m-%d') + '|url=' + url + '|titre=' + titre \
+                                                   + '}}' + current_page[len(current_page)-len(current_page2)+1:]
                                 else:
-                                    if debugLevel > 0: "Ajout sans titre"
-                                    currentPage = currentPage[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(u']')+1:len(currentPage)]
+                                    if debug_level > 0: "Ajout sans titre"
+                                    current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
+                                                   + time.strftime('%Y-%m-%d') + '|url=' + url + '}}' \
+                                                   + current_page[current_page.find('//')+url_page_end.find(']')+1:]
                             else:    
-                                if titre != u'': 
+                                if titre != '': 
                                     # Présence d'un titre
-                                    if debugLevel > 0: print u'URL nue avec titre'
-                                    currentPage = currentPage[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'|titre=' + currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL)+1:currentPage.find(u'//')+FinPageURL.find(u']')]  + u'}}' + currentPage[currentPage.find(u'//')+FinPageURL.find(u']')+1:len(currentPage)]
+                                    if debug_level > 0:
+                                        print('URL nue avec titre')
+                                    current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
+                                       + time.strftime('%Y-%m-%d') + '|url=' + url + '|titre=' \
+                                       + current_page[current_page.find('//')+url_page_end.find(url_end_char)+1:
+                                                      current_page.find('//')+url_page_end.find(']')] + '}}' \
+                                       + current_page[current_page.find('//')+url_page_end.find(']')+1:]
                                 else:
-                                    if debugLevel > 0: print u'URL nue sans titre'
-                                    currentPage = currentPage[:DebutURL] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + url + u'}} ' + currentPage[currentPage.find(u'//')+FinPageURL.find(CharFinURL):len(currentPage)]
+                                    if debug_level > 0:
+                                        print('URL nue sans titre')
+                                    current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
+                                       + time.strftime('%Y-%m-%d') + '|url=' + url + '}} ' \
+                                       + current_page[current_page.find('//')+url_page_end.find(url_end_char):]
                         
                     else:
-                        if debugLevel > 0: print u'Aucun changement sur l\'URL http'
+                        if debug_level > 0:
+                            print('Aucun changement sur l\'URL http')
             else:
-                if debugLevel > 0: print u'Aucun changement sur l\'URL non http'    
+                if debug_level > 0:
+                    print('Aucun changement sur l\'URL non http')
         else:
-            if debugLevel > 1: print u'URL entre balises sautée'
+            if debug_level > 1:
+                print('URL entre balises sautée')
 
         # Lien suivant, en sautant les URL incluses dans l'actuelle, et celles avec d'autres protocoles que http(s)
-        if templateEndPosition == 0 and isBrokenLink == False:
-            FinPageURL = currentPage[currentPage.find(u'//')+2:len(currentPage)]
-            CharFinURL = u' '
-            for l in range(1,UrlLimit):
-                if FinPageURL.find(UrlEnd[l]) != -1 and FinPageURL.find(UrlEnd[l]) < FinPageURL.find(CharFinURL):
-                    CharFinURL = UrlEnd[l]
-            if debugLevel > 0: print u'Saut après "' + CharFinURL + u'"'
-            finalPage = finalPage + currentPage[:currentPage.find(u'//')+2+FinPageURL.find(CharFinURL)]
-            currentPage = currentPage[currentPage.find(u'//')+2+FinPageURL.find(CharFinURL):]
+        if template_end_position == 0 and not is_broken_link:
+            url_page_end = current_page[current_page.find('//')+2:]
+            url_end_char = ' '
+            for l in range(1, url_limit):
+                if url_page_end.find(url_ends[l]) != -1 and url_page_end.find(url_ends[l]) \
+                        < url_page_end.find(url_end_char):
+                    url_end_char = url_ends[l]
+            if debug_level > 0:
+                print('Saut après "') + url_end_char + '"'
+            final_page = final_page + current_page[:current_page.find('//')+2+url_page_end.find(url_end_char)]
+            current_page = current_page[current_page.find('//')+2+url_page_end.find(url_end_char):]
         else:
             # Saut du reste du modèle courant (contenant parfois d'autres URL à laisser)
-            if debugLevel > 0: print u'Saut après "}}"'
-            finalPage = finalPage + currentPage[:templateEndPosition]
-            currentPage = currentPage[templateEndPosition:]
-        if debugLevel > 1: raw_input(finalPage.encode(config.console_encoding, 'replace'))
+            if debug_level > 0:
+                print('Saut après "}}"')
+            final_page = final_page + current_page[:template_end_position]
+            current_page = current_page[template_end_position:]
+        if debug_level > 1:
+            input(final_page)
 
-    if finalPage.find(u'|langue=None') != -1:
-        if isBrokenLink == False:
-            URLlanguage = getURLsiteLanguage(htmlSource)
+    if final_page.find('|langue=None') != -1:
+        if not is_broken_link:
+            URLlanguage = get_url_site_language(html_source)
             if URLlanguage != 'None':
                 try:
-                    finalPage = finalPage.replace(u'|langue=None', u'|langue=' + URLlanguage)
+                    final_page = final_page.replace('|langue=None', '|langue=' + URLlanguage)
                 except UnicodeDecodeError:
-                    if debugLevel > 0: print u'UnicodeEncodeError l 1038'
+                    if debug_level > 0:
+                        print('UnicodeEncodeError l 1038')
 
-    currentPage = finalPage + currentPage
-    finalPage = u''    
-    if debugLevel > 0: print ("Fin des tests URL")
+    current_page = final_page + current_page
+    final_page = ''    
+    if debug_level > 0:
+        print("Fin des tests URL")
 
-    # Recherche de chaque hyperlien de modèles ------------------------------------------------------------------------------------------------------------------------------------
-    if currentPage.find(u'{{langue') != -1: # du Wiktionnaire
-        if debugLevel > 0: print("Modèles Wiktionnaire")
-        for m in range(1,ligne):
-            finalPage = u''
-            while currentPage.find(u'{{' + TabModeles[m][1] + u'|') != -1:
-                finalPage =  finalPage + currentPage[:currentPage.find(u'{{' + TabModeles[m][1] + u'|')+len(u'{{' + TabModeles[m][1] + u'|')]
-                currentPage =  currentPage[currentPage.find(u'{{' + TabModeles[m][1] + u'|')+len(u'{{' + TabModeles[m][1] + u'|'):len(currentPage)]
-                if currentPage[0:currentPage.find(u'}}')].find(u'|') != -1:
-                    Param1Encode = currentPage[:currentPage.find(u'|')].replace(u' ',u'_')
+    # Recherche de chaque hyperlien de modèles -----------------------------------------------------------------------
+    if current_page.find('{{langue') != -1:  # du Wiktionnaire
+        if debug_level > 0:
+            print("Modèles Wiktionnaire")
+        for m in range(1, templates_with_url_line):
+            final_page = ''
+            while current_page.find('{{' + templates_with_url[m][1] + '|') != -1:
+                final_page = final_page + current_page[:current_page.find('{{' + templates_with_url[m][1] + '|') + len('{{' + templates_with_url[m][1] + '|')]
+                current_page = current_page[current_page.find('{{' + templates_with_url[m][1] + '|') + len('{{' + templates_with_url[m][1] + '|'):]
+                if current_page[0:current_page.find('}}')].find('|') != -1:
+                    Param1Encode = current_page[:current_page.find('|')].replace(' ',u'_')
                 else:
-                    Param1Encode = currentPage[:currentPage.find(u'}}')].replace(u' ',u'_')
-                htmlSource = testURL(TabModeles[m][2] + Param1Encode, debugLevel)
-                isBrokenLink = testURLPage(htmlSource, url)
-                if isBrokenLink: finalPage = finalPage[:finalPage.rfind(u'{{' + TabModeles[m][1] + u'|')] + u'{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + u'|url=' + TabModeles[m][2]
-            currentPage = finalPage + currentPage
-            finalPage = u''
-        currentPage = finalPage + currentPage
-        finalPage = u''
-    if debugLevel > 0: print (u'Fin des tests modèle')
+                    Param1Encode = current_page[:current_page.find('}}')].replace(' ',u'_')
+                html_source = testURL(templates_with_url[m][2] + Param1Encode, debug_level)
+                is_broken_link = testURLPage(html_source, url)
+                if is_broken_link: final_page = final_page[:final_page.rfind('{{' + templates_with_url[m][1] + '|')] + '{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + '|url=' + templates_with_url[m][2]
+            current_page = final_page + current_page
+            final_page = ''
+        current_page = final_page + current_page
+        final_page = ''
+    if debug_level > 0:
+        print('Fin des tests modèle')
 
     # Paramètres inutiles
-    currentPage = re.sub(ur'{{ *Références *\| *colonnes *= *}}', ur'{{Références}}', currentPage)
+    current_page = re.sub(r'{{ *Références *\| *colonnes *= *}}', r'{{Références}}', current_page)
     # Dans {{article}}, "éditeur" vide bloque "périodique", "journal" ou "revue"
-    currentPage = re.sub(ur'{{ *(a|A)rticle *((?:\||\n)[^}]*)\| *éditeur *= *([\||}|\n]+)', ur'{{\1rticle\2\3', currentPage)
+    current_page = re.sub(r'{{ *(a|A)rticle *((?:\||\n)[^}]*)\| *éditeur *= *([\||}|\n]+)', r'{{\1rticle\2\3', current_page)
     # https://fr.wikipedia.org/w/index.php?title=Discussion_utilisateur:JackPotte&oldid=prev&diff=165491794#Suggestion_pour_JackBot_:_Signalement_param%C3%A8tre_obligatoire_manquant_+_Lien_web_vs_Article
-    currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *(?:ref|référence|référence simplifiée) *= *harv *([\|}\n]+)', ur'{{\1uvrage\2\3', currentPage)
+    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *(?:ref|référence|référence simplifiée) *= *harv *([\|}\n]+)', r'{{\1uvrage\2\3', current_page)
     # https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Bot/Requ%C3%AAtes/2020/01#Remplacement_automatique_d%27un_message_d%27erreur_du_mod%C3%A8le_%7B%7BOuvrage%7D%7D
-    currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *display\-authors *= *etal *([\|}\n]+)', ur'{{\1uvrage\2|et al.=oui\3', currentPage)
-    currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *display\-authors *= *[0-9]* *([\|}\n]+)', ur'{{\1uvrage\2\3', currentPage)
-    currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *df *= *(?:mdy\-all|dmy\-all)* *([\|}\n]+)', ur'{{\1uvrage\2\3', currentPage)
+    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *display\-authors *= *etal *([\|}\n]+)', r'{{\1uvrage\2|et al.=oui\3', current_page)
+    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *display\-authors *= *[0-9]* *([\|}\n]+)', r'{{\1uvrage\2\3', current_page)
+    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *df *= *(?:mdy\-all|dmy\-all)* *([\|}\n]+)', r'{{\1uvrage\2\3', current_page)
     # Empty 1=
-    currentPage = re.sub(ur'{{ *(a|A)rticle *((?:\|)[^}]*)\|[ \t]*([\|}]+)', ur'{{\1rticle\2\3', currentPage)
-    currentPage = re.sub(ur'{{ *(l|L)ien web *((?:\|)[^}]*)\|[ \t]*([\|}]+)', ur'{{\1ien web\2\3', currentPage)
-    # 1= exists: currentPage = re.sub(ur'{{ *(o|O)uvrage *((?:\|)[^}]*)\|[ \t]*([\|}]+)', ur'{{\1uvrage\2\3', currentPage)
+    current_page = re.sub(r'{{ *(a|A)rticle *((?:\|)[^}]*)\|[ \t]*([\|}]+)', r'{{\1rticle\2\3', current_page)
+    current_page = re.sub(r'{{ *(l|L)ien web *((?:\|)[^}]*)\|[ \t]*([\|}]+)', r'{{\1ien web\2\3', current_page)
+    # 1= exists: current_page = re.sub(r'{{ *(o|O)uvrage *((?:\|)[^}]*)\|[ \t]*([\|}]+)', r'{{\1uvrage\2\3', current_page)
     ''' TODO : à vérifier
-    while currentPage.find(u'|deadurl=no|') != -1:
-        currentPage = currentPage[:currentPage.find(u'|deadurl=no|')+1] + currentPage[currentPage.find(u'|deadurl=no|')+len(u'|deadurl=no|'):]
+    while current_page.find('|deadurl=no|') != -1:
+        current_page = current_page[:current_page.find('|deadurl=no|')+1] + current_page[current_page.find('|deadurl=no|')+len('|deadurl=no|'):]
     '''
 
-    finalPage = finalPage + currentPage
+    final_page = final_page + current_page
 
-    # TODO: avoid these fixes when: oldTemplate.append(u'lien mort')
-    finalPage = finalPage.replace(u'<ref></ref>',u'')
-    finalPage = finalPage.replace(u'{{lien mortarchive',u'{{lien mort archive')
-    finalPage = finalPage.replace(u'|langue=None', u'')
-    finalPage = finalPage.replace(u'|langue=en|langue=en', u'|langue=en')
-    if debugLevel > 0: print(u'Fin hyperlynx.py')
+    # TODO: avoid these fixes when: old_template.append('lien mort')
+    final_page = final_page.replace('<ref></ref>', '')
+    final_page = final_page.replace('{{lien mortarchive', '{{lien mort archive')
+    final_page = final_page.replace('|langue=None', '')
+    final_page = final_page.replace('|langue=en|langue=en', '|langue=en')
+    if debug_level > 0:
+        print('Fin hyperlynx.py')
 
-    return finalPage
+    return final_page
 
 
-def getURLsiteLanguage(htmlSource, debugLevel = 0):
-    if debugLevel > 0: print u'getURLsiteLanguage() Code langue à remplacer une fois trouvé sur la page distante...'
-    URLlanguage = u'None'
+def get_url_site_language(html_source, debug_level=0):
+    if debug_level > 0:
+        print('getURLsite_language: code langue à remplacer une fois trouvé sur la page distante...')
+    url_language = 'None'
     try:
-        regex = u'<html [^>]*lang *= *"?\'?([a-zA-Z\-]+)'
-        result = re.search(regex, htmlSource)
+        regex = '<html [^>]*lang *= *"?\'?([a-zA-Z\-]+)'
+        result = re.search(regex, html_source)
         if result:
-            URLlanguage = result.group(1)
-            if debugLevel > 0: print u' Langue trouvée sur le site'
-            if (len(URLlanguage)) > 6: URLlanguage = u'None'
+            url_language = result.group(1)
+            if debug_level > 0:
+                print(' Langue trouvée sur le site')
+            if (len(url_language)) > 6:
+                url_language = 'None'
     except UnicodeDecodeError:
-        if debugLevel > 0: print u'UnicodeEncodeError l 1032'
-    if debugLevel > 0: print u' Langue retenue : ' + URLlanguage
-    return URLlanguage
+        if debug_level > 0:
+            print('UnicodeEncodeError l 1032')
+    if debug_level > 0:
+        print(' Langue retenue : ') + url_language
+    return url_language
 
-def testURL(url, debugLevel = 0):
+
+def testURL(url, debug_level=0, opener=None):
     # Renvoie la page web d'une URL dès qu'il arrive à la lire.
-    if checkURL == False: return 'ok'
-    if debugLevel > 0: print u'--------'
+    if check_url == False:
+        return 'ok'
+    if debug_level > 0:
+        print('--------')
 
-    for blacklisted in brokenDomains:
+    for blacklisted in broken_domains:
         if url.find(blacklisted) != -1:
-            if debugLevel > 0: print(u' broken domain')
+            if debug_level > 0:
+                print(' broken domain')
             return 'ko'
-    for whitelisted in blockedDomains:
+    for whitelisted in blocked_domains:
         if url.find(whitelisted) != -1:
-            if debugLevel > 0: print(u' authorized domain')
+            if debug_level > 0:
+                print(' authorized domain')
             return 'ok'
-    for whitelisted in authorizedFiles:
+    for whitelisted in authorized_files:
         if url[len(url)-len(whitelisted):] == whitelisted:
-            if debugLevel > 0: print(u' authorized file')
+            if debug_level > 0:
+                print(' authorized file')
             return 'ok'
 
-    htmlSource = u''
-    connectionMethod = u'Request'
+    html_source = ''
+    connection_method = 'Request'
     try:
         req = urllib2.Request(url)
         res = urllib2.urlopen(req) # If blocked here for hours, just whitelist the domain if the page isn't forbidden
         # TODO : ssl.CertificateError: hostname 'www.mediarodzina.com.pl' doesn't match either of 'mediarodzina.pl', 'www.mediarodzina.pl'
         # UnicodeWarning: Unicode unequal comparison failed to convert both arguments to Unicode
-        htmlSource = res.read()
-        if debugLevel > 0: print str(len(htmlSource))
-        if htmlSource != str(''): return htmlSource
+        html_source = res.read()
+        if debug_level > 0:
+            print(str(len(html_source)))
+        if html_source != str(''):
+            return html_source
     except UnicodeEncodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
     except UnicodeDecodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeDecodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
     except UnicodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeError')
     except httplib.BadStatusLine:
-        if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
-    except httplib.HTTPException:
-        if debugLevel > 0: print connectionMethod + u' : HTTPException' # ex : got more than 100 headers
+        if debug_level > 0: print(connection_method + ' : BadStatusLine')
     except httplib.InvalidURL:
-        if debugLevel > 0: print connectionMethod + u' : InvalidURL'
-    except urllib2.URLError:
-        if debugLevel > 0: print connectionMethod + u' : URLError'
+        if debug_level > 0: print(connection_method + ' : InvalidURL')
     except httplib.IncompleteRead:
-        if debugLevel > 0: print connectionMethod + u' : IncompleteRead'
-    except urllib2.HTTPError, e:
-        if debugLevel > 0: print connectionMethod + u' : HTTPError %s.' % e.code
-        connectionMethod = u'opener'
+        if debug_level > 0: print(connection_method + ' : IncompleteRead')
+    except httplib.HTTPException:
+        if debug_level > 0: print(connection_method + ' : HTTPException')  # ex : got more than 100 headers
+    except urllib2.URLError:
+        if debug_level > 0: print(connection_method + ' : URLError')
+    except urllib2.HTTPError as e:
+        if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+        connection_method = 'opener'
         try:
             opener = urllib2.build_opener()
             response = opener.open(url)
-            htmlSource = response.read()
-            if debugLevel > 0: print str(len(htmlSource))
-            if htmlSource != str(''): return htmlSource
+            html_source = response.read()
+            if debug_level > 0: print(str(len(html_source)))
+            if html_source != str(''):
+                return html_source
         except UnicodeEncodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
         except UnicodeDecodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeDecodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
         except UnicodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeError')
         except httplib.BadStatusLine:
-            if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
-        except httplib.HTTPException:
-            if debugLevel > 0: print connectionMethod + u' : HTTPException'
+            if debug_level > 0: print(connection_method + ' : BadStatusLine')
         except httplib.InvalidURL:
-            if debugLevel > 0: print connectionMethod + u' : InvalidURL'
-        except urllib2.HTTPError, e:
-            if debugLevel > 0: print connectionMethod + u' : HTTPError %s.' % e.code
+            if debug_level > 0: print(connection_method + ' : InvalidURL')
+        except httplib.HTTPException:
+            if debug_level > 0: print(connection_method + ' : HTTPException')
+        except urllib2.HTTPError as e:
+            if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
         except IOError as e:
-            if debugLevel > 0: print connectionMethod + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+            if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
         except urllib2.URLError:
-            if debugLevel > 0: print connectionMethod + u' : URLError'
+            if debug_level > 0: print(connection_method + ' : URLError')
         except MemoryError:
-            if debugLevel > 0: print connectionMethod + u' : MemoryError'
+            if debug_level > 0: print(connection_method + ' : MemoryError')
         except requests.exceptions.HTTPError:
-            if debugLevel > 0: print connectionMethod + u' : HTTPError'
+            if debug_level > 0: print(connection_method + ' : HTTPError')
         except requests.exceptions.SSLError:
-            if debugLevel > 0: print connectionMethod + u' : SSLError'
+            if debug_level > 0: print(connection_method + ' : SSLError')
         except ssl.CertificateError:
-            if debugLevel > 0: print connectionMethod + u' : CertificateError'
+            if debug_level > 0: print(connection_method + ' : CertificateError')
         # pb avec http://losangeles.broadwayworld.com/article/El_Capitan_Theatre_Presents_Disneys_Mars_Needs_Moms_311421_20110304 qui renvoie 301 car son suffixe est facultatif
     except IOError as e:
-        if debugLevel > 0: print connectionMethod + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+        if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
     except MemoryError:
-        if debugLevel > 0: print connectionMethod + u' : MemoryError'
+        if debug_level > 0: print(connection_method + ' : MemoryError')
     except requests.exceptions.HTTPError:
-        if debugLevel > 0: print connectionMethod + u' : HTTPError'
+        if debug_level > 0: print(connection_method + ' : HTTPError')
     except ssl.CertificateError:
-        if debugLevel > 0: print connectionMethod + u' : CertificateError'
+        if debug_level > 0: print(connection_method + ' : CertificateError')
     except requests.exceptions.SSLError:
-        if debugLevel > 0: print connectionMethod + u' : ssl.CertificateError'
+        if debug_level > 0: print(connection_method + ' : ssl.CertificateError')
         # HS : https://fr.wikipedia.org/w/index.php?title=Herv%C3%A9_Moulin&type=revision&diff=135989688&oldid=135121040
-        url = url.replace(u'https:', u'http:')
+        url = url.replace('https:', 'http:')
         try:
             response = opener.open(url)
-            htmlSource = response.read()
-            if debugLevel > 0: print str(len(htmlSource))
-            if htmlSource != str(''): return htmlSource
+            html_source = response.read()
+            if debug_level > 0: print(str(len(html_source)))
+            if html_source != str(''): return html_source
         except UnicodeEncodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
         except UnicodeDecodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeDecodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
         except UnicodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeError')
         except httplib.BadStatusLine:
-            if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
-        except httplib.HTTPException:
-            if debugLevel > 0: print connectionMethod + u' : HTTPException'
+            if debug_level > 0: print(connection_method + ' : BadStatusLine')
         except httplib.InvalidURL:
-            if debugLevel > 0: print connectionMethod + u' : InvalidURL'
-        except urllib2.HTTPError, e:
-            if debugLevel > 0: print connectionMethod + u' : HTTPError %s.' % e.code
+            if debug_level > 0: print(connection_method + ' : InvalidURL')
+        except httplib.HTTPException:
+            if debug_level > 0: print(connection_method + ' : HTTPException')
+        except urllib2.HTTPError as e:
+            if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
         except IOError as e:
-            if debugLevel > 0: print connectionMethod + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+            if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
         except urllib2.URLError:
-            if debugLevel > 0: print connectionMethod + u' : URLError'
+            if debug_level > 0: print(connection_method + ' : URLError')
         except MemoryError:
-            if debugLevel > 0: print connectionMethod + u' : MemoryError'
+            if debug_level > 0: print(connection_method + ' : MemoryError')
         except requests.exceptions.HTTPError:
-            if debugLevel > 0: print connectionMethod + u' : HTTPError'
+            if debug_level > 0: print(connection_method + ' : HTTPError')
         except requests.exceptions.SSLError:
-            if debugLevel > 0: print connectionMethod + u' : SSLError'
+            if debug_level > 0: print(connection_method + ' : SSLError')
         except ssl.CertificateError:
-            if debugLevel > 0: print connectionMethod + u' : CertificateError'
+            if debug_level > 0: print(connection_method + ' : CertificateError')
 
-    connectionMethod = u"urllib2.urlopen(url.encode('utf8'))"
+    connection_method = "urllib2.urlopen(url.encode('utf8'))"
     try:
-        htmlSource = urllib2.urlopen(url.encode('utf8')).read()
-        if debugLevel > 0: print str(len(htmlSource))
-        if htmlSource != str(''): return htmlSource
+        html_source = urllib2.urlopen(url.encode('utf8')).read()
+        if debug_level > 0: print(str(len(html_source)))
+        if html_source != str(''):
+            return html_source
     except UnicodeEncodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
     except UnicodeDecodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeDecodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
     except UnicodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeError')
     except httplib.BadStatusLine:
-        if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
-    except httplib.HTTPException:
-        if debugLevel > 0: print connectionMethod + u' : HTTPException'
+        if debug_level > 0: print(connection_method + ' : BadStatusLine')
     except httplib.InvalidURL:
-        if debugLevel > 0: print connectionMethod + u' : InvalidURL'
+        if debug_level > 0: print(connection_method + ' : InvalidURL')
     except httplib.IncompleteRead:
-        if debugLevel > 0: print connectionMethod + u' : IncompleteRead'
-    except urllib2.HTTPError, e:
-        if debugLevel > 0: print connectionMethod + u' : HTTPError %s.' % e.code
-        connectionMethod = u'HTTPCookieProcessor'
+        if debug_level > 0: print(connection_method + ' : IncompleteRead')
+    except httplib.HTTPException:
+        if debug_level > 0: print(connection_method + ' : HTTPException')
+    except urllib2.HTTPError as e:
+        if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+        connection_method = 'HTTPCookieProcessor'
         try:
             cj = cookielib.CookieJar()
             opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
             urllib2.install_opener(opener)
             response = opener.open(url)
-            htmlSource = response.read()
-            if debugLevel > 0: print str(len(htmlSource))
-            if htmlSource != str(''): return htmlSource
+            html_source = response.read()
+            if debug_level > 0: print(str(len(html_source)))
+            if html_source != str(''):
+                return html_source
         except UnicodeEncodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
         except UnicodeDecodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeDecodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
         except UnicodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeError')
         except httplib.BadStatusLine:
-            if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
-        except httplib.HTTPException:
-            if debugLevel > 0: print connectionMethod + u' : HTTPException'
+            if debug_level > 0: print(connection_method + ' : BadStatusLine')
         except httplib.InvalidURL:
-            if debugLevel > 0: print connectionMethod + u' : InvalidURL'
-        except urllib2.HTTPError, e:
-            if debugLevel > 0: print connectionMethod + u' : HTTPError %s.' % e.code
+            if debug_level > 0: print(connection_method + ' : InvalidURL')
+        except httplib.HTTPException:
+            if debug_level > 0: print(connection_method + ' : HTTPException')
+        except urllib2.HTTPError as e:
+            if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
         except IOError as e:
-            if debugLevel > 0: print connectionMethod + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+            if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
         except urllib2.URLError:
-            if debugLevel > 0: print connectionMethod + u' : URLError'
+            if debug_level > 0: print(connection_method + ' : URLError')
         except MemoryError:
-            if debugLevel > 0: print connectionMethod + u' : MemoryError'
+            if debug_level > 0: print(connection_method + ' : MemoryError')
         except requests.exceptions.HTTPError:
-            if debugLevel > 0: print connectionMethod + u' : HTTPError'
+            if debug_level > 0: print(connection_method + ' : HTTPError')
         except requests.exceptions.SSLError:
-            if debugLevel > 0: print connectionMethod + u' : SSLError'
+            if debug_level > 0: print(connection_method + ' : SSLError')
         except ssl.CertificateError:
-            if debugLevel > 0: print connectionMethod + u' : CertificateError'
+            if debug_level > 0: print(connection_method + ' : CertificateError')
     except IOError as e:
-        if debugLevel > 0: print connectionMethod + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+        if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
     except urllib2.URLError:
-        if debugLevel > 0: print connectionMethod + u' : URLError'
+        if debug_level > 0: print(connection_method + ' : URLError')
     except MemoryError:
-        if debugLevel > 0: print connectionMethod + u' : MemoryError'
+        if debug_level > 0: print(connection_method + ' : MemoryError')
     except requests.exceptions.HTTPError:
-        if debugLevel > 0: print connectionMethod + u' : HTTPError'
+        if debug_level > 0: print(connection_method + ' : HTTPError')
     except requests.exceptions.SSLError:
-        if debugLevel > 0: print connectionMethod + u' : SSLError'
+        if debug_level > 0: print(connection_method + ' : SSLError')
     except ssl.CertificateError:
-        if debugLevel > 0: print connectionMethod + u' : CertificateError'
+        if debug_level > 0: print(connection_method + ' : CertificateError')
         
-    connectionMethod = u'Request text/html'    
+    connection_method = 'Request text/html'    
     try:
         req = urllib2.Request(url)
         req.add_header('Accept','text/html')
         res = urllib2.urlopen(req)
-        htmlSource = res.read()
-        if debugLevel > 0: print connectionMethod + u' : text/html ' + str(len(htmlSource))
-        if htmlSource != str(''): return htmlSource
+        html_source = res.read()
+        if debug_level > 0: print(connection_method + ' : text/html ' + str(len(html_source)))
+        if html_source != str(''):
+            return html_source
     except UnicodeEncodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
     except UnicodeDecodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeDecodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
     except UnicodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeError')
     except httplib.BadStatusLine:
-        if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
-    except httplib.HTTPException:
-        if debugLevel > 0: print connectionMethod + u' : HTTPException'
+        if debug_level > 0: print(connection_method + ' : BadStatusLine')
     except httplib.InvalidURL:
-        if debugLevel > 0: print connectionMethod + u' : InvalidURL'
+        if debug_level > 0: print(connection_method + ' : InvalidURL')
     except httplib.IncompleteRead:
-        if debugLevel > 0: print connectionMethod + u' : IncompleteRead'
-    except urllib2.HTTPError, e:
-        if debugLevel > 0: print connectionMethod + u' : HTTPError %s.' % e.code
-        connectionMethod = u'geturl()'
+        if debug_level > 0: print(connection_method + ' : IncompleteRead')
+    except httplib.HTTPException:
+        if debug_level > 0: print(connection_method + ' : HTTPException')
+    except urllib2.HTTPError as e:
+        if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+        connection_method = 'geturl()'
         try:
             resp = urllib2.urlopen(url)
             req = urllib2.Request(resp.geturl())
             res = urllib2.urlopen(req)
-            htmlSource = res.read()
-            if debugLevel > 0: print str(len(htmlSource))
-            if htmlSource != str(''): return htmlSource
+            html_source = res.read()
+            if debug_level > 0: print(str(len(html_source)))
+            if html_source != str(''): return html_source
         except UnicodeEncodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
         except UnicodeDecodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeDecodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
         except UnicodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeError')
         except httplib.BadStatusLine:
-            if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
-        except httplib.HTTPException:
-            if debugLevel > 0: print connectionMethod + u' : HTTPException'
+            if debug_level > 0: print(connection_method + ' : BadStatusLine')
         except httplib.InvalidURL:
-            if debugLevel > 0: print connectionMethod + u' : InvalidURL'
-        except urllib2.HTTPError, e:
-            if debugLevel > 0: print connectionMethod + u' : HTTPError %s.' % e.code
+            if debug_level > 0: print(connection_method + ' : InvalidURL')
+        except httplib.HTTPException:
+            if debug_level > 0: print(connection_method + ' : HTTPException')
+        except urllib2.HTTPError as e:
+            if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
         except IOError as e:
-            if debugLevel > 0: print connectionMethod + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+            if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
         except urllib2.URLError:
-            if debugLevel > 0: print connectionMethod + u' : URLError'
+            if debug_level > 0: print(connection_method + ' : URLError')
         except MemoryError:
-            if debugLevel > 0: print connectionMethod + u' : MemoryError'
+            if debug_level > 0: print(connection_method + ' : MemoryError')
         except requests.exceptions.HTTPError:
-            if debugLevel > 0: print connectionMethod + u' : HTTPError'
+            if debug_level > 0: print(connection_method + ' : HTTPError')
         except requests.exceptions.SSLError:
-            if debugLevel > 0: print connectionMethod + u' : SSLError'
+            if debug_level > 0: print(connection_method + ' : SSLError')
         except ssl.CertificateError:
-            if debugLevel > 0: print connectionMethod + u' : CertificateError'
+            if debug_level > 0: print(connection_method + ' : CertificateError')
     except IOError as e:
-        if debugLevel > 0: print connectionMethod + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+        if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
     except urllib2.URLError:
-        if debugLevel > 0: print connectionMethod + u' : URLError'
+        if debug_level > 0: print(connection_method + ' : URLError')
     except MemoryError:
-        if debugLevel > 0: print connectionMethod + u' : MemoryError'
+        if debug_level > 0: print(connection_method + ' : MemoryError')
     except requests.exceptions.HTTPError:
-        if debugLevel > 0: print connectionMethod + u' : HTTPError'
+        if debug_level > 0: print(connection_method + ' : HTTPError')
     except requests.exceptions.SSLError:
-        if debugLevel > 0: print connectionMethod + u' : SSLError'
+        if debug_level > 0: print(connection_method + ' : SSLError')
     except ssl.CertificateError:
-        if debugLevel > 0: print connectionMethod + u' : CertificateError'
+        if debug_level > 0: print(connection_method + ' : CertificateError')
 
-    connectionMethod = u'Request Mozilla/5.0'
+    connection_method = 'Request Mozilla/5.0'
     agent = 'Mozilla/5.0 (compatible; MSIE 5.5; Windows NT)'
     try:
-        headers = { 'User-Agent' : agent }
+        headers = {'User-Agent': agent}
         req = urllib2.Request(url, "", headers)
         req.add_header('Accept','text/html')
         res = urllib2.urlopen(req)
-        htmlSource = res.read()
-        if debugLevel > 0: print connectionMethod + u' : ' + agent + u' : ' + str(len(htmlSource))
-        if htmlSource != str(''): return htmlSource
+        html_source = res.read()
+        if debug_level > 0:
+            print(connection_method + ' : ' + agent + ' : ' + str(len(html_source)))
+        if html_source != str(''):
+            return html_source
     except UnicodeEncodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
     except UnicodeDecodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeDecodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
     except UnicodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeError')
     except httplib.BadStatusLine:
-        if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
+        if debug_level > 0: print(connection_method + ' : BadStatusLine')
     except httplib.HTTPException:
-        if debugLevel > 0: print connectionMethod + u' : HTTPException'
+        if debug_level > 0: print(connection_method + ' : HTTPException')
     except httplib.IncompleteRead:
-        if debugLevel > 0: print connectionMethod + u' : IncompleteRead'
+        if debug_level > 0: print(connection_method + ' : IncompleteRead')
     except httplib.InvalidURL:
-        if debugLevel > 0: print connectionMethod + u' : InvalidURL'
-    except urllib2.HTTPError, e:
-        if debugLevel > 0: print connectionMethod + u' : HTTPError %s.' % e.code
+        if debug_level > 0: print(connection_method + ' : InvalidURL')
+    except urllib2.HTTPError as e:
+        if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
         if e.code == "404": return "404 error"
-        if socket.gethostname() == u'PavilionDV6':
-            connectionMethod = u'follow_all_redirects'    # fonctionne avec http://losangeles.broadwayworld.com/article/El_Capitan_Theatre_Presents_Disneys_Mars_Needs_Moms_311421_20110304
+        if socket.gethostname() == 'PavilionDV6':
+            connection_method = 'follow_all_redirects'    # fonctionne avec http://losangeles.broadwayworld.com/article/El_Capitan_Theatre_Presents_Disneys_Mars_Needs_Moms_311421_20110304
             try:
                 r = requests.get(url)
                 req = urllib2.Request(r.url)
                 res = urllib2.urlopen(req)
-                htmlSource = res.read()
-                if debugLevel > 0: print str(len(htmlSource))
-                if htmlSource != str(''): return htmlSource
+                html_source = res.read()
+                if debug_level > 0: print(str(len(html_source)))
+                if html_source != str(''): return html_source
             except UnicodeEncodeError:
-                if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
+                if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
             except UnicodeDecodeError:
-                if debugLevel > 0: print connectionMethod + u' : UnicodeDecodeError'
+                if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
             except UnicodeError:
-                if debugLevel > 0: print connectionMethod + u' : UnicodeError'
-                connectionMethod = u"Méthode url.encode('utf8')"
+                if debug_level > 0: print(connection_method + ' : UnicodeError')
+                connection_method = "Méthode url.encode('utf8')"
                 try:
                     sock = urllib.urlopen(url.encode('utf8'))
-                    htmlSource = sock.read()
+                    html_source = sock.read()
                     sock.close()
-                    if debugLevel > 0: print str(len(htmlSource))
-                    if htmlSource != str(''): return htmlSource
+                    if debug_level > 0: print(str(len(html_source)))
+                    if html_source != str(''): return html_source
                 except UnicodeError:
-                    if debugLevel > 0: print connectionMethod + u' : UnicodeError'
+                    if debug_level > 0: print(connection_method + ' : UnicodeError')
                 except UnicodeEncodeError:
-                    if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
+                    if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
                 except UnicodeDecodeError:
-                    if debugLevel > 0: print connectionMethod + u' : UnicodeDecodeError'
+                    if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
                 except httplib.BadStatusLine:
-                    if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
-                except httplib.HTTPException:
-                    if debugLevel > 0: print connectionMethod + u' : HTTPException'
+                    if debug_level > 0: print(connection_method + ' : BadStatusLine')
                 except httplib.InvalidURL:
-                    if debugLevel > 0: print connectionMethod + u' : InvalidURL'
-                except urllib2.HTTPError, e:
-                    if debugLevel > 0: print connectionMethod + u' : HTTPError %s.' % e.code
+                    if debug_level > 0: print(connection_method + ' : InvalidURL')
+                except httplib.HTTPException:
+                    if debug_level > 0: print(connection_method + ' : HTTPException')
+                except urllib2.HTTPError as e:
+                    if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
                 except IOError as e:
-                    if debugLevel > 0: print connectionMethod + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+                    if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
                 except urllib2.URLError:
-                    if debugLevel > 0: print connectionMethod + u' : URLError'
+                    if debug_level > 0: print(connection_method + ' : URLError')
                 except MemoryError:
-                    if debugLevel > 0: print connectionMethod + u' : MemoryError'
+                    if debug_level > 0: print(connection_method + ' : MemoryError')
                 except requests.exceptions.HTTPError:
-                    if debugLevel > 0: print connectionMethod + u' : HTTPError'
+                    if debug_level > 0: print(connection_method + ' : HTTPError')
                 except requests.exceptions.SSLError:
-                    if debugLevel > 0: print connectionMethod + u' : SSLError'
+                    if debug_level > 0: print(connection_method + ' : SSLError')
                 except ssl.CertificateError:
-                    if debugLevel > 0: print connectionMethod + u' : CertificateError'
+                    if debug_level > 0: print(connection_method + ' : CertificateError')
             except httplib.BadStatusLine:
-                if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
-            except httplib.HTTPException:
-                if debugLevel > 0: print connectionMethod + u' : HTTPException'
+                if debug_level > 0: print(connection_method + ' : BadStatusLine')
             except httplib.InvalidURL:
-                if debugLevel > 0: print connectionMethod + u' : InvalidURL'
-            except urllib2.HTTPError, e:
-                if debugLevel > 0: print connectionMethod + u' : HTTPError %s.' % e.code
+                if debug_level > 0: print(connection_method + ' : InvalidURL')
+            except httplib.HTTPException:
+                if debug_level > 0: print(connection_method + ' : HTTPException')
+            except urllib2.HTTPError as e:
+                if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
             except urllib2.URLError:
-                if debugLevel > 0: print connectionMethod + u' : URLError'    
+                if debug_level > 0: print(connection_method + ' : URLError')
             except requests.exceptions.TooManyRedirects:
-                if debugLevel > 0: print connectionMethod + u' : TooManyRedirects'
+                if debug_level > 0: print(connection_method + ' : TooManyRedirects')
             except IOError as e:
-                if debugLevel > 0: print connectionMethod + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
-            except requests.exceptions.ConnectionError:
-                if debugLevel > 0: print connectionMethod + u' ConnectionError'
-            except requests.exceptions.InvalidSchema:
-                if debugLevel > 0: print connectionMethod + u' InvalidSchema'
-            except MemoryError:
-                if debugLevel > 0: print connectionMethod + u' : MemoryError'
-            except requests.exceptions.HTTPError:
-                if debugLevel > 0: print connectionMethod + u' : HTTPError'
+                if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
             except requests.exceptions.SSLError:
-                if debugLevel > 0: print connectionMethod + u' : SSLError'
+                if debug_level > 0: print(connection_method + ' : SSLError')
+            except requests.exceptions.ConnectionError:
+                if debug_level > 0: print(connection_method + ' ConnectionError')
+            except requests.exceptions.InvalidSchema:
+                if debug_level > 0: print(connection_method + ' InvalidSchema')
+            except MemoryError:
+                if debug_level > 0: print(connection_method + ' : MemoryError')
+            except requests.exceptions.HTTPError:
+                if debug_level > 0: print(connection_method + ' : HTTPError')
             except ssl.CertificateError:
-                if debugLevel > 0: print connectionMethod + u' : CertificateError'
+                if debug_level > 0: print(connection_method + ' : CertificateError')
     except IOError as e:
-        if debugLevel > 0: print connectionMethod + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+        if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
     except urllib2.URLError:
-        if debugLevel > 0: print connectionMethod + u' : URLError'
+        if debug_level > 0: print(connection_method + ' : URLError')
     except MemoryError:
-        if debugLevel > 0: print connectionMethod + u' : MemoryError'
+        if debug_level > 0: print(connection_method + ' : MemoryError')
     except requests.exceptions.HTTPError:
-        if debugLevel > 0: print connectionMethod + u' : HTTPError'
+        if debug_level > 0: print(connection_method + ' : HTTPError')
     except requests.exceptions.SSLError:
-        if debugLevel > 0: print connectionMethod + u' : SSLError'
+        if debug_level > 0: print(connection_method + ' : SSLError')
     except ssl.CertificateError:
-        if debugLevel > 0: print connectionMethod + u' : CertificateError'
+        if debug_level > 0: print(connection_method + ' : CertificateError')
 
-    connectionMethod = u'Request &_r=4&'
+    connection_method = 'Request &_r=4&'
     agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
     try:
-        if url.find(u'_r=') == -1:
-            if url.find(u'?') != -1:
+        if url.find('_r=') == -1:
+            if url.find('?') != -1:
                 url = url + "&_r=4&"
             else:
                 url = url + "?_r=4&"
         else:
-            if url.find(u'?') != -1:
-                url = url[0:url.find(u'_r=')-1] + "&_r=4&"
+            if url.find('?') != -1:
+                url = url[0:url.find('_r=')-1] + "&_r=4&"
             else:
-                url = url[0:url.find(u'_r=')-1] + "?_r=4&"
-        headers = { 'User-Agent' : agent }
+                url = url[0:url.find('_r=')-1] + "?_r=4&"
+        headers = {'User-Agent': agent}
         req = urllib2.Request(url, "", headers)
         req.add_header('Accept','text/html')
         res = urllib2.urlopen(req)
-        htmlSource = res.read()
-        if debugLevel > 0: print str(len(htmlSource))
-        if htmlSource != str(''): return htmlSource
+        html_source = res.read()
+        if debug_level > 0: print(str(len(html_source)))
+        if html_source != str(''): return html_source
     except UnicodeEncodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
     except UnicodeDecodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeDecodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
     except UnicodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeError')
     except httplib.BadStatusLine:
-        if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
-    except httplib.HTTPException:
-        if debugLevel > 0: print connectionMethod + u' : HTTPException'
+        if debug_level > 0: print(connection_method + ' : BadStatusLine')
     except httplib.InvalidURL:
-        if debugLevel > 0: print connectionMethod + u' : InvalidURL'
+        if debug_level > 0: print(connection_method + ' : InvalidURL')
     except httplib.IncompleteRead:
-        if debugLevel > 0: print connectionMethod + u' : IncompleteRead'
-    except urllib2.HTTPError, e:
-        if debugLevel > 0: print connectionMethod + u' : HTTPError %s.' % e.code
-        connectionMethod = u'HTTPRedirectHandler'
+        if debug_level > 0: print(connection_method + ' : IncompleteRead')
+    except httplib.HTTPException:
+        if debug_level > 0: print(connection_method + ' : HTTPException')
+    except urllib2.HTTPError as e:
+        if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+        connection_method = 'HTTPRedirectHandler'
         try:
             opener = urllib2.build_opener(urllib2.HTTPRedirectHandler)
             request = opener.open(url)
             req = urllib2.Request(request.url)
             res = urllib2.urlopen(req)
-            htmlSource = res.read()
-            if debugLevel > 0: print str(len(htmlSource))
-            if htmlSource != str(''): return htmlSource
+            html_source = res.read()
+            if debug_level > 0: print(str(len(html_source)))
+            if html_source != str(''): return html_source
         except UnicodeEncodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
         except UnicodeDecodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeDecodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
         except UnicodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeError')
         except httplib.BadStatusLine:
-            if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
-        except httplib.HTTPException:
-            if debugLevel > 0: print connectionMethod + u' : HTTPException'
+            if debug_level > 0: print(connection_method + ' : BadStatusLine')
         except httplib.InvalidURL:
-            if debugLevel > 0: print connectionMethod + u' : InvalidURL'
-        except urllib2.HTTPError, e:
-            if debugLevel > 0: print connectionMethod + u' : HTTPError %s.' % e.code
+            if debug_level > 0: print(connection_method + ' : InvalidURL')
+        except httplib.HTTPException:
+            if debug_level > 0: print(connection_method + ' : HTTPException')
+        except urllib2.HTTPError as e:
+            if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
         except IOError as e:
-            if debugLevel > 0: print connectionMethod + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+            if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
         except urllib2.URLError:
-            if debugLevel > 0: print connectionMethod + u' : URLError'
+            if debug_level > 0: print(connection_method + ' : URLError')
         except MemoryError:
-            if debugLevel > 0: print connectionMethod + u' : MemoryError'
+            if debug_level > 0: print(connection_method + ' : MemoryError')
         except requests.exceptions.HTTPError:
-            if debugLevel > 0: print connectionMethod + u' : HTTPError'
+            if debug_level > 0: print(connection_method + ' : HTTPError')
         except requests.exceptions.SSLError:
-            if debugLevel > 0: print connectionMethod + u' : SSLError'
+            if debug_level > 0: print(connection_method + ' : SSLError')
         except ssl.CertificateError:
-            if debugLevel > 0: print connectionMethod + u' : CertificateError'        
+            if debug_level > 0: print(connection_method + ' : CertificateError')     
     except IOError as e:
-        if debugLevel > 0: print connectionMethod + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+        if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
     except urllib2.URLError:
-        if debugLevel > 0: print connectionMethod + u' : URLError'
+        if debug_level > 0: print(connection_method + ' : URLError')
     except MemoryError:
-        if debugLevel > 0: print connectionMethod + u' : MemoryError'
+        if debug_level > 0: print(connection_method + ' : MemoryError')
     except requests.exceptions.HTTPError:
-        if debugLevel > 0: print connectionMethod + u' : HTTPError'
+        if debug_level > 0: print(connection_method + ' : HTTPError')
     except requests.exceptions.SSLError:
-        if debugLevel > 0: print connectionMethod + u' : SSLError'
+        if debug_level > 0: print(connection_method + ' : SSLError')
     except ssl.CertificateError:
-        if debugLevel > 0: print connectionMethod + u' : CertificateError'
+        if debug_level > 0: print(connection_method + ' : CertificateError')
 
-    connectionMethod = u'urlopen'    # fonctionne avec http://voxofilm.free.fr/vox_0/500_jours_ensemble.htm, et http://www.kurosawa-drawings.com/page/27
+    connection_method = 'urlopen'    # fonctionne avec http://voxofilm.free.fr/vox_0/500_jours_ensemble.htm, et http://www.kurosawa-drawings.com/page/27
     try:
         res = urllib2.urlopen(url)
-        htmlSource = res.read()
-        if debugLevel > 0: print str(len(htmlSource))
-        if htmlSource != str(''): return htmlSource
+        html_source = res.read()
+        if debug_level > 0: print(str(len(html_source)))
+        if html_source != str(''): return html_source
     except UnicodeEncodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
     except UnicodeDecodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeDecodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
     except UnicodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeError'
+        if debug_level > 0: print(connection_method + ' : UnicodeError')
     except httplib.BadStatusLine:
-        if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
-    except httplib.HTTPException:
-        if debugLevel > 0: print connectionMethod + u' : HTTPException'
+        if debug_level > 0: print(connection_method + ' : BadStatusLine')
     except httplib.InvalidURL:
-        if debugLevel > 0: print connectionMethod + u' : InvalidURL'
+        if debug_level > 0: print(connection_method + ' : InvalidURL')
     except httplib.IncompleteRead:
-        if debugLevel > 0: print connectionMethod + u' : IncompleteRead'
-    except urllib2.HTTPError, e:
-        if debugLevel > 0: print connectionMethod + u' : HTTPError %s.' % e.code
+        if debug_level > 0: print(connection_method + ' : IncompleteRead')
+    except httplib.HTTPException:
+        if debug_level > 0: print(connection_method + ' : HTTPException')
+    except urllib2.HTTPError as e:
+        if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
         if e.code == 401: return "ok"    # http://www.nature.com/nature/journal/v442/n7104/full/nature04945.html
     except IOError as e:
-        if debugLevel > 0: print connectionMethod + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+        if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
     except urllib2.URLError:
-        if debugLevel > 0: print connectionMethod + u' : URLError'
+        if debug_level > 0: print(connection_method + ' : URLError')
     except MemoryError:
-        if debugLevel > 0: print connectionMethod + u' : MemoryError'
+        if debug_level > 0: print(connection_method + ' : MemoryError')
     except requests.exceptions.HTTPError:
-        if debugLevel > 0: print connectionMethod + u' : HTTPError'
+        if debug_level > 0: print(connection_method + ' : HTTPError')
     except requests.exceptions.SSLError:
-        if debugLevel > 0: print connectionMethod + u' : SSLError'
+        if debug_level > 0: print(connection_method + ' : SSLError')
     except ssl.CertificateError:
-        if debugLevel > 0: print connectionMethod + u' : CertificateError' 
+        if debug_level > 0: print(connection_method + ' : CertificateError')
 
-    connectionMethod = u'urllib.urlopen'
+    connection_method = 'urllib.urlopen'
     try:
         sock = urllib.urlopen(url)
-        htmlSource = sock.read()
+        html_source = sock.read()
         sock.close()
-        if debugLevel > 0: print str(len(htmlSource))
-        if htmlSource != str(''): return htmlSource
+        if debug_level > 0: print(str(len(html_source)))
+        if html_source != str(''): return html_source
     except httplib.BadStatusLine:
-        if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
-    except httplib.HTTPException:
-        if debugLevel > 0: print connectionMethod + u' : HTTPException'
+        if debug_level > 0: print(connection_method + ' : BadStatusLine')
     except httplib.InvalidURL:
-        if debugLevel > 0: print connectionMethod + u' : InvalidURL'
-    except IOError as e:
-        if debugLevel > 0: print connectionMethod + u' : I/O error'
-    except urllib2.URLError, e:
-        if debugLevel > 0: print connectionMethod + u' : URLError %s.' % e.code
-    except urllib2.HTTPError, e:
-        if debugLevel > 0: print connectionMethod + u' : HTTPError %s.' % e.code
-    except UnicodeEncodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
-    except UnicodeDecodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeDecodeError'
+        if debug_level > 0: print(connection_method + ' : InvalidURL')
     except httplib.IncompleteRead:
-        if debugLevel > 0: print connectionMethod + u' : IncompleteRead'
+        if debug_level > 0: print(connection_method + ' : IncompleteRead')
+    except httplib.HTTPException:
+        if debug_level > 0: print(connection_method + ' : HTTPException')
+    except IOError as e:
+        if debug_level > 0: print(connection_method + ' : I/O error')
+    except urllib2.URLError as e:
+        if debug_level > 0: print(connection_method + ' : URLError %s.' % e.code)
+    except urllib2.HTTPError as e:
+        if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+    except UnicodeEncodeError:
+        if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+    except UnicodeDecodeError:
+        if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
     except MemoryError:
-        if debugLevel > 0: print connectionMethod + u' : MemoryError'
+        if debug_level > 0: print(connection_method + ' : MemoryError')
     except requests.exceptions.HTTPError:
-        if debugLevel > 0: print connectionMethod + u' : HTTPError'
+        if debug_level > 0: print(connection_method + ' : HTTPError')
     except requests.exceptions.SSLError:
-        if debugLevel > 0: print connectionMethod + u' : SSLError'
+        if debug_level > 0: print(connection_method + ' : SSLError')
     except ssl.CertificateError:
-        if debugLevel > 0: print connectionMethod + u' : CertificateError'
+        if debug_level > 0: print(connection_method + ' : CertificateError')
     except UnicodeError:
-        if debugLevel > 0: print connectionMethod + u' : UnicodeError'
-        connectionMethod = u"Méthode url.encode('utf8')"
+        if debug_level > 0: print(connection_method + ' : UnicodeError')
+        connection_method = "Méthode url.encode('utf8')"
         try:
             sock = urllib.urlopen(url.encode('utf8'))
-            htmlSource = sock.read()
+            html_source = sock.read()
             sock.close()
-            if debugLevel > 0: print str(len(htmlSource))
-            if htmlSource != str(''): return htmlSource
+            if debug_level > 0: print(str(len(html_source)))
+            if html_source != str(''): return html_source
         except UnicodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeError')
         except UnicodeEncodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeEncodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
         except UnicodeDecodeError:
-            if debugLevel > 0: print connectionMethod + u' : UnicodeDecodeError'
+            if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
         except httplib.BadStatusLine:
-            if debugLevel > 0: print connectionMethod + u' : BadStatusLine'
-        except httplib.HTTPException:
-            if debugLevel > 0: print connectionMethod + u' : HTTPException'
+            if debug_level > 0: print(connection_method + ' : BadStatusLine')
         except httplib.InvalidURL:
-            if debugLevel > 0: print connectionMethod + u' : InvalidURL'
-        except urllib2.HTTPError, e:
-            if debugLevel > 0: print connectionMethod + u' : HTTPError %s.' % e.code
+            if debug_level > 0: print(connection_method + ' : InvalidURL')
+        except httplib.HTTPException:
+            if debug_level > 0: print(connection_method + ' : HTTPException')
+        except urllib2.HTTPError as e:
+            if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
         except IOError as e:
-            if debugLevel > 0: print connectionMethod + u' : I/O error({0}): {1}'.format(e.errno, e.strerror)
+            if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
         except urllib2.URLError:
-            if debugLevel > 0: print connectionMethod + u' : URLError'
+            if debug_level > 0: print(connection_method + ' : URLError')
         except MemoryError:
-            if debugLevel > 0: print connectionMethod + u' : MemoryError'
+            if debug_level > 0: print(connection_method + ' : MemoryError')
         except requests.exceptions.HTTPError:
-            if debugLevel > 0: print connectionMethod + u' : HTTPError'
+            if debug_level > 0: print(connection_method + ' : HTTPError')
         except requests.exceptions.SSLError:
-            if debugLevel > 0: print connectionMethod + u' : SSLError'
+            if debug_level > 0: print(connection_method + ' : SSLError')
         except ssl.CertificateError:
-            if debugLevel > 0: print connectionMethod + u' : CertificateError'
-    if debugLevel > 0: print connectionMethod + u' Fin du test d\'existance du site'
-    return u''
+            if debug_level > 0: print(connection_method + ' : CertificateError')
+    if debug_level > 0:
+        print(connection_method + ' Fin du test d\'existance du site')
+    return ''
 
-def testURLPage(htmlSource, url, debugLevel = 0):
-    isBrokenLink = False
+def testURLPage(html_source, url, debug_level = 0):
+    is_broken_link = False
     try:
-        #if debugLevel > 1 and htmlSource != str('') and htmlSource is not None: raw_input (htmlSource[0:1000])
-        if htmlSource is None:
-            if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " none type"
+        #if debug_level > 1 and html_source != str('') and html_source is not None: input(html_source[0:1000])
+        if html_source is None:
+            if debug_level > 0: print(url + " none type")
             return True
-        elif htmlSource == str('ok') or (htmlSource == str('') and (url.find(u'à') != -1 or url.find(u'é') != -1 or url.find(u'è') != -1 or url.find(u'ê') != -1 or url.find(u'ù') != -1)): # bug http://fr.wikipedia.org/w/index.php?title=Acad%C3%A9mie_fran%C3%A7aise&diff=prev&oldid=92572792
+        elif html_source == str('ok') or (html_source == str('') and (url.find('à') != -1 or url.find('é') != -1
+            or url.find('è') != -1 or url.find('ê') != -1 or url.find('ù') != -1)):
+            # bug http://fr.wikipedia.org/w/index.php?title=Acad%C3%A9mie_fran%C3%A7aise&diff=prev&oldid=92572792
             return False
-        elif htmlSource == str('ko') or htmlSource == str(''):
-            if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " page vide"
+        elif html_source == str('ko') or html_source == str(''):
+            if debug_level > 0: print(url + " page vide")
             return True
         else:
-            if debugLevel > 0: print u' Page non vide'
+            if debug_level > 0: print(' page_content non vide')
             # Recherche des erreurs
-            for e in range(0,limiteE):
-                if debugLevel > 1: print Erreur[e]
-                if htmlSource.find(Erreur[e]) != -1 and not re.search("\n[^\n]*if[^\n]*" + Erreur[e], htmlSource):
-                    if debugLevel > 1: print u'  Trouvé'
+            for e in range(0, errors_limit):
+                if debug_level > 1: print(sites_errors[e])
+                if html_source.find(sites_errors[e]) != -1 and not re.search("\n[^\n]*if[^\n]*" + sites_errors[e], html_source):
+                    if debug_level > 1: print('  Trouvé')
                     # Exceptions
-                    if Erreur[e] == "404 Not Found" and url.find("audiofilemagazine.com") == -1:    # Exception avec popup formulaire en erreur
-                        isBrokenLink = True
-                        if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+                    if sites_errors[e] == "404 Not Found" and url.find("audiofilemagazine.com") == -1:    # Exception avec popup formulaire en erreur
+                        is_broken_link = True
+                        if debug_level > 0: print(url + " : " + sites_errors[e])
                         break
                     # Wikis : page vide à créer
-                    if Erreur[e] == "Soit vous avez mal &#233;crit le titre" and url.find("wiki") != -1:
-                        isBrokenLink = True
-                        if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+                    if sites_errors[e] == "Soit vous avez mal &#233;crit le titre" and url.find("wiki") != -1:
+                        is_broken_link = True
+                        if debug_level > 0: print(url + " : " + sites_errors[e])
                         break
-                    elif Erreur[e] == "Il n'y a pour l'instant aucun texte sur cette page." != -1 and htmlSource.find("wiki") != -1:
-                        isBrokenLink = True
-                        if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+                    elif sites_errors[e] == "Il n'y a pour l'instant aucun texte sur cette page." != -1 and html_source.find("wiki") != -1:
+                        is_broken_link = True
+                        if debug_level > 0: print(url + " : " + sites_errors[e])
                         break
-                    elif Erreur[e] == "There is currently no text in this page." != -1 and htmlSource.find("wiki") != -1:
-                        isBrokenLink = True
-                        if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+                    elif sites_errors[e] == "There is currently no text in this page." != -1 and html_source.find("wiki") != -1:
+                        is_broken_link = True
+                        if debug_level > 0: print(url + " : " + sites_errors[e])
                         break
                     # Sites particuliers
-                    elif Erreur[e] == "The page you requested cannot be found" and url.find("restaurantnewsresource.com") == -1:    # bug avec http://www.restaurantnewsresource.com/article35143 (Landry_s_Restaurants_Opens_T_REX_Cafe_at_Downtown_Disney.html)
-                        isBrokenLink = True
-                        if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+                    elif sites_errors[e] == "The page you requested cannot be found" and url.find("restaurantnewsresource.com") == -1:
+                        # bug avec http://www.restaurantnewsresource.com/article35143 (Landry_s_Restaurants_Opens_T_REX_Cafe_at_Downtown_Disney.html)
+                        is_broken_link = True
+                        if debug_level > 0: print(url + " : " + sites_errors[e])
                         break
-                    elif Erreur[e] == "Terme introuvable" != -1 and htmlSource.find("Site de l'ATILF") != -1:
-                        isBrokenLink = True
-                        if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+                    elif sites_errors[e] == "Terme introuvable" != -1 and html_source.find("Site de l'ATILF") != -1:
+                        is_broken_link = True
+                        if debug_level > 0: print(url + " : " + sites_errors[e])
                         break
-                    elif Erreur[e] == "Cette forme est introuvable !" != -1 and htmlSource.find("Site de l'ATILF") != -1:
-                        isBrokenLink = True
-                        if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+                    elif sites_errors[e] == "Cette forme est introuvable !" != -1 and html_source.find("Site de l'ATILF") != -1:
+                        is_broken_link = True
+                        if debug_level > 0: print(url + " : " + sites_errors[e])
                         break
-                    elif Erreur[e] == "Sorry, no matching records for query" != -1 and htmlSource.find("ATILF - CNRS") != -1:
-                        isBrokenLink = True
-                        if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+                    elif sites_errors[e] == "Sorry, no matching records for query" != -1 and html_source.find("ATILF - CNRS") != -1:
+                        is_broken_link = True
+                        if debug_level > 0: print(url + " : " + sites_errors[e])
                         break
                     else:
-                        isBrokenLink = True
-                        if debugLevel > 0: print url.encode(config.console_encoding, 'replace') + " : " + Erreur[e]
+                        is_broken_link = True
+                        if debug_level > 0: print(url + " : " + sites_errors[e])
                         break
 
     except UnicodeError:
-        if debugLevel > 0: print u'UnicodeError lors de la lecture'
-        isBrokenLink = False
+        if debug_level > 0: print('UnicodeError lors de la lecture')
+        is_broken_link = False
     except UnicodeEncodeError:
-        if debugLevel > 0: print u'UnicodeEncodeError lors de la lecture'
-        isBrokenLink = False
+        if debug_level > 0: print('UnicodeEncodeError lors de la lecture')
+        is_broken_link = False
     except UnicodeDecodeError:
-        if debugLevel > 0: print u'UnicodeDecodeError lors de la lecture'
-        isBrokenLink = False
+        if debug_level > 0: print('UnicodeDecodeError lors de la lecture')
+        is_broken_link = False
     except httplib.BadStatusLine:
-        if debugLevel > 0: print u'BadStatusLine lors de la lecture'
-    except httplib.HTTPException:
-        if debugLevel > 0: print u'HTTPException'
-        isBrokenLink = False
+        if debug_level > 0: print('BadStatusLine lors de la lecture')
     except httplib.InvalidURL:
-        if debugLevel > 0: print u'InvalidURL lors de la lecture'
-        isBrokenLink = False
-    except urllib2.HTTPError, e:
-        if debugLevel > 0: print u'HTTPError %s.' % e.code +  u' lors de la lecture'
-        isBrokenLink = False
+        if debug_level > 0: print('InvalidURL lors de la lecture')
+        is_broken_link = False
+    except httplib.HTTPException:
+        if debug_level > 0: print('HTTPException')
+        is_broken_link = False
+    except urllib2.HTTPError as e:
+        if debug_level > 0: print('HTTPError %s.' % e.code +  ' lors de la lecture')
+        is_broken_link = False
     except IOError as e:
-        if debugLevel > 0: print u'I/O error({0}): {1}'.format(e.errno, e.strerror) +  u' lors de la lecture'
-        isBrokenLink = False
+        if debug_level > 0: print('I/O error({0}): {1}'.format(e.errno, e.strerror) +  ' lors de la lecture')
+        is_broken_link = False
     except urllib2.URLError:
-        if debugLevel > 0: print u'URLError lors de la lecture'
-        isBrokenLink = False
+        if debug_level > 0: print('URLError lors de la lecture')
+        is_broken_link = False
     else:
-        if debugLevel > 1: print u'Fin du test du contenu'
-    return isBrokenLink
+        if debug_level > 1: print('Fin du test du contenu')
+    return is_broken_link
 
 
-def getCurrentLinkTemplate(currentPage):
+def getCurrentLinkTemplate(current_page):
     # Extraction du modèle de lien en tenant compte des modèles inclus dedans
-    currentPage2 = currentPage
+    current_page2 = current_page
     templateEndPosition = 0
-    while currentPage2.find(u'{{') != -1 and currentPage2.find(u'{{') < currentPage2.find(u'}}'):
-        templateEndPosition = templateEndPosition + currentPage.find(u'}}')+2
-        currentPage2 = currentPage2[currentPage2.find(u'}}')+2:]
-    templateEndPosition = templateEndPosition + currentPage2.find(u'}}')+2
-    currentTemplate = currentPage[:templateEndPosition]
+    while current_page2.find('{{') != -1 and current_page2.find('{{') < current_page2.find('}}'):
+        templateEndPosition = templateEndPosition + current_page.find('}}')+2
+        current_page2 = current_page2[current_page2.find('}}')+2:]
+    templateEndPosition = templateEndPosition + current_page2.find('}}')+2
+    currentTemplate = current_page[:templateEndPosition]
 
-    if debugLevel > 1:
-        print(u'  getCurrentLinkTemplate()')
+    if debug_level > 1:
+        print('  getCurrentLinkTemplate()')
         print(templateEndPosition)
-        raw_input(currentTemplate.encode(config.console_encoding, 'replace'))
+        input(currentTemplate)
 
     return currentTemplate, templateEndPosition
 
 
 def translateTemplateParameters(currentTemplate):
-    if debugLevel > 1: print 'Remplacement des anciens paramètres, en tenant compte des doublons et des variables selon les modèles'
-    for p in range(0, limiteP):
-        if debugLevel > 1: print oldParam[p].encode(config.console_encoding, 'replace')
-        frName = newParam[p]
-        if oldParam[p] == u'work':
-            if isTemplate(currentTemplate, u'article') and not hasParameter(currentTemplate, u'périodique'):
-                frName = u'périodique'
-            elif isTemplate(currentTemplate, u'lien web') and not hasParameter(currentTemplate, u'site') and not hasParameter(currentTemplate, u'website'):
-                frName = u'site'
+    if debug_level > 1: print('Remplacement des anciens paramètres, en tenant compte des doublons et des variables selon les modèles')
+    for p in range(0, param_limit):
+        if debug_level > 1: print(old_param[p])
+        frName = new_param[p]
+        if old_param[p] == 'work':
+            if isTemplate(currentTemplate, 'article') and not hasParameter(currentTemplate, 'périodique'):
+                frName = 'périodique'
+            elif isTemplate(currentTemplate, 'lien web') and not hasParameter(currentTemplate, 'site') and not hasParameter(currentTemplate, 'website'):
+                frName = 'site'
             else:
-                frName = u'série'
-        elif oldParam[p] == u'publisher':
-            if isTemplate(currentTemplate, u'article') and not hasParameter(currentTemplate, u'périodique') and not hasParameter(currentTemplate, u'work'):
-                frName = u'périodique'
+                frName = 'série'
+        elif old_param[p] == 'publisher':
+            if isTemplate(currentTemplate, 'article') and not hasParameter(currentTemplate, 'périodique') and not hasParameter(currentTemplate, 'work'):
+                frName = 'périodique'
             else:
-                frName = u'éditeur'
-        elif oldParam[p] == u'agency':
-            if isTemplate(currentTemplate, u'article') and not hasParameter(currentTemplate, u'périodique') and not hasParameter(currentTemplate, u'work'):
-                frName = u'périodique'
+                frName = 'éditeur'
+        elif old_param[p] == 'agency':
+            if isTemplate(currentTemplate, 'article') and not hasParameter(currentTemplate, 'périodique') and not hasParameter(currentTemplate, 'work'):
+                frName = 'périodique'
             else:
-                frName = u'auteur institutionnel'
-        elif oldParam[p] == u'issue' and hasParameter(currentTemplate, u'numéro'):
-            frName = u'date' 
-        elif oldParam[p] == u'editor':
-            if hasParameter(currentTemplate, u'éditeur'):
-                frName = u'auteur'
-        elif oldParam[p] == u'en ligne le':
-            if currentTemplate.find(u'archiveurl') == -1 and currentTemplate.find(u'archive url') == -1 and currentTemplate.find(u'archive-url') == -1:
+                frName = 'auteur institutionnel'
+        elif old_param[p] == 'issue' and hasParameter(currentTemplate, 'numéro'):
+            frName = 'date' 
+        elif old_param[p] == 'editor':
+            if hasParameter(currentTemplate, 'éditeur'):
+                frName = 'auteur'
+        elif old_param[p] == 'en ligne le':
+            if currentTemplate.find('archiveurl') == -1 and currentTemplate.find('archive url') == -1 and currentTemplate.find('archive-url') == -1:
                 continue
-            elif currentTemplate.find(u'archivedate') != -1 or currentTemplate.find(u'archive date') != -1 or currentTemplate.find(u'archive-date') != -1:
+            elif currentTemplate.find('archivedate') != -1 or currentTemplate.find('archive date') != -1 or currentTemplate.find('archive-date') != -1:
                 continue
-            elif debugLevel > 0: u' archiveurl ' + u' archivedate'
+            elif debug_level > 0:
+                print(' archiveurl ' + ' archivedate')
 
-        regex = ur'(\| *)' + newParam[p] + ur'( *=)'
+        regex = r'(\| *)' + new_param[p] + r'( *=)'
         hasDouble = re.search(regex, currentTemplate)
         if not hasDouble:
-            regex = ur'(\| *)' + oldParam[p] + ur'( *=)'
-            currentTemplate = re.sub(regex, ur'\1' + frName + ur'\2', currentTemplate)
-    currentTemplate = currentTemplate.replace(u'|=',u'|')
-    currentTemplate = currentTemplate.replace(u'| =',u'|')
-    currentTemplate = currentTemplate.replace(u'|  =',u'|')
-    currentTemplate = currentTemplate.replace(u'|}}',u'}}')
-    currentTemplate = currentTemplate.replace(u'| }}',u'}}')
-    hasIncludedTemplate = currentTemplate.find(u'{{') != -1
+            regex = r'(\| *)' + old_param[p] + r'( *=)'
+            currentTemplate = re.sub(regex, r'\1' + frName + r'\2', currentTemplate)
+    currentTemplate = currentTemplate.replace('|=',u'|')
+    currentTemplate = currentTemplate.replace('| =',u'|')
+    currentTemplate = currentTemplate.replace('|  =',u'|')
+    currentTemplate = currentTemplate.replace('|}}',u'}}')
+    currentTemplate = currentTemplate.replace('| }}',u'}}')
+    hasIncludedTemplate = currentTemplate.find('{{') != -1
     if not hasIncludedTemplate:
-        currentTemplate = currentTemplate.replace(u'||',u'|')
+        currentTemplate = currentTemplate.replace('||',u'|')
 
     return currentTemplate
 
 
-def translateLinkTemplates(currentPage):
-    finalPage = u''
-    for m in range(0, limiteL):
+def translateLinkTemplates(current_page):
+    final_page = ''
+    for m in range(0, translated_templates_limit):
         # Formatage des anciens modèles
-        currentPage = re.sub((u'(Modèle:)?[' + oldTemplate[m][:1] + ur'|' + oldTemplate[m][:1].upper() + ur']' + oldTemplate[m][1:]).replace(u' ', u'_') + ur' *\|', oldTemplate[m] + ur'|', currentPage)
-        currentPage = re.sub((u'(Modèle:)?[' + oldTemplate[m][:1] + ur'|' + oldTemplate[m][:1].upper() + ur']' + oldTemplate[m][1:]).replace(u' ', u'  ') + ur' *\|', oldTemplate[m] + ur'|', currentPage)
-        currentPage = re.sub((u'(Modèle:)?[' + oldTemplate[m][:1] + ur'|' + oldTemplate[m][:1].upper() + ur']' + oldTemplate[m][1:]) + ur' *\|', oldTemplate[m] + ur'|', currentPage)
+        current_page = re.sub(('(Modèle:)?[' + old_template[m][:1] + r'|' + old_template[m][:1].upper() + r']' + old_template[m][1:]).replace(' ', '_') + r' *\|', old_template[m] + r'|', current_page)
+        current_page = re.sub(('(Modèle:)?[' + old_template[m][:1] + r'|' + old_template[m][:1].upper() + r']' + old_template[m][1:]).replace(' ', '  ') + r' *\|', old_template[m] + r'|', current_page)
+        current_page = re.sub(('(Modèle:)?[' + old_template[m][:1] + r'|' + old_template[m][:1].upper() + r']' + old_template[m][1:]) + r' *\|', old_template[m] + r'|', current_page)
         # Traitement de chaque modèle à traduire
-        while re.search(u'{{[\n ]*' + oldTemplate[m] + u' *[\||\n]+', currentPage):
-            if debugLevel > 1:
-                print(u'Modèle n°' + str(m))
-                print(currentPage[re.search(u'{{[\n ]*' + oldTemplate[m] + u' *[\||\n]', currentPage).end()-1:][:100].encode(config.console_encoding, 'replace'))
-            finalPage = finalPage + currentPage[:re.search(u'{{[\n ]*' + oldTemplate[m] + u' *[\||\n]', currentPage).end()-1]
-            currentPage = currentPage[re.search(u'{{[\n ]*' + oldTemplate[m] + u' *[\||\n]', currentPage).end()-1:]    
+        while re.search('{{[\n ]*' + old_template[m] + ' *[\||\n]+', current_page):
+            if debug_level > 1:
+                print('Modèle n°' + str(m))
+                print(current_page[re.search('{{[\n ]*' + old_template[m] + ' *[\||\n]', current_page).end() - 1:][:100])
+            final_page = final_page + current_page[:re.search('{{[\n ]*' + old_template[m] + ' *[\||\n]', current_page).end() - 1]
+            current_page = current_page[re.search('{{[\n ]*' + old_template[m] + ' *[\||\n]', current_page).end() - 1:]
             # Identification du code langue existant dans le modèle
-            languageCode = u''
-            if finalPage.rfind(u'{{') != -1:
-                PageDebut = finalPage[:finalPage.rfind(u'{{')]
-                if PageDebut.rfind(u'{{') != -1 and PageDebut.rfind(u'}}') != -1 and (PageDebut[len(PageDebut)-2:] == u'}}' or PageDebut[len(PageDebut)-3:] == u'}} '):
-                    languageCode = PageDebut[PageDebut.rfind(u'{{')+2:PageDebut.rfind(u'}}')]
+            language_code = ''
+            if final_page.rfind('{{') != -1:
+                page_start = final_page[:final_page.rfind('{{')]
+                if page_start.rfind('{{') != -1 and page_start.rfind('}}') != -1 \
+                        and (page_start[len(page_start)-2:] == '}}' or page_start[len(page_start)-3:] == '}} '):
+                    language_code = page_start[page_start.rfind('{{')+2:page_start.rfind('}}')]
                     if site.family in ['wikipedia', 'wiktionary']:
                         # Recherche de validité mais tous les codes ne sont pas encore sur les sites francophones
-                        if languageCode.find('}}') != -1: languageCode = languageCode[:languageCode.find('}}')]
-                        if debugLevel > 1: print u'Modèle:' + languageCode
-                        page2 = Page(site, u'Modèle:' + languageCode)
+                        if language_code.find('}}') != -1:
+                            language_code = language_code[:language_code.find('}}')]
+                        if debug_level > 1:
+                            print('Modèle:') + language_code
+                        page2 = Page(site, 'Modèle:' + language_code)
                         try:
-                            PageCode = page2.get()
+                            page_code = page2.get()
                         except pywikibot.exceptions.NoPage:
-                            print "NoPage l 425"
-                            PageCode = u''
+                            print('NoPage l 425')
+                            page_code = ''
                         except pywikibot.exceptions.LockedPage: 
-                            print "Locked l 428"
-                            PageCode = u''
+                            print('Locked l 428')
+                            page_code = ''
                         except pywikibot.exceptions.IsRedirectPage: 
-                            PageCode = page2.get(get_redirect=True)
-                        if debugLevel > 0: print(PageCode.encode(config.console_encoding, 'replace'))
-                        if PageCode.find(u'Indication de langue') != -1:
-                            if len(languageCode) == 2:    # or len(languageCode) == 3: if languageCode == u'pdf': |format=languageCode, absent de {{lien web}}
+                            page_code = page2.get(get_redirect=True)
+                        if debug_level > 0:
+                            print(page_code)
+                        if page_code.find('Indication de langue') != -1:
+                            if len(language_code) == 2:  # or len(language_code) == 3: if language_code == 'pdf': |format=language_code, absent de {{lien web}}
                                 # Retrait du modèle de langue devenu inutile
-                                finalPage = finalPage[:finalPage.rfind(u'{{' + languageCode + u'}}')] + finalPage[finalPage.rfind(u'{{' + languageCode + u'}}')+len(u'{{' + languageCode + u'}}'):]
-            if languageCode == u'':
-                if debugLevel > 0: print u' Code langue à remplacer une fois trouvé sur la page distante...'
-                languageCode = 'None'
+                                final_page = final_page[:final_page.rfind('{{' + language_code + '}}')] + final_page[final_page.rfind('{{' + language_code + '}}')+len('{{' + language_code + '}}'):]
+            if language_code == '':
+                if debug_level > 0:
+                    print(' Code langue à remplacer une fois trouvé sur la page distante...')
+                language_code = 'None'
             # Ajout du code langue dans le modèle
-            if debugLevel > 0: print u'Modèle préalable : ' + languageCode
-            regex = ur'[^}]*lang(ue|uage)* *=[^}]*}}'
-            if not re.search(regex, currentPage):
-                currentPage = u'|langue=' + languageCode + currentPage
-            elif re.search(regex, currentPage).end() > currentPage.find(u'}}')+2:
-                currentPage = u'|langue=' + languageCode + currentPage
+            if debug_level > 0:
+                print('Modèle préalable : ') + language_code
+            regex = r'[^}]*lang(ue|uage)* *=[^}]*}}'
+            if not re.search(regex, current_page):
+                current_page = '|langue=' + language_code + current_page
+            elif re.search(regex, current_page).end() > current_page.find('}}')+2:
+                current_page = '|langue=' + language_code + current_page
                 
-        currentPage = finalPage + currentPage
-        finalPage = u''
+        current_page = final_page + current_page
+        final_page = ''
 
-    for m in range(0, limiteM):
-        if debugLevel > 1: print(u' Traduction des noms du modèle ' + oldTemplate[m])
-        currentPage = currentPage.replace(u'{{' + oldTemplate[m] + u' ', u'{{' + oldTemplate[m] + u'')
-        currentPage = re.sub(ur'({{[\n ]*)[' + oldTemplate[m][:1] + ur'|' + oldTemplate[m][:1].upper() + ur']' + oldTemplate[m][1:len(oldTemplate[m])] + ur'( *[\||\n\t|}])', ur'\1' +  newTemplate[m] + ur'\2', currentPage)
+    for m in range(0, templates_limit):
+        if debug_level > 1:
+            print(' Traduction des noms du modèle ' + old_template[m])
+        current_page = current_page.replace('{{' + old_template[m] + ' ', '{{' + old_template[m] + '')
+        current_page = re.sub(r'({{[\n ]*)[' + old_template[m][:1] + r'|' + old_template[m][:1].upper() + r']' +
+                              old_template[m][1:len(old_template[m])] + r'( *[|\n\t}])', r'\1'
+                              + new_template[m] + r'\2', current_page)
         # Suppression des modèles vides
-        regex = u'{{ *[' + newTemplate[m][:1] + ur'|' + newTemplate[m][:1].upper() + ur']' + newTemplate[m][1:len(newTemplate[m])] + ur' *}}'
-        while re.search(regex, currentPage):
-            currentPage = currentPage[:re.search(regex, currentPage).start()] + currentPage[re.search(regex, currentPage).end():]
+        regex = '{{ *[' + new_template[m][:1] + r'|' + new_template[m][:1].upper() + r']' + new_template[m][1:len(new_template[m])] + r' *}}'
+        while re.search(regex, current_page):
+            current_page = current_page[:re.search(regex, current_page).start()] + current_page[re.search(regex, current_page).end():]
         # Traduction des paramètres de chaque modèle de la page
-        regex = u'{{ *[' + newTemplate[m][:1] + ur'|' + newTemplate[m][:1].upper() + ur']' + newTemplate[m][1:len(newTemplate[m])] + ur' *[\||\n]'
-        while re.search(regex, currentPage):
-            finalPage = finalPage + currentPage[:re.search(regex, currentPage).start()+2]
-            currentPage = currentPage[re.search(regex, currentPage).start()+2:]
-            currentTemplate, templateEndPosition = getCurrentLinkTemplate(currentPage)
-            currentPage = translateTemplateParameters(currentTemplate) + currentPage[templateEndPosition:]
+        regex = '{{ *[' + new_template[m][:1] + r'|' + new_template[m][:1].upper() + r']' + new_template[m][1:len(new_template[m])] + r' *[\||\n]'
+        while re.search(regex, current_page):
+            final_page = final_page + current_page[:re.search(regex, current_page).start()+2]
+            current_page = current_page[re.search(regex, current_page).start()+2:]
+            currentTemplate, templateEndPosition = getCurrentLinkTemplate(current_page)
+            current_page = translateTemplateParameters(currentTemplate) + current_page[templateEndPosition:]
 
-        currentPage = finalPage + currentPage
-        finalPage = u''
+        current_page = final_page + current_page
+        final_page = ''
 
-    return currentPage
+    return current_page
 
 
-def translateDates(currentPage):
-    if debugLevel > 1: print(u'  translateDates()')
-    parametersLimit = 9
-    dateParameters = range(1, parametersLimit +1)
-    dateParameters[1] = u'date'
-    dateParameters[2] = u'mois'
-    dateParameters[3] = u'consulté le'
-    dateParameters[4] = u'en ligne le'
-    # Date templates
-    dateParameters[5] = u'dts'
-    dateParameters[6] = u'Dts'
-    dateParameters[7] = u'date triable'
-    dateParameters[8] = u'Date triable'
-
-    for m in range(1, monthLine + 1):
-        if debugLevel > 1:
-            print u'Mois ' + str(m)
-            print TradM[m][1]
-        for p in range(1, parametersLimit):
-            if debugLevel > 1: print u'Recherche de ' + dateParameters[p] + u' *=[ ,0-9]*' + TradM[m][1]
+def translateDates(current_page):
+    if debug_level > 1: print('  translateDates()')
+    date_parameters = ['date', 'mois', 'consulté le', 'en ligne le', 'dts', 'Dts', 'date triable', 'Date triable']
+    for m in range(1, month_line + 1):
+        if debug_level > 1:
+            print('Mois ') + str(m)
+            print(months_translations[m][1])
+        for p in range(1, len(date_parameters)):
+            if debug_level > 1: print('Recherche de ') + date_parameters[p] + ' *=[ ,0-9]*' + months_translations[m][1]
             if p > 4:
-                currentPage = re.sub(ur'({{ *' + dateParameters[p] + ur'[^}]+)' + TradM[m][1] + ur'([^}]+}})', ur'\1' +  TradM[m][2] + ur'\2', currentPage)
-                currentPage = re.sub(ur'({{ *' + dateParameters[p] + ur'[^}]+)(\|[ 0-9][ 0-9][ 0-9][ 0-9])\|' + TradM[m][2] + ur'(\|[ 0-9][ 0-9])}}', ur'\1\3|' +  TradM[m][2] + ur'\2}}', currentPage)
+                current_page = re.sub(r'({{ *' + date_parameters[p] + r'[^}]+)' + months_translations[m][1] + r'([^}]+}})', r'\1' + months_translations[m][2] + r'\2', current_page)
+                current_page = re.sub(r'({{ *' + date_parameters[p] + r'[^}]+)(\|[ 0-9][ 0-9][ 0-9][ 0-9])\|' + months_translations[m][2] + r'(\|[ 0-9][ 0-9])}}', r'\1\3|' + months_translations[m][2] + r'\2}}', current_page)
             else:
-                currentPage = re.sub(ur'(\| *' + dateParameters[p] + ur' *=[ ,0-9]*)' + TradM[m][1] + ur'([ ,0-9]*\.? *[<|\||\n\t|}])', ur'\1' +  TradM[m][2] + ur'\2', currentPage)
-                currentPage = re.sub(ur'(\| *' + dateParameters[p] + ur' *=[ ,0-9]*)' + TradM[m][1][:1].lower() + TradM[m][1][1:] + ur'([ ,0-9]*\.? *[<|\||\n\t|}])', ur'\1' +  TradM[m][2] + ur'\2', currentPage)
+                current_page = re.sub(r'(\| *' + date_parameters[p] + r' *=[ ,0-9]*)' + months_translations[m][1] + r'([ ,0-9]*\.? *[<|\||\n\t|}])', r'\1' + months_translations[m][2] + r'\2', current_page)
+                current_page = re.sub(r'(\| *' + date_parameters[p] + r' *=[ ,0-9]*)' + months_translations[m][1][:1].lower() + months_translations[m][1][1:] + r'([ ,0-9]*\.? *[<|\||\n\t|}])', r'\1' + months_translations[m][2] + r'\2', current_page)
                 
                 # Ordre des dates : jj mois aaaa
-                if debugLevel > 1: print u'Recherche de ' + dateParameters[p] + u' *= *' + TradM[m][2] + u' *([0-9]+), '
-                currentPage = re.sub(ur'(\| *' + dateParameters[p] + u' *= *)' + TradM[m][2] + ur' *([0-9]+), *([0-9]+)\.? *([<|\||\n\t|}])', ur'\1' + ur'\2' + ur' ' + TradM[m][2] + ur' ' + ur'\3' + ur'\4', currentPage)    # trim(u'\3') ne fonctionne pas
+                if debug_level > 1: print('Recherche de ') + date_parameters[p] + ' *= *' + months_translations[m][2] + ' *([0-9]+), '
+                current_page = re.sub(r'(\| *' + date_parameters[p] + ' *= *)' + months_translations[m][2] + r' *([0-9]+), *([0-9]+)\.? *([<|\||\n\t|}])', r'\1' + r'\2' + r' ' + months_translations[m][2] + r' ' + r'\3' + r'\4', current_page)    # trim('\3') ne fonctionne pas
  
-    return currentPage
+    return current_page
 
 
-def translateLanguages(currentPage):
-    if debugLevel > 1: print(u'  translateLanguages()')
-    for l in range(1, ligneL+1):
-        if debugLevel > 1:
-            print u'Langue ' + str(l)
-            print TradL[l][1]
-        currentPage = re.sub(ur'(\| *langue *= *)' + TradL[l][1] + ur'( *[<|\||\n\t|}])', ur'\1' +  TradL[l][2] + ur'\2', currentPage)
+def translateLanguages(current_page):
+    if debug_level > 1: print('  translateLanguages()')
+    for l in range(1, languages_line + 1):
+        if debug_level > 1:
+            print('Langue ') + str(l)
+            print(languages_translations[l][1])
+        current_page = re.sub(r'(\| *langue *= *)' + languages_translations[l][1] + r'( *[<|\||\n\t|}])', r'\1' + languages_translations[l][2] + r'\2', current_page)
 
         # TODO rustine suite à un imprévu censé être réglé ci-dessus, mais qui touche presque 10 % des pages.
-        currentPage = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Aa]rticle\|langue=' + TradL[l][2] + ur'\|)', ur'\1', currentPage)
-        currentPage = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Ll]ien web\|langue=' + TradL[l][2] + ur'\|)', ur'\1', currentPage)
-        currentPage = re.sub(ur'{{' + TradL[l][2] + ur'}}[ \n]*({{[Oo]uvrage\|langue=' + TradL[l][2] + ur'\|)', ur'\1', currentPage)
+        current_page = re.sub(r'{{' + languages_translations[l][2] + r'}}[ \n]*({{[Aa]rticle\|langue=' + languages_translations[l][2] + r'\|)', r'\1', current_page)
+        current_page = re.sub(r'{{' + languages_translations[l][2] + r'}}[ \n]*({{[Ll]ien web\|langue=' + languages_translations[l][2] + r'\|)', r'\1', current_page)
+        current_page = re.sub(r'{{' + languages_translations[l][2] + r'}}[ \n]*({{[Oo]uvrage\|langue=' + languages_translations[l][2] + r'\|)', r'\1', current_page)
  
-    return currentPage
+    return current_page
+
 
 def isTemplate(string, template):
-    regex = ur'^(' + template[:1].upper() + ur'|' + template[:1].lower() + ur')' + template[1:]
+    regex = r'^(' + template[:1].upper() + r'|' + template[:1].lower() + r')' + template[1:]
     return re.search(regex, string)
 
+
 def hasParameter(string, param):
-    regex = ur'\| *' + param + ur' *='
+    regex = r'\| *' + param + r' *='
     return re.search(regex, string)
