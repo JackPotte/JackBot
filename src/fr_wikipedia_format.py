@@ -11,6 +11,7 @@ Ce script :
 """
 from __future__ import absolute_import, unicode_literals
 import os
+import re
 import sys
 import pywikibot
 from pywikibot import *
@@ -55,7 +56,8 @@ def treat_page_by_name(page_name):
     page = Page(site, page_name)
     if not page.exists():
         return
-    if not has_more_than_time(page): return
+    if not has_more_than_time(page):
+        return
     if not treat_all_namespaces and page.namespace() != 0 and page_name.find(username) == -1 \
             and page_name.find('Template:Cite pmid/') == -1:
         return
@@ -142,9 +144,10 @@ def treat_page_by_name(page_name):
     if current_page.count('[') - current_page.count(']') != 0:
         if page_name.find('User:JackBot/') == -1: log('*[[' + page_name + ']] : crochet cassé')
         # if debug_level > 1: raise Exception('Crochet cassé')
-    if current_page_content.count('[[') - current_page_content.count(']]') != current_page.count('[[') - current_page.count(']]'):
+    if current_page_content.count('[[') - current_page_content.count(']]') != current_page.count('[[') \
+            - current_page.count(']]'):
         txt_file = codecs.open(output, 'a', 'utf-8')
-        txt_file.write(current_page + '\n\n------------------------------------------------------------------------------------------------------------\n\n')
+        txt_file.write(current_page + '\n\n-----------------------------------------------------------------------\n\n')
         txt_file.close()
         if debug_level > 0:
             print('Crochets cassés')    # raise Exception('Crochets cassés')
@@ -152,7 +155,7 @@ def treat_page_by_name(page_name):
         if safe_mode: return
     if current_page_content.count('{{') - current_page_content.count('}}') != current_page.count('{{') - current_page.count('}}'):
         txt_file = codecs.open(output, 'a', 'utf-8')
-        txt_file.write(current_page + '\n\n------------------------------------------------------------------------------------------------------------\n\n')
+        txt_file.write(current_page + '\n\n-----------------------------------------------------------------------\n\n')
         txt_file.close()
         if debug_level > 0:
             print('Accolades cassées')    #raise Exception('Accolades cassées')
@@ -205,10 +208,11 @@ def main(*args):
         elif sys.argv[1] == '-category' or sys.argv[1] == '-cat':
             after_page = ''
             if len(sys.argv) > 2: after_page = sys.argv[2]
-            p.pages_by_cat('Catégorie:page_content du modèle Ouvrage comportant une erreur', namespaces=None, after_page=after_page)
-            #treat_all_namespaces = True
-            #p.pagesByCat('Catégorie:Pages utilisant des liens magiques ISBN', namespaces = None, after_page = after_page)
-            #p.pagesByCat('Catégorie:Pages avec ISBN invalide', namespaces = None, after_page = after_page)
+            p.pages_by_cat('Catégorie:page_content du modèle Ouvrage comportant une erreur', namespaces=None,
+                           after_page=after_page)
+            # treat_all_namespaces = True
+            # p.pagesByCat('Catégorie:Pages utilisant des liens magiques ISBN', namespaces = None, after_page = after_page)
+            # p.pagesByCat('Catégorie:Pages avec ISBN invalide', namespaces = None, after_page = after_page)
         elif sys.argv[1] == '-redirects':
             p.pages_by_redirects()
         elif sys.argv[1] == '-all':
@@ -252,7 +256,8 @@ def main(*args):
         p.pages_by_link('Template:Cite book')
         p.pages_by_link('Template:Cita libro')
         p.pages_by_link('Template:Webbref')
-        #,p.pagesByLink('Template:Reflist') Interblocages quotidients
+        p.pages_by_link('Template:Internetquelle')
+        # p.pagesByLink('Template:Reflist')  # Interblocages quotidients
 
 
 if __name__ == "__main__":

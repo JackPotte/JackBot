@@ -130,6 +130,9 @@ new_template.append('ouvrage')
 # sv
 old_template.append('webbref')
 new_template.append('lien web')
+# de
+old_template.append('internetquelle')
+new_template.append('lien web')
 translated_templates_limit = len(new_template)
 
 # Modèle avec alias français
@@ -304,6 +307,9 @@ old_param.append('booktitle')
 new_param.append('titre livre')
 old_param.append('others')
 new_param.append('champ libre')
+old_param.append('type')
+new_param.append('nature ouvrage')
+
 # Fix
 old_param.append('en ligne le')
 new_param.append('archivedate')
@@ -318,7 +324,41 @@ new_param.append('éditeur')
 old_param.append('editor2')
 new_param.append('auteur2')
 
-# espagnol
+# de
+old_param.append('werk')
+new_param.append('périodique')
+old_param.append('titel')
+new_param.append('titre')
+old_param.append('TitelErg')
+new_param.append('sous-titre')
+old_param.append('hrsg')
+new_param.append('éditeur')
+old_param.append('offline')
+new_param.append('brisé le')
+old_param.append('zugriff')
+new_param.append('consulté le')
+old_param.append('archiv-url')
+new_param.append('archiveurl')
+old_param.append('archiv-datum')
+new_param.append('archivedate')
+old_param.append('autor')
+new_param.append('nom')
+old_param.append('datum')
+new_param.append('date')
+old_param.append('datum-jahr')
+new_param.append('année')
+old_param.append('datum-monat')
+new_param.append('mois')
+old_param.append('datum-tag')
+new_param.append('jour')
+old_param.append('sprache')
+new_param.append('langue')
+old_param.append('seiten')
+new_param.append('pages')
+old_param.append('zitat')
+new_param.append('citation')  # "extrait" ailleurs
+
+# es
 old_param.append('autor')
 new_param.append('auteur')
 old_param.append('título')
@@ -342,7 +382,7 @@ new_param.append('auteur institutionnel')  # TODO write here the alternatives wh
 old_param.append('magazine')
 new_param.append('périodique')
 
-# italien
+# it
 old_param.append('autore')
 new_param.append('auteur')
 old_param.append('titolo')
@@ -372,7 +412,7 @@ new_param.append('page')
 old_param.append('editore')
 new_param.append('éditeur')
 
-# suédois
+# sv
 old_param.append('författar')
 new_param.append('auteur')
 old_param.append('titel')
@@ -957,6 +997,8 @@ def hyper_lynx(current_page):
     final_page = final_page.replace('{{lien mortarchive', '{{lien mort archive')
     final_page = final_page.replace('|langue=None', '')
     final_page = final_page.replace('|langue=en|langue=en', '|langue=en')
+    final_page = final_page.replace('deadurl=yes', 'brisé le=oui')
+    final_page = final_page.replace('deadurl=ja', 'brisé le=oui')
     if debug_level > 0:
         print('Fin hyperlynx.py')
 
@@ -1390,7 +1432,7 @@ def testURL(url, debug_level=0, opener=None):
                 url = url[0:url.find('_r=')-1] + "?_r=4&"
         headers = {'User-Agent': agent}
         req = urllib2.Request(url, "", headers)
-        req.add_header('Accept','text/html')
+        req.add_header('Accept', 'text/html')
         res = urllib2.urlopen(req)
         html_source = res.read()
         if debug_level > 0: print(str(len(html_source)))
@@ -1567,6 +1609,7 @@ def testURL(url, debug_level=0, opener=None):
         print(connection_method + ' Fin du test d\'existance du site')
     return ''
 
+
 def testURLPage(html_source, url, debug_level = 0):
     is_broken_link = False
     try:
@@ -1678,56 +1721,69 @@ def getCurrentLinkTemplate(current_page):
     return currentTemplate, templateEndPosition
 
 
-def translateTemplateParameters(currentTemplate):
-    if debug_level > 1: print('Remplacement des anciens paramètres, en tenant compte des doublons et des variables selon les modèles')
+def translateTemplateParameters(current_template):
+    if debug_level > 1:
+        print('Remplacement des anciens paramètres, en tenant compte des doublons et des variables selon les modèles')
     for p in range(0, param_limit):
-        if debug_level > 1: print(old_param[p])
-        frName = new_param[p]
+        if debug_level > 1:
+            print(old_param[p])
+        fr_name = new_param[p]
         if old_param[p] == 'work':
-            if isTemplate(currentTemplate, 'article') and not hasParameter(currentTemplate, 'périodique'):
-                frName = 'périodique'
-            elif isTemplate(currentTemplate, 'lien web') and not hasParameter(currentTemplate, 'site') and not hasParameter(currentTemplate, 'website'):
-                frName = 'site'
+            if isTemplate(current_template, 'article') and not hasParameter(current_template, 'périodique'):
+                fr_name = 'périodique'
+            elif isTemplate(current_template, 'lien web') and not hasParameter(current_template, 'site') \
+                    and not hasParameter(current_template, 'website'):
+                fr_name = 'site'
             else:
-                frName = 'série'
+                fr_name = 'série'
         elif old_param[p] == 'publisher':
-            if isTemplate(currentTemplate, 'article') and not hasParameter(currentTemplate, 'périodique') and not hasParameter(currentTemplate, 'work'):
-                frName = 'périodique'
+            if isTemplate(current_template, 'article') and not hasParameter(current_template, 'périodique') \
+                    and not hasParameter(current_template, 'work'):
+                fr_name = 'périodique'
             else:
-                frName = 'éditeur'
+                fr_name = 'éditeur'
         elif old_param[p] == 'agency':
-            if isTemplate(currentTemplate, 'article') and not hasParameter(currentTemplate, 'périodique') and not hasParameter(currentTemplate, 'work'):
-                frName = 'périodique'
+            if isTemplate(current_template, 'article') and not hasParameter(current_template, 'périodique') \
+                    and not hasParameter(current_template, 'work'):
+                fr_name = 'périodique'
             else:
-                frName = 'auteur institutionnel'
-        elif old_param[p] == 'issue' and hasParameter(currentTemplate, 'numéro'):
-            frName = 'date' 
+                fr_name = 'auteur institutionnel'
+        elif old_param[p] == 'issue' and hasParameter(current_template, 'numéro'):
+            fr_name = 'date'
         elif old_param[p] == 'editor':
-            if hasParameter(currentTemplate, 'éditeur'):
-                frName = 'auteur'
+            if hasParameter(current_template, 'éditeur'):
+                fr_name = 'auteur'
         elif old_param[p] == 'en ligne le':
-            if currentTemplate.find('archiveurl') == -1 and currentTemplate.find('archive url') == -1 and currentTemplate.find('archive-url') == -1:
+            if current_template.find('archiveurl') == -1 and current_template.find('archive url') == -1 \
+                    and current_template.find('archive-url') == -1:
                 continue
-            elif currentTemplate.find('archivedate') != -1 or currentTemplate.find('archive date') != -1 or currentTemplate.find('archive-date') != -1:
+            elif current_template.find('archivedate') != -1 or current_template.find('archive date') != -1 \
+                    or current_template.find('archive-date') != -1:
                 continue
             elif debug_level > 0:
                 print(' archiveurl ' + ' archivedate')
-
+        elif old_param[p] == 'type':
+            if isTemplate(current_template, 'article'):
+                fr_name = 'nature article'
+            elif isTemplate(current_template, 'ouvrage'):
+                fr_name = 'nature ouvrage'
+            else:
+                fr_name = 'type'
         regex = r'(\| *)' + new_param[p] + r'( *=)'
-        hasDouble = re.search(regex, currentTemplate)
-        if not hasDouble:
+        has_double = re.search(regex, current_template)
+        if not has_double:
             regex = r'(\| *)' + old_param[p] + r'( *=)'
-            currentTemplate = re.sub(regex, r'\1' + frName + r'\2', currentTemplate)
-    currentTemplate = currentTemplate.replace('|=',u'|')
-    currentTemplate = currentTemplate.replace('| =',u'|')
-    currentTemplate = currentTemplate.replace('|  =',u'|')
-    currentTemplate = currentTemplate.replace('|}}',u'}}')
-    currentTemplate = currentTemplate.replace('| }}',u'}}')
-    hasIncludedTemplate = currentTemplate.find('{{') != -1
-    if not hasIncludedTemplate:
-        currentTemplate = currentTemplate.replace('||',u'|')
+            current_template = re.sub(regex, r'\1' + fr_name + r'\2', current_template)
+    current_template = current_template.replace('|=', u'|')
+    current_template = current_template.replace('| =', u'|')
+    current_template = current_template.replace('|  =', u'|')
+    current_template = current_template.replace('|}}', u'}}')
+    current_template = current_template.replace('| }}', u'}}')
+    has_included_template = current_template.find('{{') != -1
+    if not has_included_template:
+        current_template = current_template.replace('||', u'|')
 
-    return currentTemplate
+    return current_template
 
 
 def translateLinkTemplates(current_page):
@@ -1816,7 +1872,8 @@ def translateLinkTemplates(current_page):
 
 
 def translateDates(current_page):
-    if debug_level > 1: print('  translateDates()')
+    if debug_level > 1:
+        print('  translateDates()')
     date_parameters = ['date', 'mois', 'consulté le', 'en ligne le', 'dts', 'Dts', 'date triable', 'Date triable']
     for m in range(1, month_line + 1):
         if debug_level > 1:

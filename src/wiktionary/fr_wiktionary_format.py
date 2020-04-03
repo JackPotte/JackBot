@@ -171,9 +171,8 @@ def treat_page_by_name(page_name):
                 equals_in_section = '===='
             if p == limit3:
                 equals_in_section = '====='
-            print(p)
-            print(templates[p])
-            print(sections[p])
+            if debug_level > 1:
+                print(p, templates[p], sections[p])
             regex = r'[= ]*{{[\-loc]*(' + templates[p] + r'|S\|' + sections[p] + r')([^}]*)}}[= ]*\n'
             if re.search(regex, page_content):
                 if debug_level > 1:
@@ -875,17 +874,17 @@ def treat_page_by_name(page_name):
 
             for i in range(0, 2):
                 if infinitive is not None and infinitive != '':
-                    final_page_content, summary = removeFalseHomophones(final_page_content, language, page_name,
+                    final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
                                                                         infinitive, summary)
                 if singular_page_name is not None and singular_page_name != '':
-                    final_page_content, summary = removeFalseHomophones(final_page_content, language, page_name,
+                    final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
                                                                         singular_page_name, summary)
                 if flexion_page_name is not None and flexion_page_name != '':
-                    final_page_content, summary = removeFalseHomophones(final_page_content, language, page_name,
+                    final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
                                                                         flexion_page_name, summary)
                 ms_page_name = get_lemma_from_feminine(final_page_content, language, ['adjectif'])
                 if ms_page_name is not None and ms_page_name != '':
-                    final_page_content, summary = removeFalseHomophones(final_page_content, language, page_name,
+                    final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
                                                                         ms_page_name, summary)
             if debug_level > 2:
                 input(final_page_content)
