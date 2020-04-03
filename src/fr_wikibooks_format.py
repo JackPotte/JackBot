@@ -13,6 +13,13 @@ dir_src = os.path.dirname(__file__)
 sys.path.append(dir_src)
 sys.path.append(os.path.join(dir_src, 'lib'))
 from lib import *
+from html2unicode import *
+from default_sort import *
+from hyperlynx import *
+from languages import *
+from languages_generator import *
+from page_functions import *
+from PageProvider import *
 
 # Global variables
 debug_level = 0
