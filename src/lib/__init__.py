@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from PageProvider import *
-from defaultSort import *
-from html2Unicode import *
+from __future__ import absolute_import, unicode_literals
+from default_sort import *
+from html2unicode import *
 from hyperlynx import *
 from languages import *
-from pageFunctions import *
-from WiktionaryPageFunctions import *
+from languages_generator import *
+from page_functions import *
+from PageProvider import *
