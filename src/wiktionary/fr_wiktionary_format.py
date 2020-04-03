@@ -78,9 +78,10 @@ anagrams_max_length = 4  # TODO: from dump otherwise 5 chars > 5 min & 8 chars >
 
 
 def treat_page_by_name(page_name):
-    global natures, definition_templates, definition_sentences, etymologyTemplates, etymologyTemplatesWithLanguageAtLang, \
-        etymologyTemplatesInSatelliteWords, etymologyTemplatesWithLanguageAtFirst, \
-        etymologyTemplatesWithLanguageAtSecond, debug_level
+    global natures, definition_templates, definition_sentences, etymology_templates,\
+        etymology_templates_with_language_at_lang, \
+        etymology_templates_in_satellite_words, etymology_templates_with_language_at_first, \
+        etymology_templates_with_language_at_second, debug_level
     summary = '[[Wiktionnaire:Structure des articles|Autoformatage]]'
     if debug_level > 0:
         print('------------------------------------')
@@ -459,7 +460,7 @@ def treat_page_by_name(page_name):
                             final_page_content, page_content = next_template(final_page_content, page_content)
 
                 # Templates with language code at second
-                elif current_template in definition_templates + etymologyTemplatesWithLanguageAtSecond + ['pron',
+                elif current_template in definition_templates + etymology_templates_with_language_at_second + ['pron',
                                                                                                          'phon']:
                     if language_code == 'conv':
                         final_page_content, page_content = next_template(final_page_content, page_content)
@@ -473,7 +474,7 @@ def treat_page_by_name(page_name):
                                                                                         language_code)
 
                 # Templates with "lang="
-                elif current_template in [u'écouter', 'cf'] + etymologyTemplatesWithLanguageAtLang:
+                elif current_template in [u'écouter', 'cf'] + etymology_templates_with_language_at_lang:
                     final_page_content, page_content = add_language_code_with_named_parameter_to_template(
                         final_page_content,
                         page_content,
@@ -954,7 +955,7 @@ def format_fr_section(page_content, summary, page_name, regex_page_name):
     regex = r'(' + language_code + r'\|flexion|' + '|'.join(definition_sentences) + '|'.join(
         map(lambda x: x.capitalize(), definition_sentences)) + r')'
     regex2 = r'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|' + \
-             '|'.join(etymologyTemplatesInSatelliteWords) + r')[\|}]'
+             '|'.join(etymology_templates_in_satellite_words) + r')[\|}]'
     fr_section, language_start, language_end = get_language_section(page_content, language_code)
     if fr_section is not None and re.search(regex, fr_section) is None and re.search(regex2, fr_section) is None and \
             count_first_definition_size(fr_section) > 3:

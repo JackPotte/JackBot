@@ -3,453 +3,730 @@
 
 from __future__ import absolute_import, unicode_literals
 
-templates = []  # Liste des modèles du site à traiter
-sections = []  # Sections à remplacer
-section_level = []
+templates = []  # Modèles du site à traiter
+sections = []   # Sections à remplacer, groupées si elles acceptent les modèles de domaine catégorisant
+sections_level = []
+sections_order = []  # dans l'ordre de [[WT:SDA]]
 # Paragraphes autorisant les modèles catégorisants par langue ({{voir| et {{voir/ sont gérés individuellement)
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
 templates.append('-adj-dem-')
 sections.append('adjectif démonstratif')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-adj-dém-')
 sections.append('adjectif démonstratif')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-adj-excl-')
 sections.append('adjectif exclamatif')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-adj-indef-')
 sections.append('adjectif indéfini')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-adj-indéf-')
 sections.append('adjectif indéfini')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-adj-int-')
 sections.append('adjectif interrogatif')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-adj-num-')
 sections.append('adjectif numéral')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-adj-pos-')
 sections.append('adjectif possessif')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-adjectif-')
 sections.append('adjectif')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-adj-')
 sections.append('adjectif')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-adv-int-')
 sections.append('adverbe interrogatif')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-adv-pron-')
 sections.append('adverbe pronominal')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-adv-rel-')
 sections.append('adverbe relatif')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-adverbe-')
 sections.append('adverbe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-adv-')
 sections.append('adverbe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-aff-')
 sections.append('affixe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-art-def-')
 sections.append('article défini')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-art-déf-')
 sections.append('article défini')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-art-indef-')
 sections.append('article indéfini')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-art-indéf-')
 sections.append('article indéfini')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-art-part-')
 sections.append('article partitif')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-art-')
 sections.append('article')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-aux-')
 sections.append('verbe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-circonf-')
 sections.append('circonfixe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-class-')
 sections.append('classificateur')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-conj-coord-')
 sections.append('conjonction de coordination')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-conj-')
 sections.append('conjonction')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-copule-')
 sections.append('copule')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-dét-')
 sections.append('déterminant')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-erreur-')
 sections.append('erreur')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-gismu-')
 sections.append('gismu')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-inf-')
 sections.append('infixe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-interf-')
 sections.append('interfixe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-interj-')
 sections.append('interjection')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-lettre-')
 sections.append('lettre')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-nom-fam-')
 sections.append('nom de famille')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-nom-pr-')
 sections.append('nom propre')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-nom-propre-')
 sections.append('nom propre')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-nom-sciences-')
 sections.append('nom scientifique')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-nom-')
 sections.append('nom')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-num-')
 sections.append('numéral')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-numér-')
 sections.append('numéral')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-numéral-')
 sections.append('numéral')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-part-num-')
 sections.append('particule numérale')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-part-')
 sections.append('particule')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-patronyme-')
 sections.append('patronyme')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-post-')
 sections.append('postposition')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-préf-')
 sections.append('préfixe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-préfixe-')
 sections.append('préfixe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-prénom-')
 sections.append('prénom')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-pré-nom-')
 sections.append('pré-nom')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-prép-')
 sections.append('préposition')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-pré-verbe-')
 sections.append('pré-verbe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-pronom-adj-')
 sections.append('pronom-adjectif')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-pronom-dém-')
 sections.append('pronom démonstratif')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-pronom-indéf-')
 sections.append('pronom indéfini')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-pronom-int-')
 sections.append('pronom interrogatif')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-pronom-pers-')
 sections.append('pronom personnel')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-pronom-pos-')
 sections.append('pronom possessif')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-pronom-rel-')
 sections.append('pronom relatif')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-pronom-')
 sections.append('pronom')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-quantif-')
 sections.append('quantificateur')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-radical-')
 sections.append('radical')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-rafsi-')
 sections.append('rafsi')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-sinogramme-')
 sections.append('sinogramme')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-subst-pron-pers-')
 sections.append('adjectifs')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-suf-')
 sections.append('suffixe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-suffixe-')
 sections.append('suffixe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-symb-')
 sections.append('symbole')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-symbole-')
 sections.append('symbole')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-verbe-pr-')
 sections.append('verbe pronominal')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-verb-pr-')
 sections.append('verbe pronominal')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-verb-')
 sections.append('verbe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-verbe-')
 sections.append('verbe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-faux-prov-')
 sections.append('faux proverbe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-prov-')
 sections.append('proverbe')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-loc-phr-')
 sections.append('locution-phrase')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-loc-')
 sections.append('locution')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-locution-')
 sections.append('locution')
-section_level.append('===')
-templates.append('-var-typo-')
-sections.append('variante typographique')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-onoma-')
 sections.append('onomatopée')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-onomatopée-')
 sections.append('onomatopée')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-interjection-')
 sections.append('interjection')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(2)
+
 limit1 = len(templates)
 # Paragraphes sans code langue catégorisant, de niveau 3
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_contexte
-templates.append('-réf-')
-sections.append('références')
-section_level.append('===')
-templates.append('-ref-')
-sections.append('références')
-section_level.append('===')
-templates.append('-références-')
-sections.append('références')
-section_level.append('===')
-templates.append('-sino-dico-')
-sections.append('dico sinogrammes')
-section_level.append('===')
-templates.append('-écrit-')
-sections.append('écriture')
-section_level.append('===')
-templates.append('-voir-')
-sections.append('voir aussi')
-section_level.append('===')
-templates.append('-anagrammes-')
-sections.append('anagrammes')
-section_level.append('===')
-templates.append('-anagr-')
-sections.append('anagrammes')
-section_level.append('===')
 templates.append('-étym-')
 sections.append('étymologie')
-section_level.append('===')
-templates.append('-pron-')
-sections.append('prononciation')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(1)
+
 templates.append('-décl-')
 sections.append('déclinaison')
-section_level.append('===')
+sections_level.append('===')
+sections_order.append(3)
+
+templates.append('-sino-dico-')
+sections.append('dico sinogrammes')
+sections_level.append('===')
+sections_order.append(3)
+
+templates.append('-écrit-')
+sections.append('écriture')
+sections_level.append('===')
+sections_order.append(3)
+
+templates.append('-voir-')
+sections.append('voir aussi')
+sections_level.append('===')
+sections_order.append(22)
+
+templates.append('-anagrammes-')
+sections.append('anagrammes')
+sections_level.append('===')
+sections_order.append(21)
+
+templates.append('-anagr-')
+sections.append('anagrammes')
+sections_level.append('===')
+sections_order.append(21)
+
+templates.append('-pron-')
+sections.append('prononciation')
+sections_level.append('===')
+sections_order.append(17)
+
+templates.append('-réf-')
+sections.append('références')
+sections_level.append('===')
+sections_order.append(23)
+
+templates.append('-ref-')
+sections.append('références')
+sections_level.append('===')
+sections_order.append(23)
+
+templates.append('-références-')
+sections.append('références')
+sections_level.append('===')
+sections_order.append(23)
+
 limit2 = len(templates)
 # De niveau 4
 templates.append('-compos-')
 sections.append('composés')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(7)
+
 templates.append('-dial-')
 sections.append('variantes dialectales')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(3)
+
 templates.append('-faux-amis-')
 sections.append('faux-amis')
-section_level.append('====')
-templates.append('-image-')
-sections.append('images vidéo')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(19)
+
 templates.append('-trad-')
 sections.append('traductions')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(15)
+
 templates.append('-dimin-')
 sections.append('diminutifs')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(8)
+
 templates.append('-drv-int-')
 sections.append('dérivés autres langues')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(8)
+
 templates.append('-drv-')
 sections.append('dérivés')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(7)
+
 templates.append('-exp-')
 sections.append('expressions')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(7)
+
 templates.append('-gent-')
 sections.append('gentilés')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(7)
+
 templates.append('-hist-')
 sections.append('attestations')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(7)
+
 templates.append('-holo-')
 sections.append('holonymes')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(14)
+
 templates.append('-hyper-')
 sections.append('hyperonymes')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(11)
+
 templates.append('-hypo-')
 sections.append('hyponymes')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(12)
+
 templates.append('-méro-')
 sections.append('méronymes')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(13)
+
 templates.append('-noms-vern-')
 sections.append('noms vernaculaires')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(3)
+
 templates.append('-ortho-arch-')
 sections.append('anciennes orthographes')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(3)
+
 templates.append('-paro-')
 sections.append('paronymes')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(20)
+
 templates.append('-phrases-')
 sections.append('phrases')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(10)
+
 templates.append('-q-syn-')
 sections.append('quasi-synonymes')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(6)
+
 templates.append('-syn-')
 sections.append('synonymes')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(5)
+
 templates.append('-tran-')
 sections.append('transcriptions')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(3)
+
 templates.append('-trans-')
 sections.append('transcriptions')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(3)
+
 templates.append('-translit-')
 sections.append('translittérations')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(3)
+
 templates.append('-tropo-')
 sections.append('troponymes')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(10)
+
 templates.append('-var-ortho-')
 sections.append('variantes orthographiques')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(3)
+
 templates.append('-var-ortho-')
 sections.append('variantes ortho')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(3)
+
+templates.append('-var-typo-')
+sections.append('variante typographique')
+sections_level.append('====')
+sections_order.append(3)
+
 templates.append('-var-')
 sections.append('variantes')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(4)
+
 templates.append('-vidéo-')
 sections.append('images vidéo')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(22)
+
 templates.append('-voc-')
 sections.append('vocabulaire')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(10)
+
 templates.append('-voc-')
 sections.append('vocabulaire apparenté')
-section_level.append('====')
-templates.append('-abréviation-')
-sections.append('abréviations')
-section_level.append('====')
-templates.append('-ant-')
-sections.append('antonymes')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(10)
+
 templates.append('-abrév-')
 sections.append('abréviations')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(3)
+
+templates.append('-abréviation-')
+sections.append('abréviations')
+sections_level.append('====')
+sections_order.append(3)
+
+templates.append('-ant-')
+sections.append('antonymes')
+sections_level.append('====')
+sections_order.append(6)
+
 templates.append('-dial-')
 sections.append('dial')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(3)
+
 templates.append('-apr-')
 sections.append('apparentés')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(9)
+
 templates.append('-conjug-')
 sections.append('conjugaison')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(7)
+
 templates.append('-cit-')
 sections.append('citations')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(7)
+
 templates.append('vidéos')
 sections.append('vidéos')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(22)
+
 templates.append('augmentatifs')
 sections.append('augmentatifs')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(3)
+
 templates.append('diminutifs')
 sections.append('diminutifs')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(3)
+
 templates.append('-notes-')
 sections.append('notes')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(3)
+
 templates.append('-note-')
 sections.append('notes')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(3)
 # Avec code langue
 templates.append('-homo-')
 sections.append('homophones')
-section_level.append('====')
+sections_level.append('====')
+sections_order.append(18)
+
 limit3 = len(templates)
+
 templates.append('trad-trier')
 sections.append('traductions à trier')
-section_level.append('=====')
+sections_level.append('=====')
+sections_order.append(16)
+
 limit4 = len(templates)
 
 sections.append('catégorie')
-section_level.append('')
+sections_level.append('')
+sections_order.append(25)
+
 sections.append('clé de tri')
-section_level.append('')
+sections_level.append('')
+sections_order.append(26)
 
 templates.append('caractère')
-templates.append('langue')
-templates.append('S')
+sections_level.append('==')
+sections_order.append(2)
 
-# https://fr.wiktionary.org/wiki/Catégorie:Modèles_étymologiques
-etymologyTemplates = [u'étcompcat', 'étyl', 'étylp', 'louchébem', 'reverlanisation', 'verlan']
-etymologyTemplatesWithLanguageAtLang = ['compos', 'composé de', 'deet', 'date'] #, 'siècle'
-etymologyTemplatesInSatelliteWords = ['abréviation', 'abréviation de', 'acronyme', 'apocope', 'aphérèse', 'ellipse', 'par ellipse', 'sigle']
-etymologyTemplatesWithLanguageAtFirst = etymologyTemplatesInSatelliteWords + ['agglutination', 'antonomase', \
-    'déglutination', 'mot-valise', 'parataxe', 'syncope', 'univerbation']
-etymologyTemplatesWithLanguageAtSecond = ['dénominal', 'dénominal de', 'déverbal', 'déverbal de', 'déverbal sans suffixe']
+templates.append('langue')
+sections_level.append('==')
+sections_order.append(2)
+
+templates.append('S')
+sections_level.append('==')
+sections_order.append(2)
 
 # Modèles qui ne sont pas des titres de paragraphes
 templates.append('?')
@@ -474,7 +751,18 @@ templates.append('trad+')
 templates.append('trad')
 templates.append('préciser')
 templates.append('cf')
-templates = templates + etymologyTemplatesWithLanguageAtLang
+
+etymology_templates_with_language_at_lang = ['compos', 'composé de', 'deet', 'date']  #, 'siècle'
+# https://fr.wiktionary.org/wiki/Catégorie:Modèles_étymologiques
+etymology_templates = [u'étcompcat', 'étyl', 'étylp', 'louchébem', 'reverlanisation', 'verlan']
+etymology_templates_in_satellite_words = ['abréviation', 'abréviation de', 'acronyme', 'apocope', 'aphérèse', 'ellipse',
+                                      'par ellipse', 'sigle']
+etymology_templates_with_language_at_first = etymology_templates_in_satellite_words + ['agglutination', 'antonomase',
+    'déglutination', 'mot-valise', 'parataxe', 'syncope', 'univerbation']
+etymology_templates_with_language_at_second = ['dénominal', 'dénominal de', 'déverbal', 'déverbal de',
+                                               'déverbal sans suffixe']
+
+templates += etymology_templates_with_language_at_lang
 
 limit5 = len(templates)
 templates.append('augmentatif')
@@ -1519,7 +1807,7 @@ templates.append('région ?')
 
 limit8 = len(templates)
 # Code langue si étymologie
-templates = templates + etymologyTemplatesWithLanguageAtFirst + etymologyTemplatesWithLanguageAtSecond
+templates += etymology_templates_with_language_at_first + etymology_templates_with_language_at_second
 
 limit9 = len(templates)
 # Modèles régionaux, avec "nocat" pour les prononciations
@@ -1685,24 +1973,24 @@ limit10 = len(templates)  # Somme des modèles traités
 # TODO : non traités
 
     # Sans code langue
-        Modele.append('voir')
-        Modele.append('spécialement')
-        Modele.append('région')
-        Modele.append('régio')
-        Modele.append('régional')
+        templates.append('voir')
+        templates.append('spécialement')
+        templates.append('région')
+        templates.append('régio')
+        templates.append('régional')
 
     # Utilisés sur la ligne de forme (parfois sans parenthèses)
-        Modele.append('déterminé')
-        Modele.append('indéterminé')
-        Modele.append('dét')
-        Modele.append('indét')
-        Modele.append('perfectif')
-        Modele.append('imperfectif')
-        Modele.append('perf')
-        Modele.append('imperf')
+        templates.append('déterminé')
+        templates.append('indéterminé')
+        templates.append('dét')
+        templates.append('indét')
+        templates.append('perfectif')
+        templates.append('imperfectif')
+        templates.append('perf')
+        templates.append('imperf')
 
     # à synchroniser
-        Modele.append('T')...
+        templates.append('T')...
 '''
 
 numbers = []
