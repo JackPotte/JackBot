@@ -183,7 +183,7 @@ def treatPage(line):
             terms = l[i['Termes associés 1']].split(';')
             for t in terms:
                 print(t)
-                page_content = addLine(page_content, language_code, 'vocabulaire', '* [[' + trim(t) + ']]')
+                page_content = add_line(page_content, language_code, 'vocabulaire', '* [[' + trim(t) + ']]')
         page_content += '\n==== {{S|traductions}} ====\n'
         page_content += '{{trad-début}}\n'
         page_content += '{{ébauche-trad}}\n'
@@ -196,27 +196,33 @@ def treatPage(line):
 
     if current_page_content.find(domain) != -1 or current_page_content.find('{{Import:CFC') != -1 or \
         page_name in ['cahier', 'couleurs complémentaires', 'demi-teintes', 'droits d’auteur']:
-        if debug_level > 0: print(' Définition déjà présente')
+        if debug_level > 0:
+            print(' Définition déjà présente')
         return
 
-    if l[i['Sigle']] == 'O': page_content = addLine(page_content, language_code, 'étymologie', etymology)
-    page_content = addLine(page_content, language_code, nature, definition)
+    if l[i['Sigle']] == 'O':
+        page_content = add_line(page_content, language_code, 'étymologie', etymology)
+    page_content = add_line(page_content, language_code, nature, definition)
     if l[i['Synonymes 1']] != '':
         synonyms = l[i['Synonymes 1']].split(';')
         for s in synonyms:
-            page_content = addLine(page_content, language_code, 'synonymes', '* [[' + trim(s) + ']] {{cartographie|nocat=1}} (1)')
+            page_content = add_line(page_content, language_code, 'synonymes', '* [[' + trim(s)
+                                    + ']] {{cartographie|nocat=1}} (1)')
     if l[i['Synonymes 2']] != '':
         synonyms = l[i['Synonymes 2']].split(';')
         for s in synonyms:
-            page_content = addLine(page_content, language_code, 'synonymes', '* [[' + trim(s) + ']] {{cartographie|nocat=1}} (2)')
+            page_content = add_line(page_content, language_code, 'synonymes', '* [[' + trim(s)
+                                    + ']] {{cartographie|nocat=1}} (2)')
     if l[i['Termes associés 1']] != '':
         terms = l[i['Termes associés 1']].split(';')
         for t in terms:
-            page_content = addLine(page_content, language_code, 'vocabulaire', '* [[' + trim(t) + ']] {{cartographie|nocat=1}}')
-    page_content = addLine(page_content, language_code, 'références', '{{Références}}')
+            page_content = add_line(page_content, language_code, 'vocabulaire', '* [[' + trim(t)
+                                    + ']] {{cartographie|nocat=1}}')
+    page_content = add_line(page_content, language_code, 'références', '{{Références}}')
 
     final_page_content = page_content.replace('\n\n\n', '\n\n')
-    if final_page_content != current_page_content: save_page(page, final_page_content, summary)
+    if final_page_content != current_page_content:
+        save_page(page, final_page_content, summary)
 
 set_functions_globals(debug_level, site, username)
 set_fr_wiktionary_functions_globals(debug_level, site, username)

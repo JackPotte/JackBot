@@ -88,10 +88,12 @@ def has_more_than_time(page, time_after_last_edition=60):  # minutes
             print(version[0]['timestamp'])
             print(version[0]['timestamp']) < max_date.strftime('%Y-%m-%dT%H:%M:%SZ')
         if version[0]['timestamp'] < max_date.strftime('%Y-%m-%dT%H:%M:%SZ') or username in page.title() or \
-                page.contributors(total=1).keys()[0] == 'JackPotte':
+            list(page.contributors(total=1).keys())[0] == 'JackPotte':
+            # TODO config.usernames[site_family][site_language] for human user
             return True
-        if debug_level > 0: pywikibot.output(
-            ' \03{red}the last edition is too recent to edit: \03{default}' + version[0]['timestamp'])
+        if debug_level > 0:
+            pywikibot.output(
+                ' \03{red}the last edition is too recent to edit: \03{default}' + version[0]['timestamp'])
     return False
 
 
@@ -218,13 +220,13 @@ def get_parameter(page_content, p):
     if page_content.find('}}') == -1 or not re.search(regex, page_content) \
             or re.search(regex, page_content).start() > page_content.find('}}'): return ''
     parameter = page_content[re.search(regex, page_content).start() + 1:]
-    parameterEnd = parameter
-    while parameterEnd.find('[') != -1 and parameterEnd.find('[') < parameterEnd.find('|') \
-            and parameterEnd.find('[') < parameterEnd.find('}') and parameterEnd.find('|') < parameterEnd.find('}'):
+    parameter_end = parameter
+    while parameter_end.find('[') != -1 and parameter_end.find('[') < parameter_end.find('|') \
+        and parameter_end.find('[') < parameter_end.find('}') and parameter_end.find('|') < parameter_end.find('}'):
         # The parameter contains a link like "[[ | ]]" 
-        parameterEnd = parameterEnd[parameterEnd.find(']') + 1:]
+        parameter_end = parameter_end[parameter_end.find(']') + 1:]
 
-    return parameter[:len(parameter) - len(parameterEnd) + re.search(r'[\|{}]', parameterEnd).start()]
+    return parameter[:len(parameter) - len(parameter_end) + re.search(r'[\|{}]', parameter_end).start()]
 
 
 def get_parameter_value(page_content, p):
@@ -236,9 +238,8 @@ def add_parameter(page_content, parameter, content=None):
     final_page_content = ''
     if parameter == 'titre' and content is None:
         # Détermination du titre d'un site web
-        #URL = get_parameter('url')
+        # URL = get_parameter('url')
         final_page_content = page_content
-
     else:
         # TODO
         print('TODO')
@@ -279,7 +280,7 @@ def replace_deprecated_tags(page_content):
     deprecated_tags['font *face *= *"?'] = 'span style="font-family:'
     deprecated_tags['font *\-?size *= *"?\+?\-?'] = 'span style="font-size:'
     deprecated_tags['font *style *= *"?\+?\-?'] = 'span style="'
-    # deprecated_tags['font '] = 'span ' #TODO: ajouter des ";" entre plusieurs param
+    # deprecated_tags['font '] = 'span ' # TODO: ajouter des ";" entre plusieurs param
     deprecated_tags['strike'] = 's'
     deprecated_tags['tt'] = 'code'
     deprecated_tags['BIG'] = 'strong'
@@ -316,8 +317,7 @@ def replace_deprecated_tags(page_content):
     pattern = re.compile(regex, re.UNICODE)
     for match in pattern.finditer(page_content):
         if debug_level > 1:
-            print('Remplacement de ') + match.group(0) + ' par <span style="color:' + match.group(
-            1) + '">'
+            print('Remplacement de ' + match.group(0) + ' par <span style="color:' + match.group(1) + '">')
         page_content = page_content.replace(match.group(0), '<span style="color:' + match.group(1) + '">')
         page_content = page_content.replace('</font>', '</span>')
 
@@ -333,14 +333,16 @@ def replace_deprecated_tags(page_content):
         else:
             closing_new_tag = new_tag[:new_tag.find(' ')]
         # regex = r'<' + old_tag + r'([^>]*)>([^\n]*)</' + closing_old_tag + '>'
-        # bug https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:-flex-nom-fam-/Documentation&diff=prev&oldid=24027702
+        # TODO bug
+        # https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:-flex-nom-fam-/Documentation&diff=prev&oldid=24027702
         regex = r'< *' + old_tag + r'([^>]*) *>'
         if re.search(regex, page_content):
             # summary = summary + ', ajout de ' + new_tag
             # page_content = re.sub(regex, r'<' + new_tag + r'\1>', page_content)
             pattern = re.compile(regex, re.UNICODE)
             for match in pattern.finditer(page_content):
-                if debug_level > 1: print(str(match.group(1)))
+                if debug_level > 1:
+                    print(str(match.group(1)))
                 if new_tag.find('font-size') != -1:
                     size = match.group(1).replace('"', '')
                     try:
@@ -411,10 +413,10 @@ def replace_deprecated_tags(page_content):
 
 def replace_files_errors(page_content):
     # https://fr.wiktionary.org/wiki/Sp%C3%A9cial:LintErrors/bogus-image-options
-    badFileParameters = []
-    badFileParameters.append('')
-    # badFileParameters.append('cadre')
-    for badFileParameter in badFileParameters:
+    bad_file_parameters = []
+    bad_file_parameters.append('')
+    # bad_file_parameters.append('cadre')
+    for badFileParameter in bad_file_parameters:
         regex = r'(\[\[(Image|Fichier|File) *: *[^\]{]+)\| *' + badFileParameter + r' *(\||\])'
         if debug_level > 1: print(regex)
         page_content = re.sub(regex, r'\1\3', page_content)
