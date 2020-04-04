@@ -1296,7 +1296,7 @@ def add_banner_see(page_name, page_content, summary):
                 continue
             key_page = Page(site, current_page)
             key_page_content = get_content_from_page(key_page)
-            if key_page_content != 'KO':
+            if key_page_content is not None:
                 if debug_level > 1:
                     print(pages_keys)
                 if pages_keys.find('|' + current_page) == -1:
@@ -1309,7 +1309,7 @@ def add_banner_see(page_name, page_content, summary):
                     page_content = '{{voir/' + page_content_key2[:page_content_key2.find('}}')+3] + page_content
                     pageMod = Page(site, 'Template:voir/' + page_content_key2[:page_content_key2.find('}}')])
                     page_contentModBegin = get_content_from_page(pageMod)
-                    if page_contentModBegin == 'KO':
+                    if page_contentModBegin is None:
                         break
                     page_contentMod = page_contentModBegin
                     if page_contentMod.find('!') == -1:
@@ -1350,6 +1350,7 @@ def add_banner_see(page_name, page_content, summary):
             if debug_level > 0:
                 print('  Différent de la page courante')
             remaining_pages_keys = pages_keys + '|'
+            key_page = None
             while remaining_pages_keys.find('|') != -1:
                 current_page = remaining_pages_keys[:remaining_pages_keys.find('|')]
                 if current_page == '':
@@ -1359,12 +1360,12 @@ def add_banner_see(page_name, page_content, summary):
                 remaining_pages_keys = remaining_pages_keys[remaining_pages_keys.find('|')+1:]
                 if current_page != page_name and current_page.find('*') == -1:
                     key_page = Page(site, current_page)
-                    page_contentCleBegin = get_content_from_page(key_page)
+                    page_content_key_start = get_content_from_page(key_page)
                 else:
-                    page_contentCleBegin = page_content
-                if page_contentCleBegin != 'KO' and key_page is not None and ':' not in key_page.title() \
+                    page_content_key_start = page_content
+                if page_content_key_start is not None and key_page is not None and ':' not in key_page.title() \
                         and '{' not in key_page.title():
-                    key_page_content = page_contentCleBegin
+                    key_page_content = page_content_key_start
                     if key_page_content.find('{{voir/') != -1:
                         if debug_level > 0:
                             print(' {{voir/ trouvé')
@@ -1385,7 +1386,7 @@ def add_banner_see(page_name, page_content, summary):
                              + pages_keys[len(current_page):] \
                              + key_page_content[key_page_content.find('{{voir|')+len('{{voir')
                                                 + page_content_key2.find('}}'):]
-                        if key_page_content != page_contentCleBegin:
+                        if key_page_content != page_content_key_start:
                             if current_page == page_name:
                                 page_content = key_page_content
                             else:
@@ -2689,173 +2690,333 @@ def treat_verb_inflexion(page_content, final_page_content, summary, current_page
         print('treat_verb_inflexion()')
     infinitive = get_lemma_from_conjugation(current_page_content)
     if infinitive != '':
+        # TODO check infinitive suffix to avoid spreading human errors:
+        # https://fr.wiktionary.org/w/index.php?title=d%C3%A9sappartient&diff=prev&oldid=27612966
         infinitive_page = get_content_from_page_name(infinitive, site)
-        if infinitive_page != 'KO':
+        if infinitive_page is not None:
             # http://fr.wiktionary.org/w/index.php?title=Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet
             page_content2 = page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
             if page_content2.find('flexion=') != -1 and page_content2.find('flexion=') < page_content2.find('}}'):
                 page_content3 = page_content2[page_content2.find('flexion='):len(page_content2)]
                 if page_content3.find('|') != -1 and page_content3.find('|') < page_content3.find('}'):
-                    page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')+page_content2.find('flexion=')+page_content3.find('|'):]
+                    page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                                   + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')
+                                                  + page_content2.find('flexion=')+page_content3.find('|'):]
             page_content2 = page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
             if page_content2.find(infinitive) == -1 or page_content2.find(infinitive) > page_content2.find('}}'):
-                page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|' + infinitive + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):len(page_content)]
+                page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|' \
+                    + infinitive + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
                 if page_content.find('|' + infinitive + '\n') != -1:    # Bug de l'hyperlien vers l'annexe
-                    page_content = page_content[:page_content.find('|' + infinitive + '\n')+len('|' + infinitive)] + page_content[page_content.find('|' + infinitive + '\n')+len('|' + infinitive + '\n'):len(page_content)]
+                    page_content = page_content[:page_content.find('|' + infinitive + '\n')+len('|' + infinitive)] \
+                        + page_content[page_content.find('|' + infinitive + '\n')+len('|' + infinitive + '\n'):]
             # Analyse du modèle en cours
             page_content2 = page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
             page_content2 = page_content2[:page_content2.find('}}')+2]
             if page_content2.find('impers=oui') == -1:
                 # http://fr.wiktionary.org/w/index.php?title=Modèle:fr-verbe-flexion&action=edit
-                French, lStart, lEnd = get_language_section(infinitive_page, 'fr')
-                if infinitive_page.find('{{impers|fr}}') != -1 or (infinitive_page.find('{{impersonnel|fr}}') != -1 and French is not None and count_definitions(French) == 1):
-                    page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|impers=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
-                elif (infinitive_page.find('|groupe=1') != -1 or infinitive_page.find('|grp=1') != -1) and infinitive_page.find('|groupe2=') == -1:
+                fr_section, l_start, l_end = get_language_section(infinitive_page, 'fr')
+                if infinitive_page.find('{{impers|fr}}') != -1 or (infinitive_page.find('{{impersonnel|fr}}') != -1
+                                                   and fr_section is not None and count_definitions(fr_section) == 1):
+                    page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                        + '|impers=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                elif (infinitive_page.find('|groupe=1') != -1 or infinitive_page.find('|grp=1') != -1) \
+                        and infinitive_page.find('|groupe2=') == -1:
                     # je
-                    if page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') != -1 and page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') != -1 and page_content2.find('imp.p.2s=oui') != -1:
+                    if page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') != -1 \
+                            and page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') != -1 \
+                            and page_content2.find('imp.p.2s=oui') != -1:
                         pass
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') != -1 and page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') != -1 and page_content2.find('imp.p.2s=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui')] + '|imp.p.2s=oui' + page_content[page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') != -1 and page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') == -1 and page_content2.find('imp.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui')] + '|sub.p.3s=oui' + page_content[page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') != -1 and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') != -1 and page_content2.find('imp.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui')] + '|sub.p.1s=oui' + page_content[page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') == -1 and page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') == -1 and page_content2.find('imp.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui')] + '|ind.p.3s=oui' + page_content[page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.3s=oui') != -1 and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') != -1 and page_content2.find('imp.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.p.1s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') == -1 and page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') != -1 and page_content2.find('imp.p.2s=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui')] + '|ind.p.3s=oui|imp.p.2s=oui' + page_content[page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.3s=oui') != -1 and page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') != -1 and page_content2.find('imp.p.2s=oui') == -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|imp.p.2s=oui|ind.p.1s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
-                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.3s=oui') == -1 and page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') != -1 and page_content2.find('imp.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.p.1s=oui|ind.p.3s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') != -1 and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') == -1 and page_content2.find('imp.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui')] + '|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' + page_content[page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') != -1 and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') == -1 and page_content2.find('imp.p.2s=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui')] + '|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' + page_content[page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') == -1 and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') == -1 and page_content2.find('imp.p.2s=oui') == -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.p.3s=oui|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
-                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.3s=oui') != -1 and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') == -1 and page_content2.find('imp.p.2s=oui') == -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.p.1s=oui|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
-                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.3s=oui') != -1 and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') != -1 and page_content2.find('imp.p.2s=oui') == -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.p.1s=oui|sub.p.1s=oui|imp.p.2s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
-                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.3s=oui') != -1 and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') == -1 and page_content2.find('imp.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.p.1s=oui|sub.p.1s=oui|ind.p.3s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
-                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.3s=oui') == -1 and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') == -1 and page_content2.find('imp.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.p.1s=oui|ind.p.3s=oui|sub.p.1s=oui|ind.p.3s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') != -1 \
+                            and page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') != -1 \
+                            and page_content2.find('imp.p.2s=oui') == -1:
+                        page_content = page_content[:page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui')] \
+                            + '|imp.p.2s=oui' + page_content[page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') != -1 \
+                            and page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') == -1 \
+                            and page_content2.find('imp.p.2s=oui') != -1:
+                        page_content = page_content[:page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui')] \
+                            + '|sub.p.3s=oui' + page_content[page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') != -1 \
+                            and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') != -1 \
+                            and page_content2.find('imp.p.2s=oui') != -1:
+                        page_content = page_content[:page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui')] \
+                            + '|sub.p.1s=oui' + page_content[page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') == -1 \
+                            and page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') == -1 \
+                            and page_content2.find('imp.p.2s=oui') != -1:
+                        page_content = page_content[:page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui')] \
+                            + '|ind.p.3s=oui' + page_content[page_content.find('ind.p.1s=oui') + len('ind.p.1s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.3s=oui') != -1 \
+                            and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') != -1 \
+                            and page_content2.find('imp.p.2s=oui') != -1:
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                                       + '|ind.p.1s=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                                        + len('fr-verbe-flexion'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') == -1 \
+                            and page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') != -1 \
+                            and page_content2.find('imp.p.2s=oui') == -1:
+                        page_content = page_content[:page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui')] \
+                                       + '|ind.p.3s=oui|imp.p.2s=oui' + page_content[page_content.find('ind.p.1s=oui')
+                                                                                     + len('ind.p.1s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.3s=oui') != -1 \
+                            and page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') != -1 \
+                            and page_content2.find('imp.p.2s=oui') == -1:
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                            + '|imp.p.2s=oui|ind.p.1s=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                                          + len('fr-verbe-flexion'):]
+                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.3s=oui') == -1 \
+                            and page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') != -1 \
+                            and page_content2.find('imp.p.2s=oui') != -1:
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                                   + '|ind.p.1s=oui|ind.p.3s=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                                                     + len('fr-verbe-flexion'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') != -1 \
+                            and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') == -1\
+                            and page_content2.find('imp.p.2s=oui') != -1:
+                        page_content = page_content[:page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui')] \
+                                       + '|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' \
+                                       + page_content[page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') != -1 \
+                            and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') == -1 \
+                            and page_content2.find('imp.p.2s=oui') == -1:
+                        page_content = page_content[:page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui')] \
+                            + '|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' + page_content[page_content.find('ind.p.3s=oui')
+                                                                                       + len('ind.p.3s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.3s=oui') == -1 \
+                            and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') == -1 \
+                            and page_content2.find('imp.p.2s=oui') == -1:
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                                       + '|ind.p.3s=oui|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' \
+                                       + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.3s=oui') != -1 \
+                            and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') == -1 \
+                            and page_content2.find('imp.p.2s=oui') == -1:
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                                       + '|ind.p.1s=oui|sub.p.1s=oui|sub.p.3s=oui|imp.p.2s=oui' \
+                                       + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.3s=oui') != -1 \
+                            and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') != -1 \
+                            and page_content2.find('imp.p.2s=oui') == -1:
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                                       + '|ind.p.1s=oui|sub.p.1s=oui|imp.p.2s=oui' \
+                                       + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.3s=oui') != -1 \
+                            and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') == -1 \
+                            and page_content2.find('imp.p.2s=oui') != -1:
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                            + '|ind.p.1s=oui|sub.p.1s=oui|ind.p.3s=oui' \
+                            + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.3s=oui') == -1 \
+                            and page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') == -1 \
+                            and page_content2.find('imp.p.2s=oui') != -1:
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                                       + '|ind.p.1s=oui|ind.p.3s=oui|sub.p.1s=oui|ind.p.3s=oui' \
+                                       + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
                     # tu
                     if page_content2.find('ind.p.2s=oui') != -1 and page_content2.find('sub.p.2s=oui') != -1:
                         pass
                     elif page_content2.find('ind.p.2s=oui') != -1 and page_content2.find('sub.p.2s=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui')] + '|sub.p.2s=oui' + page_content[page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui'):]
+                        page_content = page_content[:page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui')] \
+                            + '|sub.p.2s=oui' + page_content[page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui'):]
                     elif page_content2.find('ind.p.2s=oui') == -1 and page_content2.find('sub.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.p.2s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                            + '|ind.p.2s=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                             + len('fr-verbe-flexion'):]
                     # nous
                     if page_content2.find('ind.i.1p=oui') != -1 and page_content2.find('sub.p.1p=oui') != -1:
                         pass
                     if page_content2.find('ind.i.1p=oui') != -1 and page_content2.find('sub.p.1p=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.i.1p=oui')+len('ind.i.1p=oui')] + '|sub.p.1p=oui' + page_content[page_content.find('ind.i.1p=oui')+len('ind.i.1p=oui'):]
+                        page_content = page_content[:page_content.find('ind.i.1p=oui')+len('ind.i.1p=oui')] \
+                            + '|sub.p.1p=oui' + page_content[page_content.find('ind.i.1p=oui')+len('ind.i.1p=oui'):]
                     if page_content2.find('ind.i.1p=oui') == -1 and page_content2.find('sub.p.1p=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.i.1p=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')]\
+                            + '|ind.i.1p=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                             + len('fr-verbe-flexion'):]
                     # vous
                     if page_content2.find('ind.i.2p=oui') != -1 and page_content2.find('sub.p.2p=oui') != -1:
                         pass
                     if page_content2.find('ind.i.2p=oui') != -1 and page_content2.find('sub.p.2p=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.i.2p=oui')+len('ind.i.2p=oui')] + '|sub.p.2p=oui' + page_content[page_content.find('ind.i.2p=oui')+len('ind.i.2p=oui'):]
+                        page_content = page_content[:page_content.find('ind.i.2p=oui')+len('ind.i.2p=oui')] \
+                               + '|sub.p.2p=oui' + page_content[page_content.find('ind.i.2p=oui')+len('ind.i.2p=oui'):]
                     if page_content2.find('ind.i.2p=oui') == -1 and page_content2.find('sub.p.2p=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.i.2p=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                            + '|ind.i.2p=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                             + len('fr-verbe-flexion'):]
                     # ils
                     if page_content2.find('ind.p.3p=oui') != -1 and page_content2.find('sub.p.3p=oui') != -1:
                         pass
                     if page_content2.find('ind.p.3p=oui') != -1 and page_content2.find('sub.p.3p=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.p.3p=oui')+len('ind.p.3p=oui')] + '|sub.p.3p=oui' + page_content[page_content.find('ind.p.3p=oui')+len('ind.p.3p=oui'):]
+                        page_content = page_content[:page_content.find('ind.p.3p=oui')+len('ind.p.3p=oui')] \
+                            + '|sub.p.3p=oui' + page_content[page_content.find('ind.p.3p=oui')+len('ind.p.3p=oui'):]
                     if page_content2.find('ind.p.3p=oui') == -1 and page_content2.find('sub.p.3p=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.p.3p=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                            + '|ind.p.3p=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                             + len('fr-verbe-flexion'):]
                 # Certains -ir sont du 3ème
-                elif (infinitive_page.find('|groupe=2') != -1 or infinitive_page.find('|grp=2') != -1) and infinitive_page.find('{{impers') == -1 and infinitive_page.find('|groupe2=') == -1:
+                elif (infinitive_page.find('|groupe=2') != -1 or infinitive_page.find('|grp=2') != -1) \
+                        and infinitive_page.find('{{impers') == -1 and infinitive_page.find('|groupe2=') == -1:
                     # je
-                    if page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') != -1 and page_content2.find('ind.ps.1s=oui') != -1 and page_content2.find('ind.ps.2s=oui') != -1 and page_content2.find('imp.p.2s=oui') != -1:
+                    if page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') != -1 \
+                            and page_content2.find('ind.ps.1s=oui') != -1 and page_content2.find('ind.ps.2s=oui') != -1\
+                            and page_content2.find('imp.p.2s=oui') != -1:
                         pass
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') != -1 and page_content2.find('ind.ps.1s=oui') != -1 and page_content2.find('ind.ps.2s=oui') != -1 and page_content2.find('imp.p.2s=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.ps.2s=oui')+len('ind.ps.2s=oui')] + '|imp.p.2s=oui' + page_content[page_content.find('ind.ps.2s=oui')+len('ind.ps.2s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') != -1 and page_content2.find('ind.ps.1s=oui') != -1 and page_content2.find('ind.ps.2s=oui') == -1 and page_content2.find('imp.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('ind.ps.1s=oui')+len('ind.ps.1s=oui')] + '|ind.ps.2s=oui' + page_content[page_content.find('ind.ps.1s=oui')+len('ind.ps.1s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') != -1 and page_content2.find('ind.ps.1s=oui') == -1 and page_content2.find('ind.ps.2s=oui') != -1 and page_content2.find('imp.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui')] + '|ind.ps.1s=oui' + page_content[page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') == -1 and page_content2.find('ind.ps.1s=oui') != -1 and page_content2.find('ind.ps.2s=oui') != -1 and page_content2.find('imp.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui')] + '|ind.p.2s=oui' + page_content[page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.2s=oui') != -1 and page_content2.find('ind.ps.1s=oui') != -1 and page_content2.find('ind.ps.2s=oui') != -1 and page_content2.find('imp.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.p.1s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') != -1 and page_content2.find('ind.ps.1s=oui') != -1 and page_content2.find('ind.ps.2s=oui') == -1 and page_content2.find('imp.p.2s=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.ps.1s=oui')+len('ind.ps.1s=oui')] + '|ind.ps.2s=oui|imp.p.2s=oui' + page_content[page_content.find('ind.ps.1s=oui')+len('ind.ps.1s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') != -1 and page_content2.find('ind.ps.1s=oui') == -1 and page_content2.find('ind.ps.2s=oui') == -1 and page_content2.find('imp.p.2s=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui')] + '|ind.ps.1s=oui|ind.ps.2s=oui|imp.p.2s=oui' + page_content[page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') == -1 and page_content2.find('ind.ps.1s=oui') == -1 and page_content2.find('ind.ps.2s=oui') == -1 and page_content2.find('imp.p.2s=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui')] + '|ind.p.2s=oui|ind.ps.1s=oui|ind.ps.2s=oui|imp.p.2s=oui' + page_content[page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.2s=oui') == -1 and page_content2.find('ind.ps.1s=oui') == -1 and page_content2.find('ind.ps.2s=oui') == -1 and page_content2.find('imp.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.p.1s=oui|ind.p.2s=oui|ind.ps.1s=oui|ind.ps.2s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') != -1 \
+                            and page_content2.find('ind.ps.1s=oui') != -1 and page_content2.find('ind.ps.2s=oui') != -1\
+                            and page_content2.find('imp.p.2s=oui') == -1:
+                        page_content = page_content[:page_content.find('ind.ps.2s=oui')+len('ind.ps.2s=oui')] \
+                            + '|imp.p.2s=oui' + page_content[page_content.find('ind.ps.2s=oui')+len('ind.ps.2s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') != -1 \
+                            and page_content2.find('ind.ps.1s=oui') != -1 and page_content2.find('ind.ps.2s=oui') == -1\
+                            and page_content2.find('imp.p.2s=oui') != -1:
+                        page_content = page_content[:page_content.find('ind.ps.1s=oui')+len('ind.ps.1s=oui')] \
+                            + '|ind.ps.2s=oui' + page_content[page_content.find('ind.ps.1s=oui')+len('ind.ps.1s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') != -1 \
+                            and page_content2.find('ind.ps.1s=oui') == -1 and page_content2.find('ind.ps.2s=oui') != -1\
+                            and page_content2.find('imp.p.2s=oui') != -1:
+                        page_content = page_content[:page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui')] \
+                            + '|ind.ps.1s=oui' + page_content[page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') == -1 \
+                            and page_content2.find('ind.ps.1s=oui') != -1 and page_content2.find('ind.ps.2s=oui') != -1\
+                            and page_content2.find('imp.p.2s=oui') != -1:
+                        page_content = page_content[:page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui')] \
+                            + '|ind.p.2s=oui' + page_content[page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.2s=oui') != -1 \
+                            and page_content2.find('ind.ps.1s=oui') != -1 and page_content2.find('ind.ps.2s=oui') != -1\
+                            and page_content2.find('imp.p.2s=oui') != -1:
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')]\
+                            + '|ind.p.1s=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                             + len('fr-verbe-flexion'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') != -1 \
+                            and page_content2.find('ind.ps.1s=oui') != -1 and page_content2.find('ind.ps.2s=oui') == -1\
+                            and page_content2.find('imp.p.2s=oui') == -1:
+                        page_content = page_content[:page_content.find('ind.ps.1s=oui')+len('ind.ps.1s=oui')] \
+                                       + '|ind.ps.2s=oui|imp.p.2s=oui' \
+                                       + page_content[page_content.find('ind.ps.1s=oui')+len('ind.ps.1s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') != -1 \
+                            and page_content2.find('ind.ps.1s=oui') == -1 and page_content2.find('ind.ps.2s=oui') == -1\
+                            and page_content2.find('imp.p.2s=oui') == -1:
+                        page_content = page_content[:page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui')] \
+                                       + '|ind.ps.1s=oui|ind.ps.2s=oui|imp.p.2s=oui' \
+                                       + page_content[page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') == -1 \
+                            and page_content2.find('ind.ps.1s=oui') == -1 and page_content2.find('ind.ps.2s=oui') == -1\
+                            and page_content2.find('imp.p.2s=oui') == -1:
+                        page_content = page_content[:page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui')] \
+                                       + '|ind.p.2s=oui|ind.ps.1s=oui|ind.ps.2s=oui|imp.p.2s=oui' \
+                                       + page_content[page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.2s=oui') == -1 \
+                            and page_content2.find('ind.ps.1s=oui') == -1 and page_content2.find('ind.ps.2s=oui') == -1\
+                            and page_content2.find('imp.p.2s=oui') != -1:
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                                       + '|ind.p.1s=oui|ind.p.2s=oui|ind.ps.1s=oui|ind.ps.2s=oui' \
+                                       + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
 
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') != -1 and page_content2.find('ind.ps.1s=oui') == -1 and page_content2.find('ind.ps.2s=oui') == -1 and page_content2.find('imp.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui')] + '|ind.ps.1s=oui|ind.ps.2s=oui' + page_content[page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') == -1 and page_content2.find('ind.ps.1s=oui') == -1 and page_content2.find('ind.ps.2s=oui') == -1 and page_content2.find('imp.p.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui')] + '|ind.p.2s=oui|ind.ps.1s=oui|ind.ps.2s=oui' + page_content[page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui'):]
-                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.2s=oui') != -1 and page_content2.find('ind.ps.1s=oui') == -1 and page_content2.find('ind.ps.2s=oui') == -1 and page_content2.find('imp.p.2s=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui')] + '|ind.p.1s=oui|ind.ps.1s=oui|ind.ps.2s=oui|imp.p.2s=oui' + page_content[page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') != -1 \
+                            and page_content2.find('ind.ps.1s=oui') == -1 and page_content2.find('ind.ps.2s=oui') == -1\
+                            and page_content2.find('imp.p.2s=oui') != -1:
+                        page_content = page_content[:page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui')] \
+                            + '|ind.ps.1s=oui|ind.ps.2s=oui' + page_content[page_content.find('ind.p.2s=oui')
+                                                                            + len('ind.p.2s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') != -1 and page_content2.find('ind.p.2s=oui') == -1 \
+                            and page_content2.find('ind.ps.1s=oui') == -1 and page_content2.find('ind.ps.2s=oui') == -1\
+                            and page_content2.find('imp.p.2s=oui') != -1:
+                        page_content = page_content[:page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui')] \
+                                       + '|ind.p.2s=oui|ind.ps.1s=oui|ind.ps.2s=oui' \
+                                       + page_content[page_content.find('ind.p.1s=oui')+len('ind.p.1s=oui'):]
+                    elif page_content2.find('ind.p.1s=oui') == -1 and page_content2.find('ind.p.2s=oui') != -1 \
+                            and page_content2.find('ind.ps.1s=oui') == -1 and page_content2.find('ind.ps.2s=oui') == -1\
+                            and page_content2.find('imp.p.2s=oui') == -1:
+                        page_content = page_content[:page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui')] \
+                                       + '|ind.p.1s=oui|ind.ps.1s=oui|ind.ps.2s=oui|imp.p.2s=oui' \
+                                       + page_content[page_content.find('ind.p.2s=oui')+len('ind.p.2s=oui'):]
 
                     # ...
-                    if page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') != -1 and page_content2.find('sub.i.1s=oui') != -1:
+                    if page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') != -1 \
+                            and page_content2.find('sub.i.1s=oui') != -1:
                         pass
-                    elif page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') != -1 and page_content2.find('sub.i.1s=oui') == -1:
-                        page_content = page_content[:page_content.find('sub.p.3s=oui')+len('sub.p.3s=oui')] + '|sub.i.1s=oui' + page_content[page_content.find('sub.p.3s=oui')+len('sub.p.3s=oui'):]
-                    elif page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') == -1 and page_content2.find('sub.i.1s=oui') != -1:
-                        page_content = page_content[:page_content.find('sub.p.1s=oui')+len('sub.p.1s=oui')] + '|sub.p.3s=oui' + page_content[page_content.find('sub.p.1s=oui')+len('sub.p.1s=oui'):]
-                    elif page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') != -1 and page_content2.find('sub.i.1s=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|sub.p.1s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
-                    elif page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') == -1 and page_content2.find('sub.i.1s=oui') == -1:
-                        page_content = page_content[:page_content.find('sub.p.1s=oui')+len('sub.p.1s=oui')] + '|sub.p.3s=oui|sub.i.1s=oui' + page_content[page_content.find('sub.p.1s=oui')+len('sub.p.1s=oui'):]
-                    elif page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') == -1 and page_content2.find('sub.i.1s=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|sub.p.1s=oui|sub.p.3s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
-                    elif page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') != -1 and page_content2.find('sub.i.1s=oui') == -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|sub.p.1s=oui|sub.i.1s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                    elif page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') != -1 \
+                            and page_content2.find('sub.i.1s=oui') == -1:
+                        page_content = page_content[:page_content.find('sub.p.3s=oui')+len('sub.p.3s=oui')] \
+                            + '|sub.i.1s=oui' + page_content[page_content.find('sub.p.3s=oui')+len('sub.p.3s=oui'):]
+                    elif page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') == -1 \
+                            and page_content2.find('sub.i.1s=oui') != -1:
+                        page_content = page_content[:page_content.find('sub.p.1s=oui')+len('sub.p.1s=oui')] \
+                            + '|sub.p.3s=oui' + page_content[page_content.find('sub.p.1s=oui')+len('sub.p.1s=oui'):]
+                    elif page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') != -1 \
+                            and page_content2.find('sub.i.1s=oui') != -1:
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                            + '|sub.p.1s=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                             + len('fr-verbe-flexion'):]
+                    elif page_content2.find('sub.p.1s=oui') != -1 and page_content2.find('sub.p.3s=oui') == -1 \
+                            and page_content2.find('sub.i.1s=oui') == -1:
+                        page_content = page_content[:page_content.find('sub.p.1s=oui')+len('sub.p.1s=oui')]\
+                            + '|sub.p.3s=oui|sub.i.1s=oui' + page_content[page_content.find('sub.p.1s=oui')
+                                                                          + len('sub.p.1s=oui'):]
+                    elif page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') == -1 \
+                            and page_content2.find('sub.i.1s=oui') != -1:
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                            + '|sub.p.1s=oui|sub.p.3s=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                                          +len('fr-verbe-flexion'):]
+                    elif page_content2.find('sub.p.1s=oui') == -1 and page_content2.find('sub.p.3s=oui') != -1 \
+                            and page_content2.find('sub.i.1s=oui') == -1:
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                            + '|sub.p.1s=oui|sub.i.1s=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                                          +len('fr-verbe-flexion'):]
                     # tu
                     if page_content2.find('sub.p.2s=oui') != -1 and page_content2.find('sub.i.2s=oui') != -1:
                         pass
                     if page_content2.find('sub.p.2s=oui') != -1 and page_content2.find('sub.i.2s=oui') == -1:
-                        page_content = page_content[:page_content.find('sub.p.2s=oui')+len('sub.p.2s=oui')] + '|sub.i.2s=oui' + page_content[page_content.find('sub.p.2s=oui')+len('sub.p.2s=oui'):]
+                        page_content = page_content[:page_content.find('sub.p.2s=oui')+len('sub.p.2s=oui')] \
+                            + '|sub.i.2s=oui' + page_content[page_content.find('sub.p.2s=oui')+len('sub.p.2s=oui'):]
                     if page_content2.find('sub.p.2s=oui') == -1 and page_content2.find('sub.i.2s=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|sub.p.2s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                            + '|sub.p.2s=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                             + len('fr-verbe-flexion'):]
                     # il
                     if page_content2.find('ind.p.3s=oui') != -1 and page_content2.find('ind.ps.3s=oui') != -1:
                         pass
                     if page_content2.find('ind.p.3s=oui') != -1 and page_content2.find('ind.ps.3s=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui')] + '|ind.ps.3s=oui' + page_content[page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui'):]
+                        page_content = page_content[:page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui')] \
+                            + '|ind.ps.3s=oui' + page_content[page_content.find('ind.p.3s=oui')+len('ind.p.3s=oui'):]
                     if page_content2.find('ind.p.3s=oui') == -1 and page_content2.find('ind.ps.3s=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.p.3s=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                            + '|ind.p.3s=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                             + len('fr-verbe-flexion'):]
                     # nous
                     if page_content2.find('ind.i.1p=oui') != -1 and page_content2.find('sub.p.1p=oui') != -1:
                         pass
                     if page_content2.find('ind.i.1p=oui') != -1 and page_content2.find('sub.p.1p=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.i.1p=oui')+len('ind.i.1p=oui')] + '|sub.p.1p=oui' + page_content[page_content.find('ind.i.1p=oui')+len('ind.i.1p=oui'):]
+                        page_content = page_content[:page_content.find('ind.i.1p=oui')+len('ind.i.1p=oui')] \
+                            + '|sub.p.1p=oui' + page_content[page_content.find('ind.i.1p=oui')+len('ind.i.1p=oui'):]
                     if page_content2.find('ind.i.1p=oui') == -1 and page_content2.find('sub.p.1p=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.i.1p=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                            + '|ind.i.1p=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                             + len('fr-verbe-flexion'):]
                     # vous
                     if page_content2.find('ind.i.2p=oui') != -1 and page_content2.find('sub.p.2p=oui') != -1:
                         pass
                     if page_content2.find('ind.i.2p=oui') != -1 and page_content2.find('sub.p.2p=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.i.2p=oui')+len('ind.i.2p=oui')] + '|sub.p.2p=oui' + page_content[page_content.find('ind.i.2p=oui')+len('ind.i.2p=oui'):]
+                        page_content = page_content[:page_content.find('ind.i.2p=oui')+len('ind.i.2p=oui')] \
+                            + '|sub.p.2p=oui' + page_content[page_content.find('ind.i.2p=oui')+len('ind.i.2p=oui'):]
                     if page_content2.find('ind.i.2p=oui') == -1 and page_content2.find('sub.p.2p=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.i.2p=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                            + '|ind.i.2p=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                             + len('fr-verbe-flexion'):]
                     # ils
                     if page_content2.find('ind.p.3p=oui') != -1 and page_content2.find('sub.p.3p=oui') != -1:
                         pass
                     if page_content2.find('ind.p.3p=oui') != -1 and page_content2.find('sub.p.3p=oui') == -1:
-                        page_content = page_content[:page_content.find('ind.p.3p=oui')+len('ind.p.3p=oui')] + '|sub.p.3p=oui' + page_content[page_content.find('ind.p.3p=oui')+len('ind.p.3p=oui'):]
+                        page_content = page_content[:page_content.find('ind.p.3p=oui')+len('ind.p.3p=oui')] \
+                            + '|sub.p.3p=oui' + page_content[page_content.find('ind.p.3p=oui')+len('ind.p.3p=oui'):]
                     if page_content2.find('ind.p.3p=oui') == -1 and page_content2.find('sub.p.3p=oui') != -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|ind.p.3p=oui' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
-                elif (infinitive_page.find('|groupe=3') != -1 or infinitive_page.find('|grp=3') != -1) and infinitive_page.find('|groupe2=') == -1:
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                            + '|ind.p.3p=oui' + page_content[page_content.find('fr-verbe-flexion')
+                                                             + len('fr-verbe-flexion'):]
+                elif (infinitive_page.find('|groupe=3') != -1 or infinitive_page.find('|grp=3') != -1) \
+                        and infinitive_page.find('|groupe2=') == -1:
                     if page_content2.find('grp=3') == -1:
-                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] + '|grp=3' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
+                        page_content = page_content[:page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion')] \
+                            + '|grp=3' + page_content[page_content.find('fr-verbe-flexion')+len('fr-verbe-flexion'):]
 
     final_page_content = final_page_content + page_content[:page_content.find('\n')+1]
     page_content = page_content[page_content.find('\n')+1:]
@@ -3032,7 +3193,7 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
             page_content3 = page_content2[page_content2.find('|') + 1:]
             if debug_level > d:
                 print(' langue distante : ' + current_language)
-            if page_content3.find('}}') == "" or not page_content3.find('}}'):
+            if page_content3.find('}}') == '' or not page_content3.find('}}'):
                 if debug_level > d:
                     print('  aucun mot distant')
                 if final_page_content.rfind('<!--') == -1 or final_page_content.rfind(
@@ -3044,6 +3205,9 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                     backward = True
             elif current_language == 'conv':
                 external_site_name = get_wiki('species', 'species')
+            elif current_language == 'ba':
+                # Incubator: Non-JSON response received from server wiktionary:ba; the server may be down.
+                external_site_name = None
             else:
                 external_site_name = get_wiki(current_language, site_family)
             if external_site_name is None:
@@ -3070,19 +3234,19 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                 is_page_found = True
                 try:
                     external_page = Page(external_site_name, external_page_name)
-                except pywikibot.exceptions.BadTitle:
+                except pywikibot.exceptions.BadTitle as e:
                     if debug_level > d:
-                        print('  BadTitle (-)')
+                        print(str(e))
                     final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
                     is_page_found = False
-                except pywikibot.exceptions.InvalidTitle:
+                except pywikibot.exceptions.InvalidTitle as e:
                     if debug_level > d:
-                        print('  InvalidTitle (-)')
+                        print(str(e))
                     final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
                     is_page_found = False
-                except pywikibot.exceptions.NoPage:
+                except pywikibot.exceptions.NoPage as e:
                     if debug_level > d:
-                        print('  NoPage')
+                        print(str(e))
                     if external_page_name.find('\'') != -1:
                         external_page_name = external_page_name.replace('\'', '’')
                     elif external_page_name.find('’') != -1:
@@ -3094,6 +3258,11 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                             final_page_content, page_content = next_translation_template(final_page_content,
                                                                                          page_content, '-')
                             is_page_found = False
+                except BaseException as e:
+                    if debug_level > d:
+                        print(str(e))
+                    is_page_found = False
+
                 if is_page_found:
                     try:
                         is_external_page_exist = external_page.exists()
@@ -3176,7 +3345,7 @@ def add_anagrams(page_content, summary, page_name, language_code):
                     break
                 else:
                     anagram_page_content = get_content_from_page(anagram_page)
-                    if anagram_page_content == 'KO':
+                    if anagram_page_content is None:
                         break
                 if anagram_page_content.find('{{langue|' + language_code + '}}') != -1:
                     anagrams_list = anagrams_list + '* {{lien|' + anagram + '|' + language_code + '}}\n'

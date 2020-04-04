@@ -149,8 +149,9 @@ def treatPage(line):
     page_content = current_page_content
     final_page_content = ''
 
-    if current_page_content == 'KO':
-        if debug_level > 0: print(' page_content vide : création')
+    if current_page_content is None:
+        if debug_level > 0:
+            print(' page_content vide : création')
         page_content = '== {{langue|fr}} ==\n'
         page_content += '=== {{S|étymologie}} ===\n'
         page_content += '{{ébauche-étym|fr}}\n'

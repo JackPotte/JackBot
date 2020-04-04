@@ -55,7 +55,7 @@ def treat_page_by_name(page_name):
     print('\n' + page_name)
     page = Page(site, page_name)
     current_page_content = get_content_from_page(page, 'All')
-    if username not in page_name and (current_page_content == 'KO' or page_name.find('/print version') != -1):
+    if username not in page_name and (current_page_content is None or page_name.find('/print version') != -1):
         return
     summary = 'Formatting'
     page_content = current_page_content

@@ -4,10 +4,6 @@
 from __future__ import absolute_import, unicode_literals
 import re
 import sys
-try:
-    import src.lib.languages
-except ImportError:
-    import languages
 
 
 def main(*args):

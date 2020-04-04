@@ -78,10 +78,7 @@ anagrams_max_length = 4  # TODO: from dump otherwise 5 chars > 5 min & 8 chars >
 
 
 def treat_page_by_name(page_name):
-    global natures, definition_templates, definition_sentences, etymology_templates,\
-        etymology_templates_with_language_at_lang, \
-        etymology_templates_in_satellite_words, etymology_templates_with_language_at_first, \
-        etymology_templates_with_language_at_second, debug_level
+    global debug_level
     summary = '[[Wiktionnaire:Structure des articles|Autoformatage]]'
     if debug_level > 0:
         print('------------------------------------')
@@ -100,7 +97,7 @@ def treat_page_by_name(page_name):
         return
 
     current_page_content = get_content_from_page(page, 'All')
-    if current_page_content == 'KO':
+    if current_page_content is None:
         if debug_level > 0:
             print(' page_content vide')
         return
@@ -439,24 +436,29 @@ def treat_page_by_name(page_name):
                         final_page_content, page_content = next_template(final_page_content, page_content)
                     else:
                         if debug_level > 0:
-                            print("  1 = " + term)
-                        template_page = get_content_from_page_name('Template:' + term, site, allowed_namespaces=['Template:'])
-                        if template_page.find('Catégorie:Modèles de domaine') == -1 and \
-                                template_page.find('{{région|') == -1 and term[:1] != term[:1].lower():
-                            term = term[:1].lower() + term[1:]
-                            if debug_level > 0:
-                                print('  2 = ') + term
-                            template_page = get_content_from_page_name('Template:' + term, site,
-                                                                       allowed_namespaces=['Template:'])
-                        if template_page.find('Catégorie:Modèles de domaine') != -1 or template_page.find(
-                                '{{région|') != -1:
-                            if debug_level > 0:
-                                print('  substitution par le modèle existant')
-                            page_content = '{{' + term + page_content[end_position + 1 + len(raw_term):]
-                            final_page_content = final_page_content[:-2]
-                            go_backward = True
-                        else:
+                            print('  1 = ' + term)
+                        template_page = get_content_from_page_name('Template:' + term, site,
+                                                                   allowed_namespaces=['Template:'])
+                        if template_page is None:
+                            print(' Empty template page: ' + term)
                             final_page_content, page_content = next_template(final_page_content, page_content)
+                        else:
+                            if template_page.find('Catégorie:Modèles de domaine') == -1 and \
+                                    template_page.find('{{région|') == -1 and term[:1] != term[:1].lower():
+                                term = term[:1].lower() + term[1:]
+                                if debug_level > 0:
+                                    print('  2 = ') + term
+                                template_page = get_content_from_page_name('Template:' + term, site,
+                                                                           allowed_namespaces=['Template:'])
+                            if template_page.find('Catégorie:Modèles de domaine') != -1 or template_page.find(
+                                    '{{région|') != -1:
+                                if debug_level > 0:
+                                    print('  substitution par le modèle existant')
+                                page_content = '{{' + term + page_content[end_position + 1 + len(raw_term):]
+                                final_page_content = final_page_content[:-2]
+                                go_backward = True
+                            else:
+                                final_page_content, page_content = next_template(final_page_content, page_content)
 
                 # Templates with language code at second
                 elif current_template in definition_templates + etymology_templates_with_language_at_second + ['pron',
@@ -1015,9 +1017,9 @@ def main(*args):
             if test_page is not None:
                 page_content = get_content_from_page_name(test_page, site)
                 if re.search(regex, page_content, re.DOTALL):
-                    print('OK')
+                    print('Traitement...')
                 else:
-                    print('KO')
+                    print('Pas de traitement.')
             else:
                 p.page_by_xml(dump_file, regex=regex, namespaces=10)
         elif sys.argv[1] == str('-u'):
@@ -1062,8 +1064,9 @@ def main(*args):
             p.pages_by_redirects()
         elif sys.argv[1] == str('-all'):
             p.pages_by_all()
-        elif sys.argv[1] == str('-RC'):
+        elif sys.argv[1] in [str('-rc'), str('-RC')]:
             while 1:
+                # p.pages_by_rc() TODO error with self in context
                 p.pages_by_rc_last_day()
         elif sys.argv[1] == str('-nocat'):
             p.pages_by_special_not_categorized()

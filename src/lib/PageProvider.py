@@ -216,15 +216,15 @@ class PageProvider:
 
     # [[Special:RecentChanges]]
     def pages_by_rc(self, site=None):
+        from lib import time_after_last_edition
         if site is None:
             site = self.site
-        from lib import timeAfterLastEdition
         minimum_time = 30  # min
         gen = pagegenerators.RecentchangesPageGenerator(site=site)
         for page in pagegenerators.PreloadingGenerator(gen, 50):
             if self.debug_level > 1:
-                print(str(timeAfterLastEdition(Page) + ' =? ' + str(minimum_time)))
-            if timeAfterLastEdition(Page) > minimum_time:
+                print(str(time_after_last_edition(Page) + ' =? ' + str(minimum_time)))
+            if time_after_last_edition(Page) > minimum_time:
                 self.treat_page(page.title())
 
     # [[Special:RecentChanges]]

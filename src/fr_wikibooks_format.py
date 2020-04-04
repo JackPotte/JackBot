@@ -50,7 +50,7 @@ def treat_page_by_name(page_name):
     summary = 'Formatage'
     page = Page(site, page_name)
     current_page_content = get_content_from_page(page, 'All')
-    if current_page_content == 'KO' or current_page_content.find('{{en travaux') != -1 \
+    if current_page_content is None or current_page_content.find('{{en travaux') != -1 \
             or current_page_content.find('{{En travaux') != -1:
         return
     page_content = current_page_content

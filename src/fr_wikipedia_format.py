@@ -62,7 +62,7 @@ def treat_page_by_name(page_name):
             and page_name.find('Template:Cite pmid/') == -1:
         return
     current_page_content = get_content_from_page(page, 'All')
-    if current_page_content == 'KO':
+    if current_page_content is None:
         print('page_content illisible')
         return
     current_page = current_page_content

@@ -8,7 +8,7 @@ import re
 import time
 import pywikibot
 from pywikibot import *
-from lib import *
+
 debug_level = 0
 
 
@@ -154,7 +154,7 @@ def get_content_from_page(page, allowed_namespaces=None):
             except pywikibot.exceptions.BadTitle:
                 if debug_level > 0:
                     print(' IsRedirect l 676')
-                return 'KO'
+                return None
             except pywikibot.exceptions.IsRedirectPage:
                 if debug_level > 0:
                     print(' IsRedirect l 679')
@@ -167,27 +167,27 @@ def get_content_from_page(page, allowed_namespaces=None):
                             current_page_content = get_content_from_page_name(s.group(1), site,
                                                                               allowed_namespaces=allowed_namespaces)
                         else:
-                            return 'KO'
+                            return None
                     else:
-                        return 'KO'
+                        return None
                 else:
-                    return 'KO'
+                    return None
             except pywikibot.exceptions.NoPage:
                 if debug_level > 0:
                     print(' NoPage l 694')
-                return 'KO'
+                return None
             except pywikibot.exceptions.ServerError:
                 if debug_level > 0:
                     print(' ServerError l 697')
-                return 'KO'
+                return None
         else:
             if debug_level > 0:
                 print(' Forbidden namespace l 700')
-            return 'KO'
+            return None
     else:
         if debug_level > 0:
-            print(' No page in ') + __file__ + ':163: ' + page.title()
-        return 'KO'
+            print(' No page in ' + __file__ + ':163: ' + page.title())
+        return None
     return current_page_content
 
 
@@ -218,7 +218,8 @@ def get_template_by_name(page_content, template):
 def get_parameter(page_content, p):
     regex = r'\| *' + p + r' *='
     if page_content.find('}}') == -1 or not re.search(regex, page_content) \
-            or re.search(regex, page_content).start() > page_content.find('}}'): return ''
+            or re.search(regex, page_content).start() > page_content.find('}}'):
+        return ''
     parameter = page_content[re.search(regex, page_content).start() + 1:]
     parameter_end = parameter
     while parameter_end.find('[') != -1 and parameter_end.find('[') < parameter_end.find('|') \
@@ -500,7 +501,7 @@ def log(source):
 
 def stop_required(username):
     page_content = get_content_from_page_name('User talk:' + username, site)
-    if page_content == 'KO':
+    if page_content is None:
         return
     if page_content != u"{{/Stop}}":
         pywikibot.output("\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")

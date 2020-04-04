@@ -803,12 +803,12 @@ def hyper_lynx(current_page):
                     template_end_position = current_page.find('//')+2
                     template_page_end = current_page[template_end_position:]
                     # Calcul des modèles inclus dans le modèle de lien
-                    while template_page_end.find('}}') != -1 and template_page_end.find('}}') > \
-                            template_page_end.find('{{') and template_page_end.find('{{') != -1:
+                    while template_page_end.find('}}') != -1 \
+                            and template_page_end.find('}}') > template_page_end.find('{{') != -1:
                         template_end_position = template_end_position + template_page_end.find('}}')+2
-                        template_page_end = template_page_end[template_page_end.find('}}')+2:len(template_page_end)]
+                        template_page_end = template_page_end[template_page_end.find('}}')+2:]
                     template_end_position = template_end_position + template_page_end.find('}}')+2
-                    currentTemplate = current_page[template_start:template_end_position]
+                    current_template = current_page[template_start:template_end_position]
                     # if debug_level > 0: print(")*Modele : " + current_template[:100]
                     
                     if replaced_template != '':
@@ -1028,7 +1028,7 @@ def get_url_site_language(html_source, debug_level=0):
 
 def testURL(url, debug_level=0, opener=None):
     # Renvoie la page web d'une URL dès qu'il arrive à la lire.
-    if check_url == False:
+    if not check_url:
         return 'ok'
     if debug_level > 0:
         print('--------')
