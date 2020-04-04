@@ -448,7 +448,7 @@ def treat_page_by_name(page_name):
                                     template_page.find('{{région|') == -1 and term[:1] != term[:1].lower():
                                 term = term[:1].lower() + term[1:]
                                 if debug_level > 0:
-                                    print('  2 = ') + term
+                                    print('  2 = ' + term)
                                 template_page = get_content_from_page_name('Template:' + term, site,
                                                                            allowed_namespaces=['Template:'])
                             if template_page.find('Catégorie:Modèles de domaine') != -1 or template_page.find(
@@ -711,7 +711,7 @@ def treat_page_by_name(page_name):
             if language_code is not None and page_content.find('}}') != -1 and (
                     page_content.find('}}') < page_content.find('{{') or page_content.find('{{') == -1):
                 if debug_level > 1:
-                    print('    possible duplicated "lang=" in ') + current_template
+                    print('    possible duplicated "lang=" in ' + current_template)
                 final_page_content, page_content = next_template(final_page_content, page_content)
                 # TODO bug with nested templates:
                 # https://fr.wiktionary.org/w/index.php?title=Utilisateur:JackBot/test_unitaire&diff=prev&oldid=25811164

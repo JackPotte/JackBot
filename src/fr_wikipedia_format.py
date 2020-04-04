@@ -51,7 +51,8 @@ referencesAliases = []
 
 
 def treat_page_by_name(page_name):
-    print(page_name)
+    if debug_level > 0:
+        print(page_name)
     summary = 'Formatage'
     page = Page(site, page_name)
     if not page.exists():
