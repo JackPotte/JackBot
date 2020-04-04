@@ -440,7 +440,8 @@ def treat_page_by_name(page_name):
                         template_page = get_content_from_page_name('Template:' + term, site,
                                                                    allowed_namespaces=['Template:'])
                         if template_page is None:
-                            print(' Empty template page: ' + term)
+                            if debug_level > 0:
+                                print(' Empty template page: ' + term)
                             final_page_content, page_content = next_template(final_page_content, page_content)
                         else:
                             if template_page.find('Catégorie:Modèles de domaine') == -1 and \

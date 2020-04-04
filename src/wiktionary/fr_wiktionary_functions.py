@@ -676,6 +676,7 @@ def add_line(page_content, language_code, section, line_content):
 
             regex = r'\n=* *{{S\|' + section + r'[}\|]'
             s = re.search(regex, language_section)
+            final_section = None
             if s:
                 if debug_level > d:
                     print(' ajout dans la sous-section')
@@ -3258,6 +3259,7 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                             final_page_content, page_content = next_translation_template(final_page_content,
                                                                                          page_content, '-')
                             is_page_found = False
+                            external_page = None
                 except BaseException as e:
                     if debug_level > d:
                         print(str(e))

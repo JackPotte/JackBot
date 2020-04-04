@@ -643,6 +643,7 @@ def hyper_lynx(current_page):
                 break
 
         if not ignored_link:
+            is_broken_link = False
             # titre=
             if PageDebut.rfind('titre=') != -1 and PageDebut.rfind('titre=') > PageDebut.rfind('{{') \
                     and PageDebut.rfind('titre=') > PageDebut.rfind('}}'):
@@ -852,11 +853,13 @@ def hyper_lynx(current_page):
                         else:
                             if debug_level > 0:
                                 print('Ajout de lien brisé 2')
-                            if current_page[url_start-1:url_start] == '[' and current_page[url_start-2:url_start] != '[[':
+                            if current_page[url_start-1:url_start] == '[' \
+                                    and current_page[url_start-2:url_start] != '[[':
                                 if debug_level > 0:
                                     print('entre crochet')
-                                url_start = url_start -1
-                                if titre == '' :
+                                url_start = url_start - 1
+                                current_page2 = ''
+                                if titre == '':
                                     if debug_level > 0:
                                         print("Titre vide")
                                     # Prise en compte des crochets inclus dans un titre
@@ -876,12 +879,14 @@ def hyper_lynx(current_page):
                                     titre = trim(titre + current_page2[:current_page2.find(']')])
                                     current_page2 = current_page2[current_page2.find(']'):]
                                 if titre != '':
-                                    if debug_level > 0: "Ajout avec titre"
+                                    if debug_level > 0:
+                                        print("Ajout avec titre")
                                     current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
                                                    + time.strftime('%Y-%m-%d') + '|url=' + url + '|titre=' + titre \
                                                    + '}}' + current_page[len(current_page)-len(current_page2)+1:]
                                 else:
-                                    if debug_level > 0: "Ajout sans titre"
+                                    if debug_level > 0:
+                                        print("Ajout sans titre")
                                     current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
                                                    + time.strftime('%Y-%m-%d') + '|url=' + url + '}}' \
                                                    + current_page[current_page.find('//')+url_page_end.find(']')+1:]
@@ -935,10 +940,10 @@ def hyper_lynx(current_page):
 
     if final_page.find('|langue=None') != -1:
         if not is_broken_link:
-            URLlanguage = get_url_site_language(html_source)
-            if URLlanguage != 'None':
+            url_language = get_url_site_language(html_source)
+            if url_language != 'None':
                 try:
-                    final_page = final_page.replace('|langue=None', '|langue=' + URLlanguage)
+                    final_page = final_page.replace('|langue=None', '|langue=' + url_language)
                 except UnicodeDecodeError:
                     if debug_level > 0:
                         print('UnicodeEncodeError l 1038')
