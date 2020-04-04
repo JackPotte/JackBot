@@ -99,7 +99,7 @@ def modification(PageHS):
 		positionW = PageTemp.find(u'[[Catégorie:')
 	elif re.compile('\[\[[a-z][^wikts]+:[^\[\]\n]+\]\]').search(PageTemp):
 		try:
-			i1 = re.search('\[\[[a-z][^wikts]+:[^\[\]\n]+\]\]',PageTemp).start()
+			i1 = re.search(r'\[\[[a-z][^wikts]+:[^\[\]\n]+\]\]',PageTemp).start()
 			positionW = len(PageTemp[:i1])
 		except:
 			print u'pb regex interwiki'
@@ -134,7 +134,7 @@ def modification(PageHS):
 			else:	# Avant interwikis
 				if re.compile('\[\[[a-z][^wsq]+:[^\[\]\n]+\]\]').search(PageTemp):
 					try:
-						i1 = re.search('\[\[[a-z][^wsq]+:[^\[\]\n]+\]\]',PageTemp).start()
+						i1 = re.search(r'\[\[[a-z][^wsq]+:[^\[\]\n]+\]\]',PageTemp).start()
 						PageTemp = PageTemp[:i1] + u'\n{{DEFAULTSORT:' + ClePage + u'}}\n\n' + PageTemp[i1:]
 					except:
 						print u'pb regex interwiki'

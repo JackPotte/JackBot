@@ -187,7 +187,7 @@ def modification():
 			try:
 				PageBegin = page.get()
 			except wikipedia.NoPage:
-				print "NoPage l 189"
+				print("NoPage l 189")
 				return
 			if re.search(regex, PageBegin):
 				# Remplacement du précédent sommaire

@@ -63,7 +63,7 @@ def modification(PageHS):
 	#titre = "|ici]] &#224; partir du \'\'\'" + date.encode('utf8')
 	#titre = "|ici]] &#224; partir du \'\'\'" + date.replace("é", "&#233;")
 	#raw_input(titre)
-	#m = re.search('0-9a-z àéè+', titre)
+	#m = re.search(r'0-9a-z àéè+', titre)
 	#raw_input (m.group(0))
 	
 	if PageTemp.find(date) == -1: return	# pb ASCII au mois d'août

@@ -97,7 +97,7 @@ def findpage(t):
           #Remove title (to allow creation of redirects)
           contents = re.sub(search_string, "", contents)
         #Remove trailing newlines (cause troubles when creating redirects)
-        contents = re.sub('^[\r\n]*','',contents)
+        contents = re.sub(r'^[\r\n]*','',contents)
         if page.exists():
             old_text = page.get()
             if not re.search(r'==\s*{{=en=}}\s*==', old_text):
