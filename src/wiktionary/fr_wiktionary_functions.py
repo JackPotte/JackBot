@@ -1637,6 +1637,9 @@ def add_templates(page_content, summary):
     regex = r"(\|([a-z]+)}}\n# *'*(?:Participe présent|Participe passé|Prétérit|Troisième personne du singulier du présent) de *'* *)([a-zçæéë \-’']+)\."
     page_content = re.sub(regex, r'\1{{l|\3|\2}}.', page_content, re.IGNORECASE)
 
+    regex = r'\n\* *[Ss]olr[eé]sol *: *:* *\[\[«?([^\]\n«»]+)»?\]\]'
+    page_content = re.sub(regex, r'\n* {{T|solrésol}} : {{trad--|solrésol|\1}}', page_content)
+
     return page_content, summary
 
 

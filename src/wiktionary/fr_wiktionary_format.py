@@ -1120,6 +1120,7 @@ def main(*args):
         p.pages_by_cat('Catégorie:Wiktionnaire:Sections utilisant un alias')
         p.pages_by_search('insource:/\}==== \{\{S\|/', namespaces=[0])
         p.pages_by_search('insource:/\}=== \{\{S\|/', namespaces=[0])
+        p.pages_by_search('insource:/solrésol *:/i', namespaces=[0])
         p.pages_by_search(
             'insource:/[^=]=== \{\{S\|(variantes|synonymes|antonymes|dérivés|apparentés|hyperonymes|hyponymes|méronymes|holonymes|vocabulaire|traductions)/',
             namespaces=[0])
