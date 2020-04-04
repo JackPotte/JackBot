@@ -450,8 +450,8 @@ def treat_page_by_name(page_name):
                                     print('  2 = ' + term)
                                 template_page = get_content_from_page_name('Template:' + term, site,
                                                                            allowed_namespaces=['Template:'])
-                            if template_page.find('Catégorie:Modèles de domaine') != -1 or template_page.find(
-                                    '{{région|') != -1:
+                            if template_page is not None and (template_page.find('Catégorie:Modèles de domaine') != -1 \
+                                    or template_page.find('{{région|') != -1):
                                 if debug_level > 0:
                                     print('  substitution par le modèle existant')
                                 page_content = '{{' + term + page_content[end_position + 1 + len(raw_term):]
