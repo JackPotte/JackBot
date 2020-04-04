@@ -17,7 +17,6 @@ from html2unicode import *
 from default_sort import *
 from hyperlynx import *
 from languages import *
-from languages_generator import *
 from page_functions import *
 from PageProvider import *
 
@@ -32,7 +31,7 @@ for debugAlias in debug_aliases:
 site_language, site_family, site = get_site_by_file_name(__file__)
 username = config.usernames[site_family][site_language]
 
-check_url = False
+do_check_url = False
 fix_tags = False
 fix_files = True
 do_add_category = False
@@ -61,8 +60,8 @@ def treat_page_by_name(page_name):
         page_content = replace_files_errors(page_content)
     if fix_tags:
         page_content = replace_deprecated_tags(page_content)
-    if check_url:
-        page_content = hyper_lynx(page_content)
+    if do_check_url:
+        page_content, summary = treat_broken_links(page_content, summary)
 
     if page_content.find('{{AutoCat}}') == -1:
         # Présence de {{bas de page}} par inclusion

@@ -23,7 +23,6 @@ from html2unicode import *
 from default_sort import *
 from hyperlynx import *
 from languages import *
-from languages_generator import *
 from page_functions import *
 from PageProvider import *
 
@@ -38,7 +37,7 @@ for debugAlias in debug_aliases:
 site_language, site_family, site = get_site_by_file_name(__file__)
 username = config.usernames[site_family][site_language]
 
-check_url = False
+do_check_url = False
 fix_tags = False
 fix_files = True
 fix_templates = False
@@ -115,8 +114,8 @@ def treat_page_by_name(page_name):
         page_content = replace_files_errors(page_content)
     if fix_tags:
         page_content = replace_deprecated_tags(page_content)
-    if check_url:
-        page_content = hyper_lynx(page_content)
+    if do_check_url:
+        page_content, summary = treat_broken_links(page_content, summary)
         
     page_content = page_content.replace('[[Catégorie:{{PAGENAME}}|{{SUBPAGENAME}}]]', '{{AutoCat}}')
     page_content = page_content.replace('[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', '{{AutoCat}}')
@@ -159,7 +158,7 @@ def treat_page_by_name(page_name):
                 page_content = page_content[0:page_content.find(temp[p])] + newParameters[p] + page_content[page_content.find(temp[p])+len(temp[p]):]
 
         # https://fr.wikiversity.org/wiki/Catégorie:Chapitres_sans_pied_de_page
-        if re.search('{{[cC]hapitre[ \n|]', page_content) and not re.search('{{[bB]as de page[ \n|]', page_content):
+        if re.search(r'{{[cC]hapitre[ \n|]', page_content) and not re.search(r'{{[bB]as de page[ \n|]', page_content):
             chapter = get_template_by_name(page_content, 'chapitre')
             if chapter != '':
                 footer = '\n\n{{Bas de page\n'
@@ -172,19 +171,19 @@ def treat_page_by_name(page_name):
 
         # http://fr.wikiversity.org/wiki/Catégorie:Modèle_mal_utilisé
         if fix_templates:
-            if re.search('{{[cC]hapitre[ \n|{}]', page_content):
+            if re.search(r'{{[cC]hapitre[ \n|{}]', page_content):
                     ''' Bug du modèle tronqué :
                     if re.compile('{Chapitre').search(page_content):
                             if re.compile('{Chapitre[.\n]*(\n.*align.*=.*\n)').search(page_content):
-                                    i1 = re.search('{{Chapitre[.\n]*(\n.*align.*=.*\n)',page_content).end()
-                                    i2 = re.search('(\n.*align.*=.*\n)',page_content[:i1]).start()
+                                    i1 = re.search(r'{{Chapitre[.\n]*(\n.*align.*=.*\n)',page_content).end()
+                                    i2 = re.search(r'(\n.*align.*=.*\n)',page_content[:i1]).start()
                                     page_content = page_content[:i2] + '\n' + page_content[i1:]
                             final_page_content = page_content[0:page_content.find('{{Chapitre')+len('{{Chapitre')]
                             page_content = page_content[page_content.find('{{Chapitre')+len('{{Chapitre'):]
                     elif re.compile('{chapitre').search(page_content):
                             if re.compile('{chapitre[.\n]*(\n.*align.*=.*\n)').search(page_content):
-                                    i1 = re.search('{{chapitre[.\n]*(\n.*align.*=.*\n)',page_content).end()
-                                    i2 = re.search('(\n.*align.*=.*\n)',page_content[:i1]).start()
+                                    i1 = re.search(r'{{chapitre[.\n]*(\n.*align.*=.*\n)',page_content).end()
+                                    i2 = re.search(r'(\n.*align.*=.*\n)',page_content[:i1]).start()
                                     page_content = page_content[:i2] + '\n' + page_content[i1:]
                             final_page_content = page_content[0:page_content.find('{{chapitre')+len('{{chapitre')]
                             page_content = page_content[page_content.find('{{chapitre')+len('{{chapitre'):]
@@ -451,7 +450,7 @@ def treat_page_by_name(page_name):
                             # input('Attente')
                         final_page_content = final_page_content + page_content
                         page_content = ''
-            elif re.search('{{[lL]eçon[ \n|{}]', page_content):
+            elif re.search(r'{{[lL]eçon[ \n|{}]', page_content):
                 # Evaluations
                 page2 = Page(site,'Discussion:' + page_name)
                 if page2.exists():
@@ -520,8 +519,8 @@ def treat_page_by_name(page_name):
 def get_value(word, page_content):
     # TODO Bug http://fr.wikiversity.org/w/index.php?title=Initiation_%C3%A0_l%27arithm%C3%A9tique/PGCD&diff=prev&oldid=386685'
     return ''
-    if re.search('\n *' + word + ' *=', page_content):
-        value = re.sub('\n *' + word + ' *=()[\n|||}|{]', r'$1', page_content)
+    if re.search(r'\n *' + word + ' *=', page_content):
+        value = re.sub(r'\n *' + word + ' *=()[\n|||}|{]', r'$1', page_content)
         if debug_level > 0:
             input(value)
         return value

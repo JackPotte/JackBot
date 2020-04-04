@@ -19,7 +19,6 @@ from html2unicode import *
 from default_sort import *
 from hyperlynx import *
 from languages import *
-from languages_generator import *
 from page_functions import *
 from PageProvider import *
 from wiktionary import *

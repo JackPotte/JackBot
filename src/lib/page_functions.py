@@ -562,8 +562,10 @@ def save_page(current_page, page_content, summary, minor_edit=True):
 
 def is_patrolled(version):
     # TODO: extensions Patrolled Edits & Flagged Revisions
-    if debug_level > 1: print(version)  # eg: [{'timestamp': '2017-07-25T02:26:15Z', 'user': '27.34.18.159'}]
-    if debug_level > 0: print(' user: ') + version[0]['user']
+    if debug_level > 1:
+        print(version)  # eg: [{'timestamp': '2017-07-25T02:26:15Z', 'user': '27.34.18.159'}]
+    if debug_level > 0:
+        print(' user: ') + version[0]['user']
     return False
     # admins = site.allusers(group='sysop')  #<pywikibot.data.api.ListGenerator object at 0x7f6ebc521fd0>
     # patrollers = site.allusers(group='patrollers')

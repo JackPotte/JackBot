@@ -21,7 +21,6 @@ from html2unicode import *
 from default_sort import *
 from hyperlynx import *
 from languages import *
-from languages_generator import *
 from page_functions import *
 from PageProvider import *
 from wiktionary import *
@@ -94,7 +93,7 @@ def treat_page_by_name(page_name, waitingTimeBeforeArchiving=3):
 
     final_page_content = ''
     annee = time.strftime('%Y')
-    regex = '\n==[ ]*{{[rR]equête [fait|refus|refusée|sans suite]+}}.*==[ \t]*\n'
+    regex = r'\n==[ ]*{{[rR]equête [fait|refus|refusée|sans suite]+}}.*==[ \t]*\n'
     while re.compile(regex).search(page_content):
         DebutParagraphe = re.search(regex,page_content).end()
         if re.search(r'\n==[^=]',page_content[DebutParagraphe:]):

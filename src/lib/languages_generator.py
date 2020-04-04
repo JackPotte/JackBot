@@ -19,7 +19,7 @@ def main(*args):
     file_list = file.read()
 
     regex = r"\n *\t*l\['([^']+)'\] = l\['([^']+)'\]"
-    redirects = re.findall(regex, file_list)
+    redirects = re.findall(regex, str(file_list))
     print(str(len(redirects)) + ' redirections found')
 
     redirect_names = ''

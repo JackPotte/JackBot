@@ -19,7 +19,6 @@ from html2unicode import *
 from default_sort import *
 from hyperlynx import *
 from languages import *
-from languages_generator import *
 from page_functions import *
 from PageProvider import *
 from wiktionary import *
@@ -234,7 +233,7 @@ def main(*args):
         elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
             p.pages_by_file('src/lists/articles_' + site_language + '_' + site_family + '.txt')
         elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
-            regex = ''
+            regex = r''
             if len(sys.argv) > 2: regex = sys.argv[2]
             p.page_by_xml(site_language + site_family + '\-.*xml', regex)
         elif sys.argv[1] == '-u':

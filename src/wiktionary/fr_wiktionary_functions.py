@@ -935,7 +935,7 @@ def add_language_code_with_named_parameter_to_template(
         and (page_content2.find(':') == -1 or page_content2.find(':') > page_content2.find('}}'))
         and page_content2[:1] != '#')
     has_subtemplate_included = False
-    regex = ''
+    regex = r''
     if page_content.find('}}') > page_content.find('{{') != -1:
         # Inifnite loop in [[tomme]] on ^date\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang=
         regex = r'^' + re.escape(current_template) + r'\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang='
@@ -1612,7 +1612,7 @@ def format_translations(page_content, summary):
         page_content = re.sub(regex, '}}\n{{trad-fin}}', page_content)
 
     while re.compile('{{T\|.*\n\n\*[ ]*{{T\|').search(page_content):
-        i1 = re.search('{{T\|.*\n\n\*[ ]*{{T\|', page_content).end()
+        i1 = re.search(r'{{T\|.*\n\n\*[ ]*{{T\|', page_content).end()
         page_content = page_content[:i1][:page_content[:i1].rfind('\n')-1] \
                        + page_content[:i1][page_content[:i1].rfind('\n'):len(page_content[:i1])] + page_content[i1:]
 
@@ -2150,7 +2150,7 @@ def format_languages_templates(page_content, summary, page_name):
     if debug_level > 0: print(' Templates by language')
     regex_page_name = re.escape(page_name)
 
-    regex = '{{(Latn|Grek|Cyrl|Armn|Geor|Hebr|Arab|Syrc|Thaa|Deva|Hang|Hira|Kana|Hrkt|Hani|Jpan|Hans|Hant|zh-mot|kohan|ko-nom|la-verb|grc-verb|polytonique|FAchar)[\|}]'
+    regex = r'{{(Latn|Grek|Cyrl|Armn|Geor|Hebr|Arab|Syrc|Thaa|Deva|Hang|Hira|Kana|Hrkt|Hani|Jpan|Hans|Hant|zh-mot|kohan|ko-nom|la-verb|grc-verb|polytonique|FAchar)[\|}]'
     if not re.search(regex, page_content):
         if debug_level > 0:
             print(' Headword addition')

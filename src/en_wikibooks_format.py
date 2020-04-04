@@ -17,7 +17,6 @@ from html2unicode import *
 from default_sort import *
 from hyperlynx import *
 from languages import *
-from languages_generator import *
 from page_functions import *
 from PageProvider import *
 
@@ -32,7 +31,7 @@ for debugAlias in debug_aliases:
 site_language, site_family, site = get_site_by_file_name(__file__)
 username = config.usernames[site_family][site_language]
 
-check_url = False  # TODO: translate hyperlynx.py by adding content{} at the top
+do_check_url = False  # TODO: translate hyperlynx.py by adding content{} at the top
 fix_tags = False
 fix_files = True
 do_add_category = False
@@ -66,8 +65,8 @@ def treat_page_by_name(page_name):
         page_content = replace_files_errors(page_content)
     if fix_tags:
         page_content = replace_deprecated_tags(page_content)
-    if check_url:
-        page_content = hyper_lynx(page_content)
+    if do_check_url:
+        page_content, summary = treat_broken_links(page_content, summary)
 
     if debug_level > 1:
         print('Templates treatment')
@@ -124,7 +123,7 @@ def main(*args):
         elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
             p.pages_by_file('src/lists/articles_' + site_language + '_' + site_family + '.txt')
         elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
-            regex = ''
+            regex = r''
             if len(sys.argv) > 2: regex = sys.argv[2]
             p.page_by_xml(site_language + site_family + '\-.*xml', regex)
         elif sys.argv[1] == '-u':

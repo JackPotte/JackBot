@@ -5,9 +5,12 @@ Ce script :
 #     Vérifie tous les hyperliens, les marque comme {{lien brisé}} le cas échéant, et traduit leurs modèles en français
 #     Ajoute des liens vers les projets frères dans les pages d'homonymie, multilatéralement
 # A terme peut-être :
-#     Mettra à jour les liens vers les projets frères existants (fusions avec Sisterlinks...), et remplacement des liens bleu fr.wikipedia.org/wiki par [[ ]], des liens rouges par {{lien|lang=xx}}
+#     Mettra à jour les liens vers les projets frères existants (fusions avec Sisterlinks...),
+et remplacement des liens bleu fr.wikipedia.org/wiki par [[ ]], des liens rouges par {{lien|lang=xx}}
 #     Mettra à jour les évaluations à partir du bandeau ébauche
-#     Corrigera les fautes d'orthographes courantes, signalées dans http://fr.wikipedia.org/wiki/Wikip%C3%A9dia:AutoWikiBrowser/Typos (semi-auto) ou : python cosmetic_changes.py -lang:"fr" -recentchanges
+#     Corrigera les fautes d'orthographes courantes, signalées dans
+http://fr.wikipedia.org/wiki/Wikip%C3%A9dia:AutoWikiBrowser/Typos (semi-auto)
+ou : python cosmetic_changes.py -lang:"fr" -recentchanges
 """
 from __future__ import absolute_import, unicode_literals
 import os
@@ -23,8 +26,8 @@ from lib import *
 from html2unicode import *
 from default_sort import *
 from hyperlynx import *
+from templates_translator import *
 from languages import *
-from languages_generator import *
 from page_functions import *
 from PageProvider import *
 
@@ -39,7 +42,7 @@ for debugAlias in debug_aliases:
 site_language, site_family, site = get_site_by_file_name(__file__)
 username = config.usernames[site_family][site_language]
 
-translate_url = True
+do_translate_url = True
 fix_tags = False
 fix_files = True
 treat_all_namespaces = False
@@ -69,17 +72,18 @@ def treat_page_by_name(page_name):
     current_page = current_page_content
 
     # *** Traitement des textes ***
-    if debug_level > 0:
-        print(' Traitements généraux')
     current_page = global_operations(current_page)
     if fix_files:
         current_page = replace_files_errors(current_page)
     if fix_tags:
         current_page = replace_deprecated_tags(current_page)
-    if translate_url:
-        if debug_level > 0:
-            print('Test des URL')
-        current_page = hyper_lynx(current_page)
+
+    # *** Traitement des modèles ***
+    if do_translate_url:
+        current_page, summary = translate_templates(current_page, summary)
+    if do_check_url:
+        current_page, summary = treat_broken_links(current_page, summary)
+
     regex = r'({{[Ll]ien *\|[^}]*)traducteur( *=)'
     if re.search(regex, current_page):
         current_page = re.sub(regex, r'\1trad\2', current_page)
@@ -89,7 +93,6 @@ def treat_page_by_name(page_name):
     if re.search(regex, current_page):
         current_page = re.sub(regex, r'\1\2', current_page)
 
-    # *** Traitement des modèles ***
     # https://fr.wikipedia.org/wiki/Catégorie:Page_utilisant_un_modèle_avec_un_paramètre_obsolète
     regex = r' *{{[Rr]eflist([^}]*)}}'
     if re.search(regex, current_page):
@@ -151,23 +154,25 @@ def treat_page_by_name(page_name):
         txt_file.write(current_page + '\n\n-----------------------------------------------------------------------\n\n')
         txt_file.close()
         if debug_level > 0:
-            print('Crochets cassés')    # raise Exception('Crochets cassés')
+            print(' Crochets cassés')    # raise Exception('Crochets cassés')
             input(current_page_content)
-        if safe_mode: return
-    if current_page_content.count('{{') - current_page_content.count('}}') != current_page.count('{{') - current_page.count('}}'):
+        if safe_mode:
+            return
+    if current_page_content.count('{{') - current_page_content.count('}}') != current_page.count('{{') \
+            - current_page.count('}}'):
         txt_file = codecs.open(output, 'a', 'utf-8')
         txt_file.write(current_page + '\n\n-----------------------------------------------------------------------\n\n')
         txt_file.close()
         if debug_level > 0:
-            print('Accolades cassées')    #raise Exception('Accolades cassées')
+            print(' Accolades cassées')  # raise Exception('Accolades cassées')
             input(current_page)
         if safe_mode:
             return
 
     final_page = current_page
-    if debug_level > 0:
+    if debug_level > 1:
         print('--------------------------------------------------------------------------------------------')
-    if final_page != current_page_content and final_page != current_page_content.replace('{{chapitre |', '{{chapitre|') \
+    if final_page != current_page_content and final_page != current_page_content.replace('{{chapitre |', '{{chapitre|')\
             and final_page != current_page_content.replace('{{Chapitre |', '{{Chapitre|'):
         summary = summary + ', [[Wikipédia:Bot/Requêtes/2012/12#Remplacer_les_.7B.7BCite_web.7D.7D_par_.7B.7BLien_web.7D.7D|traduction des modèles de liens]]'
         final_page = final_page.replace(r'</ref><ref>', r'</ref>{{,}}<ref>')
@@ -176,7 +181,7 @@ def treat_page_by_name(page_name):
 
 p = PageProvider(treat_page_by_name, site, debug_level)
 set_functions_globals(debug_level, site, username)
-setGlobalsHL(debug_level, site, username)
+set_globals_translator(debug_level, site, username)
 
 
 def main(*args):
@@ -195,7 +200,8 @@ def main(*args):
             p.pages_by_file('src/lists/articles_' + site_language + '_' + site_family + '.txt')
         elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
             regex = r'\| *French *\|'
-            if len(sys.argv) > 2: regex = sys.argv[2]
+            if len(sys.argv) > 2:
+                regex = sys.argv[2]
             p.page_by_xml(site_language + site_family + '\-.*xml', regex)
         elif sys.argv[1] == '-u':
             p.pages_by_user('User:' + username)
@@ -208,7 +214,8 @@ def main(*args):
             p.pages_by_link('Modèle:Dead link')
         elif sys.argv[1] == '-category' or sys.argv[1] == '-cat':
             after_page = ''
-            if len(sys.argv) > 2: after_page = sys.argv[2]
+            if len(sys.argv) > 2:
+                after_page = sys.argv[2]
             p.pages_by_cat('Catégorie:page_content du modèle Ouvrage comportant une erreur', namespaces=None,
                            after_page=after_page)
             # treat_all_namespaces = True
