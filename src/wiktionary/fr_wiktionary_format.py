@@ -798,7 +798,7 @@ def treat_page_by_name(page_name):
 
             if fix_false_inflexions and page_name[-2:] == 'es':
                 if debug_level > 0:
-                    ' Hardfix des flexions de noms féminins'
+                    ' Fix des flexions de noms féminins'
                 old_suffix = []
                 new_suffix = []
                 old_suffix.append(r'eur')
@@ -962,7 +962,7 @@ def format_fr_section(page_content, summary, page_name, regex_page_name):
             count_first_definition_size(fr_section) > 3:
         summary = summary + ', ajout de {{S|traductions}}'
         page_content = add_line(page_content, 'fr', 'traductions', '{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
-    # Cosmetic hardfix
+    # Cosmetic fix
     regex = r'(==== {{S\|traductions}} ====\n)\n* *\n*({{trad\-début)'
     if re.search(regex, page_content):
         page_content = re.sub(regex, r'\1\2', page_content)

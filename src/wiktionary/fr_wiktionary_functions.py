@@ -452,7 +452,7 @@ def get_pronunciation(page_content, language_code, nature=None):
 
 def add_pronunciation_from_content(page_content, language_code, nature=None):
     if debug_level > 1:
-        print('\naddPronunciationFromContent')
+        print('\nadd_pronunciationFromContent')
     if page_content.find('{{pron||' + language_code + '}}') != -1:
         pronunciation = get_pronunciation(page_content, language_code, nature=None)
         if pronunciation != '':
@@ -2426,7 +2426,7 @@ def moveEtymologicalTemplates(page_content, summary):
 
 
 def format_wikicode(page_content, summary, page_name):
-    # TODO: à faire hors modèles https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:fr-accord-comp-mf&oldid=prev&diff=26238109
+    # TODO hors modèles https://fr.wiktionary.org/w/index.php?title=Mod%C3%A8le:fr-accord-comp-mf&oldid=prev&diff=26238109
     # page_content = page_content.replace('&nbsp;', ' ')
     # page_content = re.sub(r'«[  \t]*', r'« ', page_content) # pb &#160;
     # page_content = re.sub(r'[  \t]*»', r' »', page_content)
@@ -3415,7 +3415,7 @@ def add_anagrams(page_content, summary, page_name, language_code):
 
 '''
 TODO:
-    deploy addPronunciationFromContent()
+    deploy add_pronunciationFromContent()
     def sortSections(page_content):
     def uncategorizeDoubleTemplateWhenCategory(page_content, summary):
     def checkTranslationParagraphsNumberBySense(page_content, summary):

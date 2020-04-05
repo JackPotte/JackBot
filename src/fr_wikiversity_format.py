@@ -102,7 +102,7 @@ param.append('niveau')
 def treat_page_by_name(page_name):
     if debug_level > 0:
         print('------------------------------------')
-    print(page_name)
+        print(page_name)
     summary = 'Formatage'
     page = Page(site, page_name)
     current_page_content = get_content_from_page(page, 'All')

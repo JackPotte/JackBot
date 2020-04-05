@@ -55,6 +55,7 @@ referencesAliases = []
 
 def treat_page_by_name(page_name):
     if debug_level > 0:
+        print('------------------------------------')
         print(page_name)
     summary = 'Formatage'
     page = Page(site, page_name)
@@ -141,7 +142,7 @@ def treat_page_by_name(page_name):
         current_page = current_page.replace('Catégorie:Modèle de source‎', 'Catégorie:Modèle pmid')
         current_page = current_page.replace('[[Catégorie:Modèle pmid]]', '[[Catégorie:Modèle pmid‎|{{SUBPAGENAME}}]]')
 
-    # Analyse des crochets et accolades (à faire : hors LaTex)
+    # Analyse des crochets et accolades (TODO : hors LaTex)
     if current_page.count('{') - current_page.count('}') != 0:
         if page_name.find('User:JackBot/') == -1: log('*[[' + page_name + ']] : accolade cassée')
         # if debug_level > 1: raise Exception('Accolade cassée')

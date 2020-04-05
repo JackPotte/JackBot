@@ -51,7 +51,9 @@ book_cat_templates.append('[[Category:{{FULLBOOKNAME}}]]')
 
 
 def treat_page_by_name(page_name):
-    print('\n' + page_name)
+    if debug_level > 0:
+        print('------------------------------------')
+        print(page_name)
     page = Page(site, page_name)
     current_page_content = get_content_from_page(page, 'All')
     if username not in page_name and (current_page_content is None or page_name.find('/print version') != -1):

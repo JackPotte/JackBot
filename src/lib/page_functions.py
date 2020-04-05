@@ -460,7 +460,7 @@ def replaceISBN(page_content):
         if debug_level > 0: 'ISBN'
         page_content = re.sub(regex, r'{{ISBN|\1}}', page_content)
 
-    # TODO: no hardfix anymore
+    # TODO: remove fix
     regex = r'{{ISBN *\|([0-9X\- ]+)}}([Xx]?)'
     if re.search(regex, page_content):
         page_content = re.sub(regex, r'{{ISBN|\1\2}}', page_content)
