@@ -584,7 +584,8 @@ def translate_link_templates(current_page):
             final_page = final_page + current_page[
                                       :re.search(r'{{[\n ]*' + old_template[m] + r' *[\|\n]', current_page).end() - 1]
             current_page = current_page[re.search(r'{{[\n ]*' + old_template[m] + r' *[\|\n]', current_page).end() - 1:]
-            # Identification du code langue existant dans le modèle
+
+            # TODO split to get_template_language_from_template_page()
             language_code = ''
             if final_page.rfind('{{') != -1:
                 page_start = final_page[:final_page.rfind('{{')]

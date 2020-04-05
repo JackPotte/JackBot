@@ -357,7 +357,7 @@ def get_pronunciation_from_content(page_content, language_code, nature=None):
         return
 
     # TODO: templateContent = getTemplateContent(page_content, template) ?
-    regex = r'{{(' + templates.replace('-', '\-') + u")\|([^{}\|=]+)([^{}]*}}\n\'\'\'" \
+    regex = r'{{(' + re.escape(templates) + r")\|([^{}\|=]+)([^{}]*}}\n\'\'\'" \
         + re.escape(page_name).replace('User:', '') + r"'\'\')( *{*f?m?n?}* *)\n"
     s = re.search(regex, page_content)
     if s:
@@ -525,163 +525,46 @@ def remove_template(page_content, template, summary, language = None, inSection 
     return page_content, summary
 
 
-def add_line(page_content, language_code, section, line_content):
+def add_line(page_content, language_code, section_name, line_content):
     if debug_level > 1:
-        print('\nadd_line(' + language_code + ', ' + section + ')')
+        print('\nadd_line(' + language_code + ', ' + section_name + ')')
     d = 0
     if debug_level > d:
         pywikibot.output("\n\03{red}---------------------------------------------\03{default}")
-        print('\nadd_line into "' + section + '"')
-    if page_content != '' and language_code != '' and section != '' and line_content != '':
+        print('\nadd_line into "' + section_name + '"')
+    if page_content != '' and language_code != '' and section_name != '' and line_content != '':
         if page_content.find(line_content) == -1 and page_content.find('{{langue|' + language_code + '}}') != -1:
-            if section == 'catégorie' and line_content.find('[[Catégorie:') == -1:
+            if section_name == 'catégorie' and line_content.find('[[Catégorie:') == -1:
                 line_content = '[[Catégorie:' + line_content + ']]'
-            if section == 'clé de tri' and line_content.find('{{clé de tri|') == -1:
+            if section_name == 'clé de tri' and line_content.find('{{clé de tri|') == -1:
                 line_content = '{{clé de tri|' + line_content + '}}'
 
-            # Recherche de l'ordre théorique de la section à ajouter
-            section_to_add_number = get_section_number(section)
-            if section_to_add_number == len(sections):
+            section_to_add_order = get_order_by_section_name(section_name)
+            if section_to_add_order == len(sections):
                 if debug_level > d:
-                    print(' ajout de la sous-section : ' + section + ' dans une section inconnue')
-                    print('  (car ' + len(sections) + ' = ' + str(section_to_add_number) + ')\n')
+                    print(' ajout de la sous-section : ' + section_name + ' dans une section inconnue (car '
+                          + str(len(sections)) + ' = ' + str(section_to_add_order) + ')\n')
                 return page_content
 
             # Recherche de l'ordre réel de la section à ajouter
             language_section, start_position, end_position = get_language_section(page_content, language_code)
-            if language_section is None: return page_content
+            if language_section is None:
+                # TODO add section language too in option
+                return page_content
+
             sections_in_page = re.findall(r"\n=+ *{{S\|?([^}/|]+)([^}]*)}}", language_section)
             if debug_level > d + 1:
                 input(str(sections_in_page))  # ex : [('nom', '|fr|num=1'), ('synonymes', '')]
 
-            regex = r'\n=* *{{S\|' + section + r'[}\|]'
+            regex = r'\n=* *{{S\|' + section_name + r'[}\|]'
             if not re.search(regex, language_section):
-                if debug_level > d:
-                    print(' section not found: ' + section)
+                page_content, language_section, start_position, end_position = add_section(page_content,
+                    sections_in_page, section_name, section_to_add_order, language_section, start_position,
+                                                                           end_position, line_content, language_code)
 
-                o = 0
-                while o < len(sections_in_page) and get_section_number(sections_in_page[o][0]) <= section_to_add_number:
-                    if debug_level > d:
-                        print(' ' + sections_in_page[o][0] + ' ' + str(get_section_number(sections_in_page[o][0])))
-                    o = o + 1
-                if o > 0:
-                    o = o - 1
-                if debug_level > d:
-                    print(' while ' + str(get_section_number(sections_in_page[o][0])) + ' <= '
-                          + str(section_to_add_number)
-                          + ' and ' + str(o) + ' < ' + str(len(sections_in_page)) + ' and '
-                          + sections_in_page[o][0] + ' != langue')
-
-                # section_limit = str(sections_in_page[o][0])
-                section_limit = sections_in_page[o][0]
-                # TODO pb encodage : "étymologie" non fusionnée + "catégorie" = 1 au lieu de 20
-                if language_section.find('{{S|' + section_limit) == -1 and section_limit != 'langue':
-                    if debug_level > d:
-                        print(' sites_errors d\'encodage sur "' + section_limit + '"')
-                    if debug_level > d:
-                        input(language_section)
-                    return page_content
-
-                if section_limit == section:
-                    if debug_level > d:
-                        print(' ajout dans la sous-section existante "' + section + '"')
-                        print(' (car ' + str(get_section_number(section_limit)) + ' = ' + str(section_to_add_number)
-                              + ')\n')
-                elif section not in ['catégorie', 'clé de tri']:
-                    section_to_add = '\n\n' + sections_level[section_to_add_number] + ' {{S|' + section + '}} ' \
-                                   + sections_level[section_to_add_number] + '\n'
-                    if section_to_add_number >= get_section_number(section_limit):
-                        if debug_level > d:
-                            print(' ajout de la sous-section "' + section + '" après "' + section_limit + '"')
-                            print('  (car ' + str(section_to_add_number) + ' > '
-                                  + str(get_section_number(section_limit)) + ')')
-                        regex = r'{{S\|' + section_limit + r'[\|}]'
-                        s = re.search(regex, language_section)
-                        if section_limit == sections_in_page[-1][0]:
-                            if debug_level > d:
-                                print(' ajout de la sous-section après la dernière de la section langue : '
-                                      + section_limit)
-                            categories = language_section.find('\n[[Catégorie:')
-                            default_sort = language_section.find('\n{{clé de tri|')
-                            if categories != -1 and (categories < default_sort or default_sort == -1):
-                                if debug_level > d:
-                                    print('  avant les catégories')
-                                page_content = page_content[:start_position] + language_section[:categories] \
-                                               + section_to_add \
-                                    + language_section[categories:] + page_content[start_position+end_position:]
-                            elif default_sort != -1:
-                                if debug_level > d:
-                                    print('  avant la clé de tri')
-                                page_content = page_content[:start_position] + language_section[:default_sort] + '\n' \
-                                               + section_to_add + language_section[default_sort:] \
-                                               + page_content[start_position+end_position:]
-                            else:
-                                if debug_level > d:
-                                    print('  sans catégorie')
-                                page_content = page_content[:start_position] + language_section + section_to_add \
-                                               + page_content[start_position+end_position:]
-                            if debug_level > d + 1:
-                                input(page_content)
-                        else:
-                            if debug_level > d+1:
-                                print('   Saut des sections incluses dans la précédente (de niveau titre inférieur)')
-                                print('   ' + str(section_to_add_number) + ' => ' + sections_level[section_to_add_number]
-                                      + section)
-                                print('   ' + str(sections.index(sections_in_page[o + 1][0])) + ' => '
-                                      + sections_level[sections.index(sections_in_page[o + 1][0])]
-                                      + sections_in_page[o + 1][0])
-                            while o < len(sections_in_page) and len(sections_level[section_to_add_number]) < \
-                                len(sections_level[sections.index(sections_in_page[o + 1][0])]):
-                                if debug_level > d:
-                                    print(' saut de ' + sections_in_page[o+1][0])
-                                o += 1
-
-                            if debug_level > d:
-                                print(' ajout de la sous-section "' + section + '" avant "' + sections_in_page[o + 1][0]
-                                      + '"')
-                            regex = r'\n=* *{{S\|' + sections_in_page[o+1][0]
-                            s = re.search(regex, language_section)
-                            if s:
-                                if section in natures:
-                                    section_to_add = section_to_add.replace('}}', '|' + language_code + '}}')
-                                    if line_content[:1] == '#' or line_content[:2] == '\n#':
-                                        section_to_add += u"'''{{subst:PAGENAME}}''' {{genre ?|" + language_code + \
-                                            u"}} {{pluriel ?|" + language_code + u"}}\n"
-                                page_content = page_content[:start_position] + language_section[:s.start()] + \
-                                    section_to_add + language_section[s.start():] \
-                                               + page_content[start_position+end_position:]
-                            else:
-                                input(' bug section')
-                        language_section, start_position, end_position = get_language_section(page_content, language_code)
-                        if language_section is None:
-                            return page_content
-                    else:
-                        if debug_level > d:
-                            print(' ajout de "' + section + '" avant "' + section_limit + '"')
-                            print('  (car ' + str(section_to_add_number) + ' < ' + str(get_section_number(section_limit)) + ')')
-                        regex = r'\n=* *{{S\|' + section_limit
-                        s = re.search(regex, language_section)
-                        if s:
-                            page_content = page_content[:start_position] + language_section[:s.start()] + section_to_add\
-                                           + language_section[s.start():] + page_content[start_position+end_position:]
-                            language_section, start_position, end_position = get_language_section(page_content, language_code)
-                            if language_section is None:
-                                return page_content
-                        else:
-                            input(' bug section')
-            if debug_level > d + 1:
-                input(page_content)
-            if debug_level > d + 1:
-                input(language_section)
-
-            regex = r'\n=* *{{S\|' + section + r'[}\|]'
             s = re.search(regex, language_section)
-            final_section = None
             if s:
-                if debug_level > d:
-                    print(' ajout dans la sous-section')
                 final_section = language_section[s.end():]
-
             else:
                 regex = r'\n=* *{{S\|' + sections_in_page[len(sections_in_page)-1][0]
                 s = re.search(regex, language_section)
@@ -690,8 +573,10 @@ def add_line(page_content, language_code, section, line_content):
                         print(' ajout après les sous-sections')
                     final_section = language_section[s.end():]
                 else:
-                    input(' bug de section')
+                    final_section = None
+                    print(' bug de section')
 
+            # TODO page_content = add_line_content_into_section(page_content, line_content, final_section)
             line_content = trim(line_content)
             regex = r'\n?\n==* *{{S\|'
             s = re.search(regex, final_section)
@@ -727,12 +612,121 @@ def add_line(page_content, language_code, section, line_content):
                         line_content = '\n' + line_content
 
                     page_content = page_content[:start_position] + language_section + line_content + '\n' \
-                                   + page_content[start_position + end_position:]
+                                    + page_content[start_position + end_position:]
 
+    # TODO remove fix
     page_content = page_content.replace('\n\n* {{écouter|', '\n* {{écouter|')
     if debug_level > d:
         pywikibot.output("\n\03{red}---------------------------------------------\03{default}")
     return page_content
+
+
+def add_section(page_content, sections_in_page, section_name, section_to_add_order, language_section,
+                start_position, end_position, line_content, language_code):
+    d = 0
+    o = 0
+    while o < len(sections_in_page) and get_order_by_section_name(sections_in_page[o][0]) <= section_to_add_order:
+        if debug_level > d:
+            print(' ' + sections_in_page[o][0] + ' ' + str(get_order_by_section_name(sections_in_page[o][0])))
+        o = o + 1
+    if o > 0:
+        o = o - 1
+    if debug_level > d:
+        print(' while ' + str(get_order_by_section_name(sections_in_page[o][0])) + ' <= '
+              + str(section_to_add_order)
+              + ' and ' + str(o) + ' < ' + str(len(sections_in_page)) + ' and '
+              + sections_in_page[o][0] + ' != langue')
+
+    # section_limit = str(sections_in_page[o][0])
+    section_limit = sections_in_page[o][0]
+    # TODO pb encodage : "étymologie" non fusionnée + "catégorie" = 1 au lieu de 20
+    if language_section.find('{{S|' + section_limit) == -1 and section_limit != 'langue':
+        if debug_level > d:
+            print(' sites_errors d\'encodage sur "' + section_limit + '"')
+        if debug_level > d:
+            input(language_section)
+        return page_content, language_section
+
+    section_level = get_level_by_section_name(section_name)
+    if section_limit == section_name:
+        if debug_level > d:
+            print(' ajout dans la sous-section existante "' + section_name + '" (car '
+                  + str(get_order_by_section_name(section_limit)) + ' = ' + str(section_to_add_order)
+                  + ')\n')
+    elif section_name not in ['catégorie', 'clé de tri']:
+        section_to_add = '\n\n' + section_level + ' {{S|' + section_name + '}} ' + section_level + '\n'
+        if section_to_add_order >= get_order_by_section_name(section_limit):
+            if debug_level > d:
+                print(' ajout de la sous-section "' + section_name + '" après "' + section_limit + '" (car '
+                      + str(section_to_add_order) + ' > ' + str(get_order_by_section_name(section_limit)) + ')')
+            regex = r'{{S\|' + section_limit + r'[\|}]'
+            s = re.search(regex, language_section)
+            if section_limit == sections_in_page[-1][0]:
+                if debug_level > d:
+                    print(' ajout de la sous-section après la dernière de la section langue : ' + section_limit)
+                categories = language_section.find('\n[[Catégorie:')
+                default_sort = language_section.find('\n{{clé de tri|')
+                if categories != -1 and (categories < default_sort or default_sort == -1):
+                    if debug_level > d:
+                        print('  avant les catégories')
+                    page_content = page_content[:start_position] + language_section[:categories] \
+                                                                + section_to_add \
+                                                                + language_section[categories:]\
+                                                                + page_content[start_position+end_position:]
+                elif default_sort != -1:
+                    if debug_level > d:
+                        print('  avant la clé de tri')
+                    page_content = page_content[:start_position] + language_section[:default_sort] + '\n' \
+                                       + section_to_add + language_section[default_sort:] \
+                                       + page_content[start_position+end_position:]
+                else:
+                    if debug_level > d:
+                        print('  sans catégorie')
+                    page_content = page_content[:start_position] + language_section + section_to_add \
+                                        + page_content[start_position+end_position:]
+                if debug_level > d + 1:
+                    input(page_content)
+            else:
+                last_section_level = get_level_by_section_name(sections_in_page[o + 1][0])
+                if debug_level > d:
+                    print('   Saut des sections incluses dans la précédente (de niveau titre inférieur)')
+                while o < len(sections_in_page) and len(section_level) < len(last_section_level):
+                    o += 1
+                    if debug_level > d:
+                        print(' saut de ' + sections_in_page[o+1][0])
+
+                if debug_level > d:
+                    print(' ajout de la sous-section "' + section_name + '" avant "' + sections_in_page[o + 1][0] + '"')
+                regex = r'\n=* *{{S\|' + sections_in_page[o+1][0]
+                s = re.search(regex, language_section)
+                if s:
+                    if section_name in natures:
+                        section_to_add = section_to_add.replace('}}', '|' + language_code + '}}')
+                        if line_content[:1] == '#' or line_content[:2] == '\n#':
+                            section_to_add += u"'''{{subst:PAGENAME}}''' {{genre ?|" + language_code + \
+                                u"}} {{pluriel ?|" + language_code + u"}}\n"
+                    page_content = page_content[:start_position] + language_section[:s.start()] + \
+                        section_to_add + language_section[s.start():] + page_content[start_position+end_position:]
+                else:
+                    input(' bug section')
+            language_section, start_position, end_position = get_language_section(page_content, language_code)
+            if language_section is None:
+                return page_content
+        else:
+            if debug_level > d:
+                print(' ajout de "' + section_name + '" avant "' + section_limit + '" (car '
+                      + str(section_to_add_order) + ' < ' + str(get_order_by_section_name(section_limit)) + ')')
+            regex = r'\n=* *{{S\|' + section_limit
+            s = re.search(regex, language_section)
+            if s:
+                page_content = page_content[:start_position] + language_section[:s.start()] + section_to_add\
+                               + language_section[s.start():] + page_content[start_position+end_position:]
+                language_section, start_position, end_position = get_language_section(page_content, language_code)
+                if language_section is None:
+                    return page_content
+            else:
+                print(' Error, cannot add section: ' + section_name)
+    return page_content, language_section, start_position, end_position
 
 
 def add_line_test(page_content, language_code ='fr'):
@@ -756,7 +750,7 @@ def add_pronunciation(page_content, language_code, section, line_content):
                 line_content = '{{clé de tri|' + line_content + '}}'
 
             # Recherche de l'ordre théorique de la section à ajouter
-            section_number = get_section_number(section)
+            section_number = get_order_by_section_name(section)
             if section_number == len(sections):
                 if debug_level > 0:
                     print(' ajout de ' + section + ' dans une section inconnue')
@@ -776,9 +770,9 @@ def add_pronunciation(page_content, language_code, section, line_content):
             o = 0
             # TODO pb encodage : étymologie non fusionnée + catégorie = 1 au lieu de 20 !?
             while o < len(sections_in_page) and sections_in_page[o][0] != 'langue' \
-                and get_section_number(sections_in_page[o][0]) <= section_number:
+                and get_order_by_section_name(sections_in_page[o][0]) <= section_number:
                 if debug_level > 0:
-                    print(' ' + sections_in_page[o][0] + ' ' + str(get_section_number(sections_in_page[o][0])))
+                    print(' ' + sections_in_page[o][0] + ' ' + str(get_order_by_section_name(sections_in_page[o][0])))
                 o = o + 1
             if debug_level > 0:
                 print(' ' + str(len(sections_in_page)) + ' >? ' + str(o))
@@ -812,7 +806,7 @@ def add_pronunciation(page_content, language_code, section, line_content):
                     print(' position O : ' + o)
                 if debug_level > 0:
                     print(' ajout de "' + section + '" avant "' + repr(sectionLimit) + '"')
-                    print('  (car ' + str(get_section_number(sectionLimit)) + ' > ' + str(section_number) + ')')
+                    print('  (car ' + str(get_order_by_section_name(sectionLimit)) + ' > ' + str(section_number) + ')')
 
                 # Ajout après la section trouvée
                 if language_section.find('{{S|' + sections_in_page[o][0]) == -1:
@@ -902,21 +896,34 @@ def add_line_into_section(page_content, language_code, section, line_content):
     return page_content
 
 
-def get_section_number(section):
+def get_order_by_section_name(section):
     if debug_level > 0:
-        print(' get_section_number()')
+        print(' get_order_by_section_name()')
     s = 0
-    while s < len(sections) and section != sections[s]:
-        s = s + 1
-    if s >= len(sections):
-        section_order = 2  # Grammatical natures (ex: nom)
-        if debug_level > 0:
-            print('  ' + section + ' not found')
-    else:
+    try:
+        s = sections.index(section)
         section_order = sections_order[s]
+    except BaseException as e:
+        print(str(e))
+        section_order = 2  # Grammatical natures (ex: nom)
     if debug_level > 0:
-        print('  ' + section + ' = ' + str(s) + ' => ' + str(section_order))
+        print('  ' + section + ' (' + str(s) + 'e) = ordre ' + str(section_order))
     return section_order
+
+
+def get_level_by_section_name(section):
+    if debug_level > 0:
+        print(' get_level_by_section_name()')
+    s = 0
+    try:
+        s = sections.index(section)
+        section_level = sections_level[s]
+    except BaseException as e:
+        print(str(e))
+        section_level = '==='  # Grammatical natures (ex: === {{S|nom)
+    if debug_level > 0:
+        print('  ' + section + ' (' + str(s) + 'e) = ordre ' + str(section_level))
+    return section_level
 
 
 # TODO: def addlanguage_codeToTemplate(final_page_content, page_content, current_template = None, language_code = None):

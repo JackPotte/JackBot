@@ -717,16 +717,16 @@ sections_level.append('')
 sections_order.append(26)
 
 templates.append('caractère')
-sections_level.append('==')
-sections_order.append(2)
+# sections_level.append('==')
+# sections_order.append(2)
 
 templates.append('langue')
-sections_level.append('==')
-sections_order.append(2)
+# sections_level.append('==')
+# sections_order.append(2)
 
 templates.append('S')
-sections_level.append('==')
-sections_order.append(2)
+# sections_level.append('==')
+# sections_order.append(2)
 
 # Modèles qui ne sont pas des titres de paragraphes
 templates.append('?')
