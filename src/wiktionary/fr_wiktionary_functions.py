@@ -1649,6 +1649,9 @@ def add_templates(page_content, summary):
     regex = r'\n\* *[Ss]olr[eé]sol *: *:* *\[\[«?([^\]\n«»]+)»?\]\]'
     page_content = re.sub(regex, r'\n* {{T|solrésol}} : {{trad--|solrésol|\1}}', page_content)
 
+    regex = r'(\n\* {{T\|tsolyáni}} *: *)\[\[([^\]\n]+)\]\]'
+    page_content = re.sub(regex, r'\1{{trad--|tsolyáni|\2}}', page_content)
+
     return page_content, summary
 
 

@@ -1114,7 +1114,7 @@ def main(*args):
         p.pages_by_link('Template:fp')
         p.pages_by_link('Template:vx')
         p.pages_by_link('Template:contr')
-        # p.pages_by_link('Template:deet')
+        p.pages_by_link('Template:deet')
         # p.pages_by_link('Template:compos')
         p.pages_by_cat('Catégorie:Traduction en français demandée d’exemple(s) écrits en français')
         p.pages_by_cat('Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section')
@@ -1124,6 +1124,7 @@ def main(*args):
         p.pages_by_search('insource:/\}==== \{\{S\|/', namespaces=[0])
         p.pages_by_search('insource:/\}=== \{\{S\|/', namespaces=[0])
         p.pages_by_search('insource:/solrésol *:/i', namespaces=[0])
+        p.pages_by_search('insource:/tsolyáni}} *: *\[/i', namespaces=[0])
         p.pages_by_search(
             'insource:/[^=]=== \{\{S\|(variantes|synonymes|antonymes|dérivés|apparentés|hyperonymes|hyponymes|méronymes|holonymes|vocabulaire|traductions)/',
             namespaces=[0])

@@ -520,9 +520,15 @@ def save_page(current_page, page_content, summary, minor_edit=True):
                 print(page_content.encode(config.console_encoding, 'replace'))
         else:
             page_size = 3000
-            print(page_content[:page_size])
-            print('\n[...]\n')
-            print(page_content[len(page_content) - page_size:])
+            try:
+                print(page_content[:page_size])
+                print('\n[...]\n')
+                print(page_content[len(page_content) - page_size:])
+            except UnicodeEncodeError as e:
+                print(str(e))
+                print(page_content[:page_size].encode(config.console_encoding, 'replace'))
+                print('\n[...]\n')
+                print(page_content[len(page_content) - page_size:].encode(config.console_encoding, 'replace'))
         result = input('\nSauvegarder [[' + current_page.title() + ']] ? (o/n) ')
     if str(result) not in ['n', 'no', 'non']:
         if current_page.title().find('JackBot/') == -1:
