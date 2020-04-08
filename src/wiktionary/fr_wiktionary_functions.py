@@ -1663,7 +1663,8 @@ def rename_templates(page_content, summary):
     if debug_level > 1:
         print(' Remplacements des anciens codes langue')
     page_content = page_content.replace('|ko-hani}}', '|ko-Hani}}')
-    ''' TODO fix bug https://fr.wiktionary.org/w/index.php?title=van&diff=prev&oldid=24107783&diffmode=source
+
+    # TODO move some to incubator_languages
     old_template = []
     new_template = []
     old_template.append('ko-hanja')
@@ -1693,10 +1694,12 @@ def rename_templates(page_content, summary):
     old_template.append('xtg')
     new_template.append('gaulois')
     for p in range(1, len(old_template)):
-        regex = r'((?!:voir).*[\|{=])' + old_template[p] + r'([\|}])'
-        while re.search(regex, page_content):
-            page_content = re.sub(regex, r'\1' + new_template[p] + r'\2', page_content)
-    '''
+        # TODO select templates https://fr.wiktionary.org/w/index.php?title=van&diff=prev&oldid=24107783&diffmode=source
+        # regex = r'((?!:voir).*[\|{=])' + old_template[p] + r'([\|}])'
+        regex = r'({{T\|)' + re.escape(old_template[p]) + r'}}'
+        page_content = re.sub(regex, r'\1' + new_template[p] + r'}}', page_content)
+        regex = r'({{trad[\-\+]\-?\|)' + re.escape(old_template[p]) + r'\|'
+        page_content = re.sub(regex, r'\1' + new_template[p] + r'|', page_content)
 
     if debug_level > 1:
         print(' Modèles trop courts')
@@ -3216,8 +3219,8 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                     backward = True
             elif current_language == 'conv':
                 external_site_name = get_wiki('species', 'species')
-            elif current_language == 'ba':
-                # Incubator: Non-JSON response received from server wiktionary:ba; the server may be down.
+            elif current_language in incubator_wiktionaries:
+                # Otherwise: Non-JSON response received from server wiktionary:ba; the server may be down.
                 external_site_name = None
             else:
                 external_site_name = get_wiki(current_language, site_family)

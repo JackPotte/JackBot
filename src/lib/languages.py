@@ -6157,3 +6157,5 @@ languages = {
     'zza': 'zazaki',
     'zzj': 'zhuang de Zuojiang'
 }
+
+incubator_wiktionaries = ['ba', 'be-tarask']
