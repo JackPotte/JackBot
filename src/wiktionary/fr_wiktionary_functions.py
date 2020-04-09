@@ -1984,7 +1984,7 @@ def replace_etymology_templates(page_content, summary):
         'acron': 'acronyme',
         'compos': 'composé de',
         'contr': 'contraction',
-        'dénominal': 'démoninal de',
+        'dénominal': 'dénominal de',
         'déverbal': 'déverbal de'
     }
     for alias in templates:

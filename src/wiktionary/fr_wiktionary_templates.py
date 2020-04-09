@@ -759,8 +759,7 @@ etymology_templates_in_satellite_words = ['abréviation', 'abréviation de', 'ac
                                       'par ellipse', 'sigle']
 etymology_templates_with_language_at_first = etymology_templates_in_satellite_words + ['agglutination', 'antonomase',
     'déglutination', 'mot-valise', 'parataxe', 'syncope', 'univerbation']
-etymology_templates_with_language_at_second = ['dénominal', 'dénominal de', 'déverbal', 'déverbal de',
-                                               'déverbal sans suffixe']
+etymology_templates_with_language_at_second = ['dénominal de', 'déverbal de', 'déverbal sans suffixe']
 
 templates += etymology_templates_with_language_at_lang
 
