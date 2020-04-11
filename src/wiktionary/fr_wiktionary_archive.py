@@ -1,11 +1,12 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """
 Ce script archive des pages de discussion
 """
-# Importation des modules
 from __future__ import absolute_import, unicode_literals
+import datetime
 import os
+import re
 import sys
 import time
 import pywikibot
@@ -41,58 +42,64 @@ username = config.usernames[site_family][site_language]
 summary = 'Autoarchivage de [[Wiktionnaire:Bot/Requêtes]]'
 
 
-'''
-@param waitingTimeBeforeArchiving nombre de jours d'inactivité requis avant archivage
-(utile pour permettre aux requêtes traitées d'être relues avant qu'elles soient enfouies
-en page d'archive)
-'''
-def treat_page_by_name(page_name, waitingTimeBeforeArchiving=3):
+def treat_page_by_name(page_name, waiting_time_before_archiving=3):
+    if debug_level > 0:
+        print(page_name)
     page = Page(site, page_name)
-
-    # Ne pas archiver tout de suite si page très récemment modifiée
-    # (Idéalement, la date des dernières interventions devrait être checkée...)
-    latestRev = page.editTime()
+    '''
+    @param waiting_time_before_archiving nombre de jours d'inactivité requis avant archivage
+    (utile pour permettre aux requêtes traitées d'être relues avant qu'elles soient enfouies
+    en page d'archive)
+    Ne pas archiver tout de suite si page très récemment modifiée
+    TODO (Idéalement, la date des dernières interventions devrait être checkée...)
+    '''
+    latest_rev = page.editTime()
     now = datetime.datetime.now()
-    inactivityDuration = (now - latestRev).days
-    if inactivityDuration < waitingTimeBeforeArchiving:
+    inactivity_duration = (now - latest_rev).days
+    if inactivity_duration < waiting_time_before_archiving:
+        if debug_level > 0:
+            print(' The page has been modified in the last days: ' + str(inactivity_duration))
         return
 
-    if page.exists():
-        if page.namespace() != 4 and page.title() != 'User:JackBot/test':
+    if not page.exists():
+        if debug_level > 0:
+            print(' The page does not exist')
+        return
+    if page.namespace() != 4 and page.title() != 'User:JackBot/test':
+        if debug_level > 0:
+            print(' Untreated namespace')
+        return
+
+    try:
+        page_content = page.get()
+    except pywikibot.exceptions.NoPage as e:
+        print(str(e))
+        return
+    except pywikibot.exceptions.IsRedirectPage as e:
+        print(str(e))
+        page_content = page.get(get_redirect=True)
+        page2 = Page(site, page_content[page_content.find('[[')+2:page_content.find(']]')])
+        try:
+            final_page_content2 = page2.get()
+        except pywikibot.exceptions.NoPage as e:
+            print(str(e))
             return
-        else:
-            try:
-                page_content = page.get()
-            except pywikibot.exceptions.NoPage:
-                print("NoPage")
-                return
-            except pywikibot.exceptions.IsRedirectPage:
-                print("Redirect page l 42")
-                page_content = page.get(get_redirect=True)
-                page2 = Page(site, page_content[page_content.find('[[')+2:page_content.find(']]')])
-                try:
-                    final_page_content2 = page2.get()
-                except pywikibot.exceptions.NoPage:
-                    print("NoPage")
-                    return
-                except pywikibot.exceptions.IsRedirectPage:
-                    print("Redirect page l 51")
-                    return
-                except pywikibot.exceptions.LockedPage:
-                    print("Locked/protected page")
-                    return
-                if final_page_content2.find('{{NavigBOT') == -1:
-                    final_page_content2 = '{{NavigBOT|' + page2.title()[len(page2.title())-4:len(page2.title())] + '}}\n' + final_page_content2
-                    save_page(page2, final_page_content2, summary)
-                return
-            except pywikibot.exceptions.LockedPage:
-                print("Locked/protected page")
-                return
-    else:
+        except pywikibot.exceptions.IsRedirectPage as e:
+            print(str(e))
+            return
+        except pywikibot.exceptions.LockedPage as e:
+            print(str(e))
+            return
+        if final_page_content2.find('{{NavigBOT') == -1:
+            final_page_content2 = '{{NavigBOT|' + page2.title()[len(page2.title())-4:len(page2.title())] + '}}\n' + final_page_content2
+            save_page(page2, final_page_content2, summary)
+        return
+    except pywikibot.exceptions.LockedPage as e:
+        print(str(e))
         return
 
     final_page_content = ''
-    annee = time.strftime('%Y')
+    current_year = time.strftime('%Y')
     regex = r'\n==[ ]*{{[rR]equête [fait|refus|refusée|sans suite]+}}.*==[ \t]*\n'
     while re.compile(regex).search(page_content):
         DebutParagraphe = re.search(regex,page_content).end()
@@ -111,25 +118,26 @@ def treat_page_by_name(page_name, waitingTimeBeforeArchiving=3):
             final_page_content = final_page_content + page_content[:DebutParagraphe][page_content[:DebutParagraphe].rfind('\n=='):] + page_content[DebutParagraphe:][:FinParagraphe]
             page_content = page_content[:DebutParagraphe][:page_content[:DebutParagraphe].rfind('\n==')] + page_content[DebutParagraphe:][FinParagraphe:]
 
-
-    # Sauvegardes
+    if debug_level > 0:
+        print(' backups')
     if page_content != page.get():
-        page2 = Page(site,page_name + '/Archives/' + annee)
+        page2 = Page(site,page_name + '/Archives/' + current_year)
         final_page_content2 = ''
         if page2.exists():
             try:
                 final_page_content2 = page2.get()
-            except pywikibot.exceptions.NoPage:
-                print("NoPage")
+            except pywikibot.exceptions.NoPage as e:
+                print(str(e))
                 return
-            except pywikibot.exceptions.IsRedirectPage:
-                print("Redirect page")
+            except pywikibot.exceptions.IsRedirectPage as e:
+                print(str(e))
                 return
-            except pywikibot.exceptions.LockedPage:
-                print("Locked/protected page")
+            except pywikibot.exceptions.LockedPage as e:
+                print(str(e))
                 return
         if final_page_content2.find('{{NavigBOT') == -1: final_page_content2 = '{{NavigBOT|' + page2.title()[len(page2.title())-4:len(page2.title())] + '}}\n' + final_page_content2
         save_page(page2, final_page_content2 + final_page_content, summary)
         save_page(page, page_content, summary)
+
 
 treat_page_by_name('Wiktionnaire:Bots/Requêtes')
