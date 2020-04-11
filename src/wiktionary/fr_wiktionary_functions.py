@@ -690,14 +690,14 @@ def add_section(page_content, sections_in_page, section_name, section_to_add_ord
                 last_section_level = get_level_by_section_name(sections_in_page[o + 1][0])
                 if debug_level > d:
                     print('   Saut des sections incluses dans la précédente (de niveau titre inférieur)')
-                while o < len(sections_in_page) and len(section_level) < len(last_section_level):
+                while o + 2 < len(sections_in_page) and len(section_level) < len(last_section_level):
                     o += 1
                     if debug_level > d:
-                        print(' saut de ' + sections_in_page[o+1][0])
+                        print(' saut de ' + sections_in_page[o + 1][0])
 
                 if debug_level > d:
                     print(' ajout de la sous-section "' + section_name + '" avant "' + sections_in_page[o + 1][0] + '"')
-                regex = r'\n=* *{{S\|' + sections_in_page[o+1][0]
+                regex = r'\n=* *{{S\|' + sections_in_page[o + 1][0]
                 s = re.search(regex, language_section)
                 if s:
                     if section_name in natures:

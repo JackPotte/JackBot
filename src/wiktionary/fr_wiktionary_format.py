@@ -1043,16 +1043,6 @@ def main(*args):
 
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
                 sys.argv[1] == str('-m'):
-            p.pages_by_link('Template:ordin', namespaces=[0])
-            p.pages_by_link('Template:cardin', namespaces=[0])
-            p.pages_by_link('Template:comp', namespaces=[0])
-            p.pages_by_link('Template:super', namespaces=[0])
-            p.pages_by_link('Template:irrég', namespaces=[0])
-            p.pages_by_link('Template:perf', namespaces=[0])
-            p.pages_by_link('Template:imperf', namespaces=[0])
-            p.pages_by_link('Template:nomin', namespaces=[0])
-            p.pages_by_link('Template:acron', namespaces=[0])
-            p.pages_by_link('Template:abrév', namespaces=[0])
             p.pages_by_link('Template:compos', namespaces=[0])
             # TODO
             # p.pages_by_link('Template:abréviation', namespaces=[0])
