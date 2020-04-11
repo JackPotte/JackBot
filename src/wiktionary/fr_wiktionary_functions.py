@@ -1731,6 +1731,17 @@ def rename_templates(page_content, summary):
     page_content = page_content.replace('{{fm?}}', '{{fm ?}}')
     page_content = page_content.replace('{{coll}}', '{{collectif}}')
 
+    page_content = re.sub(r'{{ordin *([\|}\n])', r'{{ordinal\1', page_content)
+    page_content = re.sub(r'{{cardin *([\|}\n])', r'{{cardinal\1', page_content)
+    page_content = re.sub(r'{{comp *([\|}\n])', r'{{comparatif\1', page_content)
+    page_content = re.sub(r'{{super *([\|}\n])', r'{{superlatif\1', page_content)
+    page_content = re.sub(r'{{irrég *([\|}\n])', r'{{irrégulier\1', page_content)
+    page_content = re.sub(r'{{perf *([\|}\n])', r'{{perfectif\1', page_content)
+    page_content = re.sub(r'{{imperf *([\|}\n])', r'{{imperfectif\1', page_content)
+    page_content = re.sub(r'{{nomin *([\|}\n])', r'{{nominatif\1', page_content)
+    page_content = re.sub(r'{{acron *([\|}\n])', r'{{acronyme\1', page_content)
+    page_content = re.sub(r'{{abrév *([\|}\n])', r'{{abréviation\1', page_content)
+
     if debug_level > 1:
         print(' Modèles des définitions')
     page_content = re.sub(r'{{régio *\| *', r'{{région|', page_content)
