@@ -8,18 +8,17 @@ import re
 import time
 import pywikibot
 from pywikibot import *
+# JackBot
+from lib import *
 
-debug_level = 0
 
-
-# *** General functions ***
-def set_functions_globals(mydebug_level, mySite, myUsername):
+def set_functions_globals(my_debug_level, my_site, my_username):
     global debug_level
     global site
     global username
-    debug_level = mydebug_level
-    site = mySite
-    username = myUsername
+    debug_level = my_debug_level
+    site = my_site
+    username = my_username
 
 
 def global_operations(page_content):
@@ -499,7 +498,7 @@ def log(source):
     txtfile.close()
 
 
-def stop_required(username):
+def stop_required(username, site):
     page_content = get_content_from_page_name('User talk:' + username, site)
     if page_content is None:
         return
@@ -531,38 +530,38 @@ def save_page(current_page, page_content, summary, minor_edit=True):
                 print(page_content[len(page_content) - page_size:].encode(config.console_encoding, 'replace'))
         result = input('\nSauvegarder [[' + current_page.title() + ']] ? (o/n) ')
     if str(result) not in ['n', 'no', 'non']:
-        if current_page.title().find('JackBot/') == -1:
-            stop_required(username)
+        if current_page.title().find(username + '/') == -1:
+            stop_required(username, site)
         if not summary:
             summary = '[[Wiktionnaire:Structure des articles|Autoformatage]]'
         try:
             current_page.put(page_content, summary, minorEdit=minor_edit)
-        except pywikibot.exceptions.NoPage:
-            print("NoPage in savePage")
+        except pywikibot.exceptions.NoPage as e:
+            print(str(e))
             return
-        except pywikibot.exceptions.IsRedirectPage:
-            print("IsRedirectPage in savePage")
+        except pywikibot.exceptions.IsRedirectPage as e:
+            print(str(e))
             return
-        except pywikibot.exceptions.LockedPage:
-            print("LockedPage in savePage")
+        except pywikibot.exceptions.LockedPage as e:
+            print(str(e))
             return
-        except pywikibot.EditConflict:
-            print("EditConflict in savePage")
+        except pywikibot.EditConflict as e:
+            print(str(e))
             return
-        except pywikibot.exceptions.ServerError:
-            print("ServerError in savePage")
+        except pywikibot.exceptions.ServerError as e:
+            print(str(e))
             time.sleep(100)
             save_page(current_page, page_content, summary)
             return
-        except pywikibot.exceptions.BadTitle:
-            print("BadTitle in savePage")
+        except pywikibot.exceptions.BadTitle as e:
+            print(str(e))
             return
-        except pywikibot.exceptions.OtherPageSaveError:
+        except pywikibot.exceptions.OtherPageSaveError as e:
+            print(str(e))
             # Ex : [[SIMP J013656.5+093347]]
-            print("OtherPageSaveError")
             return
-        except AttributeError:
-            print("AttributeError in savePage")
+        except AttributeError as e:
+            print(str(e))
             return
 
 

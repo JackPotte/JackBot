@@ -9,6 +9,7 @@ import collections
 import re
 import pywikibot
 from pywikibot import *
+# JackBot
 from lib import *
 from languages import *
 from fr_wiktionary_templates import *

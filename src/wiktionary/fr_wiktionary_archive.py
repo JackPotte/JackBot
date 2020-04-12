@@ -40,6 +40,7 @@ site_language, site_family, site = get_site_by_file_name(__file__)
 username = config.usernames[site_family][site_language]
 
 summary = 'Autoarchivage de [[Wiktionnaire:Bot/Requêtes]]'
+wait_after_humans = True
 
 
 def treat_page_by_name(page_name, waiting_time_before_archiving=3):
@@ -56,7 +57,7 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
     latest_rev = page.editTime()
     now = datetime.datetime.now()
     inactivity_duration = (now - latest_rev).days
-    if inactivity_duration < waiting_time_before_archiving:
+    if wait_after_humans and inactivity_duration < waiting_time_before_archiving:
         if debug_level > 0:
             print(' The page has been modified in the last days: ' + str(inactivity_duration))
         return
