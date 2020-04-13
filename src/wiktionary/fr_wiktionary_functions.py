@@ -1648,17 +1648,28 @@ def format_translations(page_content, summary):
 
 
 def add_templates(page_content, summary):
+    if debug_level > 1:
+        print(' add_templates()')
+
+    if debug_level > 1:
+        print('  add etymology templates')
+    regex = r'(=== {{S\|étymologie}} ===\n:) *(?:[cC]omposé|[dD]érivé) de \'*\[\[([^\]\n]+)\]\]\'* et ' \
+            r'\'*\[\[([^\]\n]+)\]\]\'*\.*\n'
+    page_content = re.sub(regex, r'\1 {{composé de|m=1|\2|\3}}.', page_content)
+
+    if debug_level > 1:
+        print('  add definition templates')
     regex = r'\n#\* *(?:\'\')?\n'
     page_content = re.sub(regex, r'\n#* {{ébauche-exe}}\n', page_content)
-
     regex = r"(\|en}}\n# *'*(?:Participe présent|Participe passé|Prétérit|Troisième personne du singulier du présent) de *'* *)to "
     page_content = re.sub(regex, r'\1', page_content, re.IGNORECASE)
     regex = r"(\|([a-z]+)}}\n# *'*(?:Participe présent|Participe passé|Prétérit|Troisième personne du singulier du présent) de *'* *)([a-zçæéë \-’']+)\."
     page_content = re.sub(regex, r'\1{{l|\3|\2}}.', page_content, re.IGNORECASE)
 
+    if debug_level > 1:
+        print('  add translation templates')
     regex = r'\n\* *[Ss]olr[eé]sol *: *:* *\[\[«?([^\]\n«»]+)»?\]\]'
     page_content = re.sub(regex, r'\n* {{T|solrésol}} : {{trad--|solrésol|\1}}', page_content)
-
     regex = r'(\n\* {{T\|tsolyáni}} *: *)\[\[([^\]\n]+)\]\]'
     page_content = re.sub(regex, r'\1{{trad--|tsolyáni|\2}}', page_content)
 
