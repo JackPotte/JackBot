@@ -38,8 +38,10 @@ def get_first_lemma_from_locution(page_name):
 def get_gender_from_page_name(page_name, language_code='fr', nature=None):
     if debug_level > 1:
         print('\ngetGenderFromPage_name')
-    gender = ''
+    gender = None
     page_content = get_content_from_page_name(page_name, site)
+    if page_content is None:
+        return gender
     if page_content.find('|' + language_code + '}} {{m}}') != -1:
         gender = '{{m}}'
     elif page_content.find('|' + language_code + '}} {{f}}') != -1:
@@ -126,6 +128,9 @@ def get_inflexion_template(page_name, language, nature=None):
     if nature is None:
         nature = 'nom|adjectif|suffixe'
     page_content = get_content_from_page_name(page_name, site)
+    if page_content is None:
+        return inflexion_template
+
     regex = r"=== {{S\|(" + nature + r")\|" + language + r"(\|flexion)?(\|num=[0-9])?}} ===\n{{(" \
             + language + r"\-[^}]+)}}"
     s = re.search(regex, page_content)
@@ -151,30 +156,34 @@ def get_inflexion_template(page_name, language, nature=None):
     return inflexion_template
 
 
-def get_flexion_template_from_lemma(page_name, language, nature):
-    if debug_level > 1:
-        print('\nget_flexion_template_from_lemma()')
-    flexion_template = ''
+def get_inflexion_template_from_lemma(page_name, language, nature):
+    d = 0
+    if debug_level > d:
+        print('\nget_inflexion_template_from_lemma()')
+    inflexion_template = ''
     page_content = get_content_from_page_name(page_name, site)
+    if page_content is None:
+        return None
+
     regex = r"=== {{S\|" + nature + r"\|" + language + r"(\|num=[0-9])?}} ===\n{{(" + language + r"\-[^}]+)}}"
-    if debug_level > 1:
+    if debug_level > d:
         print(' ' + regex)
     s = re.search(regex, page_content)
     if s:
-        if debug_level > 1:
+        if debug_level > d:
             if not s.group(1) is None:
                 print(' ' + s.group(1))
             if not s.group(2) is None:
                 print(' ' + s.group(2))
-        flexion_template = s.group(2)
-    if debug_level > 0:
-        print(' flexion_template found: ' + flexion_template)
+        inflexion_template = s.group(2)
+    if debug_level > d:
+        print(' inflexion_template found: ' + inflexion_template)
     # TODO
-    if flexion_template.find('{{') != -1:
-        flexion_template = ''
-    if flexion_template.find('-inv') != -1:
-        flexion_template = ''
-    return flexion_template
+    if inflexion_template.find('{{') != -1:
+        inflexion_template = ''
+    if inflexion_template.find('-inv') != -1:
+        inflexion_template = ''
+    return inflexion_template
 
 
 def get_page_languages(page_content):
@@ -3065,13 +3074,16 @@ def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natu
             page_content = re.sub(regex, r'\1|flexion\2', page_content)
             summary = summary + ', ajout de |flexion'
 
-        if page_name[-2:] != 'ss':
-            if singular_page_name != '':
-                flexion_inflexion_template = get_inflexion_template(page_name, language_code, nature)
-                if flexion_inflexion_template == '':
-                    if debug_level > 0:
-                        print(' Ajout d\'une boite dans une flexion')
-                    lemma_inflexion_template = get_flexion_template_from_lemma(singular_page_name, language_code, nature)
+        if page_name[-2:] == 'ss':
+            if debug_level > 0:
+                print('-ss')
+        elif singular_page_name != '':
+            inflexion_inflexion_template = get_inflexion_template(page_name, language_code, nature)
+            if inflexion_inflexion_template is None or inflexion_inflexion_template == '':
+                if debug_level > 0:
+                    print(' Ajout d\'une boite dans une flexion')
+                lemma_inflexion_template = get_inflexion_template_from_lemma(singular_page_name, language_code, nature)
+                if lemma_inflexion_template is not None:
                     for inflexion_template_fr_with_ms in inflexion_templates_fr_with_ms:
                         if lemma_inflexion_template.find(inflexion_template_fr_with_ms) != -1:
                             if debug_level > 0:
@@ -3095,30 +3107,30 @@ def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natu
                             + lemma_inflexion_template + r'}}'
                     '''
 
-                    if lemma_inflexion_template != '':
-                        regex = r"(=== {{S\|" + nature + r"\|" + language_code + r"\|flexion}} ===\n)('''" + page_name \
-                                + r"''')"
-                        if re.search(regex, page_content):
-                            page_content = re.sub(regex, r'\1{{' + lemma_inflexion_template + r'}}\n\2', page_content)
-                            summary = summary + ', ajout de {{' + lemma_inflexion_template + r'}} depuis le lemme'
+                if lemma_inflexion_template is not None and lemma_inflexion_template != '':
+                    regex = r"(=== {{S\|" + nature + r"\|" + language_code + r"\|flexion}} ===\n)('''" + page_name \
+                            + r"''')"
+                    if re.search(regex, page_content):
+                        page_content = re.sub(regex, r'\1{{' + lemma_inflexion_template + r'}}\n\2', page_content)
+                        summary = summary + ', ajout de {{' + lemma_inflexion_template + r'}} depuis le lemme'
 
-            if page_name[-1:] != 's':
-                regex = r"(=== {{S\|" + nature + r"\|" + language_code + r"\|flexion}} ===\n)('''" + page_name \
-                        + r"''' {{pron\|)([^\|}]*)(\|" + language_code \
-                        + r"}}\n# *'*'* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
-                if re.search(regex, page_content):
-                    # page_content = re.sub(regex, r'\1{{' + language_code + r'-rég|s=\7|\3}}\n\2\3\4\7', page_content)
-                    page_content = re.sub(regex,
-                                          r'\1{{' + language_code + r'-rég|s=' + singular_page_name + '|\3}}\n\2\3\4\5',
-                                          page_content)
-                    summary = summary + ', ajout de {{' + language_code + r'-rég}}'
+        if page_name[-1:] != 's':
+            regex = r"(=== {{S\|" + nature + r"\|" + language_code + r"\|flexion}} ===\n)('''" + page_name \
+                    + r"''' {{pron\|)([^\|}]*)(\|" + language_code \
+                    + r"}}\n# *'*'* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
+            if re.search(regex, page_content):
+                # page_content = re.sub(regex, r'\1{{' + language_code + r'-rég|s=\7|\3}}\n\2\3\4\7', page_content)
+                page_content = re.sub(regex,
+                                      r'\1{{' + language_code + r'-rég|s=' + singular_page_name + '|\3}}\n\2\3\4\5',
+                                      page_content)
+                summary = summary + ', ajout de {{' + language_code + r'-rég}}'
 
-                regex = r"(=== {{S\|" + nature + r"\|" + language_code + r"\|flexion}} ===\n)('''" + page_name \
-                        + r"'''\n# *'*'* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
-                if re.search(regex, page_content):
-                    page_content = re.sub(regex, r'\1{{' + language_code + r'-rég|s=' + singular_page_name
-                                          + '|}}\n\2\5', page_content)
-                    summary = summary + ', ajout de {{' + language_code + r'-rég}}'
+            regex = r"(=== {{S\|" + nature + r"\|" + language_code + r"\|flexion}} ===\n)('''" + page_name \
+                    + r"'''\n# *'*'* *[P|p]luriel de *'*'* *\[\[)([^#\|\]]+)"
+            if re.search(regex, page_content):
+                page_content = re.sub(regex, r'\1{{' + language_code + r'-rég|s=' + singular_page_name
+                                      + '|}}\n\2\5', page_content)
+                summary = summary + ', ajout de {{' + language_code + r'-rég}}'
 
     if debug_level > 1:
         input(page_content)

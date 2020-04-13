@@ -131,62 +131,67 @@ def get_content_from_page(page, allowed_namespaces=None):
         pywikibot.output(' \03{blue}get_content_from_page : \03{default}' + page.title())
     current_page_content = ''
     try:
-        get = page.exists()
+        does_exist = page.exists()
     except pywikibot.exceptions.InvalidTitle as e:
+        if debug_level > 0:
+            print(str(e))
         return current_page_content
-    if get:
-        if isinstance(allowed_namespaces, list):
-            if debug_level > 1:
-                print(' namespace : ') + str(page.namespace())
-            condition = page.namespace() in allowed_namespaces
-        elif allowed_namespaces == 'All':
-            if debug_level > 1:
-                print(' all namespaces')
-            condition = True
-        else:
-            if debug_level > 1:
-                print(' content namespaces')
-            condition = page.namespace() in [0, 12, 14, 100] or page.title().find('JackBot') != -1
-        if condition:
-            try:
-                current_page_content = page.get()
-            except pywikibot.exceptions.BadTitle:
-                if debug_level > 0:
-                    print(' IsRedirect l 676')
-                return None
-            except pywikibot.exceptions.IsRedirectPage:
-                if debug_level > 0:
-                    print(' IsRedirect l 679')
-                if page.namespace() == 'Template:':
-                    current_page_content = page.get(get_redirect=True)
-                    if current_page_content[:len('#REDIRECT')] == '#REDIRECT':
-                        regex = r'\[\[([^\]]+)\]\]'
-                        s = re.search(regex, current_page_content)
-                        if s:
-                            current_page_content = get_content_from_page_name(s.group(1), site,
-                                                                              allowed_namespaces=allowed_namespaces)
-                        else:
-                            return None
-                    else:
-                        return None
+
+    if not does_exist:
+        if debug_level > 0:
+            print(' No page in ' + __file__)
+        return None
+
+    if isinstance(allowed_namespaces, list):
+        if debug_level > 1:
+            print(' namespace : ') + str(page.namespace())
+        condition = page.namespace() in allowed_namespaces
+    elif allowed_namespaces == 'All':
+        if debug_level > 1:
+            print(' all namespaces')
+        condition = True
+    else:
+        if debug_level > 1:
+            print(' content namespaces')
+        condition = page.namespace() in [0, 12, 14, 100] or page.title().find('JackBot') != -1
+
+    if not condition:
+        if debug_level > 0:
+            print(' Forbidden namespace')
+        return None
+
+    try:
+        current_page_content = page.get()
+    except pywikibot.exceptions.BadTitle as e:
+        if debug_level > 0:
+            print(str(e))
+        return None
+    except pywikibot.exceptions.IsRedirectPage as e:
+        if debug_level > 0:
+            print(str(e))
+        if page.namespace() == 'Template:':
+            current_page_content = page.get(get_redirect=True)
+            if current_page_content[:len('#REDIRECT')] == '#REDIRECT':
+                regex = r'\[\[([^\]]+)\]\]'
+                s = re.search(regex, current_page_content)
+                if s:
+                    current_page_content = get_content_from_page_name(s.group(1), site,
+                                                                      allowed_namespaces=allowed_namespaces)
                 else:
                     return None
-            except pywikibot.exceptions.NoPage:
-                if debug_level > 0:
-                    print(' NoPage l 694')
-                return None
-            except pywikibot.exceptions.ServerError:
-                if debug_level > 0:
-                    print(' ServerError l 697')
+            else:
                 return None
         else:
-            if debug_level > 0:
-                print(' Forbidden namespace l 700')
             return None
-    else:
+    except pywikibot.exceptions.NoPage as e:
         if debug_level > 0:
-            print(' No page in ' + __file__ + ':163: ' + page.title())
+            print(str(e))
         return None
+    except pywikibot.exceptions.ServerError as e:
+        if debug_level > 0:
+            print(str(e))
+        return None
+
     return current_page_content
 
 

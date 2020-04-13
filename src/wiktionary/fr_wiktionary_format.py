@@ -682,7 +682,7 @@ def treat_page_by_name(page_name):
                         print(' Recherche des modèles de langue désuets')
                     template_page = get_content_from_page_name('Template:' + current_template, site,
                                                                allowed_namespaces=['Template:'])
-                    if template_page.find('{{modèle désuet de code langue}}') != -1:
+                    if template_page is not None and template_page.find('{{modèle désuet de code langue}}') != -1:
                         if debug_level > 0:
                             print(' Remplacements de l\'ancien modèle de langue')
                         page_content = 'subst:nom langue|' + current_template + page_content[page_content.find('}}'):]
@@ -1016,7 +1016,7 @@ def main(*args):
                 test_page = None
             if test_page is not None:
                 page_content = get_content_from_page_name(test_page, site)
-                if re.search(regex, page_content, re.DOTALL):
+                if page_content is not None and re.search(regex, page_content, re.DOTALL):
                     print('Traitement...')
                 else:
                     print('Pas de traitement.')
