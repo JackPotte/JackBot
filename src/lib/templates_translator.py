@@ -623,10 +623,10 @@ def translate_link_templates(current_page):
             if debug_level > 1:
                 print(' language to add to template: ' + language_code)
             regex = r'[^}]*lang(ue|uage)* *=[^}]*}}'
-            if not re.search(regex, final_page):
-                final_page = '|langue=' + language_code + final_page
-            elif re.search(regex, final_page).end() > final_page.find('}}') + 2:
-                final_page = '|langue=' + language_code + final_page
+            if not re.search(regex, current_page):
+                current_page = '|langue=' + language_code + current_page
+            elif re.search(regex, current_page).end() > current_page.find('}}') + 2:
+                current_page = '|langue=' + language_code + current_page
 
         current_page = final_page + current_page
         final_page = ''

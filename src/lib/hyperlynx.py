@@ -1239,32 +1239,43 @@ def check_url_page(html_source, url, debug_level=0):
                             print(url + " : " + sites_errors[e])
                         break
 
-    except UnicodeError:
-        if debug_level > 0: print('UnicodeError lors de la lecture')
+    except UnicodeError as e:
+        if debug_level > 0:
+            print(str(e))
         is_broken_link = False
     except UnicodeEncodeError:
-        if debug_level > 0: print('UnicodeEncodeError lors de la lecture')
+        if debug_level > 0:
+            print(str(e))
         is_broken_link = False
     except UnicodeDecodeError:
-        if debug_level > 0: print('UnicodeDecodeError lors de la lecture')
+        if debug_level > 0:
+            print(str(e))
         is_broken_link = False
     except httplib.BadStatusLine:
-        if debug_level > 0: print('BadStatusLine lors de la lecture')
+        if debug_level > 0:
+            print(str(e))
     except httplib.InvalidURL:
-        if debug_level > 0: print('InvalidURL lors de la lecture')
+        if debug_level > 0:
+            print(str(e))
         is_broken_link = False
     except httplib.HTTPException:
-        if debug_level > 0: print('HTTPException')
+        if debug_level > 0:
+            print(str(e))
         is_broken_link = False
     except urllib2.HTTPError as e:
-        if debug_level > 0: print('HTTPError %s.' % e.code +  ' lors de la lecture')
+        if debug_level > 0:
+            print(str(e))
         is_broken_link = False
     except IOError as e:
-        if debug_level > 0: print('I/O error({0}): {1}'.format(e.errno, e.strerror) +  ' lors de la lecture')
+        if debug_level > 0:
+            print(str(e))
+            # print('I/O error({0}): {1}'.format(e.errno, e.strerror) + ' lors de la lecture')
         is_broken_link = False
-    except urllib2.URLError:
-        if debug_level > 0: print('URLError lors de la lecture')
+    except urllib2.URLError as e:
+        if debug_level > 0:
+            print(str(e))
         is_broken_link = False
     else:
-        if debug_level > 1: print('Fin du test du contenu')
+        if debug_level > 1:
+            print('Fin du test du contenu')
     return is_broken_link
