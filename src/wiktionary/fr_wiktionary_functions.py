@@ -1653,8 +1653,11 @@ def add_templates(page_content, summary):
 
     if debug_level > 1:
         print('  add etymology templates')
-    regex = r'(=== {{S\|étymologie}} ===\n:) *(?:[cC]omposé|[dD]érivé) de \'*\[\[([^\]\n]+)\]\]\'* et ' \
-            r'\'*\[\[([^\]\n]+)\]\]\'*\.*\n'
+    regex = r'(=== {{S\|étymologie}} ===\n:) *(?:{{siècle\|?[^}]*}})* *(?:[cC]omposé|[dD]érivé) de ' \
+            r'\'*\[\[([^\]\n]+)\]\]\'* et \'*\[\[([^\]\n]+)\]\]\'*\.*\n'
+    page_content = re.sub(regex, r'\1 {{composé de|m=1|\2|\3}}.', page_content)
+    regex = r'(=== {{S\|étymologie}} ===\n:) *(?:{{siècle\|?[^}]*}})* *[Dd]e \'*\[\[([^\]\n]+)\]\]\'* avec le ' \
+            r'(?:préfixe|suffixe) \'*\[\[([^\]\n]+)\]\]\'*\.*\n'
     page_content = re.sub(regex, r'\1 {{composé de|m=1|\2|\3}}.', page_content)
 
     if debug_level > 1:
