@@ -419,6 +419,11 @@ sections.append('interjection')
 sections_level.append('===')
 sections_order.append(2)
 
+templates.append('-var-typo-')
+sections.append('variante typographique')
+sections_level.append('===')
+sections_order.append(3)
+
 limit1 = len(templates)
 # Paragraphes sans code langue catégorisant, de niveau 3
 # http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_contexte
@@ -606,11 +611,6 @@ sections_order.append(3)
 
 templates.append('-var-ortho-')
 sections.append('variantes ortho')
-sections_level.append('====')
-sections_order.append(3)
-
-templates.append('-var-typo-')
-sections.append('variante typographique')
 sections_level.append('====')
 sections_order.append(3)
 
