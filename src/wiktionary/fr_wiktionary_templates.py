@@ -757,10 +757,11 @@ etymology_templates_with_language_at_lang = etymology_date_templates + ['compos�
 templates += etymology_templates_with_language_at_lang
 
 # https://fr.wiktionary.org/wiki/Catégorie:Modèles_étymologiques
-etymology_templates = [u'étcompcat', 'étyl', 'étylp', 'louchébem', 'reverlanisation', 'verlan']
-etymology_templates_in_satellite_words = ['abréviation', 'abréviation de', 'acronyme', 'apocope', 'aphérèse', 'ellipse',
+fr_etymological_templates = ['louchébem', 'reverlanisation', 'verlan']
+etymology_templates = [u'étcompcat', 'étyl', 'étylp'] + fr_etymological_templates
+templates_only_in_etymological_section = ['abréviation', 'abréviation de', 'acronyme', 'apocope', 'aphérèse', 'ellipse',
                                             'par ellipse', 'sigle']
-etymology_templates_with_language_at_first = etymology_templates_in_satellite_words + \
+etymology_templates_with_language_at_first = templates_only_in_etymological_section + \
                  ['agglutination', 'antonomase', 'déglutination', 'mot-valise', 'parataxe', 'syncope', 'univerbation']
 etymology_templates_with_language_at_second = ['dénominal de', 'déverbal de', 'déverbal sans suffixe']
 

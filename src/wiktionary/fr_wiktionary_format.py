@@ -199,8 +199,9 @@ def treat_page_by_name(page_name):
 
         page_content, summary = format_templates(page_content, summary)
         page_content, summary = format_wikicode(page_content, summary, page_name)
+        page_content, summary = move_templates(page_content, summary)
         page_content, summary = add_templates(page_content, summary)
-        page_content, summary = rename_templates(page_content, summary)
+        page_content, summary = replace_templates(page_content, summary)
         page_content, summary = remove_double_category_when_template(page_content, summary)
         page_content, summary = format_categories(page_content, summary)
         page_content, summary = format_languages_templates(page_content, summary, page_name)
@@ -964,7 +965,7 @@ def format_fr_section(page_content, summary, page_name, regex_page_name):
     regex = r'(' + language_code + r'\|flexion|' + '|'.join(definition_sentences) + '|'.join(
         map(lambda x: x.capitalize(), definition_sentences)) + r')'
     regex2 = r'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|' + \
-             '|'.join(etymology_templates_in_satellite_words) + r')[\|}]'
+             '|'.join(templates_only_in_etymological_section) + r')[\|}]'
     fr_section, language_start, language_end = get_language_section(page_content, language_code)
     if fr_section is not None and re.search(regex, fr_section) is None and re.search(regex2, fr_section) is None and \
             count_first_definition_size(fr_section) > 3:
