@@ -1654,12 +1654,11 @@ def add_templates(page_content, summary):
     if debug_level > 1:
         print('  add etymology templates')
 
-    regex = r'(=== {{S\|étymologie}} ===\n:) *(?:{{(?:' + '|'.join(etymology_date_templates) \
-            + r')\|?[^}]*}})* *(?:[cC]omposé|[dD]érivé) de \'*\[\[([^\]\n]+)\]\]\'* et \'*\[\[([^\]\n]+)\]\]\'*\.*\n'
-    page_content = re.sub(regex, r'\1 {{composé de|m=1|\2|\3}}.', page_content)
-    regex = r'(=== {{S\|étymologie}} ===\n:) *(?:{{(?:' + '|'.join(etymology_date_templates) \
-            + r')\|?[^}]*}})* *[Dd]e \'*\[\[([^\]\n]+)\]\]\'* avec le (?:préfixe|suffixe) \'*\[\[([^\]\n]+)\]\]\'*\.*\n'
-    page_content = re.sub(regex, r'\1 {{composé de|m=1|\2|\3}}.', page_content)
+    word_regex = r'\'*(?:\[\[|{{lien\||{{l\|)([^}\]\n]+)(?:\]\]|\|[a-z]+}})\'*'
+    regex = r'(=== {{S\|étymologie}} ===\n: *(?:{{(?:' + '|'.join(etymology_date_templates) + r')\|?[^}]*}})* *)' \
+            + r'(?:[cC]omposé|[dD]érivé) de ' + word_regex + r' (?:et|avec le (?:préfixe|suffixe)) ' \
+            + word_regex + r'\.*\n'
+    page_content = re.sub(regex, r'\1{{composé de|m=1|\2|\3}}.', page_content)
 
     if debug_level > 1:
         print('  add definition templates')
