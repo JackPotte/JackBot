@@ -64,7 +64,7 @@ fix_old_templates = False
 add_default_sort_key = False
 all_namespaces = False
 treat_templates = False
-treat_categories = False
+treat_categories = True
 fix_genders = True
 fix_false_inflexions = False
 do_list_homophons = False
@@ -120,7 +120,15 @@ def treat_page_by_name(page_name):
     if do_check_url:
         page_content, summary = treat_broken_links(page_content, summary)
 
-    if treat_templates and page.namespace() == 10:
+    if treat_categories and page.namespace() == 14:
+        if debug_level > 0:
+            print(' category treatment')
+        page_content = page_content.replace('[[Catégorie:Date manquante', '[[Catégorie:Dates manquantes')
+        final_page_content = page_content
+
+    elif treat_templates and page.namespace() == 10:
+        if debug_level > 0:
+            print(' template treatment')
         templates_to_treat = ['emploi', 'région', 'registre', 'term']
         for template in templates_to_treat:
             if '{{{clé|' not in page_content and page_content[:len('{{' + template)] == '{{' + template \
@@ -1058,7 +1066,8 @@ def main(*args):
                 else:
                     p.pages_by_cat(sys.argv[2].decode(config.console_encoding, 'replace'))
             else:
-                p.pages_by_cat('Langues en anglais', namespaces=None)
+                p.pages_by_cat('Date manquante', namespaces=[0, 14], recursive=True)
+                p.pages_by_cat('Dates manquantes', namespaces=None, recursive=False)
 
         elif sys.argv[1] == str('-redirects'):
             p.pages_by_redirects()
