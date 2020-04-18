@@ -2479,21 +2479,24 @@ def format_wikicode(page_content, summary, page_name):
     # page_content = re.sub(r'«[  \t]*', r'« ', page_content) # pb &#160;
     # page_content = re.sub(r'[  \t]*»', r' »', page_content)
     page_content = page_content.replace('{|\n|}', '')
+    page_content = page_content.replace('[[' + page_name + ']]', '\'\'\'' + page_name + '\'\'\'')
 
-    if debug_level > 0: print(' #* or #:')
+    if debug_level > 0:
+        print(' #* or #:')
     page_content = page_content.replace('\n #*', '\n#*')
     page_content = page_content.replace('\n #:', '\n#:')
     final_page_content = ''
     while page_content.find('\n#:') != -1:
         final_page_content = final_page_content + page_content[:page_content.find('\n#:')+2]
         if final_page_content.rfind('{{langue|') == final_page_content.rfind('{{langue|fr}}'):
-            page_content = '*' + page_content[page_content.find('\n#:')+len('\n#:'):]
+            separator = '*'
         else:
-            page_content = ':' + page_content[page_content.find('\n#:')+len('\n#:'):]
+            separator = ':'
+        page_content = separator + page_content[page_content.find('\n#:')+len('\n#:'):]
     page_content = final_page_content + page_content
 
-    page_content = re.sub(r'([^d\-]+-\|[a-z]+\}\}\n)# *', r"\1'''" + page_name + r"''' {{pron}}\n# ", page_content)
-    page_content = page_content.replace('[[' + page_name + ']]', '\'\'\'' + page_name + '\'\'\'')
+    # TODO fix https://fr.wiktionary.org/w/index.php?title=Theresa&action=rollback&from=JackBot&token=3f34a0277cd9229becc74bd84ada44545e9b8e3c%2B%5C
+    #page_content = re.sub(r'([^d\-]+-\|[a-z]+\}\}\n)# *', r"\1'''" + page_name + r"''' {{pron}}\n# ", page_content)
 
     return page_content, summary
 
