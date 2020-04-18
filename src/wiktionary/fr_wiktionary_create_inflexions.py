@@ -49,7 +49,8 @@ def treat_page_by_name(page_name):
         print('------------------------------------')
         print(page_name)
     page = Page(site, page_name)
-    if not has_more_than_time(page, 1440): return
+    if not has_more_than_time(page, 1440):
+        return
     if page.exists():
         if page.namespace() != 0 and page.title() != 'User:JackBot/test':
             print(' Autre namespace l 45')
@@ -58,10 +59,16 @@ def treat_page_by_name(page_name):
         print(' page_content inexistante')
         return
     singular_page = get_content_from_page(page, 'All')
-    if singular_page.find('{{formater') != -1 or singular_page.find('{{SI|') != -1 or singular_page.find('{{SI}}') != -1 or \
-        singular_page.find('{{supp|') != -1 or singular_page.find('{{supp}}') != -1 or singular_page.find('{{supprimer|') != -1 or \
-        singular_page.find('{{supprimer') != -1 or singular_page.find('{{PàS') != -1 or singular_page.find('{{S|faute') != -1 or \
-        singular_page.find('{{S|erreur') != -1:
+    if singular_page.find('{{formater') != -1 \
+            or singular_page.find('{{SI|') != -1 \
+            or singular_page.find('{{SI}}') != -1 \
+            or singular_page.find('{{supp|') != -1 \
+            or singular_page.find('{{supp}}') != -1 \
+            or singular_page.find('{{supprimer|') != -1 \
+            or singular_page.find('{{supprimer') != -1 \
+            or singular_page.find('{{PàS') != -1 \
+            or singular_page.find('{{S|faute') != -1 \
+            or singular_page.find('{{S|erreur') != -1:
         if debug_level > 0:
             print('page_content en travaux : non traitée')
         return
@@ -83,7 +90,7 @@ def treat_page_by_name(page_name):
 
     for m in range(0, len(template)):
         if debug_level > 1:
-            print(' début du for ') + str(m) + ', recherche du modèle : ' + template[m]
+            print(' début du for ' + str(m) + ', recherche du modèle : ' + template[m])
 
         if singular_page.find(template[m] + '|') == -1 and singular_page.find(template[m] + '}') == -1:
             if debug_level > 1:
@@ -121,7 +128,7 @@ def treat_page_by_name(page_name):
             nature = nature[:nature.find('|')]
             if debug_level > 0:
                 try:
-                    print('  Nature : ') + nature
+                    print('  Nature : ' + nature)
                 except UnicodeDecodeError:
                     print('  Nature à décoder')
                 except UnicodeEncodeError:
@@ -135,14 +142,16 @@ def treat_page_by_name(page_name):
             if plural is None:
                 return
             if debug_level > 0:
-                print('  Pluriel : ') + plural
+                print('  Pluriel : ' + plural)
             pronunciation = getWordPronunciation(page_content)
 
             # h aspiré
             H = ''
-            if page_content.find('|prefpron={{h aspiré') != -1 and page_content.find('|prefpron={{h aspiré') < page_content.find('}}'):
+            if page_content.find('|prefpron={{h aspiré') != -1 \
+                    and page_content.find('|prefpron={{h aspiré') < page_content.find('}}'):
                 H = '|prefpron={{h aspiré}}'
-            if page_content.find('|préfpron={{h aspiré') != -1 and page_content.find('|préfpron={{h aspiré') < page_content.find('}}'):
+            if page_content.find('|préfpron={{h aspiré') != -1 \
+                    and page_content.find('|préfpron={{h aspiré') < page_content.find('}}'):
                 H = '|préfpron={{h aspiré}}'
 
             gender = ''
@@ -158,22 +167,23 @@ def treat_page_by_name(page_name):
                 gender = ' {{mf}}'
                 MF = '|mf=oui'
                 if singular_page.find('|mf=') == -1:
-                    singular_page = singular_page[:singular_page.find(template[m])+len(template[m])] + '|mf=oui' + singular_page[singular_page.find(template[m])+len(template[m]):]
+                    singular_page = singular_page[:singular_page.find(template[m])+len(template[m])] + '|mf=oui' \
+                                    + singular_page[singular_page.find(template[m])+len(template[m]):]
                     save_page(page, singular_page, '|mf=oui')
             if page_content.find('|mf=') != -1 and page_content.find('|mf=') < page_content.find('}}'):
                 MF = '|mf=oui'
 
             page2 = Page(site, plural)
             if page2.exists():
-                pluralPage = get_content_from_page(page2, 'All')
-                if pluralPage.find('{{langue|' + language_code + '}}') != -1:
+                plural_page = get_content_from_page(page2, 'All')
+                if plural_page.find('{{langue|' + language_code + '}}') != -1:
                     if debug_level > 0:
-                        print('  Pluriel existant l 216 : ') + plural
+                        print('  Pluriel existant l 216 : ' + plural)
                     break
             else:
                 if debug_level > 0:
                     print('  Pluriel introuvable l 219')
-                pluralPage = ''
+                plural_page = ''
 
             # **************** Pluriel 1 ****************
             if debug_level > 1:
@@ -199,11 +209,11 @@ def treat_page_by_name(page_name):
 
             final_page_content = '== {{langue|' + language_code + '}} ==\n=== {{S|' + nature + '|' + \
                 language_code + '|flexion}} ===\n' + flexion_template + '\n\'\'\'' + plural + '\'\'\' {{pron' + \
-                pronunciation + '|' + language_code + '}}' + gender + '\n# \'\'Pluriel de\'\' [[' + page_name +']].\n'
+                pronunciation + '|' + language_code + '}}' + gender + '\n# \'\'Pluriel de\'\' [[' + page_name + ']].\n'
             while final_page_content.find('{{pron|' + language_code + '}}') != -1:
-                final_page_content = final_page_content[:final_page_content.find('{{pron|' + language_code + '}}')+7] + '|' + \
-                    final_page_content[final_page_content.find('{{pron|' + language_code + '}}')+7:]
-            final_page_content = final_page_content + '\n' + pluralPage
+                final_page_content = final_page_content[:final_page_content.find('{{pron|' + language_code + '}}')+7] \
+                             + '|' + final_page_content[final_page_content.find('{{pron|' + language_code + '}}')+7:]
+            final_page_content = final_page_content + '\n' + plural_page
 
             default_sort = sort_by_encoding(plural)
             if add_default_sort:
@@ -219,7 +229,7 @@ def treat_page_by_name(page_name):
             if debug_level > 1:
                 print('  Fin du while')
         if debug_level > 1:
-            print(' Fin du for ') + str(m)
+            print(' Fin du for ' + str(m))
 
 
 def createPluralFromForeignWiki(Page2):
@@ -317,7 +327,7 @@ def createPluralFromForeignWiki(Page2):
                 else:
                     pron = pron + 'd'
             if debug_level > 0:
-                print(' prononciation : ') + pron #
+                print(' prononciation : ' + pron)
         
         if page_content2.rfind('===') == -1:
             return
@@ -339,11 +349,12 @@ def createPluralFromForeignWiki(Page2):
                 print(' Nature inconnue')
             return
         if debug_level > 0:
-            print(' nature : ') + nature
+            print(' nature : ' + nature)
 
-        Page1 = '== {{langue|' + language_code + '}} ==\n=== {{' + nature + '|' + language_code + '|flexion}} ===\n\'\'\'' + \
-            page2.title() + '\'\'\' {{pron|'+pron+'|' + language_code + '}}\n# \'\'Prétérit de\'\' ' + mot + \
-            '.\n# \'\'Participe passé de\'\' ' + mot + '.\n\n[[en:' + page2.title() + ']]\n'
+        Page1 = '== {{langue|' + language_code + '}} ==\n=== {{' + nature + '|' + language_code \
+                + '|flexion}} ===\n\'\'\'' + page2.title() + '\'\'\' {{pron|'+pron+'|' + language_code \
+                + '}}\n# \'\'Prétérit de\'\' ' + mot + '.\n# \'\'Participe passé de\'\' ' + mot + '.\n\n[[en:' \
+                + page2.title() + ']]\n'
         summary = 'Importation depuis [[en:' + page2.title() + ']]'
         save_page(page1, Page1, summary)
 
@@ -379,7 +390,7 @@ def getWordPlural(page_content, page_name, current_template):
                 print(' pluriel en -ss')
                 return
             if debug_level > 1:
-                print('  paramètre du modèle du lemme : ') + page_content[:page_content.find('}}')]
+                print('  paramètre du modèle du lemme : ' + page_content[:page_content.find('}}')])
 
     return trim(plural)
     
@@ -398,21 +409,21 @@ def getWordPronunciation(page_content):
             print('  prononciation identique au singulier')
         pron = page_content[:page_content.find('}}')]
         if debug_level > 1:
-            print('  pron avant while : ') + pron
+            print('  pron avant while : ' + pron)
         if pron.find('|pron=') != -1:
             pron = '|' + pron[pron.find('|pron=')+len('|pron='):]
 
-        TabPron = pron.split('|')
+        pron_array = pron.split('|')
         # {{fr-rég|a.kʁɔ.sɑ̃.tʁik|mf=oui}}
         n = 0
-        while n < len(TabPron) and (TabPron[n] == '' or TabPron[n].find('=') != -1):
+        while n < len(pron_array) and (pron_array[n] == '' or pron_array[n].find('=') != -1):
             if debug_level > 1:
-                print(TabPron[n].find('='))
+                print(pron_array[n].find('='))
             n += 1
-        if n == len(TabPron):
+        if n == len(pron_array):
             pron = '|'
         else:
-            pron = '|' + TabPron[n]
+            pron = '|' + pron_array[n]
         '''
         while pron.find('=') != -1:
             pron2 = pron[:pron.find('=')]
@@ -432,7 +443,7 @@ def getWordPronunciation(page_content):
                 if debug_level > 0: print('  pron dans while2 : ') + pron
         '''
         if debug_level > 1:
-            print('  pron après while : ') + pron
+            print('  pron après while : ' + pron)
     pron = trim(pron)
     if pron.rfind('|') > 0:
         pronM = pron[:pron.rfind('|')]
