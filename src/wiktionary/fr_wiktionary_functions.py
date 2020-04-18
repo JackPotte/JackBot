@@ -323,7 +323,8 @@ def count_first_definition_size(page_content):
 
     regex = r'^#( *{{[^}]*}})?( *{{[^}]*}})? *\[\[[^\]]+\]\]\.?$'
     if re.search(regex, definition):
-        if debug_level > 0: print(' The definition is just one link to another article')
+        if debug_level > 0:
+            print(' The definition is just one link to another article')
         return 1
 
     regex = r' *({{[^}]*}}|\([^\)]*\) *\.?)'
@@ -333,7 +334,7 @@ def count_first_definition_size(page_content):
         input(definition)
     words = definition.split(' ')
     if debug_level > 0:
-        print(len(words))
+        print(' count_first_definition_size(): ' + str(len(words)))
     return len(words)
 
 
@@ -536,12 +537,10 @@ def remove_template(page_content, template, summary, language = None, inSection 
 
 
 def add_line(page_content, language_code, section_name, line_content):
-    if debug_level > 1:
-        print('\nadd_line(' + language_code + ', ' + section_name + ')')
     d = 0
     if debug_level > d:
         pywikibot.output("\n\03{red}---------------------------------------------\03{default}")
-        print('\nadd_line into "' + section_name + '"')
+        print('\nadd_line(' + language_code + ', ' + section_name + ')')
     if page_content != '' and language_code != '' and section_name != '' and line_content != '':
         if page_content.find(line_content) == -1 and page_content.find('{{langue|' + language_code + '}}') != -1:
             if section_name == 'catégorie' and line_content.find('[[Catégorie:') == -1:
@@ -739,7 +738,8 @@ def add_section(page_content, sections_in_page, section_name, section_to_add_ord
     return page_content, language_section, start_position, end_position
 
 
-def add_line_test(page_content, language_code ='fr'):
+def add_line_test(page_content, language_code='fr'):
+    # TODO move to /tests
     page_content = add_category(page_content, language_code, 'Tests en français')
     page_content = add_line(page_content, language_code, 'prononciation', '* {{écouter|||lang=fr|audio=test.ogg}}')
     page_content = add_line(page_content, language_code, 'prononciation', '* {{écouter|||lang=fr|audio=test2.ogg}}')
@@ -1653,11 +1653,12 @@ def add_templates(page_content, summary):
 
     if debug_level > 1:
         print('  add etymology templates')
-    regex = r'(=== {{S\|étymologie}} ===\n:) *(?:{{siècle\|?[^}]*}})* *(?:[cC]omposé|[dD]érivé) de ' \
-            r'\'*\[\[([^\]\n]+)\]\]\'* et \'*\[\[([^\]\n]+)\]\]\'*\.*\n'
+
+    regex = r'(=== {{S\|étymologie}} ===\n:) *(?:{{(?:' + '|'.join(etymology_date_templates) \
+            + r')\|?[^}]*}})* *(?:[cC]omposé|[dD]érivé) de \'*\[\[([^\]\n]+)\]\]\'* et \'*\[\[([^\]\n]+)\]\]\'*\.*\n'
     page_content = re.sub(regex, r'\1 {{composé de|m=1|\2|\3}}.', page_content)
-    regex = r'(=== {{S\|étymologie}} ===\n:) *(?:{{siècle\|?[^}]*}})* *[Dd]e \'*\[\[([^\]\n]+)\]\]\'* avec le ' \
-            r'(?:préfixe|suffixe) \'*\[\[([^\]\n]+)\]\]\'*\.*\n'
+    regex = r'(=== {{S\|étymologie}} ===\n:) *(?:{{(?:' + '|'.join(etymology_date_templates) \
+            + r')\|?[^}]*}})* *[Dd]e \'*\[\[([^\]\n]+)\]\]\'* avec le (?:préfixe|suffixe) \'*\[\[([^\]\n]+)\]\]\'*\.*\n'
     page_content = re.sub(regex, r'\1 {{composé de|m=1|\2|\3}}.', page_content)
 
     if debug_level > 1:

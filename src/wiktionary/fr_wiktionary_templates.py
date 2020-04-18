@@ -752,16 +752,17 @@ templates.append('trad')
 templates.append('préciser')
 templates.append('cf')
 
-etymology_templates_with_language_at_lang = ['compos', 'composé de', 'deet', 'date']  #, 'siècle'
+etymology_date_templates = ['date', 'siècle']
+etymology_templates_with_language_at_lang = etymology_date_templates + ['composé de']
+templates += etymology_templates_with_language_at_lang
+
 # https://fr.wiktionary.org/wiki/Catégorie:Modèles_étymologiques
 etymology_templates = [u'étcompcat', 'étyl', 'étylp', 'louchébem', 'reverlanisation', 'verlan']
 etymology_templates_in_satellite_words = ['abréviation', 'abréviation de', 'acronyme', 'apocope', 'aphérèse', 'ellipse',
-                                      'par ellipse', 'sigle']
-etymology_templates_with_language_at_first = etymology_templates_in_satellite_words + ['agglutination', 'antonomase',
-    'déglutination', 'mot-valise', 'parataxe', 'syncope', 'univerbation']
+                                            'par ellipse', 'sigle']
+etymology_templates_with_language_at_first = etymology_templates_in_satellite_words + \
+                 ['agglutination', 'antonomase', 'déglutination', 'mot-valise', 'parataxe', 'syncope', 'univerbation']
 etymology_templates_with_language_at_second = ['dénominal de', 'déverbal de', 'déverbal sans suffixe']
-
-templates += etymology_templates_with_language_at_lang
 
 limit5 = len(templates)
 templates.append('augmentatif')
