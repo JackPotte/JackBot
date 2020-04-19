@@ -509,30 +509,28 @@ def format_categories(page_content, summary):
     return page_content, summary
 
 
-def remove_template(page_content, template, summary, language = None, inSection = None):
+def remove_template(page_content, template, summary, language=None, in_section=None):
     if debug_level > 1:
-        print('\nremoveTemplate(' + template + ')')
+        print('\nremove_template(' + template + ')')
     # TODO: rattacher le bon template à la bonne ligne de l'étymologie, et s'il doit être déplacé plusieurs fois
     regex_template = r'(,?( et| ou)? *{{' + template + r'(\||})[^}]*}}?)'
     old_section = page_content
-    if inSection is not None:
-        if language is not None: old_section, lStart, lEnd = get_language_section(old_section, language)
+    if in_section is not None:
+        if language is not None:
+            old_section, l_start, l_end = get_language_section(old_section, language)
         if old_section is not None:
-            for section in inSection:
-                oldSubSection, sStart, sEnd = get_section(old_section, section)
-                if oldSubSection is not None:
-                    if debug_level > 2: input(oldSubSection)
-                    newSubSection = re.sub(regex_template, r'', oldSubSection)
-                    if oldSubSection != newSubSection:
-                        page_content = page_content.replace(oldSubSection, newSubSection)
-                        if debug_level > 2: input(page_content)
+            for section in in_section:
+                old_sub_section, s_start, s_end = get_section(old_section, section)
+                if old_sub_section is not None:
+                    new_sub_section = re.sub(regex_template, r'', old_sub_section)
+                    if old_sub_section != new_sub_section:
+                        page_content = page_content.replace(old_sub_section, new_sub_section)
                         summary = summary + ', retrait de {{' + template + '}} dans {{S|' + section + '}}'
     else:
         new_section = re.sub(regex_template, r'', old_section)
         if old_section != new_section:
             page_content = page_content.replace(old_section, new_section)
             summary = summary + ', retrait de {{' + template + '}}'
-
     return page_content, summary
 
 
@@ -2447,6 +2445,12 @@ def move_etymological_templates(page_content, summary):
             etym_templates = etym_templates + fr_etymological_templates
         for etym_template in etym_templates:
             page_content, summary = move_etymological_template(page_content, summary, page_language, etym_template)
+
+    if debug_level > 0:
+        print('  Replace otherwise')
+    regex = r'{{(' + '|'.join(etym_templates) + r')\|nocat(?:=1)*}}'
+    page_content = re.sub(regex, r"''(\1)''", page_content)
+
     return page_content, summary
 
 
@@ -2456,26 +2460,35 @@ def move_etymological_template(page_content, summary, page_language, etym_templa
     language_section, l_start, l_end = get_language_section(page_content, page_language)
     if language_section is not None and len(get_natures_sections(language_section)) == 1 \
             and language_section.find(etym_template[1:]) != -1:
-        # Si le modèle à déplacer est sur la ligne de forme ou de définition
+        if debug_level > 0:
+            print('  Move from form/definition line?')
         regex_template = r"\n'''[^\n]+(\n#)? *({{[^}]+}})? *({{[^}]+}})? *{{" + etym_template + r'(\||})'
         if re.search(regex_template, language_section):
-            new_language_section, summary = remove_template(language_section, etym_template, summary, inSection=natures)
-            # TODO generic moveFromNatureToEtymology = remove après ('|'.join(natures)) + addToEtymology, = addToLine(language_code, section, append, prepend)
-            etymology, s_start, s_end = get_section(new_language_section, 'étymologie')
-            if etymology is None:
-                new_language_section = add_line(new_language_section, page_language, 'étymologie',
-                                                ': {{ébauche-étym|' + page_language + '}}')
-                etymology, s_start, s_end = get_section(new_language_section, 'étymologie')
-            if etymology is not None and etymology.find('{{' + etym_template) == -1:
-                regex_etymology = r'(=\n:* *(\'*\([^\)]*\)\'*)?) *'
-                if re.search(regex_etymology, page_content):
-                    etymology2 = re.sub(regex_etymology, r'\1 {{' + etym_template + r'}} ', etymology)
-                    new_language_section = new_language_section.replace(etymology, etymology2)
-                    summary = summary + ', [[Wiktionnaire:Prise de décision/Déplacer les modèles de contexte' \
-                        + ' étymologiques dans la section « Étymologie »|ajout de {{' \
-                        + etym_template + r"}} dans l'étymologie]]"
+            new_language_section, summary = move_template_to_etymology(language_section, etym_template, summary,
+                                                                       page_language)
             page_content = page_content.replace(language_section, new_language_section)
     return page_content, summary
+
+
+def move_template_to_etymology(language_section, etym_template, summary, page_language):
+    if debug_level > 0:
+        print('   found')
+    new_language_section, summary = remove_template(language_section, etym_template, summary,
+                                                        in_section=natures)
+    etymology, s_start, s_end = get_section(new_language_section, 'étymologie')
+    if etymology is None:
+        new_language_section = add_line(new_language_section, page_language, 'étymologie',
+                                        ': {{ébauche-étym|' + page_language + '}}')
+        etymology, s_start, s_end = get_section(new_language_section, 'étymologie')
+    if etymology is not None and etymology.find('{{' + etym_template) == -1:
+        regex_etymology = r'(=\n:* *(\'*\([^\)]*\)\'*)?) *'
+        if re.search(regex_etymology, language_section):
+            etymology2 = re.sub(regex_etymology, r'\1 {{' + etym_template + r'}} ', etymology)
+            new_language_section = new_language_section.replace(etymology, etymology2)
+            summary = summary + ', [[Wiktionnaire:Prise de décision/Déplacer les modèles de contexte' \
+                + ' étymologiques dans la section « Étymologie »|ajout de {{' \
+                + etym_template + r"}} dans l'étymologie]]"
+    return new_language_section, summary
 
 
 def format_wikicode(page_content, summary, page_name):
