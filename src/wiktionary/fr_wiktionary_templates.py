@@ -759,8 +759,8 @@ templates += etymology_templates_with_language_at_lang
 # https://fr.wiktionary.org/wiki/Catégorie:Modèles_étymologiques
 fr_etymological_templates = ['louchébem', 'reverlanisation', 'verlan']
 etymology_templates = [u'étcompcat', 'étyl', 'étylp'] + fr_etymological_templates
-templates_only_in_etymological_section = ['abréviation', 'abréviation de', 'acronyme', 'apocope', 'aphérèse', 'ellipse',
-                                            'par ellipse', 'sigle']
+templates_only_in_etymological_section = ['abréviation', 'abréviation de', 'acronyme', 'apocope', 'aphérèse',
+                                          'diminutif', 'sigle']  # TODO 'ellipse', 'par ellipse'
 etymology_templates_with_language_at_first = templates_only_in_etymological_section + \
                  ['agglutination', 'antonomase', 'déglutination', 'mot-valise', 'parataxe', 'syncope', 'univerbation']
 etymology_templates_with_language_at_second = ['dénominal de', 'déverbal de', 'déverbal sans suffixe']

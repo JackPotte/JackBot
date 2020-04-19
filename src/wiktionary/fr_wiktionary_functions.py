@@ -2446,30 +2446,35 @@ def move_etymological_templates(page_content, summary):
         if page_language == 'fr':
             etym_templates = etym_templates + fr_etymological_templates
         for etym_template in etym_templates:
-            language_section, l_start, l_end = get_language_section(page_content, page_language)
-            if language_section is not None and len(get_natures_sections(language_section)) == 1 \
-                    and language_section.find(etym_template[1:]) != -1:
-                # Si le modèle à déplacer est sur la ligne de forme ou de définition
-                regex_template = r"\n'''[^\n]+(\n#)? *({{[^}]+}})? *({{[^}]+}})? *{{" + etym_template + r'(\||})'
-                if re.search(regex_template, language_section):
-                    new_language_section, summary = remove_template(language_section, etym_template, summary,
-                                                                    inSection=natures)
-                    # TODO generic moveFromNatureToEtymology = remove après ('|'.join(natures)) + addToEtymology, = addToLine(language_code, section, append, prepend)
-                    etymology, s_start, s_end = get_section(new_language_section, 'étymologie')
-                    if etymology is None:
-                        new_language_section = add_line(new_language_section, page_language, 'étymologie',
-                                                        ': {{ébauche-étym|' + page_language + '}}')
-                        etymology, s_start, s_end = get_section(new_language_section, 'étymologie')
-                    if etymology is not None and etymology.find('{{' + etym_template) == -1:
-                        regex_etymology = r'(=\n:* *(\'*\([^\)]*\)\'*)?) *'
-                        if re.search(regex_etymology, page_content):
-                            etymology2 = re.sub(regex_etymology, r'\1 {{' + etym_template + r'}} ', etymology)
-                            new_language_section = new_language_section.replace(etymology, etymology2)
-                            summary = summary + ', [[Wiktionnaire:Prise de décision/Déplacer les modèles de contexte' \
-                                + ' étymologiques dans la section « Étymologie »|ajout de {{' \
-                                + etym_template + r"}} dans l'étymologie]]"
-                    page_content = page_content.replace(language_section, new_language_section)
+            page_content, summary = move_etymological_template(page_content, summary, page_language, etym_template)
+    return page_content, summary
 
+
+def move_etymological_template(page_content, summary, page_language, etym_template):
+    if debug_level > 0:
+        print(' Move etymological template: ' + etym_template)
+    language_section, l_start, l_end = get_language_section(page_content, page_language)
+    if language_section is not None and len(get_natures_sections(language_section)) == 1 \
+            and language_section.find(etym_template[1:]) != -1:
+        # Si le modèle à déplacer est sur la ligne de forme ou de définition
+        regex_template = r"\n'''[^\n]+(\n#)? *({{[^}]+}})? *({{[^}]+}})? *{{" + etym_template + r'(\||})'
+        if re.search(regex_template, language_section):
+            new_language_section, summary = remove_template(language_section, etym_template, summary, inSection=natures)
+            # TODO generic moveFromNatureToEtymology = remove après ('|'.join(natures)) + addToEtymology, = addToLine(language_code, section, append, prepend)
+            etymology, s_start, s_end = get_section(new_language_section, 'étymologie')
+            if etymology is None:
+                new_language_section = add_line(new_language_section, page_language, 'étymologie',
+                                                ': {{ébauche-étym|' + page_language + '}}')
+                etymology, s_start, s_end = get_section(new_language_section, 'étymologie')
+            if etymology is not None and etymology.find('{{' + etym_template) == -1:
+                regex_etymology = r'(=\n:* *(\'*\([^\)]*\)\'*)?) *'
+                if re.search(regex_etymology, page_content):
+                    etymology2 = re.sub(regex_etymology, r'\1 {{' + etym_template + r'}} ', etymology)
+                    new_language_section = new_language_section.replace(etymology, etymology2)
+                    summary = summary + ', [[Wiktionnaire:Prise de décision/Déplacer les modèles de contexte' \
+                        + ' étymologiques dans la section « Étymologie »|ajout de {{' \
+                        + etym_template + r"}} dans l'étymologie]]"
+            page_content = page_content.replace(language_section, new_language_section)
     return page_content, summary
 
 
@@ -2481,7 +2486,7 @@ def format_wikicode(page_content, summary, page_name):
     page_content = page_content.replace('{|\n|}', '')
     page_content = page_content.replace('[[' + page_name + ']]', '\'\'\'' + page_name + '\'\'\'')
 
-    if debug_level > 0:
+    if debug_level > 1:
         print(' #* or #:')
     page_content = page_content.replace('\n #*', '\n#*')
     page_content = page_content.replace('\n #:', '\n#:')
@@ -2495,8 +2500,10 @@ def format_wikicode(page_content, summary, page_name):
         page_content = separator + page_content[page_content.find('\n#:')+len('\n#:'):]
     page_content = final_page_content + page_content
 
-    # TODO fix https://fr.wiktionary.org/w/index.php?title=Theresa&action=rollback&from=JackBot&token=3f34a0277cd9229becc74bd84ada44545e9b8e3c%2B%5C
-    #page_content = re.sub(r'([^d\-]+-\|[a-z]+\}\}\n)# *', r"\1'''" + page_name + r"''' {{pron}}\n# ", page_content)
+    if debug_level > 1:
+        print(' add form line')
+    # TODO fix https://fr.wiktionary.org/w/index.php?title=Theresa&diff=27792535&oldid=25846879
+    # page_content = re.sub(r'([^d\-]+-\|[a-z]+\}\}\n)# *', r"\1'''" + page_name + r"''' {{pron}}\n# ", page_content)
 
     return page_content, summary
 

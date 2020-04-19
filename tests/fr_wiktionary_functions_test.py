@@ -61,6 +61,12 @@ class TestFrWiktionary(unittest.TestCase):
         output, summary = add_templates(test_input, '')
         self.assertEqual(test_output, output)
 
+    def test_move_etymological_templates(self):
+        test_input = "== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n''''mac''' {{pron|mak|fr}} {{m}}, {{abréviation|fr}}, {{acronyme|fr}}\n#"
+        test_output = "== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n  {{acronyme}} {{abréviation}} {{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n''''mac''' {{pron|mak|fr}} {{m}}\n#"
+        output, summary = move_etymological_templates(test_input, '')
+        self.assertEqual(test_output, output)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -199,8 +199,8 @@ def treat_page_by_name(page_name):
 
         page_content, summary = format_templates(page_content, summary)
         page_content, summary = format_wikicode(page_content, summary, page_name)
-        page_content, summary = move_templates(page_content, summary)
         page_content, summary = add_templates(page_content, summary)
+        page_content, summary = move_templates(page_content, summary)
         page_content, summary = replace_templates(page_content, summary)
         page_content, summary = remove_double_category_when_template(page_content, summary)
         page_content, summary = format_categories(page_content, summary)
@@ -1018,7 +1018,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
-                regex = r'{term[\n\|].*id *= *[^\n\|{}]+[\n\|]'
+                regex = r"\n'''[^\n]+\n'''"
             if len(sys.argv) > 3:
                 test_page = sys.argv[3]
             else:
@@ -1069,8 +1069,9 @@ def main(*args):
                 else:
                     p.pages_by_cat(sys.argv[2].decode(config.console_encoding, 'replace'))
             else:
-                p.pages_by_cat('Date manquante', namespaces=[0, 14], recursive=True)
-                p.pages_by_cat('Dates manquantes', namespaces=None, recursive=False)
+                p.pages_by_cat('Date manquante', namespaces=[14], recursive=True)
+                # p.pages_by_cat('Date manquante', namespaces=None, recursive=True)
+                # p.pages_by_cat('Dates manquantes', namespaces=None, recursive=False)
 
         elif sys.argv[1] == str('-redirects'):
             p.pages_by_redirects()
