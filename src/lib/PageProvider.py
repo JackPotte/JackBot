@@ -5,10 +5,18 @@ from __future__ import absolute_import, unicode_literals
 import datetime
 import inspect
 import os
+import sys
 import re
 import pywikibot
 from pywikibot import *
 from pywikibot import pagegenerators
+# JackBot
+dir_wt = os.path.dirname(__file__)
+dir_src = os.path.dirname(dir_wt)
+sys.path.append(dir_src)
+sys.path.append(os.path.join(dir_src, 'lib'))
+sys.path.append(os.path.join(dir_src, 'wiktionary'))
+from html2unicode import *
 
 
 class PageProvider:
