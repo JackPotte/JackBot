@@ -2148,6 +2148,7 @@ def format_templates(page_content, summary):
     page_content = re.sub(r'({{pron\|[^|}]*)\|(}})', r"\1\2", page_content)
     page_content = re.sub(r'({{pron\|[^|}]*\|)\|([a-z\-]+}})', r"\1\2", page_content)
     page_content = re.sub(r'({{pron\|[^|}]*\|)\|nocat(?:=1)?(}})', r"\1\2", page_content)
+    page_content = re.sub(r'}}\* *{{écouter\|', r"}}\n* {{écouter\|", page_content)
 
     if debug_level > 1:
         print('  Modèles de son')
