@@ -1147,7 +1147,7 @@ def main(*args):
         p.pages_by_search('insource:/solrésol *:/i', namespaces=[0])
         p.pages_by_search('insource:/tsolyáni}} *: *\[/i', namespaces=[0])
         p.pages_by_search(
-            'insource:/[^=]=== \{\{S\|(variantes|synonymes|antonymes|dérivés|apparentés|hyperonymes|hyponymes|méronymes|holonymes|vocabulaire|traductions)/',
+            'insource:/[^=]=== \{\{S\|(variantes|synonymes|antonymes|déclinaison|dérivés|apparentés|hyperonymes|hyponymes|méronymes|holonymes|vocabulaire|traductions)/',
             namespaces=[0])
 
 
