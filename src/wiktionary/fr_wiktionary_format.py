@@ -1069,9 +1069,7 @@ def main(*args):
                 else:
                     p.pages_by_cat(sys.argv[2].decode(config.console_encoding, 'replace'))
             else:
-                p.pages_by_cat('Date manquante', namespaces=[14], recursive=True)
-                # p.pages_by_cat('Date manquante', namespaces=None, recursive=True)
-                # p.pages_by_cat('Dates manquantes', namespaces=None, recursive=False)
+                p.pages_by_cat('Dates manquantes', namespaces=None, recursive=False)
 
         elif sys.argv[1] == str('-redirects'):
             p.pages_by_redirects()
@@ -1128,7 +1126,7 @@ def main(*args):
         p.pages_by_link('Template:vx')
         p.pages_by_link('Template:contr')
         p.pages_by_link('Template:deet')
-        # p.pages_by_link('Template:compos')
+        p.pages_by_link('Template:compos')
         p.pages_by_link('Template:ordin')
         p.pages_by_link('Template:cardin')
         p.pages_by_link('Template:comp')

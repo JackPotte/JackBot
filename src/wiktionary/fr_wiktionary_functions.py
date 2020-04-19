@@ -2009,6 +2009,14 @@ def replace_etymology_templates(page_content, summary):
     if re.search(regex, page_content):
         page_content = re.sub(regex, r"\1calque|", page_content)
 
+    # Alias replacing with: |m=1
+    regex = r"({{)deet([|}])"
+    if re.search(regex, page_content):
+        page_content = re.sub(regex, r"\1composé de|m=1\2", page_content)
+
+    return page_content, summary
+    # TODO fix https://fr.wiktionary.org/w/index.php?title=nos&type=revision&diff=27795087&oldid=27614294
+    # Fix https://fr.wiktionary.org/w/index.php?title=mac&diff=27795089&oldid=27788198
     decision = ', [[Wiktionnaire:Prise de décision/Nettoyer les modèles de la section étymologie]]'
     initial_page_content = page_content
     # Alias replacing
@@ -2024,12 +2032,9 @@ def replace_etymology_templates(page_content, summary):
         regex = r"({{)" + alias + r"([|}])"
         if re.search(regex, page_content):
             page_content = re.sub(regex, r"\1" + templates[alias] + r"\2", page_content)
-    # Alias replacing with: |m=1
-    regex = r"({{)deet([|}])"
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, r"\1composé de|m=1\2", page_content)
+
     # Replacing with: |m=1 and .
-    for template in ['abréviation', 'acronyme', 'reverlanisation', 'sigle', 'verlan']:
+    for template in templates_only_in_etymological_section + fr_etymological_templates:
         # regex = r"({{)" + template + r"([^}]*)}}"              # {{abréviation|fr|m=1|m=1}}.
         # regex = r"({{)" + template + r"((?!\|m=1).)*}}"        # {{abréviationr|m=1}}
         # regex = r"({{)" + template + r"((?!\|m=1)[^}]*)*}}"    # {{abréviation|m=1}}.
