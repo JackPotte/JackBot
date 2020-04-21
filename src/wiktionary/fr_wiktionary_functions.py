@@ -1686,6 +1686,8 @@ def replace_templates(page_content, summary):
         print(' Remplacements des anciens codes langue')
     page_content = page_content.replace('|ko-hani}}', '|ko-Hani}}')
     page_content = page_content.replace('|lang=API}}', '|lang=conv}}')
+    page_content = page_content.replace('|lang=gr}}', '|lang=grc}}')
+    page_content = page_content.replace('|lang=gr|', '|lang=grc|')
     # TODO vi-Hani ?
     # TODO move some to incubator_languages
     old_template = []
