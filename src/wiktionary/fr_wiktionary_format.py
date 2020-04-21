@@ -209,7 +209,7 @@ def treat_page_by_name(page_name):
             print(' Languages in templates checking')
         add_language_code = False  # Some sections can contain uncategorizing domain templates
         if debug_level > 1:
-            print('  add_language_code = ') + str(add_language_code)
+            print('  add_language_code = ' + str(add_language_code))
         has_translation_section = False
         go_backward = False  # Some templates need to be moved and retreated
         language_code = None
@@ -274,7 +274,7 @@ def treat_page_by_name(page_name):
                     language_code = 'conv'
                     add_language_code = False
                     if debug_level > 0:
-                        print(' add_language_code = ') + str(add_language_code)
+                        print(' add_language_code = ' + str(add_language_code))
                     final_page_content, page_content = next_template(final_page_content, page_content)
 
                 elif current_template == 'langue':
@@ -284,7 +284,7 @@ def treat_page_by_name(page_name):
                             print('  empty language code')
                         return
                     if debug_level > 1:
-                        print('  language found: ') + language_code
+                        print('  language found: ' + language_code)
                     regex = r'[a-zA-Z\-]+'
                     if not re.search(regex, language_code):
                         final_page_content = '{{formater|Code langue incorrect : ' + language_code + '}}\n' \
@@ -318,7 +318,7 @@ def treat_page_by_name(page_name):
                             page_name[:1] != '-' and page_name[-1:] != '-' and ':' not in page_name:
 
                         if debug_level > 0:
-                            print(' Anagrams for ') + language_code
+                            print(' Anagrams for ' + language_code)
                         if page_content.find('{{S|anagr') == -1 and page_name.find(' ') == -1 and len(
                                 page_name) <= anagrams_max_length:
                             page_content, summary = add_anagrams(page_content, summary, page_name, language_code)
@@ -331,11 +331,11 @@ def treat_page_by_name(page_name):
                         section = trim(section[:section.find('|')])
                     if section not in sections:
                         if debug_level > 0:
-                            pywikibot.output("\03{yellow} S\03{default}: with unknown section " + section)
+                            pywikibot.output("  with unknown section \03{yellow}" + section + "\03{default}")
                         final_page_content, page_content = next_template(final_page_content, page_content)
                         break
                     if debug_level > 0:
-                        pywikibot.output("\03{yellow} S\03{default}: with known section " + section)
+                        pywikibot.output("  with known section \03{yellow}" + section + "\03{default}")
 
                     if sections.index(section) < limit1:
                         if debug_level > 1:
@@ -361,7 +361,8 @@ def treat_page_by_name(page_name):
                             page_content = page_content[:end_position + 1 + len(section)] + '|' + language_code \
                                            + page_content[page_content.find('}}'):]
 
-                        # Tous ces modèles peuvent facultativement contenir |clé= et |num=, et |genre= pour les prénoms, voire locution=
+                        # Tous ces modèles peuvent facultativement contenir |clé= et |num=, et |genre= pour les prénoms,
+                        # voire locution=
                         if page_content.find('|clé=') == -1 or page_content.find('|clé=') > page_content.find('}}'):
                             if debug_level > 1:
                                 print('  ' + str(p))  # eg: 0 for {{S}}
@@ -397,7 +398,8 @@ def treat_page_by_name(page_name):
                             has_translation_section = True
                             regex = r'{{S\|traductions}} *=*\n(\n|\:?\*? *({{cf|[Vv]oir))'
                             if not re.search(regex, page_content):
-                                # Ajout de {{trad-début}} si {{T| en français (mais pas {{L| car certains les trient par famille de langue)
+                                # Ajout de {{trad-début}} si {{T| en français (mais pas {{L| car certains les trient
+                                # par famille de langue)
                                 for t in ['T', 'ébauche-trad']:
                                     if page_content.find('{{') == page_content.find('{{' + t + '|'):
                                         if debug_level > 0:
@@ -449,8 +451,8 @@ def treat_page_by_name(page_name):
                                     print('  2 = ' + term)
                                 template_page = get_content_from_page_name('Template:' + term, site,
                                                                            allowed_namespaces=['Template:'])
-                            if template_page is not None and (template_page.find('Catégorie:Modèles de domaine') != -1 \
-                                    or template_page.find('{{région|') != -1):
+                            if template_page is not None and (template_page.find('Catégorie:Modèles de domaine') != -1
+                                                              or template_page.find('{{région|') != -1):
                                 if debug_level > 0:
                                     print('  substitution par le modèle existant')
                                 page_content = '{{' + term + page_content[end_position + 1 + len(raw_term):]
@@ -577,6 +579,13 @@ def treat_page_by_name(page_name):
                 elif current_template == 'fr-verbe-flexion':
                     page_content, final_page_content, summary = treat_verb_inflexion(page_content, final_page_content,
                                                                                      summary, current_page_content)
+                elif current_template == 'recons':
+                    page_content2 = page_content[:end_position]
+                    if '|lang-mot-vedette' not in page_content2:
+                        summary += ', ajout de "lang-mot-vedette" dans {{recons}}'
+                        final_page_content = final_page_content + page_content[:end_position] \
+                                             + '|lang-mot-vedette=' + language_code
+                        page_content = page_content[end_position:]
 
                 elif p < limit5:
                     add_language_code = False

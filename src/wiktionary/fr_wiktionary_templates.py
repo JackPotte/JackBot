@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+"""
+List of the treated templates
+"""
 from __future__ import absolute_import, unicode_literals
 
 templates = []  # Modèles du site à traiter
@@ -751,6 +753,7 @@ templates.append('trad+')
 templates.append('trad')
 templates.append('préciser')
 templates.append('cf')
+templates.append('recons')
 
 etymology_date_templates = ['date', 'siècle']
 etymology_templates_with_language_at_lang = etymology_date_templates + ['composé de']
