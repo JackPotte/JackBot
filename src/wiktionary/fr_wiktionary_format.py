@@ -167,29 +167,19 @@ def treat_page_by_name(page_name):
 
         if debug_level > 0:
             print(' {{S}} conversion and formatting')
-        equals_in_section = '==='
         for p in range(1, limit4):
             if debug_level > 1:
                 print(templates[p] + r'|S\|' + sections[p])
-            if p == limit2:
-                equals_in_section = '===='
-            if p == limit3:
-                equals_in_section = '====='
-            if debug_level > 1:
-                print(p, templates[p], sections[p])
+
             regex = r'[= ]*{{[\-loc]*(' + templates[p] + r'|S\|' + sections[p] + r')([^}]*)}}[= ]*\n'
             if re.search(regex, page_content):
-                if debug_level > 1:
-                    print(' {{S| : check des niveaux de section 1 : ') + sections[p] + ' ' + equals_in_section
-                page_content = re.sub(regex, equals_in_section + r' {{S|' + sections[p] + r'\2}} ' +
-                                      equals_in_section + '\n', page_content)
+                page_content = re.sub(regex, sections_level[p] + r' {{S|' + sections[p] + r'\2}} ' +
+                                      sections_level[p] + '\n', page_content)
 
             regex = r'[= ]*{{\-flex[\-loc]*(' + templates[p] + r'|S\|' + sections[p] + r')\|([^}]*)}}[= ]*\n'
             if re.search(regex, page_content):
-                if debug_level > 1:
-                    print(' {{S| : check des niveaux de section 2 : ') + sections[p]
-                page_content = re.sub(regex, equals_in_section + r' {{S|' + sections[p] + r'|\2|flexion}} ' +
-                                      equals_in_section + '\n', page_content)
+                page_content = re.sub(regex, sections_level[p] + r' {{S|' + sections[p] + r'|\2|flexion}} ' +
+                                      sections_level[p] + '\n', page_content)
 
             if limit1 < p < limit3 - 1:
                 regex = r'({{S\|' + sections[p] + r')\|[a-z]+}}'
