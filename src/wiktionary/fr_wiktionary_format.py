@@ -580,15 +580,15 @@ def treat_page_by_name(page_name):
                     page_content, final_page_content, summary = treat_verb_inflexion(page_content, final_page_content,
                                                                                      summary, current_page_content)
                 elif current_template == 'recons':
-                    page_content2 = page_content[:end_position]
-                    if '|lang-mot-vedette' not in page_content2:
+                    template_params = page_content[:page_content.find('}}')]
+                    if 'lang-mot-vedette' not in template_params:
                         summary += ', ajout de "lang-mot-vedette" dans {{recons}}'
                         final_page_content = final_page_content + page_content[:end_position] \
-                                             + '|lang-mot-vedette=' + language_code
+                                                + '|lang-mot-vedette=' + language_code
                         page_content = page_content[end_position:]
-                        # TODO
-                        page_content = page_content.replace('|lang-mot-vedette=gaulois|lang-mot-vedette=gaulois',
-                                                            '|lang-mot-vedette=gaulois')
+                    # Fix 2020
+                    regex = r'(?:\|lang-mot-vedette=[^\|}]+)+\|lang-mot-vedette=([^\|}]+[\|}])'
+                    page_content = re.sub(regex, r'|lang-mot-vedette=\1', page_content)
 
                 elif p < limit5:
                     add_language_code = False
