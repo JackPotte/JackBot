@@ -586,6 +586,9 @@ def treat_page_by_name(page_name):
                         final_page_content = final_page_content + page_content[:end_position] \
                                              + '|lang-mot-vedette=' + language_code
                         page_content = page_content[end_position:]
+                        # TODO
+                        page_content = page_content.replace('|lang-mot-vedette=gaulois|lang-mot-vedette=gaulois',
+                                                            '|lang-mot-vedette=gaulois')
 
                 elif p < limit5:
                     add_language_code = False
@@ -1069,7 +1072,7 @@ def main(*args):
                 else:
                     p.pages_by_cat(sys.argv[2].decode(config.console_encoding, 'replace'))
             else:
-                p.pages_by_cat('Dates manquantes', namespaces=None, recursive=False)
+                p.pages_by_cat('Pages utilisant des arguments dupliqués dans les appels de modèle', namespaces=None, recursive=False)
 
         elif sys.argv[1] == str('-redirects'):
             p.pages_by_redirects()
