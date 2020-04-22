@@ -469,6 +469,11 @@ sections.append('prononciation')
 sections_level.append('===')
 sections_order.append(17)
 
+templates.append('-pron-')
+sections.append('modification phonétique')
+sections_level.append('===')
+sections_order.append(17)
+
 templates.append('-réf-')
 sections.append('références')
 sections_level.append('===')

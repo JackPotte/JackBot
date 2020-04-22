@@ -2470,8 +2470,8 @@ def move_etymological_templates(page_content, summary):
 
 
 def move_etymological_template(page_content, summary, page_language, etym_template):
-    if debug_level > 0:
-        print(' Move etymological template: ' + etym_template)
+    if debug_level > 1:
+        print(' Move etymological template if present: ' + etym_template)
     language_section, l_start, l_end = get_language_section(page_content, page_language)
     if language_section is not None and len(get_natures_sections(language_section)) == 1 \
             and language_section.find(etym_template[1:]) != -1:
