@@ -2463,7 +2463,7 @@ def move_etymological_templates(page_content, summary):
 
     if debug_level > 0:
         print('  Replace otherwise')
-    regex = r'{{(' + '|'.join(etym_templates) + r')\|nocat(?:=1)*}}'
+    regex = r'{{(' + '|'.join(etym_templates + fr_etymological_templates) + r')\|nocat(?:=1)*}}'
     page_content = re.sub(regex, r"''(\1)''", page_content)
 
     return page_content, summary
