@@ -1050,8 +1050,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pages_by_search(sys.argv[2])
             else:
-                for template in templates_only_in_etymological_section + fr_etymological_templates:
-                    p.pages_by_search('insource:/\{\{' + template + '\|[^\|\}]+\|m=1\}\}\.\./', namespaces=[0])
+                p.pages_by_search('insource:/\{\{écouter\{/', namespaces=[0])
 
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
                 sys.argv[1] == str('-m'):

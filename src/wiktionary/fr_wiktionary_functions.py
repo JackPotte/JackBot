@@ -2173,9 +2173,11 @@ def format_templates(page_content, summary):
     mod_region = ['AU', 'AR', 'AT', 'BE', 'BR', 'CA', 'MX', 'PT', 'QC', 'UK', 'US']
     for m in range(1, len(mod_region)):
         while page_content.find('{{écouter|' + mod_region[m] + '|') != -1:
-            page_content = page_content[:page_content.find('{{écouter|' + mod_region[m] + '|')+len('{{écouter|')-1] \
+            page_content = page_content[:page_content.find('{{écouter|' + mod_region[m] + '|')+len('{{écouter|')] \
              + '{{' + mod_region[m] + '|nocat=1}}' + page_content[page_content.find('{{écouter|' + mod_region[m] + '|')
                                                                   + len('{{écouter|' + mod_region[m]):]
+    # Fix 2020
+    page_content = page_content.replace('{{écouter{', '{{écouter|{')
 
     regex = r"(\n: *(?:'*\([^)]+\)'*)? *(?:{{[^)]+}})? *(?:{{[^)]+}})? *{{abréviation\|[^}]*)\|m=1}} de([ '])"
     page_content = re.sub(regex, r'\1}} De\2', page_content)
