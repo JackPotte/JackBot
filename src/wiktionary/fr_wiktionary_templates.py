@@ -86,6 +86,11 @@ sections.append('adverbe')
 sections_level.append('===')
 sections_order.append(2)
 
+templates.append('adverbe indéfini')
+sections.append('adverbe indéfini')
+sections_level.append('===')
+sections_order.append(2)
+
 templates.append('-aff-')
 sections.append('affixe')
 sections_level.append('===')

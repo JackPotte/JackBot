@@ -1071,7 +1071,7 @@ def main(*args):
                 else:
                     p.pages_by_cat(sys.argv[2].decode(config.console_encoding, 'replace'))
             else:
-                p.pages_by_cat('Pages utilisant des arguments dupliqués dans les appels de modèle', namespaces=None, recursive=False)
+                p.pages_by_cat('Étymologies sans langue précisée incluant une reconstruction', namespaces=None, recursive=False)
 
         elif sys.argv[1] == str('-redirects'):
             p.pages_by_redirects()
