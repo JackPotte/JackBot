@@ -579,7 +579,7 @@ def treat_page_by_name(page_name):
                 elif current_template == 'fr-verbe-flexion':
                     page_content, final_page_content, summary = treat_verb_inflexion(page_content, final_page_content,
                                                                                      summary, current_page_content)
-                elif current_template == 'recons':
+                elif current_template == 'recons' and language_code is not None:
                     template_params = page_content[:page_content.find('}}')]
                     if 'lang-mot-vedette' not in template_params:
                         summary += ', ajout de "lang-mot-vedette" dans {{recons}}'
