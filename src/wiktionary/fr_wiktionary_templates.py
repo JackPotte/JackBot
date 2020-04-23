@@ -469,7 +469,12 @@ sections.append('prononciation')
 sections_level.append('===')
 sections_order.append(17)
 
-templates.append('-pron-')
+templates.append('taux de reconnaissance')
+sections.append('taux de reconnaissance')
+sections_level.append('===')
+sections_order.append(17)
+
+templates.append('modification phonétique')
 sections.append('modification phonétique')
 sections_level.append('===')
 sections_order.append(17)
