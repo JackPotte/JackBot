@@ -499,6 +499,16 @@ sections.append('références')
 sections_level.append('===')
 sections_order.append(23)
 
+templates.append('sources')
+sections.append('sources')
+sections_level.append('====')
+sections_order.append(23)
+
+templates.append('bibliographie')
+sections.append('bibliographie')
+sections_level.append('====')
+sections_order.append(23)
+
 limit2 = len(templates)
 # De niveau 4
 templates.append('-compos-')
