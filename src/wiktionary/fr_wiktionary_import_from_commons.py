@@ -38,24 +38,24 @@ username = config.usernames[site_family][site_language]
 
 commons_site = pywikibot.Site('commons', 'commons')
 summary = 'Ajout du son depuis [[commons:Category:Pronunciation]]'
+supported_extensions = ['.ogg', '.oga', '.wav']
+extension_length = len(supported_extensions[0])
 
 
 def treat_page_by_name(page_name):
     if debug_level > 0:
         print('------------------------------------')
         print(page_name)
-    if username in page_name:
-        file_name = 'LL-Q143 (epo)-Robin van der Vliet-lipharoj.wav'
-    else:
-        if page_name[-4:] != '.ogg' and page_name[-4:] != '.oga' and page_name[-4:] != '.wav':
-            if debug_level > 0:
-                print(' No supported file format found')
-            return
-        file_name = page_name
-        if page_name.find('File:') == 0:
-            file_name = file_name[len('File:'):]
-    file_desc = file_name[:-len('.ogg')]
 
+    if page_name[-extension_length:] not in supported_extensions:
+        if debug_level > 0:
+            print(' No supported file format found')
+        return
+
+    file_name = page_name
+    if page_name.find('File:') == 0:
+        file_name = file_name[len('File:'):]
+    file_desc = file_name[:-extension_length]
     if file_desc.find('-') == -1:
         if debug_level > 0:
             print(' No language code found')
@@ -65,7 +65,7 @@ def treat_page_by_name(page_name):
     if language_code == 'LL':
         if debug_level > 0:
             print(' Lingua Libre formats')
-        # LL-<Qid de la langue> (<code iso 693-3>)-<Username>-<transcription> (<précision>).wav
+            # LL-<Qid de la langue> (<code iso 693-3>)-<Username>-<transcription> (<précision>).wav
 
         if file_desc.count('-') > 3:
             if debug_level > 0:
@@ -173,13 +173,7 @@ def treat_page_by_name(page_name):
             print(' Language section absent')
         return
 
-    if file_name[:1].lower() == file_name[:1]:
-        file_name_capitalized = file_name[:1].upper() + file_name[1:]
-    else:
-        file_name_capitalized = file_name[:1].lower() + file_name[1:]
-    if file_name in current_page_content or file_name_capitalized in current_page_content or \
-        file_name.replace(' ', '_') in current_page_content or file_name_capitalized.replace(' ', '_') \
-            in current_page_content:
+    if is_file_in_page(current_page_content, file_name):
         if debug_level > 0:
             print(' File already present')
         if debug_level > 1:
@@ -269,6 +263,29 @@ def remove_numeric_suffix_from_word(word):
     if re.search(regex, word):
         word = re.sub(regex, '', word)
     return word
+
+
+def is_file_in_page(current_page_content, file_name):
+    if file_name[:1].lower() == file_name[:1]:
+        file_name_capitalized = file_name[:1].upper() + file_name[1:]
+    else:
+        file_name_capitalized = file_name[:1].lower() + file_name[1:]
+
+    if file_name.rfind('-') == -1:
+        file_name_with_underscore_at_end = False
+        file_name_capitalized_with_underscore_at_end = False
+    else:
+        suffix = file_name[file_name.rfind('-'):]
+        file_name_with_underscore_at_end = file_name[:file_name.rfind('-')] + suffix.replace(' ', '_')
+        file_name_capitalized_with_underscore_at_end = file_name_capitalized[:file_name.rfind('-')] \
+                                                       + suffix.replace(' ', '_')
+
+    return file_name in current_page_content \
+           or file_name_capitalized in current_page_content \
+           or file_name.replace(' ', '_') in current_page_content \
+           or file_name_capitalized.replace(' ', '_') in current_page_content \
+           or file_name_with_underscore_at_end in current_page_content \
+           or file_name_capitalized_with_underscore_at_end in current_page_content
 
 
 p = PageProvider(treat_page_by_name, commons_site, debug_level)
