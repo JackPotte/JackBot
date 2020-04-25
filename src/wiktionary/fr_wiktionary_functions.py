@@ -2019,9 +2019,7 @@ def replace_etymology_templates(page_content, summary):
         'abrév': 'abréviation',
         'acron': 'acronyme',
         'compos': 'composé de',
-        'contr': 'contraction',
-        'dénominal': 'dénominal de',
-        'déverbal': 'déverbal de'
+        'contr': 'contraction'
     }
     for alias in templates:
         regex = r"({{)" + alias + r"([|}])"

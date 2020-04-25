@@ -791,7 +791,8 @@ templates_only_in_etymological_section = ['abréviation', 'abréviation de', 'ac
                                           'diminutif', 'sigle']  # TODO 'ellipse', 'par ellipse'
 etymology_templates_with_language_at_first = templates_only_in_etymological_section + \
                  ['agglutination', 'antonomase', 'déglutination', 'mot-valise', 'parataxe', 'syncope', 'univerbation']
-etymology_templates_with_language_at_second = ['dénominal de', 'déverbal de', 'déverbal sans suffixe']
+# WIP etymology_templates_with_language_at_second = ['dénominal de', 'déverbal de', 'déverbal sans suffixe']
+etymology_templates_with_language_at_second = []
 
 limit5 = len(templates)
 templates.append('augmentatif')
