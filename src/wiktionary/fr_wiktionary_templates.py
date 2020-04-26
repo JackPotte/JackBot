@@ -790,9 +790,8 @@ etymology_templates = [u'étcompcat', 'étyl', 'étylp'] + fr_etymological_templ
 templates_only_in_etymological_section = ['abréviation', 'abréviation de', 'acronyme', 'apocope', 'aphérèse',
                                           'diminutif', 'sigle']  # TODO 'ellipse', 'par ellipse'
 etymology_templates_with_language_at_first = templates_only_in_etymological_section + \
-                 ['agglutination', 'antonomase', 'déglutination', 'mot-valise', 'parataxe', 'syncope', 'univerbation']
-# WIP etymology_templates_with_language_at_second = ['dénominal de', 'déverbal de', 'déverbal sans suffixe']
-etymology_templates_with_language_at_second = []
+                 ['agglutination', 'antonomase', 'déglutination', 'mot-valise', 'parataxe', 'syncope', 'univerbation',
+                  'dénominal', 'déverbal', 'déverbal sans suffixe']
 
 limit5 = len(templates)
 templates.append('augmentatif')
@@ -1841,7 +1840,7 @@ templates.append('région ?')
 
 limit8 = len(templates)
 # Code langue si étymologie
-templates += etymology_templates_with_language_at_first + etymology_templates_with_language_at_second
+templates += etymology_templates_with_language_at_first
 
 limit9 = len(templates)
 # Modèles régionaux, avec "nocat" pour les prononciations

@@ -462,8 +462,7 @@ def treat_page_by_name(page_name):
                                 final_page_content, page_content = next_template(final_page_content, page_content)
 
                 # Templates with language code at second
-                elif current_template in definition_templates + etymology_templates_with_language_at_second + ['pron',
-                                                                                                         'phon']:
+                elif current_template in definition_templates + ['pron', 'phon']:
                     if language_code == 'conv':
                         final_page_content, page_content = next_template(final_page_content, page_content)
                     else:
