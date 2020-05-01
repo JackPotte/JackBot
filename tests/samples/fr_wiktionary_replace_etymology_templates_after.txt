@@ -1,6 +1,6 @@
 == {{langue|fr}} ==
 === {{S|étymologie}} ===
-: {{abréviation|fr}}, {{acronyme|fr}}, {{sigle|fr|m=1}} de ''[[complément d’objet indirect|'''c'''omplément d’'''o'''bjet '''i'''ndirect]]''.
+: {{contraction|en|m=1}}. {{abréviation|fr|m=1}}. {{acronyme|fr|m=1}}. {{sigle|fr|m=1}} de ''[[complément d’objet indirect|'''c'''omplément d’'''o'''bjet '''i'''ndirect]]''.
 :{{déverbal|fr}}.
 :{{dénominal|de=test}}
 

@@ -789,13 +789,12 @@ templates += etymology_templates_with_language_at_lang
 
 fr_etymology_templates = ['louchébem', 'reverlanisation', 'verlan']
 etymology_templates_with_language_at_first = ['abréviation', 'acronyme', 'agglutination', 'antonomase', 'aphérèse',
-    'apocope', 'contraction', 'déglutination', 'dénominal', 'déverbal', 'déverbal sans suffixe', 'diminutif',
-    'mot-valise', 'parataxe', 'syncope', 'univerbation', 'sigle']
+    'apocope', 'augmentatif', 'contraction', 'déglutination', 'dénominal', 'déverbal', 'déverbal sans suffixe',
+    'diminutif', 'mot-valise', 'parataxe', 'syncope', 'univerbation', 'sigle']
 etymology_templates = etymology_date_templates + etymology_templates_with_language_at_lang + fr_etymology_templates \
                       + etymology_templates_with_language_at_first
 
 limit5 = len(templates)
-templates.append('augmentatif')
 templates.append('comparatif')
 templates.append('superlatif')
 templates.append('beaucoup plus courant')

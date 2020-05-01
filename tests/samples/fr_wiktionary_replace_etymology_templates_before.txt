@@ -5,7 +5,7 @@
 :{{dénominal|de=test}}
 
 === {{S|nom|fr}} ===
-'''COI''' {{pron|se.o.i|lang=fr}} {{m}}, {{abréviation|fr}}, {{invar}}, {{acronyme|fr}} {{sigle|fr}}
+'''COI''' {{pron|se.o.i|lang=fr}} {{m}}, {{abréviation|fr}}, {{invar}}, {{acronyme|fr}} {{sigle|fr}}  {{contraction|en}}
 # {{grammaire|fr}} [[complément d’objet indirect|Complément d’objet indirect]].
 
 ==== {{S|apparentés}} ====
