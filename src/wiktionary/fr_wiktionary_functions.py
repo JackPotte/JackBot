@@ -495,16 +495,14 @@ def format_categories(page_content, summary):
     if debug_level > 1:
         print('\nformat_category')
 
+    regex = r'\[\[[Cc]ategory:'
+    page_content = re.sub(regex, r'[[Catégorie:', page_content)
+
     regex = r'([^\n])\[\[[Cc]atégorie:'
     page_content = re.sub(regex, r'\1\n[[Catégorie:', page_content)
 
     regex = r'(\[\[[Cc]atégorie:[^\n]+\n)\n+(\[\[[Cc]atégorie:)'
     page_content = re.sub(regex, r'\1\2', page_content)
-
-    regex = r'([Cc]atégorie:Mots en occitan suffixés )en '
-    page_content = re.sub(regex, r'\1avec ', page_content)
-    regex = r'([Cc]atégorie:Verbes en occitan suffixés )en '
-    page_content = re.sub(regex, r'\1avec ', page_content)
 
     return page_content, summary
 
