@@ -966,7 +966,7 @@ def format_fr_section(page_content, summary, page_name, regex_page_name):
     regex = r'(' + language_code + r'\|flexion|' + '|'.join(definition_sentences) + '|'.join(
         map(lambda x: x.capitalize(), definition_sentences)) + r')'
     regex2 = r'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|' + \
-             '|'.join(templates_only_in_etymological_section) + r')[\|}]'
+             '|'.join(etymology_templates) + r')[\|}]'
     fr_section, language_start, language_end = get_language_section(page_content, language_code)
     if fr_section is not None and re.search(regex, fr_section) is None and re.search(regex2, fr_section) is None and \
             count_first_definition_size(fr_section) > 3:

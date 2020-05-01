@@ -778,20 +778,21 @@ templates.append('trad+')
 templates.append('trad')
 templates.append('préciser')
 templates.append('cf')
-templates.append('recons')
 
+# https://fr.wiktionary.org/wiki/Catégorie:Modèles_étymologiques
+# https://fr.wiktionary.org/wiki/Projet:Informations_étymologiques
+# TODO ['calque', 'étcompcat', 'étyl', 'étylp', 'ellipse']
+templates.append('recons')  # language code at second
 etymology_date_templates = ['date', 'siècle']
 etymology_templates_with_language_at_lang = etymology_date_templates + ['composé de']
 templates += etymology_templates_with_language_at_lang
 
-# https://fr.wiktionary.org/wiki/Catégorie:Modèles_étymologiques
-fr_etymological_templates = ['louchébem', 'reverlanisation', 'verlan']
-etymology_templates = [u'étcompcat', 'étyl', 'étylp'] + fr_etymological_templates
-templates_only_in_etymological_section = ['abréviation', 'abréviation de', 'acronyme', 'apocope', 'aphérèse',
-                                          'diminutif', 'sigle']  # TODO 'ellipse', 'par ellipse'
-etymology_templates_with_language_at_first = templates_only_in_etymological_section + \
-                 ['agglutination', 'antonomase', 'déglutination', 'mot-valise', 'parataxe', 'syncope', 'univerbation',
-                  'dénominal', 'déverbal', 'déverbal sans suffixe']
+fr_etymology_templates = ['louchébem', 'reverlanisation', 'verlan']
+etymology_templates_with_language_at_first = ['abréviation', 'acronyme', 'agglutination', 'antonomase', 'aphérèse',
+    'apocope', 'contraction', 'déglutination', 'dénominal', 'déverbal', 'déverbal sans suffixe', 'diminutif',
+    'mot-valise', 'parataxe', 'syncope', 'univerbation', 'sigle']
+etymology_templates = etymology_date_templates + etymology_templates_with_language_at_lang + fr_etymology_templates \
+                      + etymology_templates_with_language_at_first
 
 limit5 = len(templates)
 templates.append('augmentatif')

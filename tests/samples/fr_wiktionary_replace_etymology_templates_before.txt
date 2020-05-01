@@ -1,0 +1,17 @@
+== {{langue|fr}} ==
+=== {{S|étymologie}} ===
+: {{sigle|fr}} [[sigle|Sigle]] de ''[[complément d’objet indirect|'''c'''omplément d’'''o'''bjet '''i'''ndirect]]''.
+:{{déverbal}}.
+:{{dénominal|de=test}}
+
+=== {{S|nom|fr}} ===
+'''COI''' {{pron|se.o.i|lang=fr}} {{m}}, {{abréviation|fr}}, {{invar}}, {{acronyme|fr}} {{sigle|fr}}
+# {{grammaire|fr}} [[complément d’objet indirect|Complément d’objet indirect]].
+
+==== {{S|apparentés}} ====
+* [[COD]] {{acronyme|nocat}}
+* [[COS]] {{acronyme|nocat=1}}
+
+=== {{S|voir aussi}} ===
+{{Autres projets
+|w=COI}}

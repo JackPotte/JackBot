@@ -19,8 +19,13 @@ from fr_wiktionary_functions import *
 from fr_wiktionary_templates import *
 
 
-# TODO other methods & large inputs in .txt
 class TestFrWiktionary(unittest.TestCase):
+
+    def get_test_file_content(self, file_name):
+        article_file = open('samples/' + file_name, 'r')
+        page_content = article_file.read()
+        article_file.close()
+        return page_content
 
     def test_add_templates(self):
         test_input = '* {{T|en}} : {{trad|en|test}}\n* Solrésol : [[res\'ol]]'
@@ -28,44 +33,46 @@ class TestFrWiktionary(unittest.TestCase):
         output, summary = add_templates(test_input, '')
         self.assertEqual(test_output, output)
 
-    # def test_replace_etymology_templates(self):
-    #     for end_char in ['}', '|']:
-    #         test_input = '{{deet' + end_char
-    #         test_output = '{{composé de|m=1' + end_char
-    #         output, summary = replace_etymology_templates(test_input, '')
-    #         self.assertEqual(test_output, output)
-    #
-    #     for template in ['abréviation', 'acronyme', 'reverlanisation', 'sigle', 'verlan']:
-    #         test_input = '{{' + template + '}}'
-    #         test_output = '{{' + template + '|m=1}}.'
-    #         output, summary = replace_etymology_templates(test_input, '')
-    #         self.assertEqual(test_output, output)
-    #
-    #         test_input = '{{' + template + '|fr}}'
-    #         test_output = '{{' + template + '|fr|m=1}}.'
-    #         output, summary = replace_etymology_templates(test_input, '')
-    #         self.assertEqual(test_output, output)
-    #
-    #         test_input = '{{' + template + '|fr|m=1}}'
-    #         test_output = '{{' + template + '|fr|m=1}}.'
-    #         output, summary = replace_etymology_templates(test_input, '')
-    #         self.assertEqual(test_output, output)
-    #
-    #         test_input = '{{' + template + '|m=1|fr}}'
-    #         test_output = '{{' + template + '|fr|m=1}}.'
-    #         output, summary = replace_etymology_templates(test_input, '')
-    #         self.assertEqual(test_output, output)
-    #
-    #         test_input = '{{' + template + '|m=1}}'
-    #         test_output = '{{' + template + '|m=1}}.'
-    #         output, summary = replace_etymology_templates(test_input, '')
-    #         self.assertEqual(test_output, output)
+    def test_move_etymology_templates(self):
+        # TODO page_content = self.get_test_file_content('fr_wiktionary_replace_etymology_templates_before.txt')
+        test_input = "== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n''''mac''' {{pron|mak|fr}} {{m}}, {{abréviation|fr}}, {{acronyme|fr}}\n#"
+        test_output = "== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n  {{acronyme}} {{abréviation}} {{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n''''mac''' {{pron|mak|fr}} {{m}}\n#"
+        output, summary = move_etymology_templates(test_input, '')
+        self.assertEqual(test_output, output)
 
-    # def test_move_etymological_templates(self):
-    #     test_input = "== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n{{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n''''mac''' {{pron|mak|fr}} {{m}}, {{abréviation|fr}}, {{acronyme|fr}}\n#"
-    #     test_output = "== {{langue|fr}} ==\n=== {{S|étymologie}} ===\n  {{acronyme}} {{abréviation}} {{ébauche-étym|fr}}\n=== {{S|nom|fr}} ===\n''''mac''' {{pron|mak|fr}} {{m}}\n#"
-    #     output, summary = move_etymological_templates(test_input, '')
-    #     self.assertEqual(test_output, output)
+    def test_replace_etymology_templates(self):
+        for end_char in ['}', '|']:
+            test_input = '{{deet' + end_char
+            test_output = '{{composé de|m=1' + end_char
+            output, summary = replace_etymology_templates(test_input, '')
+            self.assertEqual(test_output, output)
+
+        # TODO
+        # for template in ['abréviation', 'acronyme', 'reverlanisation', 'sigle', 'verlan']:
+        #     test_input = '{{' + template + '}}'
+        #     test_output = '{{' + template + '|m=1}}.'
+        #     output, summary = replace_etymology_templates(test_input, '')
+        #     self.assertEqual(test_output, output)
+        #
+        #     test_input = '{{' + template + '|fr}}'
+        #     test_output = '{{' + template + '|fr|m=1}}.'
+        #     output, summary = replace_etymology_templates(test_input, '')
+        #     self.assertEqual(test_output, output)
+        #
+        #     test_input = '{{' + template + '|fr|m=1}}'
+        #     test_output = '{{' + template + '|fr|m=1}}.'
+        #     output, summary = replace_etymology_templates(test_input, '')
+        #     self.assertEqual(test_output, output)
+        #
+        #     test_input = '{{' + template + '|m=1|fr}}'
+        #     test_output = '{{' + template + '|fr|m=1}}.'
+        #     output, summary = replace_etymology_templates(test_input, '')
+        #     self.assertEqual(test_output, output)
+        #
+        #     test_input = '{{' + template + '|m=1}}'
+        #     test_output = '{{' + template + '|m=1}}.'
+        #     output, summary = replace_etymology_templates(test_input, '')
+        #     self.assertEqual(test_output, output)
 
 
 if __name__ == '__main__':

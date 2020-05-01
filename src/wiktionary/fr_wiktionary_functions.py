@@ -2029,17 +2029,11 @@ def replace_etymology_templates(page_content, summary):
     if re.search(regex, page_content):
         page_content = re.sub(regex, r"\1composé de|m=1\2", page_content)
 
-    # Fix 2020 several dots
-    for template in templates_only_in_etymological_section + fr_etymological_templates:
-        regex = r"({{)" + template + r"([^}]*)}}\.+"
-        if re.search(regex, page_content):
-            page_content = re.sub(regex, r"\1" + template + r"\2}}.", page_content)
-
     return page_content, summary
     # TODO fix https://fr.wiktionary.org/w/index.php?title=nos&type=revision&diff=27795087&oldid=27614294
     # Fix https://fr.wiktionary.org/w/index.php?title=mac&diff=27795089&oldid=27788198
     # Replacing with: |m=1 and .
-    for template in templates_only_in_etymological_section + fr_etymological_templates:
+    for template in etymology_templates:
         # regex = r"({{)" + template + r"([^}]*)}}"              # {{abréviation|fr|m=1|m=1}}.
         # regex = r"({{)" + template + r"((?!\|m=1).)*}}"        # {{abréviationr|m=1}}
         # regex = r"({{)" + template + r"((?!\|m=1)[^}]*)*}}"    # {{abréviation|m=1}}.
@@ -2061,7 +2055,7 @@ def move_templates(page_content, summary):
     if debug_level > 1:
         print(' move_templates()')
 
-    page_content, summary = move_etymological_templates(page_content, summary)
+    page_content, summary = move_etymology_templates(page_content, summary)
     return page_content, summary
 
 
@@ -2448,28 +2442,25 @@ def format_languages_templates(page_content, summary, page_name):
     return page_content, summary
 
 
-def move_etymological_templates(page_content, summary):
+def move_etymology_templates(page_content, summary):
     if debug_level > 0:
-        print(' Move etymological templates')
+        print(' Move etymology templates')
     page_languages = get_page_languages(page_content)
     for page_language in page_languages:
-        etym_templates = templates_only_in_etymological_section
-        if page_language == 'fr':
-            etym_templates = etym_templates + fr_etymological_templates
-        for etym_template in etym_templates:
-            page_content, summary = move_etymological_template(page_content, summary, page_language, etym_template)
+        for etym_template in etymology_templates:
+            page_content, summary = move_etymology_template(page_content, summary, page_language, etym_template)
 
     if debug_level > 0:
-        print('  Replace otherwise')
-    regex = r'{{(' + '|'.join(templates_only_in_etymological_section + fr_etymological_templates) + r')\|nocat(?:=1)*}}'
-    page_content = re.sub(regex, r"''(\1)''", page_content)
+        print('  Replace template otherwise')
+    regex = r'{{(' + '|'.join(etymology_templates) + r')\|nocat(?:=1)*}}'
+    page_content = re.sub(regex, r"{{term|\1}}", page_content)
 
     return page_content, summary
 
 
-def move_etymological_template(page_content, summary, page_language, etym_template):
+def move_etymology_template(page_content, summary, page_language, etym_template):
     if debug_level > 1:
-        print(' Move etymological template if present: ' + etym_template)
+        print(' Move etymology template if present: ' + etym_template)
     language_section, l_start, l_end = get_language_section(page_content, page_language)
     if language_section is not None and len(get_natures_sections(language_section)) == 1 \
             and language_section.find(etym_template[1:]) != -1:
