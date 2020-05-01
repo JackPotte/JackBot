@@ -2141,7 +2141,8 @@ def format_templates(page_content, summary):
         page_content = re.sub(regex, r"\1page \2", page_content)
     page_content = page_content.replace('myt=scandinave', 'myt=nordique')
 
-    if debug_level > 1: print(' Modèles de prononciation')
+    if debug_level > 1:
+        print(' Modèles de prononciation')
     page_content = page_content.replace('{{pron|}}', '{{pron}}')
     page_content = page_content.replace('{{prononciation|}}', '{{prononciation}}')
     page_content = re.sub(r'({{pron\|[^|}]*)\|(}})', r"\1\2", page_content)
@@ -2160,14 +2161,13 @@ def format_templates(page_content, summary):
     if re.search(regex, page_content):
         page_content = re.sub(regex, r'{{S|prononciation}} ===\n*', page_content)
 
-    mod_region = ['AU', 'AR', 'AT', 'BE', 'BR', 'CA', 'MX', 'PT', 'QC', 'UK', 'US']
-    for m in range(1, len(mod_region)):
-        while page_content.find('{{écouter|' + mod_region[m] + '|') != -1:
-            page_content = page_content[:page_content.find('{{écouter|' + mod_region[m] + '|')+len('{{écouter|')] \
-             + '{{' + mod_region[m] + '|nocat=1}}' + page_content[page_content.find('{{écouter|' + mod_region[m] + '|')
-                                                                  + len('{{écouter|' + mod_region[m]):]
-    # Fix 2020
-    page_content = page_content.replace('{{écouter{', '{{écouter|{')
+    for m in range(1, len(region_short_templates)):
+        while page_content.find('{{écouter|' + region_short_templates[m] + '|') != -1:
+            page_content = page_content[:page_content.find('{{écouter|' + region_short_templates[m] + '|')
+                + len('{{écouter|')] \
+                + '{{' + region_short_templates[m] + '|nocat=1}}' \
+                + page_content[page_content.find('{{écouter|' + region_short_templates[m] + '|')
+                + len('{{écouter|' + region_short_templates[m]):]
 
     regex = r"(\n: *(?:'*\([^)]+\)'*)? *(?:{{[^)]+}})? *(?:{{[^)]+}})? *{{abréviation\|[^}]*)\|m=1}} de([ '])"
     page_content = re.sub(regex, r'\1}} De\2', page_content)
@@ -2420,12 +2420,14 @@ def format_languages_templates(page_content, summary, page_name):
             regex = r'\({{f}} : [\[\']*' + re_page_radical_name + demonym_templates[l][3] + r'[\]\']*, {{mplur}} : [\[\']*' \
                 + re_page_radical_name + demonym_templates[l][2] + r'[\]\']*, {{fplur}} : [\[\']*' + re_page_radical_name \
                 + demonym_templates[l][4] + r'[\]\']*\)'
-            if debug_level > 1: print(regex)
+            if debug_level > 1:
+                print(regex)
             if re.search(regex, page_content):
                 page_content = re.sub(regex, '{{' + demonym_templates[l][1] + '|' + re_page_radical_name + r'}}', page_content)
                 summary = summary + ', conversion des liens flexions en modèle boite'
             # Son
-            if debug_level > 0: print(' son')
+            if debug_level > 0:
+                print(' son')
             regex = r'(\n\'\'\'' + regex_page_name + '\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' \
                     + demonym_templates[l][1] + r'\|' + re_page_radical_name + r')}}'
             if re.search(regex, page_content):
@@ -2444,7 +2446,7 @@ def format_languages_templates(page_content, summary, page_name):
 
 def move_etymology_templates(page_content, summary):
     if debug_level > 0:
-        print(' Move etymology templates')
+        print('move_etymology_templates()')
     page_languages = get_page_languages(page_content)
     for page_language in page_languages:
         for etym_template in etymology_templates:
@@ -2458,31 +2460,26 @@ def move_etymology_templates(page_content, summary):
     return page_content, summary
 
 
-def move_etymology_template(page_content, summary, page_language, etym_template):
+def move_etymology_template(page_content, summary, language_code, etym_template):
     if debug_level > 1:
-        print(' Move etymology template if present: ' + etym_template)
-    language_section, l_start, l_end = get_language_section(page_content, page_language)
+        print(' move_etymology_template(' + etym_template + ')')
+    language_section, l_start, l_end = get_language_section(page_content, language_code)
     if language_section is not None and len(get_natures_sections(language_section)) == 1 \
             and language_section.find(etym_template[1:]) != -1:
-        if debug_level > 0:
-            print('  Move from form/definition line?')
         regex_template = r"\n'''[^\n]+(\n#)? *({{[^}]+}})? *({{[^}]+}})? *{{" + etym_template + r'(\||})'
         if re.search(regex_template, language_section):
             new_language_section, summary = move_template_to_etymology(language_section, etym_template, summary,
-                                                                       page_language)
+                                                                       language_code)
             page_content = page_content.replace(language_section, new_language_section)
     return page_content, summary
 
 
-def move_template_to_etymology(language_section, etym_template, summary, page_language):
-    if debug_level > 0:
-        print('   found')
-    new_language_section, summary = remove_template(language_section, etym_template, summary,
-                                                        in_section=natures)
+def move_template_to_etymology(language_section, etym_template, summary, language_code):
+    new_language_section, summary = remove_template(language_section, etym_template, summary, in_section=natures)
     etymology, s_start, s_end = get_section(new_language_section, 'étymologie')
     if etymology is None:
-        new_language_section = add_line(new_language_section, page_language, 'étymologie',
-                                        ': {{ébauche-étym|' + page_language + '}}')
+        new_language_section = add_line(new_language_section, language_code, 'étymologie',
+                                        ': {{ébauche-étym|' + language_code + '}}')
         etymology, s_start, s_end = get_section(new_language_section, 'étymologie')
     if etymology is not None and etymology.find('{{' + etym_template) == -1:
         regex_etymology = r'(=\n:* *(\'*\([^\)]*\)\'*)?) *'
@@ -2492,6 +2489,11 @@ def move_template_to_etymology(language_section, etym_template, summary, page_la
             summary = summary + ', [[Wiktionnaire:Prise de décision/Déplacer les modèles de contexte' \
                 + ' étymologiques dans la section « Étymologie »|ajout de {{' \
                 + etym_template + r"}} dans l'étymologie]]"
+
+    l = etym_template[:1]
+    regex = r'{{' + etym_template + r'(?:\|' + language_code + r')?(?:\|m=1)?}} *(?:\[\[' + etym_template \
+            + r'\|)?[' + l + l.upper() + r']' + etym_template[1:] + r'(?:\]\])? de '
+    new_language_section = re.sub(regex, '{{' + etym_template + '|' + language_code + '|m=1}} de ', new_language_section)
     return new_language_section, summary
 
 

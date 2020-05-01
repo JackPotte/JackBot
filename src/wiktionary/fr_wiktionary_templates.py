@@ -1986,25 +1986,33 @@ templates.append('Viêt Nam')
 templates.append('Vosges')
 
 # Abréviations (python pagegenerators.py -redirectonly:Template:!)
-templates.append('EU')
-templates.append('FR')
-templates.append('BE')
-templates.append('CH')
-templates.append('QC')
-templates.append('CA')
-templates.append('US')
-templates.append('USA')
-templates.append('UK')
-templates.append('GB')
-templates.append('AU')
-templates.append('NZ')
-templates.append('IE')
-# Modèles de pronociation à synchroniser
+region_short_templates = []
+region_short_templates.append('AR')
+region_short_templates.append('AT')
+region_short_templates.append('AU')
+region_short_templates.append('BE')
+region_short_templates.append('BR')
+region_short_templates.append('CA')
+region_short_templates.append('CH')
+region_short_templates.append('EU')
+region_short_templates.append('FR')
+region_short_templates.append('GB')
+region_short_templates.append('IE')
+region_short_templates.append('MX')
+region_short_templates.append('NZ')
+region_short_templates.append('QC')
+region_short_templates.append('PT')
+region_short_templates.append('UK')
+region_short_templates.append('US')
+region_short_templates.append('USA')
+templates += region_short_templates
+
+# Modèles de prononciation à synchroniser
 templates.append('fr-verbe-flexion')
 
 limit10 = len(templates)  # Somme des modèles traités
 '''
-# TODO : non traités
+# TODO :
 
     # Sans code langue
         templates.append('voir')
