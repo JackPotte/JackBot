@@ -303,10 +303,14 @@ def add_default_sort(page_name, page_content, empty = False):
 
 def default_sort_by_language(page_name, language_code):
     if language_code == 'br':
+        if page_name.find('ch') != -1:
+            page_name = page_name.replace('ch', 'c⿕')
+        if page_name.find('ch'.upper()) != -1:
+            page_name = page_name.replace('ch'.upper(), 'c⿕')
         if page_name.find('cʼh') != -1:
-            page_name = page_name.replace('cʼh', 'c⿕h')
+            page_name = page_name.replace('cʼh', 'c⿕⿕')
         if page_name.find('cʼh'.upper()) != -1:
-            page_name = page_name.replace('cʼh'.upper(), 'c⿕h')
+            page_name = page_name.replace('cʼh'.upper(), 'c⿕⿕')
 
     elif language_code == 'es':
         if page_name.find('ñ') != -1:
