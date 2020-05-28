@@ -583,49 +583,11 @@ def translate_link_templates(current_page):
                     current_page[re.search(r'{{[\n ]*' + old_template[m] + r' *[\|\n]', current_page).end() - 1:][:100])
             final_page = final_page + current_page[
                                       :re.search(r'{{[\n ]*' + old_template[m] + r' *[\|\n]', current_page).end() - 1]
+            final_page, language_code = get_template_language_from_template_page(final_page)
             current_page = current_page[re.search(r'{{[\n ]*' + old_template[m] + r' *[\|\n]', current_page).end() - 1:]
 
-            # TODO split to get_template_language_from_template_page()
-            language_code = ''
-            if final_page.rfind('{{') != -1:
-                page_start = final_page[:final_page.rfind('{{')]
-                if page_start.rfind('{{') != -1 and page_start.rfind('}}') != -1 \
-                        and (page_start[len(page_start) - 2:] == '}}' or page_start[len(page_start) - 3:] == '}} '):
-                    language_code = page_start[page_start.rfind('{{') + 2:page_start.rfind('}}')]
-                    if site.family in ['wikipedia', 'wiktionary']:
-                        # Recherche de validité mais tous les codes ne sont pas encore sur les sites francophones
-                        if language_code.find('}}') != -1:
-                            language_code = language_code[:language_code.find('}}')]
-                        if debug_level > 1:
-                            print(' Template:' + language_code)
-                        template_page = Page(site, 'Template:' + language_code)
-                        template_page_content = ''
-                        try:
-                            template_page_content = template_page.get()
-                        except pywikibot.exceptions.NoPage as e:
-                            print(str(e))
-                        except pywikibot.exceptions.LockedPage as e:
-                            print(str(e))
-                        except pywikibot.exceptions.IsRedirectPage as e:
-                            template_page_content = template_page.get(get_redirect=True)
-                        if debug_level > 1:
-                            print(template_page_content)
-                        if template_page_content.find('Indication de langue') != -1:
-                            if len(language_code) == 2:  # TODO or len(language_code) == 3 and language_code != 'pdf':
-                                if debug_level > 0:
-                                    print(' remove useless language template: ' + language_code)
-                                final_page = final_page[:final_page.rfind('{{' + language_code + '}}')] \
-                                    + final_page[final_page.rfind('{{' + language_code + '}}')
-                                                 + len('{{' + language_code + '}}'):]
-
-            if language_code == '':
-                language_code = 'None'
-            if debug_level > 1:
-                print(' language to add to template: ' + language_code)
             regex = r'[^}]*lang(ue|uage)* *=[^}]*}}'
-            if not re.search(regex, current_page):
-                current_page = '|langue=' + language_code + current_page
-            elif re.search(regex, current_page).end() > current_page.find('}}') + 2:
+            if not re.search(regex, current_page) or re.search(regex, current_page).end() > current_page.find('}}') + 2:
                 current_page = '|langue=' + language_code + current_page
 
         current_page = final_page + current_page
@@ -656,6 +618,48 @@ def translate_link_templates(current_page):
         final_page = ''
 
     return current_page
+
+
+def get_template_language_from_template_page(final_page):
+    # Ex: {{de}} {{cite news|...
+    language_code = ''
+    if '{{' in final_page:
+        page_start_without_current_template = final_page[:final_page.rfind('{{')]
+        regex_get_last_template = r'{{([a-z]{2})}} *$'
+        s = re.search(regex_get_last_template, page_start_without_current_template, re.IGNORECASE)
+        if s:
+            language_code = page_start_without_current_template[s.start():s.end()]
+            language_code = language_code.replace('{{', '').replace('}}', '')
+            final_page = re.sub(regex_get_last_template, '', page_start_without_current_template) \
+                         + final_page[final_page.rfind('{{'):]
+            # TODO language_code = get_valid_language_code(language_code)
+
+    if language_code == '':
+        language_code = 'None'
+    if debug_level > 0:
+        print(' language to add to template: ' + language_code)
+    return final_page, language_code
+
+
+def get_valid_language_code(language_code):
+    if site.family in ['wikipedia', 'wiktionary']:
+        if language_code.find('}}') != -1:
+            language_code = language_code[:language_code.find('}}')]
+        if debug_level > 1:
+            print(' Template:' + language_code)
+        template_page = Page(site, 'Template:' + language_code)
+        template_page_content = ''
+        try:
+            template_page_content = template_page.get()
+        except pywikibot.exceptions.NoPage as e:
+            print(str(e))
+        except pywikibot.exceptions.LockedPage as e:
+            print(str(e))
+        except pywikibot.exceptions.IsRedirectPage as e:
+            template_page_content = template_page.get(get_redirect=True)
+        if debug_level > 1:
+            print(template_page_content)
+    return language_code
 
 
 def translate_dates(current_page):
