@@ -2029,7 +2029,7 @@ def replace_etymology_templates(page_content, summary):
     if re.search(regex, page_content):
         page_content = re.sub(regex, r"\1composé de|m=1\2", page_content)
 
-    regex = r'\n: *[Ll]ocution {{composé de[^{}]+}}'
+    regex = r'[Ll]ocution {{composé de[^{}]+}}'
     templates = re.findall(regex, page_content)
     for template in templates:
         regex2 = r'\| *f *= *1[\|}]'
