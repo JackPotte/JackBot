@@ -115,8 +115,8 @@ def treat_page_by_name(page_name):
 
     final_page_content = final_page_content + page_content
     if final_page_content != current_page_content:
-        page_content = page_content.replace('<references/>', '{{Références}}')
-        page_content = page_content.replace('<references />', '{{Références}}')
+        final_page_content = final_page_content.replace('<references/>', '{{Références}}')
+        final_page_content = final_page_content.replace('<references />', '{{Références}}')
         save_page(page, final_page_content, summary)
 
 

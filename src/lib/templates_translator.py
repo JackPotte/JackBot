@@ -232,6 +232,8 @@ old_param.append('others')
 new_param.append('champ libre')
 old_param.append('type')
 new_param.append('nature ouvrage')
+old_param.append('edition')
+new_param.append('numéro d\'édition')
 
 # Fix
 old_param.append('en ligne le')
@@ -499,31 +501,18 @@ def translate_template_parameters(current_template):
         if debug_level > 1:
             print(old_param[p])
         fr_name = new_param[p]
-        if old_param[p] == 'work':
-            if is_template(current_template, 'article') and not has_parameter(current_template, 'périodique'):
-                fr_name = 'périodique'
-            elif is_template(current_template, 'lien web') and not has_parameter(current_template, 'site') \
-                    and not has_parameter(current_template, 'website'):
-                fr_name = 'site'
-            else:
-                fr_name = 'série'
-        elif old_param[p] == 'publisher':
-            if is_template(current_template, 'article') and not has_parameter(current_template, 'périodique') \
-                    and not has_parameter(current_template, 'work'):
-                fr_name = 'périodique'
-            else:
-                fr_name = 'éditeur'
-        elif old_param[p] == 'agency':
+
+        if old_param[p] == 'agency':
             if is_template(current_template, 'article') and not has_parameter(current_template, 'périodique') \
                     and not has_parameter(current_template, 'work'):
                 fr_name = 'périodique'
             else:
                 fr_name = 'auteur institutionnel'
-        elif old_param[p] == 'issue' and has_parameter(current_template, 'numéro'):
-            fr_name = 'date'
+
         elif old_param[p] == 'editor':
             if has_parameter(current_template, 'éditeur'):
                 fr_name = 'auteur'
+
         elif old_param[p] == 'en ligne le':
             if current_template.find('archiveurl') == -1 and current_template.find('archive url') == -1 \
                     and current_template.find('archive-url') == -1:
@@ -533,6 +522,17 @@ def translate_template_parameters(current_template):
                 continue
             elif debug_level > 0:
                 print(' archiveurl ' + ' archivedate')
+
+        elif old_param[p] == 'issue' and has_parameter(current_template, 'numéro'):
+            fr_name = 'date'
+
+        elif old_param[p] == 'publisher':
+            if is_template(current_template, 'article') and not has_parameter(current_template, 'périodique') \
+                    and not has_parameter(current_template, 'work'):
+                fr_name = 'périodique'
+            else:
+                fr_name = 'éditeur'
+
         elif old_param[p] == 'type':
             if is_template(current_template, 'article'):
                 fr_name = 'nature article'
@@ -540,6 +540,16 @@ def translate_template_parameters(current_template):
                 fr_name = 'nature ouvrage'
             else:
                 fr_name = 'type'
+
+        elif old_param[p] == 'work':
+            if is_template(current_template, 'article') and not has_parameter(current_template, 'périodique'):
+                fr_name = 'périodique'
+            elif is_template(current_template, 'lien web') and not has_parameter(current_template, 'site') \
+                    and not has_parameter(current_template, 'website'):
+                fr_name = 'site'
+            else:
+                fr_name = 'série'
+
         has_double = False
         if new_param[p] != 'langue':  # TODO because "|langue=None" in current_template
             regex = r'(\| *)' + new_param[p] + r'( *=)'
@@ -668,10 +678,11 @@ def translate_dates(current_page):
     date_parameters = ['date', 'mois', 'consulté le', 'en ligne le', 'dts', 'Dts', 'date triable', 'Date triable']
     for m in range(1, month_line + 1):
         if debug_level > 1:
-            print('Mois ') + str(m)
+            print('Mois ' + str(m))
             print(months_translations[m][1])
         for p in range(1, len(date_parameters)):
-            if debug_level > 1: print('Recherche de ') + date_parameters[p] + ' *=[ ,0-9]*' + months_translations[m][1]
+            if debug_level > 1:
+                print('Recherche de ') + date_parameters[p] + ' *=[ ,0-9]*' + months_translations[m][1]
             if p > 4:
                 current_page = re.sub(
                     r'({{ *' + date_parameters[p] + r'[^}]+)' + months_translations[m][1] + r'([^}]+}})',
