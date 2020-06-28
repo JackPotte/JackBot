@@ -159,7 +159,7 @@ def treat_page_by_name(page_name):
 
         # https://fr.wikiversity.org/wiki/Catégorie:Chapitres_sans_pied_de_page
         if re.search(r'{{[cC]hapitre[ \n|]', page_content) and not re.search(r'{{[bB]as de page[ \n|]', page_content):
-            chapter = get_template_by_name(page_content, 'chapitre')
+            chapter = get_first_template_by_name(page_content, 'chapitre')
             if chapter != '':
                 footer = '\n\n{{Bas de page\n'
                 for p in ['idfaculté', 'leçon', 'précédent', 'suivant']:

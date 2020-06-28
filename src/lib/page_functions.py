@@ -212,11 +212,16 @@ def get_wiki(language, family):
     return wiki
 
 
-def get_template_by_name(page_content, template):
+def get_first_template_by_name(page_content, template):
     regex = r'{{[' + template[:1].lower() + template[:1].upper() + r']' + template[1:] + r'[^{}]+}}'
     if re.search(regex, page_content):
         return page_content[re.search(regex, page_content).start():re.search(regex, page_content).end()]
     return ''
+
+
+def get_all_templates_by_name(page_content, template):
+    regex = r'{{[' + template[:1].lower() + template[:1].upper() + r']' + template[1:] + r'[^{}]+}}'
+    return re.findall(regex, page_content)
 
 
 def get_parameter(page_content, p):

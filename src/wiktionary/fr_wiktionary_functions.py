@@ -2029,6 +2029,14 @@ def replace_etymology_templates(page_content, summary):
     if re.search(regex, page_content):
         page_content = re.sub(regex, r"\1composé de|m=1\2", page_content)
 
+    regex = r'\n: *[Ll]ocution {{composé de[^{}]+}}'
+    templates = re.findall(regex, page_content)
+    for template in templates:
+        regex2 = r'\| *f *= *1[\|}]'
+        if not re.search(regex2, template):
+            new_template = template.replace('composé de', 'composé de|f=1')
+            page_content = page_content.replace(template, new_template)
+
     return page_content, summary
     # TODO fix https://fr.wiktionary.org/w/index.php?title=nos&type=revision&diff=27795087&oldid=27614294
     # Fix https://fr.wiktionary.org/w/index.php?title=mac&diff=27795089&oldid=27788198
