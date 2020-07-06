@@ -450,8 +450,6 @@ def set_globals_translator(my_debug_level, my_site, my_username):
 
 
 def translate_templates(current_page, summary):
-    summary += ', traduction des modèles'
-
     current_page = current_page.replace('[//https://', '[https://')
     current_page = current_page.replace('[//http://', '[http://')
     current_page = current_page.replace('http://http://', 'http://')
@@ -495,6 +493,7 @@ def translate_templates(current_page, summary):
 
 
 def translate_template_parameters(current_template):
+    # TODO speed-up by looping on all template parameters instead of all site parameters
     if debug_level > 1:
         print('Remplacement des anciens paramètres, en tenant compte des doublons et des variables selon les modèles')
     for p in range(0, param_limit):
