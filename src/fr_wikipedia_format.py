@@ -217,8 +217,7 @@ def main(*args):
             after_page = ''
             if len(sys.argv) > 2:
                 after_page = sys.argv[2]
-            p.pages_by_cat('Catégorie:page_content du modèle Ouvrage comportant une erreur', namespaces=None,
-                           after_page=after_page)
+            p.pages_by_cat('Page du modèle Article comportant une erreur', namespaces=None, after_page=after_page)
             # treat_all_namespaces = True
             # p.pagesByCat('Catégorie:Pages utilisant des liens magiques ISBN', namespaces = None, after_page = after_page)
             # p.pagesByCat('Catégorie:Pages avec ISBN invalide', namespaces = None, after_page = after_page)
