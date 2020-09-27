@@ -24,7 +24,6 @@
 #python core/pwb.py redirect double -always -family:wikipedia -lang:fr
 #python core/pwb.py redirect double -always -family:wikipedia -lang:pl
 #python core/pwb.py redirect double -always -family:wikipedia -lang:se
-#python core/pwb.py redirect double -always -family:wikipedia -lang:tr
 #python core/pwb.py redirect double -always -family:wikipedia -lang:ta
 
 #python core/pwb.py redirect double -always -family:wiktionary -lang:de

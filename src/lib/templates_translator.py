@@ -234,6 +234,8 @@ old_param.append('type')
 new_param.append('nature ouvrage')
 old_param.append('edition')
 new_param.append('numéro d\'édition')
+old_param.append('website')
+new_param.append('périodique')
 
 # Fix
 old_param.append('en ligne le')
@@ -539,6 +541,10 @@ def translate_template_parameters(current_template):
                 fr_name = 'nature ouvrage'
             else:
                 fr_name = 'type'
+
+        elif old_param[p] == 'website':
+            if not (is_template(current_template, 'article') and not has_parameter(current_template, 'périodique')):
+                fr_name = old_param[p]
 
         elif old_param[p] == 'work':
             if is_template(current_template, 'article') and not has_parameter(current_template, 'périodique'):
