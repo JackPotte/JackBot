@@ -467,16 +467,16 @@ def translate_templates(current_page, summary):
     # Paramètres inutiles
     current_page = re.sub(r'{{ *Références *\| *colonnes *= *}}', r'{{Références}}', current_page)
     # Dans {{article}}, "éditeur" vide bloque "périodique", "journal" ou "revue"
-    current_page = re.sub(r'{{ *(a|A)rticle *((?:\||\n)[^}]*)\| *éditeur *= *([\||}|\n]+)', r'{{\1rticle\2\3', current_page)
+    current_page = re.sub(r'{{ *(a|A)rticle *((?:\||\n)[^{}]*)\| *éditeur *= *([\||}|\n]+)', r'{{\1rticle\2\3', current_page)
     # https://fr.wikipedia.org/w/index.php?title=Discussion_utilisateur:JackPotte&oldid=prev&diff=165491794#Suggestion_pour_JackBot_:_Signalement_param%C3%A8tre_obligatoire_manquant_+_Lien_web_vs_Article
-    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *(?:ref|référence|référence simplifiée) *= *harv *([\|}\n]+)', r'{{\1uvrage\2\3', current_page)
+    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^{}]*)\| *(?:ref|référence|référence simplifiée) *= *harv *([\|}\n]+)', r'{{\1uvrage\2\3', current_page)
     # https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Bot/Requ%C3%AAtes/2020/01#Remplacement_automatique_d%27un_message_d%27erreur_du_mod%C3%A8le_%7B%7BOuvrage%7D%7D
-    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *display\-authors *= *etal *([\|}\n]+)', r'{{\1uvrage\2|et al.=oui\3', current_page)
-    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *display\-authors *= *[0-9]* *([\|}\n]+)', r'{{\1uvrage\2\3', current_page)
-    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^}]*)\| *df *= *(?:mdy\-all|dmy\-all)* *([\|}\n]+)', r'{{\1uvrage\2\3', current_page)
+    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^{}]*)\| *display\-authors *= *etal *([\|}\n]+)', r'{{\1uvrage\2|et al.=oui\3', current_page)
+    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^{}]*)\| *display\-authors *= *[0-9]* *([\|}\n]+)', r'{{\1uvrage\2\3', current_page)
+    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^{}]*)\| *df *= *(?:mdy\-all|dmy\-all)* *([\|}\n]+)', r'{{\1uvrage\2\3', current_page)
     # Empty 1=
-    current_page = re.sub(r'{{ *(a|A)rticle *((?:\|)[^}]*)\|[ \t]*([\|}]+)', r'{{\1rticle\2\3', current_page)
-    current_page = re.sub(r'{{ *(l|L)ien web *((?:\|)[^}]*)\|[ \t]*([\|}]+)', r'{{\1ien web\2\3', current_page)
+    current_page = re.sub(r'{{ *(a|A)rticle *((?:\|)[^{}]*)\|[ \t]*([\|}]+)', r'{{\1rticle\2\3', current_page)
+    current_page = re.sub(r'{{ *(l|L)ien web *((?:\|)[^{}]*)\|[ \t]*([\|}]+)', r'{{\1ien web\2\3', current_page)
     # 1= exists: current_page = re.sub(r'{{ *(o|O)uvrage *((?:\|)[^}]*)\|[ \t]*([\|}]+)', r'{{\1uvrage\2\3', current_page)
     ''' TODO : à vérifier
     while current_page.find('|deadurl=no|') != -1:
@@ -571,7 +571,7 @@ def translate_template_parameters(current_template):
     current_template = current_template.replace('|}}', u'}}')
     current_template = current_template.replace('| }}', u'}}')
     has_included_template = current_template.find('{{') != -1
-    if not has_included_template:
+    if not has_included_template and '{{date' not in current_template:
         current_template = current_template.replace('||', u'|')
 
     return current_template
