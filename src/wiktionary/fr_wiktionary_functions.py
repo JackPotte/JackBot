@@ -962,7 +962,10 @@ def add_language_code_with_named_parameter_to_template(
         if has_subtemplate_included:
             print(' ' + page_content[re.search(regex, page_content).start():re.search(regex, page_content).end()])
 
+    # TODO syntax has_parameters(['lang', 'lang1'])
     if (page_content.find('lang=') == -1 or page_content.find('lang=') > page_content.find('}}')) and \
+        (page_content.find('langue=') == -1 or page_content.find('langue=') > page_content.find('}}')) and \
+        (page_content.find('lang1=') == -1 or page_content.find('lang1=') > page_content.find('}}')) and \
         is_category and not has_subtemplate_included and language_code is not None:
         if debug_level > 0:
             print('   "lang=" addition')
