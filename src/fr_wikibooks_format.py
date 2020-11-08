@@ -96,14 +96,19 @@ def treat_page_by_name(page_name):
         page_content = page_content.replace('[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', '{{AutoCat}}')
         page_content = page_content.replace('{{BookCat}}', '{{AutoCat}}')
         if do_add_category:
-            if trim(page_content) != '' and page_content.find('[[Catégorie:') == -1 and page_content.find('{{AutoCat}}') == -1 and page_content.find('{{imprimable') == -1:
+            if trim(page_content) != '' and page_content.find('[[Catégorie:') == -1 \
+                    and page_content.find('{{AutoCat}}') == -1 and page_content.find('{{imprimable') == -1:
                 page_content = page_content + '\n\n{{AutoCat}}'
                 summary = summary + ', [[Spécial:Pages non catégorisées]]'
 
         # Clés de tri pour les noms propres
         if page_content.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') != -1:
             final_page_content = final_page_content + page_content[:page_content.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')]
-            page_content = page_content[page_content.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'):page_content.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len('[[Catégorie:Personnalités de la photographie')] + page_content[page_content.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')+len('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}'):]
+            page_content = page_content[page_content.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'):
+                page_content.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') +
+                len('[[Catégorie:Personnalités de la photographie')] + \
+                page_content[page_content.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') +
+                len('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}'):]
         '''ne convient pas pour les biographies https://fr.wikibooks.org/w/index.php?title=Photographie/Personnalit%C3%A9s/B/Pierre_Berdoy&diff=prev&oldid=526479
         regex = r'()\n{{DEFAULTSORT[^}]*}}'
         if re.search(regex, page_content):
@@ -151,7 +156,8 @@ def main(*args):
             p.pages_by_link('Template:autres projets')
         elif sys.argv[1] == '-category' or sys.argv[1] == '-cat':
             after_page = ''
-            if len(sys.argv) > 2: after_page = sys.argv[2]
+            if len(sys.argv) > 2:
+                after_page = sys.argv[2]
             p.pages_by_cat('Programmation Java (livre)')
             p.pages_by_cat('Programmation PHP (livre)')
             p.pages_by_cat('Programmation Python (livre)')

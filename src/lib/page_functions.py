@@ -28,7 +28,10 @@ def global_operations(page_content):
     # page_content = replaceRFC(page_content)
 
     # Retire les espaces dans {{FORMATNUM:}} qui empêche de les trier dans les tableaux
-    page_content = re.sub(r'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', r'{{\1:\2\3}}', page_content)
+    try:
+        page_content = re.sub(r'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', r'{{\1:\2\3}}', page_content)
+    except TypeError as e:
+        print(str(e))
     return page_content
 
 
