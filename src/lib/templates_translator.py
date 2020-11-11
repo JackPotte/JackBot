@@ -236,6 +236,8 @@ old_param.append('edition')
 new_param.append('numéro d\'édition')
 old_param.append('website')
 new_param.append('périodique')
+old_param.append('pp')
+new_param.append('passage')
 
 # Fix
 old_param.append('en ligne le')
