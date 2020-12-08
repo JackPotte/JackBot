@@ -151,8 +151,11 @@ def sort_by_encoding(page_name, encoding='uca-default'):
                 add_key = True
             elif letter == 'ſ' or letter == 'ś' or letter == 'ş' or letter == 'š' or letter == 'ƪ' or \
                 letter == 'ș' or letter == 'ȿ' or letter == 'Ś' or letter == 'Ŝ' or letter == 'Ş' or \
-                letter == 'Š' or letter == 'Ʃ' or letter == 'Ș' or letter == 'ß':
+                letter == 'Š' or letter == 'Ʃ' or letter == 'Ș':
                 word_key += "s"
+                add_key = True
+            elif letter in ['ß', 'ß']:
+                word_key += "ss"
                 add_key = True
             elif letter == 'ţ' or letter == 'ť' or letter == 'ŧ' or letter == 'ƫ' or letter == 'ƭ' or \
                 letter == 'ț' or letter == 'ȶ' or letter == 'Ţ' or letter == 'Ť' or letter == 'Ŧ' or \
