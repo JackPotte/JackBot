@@ -475,7 +475,7 @@ def treat_page_by_name(page_name):
                                                                                         language_code)
 
                 # Templates with "lang="
-                elif current_template in [u'écouter', 'cf'] + etymology_templates_with_language_at_lang:
+                elif current_template in [u'écouter', 'cf', 'équiv-pour'] + etymology_templates_with_language_at_lang:
                     final_page_content, page_content = add_language_code_with_named_parameter_to_template(
                         final_page_content,
                         page_content,
@@ -1068,7 +1068,7 @@ def main(*args):
                     p.pages_by_cat('Appels de modèles incorrects:abréviation', after_page=after_page, recursive=False,
                                    namespaces=[14])
                 else:
-                    p.pages_by_cat(sys.argv[2].decode(config.console_encoding, 'replace'))
+                    p.pages_by_cat(sys.argv[2])
             else:
                 p.pages_by_cat('Étymologies sans langue précisée incluant une reconstruction', namespaces=None, recursive=False)
 
