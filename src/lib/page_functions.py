@@ -67,6 +67,8 @@ def date_plus_month(months):
 def time_after_last_edition(page):
     try:
         last_edit_time = page.getVersionHistory()[0][1]
+    except TypeError as e:
+        return 0
     except pywikibot.exceptions.NoPage as e:
         return 0
     if debug_level > 1:

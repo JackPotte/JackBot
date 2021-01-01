@@ -56,7 +56,7 @@ referencesAliases = []
 def treat_page_by_name(page_name):
     if debug_level > 0:
         print('------------------------------------')
-        print(page_name)
+    pywikibot.output("\n\03{blue}" + page_name + u"\03{default}")
     summary = 'Formatage'
     page = Page(site, page_name)
     if not page.exists():

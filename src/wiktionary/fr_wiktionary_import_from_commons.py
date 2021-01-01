@@ -45,7 +45,7 @@ extension_length = len(supported_extensions[0])
 def treat_page_by_name(page_name):
     if debug_level > 0:
         print('------------------------------------')
-        print(page_name)
+    pywikibot.output("\n\03{blue}" + page_name + u"\03{default}")
 
     if page_name[-extension_length:] not in supported_extensions:
         if debug_level > 0:

@@ -46,7 +46,7 @@ old_templates.append('NavChapitre')
 def treat_page_by_name(page_name):
     if debug_level > 0:
         print('------------------------------------')
-        print(page_name)
+    pywikibot.output("\n\03{blue}" + page_name + u"\03{default}")
     summary = 'Formatage'
     page = Page(site, page_name)
     current_page_content = get_content_from_page(page, 'All')

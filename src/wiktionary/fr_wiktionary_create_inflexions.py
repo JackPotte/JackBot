@@ -47,7 +47,7 @@ DebutScan = 'interspersed'
 def treat_page_by_name(page_name):
     if debug_level > 0:
         print('------------------------------------')
-        print(page_name)
+    pywikibot.output("\n\03{blue}" + page_name + u"\03{default}")
     page = Page(site, page_name)
     if not has_more_than_time(page, 1440):
         return
