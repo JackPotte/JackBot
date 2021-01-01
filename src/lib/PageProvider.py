@@ -289,7 +289,7 @@ class PageProvider:
                 modify = True
 
     # [[Special:AllPages]]
-    def pages_by_all(self, start=u'', ns=0, site=None):
+    def pages_by_all(self, start='', ns=0, site=None):
         if site is None:
             site = self.site
         gen = pagegenerators.AllpagesPageGenerator(start, namespace=ns, includeredirects=False, site=site)
@@ -297,10 +297,17 @@ class PageProvider:
             self.treat_page(page.title())
 
     # [[Special:ListRedirects]]
-    def pages_by_redirects(self, start=u'', site=None):
+    def pages_by_redirects(self, start='', site=None):
         if site is None:
             site = self.site
         for page in site.allpages(start, namespace=0, includeredirects='only'):
+            self.treat_page(page.title())
+
+    # [[Special:Index]]
+    def pages_by_prefix(self, prefix='', site=None, namespace=None):
+        if site is None:
+            site = self.site
+        for page in pagegenerators.PrefixingPageGenerator(prefix, site=site, namespace=namespace, includeredirects=False):
             self.treat_page(page.title())
 
     # [[Special:UncategorizedPages]]

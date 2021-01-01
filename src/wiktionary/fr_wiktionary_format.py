@@ -65,6 +65,7 @@ add_default_sort_key = False
 all_namespaces = False
 treat_templates = False
 treat_categories = True
+treat_appendix = True
 fix_genders = True
 fix_false_inflexions = False
 do_list_homophons = False
@@ -144,6 +145,21 @@ def treat_page_by_name(page_name):
             input(page_content)
 
         final_page_content = page_content
+
+    elif treat_appendix and page.namespace() == 100:
+        rime_page = r'Annexe:Rimes en français en '
+        if rime_page in page_name \
+                and not '{{-rimes-' in page_content \
+                and not '[[Catégorie:Rimes en français' in page_content:
+            rime = re.sub(rime_page, '', page_name)
+            rime = re.sub(r'[/\\]', '', rime)
+            if rime == '':
+                print('rime vide')
+                return
+            page_content += '\n\n[[Catégorie:Rimes en français|' + rime + ']]'
+            final_page_content = page_content
+        else:
+            return
 
     elif page.namespace() == 0 or username in page_name:
         regex = r'{{(formater|SI|supp|supprimer|PàS)[\|}]'
@@ -1007,7 +1023,12 @@ def main(*args):
             treat_page_by_name('User:' + username + '/test unitaire')
         elif sys.argv[1] == str('-page') or sys.argv[1] == str('-p'):
             wait_after_humans = False
-            treat_page_by_name('Nguyễn')
+            treat_page_by_name('Annexe:Rimes_en_français_en_/sɑ̃/')
+        elif sys.argv[1] == str('-start'):
+            if len(sys.argv) > 2:
+                p.pages_by_prefix(sys.argv[2])
+            else:
+                p.pages_by_prefix('Annexe:Rimes en français en /', namespace=100)
         elif sys.argv[1] == str('-file') or sys.argv[1] == str('-txt'):
             wait_after_humans = False
             file_name = 'src/lists/articles_' + site_language + '_' + site_family + '.txt'
