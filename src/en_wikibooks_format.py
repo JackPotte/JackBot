@@ -120,10 +120,16 @@ def treat_page_by_name(page_name):
             if trim(page_content) != '' and '{{BookCat' not in page_content \
               and '[[Category:' not in page_content and '[[category:' not in page_content \
               and '{{Printable' not in page_content and '{{printable' not in page_content \
-              and '{{Subjects' not in page_content and '{{subjects' not in page_content:
-                if debug_level > 0:
-                    print('  {{BookCat}} addition')
-                page_content = page_content + '\n\n{{BookCat}}'
+              and '{{Subjects' not in page_content and '{{subjects' not in page_content \
+              and '{{Shelves' not in page_content and '{{shelves' not in page_content:
+                if '/' not in page_name:
+                    if debug_level > 0:
+                        print('  {{shelves}} addition')
+                    page_content = page_content + '\n\n{{shelves}}'
+                else:
+                    if debug_level > 0:
+                        print('  {{BookCat}} addition')
+                    page_content = page_content + '\n\n{{BookCat}}'
                 summary = summary + ', [[Special:UncategorizedPages]]'
 
     final_page_content = final_page_content + page_content
