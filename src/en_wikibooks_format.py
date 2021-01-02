@@ -41,6 +41,8 @@ book_cat_templates.append('{{Auto category}}')
 book_cat_templates.append('{{Book category}}')
 book_cat_templates.append('{{AutoCat}}')
 book_cat_templates.append('{{Bookcat}}')
+book_cat_templates.append('{{bookcat}}')
+book_cat_templates.append('{{bookCat}}')
 book_cat_templates.append('{{BOOKCAT}}')
 book_cat_templates.append('[[Category:{{PAGENAME}}|{{SUBPAGENAME}}]]')
 book_cat_templates.append('[[Category:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]')
@@ -49,6 +51,10 @@ book_cat_templates.append('[[Category:{{PAGENAME}}]]')
 book_cat_templates.append('[[Category:{{BASEPAGENAME}}]]')
 book_cat_templates.append('[[Category:{{FULLBOOKNAME}}]]')
 
+book_categorizing_templates = []
+book_categorizing_templates.append('header')
+# TODO fill by templates category?
+
 
 def treat_page_by_name(page_name):
     if debug_level > 0:
@@ -56,7 +62,11 @@ def treat_page_by_name(page_name):
     pywikibot.output("\n\03{blue}" + page_name + u"\03{default}")
     page = Page(site, page_name)
     current_page_content = get_content_from_page(page, 'All')
-    if username not in page_name and (current_page_content is None or page_name.find('/print version') != -1):
+    if username not in page_name and (
+        current_page_content is None
+        or page.namespace() != 0
+        or page_name.find('/print version') != -1
+    ):
         if debug_level > 0:
             print('  Page to avoid')
         return
@@ -90,18 +100,24 @@ def treat_page_by_name(page_name):
 
         regex = r'^{{Programming/Navigation}}'
         if re.search(regex, page_content):
-            page_content = '<noinclude>' + page_content[:len(r'{{Programming/Navigation}}')] + '</noinclude>' + page_content[len(r'{{Programming/Navigation}}'):]
+            page_content = '<noinclude>' + page_content[:len(r'{{Programming/Navigation}}')] + '</noinclude>' \
+                           + page_content[len(r'{{Programming/Navigation}}'):]
 
-        # TODO: {{BookCat|filing=deep}}
-        for bookCatTemplate in book_cat_templates:
-            page_content = page_content.replace(bookCatTemplate, '{{BookCat}}')
+        for cat_tpl in book_categorizing_templates:
+            regex = r'{{[ \n]*(' + cat_tpl[:1].upper() + '|' + cat_tpl[:1] + ')' + cat_tpl[1:] + '[ \n]*[|}]'
+            if re.search(regex, page_content):
+                if debug_level > 0:
+                    print('  categorizing template: ' + cat_tpl)
+                return
+        for book_cat_template in book_cat_templates:
+            page_content = page_content.replace(book_cat_template, '{{BookCat}}')
             page_content = page_content.replace(
-                bookCatTemplate[:2] + bookCatTemplate[2:3].lower() + bookCatTemplate[3:],
+                book_cat_template[:2] + book_cat_template[2:3].lower() + book_cat_template[3:],
                 '{{BookCat}}'
             )
         if do_add_category and has_more_than_time(page) and is_trusted_version(site, page):
-            # The untrusted can have blanked a relevant content including {{BookCat}}
-            if trim(page_content) != '' and '{{BookCat}}' not in page_content \
+            # The untrusted can have blanked a relevant content including {{BookCat}} or {{BookCat|filing=deep}}
+            if trim(page_content) != '' and '{{BookCat' not in page_content \
               and '[[Category:' not in page_content and '[[category:' not in page_content \
               and '{{Printable' not in page_content and '{{printable' not in page_content \
               and '{{Subjects' not in page_content and '{{subjects' not in page_content:
