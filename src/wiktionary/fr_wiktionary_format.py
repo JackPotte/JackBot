@@ -1028,7 +1028,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pages_by_prefix(sys.argv[2])
             else:
-                p.pages_by_prefix('Annexe:Rimes en français en /', namespace=100)
+                p.pages_by_prefix('Annexe:Rimes en français en ', namespace=100)
         elif sys.argv[1] == str('-file') or sys.argv[1] == str('-txt'):
             wait_after_humans = False
             file_name = 'src/lists/articles_' + site_language + '_' + site_family + '.txt'
