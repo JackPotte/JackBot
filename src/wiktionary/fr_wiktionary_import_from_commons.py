@@ -327,10 +327,8 @@ def main(*args):
             after_page = ''
             if len(sys.argv) > 2:
                 after_page = sys.argv[2]
-            p.pages_by_cat('Canadian English pronunciation', after_page=after_page, recursive=True, namespaces=[6])
-            p.pages_by_cat('Australian English pronunciation', after_page=after_page, recursive=True, namespaces=[6])
-            p.pages_by_cat('British English pronunciation', after_page=after_page, recursive=True, namespaces=[6])
-            p.pages_by_cat('U.S. English pronunciation‎', after_page=after_page, recursive=True, namespaces=[6])
+            p.pages_by_cat('Category:Dutch pronunciation', after_page=after_page, recursive=True, namespaces=[6])
+            p.pages_by_cat('U.S. English pronunciation', after_page=after_page, recursive=True, namespaces=[6])
             # Too long? p.pagesByCat('Lingua Libre pronunciation-fr', after_page=after_page, recursive=True, namespaces=[6])
         elif sys.argv[1] == '-redirects':
             p.pages_by_redirects()
