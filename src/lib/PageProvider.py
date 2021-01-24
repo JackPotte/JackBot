@@ -118,7 +118,7 @@ class PageProvider:
         if self.debug_level > 0:
             print(category)
         cat = pywikibot.Category(site, category)
-        pages = cat.articles(recurse=False, total=10)
+        pages = list(cat.articles(recurse=False))
         if namespaces == [0]:
             if self.debug_level > 0:
                 print('  NamespaceFilterPageGenerator')
