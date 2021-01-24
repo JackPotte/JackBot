@@ -324,7 +324,7 @@ def main(*args):
         elif sys.argv[1] == '-link' or sys.argv[1] == '-l' or sys.argv[1] == '-template' or sys.argv[1] == '-m':
             p.pages_by_link('Template:autres projets')
         elif sys.argv[1] == '-category' or sys.argv[1] == '-cat' or sys.argv[1] == '-c':
-            after_page = ''
+            after_page = 'File:Nl-atoomafval.ogg'
             if len(sys.argv) > 2:
                 after_page = sys.argv[2]
             p.pages_by_cat('Category:Dutch pronunciation', after_page=after_page, recursive=True, namespaces=[6])
