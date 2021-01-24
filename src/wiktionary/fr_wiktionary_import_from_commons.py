@@ -99,8 +99,8 @@ def treat_page_by_name(page_name):
         word = word.replace('\'', '’')
 
     if debug_level > 0:
-        print(' Language code: ' + language_code)
-        print(' Word: ' + word)
+        pywikibot.output("  \03{green}Language code: " + language_code + u"\03{default}")
+        pywikibot.output("  \03{green}Word: " + word + u"\03{default}")
 
     region = ''
     word_without_suffix = None
