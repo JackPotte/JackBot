@@ -2133,7 +2133,8 @@ def format_templates(page_content, summary):
     page_content = page_content.replace(']] {{perf}}', ']] {{perf|nocat=1}}')
     page_content = page_content.replace('{{perf}} / \'\'\'', '{{perf|nocat=1}} / \'\'\'')
 
-    page_content = page_content.replace('|pinv= ', '|pinv=')
+    page_content = page_content.replace('|nocat=}}', '|nocat}}')
+    page_content = page_content.replace('|pinv=. ', '|pinv=.')
     page_content = page_content.replace('|pinv=. ', '|pinv=.')
 
     if page_content.find('{{vérifier création automatique}}') != -1:
