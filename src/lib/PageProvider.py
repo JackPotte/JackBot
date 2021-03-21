@@ -118,14 +118,20 @@ class PageProvider:
         if self.debug_level > 0:
             print(category)
         cat = pywikibot.Category(site, category)
-        pages = cat.articlesList(False)
+        pages = list(cat.articles(recurse=False))
         if namespaces == [0]:
+            if self.debug_level > 0:
+                print('  NamespaceFilterPageGenerator')
             # TODO OK with 0, 2, 12, but with 10, 100, 114: Namespace identifier(s) not recognised
             gen = pagegenerators.NamespaceFilterPageGenerator(pages, namespaces)
         else:
-            gen = pagegenerators.CategorizedPageGenerator(cat)
+            if self.debug_level > 0:
+                print('  CategorizedPageGenerator')
+            gen = pagegenerators.CategorizedPageGenerator(cat, recurse=recursive, namespaces=namespaces)
         modify = False
         for page in pagegenerators.PreloadingGenerator(gen, page_ids):
+            if self.debug_level > 0:
+                print('  ' + page.title())
             if page.title() == after_page:
                 modify = True
             elif after_page is None or after_page == '' or modify:

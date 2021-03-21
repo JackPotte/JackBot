@@ -99,8 +99,8 @@ def treat_page_by_name(page_name):
         word = word.replace('\'', '’')
 
     if debug_level > 0:
-        print(' Language code: ' + language_code)
-        print(' Word: ' + word)
+        pywikibot.output("  \03{green}Language code: " + language_code + u"\03{default}")
+        pywikibot.output("  \03{green}Word: " + word + u"\03{default}")
 
     region = ''
     word_without_suffix = None
@@ -324,13 +324,11 @@ def main(*args):
         elif sys.argv[1] == '-link' or sys.argv[1] == '-l' or sys.argv[1] == '-template' or sys.argv[1] == '-m':
             p.pages_by_link('Template:autres projets')
         elif sys.argv[1] == '-category' or sys.argv[1] == '-cat' or sys.argv[1] == '-c':
-            after_page = ''
+            after_page = 'File:Nl-atoomafval.ogg'
             if len(sys.argv) > 2:
                 after_page = sys.argv[2]
-            p.pages_by_cat('Canadian English pronunciation', after_page=after_page, recursive=True, namespaces=[6])
-            p.pages_by_cat('Australian English pronunciation', after_page=after_page, recursive=True, namespaces=[6])
-            p.pages_by_cat('British English pronunciation', after_page=after_page, recursive=True, namespaces=[6])
-            p.pages_by_cat('U.S. English pronunciation‎', after_page=after_page, recursive=True, namespaces=[6])
+            p.pages_by_cat('Category:Dutch pronunciation', after_page=after_page, recursive=True, namespaces=[6])
+            p.pages_by_cat('U.S. English pronunciation', after_page=after_page, recursive=True, namespaces=[6])
             # Too long? p.pagesByCat('Lingua Libre pronunciation-fr', after_page=after_page, recursive=True, namespaces=[6])
         elif sys.argv[1] == '-redirects':
             p.pages_by_redirects()
