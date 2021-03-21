@@ -30,20 +30,27 @@ from fr_wiktionary_templates import *
 
 # Global variables
 debug_level = 0
-debug_aliases = ['debug', 'd', '-d']
-for debugAlias in debug_aliases:
-    if debugAlias in sys.argv:
+debug_aliases = [str('-debug'), str('-d')]
+for debug_alias in debug_aliases:
+    if debug_alias in sys.argv:
         debug_level = 1
-        sys.argv.remove(debugAlias)
+        sys.argv.remove(debug_alias)
 
 site_language, site_family, site = get_site_by_file_name(__file__)
 username = config.usernames[site_family][site_language]
 
 summary = 'Autoarchivage de [[Wiktionnaire:Bot/Requêtes]]'
+closed_status = [
+    'fait',
+    'refus',
+    'refusée',
+    'sans suite',
+]
 wait_after_humans = True
 
 
 def treat_page_by_name(page_name, waiting_time_before_archiving=3):
+    global debug_level
     if debug_level > 0:
         print(page_name)
     page = Page(site, page_name)
@@ -66,7 +73,7 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
         if debug_level > 0:
             print(' The page does not exist')
         return
-    if page.namespace() != 4 and page.title() != 'User:JackBot/test':
+    if page.namespace() != 4 and 'JackBot' not in page.title():
         if debug_level > 0:
             print(' Untreated namespace')
         return
@@ -99,30 +106,15 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
         print(str(e))
         return
 
-    # TODO utiliser get_section() pour éviter les balises imbriquées : (ou juste pre, nowiki, et source qui peuvent contenir "==").
-    # ex : https://fr.wiktionary.org/w/index.php?title=Wiktionnaire:Bots/Requ%C3%AAtes&diff=prev&oldid=29274173
     final_page_content = ''
     current_year = time.strftime('%Y')
-    regex = r'\n==[ ]*{{[rR]equête [fait|refus|refusée|sans suite]+}}.*==[ \t]*\n'
-    while re.compile(regex).search(page_content):
-        debut_paragraphe = re.search(regex, page_content).end()
-        if re.search(r'\n==[^=]', page_content[debut_paragraphe:]):
-            fin_paragraphe = re.search(r'\n==[^=]', page_content[debut_paragraphe:]).start()
-        else:
-            fin_paragraphe = len(page_content[debut_paragraphe:])
-        if debug_level > 0:
-            input(page_content[debut_paragraphe:][:fin_paragraphe])
-            print('-------------------------------------')
-        if page_content[debut_paragraphe:].find('\n==') == -1:
-            # Dernier paragraphe
-            final_page_content += page_content[:debut_paragraphe][page_content[:debut_paragraphe].rfind('\n=='):] + page_content[debut_paragraphe:]
-            page_content = page_content[:debut_paragraphe][:page_content[:debut_paragraphe].rfind('\n==')]
-        else:
-            final_page_content += page_content[:debut_paragraphe][page_content[:debut_paragraphe].rfind('\n=='):] + page_content[debut_paragraphe:][:fin_paragraphe]
-            page_content = page_content[:debut_paragraphe][:page_content[:debut_paragraphe].rfind('\n==')] + page_content[debut_paragraphe:][fin_paragraphe:]
+    section_title_regex = r'\n==[ \t]*{{[rR]equête [' + r'|'.join(closed_status) + r']+}}[^\n]*==[ \t]*\n+'
+    sections_titles = get_sections_titles(page_content, section_title_regex)
+    for section_title in sections_titles:
+        section, s_start, s_end = get_section_by_title(page_content, re.escape(section_title))
+        final_page_content += section
+        page_content = page_content.replace(section, '')
 
-    if debug_level > 0:
-        print(' backups')
     if page_content != page.get():
         page2 = Page(site, page_name + '/Archives/' + current_year)
         final_page_content2 = ''
@@ -144,4 +136,15 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
         save_page(page, page_content, summary)
 
 
-treat_page_by_name('Wiktionnaire:Bots/Requêtes')
+def main(*args):
+    if len(sys.argv) > 1:
+        if sys.argv[1] == str('-tu') or sys.argv[1] == str('-t'):
+            global wait_after_humans
+            wait_after_humans = False
+            treat_page_by_name('User:' + username + '/test unitaire')
+    else:
+        treat_page_by_name('Wiktionnaire:Bots/Requêtes')
+
+
+if __name__ == "__main__":
+    main(sys.argv)

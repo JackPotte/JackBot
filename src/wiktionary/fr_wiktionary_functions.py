@@ -224,10 +224,10 @@ def get_language_section(page_content, language_code='fr'):
     return page_content, start_position, end_position
 
 
-def get_sections(page_content):
+def get_sections_titles(page_content, regex=r'{{S\|([^}\|]+)'):
     if debug_level > 1:
-        print('\nget_sections()')
-    regex = r'{{S\|([^}\|]+)'
+        print('\nget_sections_titles()')
+        print('  ' + regex)
     s = re.findall(regex, page_content, re.DOTALL)
     if s:
         return s
@@ -238,42 +238,59 @@ def get_not_natures_sections(page_content):
     global natures
     if debug_level > 1:
         print('\nget_not_natures_sections()')
-    sections = get_sections(page_content)
+    sections = get_sections_titles(page_content)
     return [item for item in sections if item not in natures]
 
 
 def get_natures_sections(page_content):
     if debug_level > 1:
         print('\nget_natures_sections()')
-    sections = get_sections(page_content)
+    sections = get_sections_titles(page_content)
     not_natures_sections = get_not_natures_sections(page_content)
     return [item for item in sections if item not in not_natures_sections]
 
 
-def get_section(page_content, section_name):
+def get_section_by_name(page_content, section_name):
     if debug_level > 1:
-        print('\nget_section(' + section_name + ')')
+        print('\nget_section_by_name(' + section_name + ')')
+    section_title = r'=* *{{S\|' + section_name + r'(\||})'
+    return get_section_by_title(page_content, section_title)
+
+
+def get_section_by_title(page_content, section_title_regex, section_level=2):
+    if debug_level > 1:
+        print('\nget_section_by_title(' + section_title_regex + ')')
     start_position = 0
     end_position = len(page_content)
-
-    regex = r'=* *{{S\|' + section_name + r'(\||})'
-    s = re.search(regex, page_content)  # , re.DOTALL
+    s = re.search(section_title_regex, page_content)  # TODO , re.DOTALL ?
     if not s:
         if debug_level > 1:
-            print(' missing section: ' + section_name)
+            print(' Missing section: ' + section_title_regex)
         return None, start_position, end_position
-
     start_position = s.start()
+
     page_content = page_content[s.start():]
-    regex = r'\n=* *{{S\|(?!' + section_name + r').*}} *='
-    s = re.search(regex, page_content, re.DOTALL)
-    if s:
-        end_position = s.start()
-        page_content = page_content[:end_position]
-        if debug_level > 1:
-            print(end_position)
-    if debug_level > 1:
-        input(page_content)
+    if page_content.find('\n') == -1:
+        if debug_level > 0:
+            print(' Without next section. start_position: ' + str(start_position) + ', end_position: ' + str(end_position))
+        return page_content, start_position, end_position
+
+    page_content2 = page_content[page_content.find('\n') + 1:]  # Commence normalement par [1:section_title_regex]
+    string_with_nested_tags = r'[^<]*(?:<(.*?)>|.)*[^<]*'  # TODO jump nested tag and template content
+    next_section_start = '='
+    for level in range(section_level - 1):
+        next_section_start += '='
+    next_section_regex = '(' + string_with_nested_tags + r')\n' + next_section_start + r'[^=]'
+    s = re.search(next_section_regex, page_content2, re.DOTALL)
+    if not s:
+        if debug_level > 0:
+            print(' Without next section2. start_position: ' + str(start_position) + ', end_position: ' + str(end_position))
+        return page_content, start_position, end_position
+
+    end_position = page_content.find('\n') + 1 + len(s.group(1))
+    page_content = page_content[:end_position]
+    if debug_level > 0:
+        print(' With next section. start_position: ' + str(start_position) + ', end_position: ' + str(end_position))
 
     return page_content, start_position, end_position
 
@@ -518,7 +535,7 @@ def remove_template(page_content, template, summary, language=None, in_section=N
             old_section, l_start, l_end = get_language_section(old_section, language)
         if old_section is not None:
             for section in in_section:
-                old_sub_section, s_start, s_end = get_section(old_section, section)
+                old_sub_section, s_start, s_end = get_section_by_name(old_section, section)
                 if old_sub_section is not None:
                     new_sub_section = re.sub(regex_template, r'', old_sub_section)
                     if old_sub_section != new_sub_section:
@@ -2493,11 +2510,11 @@ def move_etymology_template(page_content, summary, language_code, etym_template)
 
 def move_template_to_etymology(language_section, etym_template, summary, language_code):
     new_language_section, summary = remove_template(language_section, etym_template, summary, in_section=natures)
-    etymology, s_start, s_end = get_section(new_language_section, 'étymologie')
+    etymology, s_start, s_end = get_section_by_name(new_language_section, 'étymologie')
     if etymology is None:
         new_language_section = add_line(new_language_section, language_code, 'étymologie',
                                         ': {{ébauche-étym|' + language_code + '}}')
-        etymology, s_start, s_end = get_section(new_language_section, 'étymologie')
+        etymology, s_start, s_end = get_section_by_name(new_language_section, 'étymologie')
     if etymology is not None and etymology.find('{{' + etym_template) == -1:
         regex_etymology = r'(=\n:* *(\'*\([^\)]*\)\'*)?) *'
         if re.search(regex_etymology, language_section):
