@@ -99,30 +99,32 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
         print(str(e))
         return
 
+    # TODO utiliser get_section() pour éviter les balises imbriquées : (ou juste pre, nowiki, et source qui peuvent contenir "==").
+    # ex : https://fr.wiktionary.org/w/index.php?title=Wiktionnaire:Bots/Requ%C3%AAtes&diff=prev&oldid=29274173
     final_page_content = ''
     current_year = time.strftime('%Y')
     regex = r'\n==[ ]*{{[rR]equête [fait|refus|refusée|sans suite]+}}.*==[ \t]*\n'
     while re.compile(regex).search(page_content):
-        DebutParagraphe = re.search(regex,page_content).end()
-        if re.search(r'\n==[^=]',page_content[DebutParagraphe:]):
-            FinParagraphe = re.search(r'\n==[^=]',page_content[DebutParagraphe:]).start()
+        debut_paragraphe = re.search(regex, page_content).end()
+        if re.search(r'\n==[^=]', page_content[debut_paragraphe:]):
+            fin_paragraphe = re.search(r'\n==[^=]', page_content[debut_paragraphe:]).start()
         else:
-            FinParagraphe = len(page_content[DebutParagraphe:])
+            fin_paragraphe = len(page_content[debut_paragraphe:])
         if debug_level > 0:
-            input(page_content[DebutParagraphe:][:FinParagraphe])
+            input(page_content[debut_paragraphe:][:fin_paragraphe])
             print('-------------------------------------')
-        if page_content[DebutParagraphe:].find('\n==') == -1:
+        if page_content[debut_paragraphe:].find('\n==') == -1:
             # Dernier paragraphe
-            final_page_content = final_page_content + page_content[:DebutParagraphe][page_content[:DebutParagraphe].rfind('\n=='):] + page_content[DebutParagraphe:]
-            page_content = page_content[:DebutParagraphe][:page_content[:DebutParagraphe].rfind('\n==')]
+            final_page_content += page_content[:debut_paragraphe][page_content[:debut_paragraphe].rfind('\n=='):] + page_content[debut_paragraphe:]
+            page_content = page_content[:debut_paragraphe][:page_content[:debut_paragraphe].rfind('\n==')]
         else:
-            final_page_content = final_page_content + page_content[:DebutParagraphe][page_content[:DebutParagraphe].rfind('\n=='):] + page_content[DebutParagraphe:][:FinParagraphe]
-            page_content = page_content[:DebutParagraphe][:page_content[:DebutParagraphe].rfind('\n==')] + page_content[DebutParagraphe:][FinParagraphe:]
+            final_page_content += page_content[:debut_paragraphe][page_content[:debut_paragraphe].rfind('\n=='):] + page_content[debut_paragraphe:][:fin_paragraphe]
+            page_content = page_content[:debut_paragraphe][:page_content[:debut_paragraphe].rfind('\n==')] + page_content[debut_paragraphe:][fin_paragraphe:]
 
     if debug_level > 0:
         print(' backups')
     if page_content != page.get():
-        page2 = Page(site,page_name + '/Archives/' + current_year)
+        page2 = Page(site, page_name + '/Archives/' + current_year)
         final_page_content2 = ''
         if page2.exists():
             try:
@@ -136,7 +138,8 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
             except pywikibot.exceptions.LockedPage as e:
                 print(str(e))
                 return
-        if final_page_content2.find('{{NavigBOT') == -1: final_page_content2 = '{{NavigBOT|' + page2.title()[len(page2.title())-4:len(page2.title())] + '}}\n' + final_page_content2
+        if final_page_content2.find('{{NavigBOT') == -1:
+            final_page_content2 = '{{NavigBOT|' + page2.title()[len(page2.title())-4:len(page2.title())] + '}}\n' + final_page_content2
         save_page(page2, final_page_content2 + final_page_content, summary)
         save_page(page, page_content, summary)
 
