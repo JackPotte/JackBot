@@ -325,7 +325,7 @@ def workon(page):
         try:
             [endtext, qlen] = parse_quote(text[start:])
         except TypeError:
-            print('Unclosed template: ' + text[start:100])
+            print('Unclosed template: "' + text[start:100] + '" in ' + page.title())
             return
 
         offset += (len(text[start:]) - len(endtext))
