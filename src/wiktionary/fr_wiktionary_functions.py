@@ -1790,6 +1790,7 @@ def replace_templates(page_content, summary):
     page_content = re.sub(r'{{nomin *([\|}\n])', r'{{nominatif\1', page_content)
     page_content = re.sub(r'{{acron *([\|}\n])', r'{{acronyme\1', page_content)
     page_content = re.sub(r'{{abrév *([\|}\n])', r'{{abréviation\1', page_content)
+    page_content = re.sub(r'{{fig *([\|}\n])', r'{{figuré\1', page_content)
 
     if debug_level > 1:
         print(' Modèles des définitions')
