@@ -130,7 +130,7 @@ def treat_page_by_name(page_name):
     elif treat_templates and page.namespace() == 10:
         if debug_level > 0:
             print(' template treatment')
-        templates_to_treat = ['emploi', 'région', 'registre', 'term']
+        templates_to_treat = ['emploi', 'région', 'régional', 'registre', 'term']
         for template in templates_to_treat:
             if '{{{clé|' not in page_content and page_content[:len('{{' + template)] == '{{' + template \
                     and '\n}}<noinclude>' in page_content:
@@ -441,7 +441,7 @@ def treat_page_by_name(page_name):
                         print('  add_language_code = ' + str(add_language_code))
                     final_page_content, page_content = next_template(final_page_content, page_content)
 
-                elif current_template in ['term', 'région']:
+                elif current_template in ['term', 'région', 'régional']:
                     raw_term = page_content[end_position + 1:page_content.find('}}')]
                     term = trim(raw_term.replace('[[', '').replace(']]', ''))
                     if term.find('|') != -1:
@@ -1070,7 +1070,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pages_by_search(sys.argv[2])
             else:
-                p.pages_by_search('"Locution composé "', namespaces=[0])
+                p.pages_by_search('insource:"\|fr\}\} \'\'adverbe de "', namespaces=[0])
 
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
                 sys.argv[1] == str('-m'):
