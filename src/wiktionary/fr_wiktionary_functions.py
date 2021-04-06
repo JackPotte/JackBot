@@ -1122,11 +1122,11 @@ def sort_translations(page_content, summary):
                     and final_page_content.rfind('{{T') != final_page_content.rfind('{{T|conv'):
 
                 language2 = get_next_language_translation(final_page_content)
-                if debug_level > 0:
-                    print(language2, language, language2 > language)
+                if debug_level > 1:
+                    print(language2, language)
                 if language2 != '' and language2 > language:
-                    if debug_level > 0:
-                        language2 + ' > ' + language
+                    if debug_level > 1:
+                        print(language2 + ' > ' + language)
                     if final_page_content.rfind('\n') > final_page_content.rfind('trad-début'):
                         next_translations = final_page_content[final_page_content.rfind('\n'):] + next_translations
                         final_page_content = final_page_content[:final_page_content.rfind('\n')]
@@ -1135,7 +1135,7 @@ def sort_translations(page_content, summary):
                         # Cas de la première de la liste
                         current_translation = final_page_content[final_page_content.rfind('\n'):] + current_translation
                         final_page_content = final_page_content[:final_page_content.rfind('\n')]
-                    if debug_level > 0:
+                    if debug_level > 1:
                         try:
                             print(final_page_content[final_page_content.rfind('\n'):].encode('utf-8'))
                         except UnicodeEncodeError as e:
@@ -1159,7 +1159,7 @@ def sort_translations(page_content, summary):
             print(final_page_content)
         if debug_level > 2:
             print(page_content)
-        if debug_level > 0:
+        if debug_level > 1:
             print('')
     page_content = final_page_content + page_content
 
@@ -1681,6 +1681,15 @@ def add_templates(page_content, summary):
             + r'(?:[cC]omposé|[dD]érivé) de ' + word_regex + r' (?:et|avec le (?:préfixe|suffixe)) ' \
             + word_regex + r'\.*\n'
     page_content = re.sub(regex, r'\1{{composé de|m=1|\2|\3}}.', page_content)
+
+    if debug_level > 1:
+        print('  add form templates')
+    # TODO by language
+    regex = r'\|fr}} (\'+adverbe de (' + '|'.join(adverbs) + r')\'+)'
+    page_content = re.sub(regex, r'|fr}} {{adverbe de \2|fr}}', page_content)
+    for adverb in adverbs:
+        if '{{adverbe de ' + adverb + '|fr}}' in page_content:
+            page_content, summary = remove_category(page_content, 'Adverbes de temps en français', summary)
 
     if debug_level > 1:
         print('  add definition templates')
@@ -2482,7 +2491,7 @@ def format_languages_templates(page_content, summary, page_name):
 
 def move_etymology_templates(page_content, summary):
     if debug_level > 0:
-        print('move_etymology_templates()')
+        print(' move_etymology_templates()')
     page_languages = get_page_languages(page_content)
     for page_language in page_languages:
         for etym_template in etymology_templates:
@@ -3147,7 +3156,7 @@ def treat_verb_inflexion(page_content, final_page_content, summary, current_page
 def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natures_with_plural, language_code,
                          singular_page_name):
     if debug_level > 0:
-        print('treat_noun_inflexion()')
+        print(' treat_noun_inflexion()')
     for nature in natures_with_plural:
         regex = r"(== {{langue|" + language_code + r"}} ==\n=== {{S\|" + nature + r"\|" + language_code + r")\|num=2"
         if re.search(regex, page_content):
@@ -3162,18 +3171,18 @@ def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natu
 
         if page_name[-2:] == 'ss':
             if debug_level > 0:
-                print('-ss')
+                print('  -ss')
         elif singular_page_name != '':
             inflexion_inflexion_template = get_inflexion_template(page_name, language_code, nature)
             if inflexion_inflexion_template is None or inflexion_inflexion_template == '':
                 if debug_level > 0:
-                    print(' Ajout d\'une boite dans une flexion')
+                    print('  Ajout d\'une boite dans une flexion')
                 lemma_inflexion_template = get_inflexion_template_from_lemma(singular_page_name, language_code, nature)
                 if lemma_inflexion_template is not None:
                     for inflexion_template_fr_with_ms in inflexion_templates_fr_with_ms:
                         if lemma_inflexion_template.find(inflexion_template_fr_with_ms) != -1:
                             if debug_level > 0:
-                                print('inflexion_templates_fr_with_ms')
+                                print('  inflexion_templates_fr_with_ms')
                             regex = r"\|ms=[^\|}]*"
                             if not re.search(regex, lemma_inflexion_template):
                                 lemma_inflexion_template = lemma_inflexion_template + r'|ms=' + singular_page_name
@@ -3222,7 +3231,7 @@ def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natu
         input(page_content)
 
     if debug_level > 1:
-        print(' en')
+        print('  en')
     if page_name[-2:] != 'ss' and page_name[-3:] != 'hes' and page_name[-3:] != 'ies' \
             and page_name[-3:] != 'ses' and page_name[-3:] != 'ves':
         regex = r"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + page_name \

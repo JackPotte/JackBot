@@ -2134,3 +2134,9 @@ inflexion_templates_fr.append('fr-accord-oux')
 inflexion_templates_fr.append('fr-accord-personne')
 inflexion_templates_fr.append('fr-accord-t-avant1835')
 inflexion_templates_fr.append('fr-inv')
+
+adverbs = []
+adverbs.append('lieu')
+adverbs.append('manière')
+adverbs.append('quantité')
+adverbs.append('temps')
