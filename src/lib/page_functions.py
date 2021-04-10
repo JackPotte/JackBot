@@ -12,6 +12,34 @@ from pywikibot import *
 from lib import *
 
 
+def get_global_variables(args):
+    debug_level = 0
+    site_family = 'wiktionary'
+    site_language = 'fr'
+    page_name = None
+
+    for arg in args:
+        option, sep, value = arg.partition(':')
+        if option in ['-debug', '-d']:
+            debug_level = value
+        elif option in ['-family', '-f']:
+            site_family = value
+        elif option in ['-language', '-lang', '-l']:
+            site_language = value
+        elif option in ['-tu', '-t']:
+            page_name = '/test unitaire'
+
+    site = pywikibot.Site(site_language, site_family)
+    user_name = config.usernames[site_family][site_language]
+    if page_name is not None:
+        page_name = 'User:' + user_name + page_name
+    debug_level = int(debug_level)
+    if debug_level > 0:
+        print(site_language, site_family, user_name, page_name)
+
+    return site, user_name, debug_level, page_name
+
+
 def set_functions_globals(my_debug_level, my_site, my_username):
     global debug_level
     global site

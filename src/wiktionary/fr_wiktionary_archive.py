@@ -2,6 +2,7 @@
 # coding: utf-8
 """
 Ce script archive des pages de discussion
+TODO merge into TalkArchiver when debugged
 """
 from __future__ import absolute_import, unicode_literals
 import datetime
