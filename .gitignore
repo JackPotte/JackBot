@@ -9,6 +9,7 @@
 *apicache*
 *pycache*
 .idea
+nbproject/
 build
 dist
 i18n/
