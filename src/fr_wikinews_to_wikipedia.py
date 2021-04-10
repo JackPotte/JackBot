@@ -6,6 +6,7 @@ Ce script publie les articles de Wikinews sur Wikipédia
 from __future__ import absolute_import, unicode_literals
 import json as simplejson
 import re
+import os
 import sys
 import traceback
 from xml.dom import Node
@@ -13,27 +14,16 @@ from xml.dom.minidom import parseString as minidom_parseString
 import pywikibot
 from pywikibot import *
 
+dir_src = os.path.dirname(__file__)
+sys.path.append(dir_src)
+sys.path.append(os.path.join(dir_src, 'lib'))
+from page_functions import get_site_by_file_name
+
 # Global variables
 debug_level = 0
 if len(sys.argv) > 2:
     if sys.argv[2] == 'debug' or sys.argv[2] == 'd':
         debug_level = 1
-
-
-def get_site_by_file_name(file_name):
-    # TODO factorize
-    if file_name.rfind('/') != -1:
-        file_name = file_name[file_name.rfind('/') + 1:].replace('_', '.')
-    elif file_name.rfind('\\') != -1:
-        file_name = file_name[file_name.rfind('\\') + 1:].replace('_', '.')
-    site_language = file_name[:2]
-    site_family = file_name[3:]
-    site_family = site_family[:site_family.find('.')]
-    if debug_level > 1:
-        print(file_name, site_language, site_family)
-    site = pywikibot.Site(site_language, site_family)
-    return site_language, site_family, site
-
 
 site_language, site_family, site = get_site_by_file_name(__file__)
 username = config.usernames[site_family][site_language]
