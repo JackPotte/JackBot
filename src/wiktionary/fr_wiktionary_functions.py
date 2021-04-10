@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 """
-TODO: common Wiktionaries interfaces
+TODO: common Wiktionaries interfaces in OOP
 """
 
 from __future__ import absolute_import, unicode_literals
@@ -248,51 +248,6 @@ def get_natures_sections(page_content):
     sections = get_sections_titles(page_content)
     not_natures_sections = get_not_natures_sections(page_content)
     return [item for item in sections if item not in not_natures_sections]
-
-
-def get_section_by_name(page_content, section_name):
-    if debug_level > 1:
-        print('\nget_section_by_name(' + section_name + ')')
-    section_title = r'=* *{{S\|' + section_name + r'(\||})'
-    return get_section_by_title(page_content, section_title)
-
-
-def get_section_by_title(page_content, section_title_regex, section_level=2):
-    if debug_level > 1:
-        print('\nget_section_by_title(' + section_title_regex + ')')
-    start_position = 0
-    end_position = len(page_content)
-    s = re.search(section_title_regex, page_content)  # TODO , re.DOTALL ?
-    if not s:
-        if debug_level > 1:
-            print(' Missing section: ' + section_title_regex)
-        return None, start_position, end_position
-    start_position = s.start()
-
-    page_content = page_content[s.start():]
-    if page_content.find('\n') == -1:
-        if debug_level > 0:
-            print(' Without next section. start_position: ' + str(start_position) + ', end_position: ' + str(end_position))
-        return page_content, start_position, end_position
-
-    page_content2 = page_content[page_content.find('\n') + 1:]  # Commence normalement par [1:section_title_regex]
-    string_with_nested_tags = r'[^<]*(?:<(.*?)>|.)*[^<]*'  # TODO jump nested tag and template content
-    next_section_start = '='
-    for level in range(section_level - 1):
-        next_section_start += '='
-    next_section_regex = '(' + string_with_nested_tags + r')\n' + next_section_start + r'[^=]'
-    s = re.search(next_section_regex, page_content2, re.DOTALL)
-    if not s:
-        if debug_level > 0:
-            print(' Without next section2. start_position: ' + str(start_position) + ', end_position: ' + str(end_position))
-        return page_content, start_position, end_position
-
-    end_position = page_content.find('\n') + 1 + len(s.group(1))
-    page_content = page_content[:end_position]
-    if debug_level > 0:
-        print(' With next section. start_position: ' + str(start_position) + ', end_position: ' + str(end_position))
-
-    return page_content, start_position, end_position
 
 
 def get_definitions(page_content):

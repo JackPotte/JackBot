@@ -47,11 +47,11 @@ for debug_alias in debug_aliases:
         debug_level = 1
         sys.argv.remove(debug_alias)
 
-wait_after_humans = True
+days_before_archiving = True
 force_aliases = [str('-force'), str('-f')]
 for force_alias in force_aliases:
     if force_alias in sys.argv:
-        wait_after_humans = False
+        days_before_archiving = False
         sys.argv.remove(force_alias)
 
 site_language, site_family, site = get_site_by_file_name(__file__)
@@ -93,7 +93,7 @@ def treat_page_by_name(page_name):
             save_page(page, '#REDIRECT[[' + page_name + ']]', 'Redirection pour apostrophe', minor_edit=True)
 
     page = Page(site, page_name)
-    if debug_level == 0 and wait_after_humans and (page_name.find('<') != -1 or not has_more_than_time(page)):
+    if debug_level == 0 and days_before_archiving and (page_name.find('<') != -1 or not has_more_than_time(page)):
         return
 
     current_page_content = get_content_from_page(page, 'All')
@@ -1004,7 +1004,7 @@ set_fr_wiktionary_functions_globals(debug_level, site, username)
 
 
 def main(*args):
-    global wait_after_humans, fix_old_templates, output_file, site_language, site_family, fix_tags, \
+    global days_before_archiving, fix_old_templates, output_file, site_language, site_family, fix_tags, \
         list_false_translations, test_import, cancel_user
     if len(sys.argv) > 1:
         if debug_level > 1:
