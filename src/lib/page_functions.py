@@ -13,6 +13,7 @@ from lib import *
 
 
 def get_global_variables(args):
+    global debug_level  # TODO remove when proper dependency injections
     debug_level = 0
     site_family = 'wiktionary'
     site_language = 'fr'
@@ -35,7 +36,7 @@ def get_global_variables(args):
         page_name = 'User:' + user_name + page_name
     debug_level = int(debug_level)
     if debug_level > 0:
-        print(site_language, site_family, user_name, page_name)
+        print('get_global_variables() =', site_language, site_family, user_name, page_name)
 
     return site, user_name, debug_level, page_name
 
@@ -683,15 +684,25 @@ def get_site_by_file_name(file_name):
     return site_language, site_family, site
 
 
+def get_sections_titles(page_content, regex=r'\n=[^\n]+\n'):
+    if debug_level > 0:
+        print('\nget_sections_titles()')
+        print('  ' + regex)
+    s = re.findall(regex, page_content, re.DOTALL)
+    if s:
+        return s
+    return []
+
+
 def get_section_by_name(page_content, section_name):
-    if debug_level > 1:
+    if debug_level > 0:
         print('\nget_section_by_name(' + section_name + ')')
     section_title = r'=* *{{S\|' + section_name + r'(\||})'
     return get_section_by_title(page_content, section_title)
 
 
 def get_section_by_title(page_content, section_title_regex, section_level=2):
-    if debug_level > 1:
+    if debug_level > 0:
         print('\nget_section_by_title(' + section_title_regex + ')')
     start_position = 0
     end_position = len(page_content)
@@ -714,7 +725,10 @@ def get_section_by_title(page_content, section_title_regex, section_level=2):
     for level in range(section_level - 1):
         next_section_start += '='
     next_section_regex = '(' + string_with_nested_tags + r')\n' + next_section_start + r'[^=]'
+    # TODO line 730 takes too long
+    print(datetime.datetime.now(), next_section_regex)
     s = re.search(next_section_regex, page_content2, re.DOTALL)
+    print(datetime.datetime.now(), s)
     if not s:
         if debug_level > 0:
             print(' Without next section2. start_position: ' + str(start_position) + ', end_position: ' + str(end_position))

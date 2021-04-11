@@ -31,7 +31,7 @@ class TalkArchiver:
     default_talk_pages = {
         'wikipedia': 'Wikipédia:Bot/Requêtes',
         'wikisource': 'Wikisource:Bots/Requêtes',
-        'wiktionary': 'Wiktionnaire:Bot/Requêtes',
+        'wiktionary': 'Wiktionnaire:Bots/Requêtes',
     }
 
     headers = {
@@ -66,14 +66,14 @@ class TalkArchiver:
             print(self.page_name)
         page = Page(self.site, self.page_name)
 
-        latest_rev = page.editTime() #TODO AttributeError: 'Family' object has no attribute 'user_name'
+        latest_rev = page.editTime()
         now = datetime.datetime.now()
         inactivity_duration = (now - latest_rev).days
         if inactivity_duration < self.days_before_archiving:
             if self.debug_level > 0:
                 print(' The page has been modified in the last days: ' + str(inactivity_duration))
             return
-    
+
         if not page.exists():
             if self.debug_level > 0:
                 print(' The page does not exist')
@@ -82,7 +82,7 @@ class TalkArchiver:
             if self.debug_level > 0:
                 print(' Untreated namespace')
             return
-    
+
         summary = 'Autoarchivage de [[' + self.page_name + ']]'
         try:
             page_content = page.get()
@@ -111,16 +111,16 @@ class TalkArchiver:
         except pywikibot.exceptions.LockedPage as e:
             print(str(e))
             return
-    
+
         final_page_content = ''
         current_year = time.strftime('%Y')
-        section_title_regex = r'\n==[ \t]*{{[rR]equête [' + r'|'.join(fr_wiktionary_closed_status) + r']+}}[^\n]*==[ \t]*\n+'
+        section_title_regex = r'\n==[ \t]*{{[rR]equête [' + r'|'.join(self.closed_status[str(self.site.family)]) + r']+}}[^\n]*==[ \t]*\n+'
         sections_titles = get_sections_titles(page_content, section_title_regex)
         for section_title in sections_titles:
             section, s_start, s_end = get_section_by_title(page_content, re.escape(section_title))
             final_page_content += section
             page_content = page_content.replace(section, '')
-    
+
         if page_content != page.get():
             page2 = Page(self.site, self.page_name + '/Archives/' + current_year)
             final_page_content2 = ''
@@ -136,8 +136,8 @@ class TalkArchiver:
                 except pywikibot.exceptions.LockedPage as e:
                     print(str(e))
                     return
-            # TODO
-            header = self.headers[str(self.site.family)]
+            else:
+                final_page_content2 = self.headers[str(self.site.family)] + '\n'
             if final_page_content2.find('{{NavigBOT') == -1:
                 final_page_content2 = '{{NavigBOT|' + page2.title()[len(page2.title())-4:len(page2.title())] + '}}\n' + final_page_content2
             save_page(page2, final_page_content2 + final_page_content, summary)

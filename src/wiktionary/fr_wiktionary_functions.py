@@ -224,16 +224,6 @@ def get_language_section(page_content, language_code='fr'):
     return page_content, start_position, end_position
 
 
-def get_sections_titles(page_content, regex=r'{{S\|([^}\|]+)'):
-    if debug_level > 1:
-        print('\nget_sections_titles()')
-        print('  ' + regex)
-    s = re.findall(regex, page_content, re.DOTALL)
-    if s:
-        return s
-    return []
-
-
 def get_not_natures_sections(page_content):
     global natures
     if debug_level > 1:
