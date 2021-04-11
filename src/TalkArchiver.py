@@ -27,6 +27,7 @@ class TalkArchiver:
     site = None
     user_name = None
     debug_level = None
+    days_before_archiving = 0
 
     default_talk_pages = {
         'wikipedia': 'Wikipédia:Bot/Requêtes',
@@ -54,7 +55,6 @@ class TalkArchiver:
             'sans suite',
         ],
     }
-    days_before_archiving = 3
 
     def __init__(self, args):
         self.site, self.user_name, self.debug_level, self.page_name = get_global_variables(args)
@@ -118,6 +118,10 @@ class TalkArchiver:
         sections_titles = get_sections_titles(page_content, section_title_regex)
         for section_title in sections_titles:
             section, s_start, s_end = get_section_by_title(page_content, re.escape(section_title))
+            if section is None:
+                if self.debug_level > 0:
+                    print(' section not found: ' + section_title)
+                continue
             final_page_content += section
             page_content = page_content.replace(section, '')
 

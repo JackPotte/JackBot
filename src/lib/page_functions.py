@@ -116,11 +116,10 @@ def has_more_than_time(page, time_after_last_edition=60):  # minutes
         version = page.getLatestEditors(1)
         date_now = datetime.datetime.utcnow()
         max_date = date_now - datetime.timedelta(minutes=time_after_last_edition)
+        has_more_than_time = version[0]['timestamp'] < max_date.strftime('%Y-%m-%dT%H:%M:%SZ')
         if debug_level > 1:
-            print(max_date.strftime('%Y-%m-%dT%H:%M:%SZ'))
-            print(version[0]['timestamp'])
-            print(version[0]['timestamp']) < max_date.strftime('%Y-%m-%dT%H:%M:%SZ')
-        if version[0]['timestamp'] < max_date.strftime('%Y-%m-%dT%H:%M:%SZ') or username in page.title() or \
+            print(str(max_date.strftime('%Y-%m-%dT%H:%M:%SZ')), str(version[0]['timestamp']), str(has_more_than_time))
+        if has_more_than_time or username in page.title() or \
             list(page.contributors(total=1).keys())[0] == 'JackPotte':
             # TODO config.usernames[site_family][site_language] for human user
             return True
@@ -687,10 +686,13 @@ def get_site_by_file_name(file_name):
 def get_sections_titles(page_content, regex=r'\n=[^\n]+\n'):
     if debug_level > 0:
         print('\nget_sections_titles()')
-        print('  ' + regex)
     s = re.findall(regex, page_content, re.DOTALL)
     if s:
+        if debug_level > 0:
+            print(' ' + regex + ' found')
         return s
+    if debug_level > 0:
+        print(' ' + regex + ' not found')
     return []
 
 
@@ -702,8 +704,9 @@ def get_section_by_name(page_content, section_name):
 
 
 def get_section_by_title(page_content, section_title_regex, section_level=2):
+    global debug_level
     if debug_level > 0:
-        print('\nget_section_by_title(' + section_title_regex + ')')
+        print('\nget_section_by_title()')
     start_position = 0
     end_position = len(page_content)
     s = re.search(section_title_regex, page_content)  # TODO , re.DOTALL ?
