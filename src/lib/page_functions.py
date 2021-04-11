@@ -725,7 +725,7 @@ def get_section_by_title(page_content, section_title_regex, section_level=2):
     for level in range(section_level - 1):
         next_section_start += '='
     next_section_regex = '(' + string_with_nested_tags + r')\n' + next_section_start + r'[^=]'
-    # TODO line 730 takes too long
+    # TODO takes too long (instead of while re.compile(section_title_regex).search(page_content):)
     print(datetime.datetime.now(), next_section_regex)
     s = re.search(next_section_regex, page_content2, re.DOTALL)
     print(datetime.datetime.now(), s)

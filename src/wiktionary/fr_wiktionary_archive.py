@@ -109,12 +109,31 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
 
     final_page_content = ''
     current_year = time.strftime('%Y')
-    section_title_regex = r'\n==[ \t]*{{[rR]equête [' + r'|'.join(closed_status) + r']+}}[^\n]*==[ \t]*\n+'
-    sections_titles = get_sections_titles(page_content, section_title_regex)
-    for section_title in sections_titles:
-        section, s_start, s_end = get_section_by_title(page_content, re.escape(section_title))
-        final_page_content += section
-        page_content = page_content.replace(section, '')
+
+    # TODO utiliser get_section() pour éviter les balises imbriquées : (ou juste pre, nowiki, et source qui peuvent contenir "==").
+    # ex : https://fr.wiktionary.org/w/index.php?title=Wiktionnaire:Bots/Requ%C3%AAtes&diff=prev&oldid=29274173
+    regex = r'\n==[ ]*{{[rR]equête [fait|refus|refusée|sans suite]+}}.*==[ \t]*\n'
+    while re.compile(regex).search(page_content):
+        debut_paragraphe = re.search(regex, page_content).end()
+        if re.search(r'\n==[^=]', page_content[debut_paragraphe:]):
+            fin_paragraphe = re.search(r'\n==[^=]', page_content[debut_paragraphe:]).start()
+        else:
+            fin_paragraphe = len(page_content[debut_paragraphe:])
+        if debug_level > 0:
+            input(page_content[debut_paragraphe:][:fin_paragraphe])
+            print('-------------------------------------')
+        if page_content[debut_paragraphe:].find('\n==') == -1:
+            # Dernier paragraphe
+            final_page_content += page_content[:debut_paragraphe][
+                                  page_content[:debut_paragraphe].rfind('\n=='):] + page_content[debut_paragraphe:]
+            page_content = page_content[:debut_paragraphe][:page_content[:debut_paragraphe].rfind('\n==')]
+        else:
+            final_page_content += page_content[:debut_paragraphe][
+                                  page_content[:debut_paragraphe].rfind('\n=='):] + page_content[debut_paragraphe:][
+                                                                                    :fin_paragraphe]
+            page_content = page_content[:debut_paragraphe][
+                           :page_content[:debut_paragraphe].rfind('\n==')] + page_content[debut_paragraphe:][
+                                                                             fin_paragraphe:]
 
     if page_content != page.get():
         page2 = Page(site, page_name + '/Archives/' + current_year)
