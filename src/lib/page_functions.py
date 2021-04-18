@@ -160,8 +160,12 @@ def get_content_from_page_name(page_name, site, allowed_namespaces=None):
 
 
 def get_content_from_page(page, allowed_namespaces=None):
+    global debug_level
+    if debug_level > 0:
+        print('get_content_from_page()')
     if debug_level > 1:
         pywikibot.output(' \03{blue}get_content_from_page : \03{default}' + page.title())
+
     current_page_content = ''
     try:
         does_exist = page.exists()
@@ -186,7 +190,7 @@ def get_content_from_page(page, allowed_namespaces=None):
     else:
         if debug_level > 1:
             print(' content namespaces')
-        condition = page.namespace() in [0, 12, 14, 100] or page.title().find('JackBot') != -1
+        condition = page.namespace() in [0, 12, 14, 100] or username in page.title()
 
     if not condition:
         if debug_level > 0:
@@ -709,7 +713,7 @@ def get_section_by_title(page_content, section_title_regex, section_level=2):
         print('\nget_section_by_title()')
     start_position = 0
     end_position = len(page_content)
-    s = re.search(section_title_regex, page_content)  # TODO , re.DOTALL ?
+    s = re.search(section_title_regex, page_content)
     if not s:
         if debug_level > 1:
             print(' Missing section: ' + section_title_regex)
@@ -719,27 +723,26 @@ def get_section_by_title(page_content, section_title_regex, section_level=2):
     page_content = page_content[s.start():]
     if page_content.find('\n') == -1:
         if debug_level > 0:
-            print(' Without next section. start_position: ' + str(start_position) + ', end_position: ' + str(end_position))
+            print(' Without next section. start: ' + str(start_position) + ', end: ' + str(end_position))
         return page_content, start_position, end_position
 
-    page_content2 = page_content[page_content.find('\n') + 1:]  # Commence normalement par [1:section_title_regex]
-    string_with_nested_tags = r'[^<]*(?:<(.*?)>|.)*[^<]*'  # TODO jump nested tag and template content
-    next_section_start = '='
+    next_section_regex = r'\n='
     for level in range(section_level - 1):
-        next_section_start += '='
-    next_section_regex = '(' + string_with_nested_tags + r')\n' + next_section_start + r'[^=]'
-    # TODO takes too long (instead of while re.compile(section_title_regex).search(page_content):)
-    print(datetime.datetime.now(), next_section_regex)
+        next_section_regex += r'=?'
+    next_section_regex += r'[^=]'
+
+    # TODO jump nested tag and template content
+    delta = page_content.find('\n') + 1
+    page_content2 = page_content[delta:]  # Commence normalement par [1:section_title_regex]
     s = re.search(next_section_regex, page_content2, re.DOTALL)
-    print(datetime.datetime.now(), s)
     if not s:
         if debug_level > 0:
-            print(' Without next section2. start_position: ' + str(start_position) + ', end_position: ' + str(end_position))
+            print(' Without next section2. start: ' + str(start_position) + ', end: ' + str(end_position))
         return page_content, start_position, end_position
 
-    end_position = page_content.find('\n') + 1 + len(s.group(1))
+    end_position = delta + s.start()
     page_content = page_content[:end_position]
     if debug_level > 0:
-        print(' With next section. start_position: ' + str(start_position) + ', end_position: ' + str(end_position))
+        print(' With next section. start: ' + str(start_position) + ', end: ' + str(end_position))
 
     return page_content, start_position, end_position
