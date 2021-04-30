@@ -75,7 +75,7 @@ test_import = False
 cancel_user = {}
 output_file = ''
 anagrams_max_length = 4  # TODO: from dump otherwise 5 chars > 5 min & 8 chars > 1 h per page)
-
+languagesWithoutGender = ['en', 'ja', 'ko', 'zh']
 
 def treat_page_by_name(page_name):
     global debug_level
@@ -513,8 +513,7 @@ def treat_page_by_name(page_name):
 
                 # Wrong genders
                 elif current_template in ('m', 'f'):
-                    if has_translation_section or (language_code != 'en' and language_code != 'zh' and
-                                                   language_code != 'ja' and language_code != 'ko'):
+                    if has_translation_section or language_code not in languagesWithoutGender:
                         final_page_content = final_page_content + page_content[:page_content.find('}}') + 2]
                     else:
                         if debug_level > 0:
@@ -523,8 +522,7 @@ def treat_page_by_name(page_name):
                         go_backward = True
                     page_content = page_content[page_content.find('}}') + 2:]
                 elif current_template in ('mf', 'mf?'):
-                    if has_translation_section or (language_code != 'en' and language_code != 'zh' and
-                                                   language_code != 'ja' and language_code != 'ko'):
+                    if has_translation_section or language_code not in languagesWithoutGender:
                         final_page_content = final_page_content + page_content[:page_content.find('}}') + 2]
                     else:
                         if debug_level > 0:
@@ -533,9 +531,7 @@ def treat_page_by_name(page_name):
                         go_backward = True
                     page_content = page_content[page_content.find('}}') + 2:]
                 elif current_template in ('n', 'c'):
-                    if has_translation_section or (language_code != 'en' and language_code != 'zh' and
-                                                   language_code != 'ja' and language_code != 'ko' and
-                                                   language_code != 'fr'):
+                    if has_translation_section or language_code not in languagesWithoutGender:
                         final_page_content = final_page_content + current_template + '}}'
                     else:
                         if debug_level > 0:
