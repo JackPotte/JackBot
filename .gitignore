@@ -21,4 +21,5 @@ pywikibot.egg-info/
 pywikibot.lwp
 throttle.ctrl
 user-*.py
+/dumps
 core/
