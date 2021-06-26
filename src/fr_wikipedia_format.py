@@ -235,6 +235,7 @@ def main(*args):
         elif sys.argv[1] == '-extlinks':
             p. pages_by_special_link_search('www.dmoz.org')
         else:
+            treat_all_namespaces = True
             # large_media: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
             treat_page_by_name(update_html_to_unicode(sys.argv[1]))
     else:
