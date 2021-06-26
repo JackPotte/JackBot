@@ -244,7 +244,6 @@ def main(*args):
         p.pages_by_link('Template:Cite web')
         p.pages_by_link('Template:Cite journal')
         p.pages_by_link('Template:Cite news')
-        p.pages_by_link('Template:Cite pr')
         p.pages_by_link('Template:Cite press release')
         p.pages_by_link('Template:Cite episode')
         p.pages_by_link('Template:Cite video')
