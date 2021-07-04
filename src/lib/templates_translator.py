@@ -13,96 +13,94 @@ from pywikibot import *
 do_check_url = False
 
 # Modèles qui incluent des URL dans leurs paramètres
-old_template = []
-new_template = []
-old_template.append('cite web')
-new_template.append('lien web')
-old_template.append('citeweb')
-new_template.append('lien web')
-old_template.append('cite news')
-new_template.append('article')
-old_template.append('citenews')
-new_template.append('article')
-old_template.append('cite journal')
-new_template.append('article')
-old_template.append('cite magazine')
-new_template.append('article')
-old_template.append('cite newspaper')
-new_template.append('article')
-old_template.append('lien news')
-new_template.append('article')
-old_template.append('cite video')
-new_template.append('lien vidéo')
-old_template.append('cite episode')
-new_template.append('citation épisode')
-old_template.append('cite arXiv')
-new_template.append('lien arXiv')
-old_template.append('cite press release')
-new_template.append('lien web')
-old_template.append('cite press_release')
-new_template.append('lien web')
-old_template.append('cite pr')
-new_template.append('lien web')
-old_template.append('cite conference')
-new_template.append('lien conférence')
-old_template.append('docu')
-new_template.append('lien vidéo')
-old_template.append('cite book')
-new_template.append('ouvrage')
-# old_template.append('cite')
-# new_template.append('ouvrage')
+old_templates = []
+new_templates = []
+old_templates.append('cite web')
+new_templates.append('lien web')
+old_templates.append('citeweb')
+new_templates.append('lien web')
+old_templates.append('cite news')
+new_templates.append('article')
+old_templates.append('citenews')
+new_templates.append('article')
+old_templates.append('cite journal')
+new_templates.append('article')
+old_templates.append('cite magazine')
+new_templates.append('article')
+old_templates.append('cite newspaper')
+new_templates.append('article')
+old_templates.append('lien news')
+new_templates.append('article')
+old_templates.append('cite video')
+new_templates.append('lien vidéo')
+old_templates.append('cite episode')
+new_templates.append('citation épisode')
+old_templates.append('cite arXiv')
+new_templates.append('lien arXiv')
+old_templates.append('cite press release')
+new_templates.append('lien web')
+old_templates.append('cite pr')
+new_templates.append('lien web')
+old_templates.append('web site')
+new_templates.append('lien web')
+old_templates.append('cite conference')
+new_templates.append('lien conférence')
+old_templates.append('docu')
+new_templates.append('lien vidéo')
+old_templates.append('cite book')
+new_templates.append('ouvrage')
+old_templates.append('cite')
+new_templates.append('ouvrage')
 # es
-old_template.append('cita noticia')
-new_template.append('article')
+old_templates.append('cita noticia')
+new_templates.append('article')
+old_templates.append('cita web')
+new_templates.append('lien web')
 # it
-old_template.append('cita pubblicazione')
-new_template.append('article')
-old_template.append('cita libro')
-new_template.append('ouvrage')
+old_templates.append('cita pubblicazione')
+new_templates.append('article')
+old_templates.append('cita libro')
+new_templates.append('ouvrage')
 # sv
-old_template.append('webbref')
-new_template.append('lien web')
+old_templates.append('webbref')
+new_templates.append('lien web')
 # de
-old_template.append('internetquelle')
-new_template.append('lien web')
-translated_templates_limit = len(new_template)
+old_templates.append('internetquelle')
+new_templates.append('lien web')
+translated_templates_limit = len(new_templates)
 
 # Modèle avec alias français
-old_template.append('deadlink')
-new_template.append('lien brisé')
+old_templates.append('deadlink')
+new_templates.append('lien brisé')
 # old_template.append('dead link') TODO: if previous template is {{lien brisé}} then remove else replace
 # new_template.append('lien brisé')
-old_template.append('webarchive')
-new_template.append('lien brisé')
-old_template.append('lien brise')
-new_template.append('lien brisé')
-old_template.append('lien cassé')
-new_template.append('lien brisé')
-old_template.append('lien mort')
-new_template.append('lien brisé')
-old_template.append('lien web brisé')
-new_template.append('lien brisé')
-old_template.append('lien Web')
-new_template.append('lien web')
-old_template.append('cita web')
-new_template.append('lien web')
-old_template.append('web site')
-new_template.append('lien web')
-old_template.append('site web')
-new_template.append('lien web')
-old_template.append('périodique')
-new_template.append('article')
-old_template.append('quote')
-new_template.append('citation bloc')
+old_templates.append('webarchive')
+new_templates.append('lien brisé')
+old_templates.append('lien brise')
+new_templates.append('lien brisé')
+old_templates.append('lien cassé')
+new_templates.append('lien brisé')
+old_templates.append('lien mort')
+new_templates.append('lien brisé')
+old_templates.append('lien web brisé')
+new_templates.append('lien brisé')
+old_templates.append('lien Web')
+new_templates.append('lien web')
+old_templates.append('site web')
+new_templates.append('lien web')
+old_templates.append('périodique')
+new_templates.append('article')
+old_templates.append('quote')
+new_templates.append('citation bloc')
 
 # Modèles pour traduire leurs paramètres uniquement
-old_template.append('lire en ligne')
-new_template.append('lire en ligne')
-old_template.append('dts')
-new_template.append('dts')
-old_template.append('Chapitre')
-new_template.append('Chapitre')
-templates_limit = len(new_template)
+old_templates.append('lire en ligne')
+new_templates.append('lire en ligne')
+old_templates.append('dts')
+new_templates.append('dts')
+old_templates.append('Chapitre')
+new_templates.append('Chapitre')
+templates_limit = len(new_templates)
 
 # Paramètres à remplacer
 old_param = []
@@ -587,59 +585,72 @@ def translate_template_parameters(current_template):
 
 
 def translate_link_templates(current_page):
-    final_page = ''
-    for m in range(0, translated_templates_limit):
-        if debug_level > 1:
-            print(' Old templates formatting')
-        current_page = re.sub(('(Modèle:)?[' + old_template[m][:1] + r'|' + old_template[m][:1].upper() + r']' +
-                               old_template[m][1:]).replace(' ', '_') + r' *\|', old_template[m] + r'|', current_page)
-        current_page = re.sub(('(Modèle:)?[' + old_template[m][:1] + r'|' + old_template[m][:1].upper() + r']' +
-                               old_template[m][1:]).replace(' ', '  ') + r' *\|', old_template[m] + r'|', current_page)
-        current_page = re.sub(('(Modèle:)?[' + old_template[m][:1] + r'|' + old_template[m][:1].upper() + r']' +
-                               old_template[m][1:]) + r' *\|', old_template[m] + r'|', current_page)
-
-        if debug_level > 1:
-            print(' Old templates translation (without parameters)')
-        while re.search(r'{{[\n ]*' + old_template[m] + r' *[\|\n]+', current_page):
-            if debug_level > 1:
-                print(' Template n°' + str(m))
-                print(
-                    current_page[re.search(r'{{[\n ]*' + old_template[m] + r' *[\|\n]', current_page).end() - 1:][:100])
-            final_page = final_page + current_page[
-                                      :re.search(r'{{[\n ]*' + old_template[m] + r' *[\|\n]', current_page).end() - 1]
-            final_page, language_code = get_template_language_from_template_page(final_page)
-            current_page = current_page[re.search(r'{{[\n ]*' + old_template[m] + r' *[\|\n]', current_page).end() - 1:]
-
-            regex = r'[^}]*lang(ue|uage)* *=[^}]*}}'
-            if not re.search(regex, current_page) or re.search(regex, current_page).end() > current_page.find('}}') + 2:
-                current_page = '|langue=' + language_code + current_page
-
-        current_page = final_page + current_page
-        final_page = ''
-
     for m in range(0, templates_limit):
+        if m <= translated_templates_limit:
+            current_page = format_old_link_template(current_page, old_templates[m])
+        current_page = translate_link_template(current_page, old_templates[m], new_templates[m])
+
+    return current_page
+
+
+def format_old_link_template(current_page, old_template):
+    if debug_level > 1:
+        print(' translate_old_link_template: ' + old_template)
+
+    # TODO? current_page = current_page.replace('{{' + old_template.replace(' ', '_') + '|', '{{' + old_template + '|')
+    current_page = current_page.replace('{{' + old_template.replace(' ', '_') + ' ', '{{' + old_template + '')
+    current_page = current_page.replace('{{' + old_template + ' ', '{{' + old_template + '')
+
+    current_page = re.sub((r'(Modèle:)?[' + old_template[:1] + r'|' + old_template[:1].upper() + r']' +
+                           old_template[1:]).replace(' ', '_') + r' *\|', old_template + r'|', current_page)
+    current_page = re.sub((r'(Modèle:)?[' + old_template[:1] + r'|' + old_template[:1].upper() + r']' +
+                           old_template[1:]).replace(' ', '  ') + r' *\|', old_template + r'|', current_page)
+    current_page = re.sub((r'(Modèle:)?[' + old_template[:1] + r'|' + old_template[:1].upper() + r']' +
+                           old_template[1:]) + r' *\|', old_template + r'|', current_page)
+
+    final_page = ''
+    while re.search(r'{{[\n ]*' + old_template + r' *[|\n]+', current_page):
+        template_end = re.search(r'{{[\n ]*' + old_template + r' *[|\n]', current_page).end() - 1
         if debug_level > 1:
-            print(' Template names translation: ' + old_template[m])
-        current_page = current_page.replace('{{' + old_template[m] + ' ', '{{' + old_template[m] + '')
-        current_page = re.sub(r'({{[\n ]*)[' + old_template[m][:1] + r'|' + old_template[m][:1].upper() + r']'
-                              + old_template[m][1:] + r'( *[|\n\t}])', r'\1' + new_template[m] + r'\2', current_page)
-        # Suppression des modèles vides
-        regex = r'{{ *[' + new_template[m][:1] + r'|' + new_template[m][:1].upper() + r']' \
-                + new_template[m][1:] + r' *}}'
-        while re.search(regex, current_page):
-            current_page = current_page[:re.search(regex, current_page).start()] \
-                           + current_page[re.search(regex, current_page).end():]
+            print(current_page[template_end:][:100])
 
-        regex = r'{{ *[' + new_template[m][:1].lower() + new_template[m][:1].upper() + r']' + new_template[m][1:] \
-                + r' *[\|\n{}]'
-        while re.search(regex, current_page):
-            final_page = final_page + current_page[:re.search(regex, current_page).start() + 2]
-            current_page = current_page[re.search(regex, current_page).start() + 2:]
-            current_template, template_end_position = get_current_link_template(current_page)
-            current_page = translate_template_parameters(current_template) + current_page[template_end_position:]
+        final_page = final_page + current_page[:template_end]
+        final_page, language_code = get_template_language_from_template_page(final_page)
+        current_page = current_page[template_end:]
 
-        current_page = final_page + current_page
-        final_page = ''
+        regex = r'[^}]*lang(ue|uage)* *=[^}]*}}'
+        if not re.search(regex, current_page) or re.search(regex, current_page).end() > current_page.find('}}') + 2:
+            current_page = '|langue=' + language_code + current_page
+
+    current_page = final_page + current_page
+
+    return current_page
+
+
+def translate_link_template(current_page, old_template, new_template):
+    if debug_level > 1:
+        print(' translate_link_template: ' + old_template)
+
+    current_page = re.sub(r'({{[\n ]*)[' + old_template[:1] + r'|' + old_template[:1].upper() + r']'
+                          + old_template[1:] + r'( *[|\n\t}])', r'\1' + new_template + r'\2', current_page)
+
+    # Delete empty templates
+    regex = r'{{ *[' + new_template[:1] + r'|' + new_template[:1].upper() + r']' \
+            + new_template[1:] + r' *}}'
+    while re.search(regex, current_page):
+        current_page = current_page[:re.search(regex, current_page).start()] \
+                       + current_page[re.search(regex, current_page).end():]
+
+    # Translate parameters
+    regex = r'{{ *[' + new_template[:1].lower() + new_template[:1].upper() + r']' + new_template[1:] \
+            + r' *[\|\n{}]'
+    final_page = ''
+    while re.search(regex, current_page):
+        final_page = final_page + current_page[:re.search(regex, current_page).start() + 2]
+        current_page = current_page[re.search(regex, current_page).start() + 2:]
+        current_template, template_end_position = get_current_link_template(current_page)
+        current_page = translate_template_parameters(current_template) + current_page[template_end_position:]
+    current_page = final_page + current_page
 
     return current_page
 
