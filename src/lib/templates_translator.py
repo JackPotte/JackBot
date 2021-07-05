@@ -597,9 +597,9 @@ def format_old_link_template(current_page, old_template):
     if debug_level > 1:
         print(' translate_old_link_template: ' + old_template)
 
-    # TODO? current_page = current_page.replace('{{' + old_template.replace(' ', '_') + '|', '{{' + old_template + '|')
-    current_page = current_page.replace('{{' + old_template.replace(' ', '_') + ' ', '{{' + old_template + '')
-    current_page = current_page.replace('{{' + old_template + ' ', '{{' + old_template + '')
+    if 'cite' != old_template:
+        current_page = current_page.replace('{{' + old_template.replace(' ', '_') + ' ', '{{' + old_template + '')
+        current_page = current_page.replace('{{' + old_template + ' ', '{{' + old_template + '')
 
     current_page = re.sub((r'(Modèle:)?[' + old_template[:1] + r'|' + old_template[:1].upper() + r']' +
                            old_template[1:]).replace(' ', '_') + r' *\|', old_template + r'|', current_page)
