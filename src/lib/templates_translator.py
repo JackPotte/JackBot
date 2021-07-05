@@ -51,6 +51,8 @@ old_templates.append('cite book')
 new_templates.append('ouvrage')
 old_templates.append('cite')
 new_templates.append('ouvrage')
+old_templates.append('cite encyclopedia')
+new_templates.append('article encyclopédique')
 # es
 old_templates.append('cita noticia')
 new_templates.append('article')
