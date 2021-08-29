@@ -218,7 +218,7 @@ def get_language_section(page_content, language_code='fr'):
         page_content = page_content[:end_position]
         if debug_level > 1:
             print(end_position)
-    if debug_level > 1:
+    if debug_level > 2:
         input(page_content)
 
     return page_content, start_position, end_position
