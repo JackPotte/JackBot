@@ -1639,7 +1639,8 @@ def add_templates(page_content, summary):
     if debug_level > 1:
         print('  add definition templates')
     regex = r'\n#\* *(?:\'\')?\n'
-    page_content = re.sub(regex, r'\n#* {{ébauche-exe}}\n', page_content)
+    # TODO lang=
+    page_content = re.sub(regex, r'\n#* {{ébauche}}\n', page_content)
     regex = r"(\|en}}\n# *'*(?:Participe présent|Participe passé|Prétérit|Troisième personne du singulier du présent) de *'* *)to "
     page_content = re.sub(regex, r'\1', page_content, re.IGNORECASE)
     regex = r"(\|([a-z]+)}}\n# *'*(?:Participe présent|Participe passé|Prétérit|Troisième personne du singulier du présent) de *'* *)([a-zçæéë \-’']+)\."
