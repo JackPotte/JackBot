@@ -30,7 +30,7 @@ enum34==1.1.10
 fasteners==0.14.1
 future==0.18.2
 html5lib==1.0.1
-httplib2==0.14.0
+httplib2==0.19.0
 i18n==0.2
 idna==2.8
 importlib-metadata==1.5.0
