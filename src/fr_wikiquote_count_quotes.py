@@ -46,8 +46,7 @@ import re
 import sys
 import time
 import pywikibot
-from pywikibot import *
-from pywikibot import pagegenerators
+from pywikibot import config, pagegenerators
 
 site = pywikibot.Site('fr', 'wikiquote')
 msg = {
@@ -299,11 +298,12 @@ def workon(page):
 
     text = prepare_text(text)
 
-    if not site.nocapitalize:
-        pattern = '[' + re.escape(globalvar.quote_template[0].upper()) + re.escape(
-            globalvar.quote_template[0].lower()) + ']' + re.escape(globalvar.quote_template[1:])
-    else:
-        pattern = re.escape(globalvar.quote_template)
+    # TODO APISite instance has no attribute 'nocapitalize' since PWB6
+    # if not site.nocapitalize:
+    #     pattern = '[' + re.escape(globalvar.quote_template[0].upper()) + re.escape(
+    #         globalvar.quote_template[0].lower()) + ']' + re.escape(globalvar.quote_template[1:])
+    # else:
+    pattern = re.escape(globalvar.quote_template)
 
     r = re.compile(r'{{ *(?:[Tt]emplate:|[mM][sS][gG]:)?' + pattern)
 
@@ -330,7 +330,7 @@ def workon(page):
 
         offset += (len(text[start:]) - len(endtext))
 
-        quote = unicode(endtext[:qlen])
+        quote = endtext[:qlen]
         text = text[:start] + endtext
 
         debug('Quote 2: %s' % (quote))
@@ -370,7 +370,7 @@ def generate_output(quotes):
     for h in quotes:
         # Unique quotes.
         uquotes = {}
-        [operator.setitem(uquotes, i[0], []) for i in quotes[h][1] if not uquotes.has_key(i[0])]
+        [operator.setitem(uquotes, i[0], []) for i in quotes[h][1] if not i[0] in uquotes]
         # outputq('uquotes : %s' % uquotes)
 
         # Get associated pages.
@@ -477,7 +477,7 @@ class Main(object):
     def parse(self):
         # Parse options
 
-        for arg in pywikibot.handleArgs():
+        for arg in pywikibot.handle_args():
             if arg.startswith('-ref'):
                 if len(arg) == 4:
                     self.__refpagetitle = pywikibot.input('Links to which page should be processed?')
@@ -561,7 +561,7 @@ class Main(object):
 
         elif self.__refpagetitle:
             refpage = pywikibot.Page(site, self.__refpagetitle)
-            pagegen = pagegenerators.ReferringPageGenerator(refpage)
+            pagegen = pagegenerators.LinkedPageGenerator(refpage)
 
         elif self.__linkpagetitle:
             linkpage = pywikibot.Page(site, self.__linkpagetitle)
@@ -593,8 +593,8 @@ class Main(object):
         # ensure that we don't try to change main page
         globalvar.mainpage_name = pywikibot.Page(pywikibot.Link("Main page_content", site)).title(withNamespace=False)
 
-        if site.language() in msg:
-            globalvar.lang = site.language()
+        if site.lang in msg:
+            globalvar.lang = site.lang
         else:
             globalvar.lang = 'en'
 
@@ -606,7 +606,7 @@ class Main(object):
             for p in self.__pagetitles:
                 try:
                     pages.append(pywikibot.Page(site, p))
-                except pywikibot.NoPageError:
+                except pywikibot.exceptions.NoPageError:
                     pass
             generator = pagegenerators.PreloadingGenerator(iter(pages))
         else:

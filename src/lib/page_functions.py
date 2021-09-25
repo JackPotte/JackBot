@@ -635,7 +635,7 @@ def cancel_edition(page, cancel_user, summary=''):
     old_page_content = ''
     user_name = cancel_user['user']
     if debug_level > 1:
-        print(page.userName()) + ' trouvé'
+        print(page.userName() + ' trouvé')
 
     if cancel_user['action'].lower() in ['revocation', 'révocation']:
         summary = 'Révocation de ' + user_name

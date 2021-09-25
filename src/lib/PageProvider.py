@@ -136,8 +136,7 @@ class PageProvider:
                 modify = True
             elif after_page is None or after_page == '' or modify:
                 if linked:
-                    gen2 = pagegenerators.ReferringPageGenerator(Page)
-                    gen2 = pagegenerators.NamespaceFilterPageGenerator(gen2, namespaces)
+                    gen2 = Page.linkedPages(namespaces=namespaces)
                     for linked_page in pagegenerators.PreloadingGenerator(gen2, page_ids):
                         if pages_list:
                             self.outputFile.write(
@@ -200,12 +199,12 @@ class PageProvider:
             site = self.site
         modify = False
         page = pywikibot.Page(site, page_name)
-        gen = pagegenerators.ReferringPageGenerator(page, onlyTemplateInclusion=True)
+        gen = pagegenerators.LinkedPageGenerator(page,)
         gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
         for page in pagegenerators.PreloadingGenerator(gen, 100):
             if not after_page or after_page == '' or modify:
                 if linked:
-                    gen2 = pagegenerators.ReferringPageGenerator(page.title(),
+                    gen2 = pagegenerators.LinkedPageGenerator(page.title(),
                                                                  onlyTemplateInclusion=only_template_inclusion)
                     gen2 = pagegenerators.NamespaceFilterPageGenerator(gen2, namespaces)
                     for linked_page in pagegenerators.PreloadingGenerator(gen2, 100):
@@ -234,7 +233,7 @@ class PageProvider:
         if site is None:
             site = self.site
         minimum_time = 30  # min
-        gen = pagegenerators.RecentchangesPageGenerator(site=site)
+        gen = pagegenerators.RecentChangesPageGenerator(site=site)
         for page in pagegenerators.PreloadingGenerator(gen, 50):
             if self.debug_level > 1:
                 print(str(time_after_last_edition(Page) + ' =? ' + str(minimum_time)))

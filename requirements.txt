@@ -67,7 +67,6 @@ psutil==5.8.0
 py==1.10.0
 pycairo==1.16.2
 pycparser==2.20
-pycrypto==2.6.1
 pycups==1.9.73
 Pygments==2.10.0
 PyGObject==3.36.0

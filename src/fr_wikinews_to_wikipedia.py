@@ -12,7 +12,7 @@ import traceback
 from xml.dom import Node
 from xml.dom.minidom import parseString as minidom_parseString
 import pywikibot
-from pywikibot import *
+from pywikibot import config, Page
 
 dir_src = os.path.dirname(__file__)
 sys.path.append(dir_src)
@@ -77,7 +77,7 @@ def getNews(page):
 
 
 def doOnePage(tpl, page, site_src):
-    pywikibot.output(page.aslink())
+    pywikibot.output(page.title)
     txt = page.get().replace('_', ' ')
     # Recherche dans [[w:Portail:Canada/Actualités/Wikinews]] du pattern avec {{Utilisateur:Wikinews Importer Bot/config|...}}
     rx = re.search(r'{{(%s\|.*?)}}' % (tpl.title()), txt)
