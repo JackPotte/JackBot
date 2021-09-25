@@ -12,7 +12,7 @@ import urllib
 import webbrowser
 import requests
 import pywikibot
-from pywikibot import *
+
 try:
     import urllib.request as urllib2
 except ImportError:

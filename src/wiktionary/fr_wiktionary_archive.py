@@ -81,29 +81,29 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
 
     try:
         page_content = page.get()
-    except pywikibot.exceptions.NoPage as e:
+    except pywikibot.exceptions.NoPageError as e:
         print(str(e))
         return
-    except pywikibot.exceptions.IsRedirectPage as e:
+    except pywikibot.exceptions.IsRedirectPageError as e:
         print(str(e))
         page_content = page.get(get_redirect=True)
         page2 = Page(site, page_content[page_content.find('[[')+2:page_content.find(']]')])
         try:
             final_page_content2 = page2.get()
-        except pywikibot.exceptions.NoPage as e:
+        except pywikibot.exceptions.NoPageError as e:
             print(str(e))
             return
-        except pywikibot.exceptions.IsRedirectPage as e:
+        except pywikibot.exceptions.IsRedirectPageError as e:
             print(str(e))
             return
-        except pywikibot.exceptions.LockedPage as e:
+        except pywikibot.exceptions.LockedPageError as e:
             print(str(e))
             return
         if final_page_content2.find('{{NavigBOT') == -1:
             final_page_content2 = '{{NavigBOT|' + page2.title()[len(page2.title())-4:len(page2.title())] + '}}\n' + final_page_content2
             save_page(page2, final_page_content2, summary)
         return
-    except pywikibot.exceptions.LockedPage as e:
+    except pywikibot.exceptions.LockedPageError as e:
         print(str(e))
         return
 
@@ -141,13 +141,13 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
         if page2.exists():
             try:
                 final_page_content2 = page2.get()
-            except pywikibot.exceptions.NoPage as e:
+            except pywikibot.exceptions.NoPageError as e:
                 print(str(e))
                 return
-            except pywikibot.exceptions.IsRedirectPage as e:
+            except pywikibot.exceptions.IsRedirectPageError as e:
                 print(str(e))
                 return
-            except pywikibot.exceptions.LockedPage as e:
+            except pywikibot.exceptions.LockedPageError as e:
                 print(str(e))
                 return
         if final_page_content2.find('{{NavigBOT') == -1:

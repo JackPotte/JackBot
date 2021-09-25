@@ -690,11 +690,11 @@ def get_valid_language_code(language_code):
         template_page_content = ''
         try:
             template_page_content = template_page.get()
-        except pywikibot.exceptions.NoPage as e:
+        except pywikibot.exceptions.NoPageError as e:
             print(str(e))
-        except pywikibot.exceptions.LockedPage as e:
+        except pywikibot.exceptions.LockedPageError as e:
             print(str(e))
-        except pywikibot.exceptions.IsRedirectPage as e:
+        except pywikibot.exceptions.IsRedirectPageError as e:
             template_page_content = template_page.get(get_redirect=True)
         if debug_level > 1:
             print(template_page_content)

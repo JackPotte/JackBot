@@ -606,7 +606,7 @@ class Main(object):
             for p in self.__pagetitles:
                 try:
                     pages.append(pywikibot.Page(site, p))
-                except pywikibot.NoPage:
+                except pywikibot.NoPageError:
                     pass
             generator = pagegenerators.PreloadingGenerator(iter(pages))
         else:

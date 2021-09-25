@@ -8,8 +8,8 @@ import os
 import sys
 import re
 import pywikibot
-from pywikibot import *
-from pywikibot import pagegenerators
+from pywikibot import config, Page, pagegenerators
+
 # JackBot
 dir_wt = os.path.dirname(__file__)
 dir_src = os.path.dirname(dir_wt)
@@ -67,11 +67,11 @@ class PageProvider:
         if source.find('*') != -1:
             file_name = [f for f in os.listdir(folder) if re.match(source, f)]
         if len(file_name) == 0:
-            print(' Dump introubable : ') + source
+            print(' Dump introubable : ' + source)
             return
         file_name = file_name[0]
         if self.debug_level > 0:
-            print(' Dump trouvé : ') + file_name
+            print(' Dump trouvé : ' + file_name)
         from pywikibot import xmlreader
         dump = xmlreader.XmlDump(folder + '/' + file_name)
         parser = dump.parse()
@@ -164,7 +164,7 @@ class PageProvider:
                                 print(' ' + notCatName + ' ignoré')
                             modify = False
                 if modify:
-                    pages = subcategory.articlesList(False)
+                    pages = subcategory.articles(False)
                     for page in pagegenerators.PreloadingGenerator(pages, page_ids):
                         if namespaces is None or page.namespace() in namespaces:
                             self.treat_page_if_name(page.title(), names, not_names)

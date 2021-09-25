@@ -8,18 +8,11 @@ This wiki bot has performed thousands of modifications on several wikis: https:/
 
 # Installation
 
-Clone, download Pywikibot and put it in JackBot/core.
-For its old versions, you need to follow in addition
-https://www.mediawiki.org/wiki/Manual:Pywikibot/i18n/fr to achieve the installation.
 ```
-pip install regex
-pip install requests
-
 git clone https://github.com/JackPotte/JackBot.git
 cd JackBot
 ./updatePywikibot.sh
 ```
-
 
 ## Speed optimization
 To accelerate the treatments:

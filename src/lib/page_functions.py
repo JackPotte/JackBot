@@ -7,7 +7,7 @@ import datetime
 import re
 import time
 import pywikibot
-from pywikibot import *
+from pywikibot import config, Page
 # JackBot
 from lib import *
 
@@ -98,7 +98,7 @@ def time_after_last_edition(page):
         last_edit_time = page.getVersionHistory()[0][1]
     except TypeError as e:
         return 0
-    except pywikibot.exceptions.NoPage as e:
+    except pywikibot.exceptions.NoPageError as e:
         return 0
     if debug_level > 1:
         print(last_edit_time)  # Zulu format, ex: 2017-07-29T21:57:34Z
@@ -113,19 +113,18 @@ def time_after_last_edition(page):
 
 def has_more_than_time(page, time_after_last_edition=60):  # minutes
     if page.exists():
-        version = page.getLatestEditors(1)
         date_now = datetime.datetime.utcnow()
         max_date = date_now - datetime.timedelta(minutes=time_after_last_edition)
-        has_more_than_time = version[0]['timestamp'] < max_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+        has_more_than_time = str(page.latest_revision.timestamp) < max_date.strftime('%Y-%m-%dT%H:%M:%SZ')
         if debug_level > 1:
-            print(str(max_date.strftime('%Y-%m-%dT%H:%M:%SZ')), str(version[0]['timestamp']), str(has_more_than_time))
+            print(str(max_date.strftime('%Y-%m-%dT%H:%M:%SZ')), str(page.latest_revision.timestamp), str(has_more_than_time))
         if has_more_than_time or username in page.title() or \
             list(page.contributors(total=1).keys())[0] == 'JackPotte':
             # TODO config.usernames[site_family][site_language] for human user
             return True
         if debug_level > 0:
             pywikibot.output(
-                ' \03{red}the last edition is too recent to edit: \03{default}' + version[0]['timestamp'])
+                ' \03{red}the last edition is too recent to edit: \03{default}' + str(page.latest_revision.timestamp))
     return False
 
 
@@ -169,7 +168,7 @@ def get_content_from_page(page, allowed_namespaces=None):
     current_page_content = ''
     try:
         does_exist = page.exists()
-    except pywikibot.exceptions.InvalidTitle as e:
+    except pywikibot.exceptions.InvalidTitleError as e:
         if debug_level > 0:
             print(str(e))
         return current_page_content
@@ -181,7 +180,7 @@ def get_content_from_page(page, allowed_namespaces=None):
 
     if isinstance(allowed_namespaces, list):
         if debug_level > 1:
-            print(' namespace : ') + str(page.namespace())
+            print(' namespace : ' + str(page.namespace()))
         condition = page.namespace() in allowed_namespaces
     elif allowed_namespaces == 'All':
         if debug_level > 1:
@@ -199,11 +198,11 @@ def get_content_from_page(page, allowed_namespaces=None):
 
     try:
         current_page_content = page.get()
-    except pywikibot.exceptions.BadTitle as e:
+    except pywikibot.exceptions.InvalidTitleError as e:
         if debug_level > 0:
             print(str(e))
         return None
-    except pywikibot.exceptions.IsRedirectPage as e:
+    except pywikibot.exceptions.IsRedirectPageError as e:
         if debug_level > 0:
             print(str(e))
         if page.namespace() == 'Template:':
@@ -222,7 +221,7 @@ def get_content_from_page(page, allowed_namespaces=None):
                 return None
         else:
             return None
-    except pywikibot.exceptions.NoPage as e:
+    except pywikibot.exceptions.NoPageError as e:
         if debug_level > 0:
             print(str(e))
         return None
@@ -241,9 +240,9 @@ def get_wiki(language, family):
     except pywikibot.exceptions.ServerError:
         if debug_level > 1:
             print('  ServerError in getWiki')
-    except pywikibot.exceptions.NoSuchSite:
+    except pywikibot.exceptions.SiteDefinitionError:
         if debug_level > 1:
-            print('  NoSuchSite in getWiki')
+            print('  SiteDefinitionError in getWiki')
     except UnicodeEncodeError:
         if debug_level > 1:
             print('  UnicodeEncodeError in getWiki')
@@ -585,13 +584,13 @@ def save_page(current_page, page_content, summary, minor_edit=True):
             summary = '[[Wiktionnaire:Structure des articles|Autoformatage]]'
         try:
             current_page.put(page_content, summary, minorEdit=minor_edit)
-        except pywikibot.exceptions.NoPage as e:
+        except pywikibot.exceptions.NoPageError as e:
             print(str(e))
             return
-        except pywikibot.exceptions.IsRedirectPage as e:
+        except pywikibot.exceptions.IsRedirectPageError as e:
             print(str(e))
             return
-        except pywikibot.exceptions.LockedPage as e:
+        except pywikibot.exceptions.LockedPageError as e:
             print(str(e))
             return
         except pywikibot.EditConflict as e:
@@ -602,7 +601,7 @@ def save_page(current_page, page_content, summary, minor_edit=True):
             time.sleep(100)
             save_page(current_page, page_content, summary)
             return
-        except pywikibot.exceptions.BadTitle as e:
+        except pywikibot.exceptions.InvalidTitleError as e:
             print(str(e))
             return
         except pywikibot.exceptions.OtherPageSaveError as e:
@@ -662,10 +661,10 @@ def cancel_edition(page, cancel_user, summary=''):
 def get_old_page_content(page, revision):
     try:
         return page.getOldVersion(revision, get_redirect=True)
-    except pywikibot.exceptions.BadTitle:
+    except pywikibot.exceptions.InvalidTitleError:
         if debug_level > 0:
             print(' IsRedirect l 548')
-    except pywikibot.exceptions.NoPage:
+    except pywikibot.exceptions.NoPageError:
         if debug_level > 0:
             print(' NoPage l 551')
     except pywikibot.exceptions.ServerError:

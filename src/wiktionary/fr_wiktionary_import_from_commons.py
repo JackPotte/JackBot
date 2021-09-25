@@ -111,11 +111,11 @@ def treat_page_by_name(page_name):
         page1 = Page(site, word)
     try:
         current_page_content = page1.get()
-    except pywikibot.exceptions.IsRedirectPage as e:
+    except pywikibot.exceptions.IsRedirectPageError as e:
         if debug_level > 0:
             print(str(e))
         current_page_content = page1.get(get_redirect=True)
-    except pywikibot.exceptions.NoPage as e:
+    except pywikibot.exceptions.NoPageError as e:
         if debug_level > 0:
             print(str(e))
         word_without_article, region = remove_article_and_region_from_word(word, language_code)
@@ -129,11 +129,11 @@ def treat_page_by_name(page_name):
             page1 = Page(site, word)
             try:
                 current_page_content = page1.get()
-            except pywikibot.exceptions.IsRedirectPage as e:
+            except pywikibot.exceptions.IsRedirectPageError as e:
                 if debug_level > 0:
                     print(str(e))
                 current_page_content = page1.get(get_redirect=True)
-            except pywikibot.exceptions.NoPage as e:
+            except pywikibot.exceptions.NoPageError as e:
                 if debug_level > 0:
                     print(str(e))
                 word_without_suffix, remove_numeric_suffix_from_word(word)
@@ -145,11 +145,11 @@ def treat_page_by_name(page_name):
         page1 = Page(site, word)
         try:
             current_page_content = page1.get()
-        except pywikibot.exceptions.IsRedirectPage as e:
+        except pywikibot.exceptions.IsRedirectPageError as e:
             if debug_level > 0:
                 print(str(e))
             current_page_content = page1.get(get_redirect=True)
-        except pywikibot.exceptions.NoPage as e:
+        except pywikibot.exceptions.NoPageError as e:
             if debug_level > 0:
                 print(str(e))
                 print(' no page found to link this file!')

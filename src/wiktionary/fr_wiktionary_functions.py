@@ -8,7 +8,6 @@ from __future__ import absolute_import, unicode_literals
 import collections
 import re
 import pywikibot
-from pywikibot import *
 # JackBot
 from lib import *
 from languages import *
@@ -3313,17 +3312,17 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                 is_page_found = True
                 try:
                     external_page = Page(external_site_name, external_page_name)
-                except pywikibot.exceptions.BadTitle as e:
+                except pywikibot.exceptions.InconsistentTitleError as e:
                     if debug_level > d:
                         print(str(e))
                     final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
                     is_page_found = False
-                except pywikibot.exceptions.InvalidTitle as e:
+                except pywikibot.exceptions.InvalidTitleError as e:
                     if debug_level > d:
                         print(str(e))
                     final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
                     is_page_found = False
-                except pywikibot.exceptions.NoPage as e:
+                except pywikibot.exceptions.NoPageError as e:
                     if debug_level > d:
                         print(str(e))
                     if external_page_name.find('\'') != -1:
@@ -3333,7 +3332,7 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                     if external_page_name != external_page.title():
                         try:
                             external_page = Page(external_site_name, external_page_name)
-                        except pywikibot.exceptions.NoPage:
+                        except pywikibot.exceptions.NoPageError:
                             final_page_content, page_content = next_translation_template(final_page_content,
                                                                                          page_content, '-')
                             is_page_found = False
@@ -3352,9 +3351,9 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                         final_page_content, page_content = next_translation_template(final_page_content,
                                                                                      page_content, '--')
                         is_external_page_exist = False
-                    except pywikibot.exceptions.InconsistentTitleReceived:
+                    except pywikibot.exceptions.InconsistentTitleError:
                         if debug_level > d:
-                            print('  InconsistentTitleReceived (-)')
+                            print('  InconsistentTitleError (-)')
                         final_page_content, page_content = next_translation_template(final_page_content,
                                                                                      page_content, '-')
                         is_external_page_exist = False

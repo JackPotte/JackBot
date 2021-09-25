@@ -234,12 +234,12 @@ def treat_page_by_name(page_name):
                             else:
                                 try:
                                     page_lecon = page2.get()
-                                except pywikibot.exceptions.NoPage as e:
+                                except pywikibot.exceptions.NoPageError as e:
                                     print(str(e))
                                     return
-                                except pywikibot.exceptions.IsRedirectPage:
+                                except pywikibot.exceptions.IsRedirectPageError:
                                     page_lecon = page2.getRedirectTarget().get()
-                                except pywikibot.exceptions.LockedPage as e:
+                                except pywikibot.exceptions.LockedPageError as e:
                                     print(str(e))
                                     return
 
@@ -456,13 +456,13 @@ def treat_page_by_name(page_name):
                 if page2.exists():
                     try:
                         talk_page = page2.get()
-                    except pywikibot.exceptions.NoPage as e:
+                    except pywikibot.exceptions.NoPageError as e:
                         print(str(e))
                         return
-                    except pywikibot.exceptions.IsRedirectPage as e:
+                    except pywikibot.exceptions.IsRedirectPageError as e:
                         print(str(e))
                         return
-                    except pywikibot.exceptions.LockedPage as e:
+                    except pywikibot.exceptions.LockedPageError as e:
                         print(str(e))
                         return
                 else: 

@@ -23,3 +23,4 @@ throttle.ctrl
 user-*.py
 /dumps
 core/
+pywikibot/
