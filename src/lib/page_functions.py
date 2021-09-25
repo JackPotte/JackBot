@@ -7,7 +7,7 @@ import datetime
 import re
 import time
 import pywikibot
-from pywikibot import config, Page
+from pywikibot import config, Page, User
 # JackBot
 from lib import *
 
@@ -130,7 +130,7 @@ def has_more_than_time(page, time_after_last_edition=60):  # minutes
 
 def is_trusted_version(site, page):
     first_editor = page.oldest_revision['user']
-    last_editor = page.contributors(total=1).keys()[0]
+    last_editor = list(page.contributors(total=1).keys())[0]
     if first_editor == last_editor:
         if debug_level > 0:
             pywikibot.output(' \03{green} the page belongs to its last edition user: \03{default}' + last_editor)

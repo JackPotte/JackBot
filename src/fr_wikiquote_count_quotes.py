@@ -111,6 +111,9 @@ def replace_template(piece):
 
 
 class Global(object):
+    def __init__(self):
+        self.lang = None
+
     """Container class for global settings.
        Use of globals outside of this is to be avoided."""
     mainpage_name = None
@@ -420,8 +423,8 @@ def generate_output(quotes):
     #        pywikibot.output('%s' % l[0].title())
 
     # Sort by number of quotes (return list of tuples, not dict)
-    acount = sorted(acount.items(),
-                    lambda x, y: cmp(y[1], x[1]) or locale.strcoll(x[0].title().lower(), y[0].title().lower()))
+    acount = sorted(acount.items())
+    #lambda x, y: cmp(y[1], x[1]) or locale.strcoll(x[0].title().lower(), y[0].title().lower()))
 
     output += msg[globalvar.lang][2]
     output += msg[globalvar.lang][3]

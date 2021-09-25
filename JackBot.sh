@@ -79,9 +79,10 @@ python core/pwb.py src/en_wikibooks_format -nocat
 python core/pwb.py src/fr_wikibooks_format -nocat
 python core/pwb.py src/fr_wikiversity_format -nocat
 python core/pwb.py src/fr_wikipedia_format
-python core/pwb.py src/wiktionary/fr_wiktionary_archive
 python core/pwb.py src/wiktionary/fr_wiktionary_create_inflexions
 python core/pwb.py src/wiktionary/fr_wiktionary_format
 python core/pwb.py src/wiktionary/fr_wiktionary_import_from_commons
+python core/pwb.py src/TalkArchiver.py --family:wiktionary
+python core/pwb.py src/TalkArchiver.py --family:wikisource
 
 #TODO: updateDumps_sh (by cron)

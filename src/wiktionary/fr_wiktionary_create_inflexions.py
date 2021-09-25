@@ -6,8 +6,7 @@ Ce script importe les flexions d'un Wiktionary dans un autre où le lemme se tro
 from __future__ import absolute_import, unicode_literals
 import os
 import sys
-import pywikibot
-from pywikibot import *
+from pywikibot import config, Page, User
 # JackBot
 dir_wt = os.path.dirname(__file__)
 dir_src = os.path.dirname(dir_wt)

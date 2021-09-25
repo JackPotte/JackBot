@@ -9,8 +9,7 @@ import os
 import re
 import sys
 import time
-import pywikibot
-from pywikibot import *
+from pywikibot import config, Page, User
 # JackBot
 dir_src = os.path.dirname(__file__)
 sys.path.append(dir_src)
