@@ -301,12 +301,11 @@ def workon(page):
 
     text = prepare_text(text)
 
-    # TODO APISite instance has no attribute 'nocapitalize' since PWB6
-    # if not site.nocapitalize:
-    #     pattern = '[' + re.escape(globalvar.quote_template[0].upper()) + re.escape(
-    #         globalvar.quote_template[0].lower()) + ']' + re.escape(globalvar.quote_template[1:])
-    # else:
-    pattern = re.escape(globalvar.quote_template)
+    if not site.siteinfo['case'] == 'case-sensitive':
+        pattern = '[' + re.escape(globalvar.quote_template[0].upper()) + re.escape(
+            globalvar.quote_template[0].lower()) + ']' + re.escape(globalvar.quote_template[1:])
+    else:
+        pattern = re.escape(globalvar.quote_template)
 
     r = re.compile(r'{{ *(?:[Tt]emplate:|[mM][sS][gG]:)?' + pattern)
 
@@ -414,14 +413,7 @@ def generate_output(quotes):
     output += msg[globalvar.lang][1]
     output += '\n\n'
 
-    #    locale.setlocale(locale.LC_ALL, "fr_FR@euro")
-    #    for l in sorted(acount.items(), lambda x,y: locale.strcoll(x[0].title().lower(), y[0].title().lower())):
-    #        pywikibot.output('%s' % l[0].title())
-
     # Sort dictionary by values (number of quotes) and return list of tuples (not dict)
-    # print(article_count.items()) # = dict_items([(Page('1984'), 21), ...])
-    # article_count = sorted(article_count.items(), key=lambda x, y:
-    #cmp(y[1], x[1]) or locale.strcoll(x[0].title().lower(), y[0].title().lower()))
     article_count = sorted(article_count.items(), key=lambda x: x[1], reverse=True)
 
     output += msg[globalvar.lang][2]
