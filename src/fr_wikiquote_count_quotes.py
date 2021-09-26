@@ -46,7 +46,7 @@ import re
 import sys
 import time
 import pywikibot
-from pywikibot import config, pagegenerators
+from pywikibot import config, pagegenerators, User
 
 site = pywikibot.Site('fr', 'wikiquote')
 msg = {
@@ -140,7 +140,7 @@ def debug(s):
 def error(s):
     # Output errors to ... stdout, because pywikipedia uses stderr for "normal"
     # output. *sigh*
-    pywikibot.output('ERROR: %s' % s, toStdout=True)
+    pywikibot.output('ERROR: %s' % s)
 
 
 def parse_templates(text):
@@ -314,13 +314,13 @@ def workon(page):
 
     matches = r.finditer(text)
     offset = 0
-    nquotes = 0
+    n_quotes = 0
 
     for m in matches:
         debug('match (200) : %s' % text[m.start():m.start() + 200])
         debug('offset: %d' % offset)
         # Real start of the match.
-        nquotes += 1
+        n_quotes += 1
         start = m.start() - offset
 
         if trim(text[start:]) == '':
@@ -336,14 +336,14 @@ def workon(page):
         quote = endtext[:qlen]
         text = text[:start] + endtext
 
-        debug('Quote 2: %s' % (quote))
+        debug('Quote 2: %s' % quote)
         debug('Text: %s' % text)
 
         # Strip all non-alphanumeric chars.
         squote = alnum.sub('', quote)
         h = hash(squote)
 
-        if not h in globalvar.quotes:
+        if h not in globalvar.quotes:
             globalvar.quotes[h] = [squote, [[quote, page]]]
         else:
             if globalvar.quotes[h][0] != squote:
@@ -352,68 +352,64 @@ def workon(page):
 
             globalvar.quotes[h][1].append([quote, page])
 
-    if nquotes == 0:
+    if n_quotes == 0:
         outputq("no quotes in %s" % page.title())
         globalvar.noquotes.append(page)
 
 
 def generate_output(quotes):
-    # We want to compute :
-    #  - The total number of (unique) quotes.
-    #  - The number of (unique) quotes per article.
-    #  - The number of duplicates. 
-    tcount = 0
-    acount = {}
-    dupcount = {}
+    # Compute (unique) quotes and duplicates
+    total_count = 0
+    article_count = {}
+    duplicate_count = {}
     # We also want :
     #  - to print similar-but-not-equal) quotes.
     #  - to print when the same quote appears twice in an article.
 
     outputq('quotes : %d' % len(quotes))
     for h in quotes:
-        # Unique quotes.
-        uquotes = {}
-        [operator.setitem(uquotes, i[0], []) for i in quotes[h][1] if not i[0] in uquotes]
+        unique_quotes = {}
+        [operator.setitem(unique_quotes, i[0], []) for i in quotes[h][1] if not i[0] in unique_quotes]
         # outputq('uquotes : %s' % uquotes)
 
         # Get associated pages.
         for q in quotes[h][1]:
-            if q[0] in uquotes:
-                uquotes[q[0]].append(q[1])
+            if q[0] in unique_quotes:
+                unique_quotes[q[0]].append(q[1])
 
         debug('increasing count by one')
         # Only increment by one, because all quotes with the same hash
         # should be similar enough to be considered identical.
-        tcount += 1
+        total_count += 1
 
         pr = False
         # Are all quotes the same?
-        if len(uquotes) > 1:
+        if len(unique_quotes) > 1:
             pr = True
             outputq('Similar quotes found :')
 
         articles = 0
-        for q in uquotes:
+        for q in unique_quotes:
             if pr:
                 outputq('\t%s (on:' % q, newline=False)
-            for a in uquotes[q]:
+            for a in unique_quotes[q]:
                 if pr:
                     outputq(' %s' % trim(a.title()), newline=False)
-                if a in acount:
-                    acount[a] += 1
+                if a in article_count:
+                    article_count[a] += 1
                 else:
-                    acount[a] = 1;
+                    article_count[a] = 1
                 articles += 1
             if pr:
                 outputq(')')
 
-        if articles in dupcount:
-            dupcount[articles] += 1
+        if articles in duplicate_count:
+            duplicate_count[articles] += 1
         else:
-            dupcount[articles] = 1
+            duplicate_count[articles] = 1
 
-    outputq('TOTAL NUMBER OF QUOTES : %d' % tcount)
-    output = msg[globalvar.lang][0] % (tcount, len(acount))
+    outputq('TOTAL NUMBER OF QUOTES : %d' % total_count)
+    output = msg[globalvar.lang][0] % (total_count, len(article_count))
     output += '<small style="font-size: 70%%">(%s)</small></h1>\n'
     output += msg[globalvar.lang][1]
     output += '\n\n'
@@ -422,24 +418,26 @@ def generate_output(quotes):
     #    for l in sorted(acount.items(), lambda x,y: locale.strcoll(x[0].title().lower(), y[0].title().lower())):
     #        pywikibot.output('%s' % l[0].title())
 
-    # Sort by number of quotes (return list of tuples, not dict)
-    acount = sorted(acount.items())
-    #lambda x, y: cmp(y[1], x[1]) or locale.strcoll(x[0].title().lower(), y[0].title().lower()))
+    # Sort dictionary by values (number of quotes) and return list of tuples (not dict)
+    # print(article_count.items()) # = dict_items([(Page('1984'), 21), ...])
+    # article_count = sorted(article_count.items(), key=lambda x, y:
+    #cmp(y[1], x[1]) or locale.strcoll(x[0].title().lower(), y[0].title().lower()))
+    article_count = sorted(article_count.items(), key=lambda x: x[1], reverse=True)
 
     output += msg[globalvar.lang][2]
     output += msg[globalvar.lang][3]
 
     # Make it Unicode because the titles will be Unicode.
 
-    for a in acount:
+    for a in article_count:
         outputq('adding to table: %s' % a[0].title())
         output += '|-\n| [[%s]] || %d\n' % (a[0].title(), a[1])
     for p in globalvar.noquotes:
         output += '|-\n| [[%s]] || 0\n' % p.title()
 
     mean = 0
-    if len(acount) != 0:
-        mean = tcount / float(len(acount))
+    if len(article_count) != 0:
+        mean = total_count / float(len(article_count))
 
     output2 = ""
     output2 += msg[globalvar.lang][4] % mean
@@ -452,11 +450,11 @@ def generate_output(quotes):
 
     output += output2
 
-    for a in dupcount:
-        output += '|-\n|%d || %d\n' % (a, dupcount[a])
+    for a in duplicate_count:
+        output += '|-\n|%d || %d\n' % (a, duplicate_count[a])
     output += '|}\n\n'
 
-    return [output, tcount, len(acount)]
+    return [output, total_count, len(article_count)]
 
 
 class Main(object):
@@ -488,7 +486,7 @@ class Main(object):
                     self.__refpagetitle = arg[5:]
             elif arg.startswith('-cat'):
                 if len(arg) == 4:
-                    self.__catname = pywikibot.input('Please enter the category name:');
+                    self.__catname = pywikibot.input('Please enter the category name:')
                 else:
                     self.__catname = arg[5:]
             elif arg.startswith('-subcat'):
@@ -559,7 +557,7 @@ class Main(object):
 
         if self.__workonnew:
             if not self.__number:
-                self.__number = config.special_page_limit
+                self.__number = 500
             pagegen = pagegenerators.NewpagesPageGenerator(number=self.__number)
 
         elif self.__refpagetitle:
@@ -619,6 +617,7 @@ class Main(object):
             workon(page)
 
         [output, nquotes, npages] = generate_output(globalvar.quotes)
+        outputpage = self.__output
         if self.__output:
             try:
                 outputpage = pywikibot.Page(site, self.__output)
