@@ -188,7 +188,7 @@ def treat_page_by_name(page_name):
             if debug_level > 1:
                 print('  Pluriel n°1')
             if plural[-2:] == 'xs':
-                print(' Pluriel en xs : erreur')
+                print(' Pluriel en xs : ' + plural)
                 return
             elif plural[-2:] == 'ss' and page_name[-2:] != 'ss':
                 lemma_param = '|' + param[m] + '=' + plural[:-2]
@@ -386,7 +386,7 @@ def getWordPlural(page_content, page_name, current_template):
                 plural = page_name + 's'
 
             if (plural[-2:] == 'ss' or plural.find('{') != -1) and suffix == '':
-                print(' pluriel en -ss')
+                print(' Pluriel en -ss' + plural)
                 return
             if debug_level > 1:
                 print('  paramètre du modèle du lemme : ' + page_content[:page_content.find('}}')])
