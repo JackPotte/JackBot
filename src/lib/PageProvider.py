@@ -193,26 +193,25 @@ class PageProvider:
                         return
 
     # [[Special:WhatLinksHere]]
-    def pages_by_link(self, page_name, after_page=None, site=None, namespaces=[0, 10], linked=False,
+    def pages_by_link(self, page_name, after_page=None, site=None, namespaces=[0, 10], is_linked=False,
                       only_template_inclusion=True):
         if site is None:
             site = self.site
-        modify = False
+        is_after_page = False
         page = pywikibot.Page(site, page_name)
-        gen = pagegenerators.LinkedPageGenerator(page,)
-        gen = pagegenerators.NamespaceFilterPageGenerator(gen, namespaces)
-        for page in pagegenerators.PreloadingGenerator(gen, 100):
-            if not after_page or after_page == '' or modify:
-                if linked:
-                    gen2 = pagegenerators.LinkedPageGenerator(page.title(),
-                                                                 onlyTemplateInclusion=only_template_inclusion)
-                    gen2 = pagegenerators.NamespaceFilterPageGenerator(gen2, namespaces)
-                    for linked_page in pagegenerators.PreloadingGenerator(gen2, 100):
-                        self.treat_page(linked_page.title())
+        linked_pages = page.linkedPages(namespaces)  # TODO: pagegenerators.LinkedPageGenerator(page) or it now return a false list
+        for linked_page in linked_pages:
+            if self.debug_level > 0:
+                print(' Linked page: ' + linked_page.title())
+            if not after_page or after_page == '' or is_after_page:
+                if is_linked:
+                    linked_linked_pages = linked_page.linkedPages(namespaces)
+                    for linked_linked_page in linked_linked_pages:
+                        self.treat_page(linked_linked_page.title())
                 else:
                     self.treat_page(page.title())
-            elif page.title() == after_page:
-                modify = True
+            elif linked_page.title() == after_page:
+                is_after_page = True
 
     # [[Special:Search]]
     def pages_by_search(self, search_string, namespaces=None, site=None, after_page=None):
