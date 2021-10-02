@@ -99,11 +99,17 @@ param.append('niveau')
 
 
 def treat_page_by_name(page_name):
+    page = Page(site, page_name)
+    return treat_page(page)
+
+
+def treat_page(page):
     if debug_level > 0:
         print('------------------------------------')
+    page_name = page.title()
     pywikibot.output("\n\03{blue}" + page_name + u"\03{default}")
+
     summary = 'Formatage'
-    page = Page(site, page_name)
     current_page_content = get_content_from_page(page, 'All')
     page_content = current_page_content
     final_page_content = ''
@@ -544,7 +550,7 @@ def get_value(word, page_content):
     '''
 
 
-p = PageProvider(treat_page_by_name, site, debug_level)
+p = PageProvider(treat_page, site, debug_level)
 set_functions_globals(debug_level, site, username)
 
 

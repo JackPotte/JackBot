@@ -49,7 +49,8 @@ class PageProvider:
                 if page_name.find(']]') != -1:
                     page_name = page_name[:page_name.find(']]')]
                 # Conversion ASCII => Unicode (pour les .txt)
-                self.treat_page(update_html_to_unicode(page_name))
+                page = Page(site, update_html_to_unicode(page_name))
+                self.treat_page(page)
             pages_list.close()
 
     def page_by_xml(self, source, regex=None, site=None, folder='dumps', include=None, exclude=None,
@@ -142,7 +143,7 @@ class PageProvider:
                             self.outputFile.write(
                                 (linked_page.title() + '\n'))
                         else:
-                            self.treat_page(linked_page.title())
+                            self.treat_page(linked_page)
                 elif pages_list:
                     self.outputFile.write((page.title() + '\n'))
                 else:
@@ -169,47 +170,69 @@ class PageProvider:
                             self.treat_page_if_name(page.title(), names, not_names)
 
     def treat_page_if_name(self, page_name, names=None, not_names=None):
+        page = Page(self.site, page_name)
         if names is None and not_names is None:
-            self.treat_page(page_name)
+            self.treat_page(page)
         elif names is not None:
             for name in names:
                 if self.debug_level > 1:
                     print(' ' + name + ' trouvé')
                 if page_name.find(name) != -1:
-                    self.treat_page(page_name)
+                    self.treat_page(page)
                     return
         elif not_names is not None:
             for notName in not_names:
                 if self.debug_level > 1:
                     print(' ' + notName + ' ignoré')
                 if page_name.find(notName) == -1:
-                    self.treat_page(page_name)
+                    self.treat_page(page)
                     return
         else:
             for name in names:
                 for notName in not_names:
                     if page_name.find(name) != -1 and page_name.find(notName) == -1:
-                        self.treat_page(page_name)
+                        self.treat_page(page)
                         return
 
-    # [[Special:WhatLinksHere]]
+    # [[Special:WhatLinksHere]] with link
+    def pages_by_untranscluded_link(self, page_name, after_page=None, site=None, namespaces=[0, 10], is_linked=False,
+                      only_template_inclusion=True):
+        if site is None:
+            site = self.site
+        is_after_page = False
+        page = pywikibot.Page(site, page_name)
+        linked_pages = page.linkedPages(namespaces=namespaces)
+        for linked_page in linked_pages:
+            if self.debug_level > 0:
+                print(' Linked page: ' + linked_page.title())
+            if not after_page or after_page == '' or is_after_page:
+                if is_linked:
+                    linked_linked_pages = linked_page.linkedPages(namespaces=namespaces)
+                    for linked_linked_page in linked_linked_pages:
+                        self.treat_page(linked_linked_page)
+                else:
+                    self.treat_page(linked_page)
+            elif linked_page.title() == after_page:
+                is_after_page = True
+
+    # [[Special:WhatLinksHere]] with transclude
     def pages_by_link(self, page_name, after_page=None, site=None, namespaces=[0, 10], is_linked=False,
                       only_template_inclusion=True):
         if site is None:
             site = self.site
         is_after_page = False
         page = pywikibot.Page(site, page_name)
-        linked_pages = page.linkedPages(namespaces)  # TODO: pagegenerators.LinkedPageGenerator(page) or it now return a false list
+        linked_pages = page.embeddedin(namespaces=namespaces)
         for linked_page in linked_pages:
             if self.debug_level > 0:
                 print(' Linked page: ' + linked_page.title())
             if not after_page or after_page == '' or is_after_page:
                 if is_linked:
-                    linked_linked_pages = linked_page.linkedPages(namespaces)
+                    linked_linked_pages = linked_page.embeddedin(namespaces=namespaces)
                     for linked_linked_page in linked_linked_pages:
-                        self.treat_page(linked_linked_page.title())
+                        self.treat_page(linked_linked_page)
                 else:
-                    self.treat_page(page.title())
+                    self.treat_page(linked_page)
             elif linked_page.title() == after_page:
                 is_after_page = True
 
@@ -222,7 +245,7 @@ class PageProvider:
         gen = pagegenerators.SearchPageGenerator(search_string, site=site, namespaces=namespaces)
         for page in pagegenerators.PreloadingGenerator(gen, 100):
             if not after_page or after_page == '' or modify:
-                self.treat_page(page.title())
+                self.treat_page(page)
             elif page.title() == after_page:
                 modify = True
 
@@ -237,7 +260,7 @@ class PageProvider:
             if self.debug_level > 1:
                 print(str(time_after_last_edition(Page) + ' =? ' + str(minimum_time)))
             if time_after_last_edition(Page) > minimum_time:
-                self.treat_page(page.title())
+                self.treat_page(page)
 
     # [[Special:RecentChanges]]
     def pages_by_rc_last_day(self, nobots=True, ns='0', site=None):
@@ -284,7 +307,7 @@ class PageProvider:
                     found = True
 
                 if found:
-                    self.treat_page(page.title())
+                    self.treat_page(page)
                     # self.outputFile.write((page.title() + '\n'))
                 number_of_pages_treated += 1
                 if number_of_pages_to_treat is not None and number_of_pages_treated > number_of_pages_to_treat:
@@ -298,21 +321,21 @@ class PageProvider:
             site = self.site
         gen = pagegenerators.AllpagesPageGenerator(start, namespace=ns, includeredirects=False, site=site)
         for page in pagegenerators.PreloadingGenerator(gen, 100):
-            self.treat_page(page.title())
+            self.treat_page(page)
 
     # [[Special:ListRedirects]]
     def pages_by_redirects(self, start='', site=None):
         if site is None:
             site = self.site
         for page in site.allpages(start, namespace=0, includeredirects='only'):
-            self.treat_page(page.title())
+            self.treat_page(page)
 
     # [[Special:Index]]
     def pages_by_prefix(self, prefix='', site=None, namespace=None):
         if site is None:
             site = self.site
         for page in pagegenerators.PrefixingPageGenerator(prefix, site=site, namespace=namespace, includeredirects=False):
-            self.treat_page(page.title())
+            self.treat_page(page)
 
     # [[Special:UncategorizedPages]]
     def pages_by_special_not_categorized(self, site=None):
@@ -321,35 +344,35 @@ class PageProvider:
         global do_add_category
         do_add_category = True
         for page in site.uncategorizedpages():
-            self.treat_page(page.title())
+            self.treat_page(page)
 
     # [[Special:WantedCategories]]
     def pages_by_special_wanted_categories(self, site=None):
         if site is None:
             site = self.site
         for page in site.wantedcategories():
-            self.treat_page(page.title())
+            self.treat_page(page)
 
     # [[Special:WantedPages]]
     def pages_by_special_wanted_pages(self, site=None):
         if site is None:
             site = self.site
         for page in site.wantedpages():
-            self.treat_page(page.title())
+            self.treat_page(page)
 
     # [[Special:LinkSearch]]
     def pages_by_special_link_search(self, url, namespaces=[0], site=None):
         if site is None:
             site = self.site
         for page in site.exturlusage(url=url, namespaces=namespaces):
-            self.treat_page(page.title())
+            self.treat_page(page)
 
     # [[Special:LintErrors]]
     def pages_by_special_lint(self, namespaces=None, site=None, lint_categories='multiple-unclosed-formatting-tags'):
         if site is None:
             site = self.site
         for page in site.linter_pages(lint_categories=lint_categories, namespaces=namespaces):
-            self.treat_page(page.title())
+            self.treat_page(page)
 
     # *** Tested methods ***
     # TODO: impossible de parser une page spéciale ainsi (et pywikibot.site.BaseSite.postForm is deprecated)
@@ -358,4 +381,4 @@ class PageProvider:
             site = self.site
         page = pywikibot.Page(site, 'Special:ApiSandbox')
         # input(page._get_parsed_page())  # TODO API error pagecannotexist: Namespace doesn't allow actual pages.
-        # self.treat_page(page.title())
+        # self.treat_page(page)

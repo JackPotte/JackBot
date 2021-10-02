@@ -44,10 +44,16 @@ DebutScan = 'interspersed'
 
 
 def treat_page_by_name(page_name):
+    page = Page(site, page_name)
+    return treat_page(page)
+
+
+def treat_page(page):
     if debug_level > 0:
         print('------------------------------------')
+    page_name = page.title()
     pywikibot.output("\n\03{blue}" + page_name + u"\03{default}")
-    page = Page(site, page_name)
+
     if not has_more_than_time(page, 1440):
         return
     if page.exists():
@@ -462,7 +468,7 @@ def getWordPronunciation(page_content):
     return trim(pronM)
 
 
-p = PageProvider(treat_page_by_name, site, debug_level)
+p = PageProvider(treat_page, site, debug_level)
 set_functions_globals(debug_level, site, username)
 set_fr_wiktionary_functions_globals(debug_level, site, username)
 

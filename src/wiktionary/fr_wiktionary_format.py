@@ -78,8 +78,19 @@ output_file = ''
 anagrams_max_length = 4  # TODO: from dump otherwise 5 chars > 5 min & 8 chars > 1 h per page)
 languagesWithoutGender = ['en', 'ja', 'ko', 'zh']
 
+
 def treat_page_by_name(page_name):
+    page = Page(site, page_name)
+    return treat_page(page)
+
+
+def treat_page(page):
     global debug_level
+    if debug_level > 0:
+        print('------------------------------------')
+    page_name = page.title()
+    pywikibot.output("\n\03{blue}" + page_name + u"\03{default}")
+
     summary = '[[Wiktionnaire:Structure des articles|Autoformatage]]'
     if debug_level > 0:
         print('------------------------------------')
@@ -93,7 +104,6 @@ def treat_page_by_name(page_name):
                 print('Création d\'une redirection apostrophe')
             save_page(page, '#REDIRECT[[' + page_name + ']]', 'Redirection pour apostrophe', minor_edit=True)
 
-    page = Page(site, page_name)
     if debug_level == 0 and days_before_archiving and (page_name.find('<') != -1 or not has_more_than_time(page)):
         return
 
@@ -997,7 +1007,7 @@ def format_fr_section(page_content, summary, page_name, regex_page_name):
     return page_content, summary
 
 
-p = PageProvider(treat_page_by_name, site, debug_level)
+p = PageProvider(treat_page, site, debug_level)
 set_functions_globals(debug_level, site, username)
 set_fr_wiktionary_functions_globals(debug_level, site, username)
 

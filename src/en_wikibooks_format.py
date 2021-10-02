@@ -56,10 +56,16 @@ book_categorizing_templates.append('header')
 
 
 def treat_page_by_name(page_name):
+    page = Page(site, page_name)
+    return treat_page(page)
+
+
+def treat_page(page):
     if debug_level > 0:
         print('------------------------------------')
+    page_name = page.title()
     pywikibot.output("\n\03{blue}" + page_name + u"\03{default}")
-    page = Page(site, page_name)
+
     current_page_content = get_content_from_page(page, 'All')
     if username not in page_name and (
         current_page_content is None
@@ -136,7 +142,7 @@ def treat_page_by_name(page_name):
         save_page(page, final_page_content, summary)
 
 
-p = PageProvider(treat_page_by_name, site, debug_level)
+p = PageProvider(treat_page, site, debug_level)
 set_functions_globals(debug_level, site, username)
 
 

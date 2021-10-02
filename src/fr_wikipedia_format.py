@@ -53,21 +53,30 @@ referencesAliases = []
 
 
 def treat_page_by_name(page_name):
+    page = Page(site, page_name)
+    return treat_page(page)
+
+
+def treat_page(page):
     if debug_level > 0:
         print('------------------------------------')
+    page_name = page.title()
     pywikibot.output("\n\03{blue}" + page_name + u"\03{default}")
+
     summary = 'Formatage'
-    page = Page(site, page_name)
     if not page.exists():
+        print(' page does not exist')
         return
     if not has_more_than_time(page):
+        print(' page is too freshly edited')
         return
     if not treat_all_namespaces and page.namespace() != 0 and page_name.find(username) == -1 \
             and page_name.find('Template:Cite pmid/') == -1:
+        print(' not Cite pmid: ' + str(page.namespace()))
         return
     current_page_content = get_content_from_page(page, 'All')
     if current_page_content is None:
-        print('page_content illisible')
+        print(' page_content illisible')
         return
     current_page = current_page_content
 
@@ -179,7 +188,7 @@ def treat_page_by_name(page_name):
         save_page(page, final_page, summary)
 
 
-p = PageProvider(treat_page_by_name, site, debug_level)
+p = PageProvider(treat_page, site, debug_level)
 set_functions_globals(debug_level, site, username)
 set_globals_translator(debug_level, site, username)
 
