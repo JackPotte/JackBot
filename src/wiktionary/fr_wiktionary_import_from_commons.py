@@ -8,7 +8,7 @@ import os
 import re
 import sys
 import pywikibot
-from pywikibot import *
+from pywikibot import config, Page
 # JackBot
 dir_wt = os.path.dirname(__file__)
 dir_src = os.path.dirname(dir_wt)
