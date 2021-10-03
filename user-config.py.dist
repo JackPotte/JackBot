@@ -1,0 +1,29 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
+
+minthrottle = 0
+maxthrottle = 0
+
+mylang = 'fr'
+family = 'wiktionary'
+
+usernames['commons']['commons'] = 'JackPotte'
+usernames['wikidata']['wikidata'] = 'JackBot'
+usernames['meta']['meta'] = 'JackBot'
+usernames['species']['species'] = 'JackBot'
+
+sites = [
+    'wikibooks',
+    'wikinews',
+    'wikipedia',
+    'wikiquote',
+    'wikisource',
+    'wikiversity',
+    'wikivoyage',
+    'wiktionary',
+]
+languages = ['de', 'en', 'es', 'fr', 'it', 'my', 'pl', 'pt', 'ru', 'se', 'sv', 'ta', 'tr', 'zh']
+
+for site in sites:
+    for language in languages:
+        usernames[site][language] = 'JackBot'
