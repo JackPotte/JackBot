@@ -3367,6 +3367,11 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                             print('  exists (+)')
                         final_page_content, page_content = next_translation_template(final_page_content,
                                                                                      page_content, '+')
+                    # else: commented because makes "-" instead of "--" if wiki is closed
+                    #     if debug_level > d:
+                    #         print('  not exists (-)')
+                    #     final_page_content, page_content = next_translation_template(final_page_content,
+                    #                                                                  page_content, '-')
     return page_content, final_page_content, summary
 
 
