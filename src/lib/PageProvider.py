@@ -131,7 +131,7 @@ class PageProvider:
             gen = pagegenerators.CategorizedPageGenerator(cat, recurse=recursive, namespaces=namespaces)
         modify = False
         for page in pagegenerators.PreloadingGenerator(gen, page_ids):
-            if self.debug_level > 0:
+            if self.debug_level > 2:
                 print('  ' + page.title())
             if page.title() == after_page:
                 modify = True

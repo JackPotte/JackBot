@@ -971,29 +971,75 @@ def next_translation_template(final_page_content, current_page_content, result='
     return final_page_content, current_page_content
 
 
+def check_false_homophons(final_page_content, summary, page_name, infinitive, singular_page_name):
+    language = 'fr'  # TODO: intl
+    if final_page_content.find('{{langue|' + language + '}}') != -1:
+        if debug_level > 0:
+            print(' Fix false homophons (lemma and its inflexion)')
+        # TODO: {{S}} forced locutions parameter
+
+        flexion_page_name = ''
+        lemma_template_suffix = '|' + language + '}}'
+        flexion_template_suffix = '|' + language + '|flexion}}'
+        if flexion_template_suffix in final_page_content and lemma_template_suffix not in final_page_content:
+            # Recherche d'éventuelles flexions dans la page du lemme
+            inflexion_template = get_inflexion_template(page_name, language)
+            if inflexion_template.find('inv=') == -1 and \
+                    (inflexion_template[:inflexion_template.find('|')] in inflexion_templates_fr_with_s
+                     or inflexion_template[:inflexion_template.find('|')] in inflexion_templates_fr_with_ms):
+                flexion_page_name = get_parameter_value(inflexion_template, 'p')
+                if flexion_page_name == '':
+                    flexion_page_name = page_name + 's'
+
+            if infinitive is not None and infinitive != '':
+                final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
+                                                                     infinitive, summary)
+            if singular_page_name is not None and singular_page_name != '':
+                final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
+                                                                     singular_page_name, summary)
+            if flexion_page_name is not None and flexion_page_name != '':
+                final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
+                                                                     flexion_page_name, summary)
+            ms_page_name = get_lemma_from_feminine(final_page_content, language, ['adjectif'])
+            if ms_page_name is not None and ms_page_name != '':
+                final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
+                                                                     ms_page_name, summary)
+        if debug_level > 2:
+            input(final_page_content)
+
+    return final_page_content, summary
+
+
 def remove_false_homophons(page_content, language_code, page_name, related_page_name, summary):
     if debug_level > 1:
         print('\nremove_false_homophons(' + related_page_name + ')')
-    regex = r"==== *{{S\|homophones\|" + language_code + r"}} *====\n\* *'''" + re.escape(page_name) + \
-        r"''' *{{cf\|[^\|]*\|?" + re.escape(related_page_name) + r"[\|}][^\n]*\n"
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
-        summary = summary + ', homophone erroné'
-    regex = r"==== *{{S\|homophones\|" + language_code + r"}} *====\n\* *\[\[[^}\n]+{{cf\|[^\|]*\|?" \
-            + re.escape(related_page_name) + r"[\|}][^\n]*\n?"
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
-        summary = summary + ', homophone erroné'
-    regex = r"==== *{{S\|homophones\|" + language_code + r"}} *====\n\* *\[\[" + re.escape(related_page_name) \
-            + r"\]\](\n|$)"
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
-        summary = summary + ', homophone erroné'
 
-    regex = r"=== {{S\|prononciation}} ===\n==== *{{S\|homophones\|[^}]*}} *====\n*(=|$|{{clé de tri|\[\[Catégorie:)"
-    if re.search(regex, page_content): page_content = re.sub(regex, r'\1', page_content)
-    regex = r"==== *{{S\|homophones\|[^}]*}} *====\n*(=|$|{{clé de tri|\[\[Catégorie:)"
-    if re.search(regex, page_content): page_content = re.sub(regex, r'\1', page_content)
+    for i in range(0, 2):
+        regex = r"==== *{{S\|homophones\|" + language_code + r"}} *====\n\* *'''" + re.escape(page_name) + \
+            r"''' *{{cf\|[^\|]*\|?" + re.escape(related_page_name) + r"[\|}][^\n]*\n"
+        if re.search(regex, page_content):
+            page_content = re.sub(regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
+            summary = summary + ', homophone erroné'
+
+        regex = r"==== *{{S\|homophones\|" + language_code + r"}} *====\n\* *\[\[[^}\n]+{{cf\|[^\|]*\|?" \
+                + re.escape(related_page_name) + r"[\|}][^\n]*\n?"
+        if re.search(regex, page_content):
+            page_content = re.sub(regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
+            summary = summary + ', homophone erroné'
+
+        regex = r"==== *{{S\|homophones\|" + language_code + r"}} *====\n\* *\[\[" + re.escape(related_page_name) \
+                + r"\]\](\n|$)"
+        if re.search(regex, page_content):
+            page_content = re.sub(regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
+            summary = summary + ', homophone erroné'
+
+        regex = r"=== {{S\|prononciation}} ===\n==== *{{S\|homophones\|[^}]*}} *====\n*(=|$|{{clé de tri|\[\[Catégorie:)"
+        if re.search(regex, page_content):
+            page_content = re.sub(regex, r'\1', page_content)
+
+        regex = r"==== *{{S\|homophones\|[^}]*}} *====\n*(=|$|{{clé de tri|\[\[Catégorie:)"
+        if re.search(regex, page_content):
+            page_content = re.sub(regex, r'\1', page_content)
 
     return page_content, summary
 

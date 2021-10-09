@@ -90,12 +90,9 @@ def treat_page(page):
     if debug_level > 0:
         print('------------------------------------')
     page_name = page.title()
-    pywikibot.output("\n\03{blue}" + page_name + u"\03{default}")
+    pywikibot.output("\n\03{blue}" + page_name + "\03{default}")
 
     summary = '[[Wiktionnaire:Structure des articles|Autoformatage]]'
-    if debug_level > 0:
-        print('------------------------------------')
-    pywikibot.output("\n\03{blue}" + page_name + u"\03{default}")
     if page_name[-3:] == '.js' or page_name[-4:] == '.css':
         return
     if page_name.find('’') != -1:
@@ -498,7 +495,7 @@ def treat_page(page):
                     else:
                         if debug_level > 0:
                             pywikibot.output("  Template with language code at second: \03{green}" + current_template
-                                             + u"\03{default}")
+                                             + "\03{default}")
                         page_content, final_page_content, summary = treat_pronunciation(page_content,
                                                                                         final_page_content, summary,
                                                                                         end_position, current_template,
@@ -795,8 +792,8 @@ def treat_page(page):
                              'ments']  # pas "é" : adaptabilité
                 for mSuffix in mSuffixes:
                     if page_name[-len(mSuffix):] == mSuffix:
-                        final_page_content = final_page_content.replace(u"{{genre|fr}}", u"{{m}}")
-                        final_page_content = final_page_content.replace(u"{{genre ?|fr}}", u"{{m}}")
+                        final_page_content = final_page_content.replace("{{genre|fr}}", "{{m}}")
+                        final_page_content = final_page_content.replace("{{genre ?|fr}}", "{{m}}")
                         summary = summary + ', précision du genre m'
                         if debug_level > 1:
                             print('  m2')
@@ -806,8 +803,8 @@ def treat_page(page):
                              'elle', 'ive']
                 for fSuffix in fSuffixes:
                     if page_name[-len(fSuffix):] == fSuffix:
-                        final_page_content = final_page_content.replace(u"{{genre|fr}}", u"{{f}}")
-                        final_page_content = final_page_content.replace(u"{{genre ?|fr}}", u"{{f}}")
+                        final_page_content = final_page_content.replace("{{genre|fr}}", "{{f}}")
+                        final_page_content = final_page_content.replace("{{genre ?|fr}}", "{{f}}")
                         summary = summary + ', précision du genre f'
                         if debug_level > 1:
                             print('  f2')
@@ -816,8 +813,8 @@ def treat_page(page):
                 mfSuffixes = ['iste']
                 for mfSuffix in mfSuffixes:
                     if page_name[-len(mfSuffix):] == mfSuffix:
-                        final_page_content = final_page_content.replace(u"{{genre|fr}}", u"{{mf}}")
-                        final_page_content = final_page_content.replace(u"{{genre ?|fr}}", u"{{mf}}")
+                        final_page_content = final_page_content.replace("{{genre|fr}}", "{{mf}}")
+                        final_page_content = final_page_content.replace("{{genre ?|fr}}", "{{mf}}")
                         summary = summary + ', précision du genre mf'
                         if debug_level > 1:
                             print('  mf1')
@@ -857,24 +854,24 @@ def treat_page(page):
                     i = 0
                     while i < len(new_suffix):
                         if page_name[-len(new_suffix[i] + 's'):] == new_suffix[i] + 's':
-                            regex = r"({{fr\-rég\|s=[^\|}]+)" + old_suffix[i] + u"([\|}])"
+                            regex = r"({{fr\-rég\|s=[^\|}]+)" + old_suffix[i] + "([\|}])"
                             if re.search(regex, new_section_content):
                                 new_section_content = re.sub(regex, r'\1' + new_suffix[i] + r'\2', new_section_content)
 
                             regex = r"({{f}}\n# *''(?:[fF]éminin )?[pP]luriel de'' \[\[[^\|\]#]+)" + old_suffix[
-                                i] + u"([\|#][^\]]+)" + old_suffix[i] + u"(\])"
+                                i] + "([\|#][^\]]+)" + old_suffix[i] + "(\])"
                             if re.search(regex, new_section_content):
                                 new_section_content = re.sub(regex,
                                                              r'\1' + new_suffix[i] + r'\2' + new_suffix[i] + r'\3',
                                                              new_section_content)
 
                             regex = r"({{f}}\n# *''(?:[fF]éminin )?[pP]luriel de'' \[\[[^\|\]#]+)" + old_suffix[
-                                i] + u"([\|#])"
+                                i] + "([\|#])"
                             if re.search(regex, new_section_content):
                                 new_section_content = re.sub(regex, r'\1' + new_suffix[i] + r'\2', new_section_content)
 
                             regex = r"({{f}}\n# *''(?:[fF]éminin )?[pP]luriel de'' \[\[[^\|\]#]+)" + old_suffix[
-                                i] + u"(\])"
+                                i] + "(\])"
                             if re.search(regex, new_section_content):
                                 new_section_content = re.sub(regex, r'\1' + new_suffix[i] + r'\2', new_section_content)
                         i = i + 1
@@ -892,40 +889,7 @@ def treat_page(page):
                     summary = summary + ', correction de flexion de nom féminin'
                     final_page_content = final_page_content.replace(section_content, new_section_content)
 
-        language = 'fr'  # TODO: intl
-        if final_page_content.find('{{langue|' + language + '}}') != -1:
-            if debug_level > 0:
-                print(' Fix false homophons (lemma and its inflexion)')
-            # TODO : modèles des locutions
-            # TODO : doublon systématique ? singular_page_name = getLemmaFromContent(final_page_content, language)
-            flexion_page_name = ''
-            if final_page_content.find('|' + language + '|flexion}}') == -1:
-                # Recherche d'éventuelles flexions dans la page du lemme
-                inflexion_template = get_inflexion_template(page_name, language)
-                if inflexion_template.find('inv=') == -1 and \
-                        (inflexion_template[:inflexion_template.find('|')] in inflexion_templates_fr_with_s
-                         or inflexion_template[:inflexion_template.find('|')] in inflexion_templates_fr_with_ms):
-                    flexion_page_name = get_parameter_value(inflexion_template, 'p')
-                    if flexion_page_name == '':
-                        flexion_page_name = page_name + 's'
-                # TODO: inflexion_template = [conjugaisons]
-
-            for i in range(0, 2):
-                if infinitive is not None and infinitive != '':
-                    final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
-                                                                        infinitive, summary)
-                if singular_page_name is not None and singular_page_name != '':
-                    final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
-                                                                        singular_page_name, summary)
-                if flexion_page_name is not None and flexion_page_name != '':
-                    final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
-                                                                        flexion_page_name, summary)
-                ms_page_name = get_lemma_from_feminine(final_page_content, language, ['adjectif'])
-                if ms_page_name is not None and ms_page_name != '':
-                    final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
-                                                                        ms_page_name, summary)
-            if debug_level > 2:
-                input(final_page_content)
+        final_page_content, summary = check_false_homophons(final_page_content, summary, page_name, infinitive, singular_page_name)
 
         regex = r'([^\n=])(===?=? *{{S\|)'
         if re.search(regex, final_page_content):
@@ -1022,6 +986,7 @@ def main(*args):
         after_page = ''
         if len(sys.argv) > 2:
             after_page = sys.argv[2]
+
         if sys.argv[1] == str('-test'):
             treat_page_by_name('User:' + username + '/test')
         elif sys.argv[1] == str('-test2'):
