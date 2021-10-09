@@ -45,9 +45,9 @@ def get_gender_from_page_name(page_name, language_code='fr', nature=None):
         gender = '{{m}}'
     elif page_content.find('|' + language_code + '}} {{f}}') != -1:
         gender = '{{f}}'
-    elif page_content.find(u"''' {{m}}") != -1:
+    elif page_content.find("''' {{m}}") != -1:
         gender = '{{m}}'
-    elif page_content.find(u"''' {{f}}") != -1:
+    elif page_content.find("''' {{f}}") != -1:
         gender = '{{f}}'
     if debug_level > 1:
         input(gender)
@@ -339,14 +339,14 @@ def get_pronunciation_from_content(page_content, language_code, nature=None):
         page_content = re.sub(regex, r'{{\1|\2\3 {{pron|\2|' + language_code + '}}\4\n', page_content)
         return pronunciation
 
-    regex = r'{{(' + templates.replace('-', '\-') + u")\|([^{}]+)}}"
+    regex = r'{{(' + templates.replace('-', '\-') + r")\|([^{}]+)}}"
     s = re.search(regex, page_content)
     if s:
         template = s.group(1)
         if debug_level > 0:
             print(template)
 
-    regex = r'{{(' + templates2 + u")\|([^{}]+)}}"
+    regex = r'{{(' + templates2 + r")\|([^{}]+)}}"
     s = re.search(regex, page_content)
     if s:
         template = s.group(1)
@@ -669,8 +669,8 @@ def add_section(page_content, sections_in_page, section_name, section_to_add_ord
                     if section_name in natures:
                         section_to_add = section_to_add.replace('}}', '|' + language_code + '}}')
                         if line_content[:1] == '#' or line_content[:2] == '\n#':
-                            section_to_add += u"'''{{subst:PAGENAME}}''' {{genre ?|" + language_code + \
-                                u"}} {{pluriel ?|" + language_code + u"}}\n"
+                            section_to_add += "'''{{subst:PAGENAME}}''' {{genre ?|" + language_code + \
+                                "}} {{pluriel ?|" + language_code + "}}\n"
                     page_content = page_content[:start_position] + language_section[:s.start()] + \
                         section_to_add + language_section[s.start():] + page_content[start_position+end_position:]
                 else:
@@ -908,7 +908,7 @@ def add_language_code_with_named_parameter_to_template(
     end_position=0
 ):        
     if debug_level > 0:
-        pywikibot.output("  Template with lang=: \03{green}" + current_template + u"\03{default}")
+        pywikibot.output("  Template with lang=: \03{green}" + current_template + "\03{default}")
     page_content2 = page_content[end_position + 1:]
 
     is_category = current_template != 'cf' or (page_content2.find('}}') > end_position + 1
@@ -974,20 +974,20 @@ def next_translation_template(final_page_content, current_page_content, result='
 def remove_false_homophons(page_content, language_code, page_name, related_page_name, summary):
     if debug_level > 1:
         print('\nremove_false_homophons(' + related_page_name + ')')
-    regex = r"==== *{{S\|homophones\|" + language_code + u"}} *====\n\* *'''" + re.escape(page_name) + \
+    regex = r"==== *{{S\|homophones\|" + language_code + r"}} *====\n\* *'''" + re.escape(page_name) + \
         r"''' *{{cf\|[^\|]*\|?" + re.escape(related_page_name) + r"[\|}][^\n]*\n"
     if re.search(regex, page_content):
-        page_content = re.sub(regex, "==== {{S|homophones|" + language_code + u"}} ====\n", page_content)
+        page_content = re.sub(regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
         summary = summary + ', homophone erroné'
-    regex = r"==== *{{S\|homophones\|" + language_code + u"}} *====\n\* *\[\[[^}\n]+{{cf\|[^\|]*\|?" \
+    regex = r"==== *{{S\|homophones\|" + language_code + r"}} *====\n\* *\[\[[^}\n]+{{cf\|[^\|]*\|?" \
             + re.escape(related_page_name) + r"[\|}][^\n]*\n?"
     if re.search(regex, page_content):
-        page_content = re.sub(regex, "==== {{S|homophones|" + language_code + u"}} ====\n", page_content)
+        page_content = re.sub(regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
         summary = summary + ', homophone erroné'
-    regex = r"==== *{{S\|homophones\|" + language_code + u"}} *====\n\* *\[\[" + re.escape(related_page_name) \
+    regex = r"==== *{{S\|homophones\|" + language_code + r"}} *====\n\* *\[\[" + re.escape(related_page_name) \
             + r"\]\](\n|$)"
     if re.search(regex, page_content):
-        page_content = re.sub(regex, "==== {{S|homophones|" + language_code + u"}} ====\n", page_content)
+        page_content = re.sub(regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
         summary = summary + ', homophone erroné'
 
     regex = r"=== {{S\|prononciation}} ===\n==== *{{S\|homophones\|[^}]*}} *====\n*(=|$|{{clé de tri|\[\[Catégorie:)"
