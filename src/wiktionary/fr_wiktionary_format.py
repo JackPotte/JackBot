@@ -29,6 +29,7 @@ dir_src = os.path.dirname(dir_wt)
 sys.path.append(dir_src)
 sys.path.append(os.path.join(dir_src, 'lib'))
 sys.path.append(os.path.join(dir_src, 'wiktionary'))
+#from src.lib import get_content_from_page_name, update_html_to_unicode, get_site_by_file_name
 from lib import *
 from html2unicode import *
 from default_sort import *
@@ -1049,7 +1050,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
-                regex = r"\n'''[^\n]+\n'''"
+                regex = r"/\{\{S\|prononciation\}\}(?!\{\{langue).*\{\{S\|prononciation\}\}/"
             if len(sys.argv) > 3:
                 test_page = sys.argv[3]
             else:
@@ -1061,7 +1062,7 @@ def main(*args):
                 else:
                     print('Pas de traitement.')
             else:
-                p.page_by_xml(dump_file, regex=regex, namespaces=10)
+                p.page_by_xml(dump_file, regex=regex, namespaces=0)
         elif sys.argv[1] == str('-u'):
             if len(sys.argv) > 2:
                 targeted_user = sys.argv[2]

@@ -3342,6 +3342,7 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                         print(str(e))
                     is_page_found = False
 
+                is_external_page_exist = False
                 if is_page_found:
                     try:
                         is_external_page_exist = external_page.exists()
@@ -3350,13 +3351,16 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                             print('  removed site (--)')
                         final_page_content, page_content = next_translation_template(final_page_content,
                                                                                      page_content, '--')
-                        is_external_page_exist = False
                     except pywikibot.exceptions.InconsistentTitleError:
                         if debug_level > d:
                             print('  InconsistentTitleError (-)')
                         final_page_content, page_content = next_translation_template(final_page_content,
                                                                                      page_content, '-')
-                        is_external_page_exist = False
+                    except pywikibot.exceptions.InvalidTitleError:
+                        if debug_level > d:
+                            print('  InvalidTitleError: ' + external_page_name)
+                        final_page_content, page_content = next_translation_template(final_page_content,
+                                                                                     page_content, '')
 
                     if is_external_page_exist:
                         if debug_level > d:
