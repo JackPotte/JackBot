@@ -3397,6 +3397,11 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                             print('  removed site (--)')
                         final_page_content, page_content = next_translation_template(final_page_content,
                                                                                      page_content, '--')
+                    except pywikibot.exceptions.InvalidPageError:
+                        if debug_level > d:
+                            print('  InvalidPageError: ' + external_page_name)
+                        final_page_content, page_content = next_translation_template(final_page_content,
+                                                                                     page_content, '--')
                     except pywikibot.exceptions.InconsistentTitleError:
                         if debug_level > d:
                             print('  InconsistentTitleError (-)')
@@ -3405,12 +3410,6 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                     except pywikibot.exceptions.InvalidTitleError:
                         if debug_level > d:
                             print('  InvalidTitleError: ' + external_page_name)
-                        final_page_content, page_content = next_translation_template(final_page_content,
-                                                                                     page_content, '')
-
-                    except pywikibot.exceptions.InvalidPageError:
-                        if debug_level > d:
-                            print('  InvalidPageError: ' + external_page_name)
                         final_page_content, page_content = next_translation_template(final_page_content,
                                                                                      page_content, '')
 
