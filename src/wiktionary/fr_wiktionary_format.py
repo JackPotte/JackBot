@@ -100,7 +100,7 @@ def treat_page(page):
         if not page.exists() and page.namespace() == 0:
             if debug_level > 0:
                 print('Création d\'une redirection apostrophe')
-            save_page(page, '#REDIRECT[[' + page_name + ']]', 'Redirection pour apostrophe', minor_edit=True)
+            save_page(page, '#REDIRECT[[' + page_name + ']]', 'Redirection pour apostrophe', is_minor=True)
 
     if debug_level == 0 and days_before_archiving and (page_name.find('<') != -1 or not has_more_than_time(page)):
         return

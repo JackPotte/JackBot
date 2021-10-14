@@ -555,7 +555,7 @@ def stop_required(username, site):
         exit(0)
 
 
-def save_page(current_page, page_content, summary, minor_edit=True):
+def save_page(current_page, page_content, summary, is_minor=True):
     result = "ok"
     if debug_level > 0:
         pywikibot.output("\n\03{blue}" + summary + u"\03{default}")
@@ -583,7 +583,7 @@ def save_page(current_page, page_content, summary, minor_edit=True):
         if not summary:
             summary = '[[Wiktionnaire:Structure des articles|Autoformatage]]'
         try:
-            current_page.put(page_content, summary, minorEdit=minor_edit)
+            current_page.put(page_content, summary, minor=is_minor)
         except pywikibot.exceptions.NoPageError as e:
             print(str(e))
             return
