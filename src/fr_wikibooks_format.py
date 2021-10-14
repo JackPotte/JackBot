@@ -145,7 +145,7 @@ def main(*args):
         elif sys.argv[1] == '-page' or sys.argv[1] == '-p':
             treat_page_by_name('Catégorie:Python')
         elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
-            p.pages_by_file('src/lists/articles_' + site_language + '_' + site_family + '.txt')
+            p.pages_by_file('lists/articles_' + site_language + '_' + site_family + '.txt')
         elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
             regex = r'{{[Mm]éta-étiquette *\|[^}]*text-align: center'
             if len(sys.argv) > 2: regex = sys.argv[2]

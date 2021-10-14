@@ -315,7 +315,7 @@ def main(*args):
                 sound = 'File:LL-Q150 (fra)-Pamputt-suivant.wav'
             treat_page_by_name(sound)
         elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
-            p.pages_by_file('src/lists/articles_' + site_language + '_' + site_family + '.txt')
+            p.pages_by_file('lists/articles_' + site_language + '_' + site_family + '.txt')
         elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
             regex = r''
             if len(sys.argv) > 2:

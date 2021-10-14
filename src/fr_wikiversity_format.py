@@ -565,7 +565,7 @@ def main(*args):
         elif sys.argv[1] == '-page' or sys.argv[1] == '-p':
             treat_page_by_name("Fonctions_d'une_variable_réelle/Continuité")
         elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
-            p.pages_by_file('src/lists/articles_' + site_language + '_' + site_family + '.txt')
+            p.pages_by_file('lists/articles_' + site_language + '_' + site_family + '.txt')
         elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
             # regex = r'{{[Ee]ncadre *\|[^}]*text-align: center'
             regex = r'text-align'

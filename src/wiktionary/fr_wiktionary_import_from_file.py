@@ -230,7 +230,7 @@ set_fr_wiktionary_functions_globals(debug_level, site, username)
 
 def main(*args):
     from lib import html2unicode
-    pagesList = open('src/lists/articles_' + site_language + '_' + site_family + '_CFC.csv', 'r')
+    pagesList = open('lists/articles_' + site_language + '_' + site_family + '_CFC.csv', 'r')
     while 1:
         line = pagesList.readline().decode(config.console_encoding, 'replace')
         fin = line.find("\t")

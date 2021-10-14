@@ -206,7 +206,7 @@ def main(*args):
             treat_all_namespaces = True
             treat_page_by_name('SIMP J013656.5+093347')
         elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
-            p.pages_by_file('src/lists/articles_' + site_language + '_' + site_family + '.txt')
+            p.pages_by_file('lists/articles_' + site_language + '_' + site_family + '.txt')
         elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
             regex = r'\| *French *\|'
             if len(sys.argv) > 2:

@@ -28,7 +28,7 @@ class PageProvider:
         self.treat_page = treat_page
         self.site = site
         self.debug_level = debug_level
-        self.outputFile = open('src/lists/articles_' + str(site.lang) + '_' + str(site.family) + '.txt', 'a')
+        self.outputFile = open('lists/articles_' + str(site.lang) + '_' + str(site.family) + '.txt', 'a')
 
     # .txt may need to be formatted with format http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
     def pages_by_file(self, source, site=None):

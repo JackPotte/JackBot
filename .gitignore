@@ -13,6 +13,7 @@ nbproject/
 build
 dist
 i18n/
+lists/
 login-data/*
 logs/*.*
 pywikibot/families/

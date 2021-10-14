@@ -1006,7 +1006,7 @@ def main(*args):
                 p.pages_by_prefix('Annexe:Rimes en français en ', namespace=100)
         elif sys.argv[1] == str('-file') or sys.argv[1] == str('-txt'):
             wait_after_humans = False
-            file_name = 'src/lists/articles_' + site_language + '_' + site_family + '.txt'
+            file_name = 'lists/articles_' + site_language + '_' + site_family + '.txt'
             if debug_level > 0:
                 print(file_name)
             p.pages_by_file(file_name)
