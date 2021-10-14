@@ -3408,6 +3408,12 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                         final_page_content, page_content = next_translation_template(final_page_content,
                                                                                      page_content, '')
 
+                    except pywikibot.exceptions.InvalidPageError:
+                        if debug_level > d:
+                            print('  InvalidPageError: ' + external_page_name)
+                        final_page_content, page_content = next_translation_template(final_page_content,
+                                                                                     page_content, '')
+
                     if is_external_page_exist:
                         if debug_level > d:
                             print('  exists (+)')
