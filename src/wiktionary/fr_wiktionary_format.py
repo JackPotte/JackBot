@@ -502,7 +502,7 @@ def treat_page(page):
                                                                                         language_code)
 
                 # Templates with "lang="
-                elif current_template in [u'écouter', 'cf', 'équiv-pour'] + etymology_templates_with_language_at_lang:
+                elif current_template in [u'écouter', 'cf', 'équiv-pour', 'exemple'] + etymology_templates_with_language_at_lang:
                     final_page_content, page_content = add_language_code_with_named_parameter_to_template(
                         final_page_content,
                         page_content,
@@ -1045,7 +1045,7 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pages_by_search(sys.argv[2])
             else:
-                p.pages_by_search('insource:"\|fr\}\} \'\'adverbe de "', namespaces=[0])
+                p.pages_by_search('insource:/"#* {{ébauche|"/', namespaces=[0])
 
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
                 sys.argv[1] == str('-m'):

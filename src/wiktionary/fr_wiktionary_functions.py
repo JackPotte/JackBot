@@ -1660,7 +1660,7 @@ def format_translations(page_content, summary):
 
 
 def add_templates(page_content, summary):
-    if debug_level > 1:
+    if debug_level > 0:
         print(' add_templates()')
 
     if debug_level > 1:
@@ -1683,9 +1683,10 @@ def add_templates(page_content, summary):
 
     if debug_level > 1:
         print('  add definition templates')
+
     regex = r'\n#\* *(?:\'\')?\n'
-    # TODO lang=
-    page_content = re.sub(regex, r'\n#* {{ébauche}}\n', page_content)
+    page_content = re.sub(regex, r'\n#* {{exemple}}\n', page_content)
+
     regex = r"(\|en}}\n# *'*(?:Participe présent|Participe passé|Prétérit|Troisième personne du singulier du présent) de *'* *)to "
     page_content = re.sub(regex, r'\1', page_content, re.IGNORECASE)
     regex = r"(\|([a-z]+)}}\n# *'*(?:Participe présent|Participe passé|Prétérit|Troisième personne du singulier du présent) de *'* *)([a-zçæéë \-’']+)\."
