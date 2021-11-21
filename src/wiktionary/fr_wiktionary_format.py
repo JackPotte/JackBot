@@ -1045,7 +1045,8 @@ def main(*args):
             if len(sys.argv) > 2:
                 p.pages_by_search(sys.argv[2])
             else:
-                p.pages_by_search('insource:/"#* {{ébauche|"/', namespaces=[0])
+                p.pages_by_search('insource:/trad--\|lmo/', namespaces=[0])
+                p.pages_by_search('insource:/trad--\|shy/', namespaces=[0])
 
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
                 sys.argv[1] == str('-m'):

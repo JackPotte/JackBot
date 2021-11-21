@@ -917,7 +917,7 @@ def add_language_code_with_named_parameter_to_template(
     has_subtemplate_included = False
     regex = r''
     if page_content.find('}}') > page_content.find('{{') != -1:
-        # Inifnite loop in [[tomme]] on ^date\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang=
+        # Infinite loop in [[tomme]] on ^date\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang=
         regex = r'^' + re.escape(current_template) + r'\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang='
         if re.search(regex, page_content):
             has_subtemplate_included = True
@@ -960,7 +960,7 @@ def next_template(final_page_content, current_page_content, current_template=Non
     if language_code is None:
         final_page_content = final_page_content + current_page_content[:current_page_content.find('}}')+2]
     else:
-        final_page_content = final_page_content + current_template + "|" + language_code + '}}'
+        final_page_content = final_page_content + current_template + '|' + language_code + '}}'
     current_page_content = current_page_content[current_page_content.find('}}')+2:]
     return final_page_content, current_page_content
 
@@ -3241,8 +3241,18 @@ def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natu
 
 
 def treat_translations(page_content, final_page_content, summary, end_position, site_family):
-    if end_position == page_content.find('}}') or end_position == page_content.find(
-            '--}}') - 2 or end_position == page_content.find('|en|}}') - 4:
+    new_wikis = ['diq', 'lmo', 'shy']
+    language_and_translation = page_content[page_content.find('|') + 1:page_content.find('}}')]
+    targetted_wiki = language_and_translation[:language_and_translation.find('|')]
+
+    if end_position == page_content.find('--}}') - 2 and targetted_wiki in new_wikis:
+        page_content = page_content.replace('trad--|' + targetted_wiki, 'trad|' + targetted_wiki)
+
+    # Empty or stub
+    has_not_to_call_interwiki_link = end_position == page_content.find('}}') \
+        or end_position == page_content.find('|en|}}') - 4
+
+    if has_not_to_call_interwiki_link:
         final_page_content = final_page_content + page_content[:page_content.find('}}') + 2]
         final_page_content, page_content = next_template(final_page_content, page_content)
     else:
