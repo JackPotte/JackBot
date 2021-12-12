@@ -2064,7 +2064,7 @@ def replace_etymology_templates(page_content, summary):
     regex = r'[Ll]ocution {{composé de[^{}]+}}'
     templates = re.findall(regex, page_content)
     for template in templates:
-        regex2 = r'\| *f *= *1[\|}]'
+        regex2 = r'\| *f *= *(1|oui)[\|}]'
         if not re.search(regex2, template):
             new_template = template.replace('composé de', 'composé de|f=1')
             page_content = page_content.replace(template, new_template)
