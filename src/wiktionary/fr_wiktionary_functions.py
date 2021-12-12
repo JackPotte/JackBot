@@ -2021,11 +2021,15 @@ def replace_templates(page_content, summary):
 
     # TODO: replace {{fr-rég|ɔs vɛʁ.tɛ.bʁal|s=os vertébral|p=os vertébraux|pp=ɔs vɛʁ.tɛ.bʁo}} by {{fr-accord-mf-al|
 
-    # Hotfix
+    if debug_level > 1:
+        print(' Fixes')
     regex = r'\n{{\(}}nombre= *[0-9]*\|\n'
     page_content = re.sub(regex, r'\n{{(}}\n', page_content)
     regex = r'\n{{\(}}taille= *[0-9]*\|\n'
     page_content = re.sub(regex, r'\n{{(}}\n', page_content)
+
+    regex = r'({{composé de)\|m=1(([^}]+)\|m=1}})'
+    page_content = re.sub(regex, r'\1\2', page_content)
 
     return page_content, summary
 
@@ -2245,7 +2249,8 @@ def format_templates(page_content, summary):
 
 
 def format_languages_templates(page_content, summary, page_name):
-    if debug_level > 0: print(' Templates by language')
+    if debug_level > 0:
+        print(' Templates by language')
     regex_page_name = re.escape(page_name)
 
     regex = r'{{(Latn|Grek|Cyrl|Armn|Geor|Hebr|Arab|Syrc|Thaa|Deva|Hang|Hira|Kana|Hrkt|Hani|Jpan|Hans|Hant|zh-mot|kohan|ko-nom|la-verb|grc-verb|polytonique|FAchar)[\|}]'
