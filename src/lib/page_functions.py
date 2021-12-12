@@ -208,18 +208,23 @@ def get_content_from_page(page, allowed_namespaces=None):
         if page.namespace() == 'Template:':
             return None
             # TODO takes the HTML page, ex: https://fr.wikipedia.org/w/index.php?title=Mod%C3%A8le:Donn%C3%A9es_de_la_pand%C3%A9mie_de_maladie_%C3%A0_coronavirus_de_2019-2020&diff=prev&oldid=184135983
-            current_page_content = page.get(get_redirect=True)
-            if current_page_content[:len('#REDIRECT')] == '#REDIRECT':
-                regex = r'\[\[([^\]]+)\]\]'
-                s = re.search(regex, current_page_content)
-                if s:
-                    current_page_content = get_content_from_page_name(s.group(1), site,
-                                                                      allowed_namespaces=allowed_namespaces)
-                else:
-                    return None
-            else:
-                return None
+            # current_page_content = page.get(get_redirect=True)
+            # if current_page_content[:len('#REDIRECT')] == '#REDIRECT':
+            #     regex = r'\[\[([^\]]+)\]\]'
+            #     s = re.search(regex, current_page_content)
+            #     if s:
+            #         current_page_content = get_content_from_page_name(s.group(1), site,
+            #                                                           allowed_namespaces=allowed_namespaces)
+            #     else:
+            #         return None
+            # else:
+            #     return None
         else:
+            # This would erase redirection pages by their target pages
+            # redir_target = page.getRedirectTarget()
+            # if redir_target.exists():
+            #     current_page_content = redir_target.get()
+            # else:
             return None
     except pywikibot.exceptions.NoPageError as e:
         if debug_level > 0:

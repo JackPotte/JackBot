@@ -96,11 +96,11 @@ def treat_page(page):
     if page_name[-3:] == '.js' or page_name[-4:] == '.css':
         return
     if page_name.find('’') != -1:
-        page = Page(site, page_name.replace('’', '\''))
-        if not page.exists() and page.namespace() == 0:
+        redir_page = Page(site, page_name.replace('’', '\''))
+        if not redir_page.exists() and redir_page.namespace() == 0:
             if debug_level > 0:
                 print('Création d\'une redirection apostrophe')
-            save_page(page, '#REDIRECT[[' + page_name + ']]', 'Redirection pour apostrophe', is_minor=True)
+            save_page(redir_page, '#REDIRECT[[' + page_name + ']]', 'Redirection pour apostrophe', is_minor=True)
 
     if debug_level == 0 and days_before_archiving and (page_name.find('<') != -1 or not has_more_than_time(page)):
         return
