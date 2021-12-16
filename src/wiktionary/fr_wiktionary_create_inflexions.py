@@ -122,12 +122,15 @@ def treat_page(page):
 
             # Vérification que la langue en cours est bien la langue du modèle
             page_content_till_template = page_content[:page_content.find(template[m])]
-            current_language = re.findall(r'{{langue\|([^}]+)}}', page_content_till_template)[-1]
+            current_language = None
+            matches = re.findall(r'{{langue\|([^}]+)}}', page_content_till_template)
+            if len(matches) > 0:
+                current_language = matches[-1]
             if current_language != language_code:
                 if debug_level > 0:
                     print(' fr-xxx en section étrangère')
                 break
-                
+
             # Parcours de la page pour chaque occurence du modèle
             nature = page_content_till_template[page_content_till_template.rfind('{{S|')+len('{{S|'):]
             nature = nature[:nature.find('|')]
