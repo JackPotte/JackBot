@@ -104,7 +104,7 @@ testresources==2.0.1
 texttable==1.6.2
 tinycss==0.4
 ttystatus==0.38
-ubuntu-advantage-tools==27.2
+ubuntu-advantage-tools==27.4
 ubuntu-drivers-common==0.0.0
 ufw==0.36
 unattended-upgrades==0.1
