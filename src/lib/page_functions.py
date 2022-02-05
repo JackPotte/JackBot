@@ -235,6 +235,9 @@ def get_content_from_page(page, allowed_namespaces=None):
             print(str(e))
         return None
 
+    if debug_level > 0:
+        print(' Page retrieved')
+
     return current_page_content
 
 
@@ -752,3 +755,13 @@ def get_section_by_title(page_content, section_title_regex, section_level=2):
         print(' With next section. start: ' + str(start_position) + ', end: ' + str(end_position))
 
     return page_content, start_position, end_position
+
+
+def is_template_name(string, template_name):
+    regex = r'^(' + template_name[:1].upper() + r'|' + template_name[:1].lower() + r')' + template_name[1:]
+    return re.search(regex, string)
+
+
+def has_parameter(string, param):
+    regex = r'\| *' + param + r' *='
+    return re.search(regex, string)

@@ -9,6 +9,7 @@ from __future__ import absolute_import, unicode_literals
 import re
 import pywikibot
 from pywikibot import *
+from page_functions import *
 
 do_check_url = False
 
@@ -506,16 +507,18 @@ def translate_templates(current_page, summary):
 
 
 def translate_template_parameters(current_template):
-    # TODO speed-up by looping on all template parameters instead of all site parameters
-    if debug_level > 1:
-        print('Remplacement des anciens paramètres, en tenant compte des doublons et des variables selon les modèles')
+    if debug_level > 0:
+        print('translate_template_parameters()')
     for p in range(0, param_limit):
-        if debug_level > 1:
-            print(old_param[p])
+        if (not has_parameter(current_template, old_param[p])):
+            continue
+
+        if debug_level > 0:
+            print('  "' + old_param[p] + '" found')
         fr_name = new_param[p]
 
         if old_param[p] == 'agency':
-            if is_template(current_template, 'article') and not has_parameter(current_template, 'périodique') \
+            if is_template_name(current_template, 'article') and not has_parameter(current_template, 'périodique') \
                     and not has_parameter(current_template, 'work'):
                 fr_name = 'périodique'
             else:
@@ -526,51 +529,59 @@ def translate_template_parameters(current_template):
                 fr_name = 'auteur'
 
         elif old_param[p] == 'en ligne le':
-            if current_template.find('archiveurl') == -1 and current_template.find('archive url') == -1 \
-                    and current_template.find('archive-url') == -1:
+            if 'archiveurl' not in current_template and 'archive url' not in current_template \
+                    and 'archive-url' not in current_template:
                 continue
-            elif current_template.find('archivedate') != -1 or current_template.find('archive date') != -1 \
-                    or current_template.find('archive-date') != -1:
+            elif 'archivedate' in current_template or 'archive date' in current_template \
+                    or 'archive-date' in current_template:
                 continue
             elif debug_level > 0:
-                print(' archiveurl ' + ' archivedate')
+                print('  archive url + archive date')
 
         elif old_param[p] == 'issue' and has_parameter(current_template, 'numéro'):
             fr_name = 'date'
 
         elif old_param[p] == 'publisher':
-            if is_template(current_template, 'article') and not has_parameter(current_template, 'périodique') \
+            if is_template_name(current_template, 'article') and not has_parameter(current_template, 'périodique') \
                     and not has_parameter(current_template, 'work'):
                 fr_name = 'périodique'
             else:
                 fr_name = 'éditeur'
 
         elif old_param[p] == 'type':
-            if is_template(current_template, 'article'):
+            if is_template_name(current_template, 'article'):
                 fr_name = 'nature article'
-            elif is_template(current_template, 'ouvrage'):
+            elif is_template_name(current_template, 'ouvrage'):
                 fr_name = 'nature ouvrage'
             else:
                 fr_name = 'type'
 
         elif old_param[p] == 'website':
-            if not (is_template(current_template, 'article') and not has_parameter(current_template, 'périodique')):
+            if not (is_template_name(current_template, 'article') and not has_parameter(current_template, 'périodique')):
                 fr_name = old_param[p]
 
         elif old_param[p] == 'work':
-            if is_template(current_template, 'article') and not has_parameter(current_template, 'périodique'):
+            if is_template_name(current_template, 'article') and not has_parameter(current_template, 'périodique'):
                 fr_name = 'périodique'
-            elif is_template(current_template, 'lien web') and not has_parameter(current_template, 'site') \
+            elif is_template_name(current_template, 'lien web') and not has_parameter(current_template, 'site') \
                     and not has_parameter(current_template, 'website'):
                 fr_name = 'site'
             else:
                 fr_name = 'série'
 
-        has_double = False
+        is_already_present = False
         if new_param[p] != 'langue':  # TODO because "|langue=None" in current_template
             regex = r'(\| *)' + new_param[p] + r'( *=)'
-            has_double = re.search(regex, current_template)
-        if not has_double:
+            is_already_present = re.search(regex, current_template)
+
+        if is_already_present:
+            # Remove double if value is the same
+            value = get_parameter_value(current_template, old_param[p])
+            if debug_level > 0:
+                print('  "' + old_param[p] + '" has double')
+                print('  value: ' + value)  # TODO empty
+
+        else:
             regex = r'(\| *)' + old_param[p] + r'( *=)'
             current_template = re.sub(regex, r'\1' + fr_name + r'\2', current_template)
             if debug_level > 1:
@@ -654,6 +665,7 @@ def translate_link_template(current_page, old_template, new_template):
         current_page = current_page[re.search(regex, current_page).start() + 2:]
         current_template, template_end_position = get_current_link_template(current_page)
         current_page = translate_template_parameters(current_template) + current_page[template_end_position:]
+        # TODO stop looping several times on the same template (template_end_position stays the same)
     current_page = final_page + current_page
 
     return current_page
@@ -777,13 +789,3 @@ def get_current_link_template(current_page):
         input(current_template)
 
     return current_template, template_end_position
-
-
-def is_template(string, template):
-    regex = r'^(' + template[:1].upper() + r'|' + template[:1].lower() + r')' + template[1:]
-    return re.search(regex, string)
-
-
-def has_parameter(string, param):
-    regex = r'\| *' + param + r' *='
-    return re.search(regex, string)

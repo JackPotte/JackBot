@@ -186,6 +186,8 @@ def treat_page(page):
         summary = summary + ', [[Wikipédia:Bot/Requêtes/2012/12#Remplacer_les_.7B.7BCite_web.7D.7D_par_.7B.7BLien_web.7D.7D|traduction des modèles de liens]]'
         final_page = final_page.replace(r'</ref><ref>', r'</ref>{{,}}<ref>')
         save_page(page, final_page, summary)
+    elif debug_level > 0:
+        print(' Page unchanged')
 
 
 p = PageProvider(treat_page, site, debug_level)
