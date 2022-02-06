@@ -576,16 +576,20 @@ def translate_template_parameters(current_template):
 
         if is_already_present:
             # Remove double if value is the same
-            value = get_parameter_value(current_template, old_param[p])
+            old_param_value = get_parameter_value(current_template, old_param[p])
+            new_param_value = get_parameter_value(current_template, fr_name)
             if debug_level > 0:
-                print('  "' + old_param[p] + '" has double')
-                print('  value: ' + value)  # TODO empty
-
+                print('  "' + old_param[p] + '" has double, value:')
+                print('   ' + old_param_value)
+                print('  "' + fr_name + '" value:')
+                print('   ' + new_param_value)
+            # Nested templates engenders a false empty value for now
+            if old_param_value == new_param_value and old_param_value != '':
+                regex = r'(\| *)' + old_param[p] + r'( *=[^\|}]*)([\|}])'
+                current_template = re.sub(regex, r'\3', current_template)
         else:
             regex = r'(\| *)' + old_param[p] + r'( *=)'
             current_template = re.sub(regex, r'\1' + fr_name + r'\2', current_template)
-            if debug_level > 1:
-                print(regex)
 
     current_template = current_template.replace('|=', u'|')
     current_template = current_template.replace('| =', u'|')
