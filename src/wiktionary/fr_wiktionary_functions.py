@@ -871,7 +871,7 @@ def add_line_into_section(page_content, language_code, section, line_content):
 
 def get_order_by_section_name(section):
     if debug_level > 0:
-        print(' get_order_by_section_name()')
+        print('\nget_order_by_section_name()')
     s = 0
     try:
         s = sections.index(section)
@@ -886,7 +886,7 @@ def get_order_by_section_name(section):
 
 def get_level_by_section_name(section):
     if debug_level > 0:
-        print(' get_level_by_section_name()')
+        print('\nget_level_by_section_name()')
     s = 0
     try:
         s = sections.index(section)
@@ -1476,7 +1476,7 @@ def add_banner_see(page_name, page_content, summary):
 
 def format_sections(page_content, summary):
     if debug_level > 0:
-        print(' format_sections()')
+        print('\nformat_sections()')
     regex = r'{{=([a-z\-]+)=}}'
     if re.search(regex, page_content):
         page_content = re.sub(regex, r'{{langue|\1}}', page_content)
@@ -1573,7 +1573,7 @@ def format_sections(page_content, summary):
 
 def format_translations(page_content, summary):
     if debug_level > 0:
-        print(' format_translations()')
+        print('\nformat_translations()')
     regex = r'({{langue\|(?!fr}).*}[^€]*)\n=* *{{S\|traductions}} *=*\n*{{trad\-début}}\n{{ébauche\-trad}}\n{{trad\-fin}}'
     if re.search(regex, page_content):
         page_content = re.sub(regex, r'\1', page_content)
@@ -1661,7 +1661,7 @@ def format_translations(page_content, summary):
 
 def add_templates(page_content, summary):
     if debug_level > 0:
-        print(' add_templates()')
+        print('\nadd_templates()')
 
     if debug_level > 1:
         print('  add etymology templates')
@@ -2093,7 +2093,7 @@ def replace_etymology_templates(page_content, summary):
 
 def move_templates(page_content, summary):
     if debug_level > 1:
-        print(' move_templates()')
+        print('\nmove_templates()')
 
     page_content, summary = move_etymology_templates(page_content, summary)
     return page_content, summary
@@ -2488,7 +2488,7 @@ def format_languages_templates(page_content, summary, page_name):
 
 def move_etymology_templates(page_content, summary):
     if debug_level > 0:
-        print(' move_etymology_templates()')
+        print('\nmove_etymology_templates()')
     page_languages = get_page_languages(page_content)
     for page_language in page_languages:
         for etym_template in etymology_templates:
@@ -2814,7 +2814,7 @@ def treat_conjugation(page_content, final_page_content, summary, current_templat
 
 def treat_verb_inflexion(page_content, final_page_content, summary, current_page_content):
     if debug_level > 0:
-        print('treat_verb_inflexion()')
+        print('\ntreat_verb_inflexion()')
     infinitive = get_lemma_from_conjugation(current_page_content)
     if infinitive != '':
         # TODO check infinitive suffix to avoid spreading human errors:
@@ -3153,7 +3153,7 @@ def treat_verb_inflexion(page_content, final_page_content, summary, current_page
 def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natures_with_plural, language_code,
                          singular_page_name):
     if debug_level > 0:
-        print(' treat_noun_inflexion()')
+        print('\ntreat_noun_inflexion()')
     for nature in natures_with_plural:
         regex = r"(== {{langue|" + language_code + r"}} ==\n=== {{S\|" + nature + r"\|" + language_code + r")\|num=2"
         if re.search(regex, page_content):

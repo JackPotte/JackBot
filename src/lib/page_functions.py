@@ -161,7 +161,7 @@ def get_content_from_page_name(page_name, site, allowed_namespaces=None):
 def get_content_from_page(page, allowed_namespaces=None):
     global debug_level
     if debug_level > 0:
-        print('get_content_from_page()')
+        print('\nget_content_from_page()')
     if debug_level > 1:
         pywikibot.output(' \03{blue}get_content_from_page : \03{default}' + page.title())
 
@@ -271,10 +271,19 @@ def get_all_templates_by_name(page_content, template):
 
 
 def get_parameter(page_content, p):
+    if debug_level > 0:
+        print('\nget_parameter()')
     regex = r'\| *' + p + r' *='
-    if page_content.find('}}') == -1 or not re.search(regex, page_content) \
+    if '}}' not in page_content or not re.search(regex, page_content) \
             or re.search(regex, page_content).start() > page_content.find('}}'):
+        if debug_level > 0:
+            print(' no template end after parameter')
+        if debug_level > 1:
+            # TODO ignore nested templates
+            print(re.search(regex, page_content).start())
+            print(page_content.find('}}'))
         return ''
+
     parameter = page_content[re.search(regex, page_content).start() + 1:]
     parameter_end = parameter
     while parameter_end.find('[') != -1 and parameter_end.find('[') < parameter_end.find('|') \

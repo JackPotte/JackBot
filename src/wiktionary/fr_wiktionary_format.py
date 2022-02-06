@@ -926,7 +926,7 @@ def treat_page(page):
 
 def format_fr_section(page_content, summary, page_name, regex_page_name):
     if debug_level > 0:
-        print(' format_fr_section()')
+        print('\nformat_fr_section()')
     language_code = 'fr'
     natures_with_plural = ['nom', 'adjectif', 'suffixe']
 

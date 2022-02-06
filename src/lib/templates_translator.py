@@ -508,7 +508,7 @@ def translate_templates(current_page, summary):
 
 def translate_template_parameters(current_template):
     if debug_level > 0:
-        print('translate_template_parameters()')
+        print('\ntranslate_template_parameters()')
     for p in range(0, param_limit):
         if (not has_parameter(current_template, old_param[p])):
             continue
@@ -715,7 +715,7 @@ def get_valid_language_code(language_code):
 
 def translate_dates(current_page):
     if debug_level > 1:
-        print('  translate_dates()')
+        print('\ntranslate_dates()')
     date_parameters = ['date', 'mois', 'consulté le', 'en ligne le', 'dts', 'Dts', 'date triable', 'Date triable']
     for m in range(1, month_line + 1):
         if debug_level > 1:
@@ -751,7 +751,8 @@ def translate_dates(current_page):
 
 
 def translate_languages(current_page):
-    if debug_level > 1: print('  translate_languages()')
+    if debug_level > 0:
+        print('\ntranslate_languages()')
     for l in range(1, languages_line + 1):
         if debug_level > 1:
             print('Langue ') + str(l)
@@ -784,7 +785,7 @@ def get_current_link_template(current_page):
     current_template = current_page[:template_end_position]
 
     if debug_level > 1:
-        print('  get_current_link_template()')
+        print('\nget_current_link_template()')
         print(template_end_position)
         input(current_template)
 

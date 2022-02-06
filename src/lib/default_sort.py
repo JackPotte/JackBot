@@ -15,7 +15,7 @@ debug_level = 0
 
 def sort_by_encoding(page_name, encoding='uca-default'):
     if debug_level > 0:
-        print(' sort_by_encoding()')
+        print('\nsort_by_encoding()')
 
     page_name = update_html_to_unicode(page_name)
     word_key = ''
