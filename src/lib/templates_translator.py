@@ -594,6 +594,7 @@ def translate_template_parameters(current_template):
             if old_param_value == new_param_value and old_param_value != '':
                 regex = r'(\| *)' + old_param[p] + r'( *=[^\|}]*)([\|}])'
                 current_template = re.sub(regex, r'\3', current_template)
+            # TODO keep only the last date between "access-date" and "consulté le"
         else:
             regex = r'(\| *)' + old_param[p] + r'( *=)'
             current_template = re.sub(regex, r'\1' + fr_name + r'\2', current_template)
