@@ -510,12 +510,19 @@ def translate_template_parameters(current_template):
     if debug_level > 0:
         print('\ntranslate_template_parameters()')
     for p in range(0, param_limit):
-        if (not has_parameter(current_template, old_param[p])):
+        if not has_parameter(current_template, old_param[p]):
             continue
 
         if debug_level > 0:
             print('  "' + old_param[p] + '" found')
         fr_name = new_param[p]
+
+        new_template = remove_parameter_if_empty(current_template, old_param[p])
+        if new_template != current_template:
+            current_template = new_template
+            if debug_level > 0:
+                print('  empty parameter in double removed"' + old_param[p])
+            continue
 
         if old_param[p] == 'agency':
             if is_template_name(current_template, 'article') and not has_parameter(current_template, 'périodique') \

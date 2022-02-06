@@ -774,3 +774,8 @@ def is_template_name(string, template_name):
 def has_parameter(string, param):
     regex = r'\| *' + param + r' *='
     return re.search(regex, string)
+
+
+def remove_parameter_if_empty(template, parameter_name):
+    regex = r'(\| *)' + parameter_name + r'( *=\n*)([\|}])'
+    return re.sub(regex, r'\3', template)
