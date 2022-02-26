@@ -304,7 +304,8 @@ class PageProvider:
                     if not re.search(not_regex, page.title()):
                         found = True
                 elif regex is not None and not_regex is not None:
-                    if re.search(regex, page.title()) or not re.search(not_regex, page.title()): found = True
+                    if re.search(regex, page.title()) or not re.search(not_regex, page.title()):
+                        found = True
                 else:
                     found = True
 

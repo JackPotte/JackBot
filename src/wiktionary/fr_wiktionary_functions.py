@@ -2332,7 +2332,7 @@ def format_languages_templates(page_content, summary, page_name):
         page_content = page_content.replace('{{reverlanisation|fr}}', '{{reverlanisation}}')
         page_content = page_content.replace('{{verlan|fr}}', '{{verlan}}')
 
-# Ajout des redirections des pronominaux
+        # Ajout des redirections des pronominaux
         if page_content.find('{{S|verbe|fr}}') != -1 and page_name[:3] != 'se' and page_name[:2] != 's’':
             page_content2 = page_content[page_content.find('{{S|verbe|fr}}'):]
             regex = r'(\n|\')s(e |’)\'\'\''
@@ -2437,6 +2437,13 @@ def format_languages_templates(page_content, summary, page_name):
 
         regex = r'(=== {{S\|adjectif\|en}} ===\n[^\n]*) *{{pluriel \?\|en}}'
         page_content = re.sub(regex, r"\1", page_content)
+
+        regex = r"(# *''Prétérit de'' )([A-Za-z\- ]+)\."
+        if re.search(regex, page_content):
+            page_content = re.sub(regex, r'\1{{l|\2|en}}.', page_content)
+        regex = r"(# *''Participe passé de'' )([A-Za-z\- ]+)\."
+        if re.search(regex, page_content):
+            page_content = re.sub(regex, r'\1{{l|\2|en}}.', page_content)
 
     elif '{{langue|es}}' in page_content:
         regex = r'(\|es}} ===\n{{)fr\-rég'

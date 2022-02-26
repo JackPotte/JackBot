@@ -65,7 +65,7 @@ def treat_page(source_page, is_lemma=True):
             page_name = lemma_page_name + 'ed'
         source_page = Page(source_site, page_name)
         if not source_page.exists():
-            page_name = lemma_page_name + lemma_page_name[-1:] + 'ed'
+            page_name = lemma_page_name + last_letter + 'ed'
             source_page = Page(source_site, page_name)
     else:
         page_name = source_page.title()
@@ -125,14 +125,15 @@ def treat_page(source_page, is_lemma=True):
     if lemma_page_name[:2] != '[[':
         lemma_page_name = '[[' + lemma_page_name + ']]'
 
+    lemma_page_name = lemma_page_name[2:-2]
     if '{' in lemma_page_name or '}' in lemma_page_name or '[' in lemma_page_name or ']' in lemma_page_name \
         or '=' in lemma_page_name:
         if debug_level > 0:
-            print('Unsupported source page format')
+            print(' Unsupported source page format')
         return
 
     # On ne crée que les flexions des lemmes existants
-    lemma_page = Page(site, lemma_page_name[2:-2])
+    lemma_page = Page(site, lemma_page_name)
     if not lemma_page.exists():
         print('page_content du lemme absente du Wiktionnaire')
         return
@@ -208,7 +209,7 @@ def treat_page(source_page, is_lemma=True):
 
     target_page_content = '== {{langue|' + language_code + '}} ==\n=== {{' + nature + '|' + language_code \
             + '|flexion}} ===\n\'\'\'' + page_name + '\'\'\' {{pron|'+pron+'|' + language_code \
-            + '}}\n# \'\'Prétérit de\'\' ' + lemma_page_name + '.\n# \'\'Participe passé de\'\' ' + lemma_page_name + '.\n'
+            + '}}\n# \'\'Prétérit de\'\' {{l|' + lemma_page_name + '|en}}.\n# \'\'Participe passé de\'\' {{l|' + lemma_page_name + '|en}}.\n'
     save_page(target_page, target_page_content, summary)
 
 

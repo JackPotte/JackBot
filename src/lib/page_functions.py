@@ -119,7 +119,7 @@ def has_more_than_time(page, time_after_last_edition=60):  # minutes
         if debug_level > 1:
             print(str(max_date.strftime('%Y-%m-%dT%H:%M:%SZ')), str(page.latest_revision.timestamp), str(has_more_than_time))
         if has_more_than_time or username in page.title() or \
-            list(page.contributors(total=1).keys())[0] == 'JackPotte':
+            list(page.contributors(total=1).keys())[0] in ['JackBot', 'JackPotte']:
             # TODO config.usernames[site_family][site_language] for human user
             return True
         if debug_level > 0:
@@ -706,14 +706,14 @@ def get_site_by_file_name(file_name):
 
 
 def get_sections_titles(page_content, regex=r'\n=[^\n]+\n'):
-    if debug_level > 0:
+    if debug_level > 1:
         print('\nget_sections_titles()')
     s = re.findall(regex, page_content, re.DOTALL)
     if s:
-        if debug_level > 0:
+        if debug_level > 1:
             print(' ' + regex + ' found')
         return s
-    if debug_level > 0:
+    if debug_level > 1:
         print(' ' + regex + ' not found')
     return []
 
