@@ -54,11 +54,12 @@ def treat_page(source_page, is_lemma=True):
         print('------------------------------------')
 
     if is_lemma:
-        # TODO deduce from {{en-conj-rég|xxx}}?
         lemma_page_name = source_page.title()
         last_letter = lemma_page_name[-1:]
         if last_letter == 'e':
             page_name = lemma_page_name + 'd'
+        elif last_letter == 'y':
+            page_name = lemma_page_name + 'ied'
         else:
             page_name = lemma_page_name + 'ed'
         source_page = Page(source_site, page_name)
