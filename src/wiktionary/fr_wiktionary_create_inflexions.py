@@ -198,6 +198,7 @@ def treat_page(page):
                 print('  Pluriel n°1')
             if plural[-2:] == 'xs':
                 print(' Pluriel en xs : ' + plural)
+                log('*[[' + page_name + ']]')
                 return
             elif plural[-2:] == 'ss' and page_name[-2:] != 'ss':
                 lemma_param = '|' + param[m] + '=' + plural[:-2]
@@ -279,12 +280,12 @@ def createPluralFromForeignWiki(Page2):
             mot = page_content[:page_content.find(']]')+2]
         elif page_content.find('|') != -1 and page_content.find('|') < page_content.find('}}'):
             mot = page_content[:page_content.find('|')]
-            # TODO si dièse on remplace en même temps que les language_code ci-dessous, à patir d'un tableau des langues
+            # TODO si dièse remplacer en même temps que les language_code ci-dessous, à partir d'un tableau des langues
         else:
             mot = page_content[:page_content.find('}}')]
         if mot[:2] != '[[': mot = '[[' + mot + ']]'
         
-        # On ne crée que les flexions des lemmes existant
+        # On ne crée que les flexions des lemmes existants
         page3 = Page(site, mot[2:-2])
         if page3.exists() == 'False':
             print('page_content du lemme absente du Wiktionnaire')
@@ -396,6 +397,7 @@ def getWordPlural(page_content, page_name, current_template):
 
             if (plural[-2:] == 'ss' or plural.find('{') != -1) and suffix == '':
                 print(' Pluriel en -ss' + plural)
+                log('*[[' + page_name + ']]')
                 return
             if debug_level > 1:
                 print('  paramètre du modèle du lemme : ' + page_content[:page_content.find('}}')])

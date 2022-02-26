@@ -152,10 +152,12 @@ def treat_page(page):
 
     # Analyse des crochets et accolades (TODO : hors LaTex)
     if current_page.count('{') - current_page.count('}') != 0:
-        if page_name.find('User:JackBot/') == -1: log('*[[' + page_name + ']] : accolade cassée')
+        if page_name.find('User:JackBot/') == -1:
+            log('*[[' + page_name + ']] : accolade cassée')
         # if debug_level > 1: raise Exception('Accolade cassée')
     if current_page.count('[') - current_page.count(']') != 0:
-        if page_name.find('User:JackBot/') == -1: log('*[[' + page_name + ']] : crochet cassé')
+        if page_name.find('User:JackBot/') == -1:
+            log('*[[' + page_name + ']] : crochet cassé')
         # if debug_level > 1: raise Exception('Crochet cassé')
     if current_page_content.count('[[') - current_page_content.count(']]') != current_page.count('[[') \
             - current_page.count(']]'):
