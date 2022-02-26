@@ -85,4 +85,7 @@ python core/pwb.py src/wiktionary/fr_wiktionary_import_from_commons
 python core/pwb.py src/TalkArchiver.py --family:wiktionary
 python core/pwb.py src/TalkArchiver.py --family:wikisource
 
-#TODO: updateDumps_sh (by cron)
+#TODO updateDumps_sh (by cron)
+#TODO pipeline with tests:
+  #python -m unittest discover -s tests -p '*_test.py' does not work because tests use pwb.py
+  #python3 core/pwb.py tests/fr_wiktionary_functions_test.py
