@@ -45,14 +45,28 @@ DebutScan = 'interspersed'
 
 def treat_page_by_name(page_name):
     page = Page(source_site, page_name)
-    return treat_page(page)
+    return treat_page(page, False)
 
 
-def treat_page(source_page):
+def treat_page(source_page, is_lemma=True):
     global debug_level
     if debug_level > 0:
         print('------------------------------------')
-    page_name = source_page.title()
+
+    if is_lemma:
+        # TODO deduce from {{en-conj-rég|xxx}}?
+        lemma_page_name = source_page.title()
+        last_letter = lemma_page_name[-1:]
+        if last_letter == 'e':
+            page_name = lemma_page_name + 'd'
+        else:
+            page_name = lemma_page_name + 'ed'
+        source_page = Page(source_site, page_name)
+        if not source_page.exists():
+            page_name = lemma_page_name + lemma_page_name[-1:] + 'ed'
+            source_page = Page(source_site, page_name)
+    else:
+        page_name = source_page.title()
     pywikibot.output("\n\03{blue}" + page_name + "\03{default}")
 
     if not source_page.exists():
@@ -238,9 +252,8 @@ def main(*args):
             # large_media: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
             treat_page_by_name(update_html_to_unicode(sys.argv[1]))
     else:
-        # Daily
-        p.pages_by_cat('Catégorie:Pluriels manquants en français', False, '')
-        # TODO: python core/pwb.py touch -lang:fr -family:wiktionary -cat:"Pluriels manquants en français"
+        #p.pages_by_cat('Catégorie:Pluriels manquants en français', False, '')
+        p.pages_by_cat('Catégorie:Prétérits et participes passés manquants en anglais', False, '')
 
 
 if __name__ == "__main__":
