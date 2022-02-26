@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-"""
-Ce script importe les flexions d'un Wiktionary dans un autre où le lemme se trouve
-"""
+
 from __future__ import absolute_import, unicode_literals
 import os
 import sys
@@ -22,7 +20,6 @@ from page_functions import *
 from PageProvider import *
 from wiktionary import *
 from fr_wiktionary_functions import *
-from fr_wiktionary_templates import *
 
 # Global variables
 debug_level = 0
@@ -36,11 +33,6 @@ site_language, site_family, site = get_site_by_file_name(__file__)
 username = config.usernames[site_family][site_language]
 
 addDefaultSort = False
-siteSource = pywikibot.Site('en', site_family)
-templateSource = 'en-past of'
-textTranslated = 'Passé de'
-DebutScan = 'interspersed'
-# TODO pluriels fr + en
 
 
 def treat_page_by_name(page_name):
@@ -58,11 +50,12 @@ def treat_page(page):
         return
     if page.exists():
         if page.namespace() != 0 and page.title() != 'User:JackBot/test':
-            print(' Autre namespace l 45')
+            print(' untreated namespace')
             return
     else:
-        print(' page_content inexistante')
+        print(' missing page content')
         return
+
     singular_page = get_content_from_page(page, 'All')
     if singular_page.find('{{formater') != -1 \
             or singular_page.find('{{SI|') != -1 \
@@ -239,133 +232,6 @@ def treat_page(page):
                 print('  Fin du while')
         if debug_level > 1:
             print(' Fin du for ' + str(m))
-
-
-def createPluralFromForeignWiki(Page2):
-    page2 = Page(siteSource, Page2)
-    page1 = Page(site, Page2)
-    if debug_level > 0:
-        print(Page2)
-    if page2.exists() and page2.namespace() == 0 and not page1.exists():
-        page_content = getPage(page2)
-        if page_content == '':
-            return
-        # Nature grammaticale
-        page_content2 = page_content[:page_content.find(templateSource)]
-        # Code langue
-        page_content = page_content[page_content.find(templateSource)+len(templateSource)+1:len(page_content)]
-        if page_content.find("lang=") != -1 and page_content.find("lang=") < page_content.find('}}'):
-            page_content2 = page_content[page_content.find("lang=")+5:len(page_content)]
-            if page_content2.find('|') != -1 and page_content2.find('|') < page_content2.find('}}'):
-                language_code = page_content2[:page_content2.find("|")]
-                page_content = page_content[:page_content.find("lang=")] + page_content[page_content.find("lang=") + 5
-                                                                                        + page_content2.find("|"):]
-            else:
-                language_code = page_content2[:page_content2.find("}}")]
-                page_content = page_content[:page_content.find("lang=")] + page_content[page_content.find("lang=") + 5
-                                                                                        + page_content2.find("}"):]
-
-            if language_code == '':
-                # TODO site language
-                language_code = 'en'
-            else:
-                language_code = get_language_code_by_name(language_code)
-        else:
-            language_code = 'en'
-
-        while page_content[:1] == ' ' or page_content[:1] == '|':
-            page_content = page_content[1:]
-        # Lemme
-        if page_content.find(']]') != -1 and page_content.find(']]') < page_content.find('}}'): # Si on est dans un lien
-            mot = page_content[:page_content.find(']]')+2]
-        elif page_content.find('|') != -1 and page_content.find('|') < page_content.find('}}'):
-            mot = page_content[:page_content.find('|')]
-            # TODO si dièse remplacer en même temps que les language_code ci-dessous, à partir d'un tableau des langues
-        else:
-            mot = page_content[:page_content.find('}}')]
-        if mot[:2] != '[[': mot = '[[' + mot + ']]'
-        
-        # On ne crée que les flexions des lemmes existants
-        page3 = Page(site, mot[2:-2])
-        if page3.exists() == 'False':
-            print('page_content du lemme absente du Wiktionnaire')
-            return
-        lemma_page = getPage(page3)
-        if lemma_page == '':
-            return
-        if lemma_page.find('{{langue|' + language_code + '}}') == -1:
-            print(' Paragraphe du lemme absent du Wiktionnaire')
-            return
-        else:
-            # Prononciation
-            pron = ''
-            lemma_page = lemma_page[lemma_page.find('{{langue|' + language_code + '}}'):]
-            if debug_level > 1:
-                input(lemma_page)
-
-            p = re.compile(r'{{pron\|([^}]+)\|en}}')
-            result = p.findall(lemma_page)
-            if len(result) > 0:
-                if debug_level > 0:
-                    print(' à partir de {{pron}}')
-                r = 0
-                while result[r] == '' and r < len(result):
-                    r += 1
-                pron = result[r]
-
-            elif lemma_page.find('{{en-conj-rég') != -1:
-                if debug_level > 0:
-                    print(' à partir de {{en-conj-rég')
-                pron = lemma_page[lemma_page.find('{{en-conj-rég')+len('{{en-conj-rég'):]
-                if pron.find('|inf.pron=') != -1 and pron.find('|inf.pron=') < pron.find('}}'):
-                    pron = pron[pron.find('|inf.pron=')+len('|inf.pron='):]
-                    if pron.find('}}') < pron.find('|') or pron.find('|') == -1:
-                        pron = pron[:pron.find('}}')]
-                    else:
-                        pron = pron[:pron.find('|')]
-                else:
-                    pron = ''
-
-            if pron != '':
-                # Suffixe du -ed
-                letter = pron[-1:]
-                if letter in ('f', 'k', 'p', 'θ', 's', 'ʃ'):
-                    pron = pron + 't'
-                elif letter in ('t', 'd'):
-                    pron = pron + 'ɪd' 
-                else:
-                    pron = pron + 'd'
-            if debug_level > 0:
-                print(' prononciation : ' + pron)
-        
-        if page_content2.rfind('===') == -1:
-            return
-        else:
-            page_content3 = page_content2[:page_content2.rfind('===')]
-            nature = page_content3[page_content3.rfind('===')+3:]
-            if debug_level > 1:
-                input(nature)
-        if nature == 'Noun':
-            nature = 'S|nom'
-        elif nature == 'Adjective':
-            nature = 'S|adjectif'
-        elif nature == 'Pronoun':
-            nature = 'S|pronom'
-        elif nature == 'Verb':
-            nature = 'S|verbe'
-        else:
-            if debug_level > 0:
-                print(' Nature inconnue')
-            return
-        if debug_level > 0:
-            print(' nature : ' + nature)
-
-        Page1 = '== {{langue|' + language_code + '}} ==\n=== {{' + nature + '|' + language_code \
-                + '|flexion}} ===\n\'\'\'' + page2.title() + '\'\'\' {{pron|'+pron+'|' + language_code \
-                + '}}\n# \'\'Prétérit de\'\' ' + mot + '.\n# \'\'Participe passé de\'\' ' + mot + '.\n\n[[en:' \
-                + page2.title() + ']]\n'
-        summary = 'Importation depuis [[en:' + page2.title() + ']]'
-        save_page(page1, Page1, summary)
 
 
 def getWordPlural(page_content, page_name, current_template):
