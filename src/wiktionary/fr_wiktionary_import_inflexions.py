@@ -56,10 +56,11 @@ def treat_page(source_page, is_lemma=True):
     if is_lemma:
         lemma_page_name = source_page.title()
         last_letter = lemma_page_name[-1:]
+        # TODO check each inflexion (plural, present participle...)
         if last_letter == 'e':
             page_name = lemma_page_name + 'd'
         elif last_letter == 'y':
-            page_name = lemma_page_name + 'ied'
+            page_name = lemma_page_name[:-1] + 'ied'
         else:
             page_name = lemma_page_name + 'ed'
         source_page = Page(source_site, page_name)
@@ -71,10 +72,12 @@ def treat_page(source_page, is_lemma=True):
     pywikibot.output("\n\03{blue}" + page_name + "\03{default}")
 
     if not source_page.exists():
-        print(' missing page content')
+        if debug_level > 0:
+            print(' missing page content')
         return
     if source_page.namespace() != 0 and source_page.title() != 'User:JackBot/test':
-        print(' untreated namespace')
+        if debug_level > 0:
+            print(' untreated namespace')
         return
 
     target_page = Page(site, page_name)
@@ -113,18 +116,24 @@ def treat_page(source_page, is_lemma=True):
         page_content = page_content[1:]
     # Lemme
     if page_content.find(']]') != -1 and page_content.find(']]') < page_content.find('}}'):  # Si on est dans un lien
-        mot = page_content[:page_content.find(']]')+2]
+        lemma_page_name = page_content[:page_content.find(']]')+2]
     elif page_content.find('|') != -1 and page_content.find('|') < page_content.find('}}'):
-        mot = page_content[:page_content.find('|')]
+        lemma_page_name = page_content[:page_content.find('|')]
         # TODO si dièse remplacer en même temps que les language_code ci-dessous, à partir d'un tableau des langues
     else:
-        mot = page_content[:page_content.find('}}')]
-    if mot[:2] != '[[':
-        mot = '[[' + mot + ']]'
+        lemma_page_name = page_content[:page_content.find('}}')]
+    if lemma_page_name[:2] != '[[':
+        lemma_page_name = '[[' + lemma_page_name + ']]'
+
+    if '{' in lemma_page_name or '}' in lemma_page_name or '[' in lemma_page_name or ']' in lemma_page_name \
+        or '=' in lemma_page_name:
+        if debug_level > 0:
+            print('Unsupported source page format')
+        return
 
     # On ne crée que les flexions des lemmes existants
-    lemma_page = Page(site, mot[2:-2])
-    if lemma_page.exists() == 'False':
+    lemma_page = Page(site, lemma_page_name[2:-2])
+    if not lemma_page.exists():
         print('page_content du lemme absente du Wiktionnaire')
         return
     lemma_page_content = get_content_from_page(lemma_page, 'All')
@@ -199,7 +208,7 @@ def treat_page(source_page, is_lemma=True):
 
     target_page_content = '== {{langue|' + language_code + '}} ==\n=== {{' + nature + '|' + language_code \
             + '|flexion}} ===\n\'\'\'' + page_name + '\'\'\' {{pron|'+pron+'|' + language_code \
-            + '}}\n# \'\'Prétérit de\'\' ' + mot + '.\n# \'\'Participe passé de\'\' ' + mot + '.\n'
+            + '}}\n# \'\'Prétérit de\'\' ' + lemma_page_name + '.\n# \'\'Participe passé de\'\' ' + lemma_page_name + '.\n'
     save_page(target_page, target_page_content, summary)
 
 
@@ -255,6 +264,7 @@ def main(*args):
     else:
         #p.pages_by_cat('Catégorie:Pluriels manquants en français', False, '')
         p.pages_by_cat('Catégorie:Prétérits et participes passés manquants en anglais', False, '')
+        # TODO: python3 core/pwb.py touch -lang:fr -family:wiktionary -cat:"Prétérits et participes passés manquants en anglais"
 
 
 if __name__ == "__main__":
