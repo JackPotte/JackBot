@@ -911,44 +911,33 @@ def add_language_code_with_named_parameter_to_template(
         pywikibot.output("  Template with lang=: \03{green}" + current_template + "\03{default}")
     page_content2 = page_content[end_position + 1:]
 
-    is_category = current_template != 'cf' or (page_content2.find('}}') > end_position + 1
+    has_subtemplate_included = False
+    if page_content.find('}}') > page_content.find('{{') != -1:
+        # TODO Infinite loop in [[tomme]] with ^date\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang=
+        regex_has_subtemplate = r'^' + re.escape(current_template) + r'\|[^{}]*({{(.*?)}}|.)+[^{}]*\| *lang *='
+        if re.search(regex_has_subtemplate, page_content):
+            has_subtemplate_included = True
+
+    if has_subtemplate_included or language_code is None:
+        if debug_level > 0:
+            print('   "lang=" addition ignored')
+        return next_template(final_page_content, page_content)
+
+    is_not_category_name = current_template != 'cf' or (page_content2.find('}}') > end_position + 1
         and (page_content2.find(':') == -1 or page_content2.find(':') > page_content2.find('}}'))
         and page_content2[:1] != '#')
-    has_subtemplate_included = False
-    regex = r''
-    if page_content.find('}}') > page_content.find('{{') != -1:
-        # Infinite loop in [[tomme]] on ^date\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang=
-        regex = r'^' + re.escape(current_template) + r'\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang='
-        if re.search(regex, page_content):
-            has_subtemplate_included = True
-    if debug_level > 1:
-        print('  ' + page_content.find('lang=') == -1 or page_content.find('lang=') > page_content.find('}}'))
-        print('  ' + is_category)
-        print('  ' + str(not has_subtemplate_included))
-        print('   ' + regex)
-        if has_subtemplate_included:
-            print(' ' + page_content[re.search(regex, page_content).start():re.search(regex, page_content).end()])
 
-    # TODO syntax has_parameters(['lang', 'lang1'])
-    if (page_content.find('lang=') == -1 or page_content.find('lang=') > page_content.find('}}')) and \
-        (page_content.find('langue=') == -1 or page_content.find('langue=') > page_content.find('}}')) and \
-        (page_content.find('lang1=') == -1 or page_content.find('lang1=') > page_content.find('}}')) and \
-        is_category and not has_subtemplate_included and language_code is not None:
+    regex_has_lang = r'[^{}]+\| *lang(gue|1)? *='
+    if is_not_category_name and not re.search(regex_has_lang, page_content):
         if debug_level > 0:
             print('   "lang=" addition')
         while page_content2.find('{{') < page_content2.find('}}') and page_content2.find('{{') != -1:
             page_content2 = page_content2[page_content2.find('}}')+2:]
-        if page_content.find('lang=') == -1 or page_content.find('lang=') > page_content.find('}}'):
-            if debug_level > 1:
-                print('    at ' + str(end_position))
-            final_page_content = final_page_content + current_template + '|lang=' + language_code\
-                                 + page_content[end_position:page_content.find('}}') + 2]
-            page_content = page_content[page_content.find('}}')+2:]
-            return final_page_content, page_content
-        else:
-            if debug_level > 0:
-                print('    "lang=" addition cancellation')
-            return next_template(final_page_content, page_content)
+
+        final_page_content = final_page_content + current_template + '|lang=' + language_code \
+                             + page_content[end_position:page_content.find('}}') + 2]
+        page_content = page_content[page_content.find('}}')+2:]
+        return final_page_content, page_content
 
     else:
         if debug_level > 0:
