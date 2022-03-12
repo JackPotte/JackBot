@@ -234,6 +234,10 @@ def get_content_from_page(page, allowed_namespaces=None):
         if debug_level > 0:
             print(str(e))
         return None
+    except pywikibot.exceptions.SiteDefinitionError as e:
+        if debug_level > 0:
+            print(str(e))
+        return None
 
     if debug_level > 0:
         print(' Page retrieved')
@@ -610,9 +614,9 @@ def save_page(current_page, page_content, summary, is_minor=True):
         except pywikibot.exceptions.LockedPageError as e:
             print(str(e))
             return
-        except pywikibot.EditConflict as e:
-            print(str(e))
-            return
+        # except pywikibot.EditConflict as e:
+        #     print(str(e))
+        #     return
         except pywikibot.exceptions.ServerError as e:
             print(str(e))
             time.sleep(100)

@@ -1311,7 +1311,8 @@ def add_banner_see(page_name, page_content, summary):
                 print(remaining_pages_keys)
             current_page = remaining_pages_keys[:remaining_pages_keys.find('|')]
             remaining_pages_keys = remaining_pages_keys[remaining_pages_keys.find('|')+1:]
-            if current_page == '':
+            # TODO escape ":"
+            if current_page == '' or ':' in current_page:
                 continue
             key_page = Page(site, current_page)
             key_page_content = get_content_from_page(key_page)
