@@ -8,7 +8,7 @@ cf http://www.tradino.org/
 from __future__ import absolute_import, unicode_literals
 import re
 import pywikibot
-from pywikibot import *
+#from pywikibot import *
 from page_functions import *
 
 do_check_url = False
@@ -248,6 +248,12 @@ old_param.append('website')
 new_param.append('périodique')
 old_param.append('pp')
 new_param.append('passage')
+old_param.append('url-access')
+new_param.append('accès url')
+old_param.append('doi-access')
+new_param.append('accès doi')
+old_param.append('hdl-access')
+new_param.append('accès hdl')
 
 # Fix
 old_param.append('en ligne le')
@@ -453,6 +459,18 @@ languages_translations[16][2] = 'hi'
 languages_translations[17][1] = 'Arabic'
 languages_translations[17][2] = 'ar'
 
+access_line = 4
+access_column = 2
+access_translations = [[0] * (access_column + 1) for _ in range(access_line + 1)]
+access_translations[1][1] = 'free'
+access_translations[1][2] = 'libre'
+access_translations[2][1] = 'registration'
+access_translations[2][2] = 'inscription'
+access_translations[3][1] = 'limited'
+access_translations[3][2] = 'limité'
+access_translations[4][1] = 'subscription'
+access_translations[4][2] = 'payant'
+
 
 def set_globals_translator(my_debug_level, my_site, my_username):
     global debug_level
@@ -475,6 +493,7 @@ def translate_templates(current_page, summary):
     current_page = translate_link_templates(current_page)
     current_page = translate_dates(current_page)
     current_page = translate_languages(current_page)
+    current_page = translate_access(current_page)
 
     # Paramètres inutiles
     current_page = re.sub(r'{{ *Références *\| *colonnes *= *}}', r'{{Références}}', current_page)
@@ -767,7 +786,7 @@ def translate_languages(current_page):
         print('\ntranslate_languages()')
     for l in range(1, languages_line + 1):
         if debug_level > 1:
-            print('Langue ') + str(l)
+            print('Langue ' + str(l))
             print(languages_translations[l][1])
         current_page = re.sub(r'(\| *langue *= *)' + languages_translations[l][1] + r'( *[<|\||\n\t|}])',
                               r'\1' + languages_translations[l][2] + r'\2', current_page)
@@ -781,6 +800,30 @@ def translate_languages(current_page):
                 2] + r'\|)', r'\1', current_page)
         current_page = re.sub(
             r'{{' + languages_translations[l][2] + r'}}[ \n]*({{[Oo]uvrage\|langue=' + languages_translations[l][
+                2] + r'\|)', r'\1', current_page)
+
+    return current_page
+
+
+def translate_access(current_page):
+    if debug_level > 0:
+        print('\ntranslate_access()')
+    for l in range(1, access_line + 1):
+        if debug_level > 1:
+            print('Access ' + str(l))
+            print(access_translations[l][1])
+        current_page = re.sub(r'(\| *accès (?:url|doi|hdl) *= *)' + access_translations[l][1] + r'( *[<|\||\n\t|}])',
+                              r'\1' + access_translations[l][2] + r'\2', current_page)
+
+        # TODO rustine suite à un imprévu censé être réglé ci-dessus, mais qui touche presque 10 % des pages.
+        current_page = re.sub(
+            r'{{' + access_translations[l][2] + r'}}[ \n]*({{[Aa]rticle\|langue=' + access_translations[l][
+                2] + r'\|)', r'\1', current_page)
+        current_page = re.sub(
+            r'{{' + access_translations[l][2] + r'}}[ \n]*({{[Ll]ien web\|langue=' + access_translations[l][
+                2] + r'\|)', r'\1', current_page)
+        current_page = re.sub(
+            r'{{' + access_translations[l][2] + r'}}[ \n]*({{[Oo]uvrage\|langue=' + access_translations[l][
                 2] + r'\|)', r'\1', current_page)
 
     return current_page
