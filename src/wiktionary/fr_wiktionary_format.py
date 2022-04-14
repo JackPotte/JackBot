@@ -568,8 +568,7 @@ def treat_page(page):
                                                                                   summary, current_template,
                                                                                   language_code, page_name)
 
-                elif do_fix_translations and (current_template == 'trad' or current_template == 'trad+'
-                                              or current_template == 'trad-' or current_template == 'trad--'):
+                elif do_fix_translations and current_template in ('trad', 'trad+', 'trad-', 'trad--'):
                     page_content, final_page_content, summary = treat_translations(page_content, final_page_content,
                                                                                    summary, end_position, site_family)
 
@@ -1046,7 +1045,6 @@ def main(*args):
                 p.pages_by_search(sys.argv[2])
             else:
                 p.pages_by_search('insource:/trad--\|lmo/', namespaces=[0])
-                p.pages_by_search('insource:/trad--\|shy/', namespaces=[0])
 
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
                 sys.argv[1] == str('-m'):

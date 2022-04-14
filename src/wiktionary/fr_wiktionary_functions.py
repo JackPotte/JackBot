@@ -1685,9 +1685,9 @@ def add_templates(page_content, summary):
     if debug_level > 1:
         print('  add translation templates')
     regex = r'\n\* *[Ss]olr[eé]sol *: *:* *\[\[«?([^\]\n«»]+)»?\]\]'
-    page_content = re.sub(regex, r'\n* {{T|solrésol}} : {{trad--|solrésol|\1}}', page_content)
+    page_content = re.sub(regex, r'\n* {{T|solrésol}} : {{trad|solrésol|\1}}', page_content)
     regex = r'(\n\* {{T\|tsolyáni}} *: *)\[\[([^\]\n]+)\]\]'
-    page_content = re.sub(regex, r'\1{{trad--|tsolyáni|\2}}', page_content)
+    page_content = re.sub(regex, r'\1{{trad|tsolyáni|\2}}', page_content)
 
     return page_content, summary
 
@@ -1851,6 +1851,8 @@ def replace_templates(page_content, summary):
     page_content = page_content.replace('{{abrév}}', '{{abréviation}}')
     page_content = page_content.replace('{{acron|', '{{acronyme|')
     page_content = page_content.replace('{{cours d\'eau', '{{cours d’eau')
+
+    page_content = page_content.replace('{{trad--|', '{{trad|')
 
     if debug_level > 1:
         print(' Modèles trop longs')
@@ -3243,13 +3245,6 @@ def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natu
 
 
 def treat_translations(page_content, final_page_content, summary, end_position, site_family):
-    new_wikis = ['diq', 'lmo', 'shy']
-    language_and_translation = page_content[page_content.find('|') + 1:page_content.find('}}')]
-    targetted_wiki = language_and_translation[:language_and_translation.find('|')]
-
-    if end_position == page_content.find('--}}') - 2 and targetted_wiki in new_wikis:
-        page_content = page_content.replace('trad--|' + targetted_wiki, 'trad|' + targetted_wiki)
-
     # Empty or stub
     has_not_to_call_interwiki_link = end_position == page_content.find('}}') \
         or end_position == page_content.find('|en|}}') - 4
@@ -3350,7 +3345,7 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
             if external_site_name is None:
                 if debug_level > d:
                     print('  no site (--)')
-                final_page_content, page_content = next_translation_template(final_page_content, page_content, '--')
+                final_page_content, page_content = next_translation_template(final_page_content, page_content, '')
                 external_site_name = ''
             elif external_site_name != '':
                 if page_content3.find('|') != -1 and page_content3.find('|') < page_content3.find('}}'):
