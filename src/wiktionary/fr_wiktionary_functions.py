@@ -927,7 +927,7 @@ def add_language_code_with_named_parameter_to_template(
         and (page_content2.find(':') == -1 or page_content2.find(':') > page_content2.find('}}'))
         and page_content2[:1] != '#')
 
-    regex_has_lang = r'[^{}]+\| *lang(gue|1)? *='
+    regex_has_lang = r'^[^{}]+\| *lang(gue|1)? *='
     if is_not_category_name and not re.search(regex_has_lang, page_content):
         if debug_level > 0:
             print('   "lang=" addition')
