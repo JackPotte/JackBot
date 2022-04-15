@@ -1101,7 +1101,8 @@ def main(*args):
         p.pages_by_cat('Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet')
         p.pages_by_cat('Catégorie:Appels de modèles incorrects:deet')
         p.pages_by_cat('Catégorie:Wiktionnaire:Ébauches à compléter')
-        p.pages_by_link('Template:trad', namespaces=[0])
+        # Old templates names
+        p.pages_by_link('Template:trad--', namespaces=[0])
         p.pages_by_link('Template:clef de tri')
         p.pages_by_link('Template:1ergroupe')
         p.pages_by_link('Template:2egroupe')
@@ -1133,6 +1134,7 @@ def main(*args):
         p.pages_by_link('Template:nomin')
         p.pages_by_link('Template:acron')
         p.pages_by_link('Template:abrév')
+
         p.pages_by_cat('Catégorie:Traduction en français demandée d’exemple(s) écrits en français')
         p.pages_by_cat('Catégorie:Wiktionnaire:Utilisation d’anciens modèles de section')
         p.pages_by_cat('Catégorie:Wiktionnaire:Sections avec paramètres superflus')
@@ -1140,8 +1142,6 @@ def main(*args):
         #p.pages_by_cat('Catégorie:Wiktionnaire:Sections avec titre inconnu')
         p.pages_by_search('insource:/\}==== \{\{S\|/', namespaces=[0])
         p.pages_by_search('insource:/\}=== \{\{S\|/', namespaces=[0])
-        p.pages_by_search('insource:/solrésol *:/i', namespaces=[0])
-        p.pages_by_search('insource:/tsolyáni}} *: *\[/i', namespaces=[0])
         p.pages_by_search(
             'insource:/[^=]=== \{\{S\|(variantes|synonymes|antonymes|déclinaison|dérivés|apparentés|hyperonymes|hyponymes|méronymes|holonymes|vocabulaire|traductions)/',
             namespaces=[0])
