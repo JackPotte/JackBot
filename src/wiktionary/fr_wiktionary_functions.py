@@ -1789,6 +1789,15 @@ def replace_templates(page_content, summary):
     page_content = re.sub(r'{{terme *\| *', r'{{term|', page_content)
     page_content = re.sub(r'{{term *\|Registre neutre}} *', r'', page_content)
 
+    t = '{{ucf|'
+    while t in page_content:
+        page_end = page_content[page_content.find(t) + len(t):]
+        word = page_end[:page_end.find('}}')]
+        if '|' in word:
+            break
+        page_content = page_content[:page_content.find(t)] + '[[' + word + '|' + word[:1].upper() + word[1:] + ']]' + \
+            page_end[page_end.find('}}') + 2:]
+
     regex = r"{{ *dés *([\|}])"
     if re.search(regex, page_content):
         page_content = re.sub(regex, r"{{désuet\1", page_content)

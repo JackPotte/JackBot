@@ -1048,11 +1048,7 @@ def main(*args):
 
         elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
                 sys.argv[1] == str('-m'):
-            p.pages_by_link('Template:abréviation', namespaces=[0])
-            p.pages_by_link('Template:acronyme', namespaces=[0])
-            p.pages_by_link('Template:diminutif', namespaces=[0])
-            p.pages_by_link('Template:sigle', namespaces=[0])
-            p.pages_by_link('Template:verlan', namespaces=[0])
+            p.pages_by_link('Template:ucf', namespaces=[0])
         elif sys.argv[1] == str('-category') or sys.argv[1] == str('-cat') or sys.argv[1] == str('-c'):
             if len(sys.argv) > 2:
                 if sys.argv[2] == str('listFalseTranslations'):
@@ -1103,6 +1099,7 @@ def main(*args):
         p.pages_by_cat('Catégorie:Wiktionnaire:Ébauches à compléter')
         # Old templates names
         p.pages_by_link('Template:trad--', namespaces=[0])
+        p.pages_by_link('Template:ucf')
         p.pages_by_link('Template:clef de tri')
         p.pages_by_link('Template:1ergroupe')
         p.pages_by_link('Template:2egroupe')

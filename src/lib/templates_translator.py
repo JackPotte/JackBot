@@ -526,7 +526,7 @@ def translate_templates(current_page, summary):
 
 
 def translate_template_parameters(current_template):
-    if debug_level > 0:
+    if debug_level > 1:
         print('\ntranslate_template_parameters()')
     for p in range(0, param_limit):
         if not has_parameter(current_template, old_param[p]):

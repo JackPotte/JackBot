@@ -42,7 +42,7 @@ site_language, site_family, site = get_site_by_file_name(__file__)
 username = config.usernames[site_family][site_language]
 
 do_translate_url = True
-fix_tags = False
+fix_tags = False  # TODO treat only some of them (like <tt>)
 fix_files = True
 treat_all_namespaces = False
 fix_article = False
