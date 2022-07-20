@@ -49,7 +49,7 @@ def treat_page(page):
     if not has_more_than_time(page, 1440):
         return
     if page.exists():
-        if page.namespace() != 0 and page.title() != 'User:JackBot/test':
+        if page.namespace() != 0 and 'Utilisateur:' + username not in page.title():
             print(' untreated namespace')
             return
     else:
@@ -162,7 +162,11 @@ def treat_page(page):
             if page_content2.find('{{m}}') != -1 and page_content2.find('{{m}}') < page_content2.find('\n'):
                 gender = ' {{m}}'
             if page_content2.find('{{f}}') != -1 and page_content2.find('{{f}}') < page_content2.find('\n'):
-                gender = ' {{f}}'
+                if '' == gender:
+                    gender = ' {{f}}'
+                else:
+                    gender = ' {{mf}}'
+
             MF = ''
             if page_content2.find('{{mf}}') != -1 and page_content2.find('{{mf}}') < page_content2.find('\n'):
                 gender = ' {{mf}}'
@@ -352,6 +356,8 @@ def main(*args):
             treat_page_by_name('User:' + username + '/test')
         elif sys.argv[1] == '-test2':
             treat_page_by_name('User:' + username + '/test2')
+        elif sys.argv[1] == str('-tu') or sys.argv[1] == str('-t'):
+            treat_page_by_name('User:' + username + '/test unitaire')
         elif sys.argv[1] == '-page' or sys.argv[1] == '-p':
             treat_page_by_name('saisie de schéma')
         elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
