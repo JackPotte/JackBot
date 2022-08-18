@@ -2578,6 +2578,8 @@ def format_wikicode(page_content, summary, page_name):
 
 
 def add_appendix_links(page_content, summary, page_name):
+    if debug_level > 0:
+        print('add_appendix_links()')
     language_suffixes = [('es', 'ar', 'arsi', 'er', 'ersi', 'ir', 'irsi'),
          ('pt', 'ar', 'ar-se', 'er', 'er-se', 'ir', 'ir-se'),
          ('it', 'are', 'arsi', 'ere', 'ersi', 'ire', 'irsi'),
@@ -2588,26 +2590,31 @@ def add_appendix_links(page_content, summary, page_name):
             and page_content.find('{{invar') == -1 and page_content.find('{{verbe non standard') == -1 \
             and page_content.find('[[Image:') == -1:
         # Sinon bug https://fr.wiktionary.org/w/index.php?title=d%C3%A9finir&diff=10128404&oldid=10127687
+        # TODO add if images
         if debug_level > 0:
             print(' {{conj}}')
         for l in language_suffixes:
-            if not (l[0] == 'fr' and page_name[-3:] == 'ave'):
-                if re.compile(r'{{S\|verbe\|'+l[0]+'}}').search(page_content) and not \
-                    re.compile(r'{{S\|verbe\|'+l[0]+u'}}[= ]+\n+[^\n]*\n*[^\n]*\n*{{(conj[a-z1-3| ]*|invar)').search(page_content):
+            # Pas de conjugaison pour les verbes français avec infinitif en -ave
+            # TODO use l[>0] instead
+            if l[0] == 'fr' and page_name[-3:] == 'ave':
+                continue
+
+            section_title = r'{{S\|verbe\|' + l[0] + '}}'
+            if re.compile(section_title).search(page_content) and not \
+                re.compile(section_title + r'[= ]+\n+[^\n]*\n*[^\n]*\n*{{(conj[a-z1-3| ]*|invar)').search(page_content):
+                if debug_level > 0:
+                    print(' {{conj|' + l[0] + '}} manquant')
+
+                if re.compile(section_title + r'[^\n]*\n*[^\n]*\n*[^{]*{{pron\|[^}]*}}').search(page_content):
                     if debug_level > 0:
-                        print(' {{conj|')+l[0]+u'}} manquant'
-                    if re.compile(r'{{S\|verbe\|'+l[0]+u'}}[^\n]*\n*[^\n]*\n*[^{]*{{pron\|[^}]*}}').search(page_content):
-                        if debug_level > 0:
-                            print(' ajout de {{conj|')+l[0]+u'}} après {{pron|...}}'
-                        try:
-                            i1 = re.search(r'{{S\|verbe\|'+l[0]+u'}}[^\n]*\n*[^\n]*\n*[^{]*{{pron\|[^\}]*}}', page_content).end()
-                            page_content = page_content[:i1] + ' {{conjugaison|'+l[0]+'}}' + page_content[i1:]
-                        except:
-                            if debug_level > 0:
-                                print(' sites_errors l 5390')
-                    else:
-                        if debug_level > 0:
-                            print(' pas de prononciation pour ajouter {{conj}}')
+                        print(' ajout de {{conj|' + l[0] + '}} après {{pron|...}}')
+
+                    i1 = re.search(section_title + r'[^\n]*\n*[^\n]*\n*[^{]*{{pron\|[^\}]*}}', page_content).end()
+                    page_content = page_content[:i1] + ' {{conjugaison|' + l[0] + '}}' + page_content[i1:]
+
+                else:
+                    if debug_level > 0:
+                        print(' pas de prononciation pour ajouter {{conj}}')
 
     return page_content, summary
 
@@ -3566,6 +3573,7 @@ TODO:
     def sortSections(page_content):
     def uncategorizeDoubleTemplateWhenCategory(page_content, summary):
     def checkTranslationParagraphsNumberBySense(page_content, summary):
+    def get_form_line() & get_definition_line()
 
 if page_content.find('{{conj') != -1:
     if debug_level > 0: print(' Ajout des groupes dans {{conj}}')
