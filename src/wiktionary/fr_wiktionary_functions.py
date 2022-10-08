@@ -2588,7 +2588,7 @@ def add_appendix_links(page_content, summary, page_name):
        ]
     if ' ' not in page_name and page_content.find('{{voir-conj') == -1 \
             and page_content.find('{{invar') == -1 and page_content.find('{{verbe non standard') == -1 \
-            and page_content.find('[[Image:') == -1:
+            and page_content.find('[[Image:') == -1 and page_content.find('[[Fichier:') == -1:
         # Sinon bug https://fr.wiktionary.org/w/index.php?title=d%C3%A9finir&diff=10128404&oldid=10127687
         # TODO add if images
         if debug_level > 0:
