@@ -2131,6 +2131,8 @@ def remove_double_category_when_template(page_content, summary):
 def format_templates(page_content, summary):
     page_content = page_content.replace('}} \n', '}}\n')
     page_content = page_content.replace('\n {{', '\n{{')
+    page_content = page_content.replace('|lang=}}', '}}')
+    page_content = page_content.replace('|}}', '}}')
 
     if debug_level > 1:
         print(' Formatage de la ligne de forme')
