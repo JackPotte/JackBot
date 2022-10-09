@@ -54,7 +54,7 @@ protobuf==3.20.2
 psutil==5.8.0
 ptyprocess==0.7.0
 py==1.10.0
-pycairo==1.16.2
+pycairo==1.21.0
 pycparser==2.20
 Pygments==2.10.0
 pyinotify==0.9.6
