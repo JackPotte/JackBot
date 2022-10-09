@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rm -Rf core
+mv core core.old
 wget https://tools.wmflabs.org/pywikibot/core_stable.zip
 unzip core_stable.zip
 mv core_stable core
@@ -12,9 +12,9 @@ cd core/scripts/i18n
 git pull
 #rm -Rf .git
 
-pip install i18n
-pip install regex
-pip install requests
+#pip install i18n
+#pip install regex
+#pip install requests
 
 if [ ! -e 'user-config.py' ]
   then cp user-config.py.dist user-config.py
