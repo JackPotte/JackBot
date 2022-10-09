@@ -10,12 +10,9 @@ pip install -r requirements.txt
 
 cd core/scripts/i18n
 git pull
-#rm -Rf .git
+rm -Rf .git
 
-#pip install i18n
-#pip install regex
-#pip install requests
-
+cd ../../..
 if [ ! -e 'user-config.py' ]
   then cp user-config.py.dist user-config.py
 fi
