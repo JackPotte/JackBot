@@ -48,7 +48,7 @@ treat_all_namespaces = False
 fix_article = False
 fix_missing_titles = False
 safe_mode = True  # Count if the braces & brackets are even before saving
-output = 'dumps/articles_WPout.txt'
+output_file = 'dumps/articles_WPout.txt'
 referencesAliases = []
 
 
@@ -161,22 +161,12 @@ def treat_page(page):
         # if debug_level > 1: raise Exception('Crochet cassé')
     if current_page_content.count('[[') - current_page_content.count(']]') != current_page.count('[[') \
             - current_page.count(']]'):
-        txt_file = codecs.open(output, 'a', 'utf-8')
-        txt_file.write(current_page + '\n\n-----------------------------------------------------------------------\n\n')
-        txt_file.close()
-        if debug_level > 0:
-            print(' Crochets cassés')    # raise Exception('Crochets cassés')
-            input(current_page_content)
+        log_in_file(page_name, current_page_content, 'Crochets cassés')
         if safe_mode:
             return
     if current_page_content.count('{{') - current_page_content.count('}}') != current_page.count('{{') \
             - current_page.count('}}'):
-        txt_file = codecs.open(output, 'a', 'utf-8')
-        txt_file.write(current_page + '\n\n-----------------------------------------------------------------------\n\n')
-        txt_file.close()
-        if debug_level > 0:
-            print(' Accolades cassées')  # raise Exception('Accolades cassées')
-            input(current_page)
+        log_in_file(page_name, current_page_content, 'Accolades cassées')
         if safe_mode:
             return
 
@@ -279,8 +269,23 @@ def main(*args):
         p.pages_by_link('Template:Cita libro')
         p.pages_by_link('Template:Webbref')
         p.pages_by_link('Template:Internetquelle')
-        # p.pagesByLink('Template:Reflist')  # Interblocages quotidients
+        # p.pagesByLink('Template:Reflist')  # Interblocages quotidiens
 
+
+def log_in_file(page_name, current_page_content, error_title):
+    if debug_level > 0:
+        print(page_name)
+        print(error_title)
+        print(current_page_content)
+
+    parent_folder = os.path.dirname(output_file)
+    if not os.path.exists(parent_folder):
+        os.mkdir(parent_folder)
+
+    file_object = codecs.open(output_file, 'a', 'utf-8')
+    file_object.write(error_title + ' dans ' + page_name + '\n')
+    file_object.write(current_page_content + '\n\n----------------------------------------------------------------\n\n')
+    file_object.close()
 
 if __name__ == "__main__":
     main(sys.argv)
