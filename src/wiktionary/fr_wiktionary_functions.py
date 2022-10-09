@@ -2588,9 +2588,11 @@ def add_appendix_links(page_content, summary, page_name):
          ('fr', 'er', 'er', 'ir', 'ir', 're', 'ar'),
          ('ru', '', '', '', '', '', '')
        ]
-    if ' ' not in page_name and page_content.find('{{voir-conj') == -1 \
+    if (' ' not in page_name or 'JackBot' in page_name) and page_content.find('{{voir-conj') == -1 \
             and page_content.find('{{invar') == -1 and page_content.find('{{verbe non standard') == -1 \
-            and page_content.find('[[Image:') == -1 and page_content.find('[[Fichier:') == -1:
+            and '[[Image:' not in page_content and '[[image:' not in page_content \
+            and '[[File:' not in page_content and '[[file:' not in page_content \
+            and '[[Fichier:' not in page_content and '[[Fichier:' not in page_content:
         # Sinon bug https://fr.wiktionary.org/w/index.php?title=d%C3%A9finir&diff=10128404&oldid=10127687
         # TODO add if images
         if debug_level > 0:
@@ -2601,22 +2603,23 @@ def add_appendix_links(page_content, summary, page_name):
             if l[0] == 'fr' and page_name[-3:] == 'ave':
                 continue
 
+            # TODO treat verbe|num=1...
             section_title = r'{{S\|verbe\|' + l[0] + '}}'
             if re.compile(section_title).search(page_content) and not \
                 re.compile(section_title + r'[= ]+\n+[^\n]*\n*[^\n]*\n*{{(conj[a-z1-3| ]*|invar)').search(page_content):
                 if debug_level > 0:
-                    print(' {{conj|' + l[0] + '}} manquant')
+                    print(' Missing {{conj|' + l[0] + '}} in a verb section')
 
                 if re.compile(section_title + r'[^\n]*\n*[^\n]*\n*[^{]*{{pron\|[^}]*}}').search(page_content):
                     if debug_level > 0:
-                        print(' ajout de {{conj|' + l[0] + '}} après {{pron|...}}')
+                        print(' Add {{conj|' + l[0] + '}} after {{pron|...}}')
 
                     i1 = re.search(section_title + r'[^\n]*\n*[^\n]*\n*[^{]*{{pron\|[^\}]*}}', page_content).end()
                     page_content = page_content[:i1] + ' {{conjugaison|' + l[0] + '}}' + page_content[i1:]
 
                 else:
                     if debug_level > 0:
-                        print(' pas de prononciation pour ajouter {{conj}}')
+                        print(' No pronunciation to add {{conj}} after')
 
     return page_content, summary
 
