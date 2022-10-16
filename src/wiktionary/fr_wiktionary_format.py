@@ -976,7 +976,7 @@ set_functions_globals(debug_level, site, username)
 set_fr_wiktionary_functions_globals(debug_level, site, username)
 
 
-def main(*args):
+def main(*args) -> int:
     global days_before_archiving, fix_old_templates, output_file, site_language, site_family, fix_tags, \
         list_false_translations, test_import, cancel_user
     if len(sys.argv) > 1:
@@ -1142,6 +1142,7 @@ def main(*args):
         p.pages_by_search(
             'insource:/[^=]=== \{\{S\|(variantes|synonymes|antonymes|déclinaison|dérivés|apparentés|hyperonymes|hyponymes|méronymes|holonymes|vocabulaire|traductions)/',
             namespaces=[0])
+    return 0
 
 
 if __name__ == "__main__":

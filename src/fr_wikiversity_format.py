@@ -554,7 +554,7 @@ p = PageProvider(treat_page, site, debug_level)
 set_functions_globals(debug_level, site, username)
 
 
-def main(*args):
+def main(*args) -> int:
     if len(sys.argv) > 1:
         if debug_level > 1:
             print(sys.argv)
@@ -607,6 +607,7 @@ def main(*args):
     else:
         while 1:
             p.pages_by_rc()
+    return 0
 
 
 if __name__ == "__main__":

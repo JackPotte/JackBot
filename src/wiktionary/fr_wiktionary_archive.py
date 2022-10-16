@@ -156,7 +156,7 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
         save_page(page, page_content, summary)
 
 
-def main(*args):
+def main(*args) -> int:
     if len(sys.argv) > 1:
         if sys.argv[1] == str('-tu') or sys.argv[1] == str('-t'):
             global wait_after_humans
@@ -164,6 +164,7 @@ def main(*args):
             treat_page_by_name('User:' + username + '/test unitaire')
     else:
         treat_page_by_name('Wiktionnaire:Bots/Requêtes')
+    return 0
 
 
 if __name__ == "__main__":

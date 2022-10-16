@@ -348,7 +348,7 @@ set_functions_globals(debug_level, site, username)
 set_fr_wiktionary_functions_globals(debug_level, site, username)
 
 
-def main(*args):
+def main(*args) -> int:
     if len(sys.argv) > 1:
         if debug_level > 1:
             print(sys.argv)
@@ -398,6 +398,7 @@ def main(*args):
         # Daily
         p.pages_by_cat('Catégorie:Pluriels manquants en français', False, '')
         # TODO: python core/pwb.py touch -lang:fr -family:wiktionary -cat:"Pluriels manquants en français"
+    return 0
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ import re
 import sys
 
 
-def main(*args):
+def main(*args) -> int:
     # TODO
     # 1) get https://fr.wiktionary.org/wiki/Module:langues/data 
     # 2) Regex
@@ -27,6 +27,7 @@ def main(*args):
         redirect_names += "\n    '" + redirect[0] + "': '" + languages.languages[redirect[1]] + "',"
     file.write(redirect_names)
     file.close
+    return 0
 
 
 if __name__ == "__main__":

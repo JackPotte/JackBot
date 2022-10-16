@@ -228,7 +228,7 @@ set_functions_globals(debug_level, site, username)
 set_fr_wiktionary_functions_globals(debug_level, site, username)
 
 
-def main(*args):
+def main(*args) -> int:
     from lib import html2unicode
     pagesList = open('lists/articles_' + site_language + '_' + site_family + '_CFC.csv', 'r')
     while 1:
@@ -240,6 +240,7 @@ def main(*args):
         # Conversion ASCII => Unicode (pour les .txt)
         treatPage(update_html_to_unicode(line))
     pagesList.close()
+    return 0
 
 
 if __name__ == "__main__":

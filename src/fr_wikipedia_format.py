@@ -187,7 +187,7 @@ set_functions_globals(debug_level, site, username)
 set_globals_translator(debug_level, site, username)
 
 
-def main(*args):
+def main(*args) -> int:
     global treat_all_namespaces
     if len(sys.argv) > 1:
         if debug_level > 1:
@@ -270,6 +270,7 @@ def main(*args):
         p.pages_by_link('Template:Webbref')
         p.pages_by_link('Template:Internetquelle')
         # p.pagesByLink('Template:Reflist')  # Interblocages quotidiens
+    return 0
 
 
 def log_in_file(page_name, current_page_content, error_title):

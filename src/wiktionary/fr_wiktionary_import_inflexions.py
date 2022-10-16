@@ -218,7 +218,7 @@ set_functions_globals(debug_level, site, username)
 set_fr_wiktionary_functions_globals(debug_level, site, username)
 
 
-def main(*args):
+def main(*args) -> int:
     if len(sys.argv) > 1:
         if debug_level > 1:
             print(sys.argv)
@@ -266,6 +266,7 @@ def main(*args):
         #p.pages_by_cat('Catégorie:Pluriels manquants en français', False, '')
         p.pages_by_cat('Catégorie:Prétérits et participes passés manquants en anglais', False, '')
         # TODO: python3 core/pwb.py touch -lang:fr -family:wiktionary -cat:"Prétérits et participes passés manquants en anglais"
+    return 0
 
 
 if __name__ == "__main__":

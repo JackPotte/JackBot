@@ -146,7 +146,7 @@ p = PageProvider(treat_page, site, debug_level)
 set_functions_globals(debug_level, site, username)
 
 
-def main(*args):
+def main(*args) -> int:
     global do_add_category
     if len(sys.argv) > 1:
         if debug_level > 1:
@@ -206,6 +206,7 @@ def main(*args):
     else:
         while 1:
             p.pages_by_rc()
+    return 0
 
 
 if __name__ == "__main__":

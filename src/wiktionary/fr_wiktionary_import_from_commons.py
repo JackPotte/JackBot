@@ -300,7 +300,7 @@ set_functions_globals(debug_level, commons_site, username)
 set_fr_wiktionary_functions_globals(debug_level, site, username)
 
 
-def main(*args):
+def main(*args) -> int:
     if len(sys.argv) > 1:
         if debug_level > 1:
             print(sys.argv)
@@ -352,6 +352,7 @@ def main(*args):
             treat_page_by_name(sys.argv[1])
     else:
         p.pages_by_cat('Category:Pronunciation', recursive=True, not_names=['spoken ', 'Wikipedia', 'Wikinews'])
+    return 0
 
 
 if __name__ == "__main__":
