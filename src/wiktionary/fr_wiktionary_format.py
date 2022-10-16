@@ -1097,7 +1097,6 @@ def main(*args):
         p.pages_by_cat('Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet')
         p.pages_by_cat('Catégorie:Appels de modèles incorrects:deet')
         p.pages_by_cat('Catégorie:Wiktionnaire:Ébauches à compléter')
-        p.pages_by_link('Template:trad', namespaces=[0])
         # Old templates names
         p.pages_by_link('Template:trad--', namespaces=[0])
         p.pages_by_link('Template:ucf')
