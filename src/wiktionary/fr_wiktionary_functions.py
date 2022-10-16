@@ -2581,7 +2581,7 @@ def format_wikicode(page_content, summary, page_name):
 
 def add_appendix_links(page_content, summary, page_name):
     if debug_level > 0:
-        print('add_appendix_links()')
+        print('\nadd_appendix_links()')
     language_suffixes = [('es', 'ar', 'arsi', 'er', 'ersi', 'ir', 'irsi'),
          ('pt', 'ar', 'ar-se', 'er', 'er-se', 'ir', 'ir-se'),
          ('it', 'are', 'arsi', 'ere', 'ersi', 'ire', 'irsi'),
