@@ -575,7 +575,7 @@ class Main(object):
             if not self.__start:
                 self.__start = '!'
             namespace = pywikibot.Page(site, self.__start).namespace()
-            start = pywikibot.Page(site, self.__start).title(withNamespace=False)
+            start = pywikibot.Page(site, self.__start).title(with_ns=False)
             pagegen = pagegenerators.AllpagesPageGenerator(start, namespace, includeredirects=False, site=site)
         return pagegen
 
@@ -584,7 +584,7 @@ class Main(object):
         self.parse()
 
         # ensure that we don't try to change main page
-        globalvar.mainpage_name = pywikibot.Page(pywikibot.Link("Main page_content", site)).title(withNamespace=False)
+        globalvar.mainpage_name = pywikibot.Page(pywikibot.Link("Main page_content", site)).title(with_ns=False)
 
         if site.lang in msg:
             globalvar.lang = site.lang
