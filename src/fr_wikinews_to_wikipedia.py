@@ -21,9 +21,11 @@ from page_functions import get_site_by_file_name
 
 # Global variables
 debug_level = 0
-if len(sys.argv) > 2:
-    if sys.argv[2] == 'debug' or sys.argv[2] == 'd':
+debug_aliases = ['-debug', '-d']
+for debugAlias in debug_aliases:
+    if debugAlias in sys.argv:
         debug_level = 1
+        sys.argv.remove(debugAlias)
 
 site_language, site_family, site = get_site_by_file_name(__file__)
 username = config.usernames[site_family][site_language]
@@ -41,7 +43,7 @@ def getNewsOld(page):
         response, data = site.postForm('/w/api.php', {'action':'parse','format':'json','page':page.title()})
     except ValueError: #too many values to unpack
         input('sites_errors systématique')'''
-    predata = { #ex : https://fr.wikipedia.org/w/api.php?action=parse&format=jsonfm&page=Portail:Canada/Actualit%C3%A9s/Wikinews
+    predata = {  #ex : https://fr.wikipedia.org/w/api.php?action=parse&format=jsonfm&page=Portail:Canada/Actualit%C3%A9s/Wikinews
        'action': 'parse',
        'format': 'json',
        'page': page.title().encode('utf-8')
@@ -71,8 +73,8 @@ def parseNews(text):
 
 
 def getNews(page):
-    text = page._get_parsed_page()  # TODO: APIError missing title when the WN page doesn't exist
-    #input(parsed_text)
+    text = page.get_parsed_page()  # TODO: APIError missing title when the WN page doesn't exist
+    #input(text)
     return parseNews(text)
 
 
@@ -92,7 +94,7 @@ def doOnePage(tpl, page, site_src):
     raw_config = rx.group(1).split('|')[1:]
     for x in raw_config:
         if debug_level > 0: print(x)
-        var, val = x.split('=',1)
+        var, val = x.split('=', 1)
         var, val = var.strip(), val.strip()
         config[var] = (val, True)
  
@@ -104,11 +106,11 @@ def doOnePage(tpl, page, site_src):
         print(news_page)  # ex: <DynamicPageList>...
     text = '\n'.join(
         [u'%(indent)s %(prefix)s[[wikinews:%(lang)s:%(article_page)s|%(article_title)s]]' % {
-                'article_page' : re.sub(r'[\s\xa0]', ' ', news.title()),
-                'article_title' : news.title(),
-                'prefix' : prefix,
-                'indent' : config['indent'][0],
-                'lang' : site_src.lang
+                'article_page': re.sub(r'[\s\xa0]', ' ', news.title()),
+                'article_title': news.title(),
+                'prefix': prefix,
+                'indent': config['indent'][0],
+                'lang': site_src.lang
             }
             # for prefix, news in parseNews(news_page)]
             for prefix, news in getNews(news_page)
@@ -127,11 +129,11 @@ def doOnePage(tpl, page, site_src):
     if text != old_text:
         raw_config = '|'.join('%s = %s' % (v,k[0]) for v,k in config.items() if k[1])
         text = '%(text)s<noinclude>\n{{%(tpl)s|%(config)s}}\nRetrieved by ~~~ from [[wikinews:%(lang)s:%(page)s|]] on ~~~~~\n</noinclude>' % {
-                'text' : text,
-                'tpl' : tpl.title(),
-                'config' : raw_config,
-                'page' : config['page'][0],
-                'lang' : site_src.lang,
+                'text': text,
+                'tpl': tpl.title(),
+                'config': raw_config,
+                'page': config['page'][0],
+                'lang': site_src.lang,
                 }
         # pywikibot.output(text)
         result = 'ok'
@@ -139,7 +141,7 @@ def doOnePage(tpl, page, site_src):
             print(text)
             result = input("Sauvegarder ? (o/n) ")
         if result != "n" and result != "no" and result != "non":
-            page.put(text, comment='Updating from [[n:%s|%s]]' % (news_page.title(), news_page.title(),))
+            page.put(text, summary='Updating from [[n:%s|%s]]' % (news_page.title(), news_page.title(),))
 
     WPsite = pywikibot.Site(code=lang, fam='wikipedia')
     return {
@@ -187,7 +189,7 @@ def main(lang):
         if result != "n" and result != "no" and result != "non":
             audit_page.put(
             'List of pages maintained by {{user|' + username + '}} by namespace. Last updated: ~~~~~\n\n' + audit_txt,
-            comment='Updating list of maintained pages (%d items).' % sum(len(i) for i in pages_maintained.values()),
+            summary='Updating list of maintained pages (%d items).' % sum(len(i) for i in pages_maintained.values()),
             )
 
 
