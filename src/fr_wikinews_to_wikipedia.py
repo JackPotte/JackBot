@@ -154,7 +154,7 @@ def main(lang):
     site_src = pywikibot.Site(code=lang, fam='wikinews')
     site_dest = pywikibot.Site(code=lang, fam='wikipedia')
     tpl = Page(site_dest, 'User:Wikinews Importer Bot/config')
-    for page in tpl.getReferences(onlyTemplateInclusion=True):
+    for page in tpl.getReferences(only_template_inclusion=True):
         if page.title().endswith('/Wikinews') or page.title().startswith('Template:Wikinewshas/') or '/Wikinews/' \
                 in page.title():
             try:
