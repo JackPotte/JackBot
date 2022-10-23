@@ -43,7 +43,11 @@ extension_length = len(supported_extensions[0])
 
 
 def treat_page_by_name(page_name):
-    page = Page(site, page_name)
+    try:
+        page = Page(site, page_name)
+    except TypeError:  # ex: argument of type 'Page' is not iterable
+        print(page_name + ' Page is not iterable')
+        return None
     return treat_page(page)
 
 
