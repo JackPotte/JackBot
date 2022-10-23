@@ -7,7 +7,7 @@ maxthrottle = 0
 mylang = 'fr'
 family = 'wiktionary'
 
-usernames['commons']['commons'] = 'JackPotte'
+usernames['commons']['commons'] = 'JackBot'
 usernames['wikidata']['wikidata'] = 'JackBot'
 usernames['meta']['meta'] = 'JackBot'
 usernames['species']['species'] = 'JackBot'

@@ -1,4 +1,7 @@
+#!/bin/bash
+
 cd JackBot
+devops/update.sh
 
 python3 core/pwb.py redirect.py double -always -family:wikipedia -lang:fr
 python3 core/pwb.py redirect.py double -always -family:wikipedia -lang:pl

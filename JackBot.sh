@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #== Native scripts ==
 #python core/pwb.py replace       -lang:commons -family:commons -file:articles_commons_txt "[[Category:PDF Wikibooks]]" "[[Category:English Wikibooks PDF]]"
 #python core/pwb.py movepages     -lang:fr -family:wiktionary -pairsfile:"articles_fr_wiktionary.txt" -noredirect

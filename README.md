@@ -11,7 +11,7 @@ This wiki bot has performed thousands of modifications on several wikis: https:/
 ```
 git clone https://github.com/JackPotte/JackBot.git
 cd JackBot
-./updatePywikibot.sh
+devops/updatePywikibot.sh
 ```
 
 ## Speed optimization
