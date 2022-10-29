@@ -620,7 +620,7 @@ class Main(object):
 
                 if oldtext != output:
                     output = output % time.strftime('%d/%m/%y / %H:00')
-                    outputpage.put(output, comment=msg[globalvar.lang][9])
+                    outputpage.put(output, summary=msg[globalvar.lang][9])
             except:
                 error('Getting/Modifying page %s failed, generated output was:\n%s' % (outputpage, output))
         else:
@@ -649,12 +649,12 @@ class Main(object):
         if nquotespage:
             # April fool (replace %d by %s too)
             # nquotes = hex(nquotes)
-            nquotespage.put("%d" % nquotes, comment=msg[globalvar.lang][9])
+            nquotespage.put("%d" % nquotes, summary=msg[globalvar.lang][9])
 
         if narticlespage:
             # Same as above
             # npages = hex(npages)
-            narticlespage.put("%d" % npages, comment=msg[globalvar.lang][9])
+            narticlespage.put("%d" % npages, summary=msg[globalvar.lang][9])
 
 
 globalvar = Global()

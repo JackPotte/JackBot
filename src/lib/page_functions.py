@@ -604,7 +604,7 @@ def save_page(current_page, page_content, summary, is_minor=True):
         if not summary:
             summary = '[[Wiktionnaire:Structure des articles|Autoformatage]]'
         try:
-            current_page.put(page_content, summary, minor=is_minor)
+            current_page.put(page_content, summary=summary, minor=is_minor)
         except pywikibot.exceptions.NoPageError as e:
             print(str(e))
             return

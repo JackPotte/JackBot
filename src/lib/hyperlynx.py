@@ -2,7 +2,7 @@
 # coding: utf-8
 """
 Ce script vérifie toutes les URL des articles de la forme http://, https:// et [// ou incluses dans certains modèles
-(pas tous étant donnée leur complexité, car certains incluent des {{{1}}} et {{{2}}} dans leurs URL)
+(pas tous étant donné leur complexité, car certains incluent des {{{1}}} et {{{2}}} dans leurs URL)
 """
 
 from __future__ import absolute_import, unicode_literals
