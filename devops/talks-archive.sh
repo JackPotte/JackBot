@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd JackBot
-devops/update.sh
+devops/update_JackBot.sh
 
 python3 core/pwb.py clean_sandbox.py -q -lang:fr -family:wiktionary
 python3 core/pwb.py clean_sandbox.py -q -lang:fr -family:wikibooks
