@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# toolforge-jobs delete touch
 toolforge-jobs run wiktionary --command "$HOME/JackBot/devops/WT.sh" --image tf-python39 --schedule "0 0 * * *" --emails onfailure
 toolforge-jobs run wikt-inflexions --command "$HOME/JackBot/devops/WT-flexions.sh" --image tf-python39 --schedule "0 3 * * *" --emails onfailure
 toolforge-jobs run wikipedia --command "$HOME/JackBot/devops/WP.sh" --image tf-python39 --schedule "0 2 * * *" --emails onfailure
