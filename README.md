@@ -16,7 +16,6 @@ devops/update_Pywikibot.sh
 
 ## Speed optimization
 To accelerate the treatments:
-* vim user-config.py: maxthrottle & put_throttle = 0
 * vim core/pywikibot/throttle.py, time.sleep(0).
 
 # Usage

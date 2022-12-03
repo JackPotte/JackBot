@@ -69,7 +69,7 @@ pexpect==4.6.0
 protobuf==3.20.2
 psutil==5.8.0
 ptyprocess==0.7.0
-py==1.10.0
+py==1.11.0
 pyRFC3339==1.1
 pycparser==2.20
 pydot >= 1.2
