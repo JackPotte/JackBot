@@ -1096,7 +1096,6 @@ def main(*args) -> int:
         p.pages_by_cat('Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée')
         p.pages_by_cat('Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet')
         p.pages_by_cat('Catégorie:Appels de modèles incorrects:deet')
-        p.pages_by_cat('Catégorie:Wiktionnaire:Ébauches à compléter')
         # Old templates names
         p.pages_by_link('Template:trad--', namespaces=[0])
         p.pages_by_link('Template:ucf')
@@ -1142,6 +1141,7 @@ def main(*args) -> int:
         p.pages_by_search(
             'insource:/[^=]=== \{\{S\|(variantes|synonymes|antonymes|déclinaison|dérivés|apparentés|hyperonymes|hyponymes|méronymes|holonymes|vocabulaire|traductions)/',
             namespaces=[0])
+        #p.pages_by_cat('Catégorie:Wiktionnaire:Ébauches à compléter')
     return 0
 
 
