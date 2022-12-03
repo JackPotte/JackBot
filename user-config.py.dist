@@ -27,3 +27,11 @@ languages = ['de', 'en', 'es', 'fr', 'it', 'my', 'pl', 'pt', 'ru', 'se', 'sv', '
 for site in sites:
     for language in languages:
         usernames[site][language] = 'JackBot'
+
+# Remove four UserWarning
+del sites
+del languages
+del site
+del language
+
+password_file = "user-password.py"
