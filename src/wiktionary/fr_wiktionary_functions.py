@@ -1800,13 +1800,13 @@ def replace_languages_templates(page_content, summary):
     page_content = page_content.replace('|lang=gr}}', '|lang=grc}}')
     page_content = page_content.replace('|lang=gr|', '|lang=grc|')
 
-    for p in range(1, len(old_language_templates)):
+    for old_language_template in old_language_templates:
         # TODO select templates https://fr.wiktionary.org/w/index.php?title=van&diff=prev&oldid=24107783&diffmode=source
         # regex = r'((?!:voir).*[\|{=])' + old_template[p] + r'([\|}])'
-        regex = r'({{T\|)' + re.escape(old_language_templates[p]) + r'}}'
-        page_content = re.sub(regex, r'\1' + new_language_templates[p] + r'}}', page_content)
-        regex = r'({{trad[\-\+]\-?\|)' + re.escape(old_language_templates[p]) + r'\|'
-        page_content = re.sub(regex, r'\1' + new_language_templates[p] + r'|', page_content)
+        regex = r'({{T\|)' + re.escape(old_language_template) + r'}}'
+        page_content = re.sub(regex, r'\1' + old_language_templates[old_language_template] + r'}}', page_content)
+        regex = r'({{trad[\-\+]\-?\|)' + re.escape(old_language_template) + r'\|'
+        page_content = re.sub(regex, r'\1' + old_language_templates[old_language_template] + r'|', page_content)
 
     return page_content, summary
 

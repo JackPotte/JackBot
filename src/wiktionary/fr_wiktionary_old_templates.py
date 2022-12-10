@@ -89,32 +89,19 @@ old_templates = {
     'vx': 'vieilli',
 }
 
+old_language_templates = {
+    'arg': 'an',
+    'be-x-old': 'be-tarask',
+    'gaul': 'gaulois',
+    'gsw-FR': 'gsw-fr',
+    'ko-hanja': 'ko-Hani',
+    'lsf': 'fsl',
+    'nav': 'nv',
+    'nds-NL': 'nds-nl',
+    'prv': 'oc',
+    'roa-rup': 'rup',
+    'xtg': 'gaulois',
+    'zh-min-nan': 'nan',
+    'zh-sc': 'zh-Hans',
+}
 # TODO vi-Hani ?
-old_language_templates = []
-new_language_templates = []
-old_language_templates.append('ko-hanja')
-new_language_templates.append('ko-Hani')
-old_language_templates.append('be-x-old')
-new_language_templates.append('be-tarask')
-old_language_templates.append('zh-min-nan')
-new_language_templates.append('nan')
-old_language_templates.append('lsf')
-new_language_templates.append('fsl')
-old_language_templates.append('arg')
-new_language_templates.append('an')
-old_language_templates.append('nav')
-new_language_templates.append('nv')
-old_language_templates.append('prv')
-new_language_templates.append('oc')
-old_language_templates.append('nds-NL')
-new_language_templates.append('nds-nl')
-old_language_templates.append('gsw-FR')
-new_language_templates.append('gsw-fr')
-old_language_templates.append('zh-sc')
-new_language_templates.append('zh-Hans')
-old_language_templates.append('roa-rup')
-new_language_templates.append('rup')
-old_language_templates.append('gaul')
-new_language_templates.append('gaulois')
-old_language_templates.append('xtg')
-new_language_templates.append('gaulois')
