@@ -12,6 +12,7 @@ import pywikibot
 from lib import *
 from languages import *
 from fr_wiktionary_templates import *
+from fr_wiktionary_old_templates import *
 
 
 def set_fr_wiktionary_functions_globals(my_debug_level, my_site, my_username):
@@ -1692,102 +1693,25 @@ def add_templates(page_content, summary):
     return page_content, summary
 
 
+def replace_template(page_content, old_template, new_template):
+    regex = r"({{) *" + old_template + r" *([|}])"
+    if re.search(regex, page_content):
+        page_content = re.sub(regex, r"\1" + new_template + r"\2", page_content)
+
+    return page_content
+
+
 def replace_templates(page_content, summary):
     if debug_level > 1:
-        print('  replace_templates')
+        print('  replace_templates()')
+
+    for old_template in old_templates:
+        page_content = replace_template(page_content, old_template, old_templates[old_template])
+
     page_content, summary = replace_etymology_templates(page_content, summary)
-
-    if debug_level > 1:
-        print(' Remplacements des anciens codes langue')
-    page_content = page_content.replace('|ko-hani}}', '|ko-Hani}}')
-    page_content = page_content.replace('|lang=API}}', '|lang=conv}}')
-    page_content = page_content.replace('|lang=gr}}', '|lang=grc}}')
-    page_content = page_content.replace('|lang=gr|', '|lang=grc|')
-    # TODO vi-Hani ?
-    # TODO move some to incubator_languages
-    old_template = []
-    new_template = []
-    old_template.append('ko-hanja')
-    new_template.append('ko-Hani')
-    old_template.append('be-x-old')
-    new_template.append('be-tarask')
-    old_template.append('zh-min-nan')
-    new_template.append('nan')
-    old_template.append('lsf')
-    new_template.append('fsl')
-    old_template.append('arg')
-    new_template.append('an')
-    old_template.append('nav')
-    new_template.append('nv')
-    old_template.append('prv')
-    new_template.append('oc')
-    old_template.append('nds-NL')
-    new_template.append('nds-nl')
-    old_template.append('gsw-FR')
-    new_template.append('gsw-fr')
-    old_template.append('zh-sc')
-    new_template.append('zh-Hans')
-    old_template.append('roa-rup')
-    new_template.append('rup')
-    old_template.append('gaul')
-    new_template.append('gaulois')
-    old_template.append('xtg')
-    new_template.append('gaulois')
-    for p in range(1, len(old_template)):
-        # TODO select templates https://fr.wiktionary.org/w/index.php?title=van&diff=prev&oldid=24107783&diffmode=source
-        # regex = r'((?!:voir).*[\|{=])' + old_template[p] + r'([\|}])'
-        regex = r'({{T\|)' + re.escape(old_template[p]) + r'}}'
-        page_content = re.sub(regex, r'\1' + new_template[p] + r'}}', page_content)
-        regex = r'({{trad[\-\+]\-?\|)' + re.escape(old_template[p]) + r'\|'
-        page_content = re.sub(regex, r'\1' + new_template[p] + r'|', page_content)
-
-    if debug_level > 1:
-        print(' Modèles trop courts')
-    page_content = page_content.replace('{{f}} {{fsing}}', '{{f}}')
-    page_content = page_content.replace('{{m}} {{msing}}', '{{m}}')
-    page_content = page_content.replace('{{f}} {{p}}', '{{fplur}}')
-    page_content = page_content.replace('{{m}} {{p}}', '{{mplur}}')
-    page_content = page_content.replace('{{fp}}', '{{fplur}}')
-    page_content = page_content.replace('{{mp}}', '{{mplur}}')
-    page_content = page_content.replace('{{np}}', '{{nlur}}')
-    page_content = page_content.replace('{{fs}}', '{{fsing}}')
-    page_content = page_content.replace('{{mascul}}', '{{au masculin}}')
-    page_content = page_content.replace('{{fémin}}', '{{au féminin}}')
-    page_content = page_content.replace('{{femin}}', '{{au féminin}}')
-    page_content = page_content.replace('{{sing}}', '{{au singulier}}')
-    page_content = page_content.replace('{{plur}}', '{{au pluriel}}')
-    page_content = page_content.replace('{{pluri}}', '{{au pluriel}}')
-    page_content = page_content.replace('{{mascul|', '{{au masculin|')
-    page_content = page_content.replace('{{fémin|', '{{au féminin|')
-    page_content = page_content.replace('{{femin|', '{{au féminin|')
-    page_content = page_content.replace('{{sing|', '{{au singulier|')
-    page_content = page_content.replace('{{plur|', '{{au pluriel|')
-    page_content = page_content.replace('{{pluri|', '{{au pluriel|')
-    page_content = page_content.replace('{{dét|', '{{déterminé|')
-    page_content = page_content.replace('{{dén|', '{{dénombrable|')
-    page_content = page_content.replace('{{pl-cour}}', '{{plus courant}}')
-    page_content = page_content.replace('{{pl-rare}}', '{{plus rare}}')
-    page_content = page_content.replace('{{mf?}}', '{{mf ?}}')
-    page_content = page_content.replace('{{fm?}}', '{{fm ?}}')
-    page_content = page_content.replace('{{coll}}', '{{collectif}}')
-
-    page_content = re.sub(r'{{ordin *([\|}\n])', r'{{ordinal\1', page_content)
-    page_content = re.sub(r'{{cardin *([\|}\n])', r'{{cardinal\1', page_content)
-    page_content = re.sub(r'{{comp *([\|}\n])', r'{{comparatif\1', page_content)
-    page_content = re.sub(r'{{super *([\|}\n])', r'{{superlatif\1', page_content)
-    page_content = re.sub(r'{{irrég *([\|}\n])', r'{{irrégulier\1', page_content)
-    page_content = re.sub(r'{{perf *([\|}\n])', r'{{perfectif\1', page_content)
-    page_content = re.sub(r'{{imperf *([\|}\n])', r'{{imperfectif\1', page_content)
-    page_content = re.sub(r'{{nomin *([\|}\n])', r'{{nominatif\1', page_content)
-    page_content = re.sub(r'{{acron *([\|}\n])', r'{{acronyme\1', page_content)
-    page_content = re.sub(r'{{abrév *([\|}\n])', r'{{abréviation\1', page_content)
-    page_content = re.sub(r'{{fig *([\|}\n])', r'{{figuré\1', page_content)
-
-    if debug_level > 1:
-        print(' Modèles des définitions')
-    page_content = re.sub(r'{{régio *\| *', r'{{région|', page_content)
-    page_content = re.sub(r'{{terme *\| *', r'{{term|', page_content)
-    page_content = re.sub(r'{{term *\|Registre neutre}} *', r'', page_content)
+    page_content, summary = replace_languages_templates(page_content, summary)
+    page_content, summary = replace_doubles_templates(page_content, summary)
+    page_content, summary = replace_banner_templates(page_content, summary)
 
     t = '{{ucf|'
     while t in page_content:
@@ -1798,21 +1722,105 @@ def replace_templates(page_content, summary):
         page_content = page_content[:page_content.find(t)] + '[[' + word + '|' + word[:1].upper() + word[1:] + ']]' + \
             page_end[page_end.find('}}') + 2:]
 
-    regex = r"{{ *dés *([\|}])"
+    regex = r'\* ?{{sound}} ?: \[\[Media:([^\|\]]*)\|[^\|\]]*\]\]'
     if re.search(regex, page_content):
-        page_content = re.sub(regex, r"{{désuet\1", page_content)
-    regex = r"{{ *fam *([\|}])"
+        page_content = re.sub(regex, r'{{écouter|audio=\1}}', page_content)
+        summary = summary + ', conversion de modèle de son'
+    regex = r'\{{audio\|([^\|}]*)\|[^\|}]*}}'
     if re.search(regex, page_content):
-        page_content = re.sub(regex, r"{{familier\1", page_content)
-    regex = r"{{ *péj *([\|}])"
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, r"{{péjoratif\1", page_content)
-    regex = r"{{ *vx *([\|}])"
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, r"{{vieilli\1", page_content)
+        page_content = re.sub(regex, r'{{écouter|audio=\1}}', page_content)
+        summary = summary + ', conversion de modèle de son'
+
+    # TODO: replace {{fr-rég|ɔs vɛʁ.tɛ.bʁal|s=os vertébral|p=os vertébraux|pp=ɔs vɛʁ.tɛ.bʁo}} by {{fr-accord-mf-al|
 
     if debug_level > 1:
-        print(' Modèles alias en doublon')
+        print(' Template replacement fixes')
+    regex = r'\n{{\(}}nombre= *[0-9]*\|\n'
+    page_content = re.sub(regex, r'\n{{(}}\n', page_content)
+    regex = r'\n{{\(}}taille= *[0-9]*\|\n'
+    page_content = re.sub(regex, r'\n{{(}}\n', page_content)
+
+    regex = r'({{composé de)\|m=1(([^}]+)\|m=1}})'
+    page_content = re.sub(regex, r'\1\2', page_content)
+
+    return page_content, summary
+
+
+def replace_etymology_templates(page_content, summary):
+    if debug_level > 1:
+        print('  replace_etymology_templates()')
+
+    regex = r"(\n:? *(?:{{date[^}]*}})? *(?:\[\[calque\|)?[Cc]alque\]* d(?:u |e l['’]){{)étyl\|"
+    if re.search(regex, page_content):
+        page_content = re.sub(regex, r"\1calque|", page_content)
+
+    decision = ', [[Wiktionnaire:Prise de décision/Nettoyer les modèles de la section étymologie]]'
+    initial_page_content = page_content
+
+    # Alias replacing with: |m=1
+    regex = r"({{)deet([|}])"
+    if re.search(regex, page_content):
+        page_content = re.sub(regex, r"\1composé de|m=1\2", page_content)
+
+    regex = r'[Ll]ocution {{composé de[^{}]+}}'
+    templates = re.findall(regex, page_content)
+    for template in templates:
+        regex2 = r'\| *f *= *(1|oui)[\|}]'
+        if not re.search(regex2, template):
+            new_template = template.replace('composé de', 'composé de|f=1')
+            page_content = page_content.replace(template, new_template)
+
+    return page_content, summary
+    # TODO fix https://fr.wiktionary.org/w/index.php?title=nos&type=revision&diff=27795087&oldid=27614294
+    # Fix https://fr.wiktionary.org/w/index.php?title=mac&diff=27795089&oldid=27788198
+    # Replacing with: |m=1 and .
+    for template in etymology_templates:
+        # regex = r"({{)" + template + r"([^}]*)}}"              # {{abréviation|fr|m=1|m=1}}.
+        # regex = r"({{)" + template + r"((?!\|m=1).)*}}"        # {{abréviationr|m=1}}
+        # regex = r"({{)" + template + r"((?!\|m=1)[^}]*)*}}"    # {{abréviation|m=1}}.
+        # regex = r"({{)" + template + r"(((?!\|m=1)[^}]*)*)}}"  # {{abréviation|fr|m=1|m=1}}.
+        regex = r"({{)" + template + r"([^}]*)}}"
+        if re.search(regex, page_content):
+            page_content = re.sub(regex, r"\1" + template + r"\2|m=1}}.", page_content)
+    # Fix doubles. TODO prevent them just above
+    regex = r"({{[^}]+)\|m=1([^}]*\|m=1[\|}])"
+    if re.search(regex, page_content):
+        page_content = re.sub(regex, r"\1\2", page_content)
+
+    if initial_page_content != page_content and decision not in summary:
+        summary += decision
+    return page_content, summary
+
+
+def replace_languages_templates(page_content, summary):
+    if debug_level > 1:
+        print(' replace_languages_templates()')
+    page_content = page_content.replace('|ko-hani}}', '|ko-Hani}}')
+    page_content = page_content.replace('|lang=API}}', '|lang=conv}}')
+    page_content = page_content.replace('|lang=gr}}', '|lang=grc}}')
+    page_content = page_content.replace('|lang=gr|', '|lang=grc|')
+
+    for p in range(1, len(old_language_templates)):
+        # TODO select templates https://fr.wiktionary.org/w/index.php?title=van&diff=prev&oldid=24107783&diffmode=source
+        # regex = r'((?!:voir).*[\|{=])' + old_template[p] + r'([\|}])'
+        regex = r'({{T\|)' + re.escape(old_language_templates[p]) + r'}}'
+        page_content = re.sub(regex, r'\1' + new_language_templates[p] + r'}}', page_content)
+        regex = r'({{trad[\-\+]\-?\|)' + re.escape(old_language_templates[p]) + r'\|'
+        page_content = re.sub(regex, r'\1' + new_language_templates[p] + r'|', page_content)
+
+    return page_content, summary
+
+
+def replace_doubles_templates(page_content, summary):
+    if debug_level > 1:
+        print(' replace_doubles_templates()')
+
+    page_content = page_content.replace('{{f}} {{fsing}}', '{{f}}')
+    page_content = page_content.replace('{{m}} {{msing}}', '{{m}}')
+    page_content = page_content.replace('{{f}} {{p}}', '{{fplur}}')
+    page_content = page_content.replace('{{m}} {{p}}', '{{mplur}}')
+    page_content = page_content.replace('{{Valence|ca}}', '{{valencien}}')
+
     regex = r"(\{\{figuré\|[^}]*\}\}) ?\{\{métaphore\|[^}]*\}\}"
     pattern = re.compile(regex)
     page_content = pattern.sub(r"\1", page_content)
@@ -1836,41 +1844,6 @@ def replace_templates(page_content, summary):
     if re.search(regex, page_content):
         page_content = re.sub(regex, r"\1", page_content)
 
-    page_content = page_content.replace('{{arbre|', '{{arbres|')
-    page_content = page_content.replace('{{arme|', '{{armement|')
-    page_content = page_content.replace('{{astro|', '{{astronomie|')
-    page_content = page_content.replace('{{bota|', '{{botanique|')
-    page_content = page_content.replace('{{électro|', '{{électronique|')
-    page_content = page_content.replace('{{équi|', '{{équitation|')
-    page_content = page_content.replace('{{ex|', '{{e|')
-    page_content = page_content.replace('{{gastro|', '{{gastronomie|')
-    page_content = page_content.replace('{{légume|', '{{légumes|')
-    page_content = page_content.replace('{{minéral|', '{{minéralogie|')
-    page_content = page_content.replace('{{myth|', '{{mythologie|')
-    page_content = page_content.replace('{{oiseau|', '{{oiseaux|')
-    page_content = page_content.replace('{{péj|', '{{péjoratif|')
-    page_content = page_content.replace('{{plante|', '{{plantes|')
-    page_content = page_content.replace('{{psycho|', '{{psychologie|')
-    page_content = page_content.replace('{{réseau|', '{{réseaux|')
-    page_content = page_content.replace('{{typo|', '{{typographie|')
-    page_content = page_content.replace('{{vêtement|', '{{vêtements|')
-    page_content = page_content.replace('{{en-nom-rég-double|', '{{en-nom-rég|')
-    page_content = page_content.replace('{{Valence|ca}}', '{{valencien}}')
-    page_content = page_content.replace('{{abrév|', '{{abréviation|')
-    page_content = page_content.replace('{{abrév}}', '{{abréviation}}')
-    page_content = page_content.replace('{{acron|', '{{acronyme|')
-    page_content = page_content.replace('{{cours d\'eau', '{{cours d’eau')
-
-    page_content = page_content.replace('{{trad--|', '{{trad|')
-
-    if debug_level > 1:
-        print(' Modèles trop longs')
-    page_content = page_content.replace('{{boîte début', '{{(')
-    page_content = page_content.replace('{{boîte fin', '{{)')
-    page_content = page_content.replace('\n{{-}}', '')
-
-    if debug_level > 1:
-        print(' Modèles en doublon')
     imported_sites = ['DAF8', 'Littré']
     for importedSite in imported_sites:
         regex = r'\n\** *{{R:' + importedSite + r'}} *\n\** *({{Import:' + importedSite + r'}})'
@@ -1882,8 +1855,12 @@ def replace_templates(page_content, summary):
             summary = summary + ', doublon {{R:' + importedSite + r'}}'
             page_content = re.sub(regex, r'\n* \1', page_content)
 
+    return page_content, summary
+
+
+def replace_banner_templates(page_content, summary):
     if debug_level > 1:
-        print(' Modèles bandeaux')
+        print(' replace_banner_templates()')
     while page_content.find('\n{{colonnes|') != -1:
         if debug_level > 0:
             pywikibot.output('\n \03{green}colonnes\03{default}')
@@ -2006,89 +1983,6 @@ def replace_templates(page_content, summary):
             page_content = page_content[:page_content.find('}}1=')] + page_content[page_content.find('}}1=')
                                                                                         + len('}}1='):]
 
-    page_content = page_content.replace('{{pron-rég|', '{{écouter|')
-    regex = r'\* ?{{sound}} ?: \[\[Media:([^\|\]]*)\|[^\|\]]*\]\]'
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, r'{{écouter|audio=\1}}', page_content)
-        summary = summary + ', conversion de modèle de son'
-    regex = r'\{{audio\|([^\|}]*)\|[^\|}]*}}'
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, r'{{écouter|audio=\1}}', page_content)
-        summary = summary + ', conversion de modèle de son'
-
-    page_content = page_content.replace('{{Citation needed}}', '{{référence nécessaire}}')
-    page_content = page_content.replace('{{Référence nécessaire}}', '{{référence nécessaire}}')
-    page_content = page_content.replace('{{clef de tri', '{{clé de tri')
-
-    # TODO: replace {{fr-rég|ɔs vɛʁ.tɛ.bʁal|s=os vertébral|p=os vertébraux|pp=ɔs vɛʁ.tɛ.bʁo}} by {{fr-accord-mf-al|
-
-    if debug_level > 1:
-        print(' Fixes')
-    regex = r'\n{{\(}}nombre= *[0-9]*\|\n'
-    page_content = re.sub(regex, r'\n{{(}}\n', page_content)
-    regex = r'\n{{\(}}taille= *[0-9]*\|\n'
-    page_content = re.sub(regex, r'\n{{(}}\n', page_content)
-
-    regex = r'({{composé de)\|m=1(([^}]+)\|m=1}})'
-    page_content = re.sub(regex, r'\1\2', page_content)
-
-    return page_content, summary
-
-
-def replace_etymology_templates(page_content, summary):
-    if debug_level > 1:
-        print('  replace_etymology_templates')
-
-    regex = r"(\n:? *(?:{{date[^}]*}})? *(?:\[\[calque\|)?[Cc]alque\]* d(?:u |e l['’]){{)étyl\|"
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, r"\1calque|", page_content)
-
-    decision = ', [[Wiktionnaire:Prise de décision/Nettoyer les modèles de la section étymologie]]'
-    initial_page_content = page_content
-    # Alias replacing
-    templates = {
-        'abrév': 'abréviation',
-        'acron': 'acronyme',
-        'compos': 'composé de',
-        'contr': 'contraction'
-    }
-    for alias in templates:
-        regex = r"({{)" + alias + r"([|}])"
-        if re.search(regex, page_content):
-            page_content = re.sub(regex, r"\1" + templates[alias] + r"\2", page_content)
-
-    # Alias replacing with: |m=1
-    regex = r"({{)deet([|}])"
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, r"\1composé de|m=1\2", page_content)
-
-    regex = r'[Ll]ocution {{composé de[^{}]+}}'
-    templates = re.findall(regex, page_content)
-    for template in templates:
-        regex2 = r'\| *f *= *(1|oui)[\|}]'
-        if not re.search(regex2, template):
-            new_template = template.replace('composé de', 'composé de|f=1')
-            page_content = page_content.replace(template, new_template)
-
-    return page_content, summary
-    # TODO fix https://fr.wiktionary.org/w/index.php?title=nos&type=revision&diff=27795087&oldid=27614294
-    # Fix https://fr.wiktionary.org/w/index.php?title=mac&diff=27795089&oldid=27788198
-    # Replacing with: |m=1 and .
-    for template in etymology_templates:
-        # regex = r"({{)" + template + r"([^}]*)}}"              # {{abréviation|fr|m=1|m=1}}.
-        # regex = r"({{)" + template + r"((?!\|m=1).)*}}"        # {{abréviationr|m=1}}
-        # regex = r"({{)" + template + r"((?!\|m=1)[^}]*)*}}"    # {{abréviation|m=1}}.
-        # regex = r"({{)" + template + r"(((?!\|m=1)[^}]*)*)}}"  # {{abréviation|fr|m=1|m=1}}.
-        regex = r"({{)" + template + r"([^}]*)}}"
-        if re.search(regex, page_content):
-            page_content = re.sub(regex, r"\1" + template + r"\2|m=1}}.", page_content)
-    # Fix doubles. TODO prevent them just above
-    regex = r"({{[^}]+)\|m=1([^}]*\|m=1[\|}])"
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, r"\1\2", page_content)
-
-    if initial_page_content != page_content and decision not in summary:
-        summary += decision
     return page_content, summary
 
 
