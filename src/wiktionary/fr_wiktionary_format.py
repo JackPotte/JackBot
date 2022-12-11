@@ -725,7 +725,7 @@ def treat_page(page):
                         final_page_content, page_content = next_template(final_page_content, page_content)
                 else:
                     if debug_level > 0:
-                        pywikibot.output("\03{yellow} " + current_template + "\03{default}: unknown template")
+                        pywikibot.output("\03{yellow} " + current_template + "\03{default}: untreated template")
                     final_page_content, page_content = next_template(final_page_content, page_content)
 
             if not go_backward:

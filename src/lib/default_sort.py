@@ -211,7 +211,8 @@ def sort_by_encoding(page_name, encoding='uca-default'):
     if add_key:
         return trim(word_key.replace('  ', ' '))
     else:
-        if debug_level > 0: input(page_name)
+        if debug_level > 0:
+            input(page_name)
         return page_name
 
 
@@ -495,5 +496,9 @@ def default_sort_by_language(page_name, language_code):
 
 def trim(s):
     return s.strip(" \t\n\r\0\x0B")
+
+
+def compare(string1, string2):
+    return sort_by_encoding(string1, 'UTF-8') > sort_by_encoding(string2, 'UTF-8')
 
 # TODO : tsolyáni, {{clé de tri|dhu'onikh}}<!-- exception à la règle de la clé de tri car "'" est une lettre à part entière en tsolyáni -->

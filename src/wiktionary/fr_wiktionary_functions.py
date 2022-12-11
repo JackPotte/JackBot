@@ -1052,11 +1052,11 @@ def get_anagram(word):
 
 
 def sort_translations(page_content, summary):
-    summary2 = ''
     if debug_level > 0:
-        print(' Translations sorting, by adding {{T}} if needed')
+        print(' sort_translations()')
     if debug_level > 1:
         print(' First translation detection')
+
     regex = r'\* ?{{[a-z][a-z][a-z]?-?[a-z]?[a-z]?[a-z]?}} :'
     final_page_content = ''
     while page_content.find('{{trad-début') != -1:
@@ -1071,6 +1071,7 @@ def sort_translations(page_content, summary):
     page_content = final_page_content + page_content
     final_page_content = ''
 
+    summary2 = ''
     while page_content.find('{{T|') != -1:
         final_page_content = final_page_content + page_content[:page_content.find('{{T|')]
         page_content = page_content[page_content.find('{{T|'):]
@@ -1094,19 +1095,25 @@ def sort_translations(page_content, summary):
             next_translations = ''
             final_page_content = final_page_content[:final_page_content.rfind('\n')]
             page_content = page_content[page_content.find('\n'):]
-            while language2 > language \
+
+            d = 0
+            if debug_level > d:
+                print(' 1 ' + language2 + ' > ' + language + ' ?')
+            while compare(language2, language) \
                     and final_page_content.rfind('{{') != final_page_content.rfind('{{S|') \
                     and final_page_content.rfind('{{') != final_page_content.rfind('{{trad-début') \
                     and final_page_content.rfind('{{') != final_page_content.rfind('{{trad-fin') \
                     and final_page_content.rfind('{{') != final_page_content.rfind('{{(') \
                     and final_page_content.rfind('{{T') != final_page_content.rfind('{{T|conv'):
+                if debug_level > d:
+                    print(' 1 ' + language2 + ' > ' + language)
 
                 language2 = get_next_language_translation(final_page_content)
-                if debug_level > 1:
-                    print(language2, language)
-                if language2 != '' and language2 > language:
-                    if debug_level > 1:
-                        print(language2 + ' > ' + language)
+                if debug_level > d:
+                    print(' 2 ' + language2 + ' > ' + language + ' ?')
+                if language2 != '' and compare(language2, language):
+                    if debug_level > d:
+                        print(' 2 ' + language2 + ' > ' + language)
                     if final_page_content.rfind('\n') > final_page_content.rfind('trad-début'):
                         next_translations = final_page_content[final_page_content.rfind('\n'):] + next_translations
                         final_page_content = final_page_content[:final_page_content.rfind('\n')]
@@ -1115,12 +1122,6 @@ def sort_translations(page_content, summary):
                         # Cas de la première de la liste
                         current_translation = final_page_content[final_page_content.rfind('\n'):] + current_translation
                         final_page_content = final_page_content[:final_page_content.rfind('\n')]
-                    if debug_level > 1:
-                        try:
-                            print(final_page_content[final_page_content.rfind('\n'):].encode('utf-8'))
-                        except UnicodeEncodeError as e:
-                            print(str(e), final_page_content.rfind('\n'))
-                            input(final_page_content)
                 else:
                     break
             final_page_content = final_page_content + current_translation + next_translations
@@ -1169,7 +1170,7 @@ def get_langage_name_by_code(language_code):
     if language_code != '':
         if len(language_code) > 3 and language_code.find('-') == -1:
             if debug_level > 0:
-                print('No ISO code (ex: gallo)')
+                print(' No ISO code for ' + language_code) # (ex: gallo)
             language_name = language_code
         else:
             try:
@@ -3239,7 +3240,7 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
             d = 0
             page_content3 = page_content2[page_content2.find('|') + 1:]
             if debug_level > d:
-                print(' langue distante : ' + current_language)
+                print(' remote wiki language: ' + current_language)
             if page_content3.find('}}') == '' or not page_content3.find('}}'):
                 if debug_level > d:
                     print('  aucun mot distant')
@@ -3270,7 +3271,7 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
             if external_page_name != '' and external_page_name.find('<') != -1:
                 external_page_name = external_page_name[:external_page_name.find('<')]
             if debug_level > d:
-                msg = ' page distante : ' + external_page_name
+                msg = ' remote wiki page: ' + external_page_name
                 try:
                     print(msg)
                 except UnicodeEncodeError as e:
