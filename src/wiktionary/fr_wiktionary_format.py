@@ -308,6 +308,9 @@ def treat_page(page):
                         if debug_level > 0:
                             print('  empty language code')
                         return
+                    if '==' not in page_content[end_position + 1:page_content.find('\n')]:
+                        print('  ERROR: language template out of section')
+                        return
                     if debug_level > 1:
                         print('  language found: ' + language_code)
                     regex = r'[a-zA-Z\-]+'
