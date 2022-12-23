@@ -120,7 +120,7 @@ def treat_page(page):
                 book_cat_template[:2] + book_cat_template[2:3].lower() + book_cat_template[3:],
                 '{{BookCat}}'
             )
-        if do_add_category and has_more_than_time(page) and is_trusted_version(site, page):
+        if do_add_category and has_more_than_time(page) and ('/' in page.title() or is_trusted_version(site, page)):
             # The untrusted can have blanked a relevant content including {{BookCat}} or {{BookCat|filing=deep}}
             if trim(page_content) != '' and '{{BookCat' not in page_content \
               and '[[Category:' not in page_content and '[[category:' not in page_content \
