@@ -1020,7 +1020,6 @@ templates.append('combat')
 templates.append('comm')
 templates.append('commerce')
 templates.append('commerces')
-templates.append('comparatif de')
 templates.append('composants')
 templates.append('composants électriques')
 templates.append('composants électroniques')
@@ -1721,7 +1720,6 @@ templates.append('stéréochimie')
 templates.append('stéréotomie')
 templates.append('stéréotype')
 templates.append('substances')
-templates.append('superlatif de')
 templates.append('supprimer-déf ?')
 templates.append('surf')
 templates.append('sylvi')
@@ -2095,6 +2093,7 @@ natures = ['adjectif', 'adverbe', 'article', 'conjonction', 'copule', 'détermin
 # https://fr.wiktionary.org/wiki/Catégorie:Modèles_de_définitions
 definition_templates = ['abréviation de', 'comparatif de', 'exclamatif de', 'mutation de', 'superlatif de',
     'variante de', 'variante ortho de', 'variante orthographique de']
+templates = templates + definition_templates
 
 definition_sentences = ['abréviation de', 'ancienne orthographe de', 'autre nom de', 'autre orthographe',
     'comparatif de', 'exclamatif de', 'féminin de', 'graphie erronée', 'mauvaise orthographe de', 'mutation de',
