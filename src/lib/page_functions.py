@@ -124,7 +124,7 @@ def has_more_than_time(page, time_after_last_edition=60):  # minutes
             return True
         if debug_level > 0:
             pywikibot.output(
-                ' \03{red}the last edition is too recent to edit: \03{default}' + str(page.latest_revision.timestamp))
+                ' \03<<red>>the last edition is too recent to edit: \03<<default>>' + str(page.latest_revision.timestamp))
     return False
 
 
@@ -133,23 +133,23 @@ def is_trusted_version(site, page):
     last_editor = list(page.contributors(total=1).keys())[0]
     if first_editor == last_editor:
         if debug_level > 0:
-            pywikibot.output(' \03{green} the page belongs to its last edition user: \03{default}' + last_editor)
+            pywikibot.output(' \03<<green>> the page belongs to its last edition user: \03<<default>>' + last_editor)
         return True
     user_page_name = ' user: ' + last_editor
     user_page = Page(site, user_page_name)
     user = User(user_page)
     if 'autoconfirmed' in user.groups():
         if debug_level > 0:
-            pywikibot.output(' \03{green} the last edition user can be trusted: \03{default}' + last_editor)
+            pywikibot.output(' \03<<green>> the last edition user can be trusted: \03<<default>>' + last_editor)
         return True
     if user.isAnonymous():
         if debug_level > 0:
-            pywikibot.output(' \03{red}the last edition user cannot be trusted: \03{default}' + last_editor)
-        pywikibot.output(' \03{red}The page needs to be categorized manually\03{default}: ' +
+            pywikibot.output(' \03<<red>>the last edition user cannot be trusted: \03<<default>>' + last_editor)
+        pywikibot.output(' \03<<red>>The page needs to be categorized manually\03<<default>>: ' +
              'https://' + page.site.hostname() + '/wiki/' + page.title().replace(' ', '_'))
         return False
     if debug_level > 0:
-        pywikibot.output(' \03{green} the last edition user could be trusted: \03{default}' + last_editor)
+        pywikibot.output(' \03<<green>> the last edition user could be trusted: \03<<default>>' + last_editor)
     return True
 
 
@@ -163,7 +163,7 @@ def get_content_from_page(page, allowed_namespaces=None):
     if debug_level > 0:
         print('\nget_content_from_page()')
     if debug_level > 1:
-        pywikibot.output(' \03{blue}get_content_from_page : \03{default}' + page.title())
+        pywikibot.output(' \03<<blue>>get_content_from_page : \03<<default>>' + page.title())
 
     current_page_content = ''
     try:
@@ -572,15 +572,15 @@ def stop_required(username, site):
     if page_content is None:
         return
     if page_content != u"{{/Stop}}":
-        pywikibot.output("\n*** \03{lightyellow}Arrêt d'urgence demandé\03{default} ***")
+        pywikibot.output("\n*** \03<<yellow>>Arrêt d'urgence demandé\03<<default>> ***")
         exit(0)
 
 
 def save_page(current_page, page_content, summary, is_minor=True):
     result = "ok"
     if debug_level > 0:
-        pywikibot.output("\n\03{blue}" + summary + u"\03{default}")
-        pywikibot.output("\n\03{red}---------------------------------------------------\03{default}")
+        pywikibot.output("\n\03<<blue>>" + summary + u"\03<<default>>")
+        pywikibot.output("\n\03<<red>>---------------------------------------------------\03<<default>>")
         if len(page_content) < 6000:
             try:
                 print(page_content)

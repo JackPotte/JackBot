@@ -64,7 +64,7 @@ def treat_page(page):
     if debug_level > 0:
         print('------------------------------------')
     page_name = page.title()
-    pywikibot.output("\n\03{blue}" + page_name + u"\03{default}")
+    pywikibot.output("\n\03<<blue>>" + page_name + u"\03<<default>>")
 
     current_page_content = get_content_from_page(page, 'All')
     if username not in page_name and (

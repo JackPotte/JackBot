@@ -77,7 +77,7 @@ def get_lemma_from_plural(page_content, language_code='fr', natures=['nom', 'adj
             input(s.group(6))
         lemma_page_name = s.group(6)
     if debug_level > 0:
-        pywikibot.output(" lemma_page_name found: \03{red}" + lemma_page_name + "\03{default}")
+        pywikibot.output(" lemma_page_name found: \03<<red>>" + lemma_page_name + "\03<<default>>")
     if debug_level > 1:
         input(page_content)
 
@@ -97,7 +97,7 @@ def get_lemma_from_feminine(page_content, language_code='fr', natures=['nom', 'a
             input(s.group(6))
         lemma_page_name = s.group(6)
     if debug_level > 0:
-        pywikibot.output(" lemma_page_name found: \03{red}" + lemma_page_name + "\03{default}")
+        pywikibot.output(" lemma_page_name found: \03<<red>>" + lemma_page_name + "\03<<default>>")
     if debug_level > 1:
         input(page_content)
 
@@ -116,7 +116,7 @@ def get_lemma_from_conjugation(page_content, language_code='fr'):
             input(s.group(4))
         lemma_page_name = s.group(4)
     if debug_level > 0:
-        pywikibot.output(" lemma_page_name found: \03{red}" + lemma_page_name + "\03{default}")
+        pywikibot.output(" lemma_page_name found: \03<<red>>" + lemma_page_name + "\03<<default>>")
 
     return lemma_page_name
 
@@ -146,7 +146,7 @@ def get_inflexion_template(page_name, language, nature=None):
                 print(' ' + s.group(4))  # Template
         inflexion_template = s.group(4)
     if debug_level > 0:
-        pywikibot.output(" inflexion_template found: \03{green}" + inflexion_template + "\03{default}")
+        pywikibot.output(" inflexion_template found: \03<<green>>" + inflexion_template + "\03<<default>>")
     # TODO
     if inflexion_template.find('{{') != -1:
         inflexion_template = ''
@@ -497,7 +497,7 @@ def remove_template(page_content, template, summary, language=None, in_section=N
 def add_line(page_content, language_code, section_name, line_content):
     d = 0
     if debug_level > d:
-        pywikibot.output("\n\03{red}---------------------------------------------\03{default}")
+        pywikibot.output("\n\03<<red>>---------------------------------------------\03<<default>>")
         print('\nadd_line(' + language_code + ', ' + section_name + ')')
     if page_content != '' and language_code != '' and section_name != '' and line_content != '':
         if page_content.find(line_content) == -1 and page_content.find('{{langue|' + language_code + '}}') != -1:
@@ -584,7 +584,7 @@ def add_line(page_content, language_code, section_name, line_content):
     # TODO remove fix
     page_content = page_content.replace('\n\n* {{écouter|', '\n* {{écouter|')
     if debug_level > d:
-        pywikibot.output("\n\03{red}---------------------------------------------\03{default}")
+        pywikibot.output("\n\03<<red>>---------------------------------------------\03<<default>>")
     return page_content
 
 
@@ -856,7 +856,7 @@ def add_pronunciation(page_content, language_code, section, line_content):
 def add_line_into_section(page_content, language_code, section, line_content):
     d = 1
     if debug_level > d:
-        pywikibot.output("\n\03{red}---------------------------------------------\03{default}")
+        pywikibot.output("\n\03<<red>>---------------------------------------------\03<<default>>")
         print('\naddLineIntoSection "' + section + '"')
     if page_content != '' and language_code != '' and section != '' and line_content != '':
         if page_content.find(line_content) == -1 and page_content.find('{{langue|' + language_code + '}}') != -1:
@@ -909,7 +909,7 @@ def add_language_code_with_named_parameter_to_template(
     end_position=0
 ):        
     if debug_level > 0:
-        pywikibot.output("  Template with lang=: \03{green}" + current_template + "\03{default}")
+        pywikibot.output("  Template with lang=: \03<<green>>" + current_template + "\03<<default>>")
     page_content2 = page_content[end_position + 1:]
 
     has_subtemplate_included = False
@@ -1864,7 +1864,7 @@ def replace_banner_templates(page_content, summary):
         print(' replace_banner_templates()')
     while page_content.find('\n{{colonnes|') != -1:
         if debug_level > 0:
-            pywikibot.output('\n \03{green}colonnes\03{default}')
+            pywikibot.output('\n \03<<green>>colonnes\03<<default>>')
         page_content2 = page_content[:page_content.find('\n{{colonnes|')]
         if page_content2.rfind('{{') != -1 and page_content2.rfind('{{') == page_content2.rfind('{{trad-début'):
             # modèles impriqués dans trad
@@ -1896,7 +1896,7 @@ def replace_banner_templates(page_content, summary):
         elif page_content2.rfind('{{') != -1 and page_content2.rfind('{{') == page_content2.rfind('{{('):
             # modèles impriqués ailleurs
             if debug_level > 0:
-                pywikibot.output('\nTemplate: \03{blue}(\03{default}')
+                pywikibot.output('\nTemplate: \03<<blue>>(\03<<default>>')
             page_content2 = page_content[page_content.find('\n{{colonnes|') + len('\n{{colonnes|'):]
             if page_content2.find('\n}}\n') != -1:
                 if page_content2[:len('titre=')] == 'titre=':
@@ -3163,7 +3163,7 @@ def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natu
 def treat_translations(page_content, final_page_content, summary, end_position, site_family):
     # Empty or stub
     has_not_to_call_interwiki_link = end_position == page_content.find('}}') \
-        or end_position == page_content.find('|en|}}') - 4
+        or end_position == page_content.find('|}}') - 1
 
     if has_not_to_call_interwiki_link:
         final_page_content = final_page_content + page_content[:page_content.find('}}') + 2]

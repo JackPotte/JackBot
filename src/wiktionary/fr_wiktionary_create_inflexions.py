@@ -44,7 +44,7 @@ def treat_page(page):
     if debug_level > 0:
         print('------------------------------------')
     page_name = page.title()
-    pywikibot.output("\n\03{blue}" + page_name + u"\03{default}")
+    pywikibot.output("\n\03<<blue>>" + page_name + u"\03<<default>>")
 
     if not has_more_than_time(page, 1440):
         return
@@ -92,11 +92,11 @@ def treat_page(page):
 
         if singular_page.find(template[m] + '|') == -1 and singular_page.find(template[m] + '}') == -1:
             if debug_level > 1:
-                pywikibot.output(' Modèle : \03{blue}' + template[m] + '\03{default} absent')
+                pywikibot.output(' Modèle : \03<<blue>>' + template[m] + '\03<<default>> absent')
             continue
         else:
             if debug_level > 0:
-                pywikibot.output(' Modèle : \03{blue}' + template[m] + '\03{default} trouvé')
+                pywikibot.output(' Modèle : \03<<blue>>' + template[m] + '\03<<default>> trouvé')
             page_content = singular_page
 
         language_code = template[m][:2]

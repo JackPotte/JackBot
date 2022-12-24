@@ -59,7 +59,7 @@ def treat_page(page):
     if debug_level > 0:
         print('------------------------------------')
     page_name = page.title()
-    pywikibot.output("\n\03{blue}" + page_name + u"\03{default}")
+    pywikibot.output("\n\03<<blue>>" + page_name + u"\03<<default>>")
 
     if page_name[-extension_length:] not in supported_extensions:
         if debug_level > 0:
@@ -113,8 +113,8 @@ def treat_page(page):
         word = word.replace('\'', '’')
 
     if debug_level > 0:
-        pywikibot.output("  \03{green}Language code: " + language_code + u"\03{default}")
-        pywikibot.output("  \03{green}Word: " + word + u"\03{default}")
+        pywikibot.output("  \03<<green>>Language code: " + language_code + u"\03<<default>>")
+        pywikibot.output("  \03<<green>>Word: " + word + u"\03<<default>>")
 
     region = ''
     word_without_suffix = None

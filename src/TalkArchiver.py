@@ -69,7 +69,7 @@ class TalkArchiver:
         if self.page_name is None:
             self.page_name = self.default_talk_pages[str(self.site.family)]
         if self.debug_level > 0:
-            pywikibot.output("\n\03{red}" + self.page_name + u"\03{default}")
+            pywikibot.output("\n\03<<red>>" + self.page_name + u"\03<<default>>")
 
         page = Page(self.site, self.page_name)
         latest_rev = page.editTime()

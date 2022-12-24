@@ -90,7 +90,7 @@ def treat_page(page):
     if debug_level > 0:
         print('------------------------------------')
     page_name = page.title()
-    pywikibot.output("\n\03{blue}" + page_name + "\03{default}")
+    pywikibot.output("\n\03<<blue>>" + page_name + "\03<<default>>")
 
     summary = '[[Wiktionnaire:Structure des articles|Autoformatage]]'
     if page_name[-3:] == '.js' or page_name[-4:] == '.css':
@@ -246,10 +246,10 @@ def treat_page(page):
         # Loop to find each page template, filling final_page_content by emptying page_content
         while start_position > -1:
             if debug_level > 1:
-                pywikibot.output("\n\03{red}---------------------------------------------------\03{default}")
+                pywikibot.output("\n\03<<red>>---------------------------------------------------\03<<default>>")
                 print(final_page_content[:1000])
                 input(page_content[:1000])
-                pywikibot.output("\n\03{red}---------------------------------------------------\03{default}")
+                pywikibot.output("\n\03<<red>>---------------------------------------------------\03<<default>>")
                 if language_code is None:
                     print(' loop start with no language')
                 else:
@@ -276,13 +276,13 @@ def treat_page(page):
             else:
                 if debug_level > 1:
                     print(' Retour en arrière')
-                    pywikibot.output("\n\03{red}---------------------------------------------------\03{default}")
+                    pywikibot.output("\n\03<<red>>---------------------------------------------------\03<<default>>")
             go_backward = False
 
             if current_template in templates:
                 p = templates.index(current_template)
                 if debug_level > 0:
-                    pywikibot.output(' \03{yellow}' + current_template + '\03{default} (' + str(p) + ')')
+                    pywikibot.output(' \03<<yellow>>' + current_template + '\03<<default>> (' + str(p) + ')')
 
                 # Missing language section
                 if not language_code and (p < limit1 or p >= limit6) and current_template != 'ébauche':
@@ -359,11 +359,11 @@ def treat_page(page):
                         section = trim(section[:section.find('|')])
                     if section not in sections:
                         if debug_level > 0:
-                            pywikibot.output("  with unknown section \03{yellow}" + section + "\03{default}")
+                            pywikibot.output("  with unknown section \03<<yellow>>" + section + "\03<<default>>")
                         final_page_content, page_content = next_template(final_page_content, page_content)
                         break
                     if debug_level > 0:
-                        pywikibot.output("  with known section \03{yellow}" + section + "\03{default}")
+                        pywikibot.output("  with known section \03<<yellow>>" + section + "\03<<default>>")
 
                     if sections.index(section) < limit1:
                         if debug_level > 1:
@@ -497,8 +497,8 @@ def treat_page(page):
                         final_page_content, page_content = next_template(final_page_content, page_content)
                     else:
                         if debug_level > 0:
-                            pywikibot.output("  Template with language code at second: \03{green}" + current_template
-                                             + "\03{default}")
+                            pywikibot.output("  Template with language code at second: \03<<green>>" + current_template
+                                             + "\03<<default>>")
                         page_content, final_page_content, summary = treat_pronunciation(page_content,
                                                                                         final_page_content, summary,
                                                                                         end_position, current_template,
@@ -705,12 +705,12 @@ def treat_page(page):
                                                                             current_template, 'nocat=1')
 
                 if debug_level > 1:
-                    pywikibot.output("\n\03{red}---------------------------------------------\03{default}")
-                    pywikibot.output("\n\03{blue}Modèle traité\03{default}")
+                    pywikibot.output("\n\03<<red>>---------------------------------------------\03<<default>>")
+                    pywikibot.output("\n\03<<blue>>Modèle traité\03<<default>>")
                     print(final_page_content[:1000])
-                    pywikibot.output("\n\03{red}---------------------------------------------\03{default}")
+                    pywikibot.output("\n\03<<red>>---------------------------------------------\03<<default>>")
                     input(page_content)
-                    pywikibot.output("\n\03{red}---------------------------------------------\03{default}")
+                    pywikibot.output("\n\03<<red>>---------------------------------------------\03<<default>>")
             else:
                 if fix_old_templates:
                     if debug_level > 0:
@@ -728,7 +728,7 @@ def treat_page(page):
                         final_page_content, page_content = next_template(final_page_content, page_content)
                 else:
                     if debug_level > 0:
-                        pywikibot.output("\03{yellow} " + current_template + "\03{default}: untreated template")
+                        pywikibot.output("\03<<yellow>> " + current_template + "\03<<default>>: untreated template")
                     final_page_content, page_content = next_template(final_page_content, page_content)
 
             if not go_backward:
@@ -736,11 +736,11 @@ def treat_page(page):
                     message = ' Remplacement par \x1b[6;32;40m' + final_page_content[
                                                                   final_page_content.rfind('{{'):] + '\x1b[0m\n\n'
                     print(message)
-                    pywikibot.output("\n\03{red}---------------------------------------------\03{default}")
+                    pywikibot.output("\n\03<<red>>---------------------------------------------\03<<default>>")
                 if debug_level > 1:
-                    pywikibot.output("\n\03{red}---------------------------------------------\03{default}")
+                    pywikibot.output("\n\03<<red>>---------------------------------------------\03<<default>>")
                     input(page_content)
-                    pywikibot.output("\n\03{red}---------------------------------------------\03{default}")
+                    pywikibot.output("\n\03<<red>>---------------------------------------------\03<<default>>")
 
             if language_code is not None and page_content.find('}}') != -1 and (
                     page_content.find('}}') < page_content.find('{{') or page_content.find('{{') == -1):
@@ -910,7 +910,7 @@ def treat_page(page):
     if test_import and username in page_name:
         final_page_content = add_line_test(final_page_content)
     if debug_level > 0:
-        pywikibot.output("\n\03{red}---------------------------------------------\03{default}")
+        pywikibot.output("\n\03<<red>>---------------------------------------------\03<<default>>")
     if final_page_content != current_page_content:
         if page.namespace() == 0 or username in page_name:
             # Modifications mineures, ne justifiant pas une édition à elles seules

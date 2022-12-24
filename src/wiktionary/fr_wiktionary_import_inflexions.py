@@ -69,7 +69,7 @@ def treat_page(source_page, is_lemma=True):
             source_page = Page(source_site, page_name)
     else:
         page_name = source_page.title()
-    pywikibot.output("\n\03{blue}" + page_name + "\03{default}")
+    pywikibot.output("\n\03<<blue>>" + page_name + "\03<<default>>")
 
     if not source_page.exists():
         if debug_level > 0:
