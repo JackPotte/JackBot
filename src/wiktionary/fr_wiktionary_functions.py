@@ -3160,6 +3160,89 @@ def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natu
     return page_content, summary
 
 
+# (TODO: check other wikt language section)
+def update_if_page_exists_on_other_wiktionaries(
+        final_page_content,
+        page_content,
+        external_site,
+        external_page_name
+):
+    if external_site == '' or external_page_name == '':
+        return final_page_content, page_content
+
+    d = 0
+    do_treat_new_missing = True
+    is_page_found = True
+    try:
+        external_page = Page(external_site, external_page_name)
+    except pywikibot.exceptions.InconsistentTitleError as e:
+        if debug_level > d:
+            print(str(e))
+        final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
+        is_page_found = False
+    except pywikibot.exceptions.InvalidTitleError as e:
+        if debug_level > d:
+            print(str(e))
+        final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
+        is_page_found = False
+    except pywikibot.exceptions.NoPageError as e:
+        if debug_level > d:
+            print(str(e))
+        if external_page_name.find('\'') != -1:
+            external_page_name = external_page_name.replace('\'', '’')
+        elif external_page_name.find('’') != -1:
+            external_page_name = external_page_name.replace('’', '\'')
+        if external_page_name != external_page.title():
+            try:
+                external_page = Page(external_site, external_page_name)
+            except pywikibot.exceptions.NoPageError:
+                final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
+                is_page_found = False
+                external_page = None
+    except BaseException as e:
+        if debug_level > d:
+            print(str(e))
+        is_page_found = False
+    if debug_level > d:
+        print('  is_page_found: ' + str(is_page_found))
+
+    is_external_page_exist = False
+    if is_page_found:
+        try:
+            is_external_page_exist = external_page.exists()
+        except AttributeError:
+            if debug_level > d:
+                print('  removed site (--)')
+            final_page_content, page_content = next_translation_template(final_page_content, page_content, '--')
+        except pywikibot.exceptions.InvalidPageError:
+            if debug_level > d:
+                print('  InvalidPageError: ' + external_page_name)
+            final_page_content, page_content = next_translation_template(final_page_content, page_content, '--')
+        except pywikibot.exceptions.InconsistentTitleError:
+            if debug_level > d:
+                print('  InconsistentTitleError (-)')
+            final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
+        except pywikibot.exceptions.InvalidTitleError:
+            if debug_level > d:
+                print('  InvalidTitleError: ' + external_page_name)
+            final_page_content, page_content = next_translation_template(final_page_content, page_content, '')
+
+        if is_external_page_exist:
+            if debug_level > d:
+                print('  exists (+)')
+            final_page_content, page_content = next_translation_template(final_page_content, page_content, '+')
+        elif do_treat_new_missing and external_site.lang != 'zh':
+            # TODO handle simplified/traditional https://fr.wiktionary.org/w/index.php?title=poussin&diff=31244062&oldid=31244057
+            if debug_level > d:
+                print('  not exists (-)')
+            final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
+
+    if debug_level > d:
+        print('')
+
+    return final_page_content, page_content
+
+
 def treat_translations(page_content, final_page_content, summary, end_position, site_family):
     # Empty or stub
     has_not_to_call_interwiki_link = end_position == page_content.find('}}') \
@@ -3235,7 +3318,7 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
         if current_language != '':
             # TODO: reproduire bug site fermé https://fr.wiktionary.org/w/index.php?title=chat&diff=prev&oldid=9366302
             # Identification des Wiktionnaires hébergeant les traductions
-            external_site_name = ''
+            external_site = ''
             external_page_name = ''
             d = 0
             page_content3 = page_content2[page_content2.find('|') + 1:]
@@ -3252,18 +3335,18 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                     final_page_content = final_page_content[:-2]
                     backward = True
             elif current_language == 'conv':
-                external_site_name = get_wiki('species', 'species')
+                external_site = get_wiki('species', 'species')
             elif current_language in incubator_wiktionaries:
                 # Otherwise: Non-JSON response received from server wiktionary:ba; the server may be down.
-                external_site_name = None
+                external_site = None
             else:
-                external_site_name = get_wiki(current_language, site_family)
-            if external_site_name is None:
+                external_site = get_wiki(current_language, site_family)
+            if external_site is None:
                 if debug_level > d:
                     print('  no site (--)')
                 final_page_content, page_content = next_translation_template(final_page_content, page_content, '')
-                external_site_name = ''
-            elif external_site_name != '':
+                external_site = ''
+            elif external_site != '':
                 if page_content3.find('|') != -1 and page_content3.find('|') < page_content3.find('}}'):
                     external_page_name = page_content3[:page_content3.find('|')]
                 else:
@@ -3277,76 +3360,14 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                 except UnicodeEncodeError as e:
                     # Python 2 only
                     print(msg.encode(config.console_encoding, 'replace'))
-            # Connexions aux Wiktionnaires pour vérifier la présence de la page (TODO: et de sa section langue)
-            if external_site_name != '' and external_page_name != '':
-                is_page_found = True
-                try:
-                    external_page = Page(external_site_name, external_page_name)
-                except pywikibot.exceptions.InconsistentTitleError as e:
-                    if debug_level > d:
-                        print(str(e))
-                    final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
-                    is_page_found = False
-                except pywikibot.exceptions.InvalidTitleError as e:
-                    if debug_level > d:
-                        print(str(e))
-                    final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
-                    is_page_found = False
-                except pywikibot.exceptions.NoPageError as e:
-                    if debug_level > d:
-                        print(str(e))
-                    if external_page_name.find('\'') != -1:
-                        external_page_name = external_page_name.replace('\'', '’')
-                    elif external_page_name.find('’') != -1:
-                        external_page_name = external_page_name.replace('’', '\'')
-                    if external_page_name != external_page.title():
-                        try:
-                            external_page = Page(external_site_name, external_page_name)
-                        except pywikibot.exceptions.NoPageError:
-                            final_page_content, page_content = next_translation_template(final_page_content,
-                                                                                         page_content, '-')
-                            is_page_found = False
-                            external_page = None
-                except BaseException as e:
-                    if debug_level > d:
-                        print(str(e))
-                    is_page_found = False
 
-                is_external_page_exist = False
-                if is_page_found:
-                    try:
-                        is_external_page_exist = external_page.exists()
-                    except AttributeError:
-                        if debug_level > d:
-                            print('  removed site (--)')
-                        final_page_content, page_content = next_translation_template(final_page_content,
-                                                                                     page_content, '--')
-                    except pywikibot.exceptions.InvalidPageError:
-                        if debug_level > d:
-                            print('  InvalidPageError: ' + external_page_name)
-                        final_page_content, page_content = next_translation_template(final_page_content,
-                                                                                     page_content, '--')
-                    except pywikibot.exceptions.InconsistentTitleError:
-                        if debug_level > d:
-                            print('  InconsistentTitleError (-)')
-                        final_page_content, page_content = next_translation_template(final_page_content,
-                                                                                     page_content, '-')
-                    except pywikibot.exceptions.InvalidTitleError:
-                        if debug_level > d:
-                            print('  InvalidTitleError: ' + external_page_name)
-                        final_page_content, page_content = next_translation_template(final_page_content,
-                                                                                     page_content, '')
+            final_page_content, page_content = update_if_page_exists_on_other_wiktionaries(
+                final_page_content,
+                page_content,
+                external_site,
+                external_page_name
+            )
 
-                    if is_external_page_exist:
-                        if debug_level > d:
-                            print('  exists (+)')
-                        final_page_content, page_content = next_translation_template(final_page_content,
-                                                                                     page_content, '+')
-                    # else: commented because makes "-" instead of "--" if wiki is closed
-                    #     if debug_level > d:
-                    #         print('  not exists (-)')
-                    #     final_page_content, page_content = next_translation_template(final_page_content,
-                    #                                                                  page_content, '-')
     return page_content, final_page_content, summary
 
 
