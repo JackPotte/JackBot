@@ -487,8 +487,13 @@ def replace_files_errors(page_content):
     # bad_file_parameters.append('cadre')
     for badFileParameter in bad_file_parameters:
         regex = r'(\[\[(Image|Fichier|File) *: *[^\]{]+)\| *' + badFileParameter + r' *(\||\])'
-        if debug_level > 1: print(regex)
-        page_content = re.sub(regex, r'\1\3', page_content)
+        if debug_level > 1:
+            print(regex)
+        try:
+            page_content = re.sub(regex, r'\1\3', page_content)
+        except TypeError:
+            print('TypeError')
+
     # Doublons
     regex = r'(\[\[(Image|Fichier|File) *: *[^\]]+)\| *thumb *(\| *thumb *[\|\]])'
     page_content = re.sub(regex, r'\1\3', page_content)
