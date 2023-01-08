@@ -121,7 +121,9 @@ def treat_page(page):
         page_content = replace_deprecated_tags(page_content)
     if do_check_url:
         page_content, summary = treat_broken_links(page_content, summary)
-        
+    if page_content is None:
+        return
+
     page_content = page_content.replace('[[Catégorie:{{PAGENAME}}|{{SUBPAGENAME}}]]', '{{AutoCat}}')
     page_content = page_content.replace('[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', '{{AutoCat}}')
     page_content = page_content.replace('{{autoCat}}', '{{AutoCat}}')
