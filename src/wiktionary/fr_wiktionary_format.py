@@ -243,6 +243,7 @@ def treat_page(page):
         start_position = 1
         singular_page_name = ''
         infinitive = ''
+        section = None
         # Loop to find each page template, filling final_page_content by emptying page_content
         while start_position > -1:
             if debug_level > 1:
@@ -526,7 +527,7 @@ def treat_page(page):
                         final_page_content, page_content = next_template(final_page_content, page_content)
 
                 # Wrong genders
-                elif current_template in ('m', 'f'):
+                elif current_template in ('m', 'f', 'mf', 'n', 'c'):
                     if has_translation_section or language_code not in languagesWithoutGender:
                         final_page_content = final_page_content + page_content[:page_content.find('}}') + 2]
                     else:
@@ -535,24 +536,10 @@ def treat_page(page):
                         final_page_content = final_page_content[:-2]
                         go_backward = True
                     page_content = page_content[page_content.find('}}') + 2:]
-                elif current_template in ('mf', 'mf?'):
-                    if has_translation_section or language_code not in languagesWithoutGender:
-                        final_page_content = final_page_content + page_content[:page_content.find('}}') + 2]
-                    else:
-                        if debug_level > 0:
-                            print('  removing missing gender in ' + language_code)
-                        final_page_content = final_page_content[:-2]
-                        go_backward = True
-                    page_content = page_content[page_content.find('}}') + 2:]
-                elif current_template in ('n', 'c'):
-                    if has_translation_section or language_code not in languagesWithoutGender:
-                        final_page_content = final_page_content + current_template + '}}'
-                    else:
-                        if debug_level > 0:
-                            print('  removing missing gender in ' + language_code)
-                        final_page_content = final_page_content[:-2]
-                        go_backward = True
-                    page_content = page_content[page_content.find('}}') + 2:]
+
+                elif current_template in ('mf?', 'mf ?', 'fm?', 'fm ?'):
+                    final_page_content, page_content = next_template(final_page_content, page_content,
+                                                                     current_template, language_code)
 
                 # Templates with language code at first
                 elif current_template in ('perfectif', 'perf', 'imperfectif', 'imperf', 'déterminé', 'dét',
