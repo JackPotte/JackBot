@@ -34,7 +34,7 @@ docopt==0.6.2
 entrypoints==0.3
 enum34==1.1.10
 fasteners==0.14.1
-future==0.18.2
+future==0.18.3
 google >= 1.7
 html5lib==1.0.1
 httplib2==0.19.1
