@@ -88,7 +88,7 @@ blocked_domains.append('biodiversitylibrary.org')
 blocked_domains.append('charts.fi')
 blocked_domains.append('cia.gov')
 blocked_domains.append('finnishcharts.com')
-blocked_domains.append('history.navy.mil') # IP Free bloquée en lecture
+blocked_domains.append('history.navy.mil')  # IP Free bloquée en lecture
 blocked_domains.append('itunes.apple.com')
 blocked_domains.append('nytimes.com')
 blocked_domains.append('psaworldtour.com')
@@ -102,7 +102,8 @@ url_to_replace_limit = len(url_to_replace)
 
 templates_with_url_line = 4
 templates_with_url_column = 2
-templates_with_url = [[0] * (templates_with_url_column + 1) for _ in range(templates_with_url_line + 1)]
+templates_with_url = [[0] * (templates_with_url_column + 1)
+                      for _ in range(templates_with_url_line + 1)]
 templates_with_url[1][1] = 'Import:DAF8'
 templates_with_url[1][2] = 'http://www.cnrtl.fr/definition/academie8/'
 templates_with_url[2][1] = 'R:DAF8'
@@ -117,13 +118,13 @@ if not do_retest_broken_links:
     broken_link_templates.append('lien brisé')
 
 sites_errors = ["403 Forbidden", "404 – File not found", "404 error", "404 Not Found", "404. That’s an error.",
-          "Error 404 - Not found", "Error 404 (Not Found)", "Error 503 (Server Error)", "page_content not found",
-          "Runtime Error", "server timedout", "Sorry, no matching records for query",
-          "The page you requested cannot be found", "this page can't be found",
-          "The service you requested is not available at this time", "There is currently no text in this page.",
-          "500 Internal Server Error", "Cette forme est introuvable !", "Soit vous avez mal &#233;crit le titre",
-          'Soit vous avez mal écrit le titre', 'Terme introuvable', "nom de domaine demandé n'est plus actif",
-          "Il n'y a pour l'instant aucun texte sur cette page."]
+                "Error 404 - Not found", "Error 404 (Not Found)", "Error 503 (Server Error)", "page_content not found",
+                "Runtime Error", "server timedout", "Sorry, no matching records for query",
+                "The page you requested cannot be found", "this page can't be found",
+                "The service you requested is not available at this time", "There is currently no text in this page.",
+                "500 Internal Server Error", "Cette forme est introuvable !", "Soit vous avez mal &#233;crit le titre",
+                'Soit vous avez mal écrit le titre', 'Terme introuvable', "nom de domaine demandé n'est plus actif",
+                "Il n'y a pour l'instant aucun texte sur cette page."]
 errors_limit = len(sites_errors)
 
 authorized_files = []
@@ -131,9 +132,9 @@ authorized_files.append('.pdf')
 
 # Too large media to ignore
 large_media = ['RIFF', 'WAV', 'BWF', 'Ogg', 'AIFF', 'CAF', 'PCM', 'RAW', 'CDA', 'FLAC', 'ALAC', 'AC3', 'MP3', 'mp3PRO',
-          'Ogg Vorbis', 'VQF', 'TwinVQ', 'WMA', 'AU', 'ASF', 'AA', 'AAC', 'MPEG-2 AAC', 'ATRAC', 'iKlax', 'U-MYX',
-          'MXP4', 'avi', 'mpg', 'mpeg', 'mkv', 'mka', 'mks', 'asf', 'wmv', 'wma', 'mov', 'ogv', 'oga', 'ogx', 'ogm',
-          '3gp', '3g2', 'webm', 'weba', 'nut', 'rm', 'mxf', 'asx', 'ts', 'flv']
+               'Ogg Vorbis', 'VQF', 'TwinVQ', 'WMA', 'AU', 'ASF', 'AA', 'AAC', 'MPEG-2 AAC', 'ATRAC', 'iKlax', 'U-MYX',
+               'MXP4', 'avi', 'mpg', 'mpeg', 'mkv', 'mka', 'mks', 'asf', 'wmv', 'wma', 'mov', 'ogv', 'oga', 'ogx', 'ogm',
+               '3gp', '3g2', 'webm', 'weba', 'nut', 'rm', 'mxf', 'asx', 'ts', 'flv']
 large_media_limit = len(large_media)
 
 
@@ -170,13 +171,15 @@ def treat_broken_links(current_page, summary):
                     PageDebut.rfind(tags_without_url[b][2]):
                 ignored_link = True
                 if debug_level > 0:
-                    print('URL non traitée, car dans ' + tags_without_url[b][1])
+                    print('URL non traitée, car dans ' +
+                          tags_without_url[b][1])
                 break
             if final_page.rfind(tags_without_url[b][1]) != -1 and final_page.rfind(tags_without_url[b][1]) > \
                     final_page.rfind(tags_without_url[b][2]):
                 ignored_link = True
                 if debug_level > 0:
-                    print('URL non traitée, car dans ' + tags_without_url[b][1])
+                    print('URL non traitée, car dans ' +
+                          tags_without_url[b][1])
                 break
         for noTemplate in broken_link_templates:
             if PageDebut.rfind('{{' + noTemplate + '|') != -1 and PageDebut.rfind('{{' + noTemplate + '|') > \
@@ -186,9 +189,10 @@ def treat_broken_links(current_page, summary):
                     print('URL non traitée, car dans ') + noTemplate
                 break
             if PageDebut.rfind('{{' + noTemplate[:1].upper() + noTemplate[1:] + '|') != -1 and \
-                PageDebut.rfind('{{' + noTemplate[:1].upper() + noTemplate[1:] + '|') > PageDebut.rfind('}}'):
+                    PageDebut.rfind('{{' + noTemplate[:1].upper() + noTemplate[1:] + '|') > PageDebut.rfind('}}'):
                 ignored_link = True
-                if debug_level > 0: print('URL non traitée, car dans ') + noTemplate
+                if debug_level > 0:
+                    print('URL non traitée, car dans ') + noTemplate
                 break
             if final_page.rfind('{{' + noTemplate + '|') != -1 and final_page.rfind('{{' + noTemplate + '|') > \
                     final_page.rfind('}}'):
@@ -197,7 +201,7 @@ def treat_broken_links(current_page, summary):
                     print('URL non traitée, car dans ') + noTemplate
                 break
             if final_page.rfind('{{' + noTemplate[:1].upper() + noTemplate[1:] + '|') != -1 and \
-                final_page.rfind('{{' + noTemplate[:1].upper() + noTemplate[1:] + '|') > final_page.rfind('}}'):
+                    final_page.rfind('{{' + noTemplate[:1].upper() + noTemplate[1:] + '|') > final_page.rfind('}}'):
                 ignored_link = True
                 if debug_level > 0:
                     print('URL non traitée, car dans ') + noTemplate
@@ -208,7 +212,8 @@ def treat_broken_links(current_page, summary):
             # titre=
             if PageDebut.rfind('titre=') != -1 and PageDebut.rfind('titre=') > PageDebut.rfind('{{') \
                     and PageDebut.rfind('titre=') > PageDebut.rfind('}}'):
-                current_page3 = PageDebut[PageDebut.rfind('titre=')+len('titre='):]
+                current_page3 = PageDebut[PageDebut.rfind(
+                    'titre=')+len('titre='):]
                 if current_page3.find('|') != -1 and (current_page3.find('|') < current_page3.find('}}')
                                                       or current_page3.rfind('}}') == -1):
                     titre = current_page3[:current_page3.find('|')]
@@ -218,7 +223,8 @@ def treat_broken_links(current_page, summary):
                     print('Titre= avant URL : ' + titre)
             elif PageDebut.rfind('titre =') != -1 and PageDebut.rfind('titre =') > PageDebut.rfind('{{') \
                     and PageDebut.rfind('titre =') > PageDebut.rfind('}}'):
-                current_page3 = PageDebut[PageDebut.rfind('titre =')+len('titre ='):]
+                current_page3 = PageDebut[PageDebut.rfind(
+                    'titre =')+len('titre ='):]
                 if current_page3.find('|') != -1 and (current_page3.find('|') < current_page3.find('}}')
                                                       or current_page3.rfind('}}') == -1):
                     titre = current_page3[:current_page3.find('|')]
@@ -226,7 +232,7 @@ def treat_broken_links(current_page, summary):
                     titre = current_page3
                 if debug_level > 0:
                     print('Titre = avant URL : ') + titre
-        
+
             # url=
             if PageDebut[-1:] == '[':
                 if debug_level > 0:
@@ -251,22 +257,26 @@ def treat_broken_links(current_page, summary):
             if url_start != 0:
                 # Après l'URL
                 url_page_end = current_page[current_page.find('//'):]
-                # url=    
+                # url=
                 url_end_char = ' '
                 for l in range(1, url_limit):
                     if url_page_end.find(url_end_char) == -1 or (url_page_end.find(url_ends[l]) != -1
-                         and url_page_end.find(url_ends[l]) < url_page_end.find(url_end_char)):
+                                                                 and url_page_end.find(url_ends[l]) < url_page_end.find(url_end_char)):
                         url_end_char = url_ends[l]
                 if debug_level > 0:
                     print('*Caractère de fin URL : ' + url_end_char)
-                
+
                 if url_start == 1:
-                    url = 'http:' + current_page[current_page.find('//'):current_page.find('//')+url_page_end.find(url_end_char)]
+                    url = 'http:' + \
+                        current_page[current_page.find(
+                            '//'):current_page.find('//')+url_page_end.find(url_end_char)]
                     if titre == '':
-                        titre = current_page[current_page.find('//')+url_page_end.find(url_end_char):]
+                        titre = current_page[current_page.find(
+                            '//')+url_page_end.find(url_end_char):]
                         titre = trim(titre[:titre.find(']')])
                 else:
-                    url = current_page[current_page.find('//')-url_start:current_page.find('//')+url_page_end.find(url_end_char)]
+                    url = current_page[current_page.find(
+                        '//')-url_start:current_page.find('//')+url_page_end.find(url_end_char)]
                 if len(url) <= 10:
                     url = ''
                     html_source = ''
@@ -277,7 +287,7 @@ def treat_broken_links(current_page, summary):
                             url = url[:len(url)-1]
                             if debug_level > 0:
                                 print('Réduction de l\'URL de ' + url_ends2[u])
-                    
+
                     is_large_media = False
                     for f in range(1, large_media_limit):
                         if url[len(url) - len(large_media[f]) - 1:].lower() == '.' + large_media[f].lower():
@@ -292,12 +302,13 @@ def treat_broken_links(current_page, summary):
                         if debug_level > 0:
                             print('Recherche dans son contenu')
                         is_broken_link = check_url_page(html_source, url)
-                
+
                 # Site réputé HS mais invisible car ses sous-pages ont toutes été déplacées, et renvoient vers l'accueil
                 for u in range(1, url_to_replace_limit):
-                    if url.find(url_to_replace[u]) != -1 and len(url) > len(url_to_replace[u]) + 8:  # http://.../
+                    # http://.../
+                    if url.find(url_to_replace[u]) != -1 and len(url) > len(url_to_replace[u]) + 8:
                         is_broken_link = True
-                
+
                 # Confirmation manuelle
                 if is_semi_auto:
                     webbrowser.open_new_tab(url)
@@ -309,7 +320,7 @@ def treat_broken_links(current_page, summary):
                         is_broken_link = True
                     else:
                         is_broken_link = False
-                        
+
                 if debug_level > 0:
                     # Compte-rendu des URL détectées
                     try:
@@ -319,12 +330,14 @@ def treat_broken_links(current_page, summary):
                     except UnicodeDecodeError:
                         print('*HS : ' + str(is_broken_link))
                         print("UnicodeDecodeError l 466")
-                if debug_level > 1: input(html_source[:7000])
-                
-                # Modification du wiki en conséquence    
+                if debug_level > 1:
+                    input(html_source[:7000])
+
+                # Modification du wiki en conséquence
                 page_start = current_page[:current_page.find('//')+2]
-                url_start = max(page_start.find('http://'), page_start.find('https://'), page_start.find('[//'))
-                
+                url_start = max(page_start.find(
+                    'http://'), page_start.find('https://'), page_start.find('[//'))
+
                 # Saut des modèles inclus dans un modèle de lien
                 while page_start.rfind('{{') != -1 and page_start.rfind('{{') < page_start.rfind('}}'):
                     # pb des multiples crochets fermants sautés : {{ ({{ }} }})
@@ -336,19 +349,19 @@ def treat_broken_links(current_page, summary):
                         break
                     if debug_level > 1:
                         input(page_start[-100:])
-                    
-                
+
                 # Détection si l'hyperlien est dans un modèle (si aucun modèle n'est fermé avant eux)
                 if (page_start.rfind('{{') != -1 and page_start.rfind('{{') > page_start.rfind('}}')) or \
                     (page_start.rfind('url=') != -1 and page_start.rfind('url=') > page_start.rfind('}}')) or \
-                    (page_start.rfind('url =') != -1 and page_start.rfind('url =') > page_start.rfind('}}')):
+                        (page_start.rfind('url =') != -1 and page_start.rfind('url =') > page_start.rfind('}}')):
                     template_start = page_start.rfind('{{')
-                    page_start = page_start[page_start.rfind('{{'):len(page_start)]
+                    page_start = page_start[page_start.rfind(
+                        '{{'):len(page_start)]
                     replaced_template = ''
                     # Lien dans un modèle connu (consensus en cours pour les autres, atention aux infobox)
                     '''for m in range(1,templates_limit):
                         regex = r'{{ *[' + new_template[m][0:1] + r'|' + new_template[m][0:1].upper() + r']' + new_template[m][1:len(new_template[m])] + r' *[\||\n]'
-                    ''' 
+                    '''
                     if re.search(r'{{ *[L|l]ien web *[\||\n]', page_start):
                         replaced_template = 'lien web'
                         if debug_level > 0:
@@ -361,37 +374,41 @@ def treat_broken_links(current_page, summary):
                         replaced_template = 'lien brisé'
                         if debug_level > 0:
                             print('Détection de ' + replaced_template)
-                        
+
                     # if page_start[0:2] == '{{': replaced_template = trim(page_start[2:page_start.find('|')])
-                    
+
                     template_end_position = current_page.find('//')+2
                     template_page_end = current_page[template_end_position:]
                     # Calcul des modèles inclus dans le modèle de lien
                     while template_page_end.find('}}') != -1 \
                             and template_page_end.find('}}') > template_page_end.find('{{') != -1:
-                        template_end_position = template_end_position + template_page_end.find('}}')+2
-                        template_page_end = template_page_end[template_page_end.find('}}')+2:]
-                    template_end_position = template_end_position + template_page_end.find('}}')+2
+                        template_end_position = template_end_position + \
+                            template_page_end.find('}}')+2
+                        template_page_end = template_page_end[template_page_end.find(
+                            '}}')+2:]
+                    template_end_position = template_end_position + \
+                        template_page_end.find('}}')+2
                     current_template = current_page[template_start:template_end_position]
                     # if debug_level > 0: print(")*Modele : " + current_template[:100]
-                    
+
                     if replaced_template != '':
                         if debug_level > 0:
-                            print('Ancien modèle à traiter : ' + replaced_template)
+                            print('Ancien modèle à traiter : ' +
+                                  replaced_template)
                         if is_broken_link:
                             try:
                                 current_page = current_page[:template_start] + '{{lien brisé' \
                                     + current_page[re.search(r'{{ *[' + replaced_template[:1] + '|'
-                                    + replaced_template[:1].upper() + ']'
-                                    + replaced_template[1:] + ' *[\||\n]', current_page).end()-1:]
+                                                             + replaced_template[:1].upper() + ']'
+                                                             + replaced_template[1:] + ' *[\||\n]', current_page).end()-1:]
                             except AttributeError:
                                 raise Exception("Regex introuvable ligne 811")
-                                
+
                         elif replaced_template == 'lien brisé':
                             if debug_level > 0:
                                 print('Rétablissement d\'un ancien lien brisé')
                             current_page = current_page[:current_page.find(replaced_template)] + 'lien web' \
-                                           + current_page[current_page.find(replaced_template)+len(replaced_template):]
+                                + current_page[current_page.find(replaced_template)+len(replaced_template):]
                     else:
                         if debug_level > 0:
                             print(url + " dans modèle non géré")
@@ -403,15 +420,16 @@ def treat_broken_links(current_page, summary):
                         summary = summary + ', ajout de {{lien brisé}}'
                         if url_start == 1:
                             if debug_level > 0:
-                                print('Ajout de lien brisé entre crochets sans protocole')
+                                print(
+                                    'Ajout de lien brisé entre crochets sans protocole')
                             if titre != '':
                                 current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
-                                               + time.strftime('%Y-%m-%d') + '|url=' + url + '|titre=' + titre + '}}' \
-                                               + current_page[current_page.find('//')+url_page_end.find(url_end_char):]
+                                    + time.strftime('%Y-%m-%d') + '|url=' + url + '|titre=' + titre + '}}' \
+                                    + current_page[current_page.find('//')+url_page_end.find(url_end_char):]
                             else:
                                 current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
-                                               + time.strftime('%Y-%m-%d') + '|url=' + url + '}}' \
-                                               + current_page[current_page.find('//')+url_page_end.find(url_end_char):]
+                                    + time.strftime('%Y-%m-%d') + '|url=' + url + '}}' \
+                                    + current_page[current_page.find('//')+url_page_end.find(url_end_char):]
                             # if debug_level > 0: input(current_page)
                         else:
                             if debug_level > 0:
@@ -426,50 +444,63 @@ def treat_broken_links(current_page, summary):
                                     if debug_level > 0:
                                         print("Titre vide")
                                     # Prise en compte des crochets inclus dans un titre
-                                    current_page2 = current_page[current_page.find('//')+url_page_end.find(url_end_char):]
+                                    current_page2 = current_page[current_page.find(
+                                        '//')+url_page_end.find(url_end_char):]
                                     # if debug_level > 0: input(current_page2)
                                     if current_page2.find(']]') != -1 and current_page2.find(']]') < current_page2.find(']'):
                                         while current_page2.find(']]') != -1 and current_page2.find('[[') != -1 \
                                                 and current_page2.find('[[') < current_page2.find(']]'):
-                                            titre = titre + current_page2[:current_page2.find(']]')+1]
-                                            current_page2 = current_page2[current_page2.find(']]')+1:]
-                                        titre = trim(titre + current_page2[:current_page2.find(']]')])
-                                        current_page2 = current_page2[current_page2.find(']]'):]
+                                            titre = titre + \
+                                                current_page2[:current_page2.find(
+                                                    ']]')+1]
+                                            current_page2 = current_page2[current_page2.find(
+                                                ']]')+1:]
+                                        titre = trim(
+                                            titre + current_page2[:current_page2.find(']]')])
+                                        current_page2 = current_page2[current_page2.find(
+                                            ']]'):]
                                     while current_page2.find(']') != -1 and current_page2.find('[') != -1 \
                                             and current_page2.find('[') < current_page2.find(']'):
-                                        titre = titre + current_page2[:current_page2.find(']')+1]
-                                        current_page2 = current_page2[current_page2.find(']')+1:]
-                                    titre = trim(titre + current_page2[:current_page2.find(']')])
-                                    current_page2 = current_page2[current_page2.find(']'):]
+                                        titre = titre + \
+                                            current_page2[:current_page2.find(
+                                                ']')+1]
+                                        current_page2 = current_page2[current_page2.find(
+                                            ']')+1:]
+                                    titre = trim(
+                                        titre + current_page2[:current_page2.find(']')])
+                                    current_page2 = current_page2[current_page2.find(
+                                        ']'):]
                                 if titre != '':
                                     if debug_level > 0:
                                         print("Ajout avec titre")
                                     current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
-                                                   + time.strftime('%Y-%m-%d') + '|url=' + url + '|titre=' + titre \
-                                                   + '}}' + current_page[len(current_page)-len(current_page2)+1:]
+                                        + time.strftime('%Y-%m-%d') + '|url=' + url + '|titre=' + titre \
+                                        + '}}' + \
+                                        current_page[len(
+                                            current_page)-len(current_page2)+1:]
                                 else:
                                     if debug_level > 0:
                                         print("Ajout sans titre")
                                     current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
-                                                   + time.strftime('%Y-%m-%d') + '|url=' + url + '}}' \
-                                                   + current_page[current_page.find('//')+url_page_end.find(']')+1:]
-                            else:    
-                                if titre != '': 
+                                        + time.strftime('%Y-%m-%d') + '|url=' + url + '}}' \
+                                        + current_page[current_page.find('//')+url_page_end.find(']')+1:]
+                            else:
+                                if titre != '':
                                     # Présence d'un titre
                                     if debug_level > 0:
                                         print('URL nue avec titre')
                                     current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
-                                       + time.strftime('%Y-%m-%d') + '|url=' + url + '|titre=' \
-                                       + current_page[current_page.find('//')+url_page_end.find(url_end_char)+1:
-                                                      current_page.find('//')+url_page_end.find(']')] + '}}' \
-                                       + current_page[current_page.find('//')+url_page_end.find(']')+1:]
+                                        + time.strftime('%Y-%m-%d') + '|url=' + url + '|titre=' \
+                                        + current_page[current_page.find('//')+url_page_end.find(url_end_char)+1:
+                                                       current_page.find('//')+url_page_end.find(']')] + '}}' \
+                                        + current_page[current_page.find('//')+url_page_end.find(']')+1:]
                                 else:
                                     if debug_level > 0:
                                         print('URL nue sans titre')
                                     current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
-                                       + time.strftime('%Y-%m-%d') + '|url=' + url + '}} ' \
-                                       + current_page[current_page.find('//')+url_page_end.find(url_end_char):]
-                        
+                                        + time.strftime('%Y-%m-%d') + '|url=' + url + '}} ' \
+                                        + current_page[current_page.find('//')+url_page_end.find(url_end_char):]
+
                     else:
                         if debug_level > 0:
                             print('Aucun changement sur l\'URL http')
@@ -490,8 +521,11 @@ def treat_broken_links(current_page, summary):
                     url_end_char = url_ends[l]
             if debug_level > 0:
                 print('Saut après "' + url_end_char + '"')
-            final_page = final_page + current_page[:current_page.find('//')+2+url_page_end.find(url_end_char)]
-            current_page = current_page[current_page.find('//')+2+url_page_end.find(url_end_char):]
+            final_page = final_page + \
+                current_page[:current_page.find(
+                    '//')+2+url_page_end.find(url_end_char)]
+            current_page = current_page[current_page.find(
+                '//')+2+url_page_end.find(url_end_char):]
         else:
             # Saut du reste du modèle courant (contenant parfois d'autres URL à laisser)
             if debug_level > 0:
@@ -512,7 +546,8 @@ def treat_broken_links(current_page, summary):
             url_language = get_url_site_language(html_source)
             if url_language != 'None':
                 try:
-                    current_page = current_page.replace('|langue=None', '|langue=' + url_language)
+                    current_page = current_page.replace(
+                        '|langue=None', '|langue=' + url_language)
                 except UnicodeDecodeError as e:
                     if debug_level > 0:
                         print(str(e))
@@ -525,18 +560,23 @@ def treat_broken_links(current_page, summary):
             final_page = ''
             while current_page.find('{{' + templates_with_url[m][1] + '|') != -1:
                 final_page = final_page + current_page[:current_page.find('{{' + templates_with_url[m][1] + '|')
-                                                        + len('{{' + templates_with_url[m][1] + '|')]
+                                                       + len('{{' + templates_with_url[m][1] + '|')]
                 current_page = current_page[current_page.find('{{' + templates_with_url[m][1] + '|') + len('{{'
-                                                                                   + templates_with_url[m][1] + '|'):]
+                                                                                                           + templates_with_url[m][1] + '|'):]
                 if current_page[:current_page.find('}}')].find('|') != -1:
-                    encoded_param1 = current_page[:current_page.find('|')].replace(' ', '_')
+                    encoded_param1 = current_page[:current_page.find(
+                        '|')].replace(' ', '_')
                 else:
-                    encoded_param1 = current_page[:current_page.find('}}')].replace(' ', '_')
-                html_source = check_url(templates_with_url[m][2] + encoded_param1, debug_level)
+                    encoded_param1 = current_page[:current_page.find(
+                        '}}')].replace(' ', '_')
+                html_source = check_url(
+                    templates_with_url[m][2] + encoded_param1, debug_level)
                 is_broken_link = check_url_page(html_source, url)
                 if is_broken_link:
                     final_page = final_page[:final_page.rfind('{{' + templates_with_url[m][1] + '|')] \
-                        + '{{lien brisé|consulté le=' + time.strftime('%Y-%m-%d') + '|url=' + templates_with_url[m][2]
+                        + '{{lien brisé|consulté le=' + \
+                        time.strftime('%Y-%m-%d') + '|url=' + \
+                        templates_with_url[m][2]
             current_page = final_page + current_page
             final_page = ''
         current_page = final_page + current_page
@@ -597,7 +637,8 @@ def check_url(url, debug_level=0, opener=None):
     connection_method = 'Request'
     try:
         req = urllib2.Request(url)
-        res = urllib2.urlopen(req) # If blocked here for hours, just whitelist the domain if the page isn't forbidden
+        # If blocked here for hours, just whitelist the domain if the page isn't forbidden
+        res = urllib2.urlopen(req)
         # TODO : ssl.CertificateError: hostname 'www.mediarodzina.com.pl' doesn't match either of 'mediarodzina.pl', 'www.mediarodzina.pl'
         # UnicodeWarning: Unicode unequal comparison failed to convert both arguments to Unicode
         html_source = res.read()
@@ -606,23 +647,33 @@ def check_url(url, debug_level=0, opener=None):
         if html_source != str(''):
             return str(html_source)
     except UnicodeEncodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeEncodeError')
     except UnicodeDecodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeDecodeError')
     except UnicodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeError')
     except httplib.BadStatusLine:
-        if debug_level > 0: print(connection_method + ' : BadStatusLine')
+        if debug_level > 0:
+            print(connection_method + ' : BadStatusLine')
     except httplib.InvalidURL:
-        if debug_level > 0: print(connection_method + ' : InvalidURL')
+        if debug_level > 0:
+            print(connection_method + ' : InvalidURL')
     except httplib.IncompleteRead:
-        if debug_level > 0: print(connection_method + ' : IncompleteRead')
+        if debug_level > 0:
+            print(connection_method + ' : IncompleteRead')
     except httplib.HTTPException:
-        if debug_level > 0: print(connection_method + ' : HTTPException')  # ex : got more than 100 headers
+        if debug_level > 0:
+            # ex : got more than 100 headers
+            print(connection_method + ' : HTTPException')
     except urllib2.URLError:
-        if debug_level > 0: print(connection_method + ' : URLError')
+        if debug_level > 0:
+            print(connection_method + ' : URLError')
     except urllib2.HTTPError as e:
-        if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+        if debug_level > 0:
+            print(connection_method + ' : HTTPError %s.' % e.code)
         connection_method = 'opener'
         try:
             opener = urllib2.build_opener()
@@ -633,75 +684,111 @@ def check_url(url, debug_level=0, opener=None):
             if html_source != str(''):
                 return str(html_source)
         except UnicodeEncodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeEncodeError')
         except UnicodeDecodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeDecodeError')
         except UnicodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeError')
         except httplib.BadStatusLine:
-            if debug_level > 0: print(connection_method + ' : BadStatusLine')
+            if debug_level > 0:
+                print(connection_method + ' : BadStatusLine')
         except httplib.InvalidURL:
-            if debug_level > 0: print(connection_method + ' : InvalidURL')
+            if debug_level > 0:
+                print(connection_method + ' : InvalidURL')
         except httplib.HTTPException:
-            if debug_level > 0: print(connection_method + ' : HTTPException')
+            if debug_level > 0:
+                print(connection_method + ' : HTTPException')
         except urllib2.HTTPError as e:
-            if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+            if debug_level > 0:
+                print(connection_method + ' : HTTPError %s.' % e.code)
         except IOError as e:
-            if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
+            if debug_level > 0:
+                print(connection_method +
+                      ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
         except urllib2.URLError:
-            if debug_level > 0: print(connection_method + ' : URLError')
+            if debug_level > 0:
+                print(connection_method + ' : URLError')
         except MemoryError:
-            if debug_level > 0: print(connection_method + ' : MemoryError')
+            if debug_level > 0:
+                print(connection_method + ' : MemoryError')
         except requests.exceptions.HTTPError:
-            if debug_level > 0: print(connection_method + ' : HTTPError')
+            if debug_level > 0:
+                print(connection_method + ' : HTTPError')
         except requests.exceptions.SSLError:
-            if debug_level > 0: print(connection_method + ' : SSLError')
+            if debug_level > 0:
+                print(connection_method + ' : SSLError')
         except ssl.CertificateError:
-            if debug_level > 0: print(connection_method + ' : CertificateError')
+            if debug_level > 0:
+                print(connection_method + ' : CertificateError')
         # pb avec http://losangeles.broadwayworld.com/article/El_Capitan_Theatre_Presents_Disneys_Mars_Needs_Moms_311421_20110304 qui renvoie 301 car son suffixe est facultatif
     except IOError as e:
-        if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
+        if debug_level > 0:
+            print(connection_method +
+                  ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
     except MemoryError:
-        if debug_level > 0: print(connection_method + ' : MemoryError')
+        if debug_level > 0:
+            print(connection_method + ' : MemoryError')
     except requests.exceptions.HTTPError:
-        if debug_level > 0: print(connection_method + ' : HTTPError')
+        if debug_level > 0:
+            print(connection_method + ' : HTTPError')
     except ssl.CertificateError:
-        if debug_level > 0: print(connection_method + ' : CertificateError')
+        if debug_level > 0:
+            print(connection_method + ' : CertificateError')
     except requests.exceptions.SSLError:
-        if debug_level > 0: print(connection_method + ' : ssl.CertificateError')
+        if debug_level > 0:
+            print(connection_method + ' : ssl.CertificateError')
         # HS : https://fr.wikipedia.org/w/index.php?title=Herv%C3%A9_Moulin&type=revision&diff=135989688&oldid=135121040
         url = url.replace('https:', 'http:')
         try:
             response = opener.open(url)
             html_source = response.read()
-            if debug_level > 0: print(str(len(html_source)))
-            if html_source != str(''): return str(html_source)
+            if debug_level > 0:
+                print(str(len(html_source)))
+            if html_source != str(''):
+                return str(html_source)
         except UnicodeEncodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeEncodeError')
         except UnicodeDecodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeDecodeError')
         except UnicodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeError')
         except httplib.BadStatusLine:
-            if debug_level > 0: print(connection_method + ' : BadStatusLine')
+            if debug_level > 0:
+                print(connection_method + ' : BadStatusLine')
         except httplib.InvalidURL:
-            if debug_level > 0: print(connection_method + ' : InvalidURL')
+            if debug_level > 0:
+                print(connection_method + ' : InvalidURL')
         except httplib.HTTPException:
-            if debug_level > 0: print(connection_method + ' : HTTPException')
+            if debug_level > 0:
+                print(connection_method + ' : HTTPException')
         except urllib2.HTTPError as e:
-            if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+            if debug_level > 0:
+                print(connection_method + ' : HTTPError %s.' % e.code)
         except IOError as e:
-            if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
+            if debug_level > 0:
+                print(connection_method +
+                      ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
         except urllib2.URLError:
-            if debug_level > 0: print(connection_method + ' : URLError')
+            if debug_level > 0:
+                print(connection_method + ' : URLError')
         except MemoryError:
-            if debug_level > 0: print(connection_method + ' : MemoryError')
+            if debug_level > 0:
+                print(connection_method + ' : MemoryError')
         except requests.exceptions.HTTPError:
-            if debug_level > 0: print(connection_method + ' : HTTPError')
+            if debug_level > 0:
+                print(connection_method + ' : HTTPError')
         except requests.exceptions.SSLError:
-            if debug_level > 0: print(connection_method + ' : SSLError')
+            if debug_level > 0:
+                print(connection_method + ' : SSLError')
         except ssl.CertificateError:
-            if debug_level > 0: print(connection_method + ' : CertificateError')
+            if debug_level > 0:
+                print(connection_method + ' : CertificateError')
 
     connection_method = "urllib2.urlopen(url.encode('utf8'))"
     try:
@@ -711,21 +798,29 @@ def check_url(url, debug_level=0, opener=None):
         if html_source != str(''):
             return str(html_source)
     except UnicodeEncodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeEncodeError')
     except UnicodeDecodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeDecodeError')
     except UnicodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeError')
     except httplib.BadStatusLine:
-        if debug_level > 0: print(connection_method + ' : BadStatusLine')
+        if debug_level > 0:
+            print(connection_method + ' : BadStatusLine')
     except httplib.InvalidURL:
-        if debug_level > 0: print(connection_method + ' : InvalidURL')
+        if debug_level > 0:
+            print(connection_method + ' : InvalidURL')
     except httplib.IncompleteRead:
-        if debug_level > 0: print(connection_method + ' : IncompleteRead')
+        if debug_level > 0:
+            print(connection_method + ' : IncompleteRead')
     except httplib.HTTPException:
-        if debug_level > 0: print(connection_method + ' : HTTPException')
+        if debug_level > 0:
+            print(connection_method + ' : HTTPException')
     except urllib2.HTTPError as e:
-        if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+        if debug_level > 0:
+            print(connection_method + ' : HTTPError %s.' % e.code)
         connection_method = 'HTTPCookieProcessor'
         try:
             cj = cookielib.CookieJar()
@@ -733,235 +828,342 @@ def check_url(url, debug_level=0, opener=None):
             urllib2.install_opener(opener)
             response = opener.open(url)
             html_source = response.read()
-            if debug_level > 0: print(str(len(html_source)))
+            if debug_level > 0:
+                print(str(len(html_source)))
             if html_source != str(''):
                 return str(html_source)
         except UnicodeEncodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeEncodeError')
         except UnicodeDecodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeDecodeError')
         except UnicodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeError')
         except httplib.BadStatusLine:
-            if debug_level > 0: print(connection_method + ' : BadStatusLine')
+            if debug_level > 0:
+                print(connection_method + ' : BadStatusLine')
         except httplib.InvalidURL:
-            if debug_level > 0: print(connection_method + ' : InvalidURL')
+            if debug_level > 0:
+                print(connection_method + ' : InvalidURL')
         except httplib.HTTPException:
-            if debug_level > 0: print(connection_method + ' : HTTPException')
+            if debug_level > 0:
+                print(connection_method + ' : HTTPException')
         except urllib2.HTTPError as e:
-            if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+            if debug_level > 0:
+                print(connection_method + ' : HTTPError %s.' % e.code)
         except IOError as e:
-            if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
+            if debug_level > 0:
+                print(connection_method +
+                      ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
         except urllib2.URLError:
-            if debug_level > 0: print(connection_method + ' : URLError')
+            if debug_level > 0:
+                print(connection_method + ' : URLError')
         except MemoryError:
-            if debug_level > 0: print(connection_method + ' : MemoryError')
+            if debug_level > 0:
+                print(connection_method + ' : MemoryError')
         except requests.exceptions.HTTPError:
-            if debug_level > 0: print(connection_method + ' : HTTPError')
+            if debug_level > 0:
+                print(connection_method + ' : HTTPError')
         except requests.exceptions.SSLError:
-            if debug_level > 0: print(connection_method + ' : SSLError')
+            if debug_level > 0:
+                print(connection_method + ' : SSLError')
         except ssl.CertificateError:
-            if debug_level > 0: print(connection_method + ' : CertificateError')
+            if debug_level > 0:
+                print(connection_method + ' : CertificateError')
     except IOError as e:
-        if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
+        if debug_level > 0:
+            print(connection_method +
+                  ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
     except urllib2.URLError:
-        if debug_level > 0: print(connection_method + ' : URLError')
+        if debug_level > 0:
+            print(connection_method + ' : URLError')
     except MemoryError:
-        if debug_level > 0: print(connection_method + ' : MemoryError')
+        if debug_level > 0:
+            print(connection_method + ' : MemoryError')
     except requests.exceptions.HTTPError:
-        if debug_level > 0: print(connection_method + ' : HTTPError')
+        if debug_level > 0:
+            print(connection_method + ' : HTTPError')
     except requests.exceptions.SSLError:
-        if debug_level > 0: print(connection_method + ' : SSLError')
+        if debug_level > 0:
+            print(connection_method + ' : SSLError')
     except ssl.CertificateError:
-        if debug_level > 0: print(connection_method + ' : CertificateError')
-        
-    connection_method = 'Request text/html'    
+        if debug_level > 0:
+            print(connection_method + ' : CertificateError')
+
+    connection_method = 'Request text/html'
     try:
         req = urllib2.Request(url)
-        req.add_header('Accept','text/html')
+        req.add_header('Accept', 'text/html')
         res = urllib2.urlopen(req)
         html_source = res.read()
-        if debug_level > 0: print(connection_method + ' : text/html ' + str(len(html_source)))
+        if debug_level > 0:
+            print(connection_method + ' : text/html ' + str(len(html_source)))
         if html_source != str(''):
             return str(html_source)
     except UnicodeEncodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeEncodeError')
     except UnicodeDecodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeDecodeError')
     except UnicodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeError')
     except httplib.BadStatusLine:
-        if debug_level > 0: print(connection_method + ' : BadStatusLine')
+        if debug_level > 0:
+            print(connection_method + ' : BadStatusLine')
     except httplib.InvalidURL:
-        if debug_level > 0: print(connection_method + ' : InvalidURL')
+        if debug_level > 0:
+            print(connection_method + ' : InvalidURL')
     except httplib.IncompleteRead:
-        if debug_level > 0: print(connection_method + ' : IncompleteRead')
+        if debug_level > 0:
+            print(connection_method + ' : IncompleteRead')
     except httplib.HTTPException:
-        if debug_level > 0: print(connection_method + ' : HTTPException')
+        if debug_level > 0:
+            print(connection_method + ' : HTTPException')
     except urllib2.HTTPError as e:
-        if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+        if debug_level > 0:
+            print(connection_method + ' : HTTPError %s.' % e.code)
         connection_method = 'geturl()'
         try:
             resp = urllib2.urlopen(url)
             req = urllib2.Request(resp.geturl())
             res = urllib2.urlopen(req)
             html_source = res.read()
-            if debug_level > 0: print(str(len(html_source)))
-            if html_source != str(''): return str(html_source)
+            if debug_level > 0:
+                print(str(len(html_source)))
+            if html_source != str(''):
+                return str(html_source)
         except UnicodeEncodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeEncodeError')
         except UnicodeDecodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeDecodeError')
         except UnicodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeError')
         except httplib.BadStatusLine:
-            if debug_level > 0: print(connection_method + ' : BadStatusLine')
+            if debug_level > 0:
+                print(connection_method + ' : BadStatusLine')
         except httplib.InvalidURL:
-            if debug_level > 0: print(connection_method + ' : InvalidURL')
+            if debug_level > 0:
+                print(connection_method + ' : InvalidURL')
         except httplib.HTTPException:
-            if debug_level > 0: print(connection_method + ' : HTTPException')
+            if debug_level > 0:
+                print(connection_method + ' : HTTPException')
         except urllib2.HTTPError as e:
-            if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+            if debug_level > 0:
+                print(connection_method + ' : HTTPError %s.' % e.code)
         except IOError as e:
-            if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
+            if debug_level > 0:
+                print(connection_method +
+                      ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
         except urllib2.URLError:
-            if debug_level > 0: print(connection_method + ' : URLError')
+            if debug_level > 0:
+                print(connection_method + ' : URLError')
         except MemoryError:
-            if debug_level > 0: print(connection_method + ' : MemoryError')
+            if debug_level > 0:
+                print(connection_method + ' : MemoryError')
         except requests.exceptions.HTTPError:
-            if debug_level > 0: print(connection_method + ' : HTTPError')
+            if debug_level > 0:
+                print(connection_method + ' : HTTPError')
         except requests.exceptions.SSLError:
-            if debug_level > 0: print(connection_method + ' : SSLError')
+            if debug_level > 0:
+                print(connection_method + ' : SSLError')
         except ssl.CertificateError:
-            if debug_level > 0: print(connection_method + ' : CertificateError')
+            if debug_level > 0:
+                print(connection_method + ' : CertificateError')
     except IOError as e:
-        if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
+        if debug_level > 0:
+            print(connection_method +
+                  ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
     except urllib2.URLError:
-        if debug_level > 0: print(connection_method + ' : URLError')
+        if debug_level > 0:
+            print(connection_method + ' : URLError')
     except MemoryError:
-        if debug_level > 0: print(connection_method + ' : MemoryError')
+        if debug_level > 0:
+            print(connection_method + ' : MemoryError')
     except requests.exceptions.HTTPError:
-        if debug_level > 0: print(connection_method + ' : HTTPError')
+        if debug_level > 0:
+            print(connection_method + ' : HTTPError')
     except requests.exceptions.SSLError:
-        if debug_level > 0: print(connection_method + ' : SSLError')
+        if debug_level > 0:
+            print(connection_method + ' : SSLError')
     except ssl.CertificateError:
-        if debug_level > 0: print(connection_method + ' : CertificateError')
+        if debug_level > 0:
+            print(connection_method + ' : CertificateError')
 
     connection_method = 'Request Mozilla/5.0'
     agent = 'Mozilla/5.0 (compatible; MSIE 5.5; Windows NT)'
     try:
         headers = {'User-Agent': agent}
         req = urllib2.Request(url, "", headers)
-        req.add_header('Accept','text/html')
+        req.add_header('Accept', 'text/html')
         res = urllib2.urlopen(req)
         html_source = res.read()
         if debug_level > 0:
-            print(connection_method + ' : ' + agent + ' : ' + str(len(html_source)))
+            print(connection_method + ' : ' + agent +
+                  ' : ' + str(len(html_source)))
         if html_source != str(''):
             return str(html_source)
     except UnicodeEncodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeEncodeError')
     except UnicodeDecodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeDecodeError')
     except UnicodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeError')
     except httplib.BadStatusLine:
-        if debug_level > 0: print(connection_method + ' : BadStatusLine')
+        if debug_level > 0:
+            print(connection_method + ' : BadStatusLine')
     except httplib.HTTPException:
-        if debug_level > 0: print(connection_method + ' : HTTPException')
+        if debug_level > 0:
+            print(connection_method + ' : HTTPException')
     except httplib.IncompleteRead:
-        if debug_level > 0: print(connection_method + ' : IncompleteRead')
+        if debug_level > 0:
+            print(connection_method + ' : IncompleteRead')
     except httplib.InvalidURL:
-        if debug_level > 0: print(connection_method + ' : InvalidURL')
+        if debug_level > 0:
+            print(connection_method + ' : InvalidURL')
     except urllib2.HTTPError as e:
-        if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
-        if e.code == "404": return "404 error"
+        if debug_level > 0:
+            print(connection_method + ' : HTTPError %s.' % e.code)
+        if e.code == "404":
+            return "404 error"
         if socket.gethostname() == 'PavilionDV6':
-            connection_method = 'follow_all_redirects'    # fonctionne avec http://losangeles.broadwayworld.com/article/El_Capitan_Theatre_Presents_Disneys_Mars_Needs_Moms_311421_20110304
+            # fonctionne avec http://losangeles.broadwayworld.com/article/El_Capitan_Theatre_Presents_Disneys_Mars_Needs_Moms_311421_20110304
+            connection_method = 'follow_all_redirects'
             try:
                 r = requests.get(url)
                 req = urllib2.Request(r.url)
                 res = urllib2.urlopen(req)
                 html_source = res.read()
-                if debug_level > 0: print(str(len(html_source)))
-                if html_source != str(''): return str(html_source)
+                if debug_level > 0:
+                    print(str(len(html_source)))
+                if html_source != str(''):
+                    return str(html_source)
             except UnicodeEncodeError:
-                if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+                if debug_level > 0:
+                    print(connection_method + ' : UnicodeEncodeError')
             except UnicodeDecodeError:
-                if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
+                if debug_level > 0:
+                    print(connection_method + ' : UnicodeDecodeError')
             except UnicodeError:
-                if debug_level > 0: print(connection_method + ' : UnicodeError')
+                if debug_level > 0:
+                    print(connection_method + ' : UnicodeError')
                 connection_method = "Méthode url.encode('utf8')"
                 try:
                     sock = urllib.urlopen(url.encode('utf8'))
                     html_source = sock.read()
                     sock.close()
-                    if debug_level > 0: print(str(len(html_source)))
-                    if html_source != str(''): return str(html_source)
+                    if debug_level > 0:
+                        print(str(len(html_source)))
+                    if html_source != str(''):
+                        return str(html_source)
                 except UnicodeError:
-                    if debug_level > 0: print(connection_method + ' : UnicodeError')
+                    if debug_level > 0:
+                        print(connection_method + ' : UnicodeError')
                 except UnicodeEncodeError:
-                    if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+                    if debug_level > 0:
+                        print(connection_method + ' : UnicodeEncodeError')
                 except UnicodeDecodeError:
-                    if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
+                    if debug_level > 0:
+                        print(connection_method + ' : UnicodeDecodeError')
                 except httplib.BadStatusLine:
-                    if debug_level > 0: print(connection_method + ' : BadStatusLine')
+                    if debug_level > 0:
+                        print(connection_method + ' : BadStatusLine')
                 except httplib.InvalidURL:
-                    if debug_level > 0: print(connection_method + ' : InvalidURL')
+                    if debug_level > 0:
+                        print(connection_method + ' : InvalidURL')
                 except httplib.HTTPException:
-                    if debug_level > 0: print(connection_method + ' : HTTPException')
+                    if debug_level > 0:
+                        print(connection_method + ' : HTTPException')
                 except urllib2.HTTPError as e:
-                    if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+                    if debug_level > 0:
+                        print(connection_method + ' : HTTPError %s.' % e.code)
                 except IOError as e:
-                    if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
+                    if debug_level > 0:
+                        print(connection_method +
+                              ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
                 except urllib2.URLError:
-                    if debug_level > 0: print(connection_method + ' : URLError')
+                    if debug_level > 0:
+                        print(connection_method + ' : URLError')
                 except MemoryError:
-                    if debug_level > 0: print(connection_method + ' : MemoryError')
+                    if debug_level > 0:
+                        print(connection_method + ' : MemoryError')
                 except requests.exceptions.HTTPError:
-                    if debug_level > 0: print(connection_method + ' : HTTPError')
+                    if debug_level > 0:
+                        print(connection_method + ' : HTTPError')
                 except requests.exceptions.SSLError:
-                    if debug_level > 0: print(connection_method + ' : SSLError')
+                    if debug_level > 0:
+                        print(connection_method + ' : SSLError')
                 except ssl.CertificateError:
-                    if debug_level > 0: print(connection_method + ' : CertificateError')
+                    if debug_level > 0:
+                        print(connection_method + ' : CertificateError')
             except httplib.BadStatusLine:
-                if debug_level > 0: print(connection_method + ' : BadStatusLine')
+                if debug_level > 0:
+                    print(connection_method + ' : BadStatusLine')
             except httplib.InvalidURL:
-                if debug_level > 0: print(connection_method + ' : InvalidURL')
+                if debug_level > 0:
+                    print(connection_method + ' : InvalidURL')
             except httplib.HTTPException:
-                if debug_level > 0: print(connection_method + ' : HTTPException')
+                if debug_level > 0:
+                    print(connection_method + ' : HTTPException')
             except urllib2.HTTPError as e:
-                if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+                if debug_level > 0:
+                    print(connection_method + ' : HTTPError %s.' % e.code)
             except urllib2.URLError:
-                if debug_level > 0: print(connection_method + ' : URLError')
+                if debug_level > 0:
+                    print(connection_method + ' : URLError')
             except requests.exceptions.TooManyRedirects:
-                if debug_level > 0: print(connection_method + ' : TooManyRedirects')
+                if debug_level > 0:
+                    print(connection_method + ' : TooManyRedirects')
             except IOError as e:
-                if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
+                if debug_level > 0:
+                    print(connection_method +
+                          ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
             except requests.exceptions.SSLError:
-                if debug_level > 0: print(connection_method + ' : SSLError')
+                if debug_level > 0:
+                    print(connection_method + ' : SSLError')
             except requests.exceptions.ConnectionError:
-                if debug_level > 0: print(connection_method + ' ConnectionError')
+                if debug_level > 0:
+                    print(connection_method + ' ConnectionError')
             except requests.exceptions.InvalidSchema:
-                if debug_level > 0: print(connection_method + ' InvalidSchema')
+                if debug_level > 0:
+                    print(connection_method + ' InvalidSchema')
             except MemoryError:
-                if debug_level > 0: print(connection_method + ' : MemoryError')
+                if debug_level > 0:
+                    print(connection_method + ' : MemoryError')
             except requests.exceptions.HTTPError:
-                if debug_level > 0: print(connection_method + ' : HTTPError')
+                if debug_level > 0:
+                    print(connection_method + ' : HTTPError')
             except ssl.CertificateError:
-                if debug_level > 0: print(connection_method + ' : CertificateError')
+                if debug_level > 0:
+                    print(connection_method + ' : CertificateError')
     except IOError as e:
-        if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
+        if debug_level > 0:
+            print(connection_method +
+                  ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
     except urllib2.URLError:
-        if debug_level > 0: print(connection_method + ' : URLError')
+        if debug_level > 0:
+            print(connection_method + ' : URLError')
     except MemoryError:
-        if debug_level > 0: print(connection_method + ' : MemoryError')
+        if debug_level > 0:
+            print(connection_method + ' : MemoryError')
     except requests.exceptions.HTTPError:
-        if debug_level > 0: print(connection_method + ' : HTTPError')
+        if debug_level > 0:
+            print(connection_method + ' : HTTPError')
     except requests.exceptions.SSLError:
-        if debug_level > 0: print(connection_method + ' : SSLError')
+        if debug_level > 0:
+            print(connection_method + ' : SSLError')
     except ssl.CertificateError:
-        if debug_level > 0: print(connection_method + ' : CertificateError')
+        if debug_level > 0:
+            print(connection_method + ' : CertificateError')
 
     connection_method = 'Request &_r=4&'
     agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
@@ -981,24 +1183,34 @@ def check_url(url, debug_level=0, opener=None):
         req.add_header('Accept', 'text/html')
         res = urllib2.urlopen(req)
         html_source = res.read()
-        if debug_level > 0: print(str(len(html_source)))
-        if html_source != str(''): return str(html_source)
+        if debug_level > 0:
+            print(str(len(html_source)))
+        if html_source != str(''):
+            return str(html_source)
     except UnicodeEncodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeEncodeError')
     except UnicodeDecodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeDecodeError')
     except UnicodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeError')
     except httplib.BadStatusLine:
-        if debug_level > 0: print(connection_method + ' : BadStatusLine')
+        if debug_level > 0:
+            print(connection_method + ' : BadStatusLine')
     except httplib.InvalidURL:
-        if debug_level > 0: print(connection_method + ' : InvalidURL')
+        if debug_level > 0:
+            print(connection_method + ' : InvalidURL')
     except httplib.IncompleteRead:
-        if debug_level > 0: print(connection_method + ' : IncompleteRead')
+        if debug_level > 0:
+            print(connection_method + ' : IncompleteRead')
     except httplib.HTTPException:
-        if debug_level > 0: print(connection_method + ' : HTTPException')
+        if debug_level > 0:
+            print(connection_method + ' : HTTPException')
     except urllib2.HTTPError as e:
-        if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+        if debug_level > 0:
+            print(connection_method + ' : HTTPError %s.' % e.code)
         connection_method = 'HTTPRedirectHandler'
         try:
             opener = urllib2.build_opener(urllib2.HTTPRedirectHandler)
@@ -1006,151 +1218,225 @@ def check_url(url, debug_level=0, opener=None):
             req = urllib2.Request(request.url)
             res = urllib2.urlopen(req)
             html_source = res.read()
-            if debug_level > 0: print(str(len(html_source)))
-            if html_source != str(''): return str(html_source)
+            if debug_level > 0:
+                print(str(len(html_source)))
+            if html_source != str(''):
+                return str(html_source)
         except UnicodeEncodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeEncodeError')
         except UnicodeDecodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeDecodeError')
         except UnicodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeError')
         except httplib.BadStatusLine:
-            if debug_level > 0: print(connection_method + ' : BadStatusLine')
+            if debug_level > 0:
+                print(connection_method + ' : BadStatusLine')
         except httplib.InvalidURL:
-            if debug_level > 0: print(connection_method + ' : InvalidURL')
+            if debug_level > 0:
+                print(connection_method + ' : InvalidURL')
         except httplib.HTTPException:
-            if debug_level > 0: print(connection_method + ' : HTTPException')
+            if debug_level > 0:
+                print(connection_method + ' : HTTPException')
         except urllib2.HTTPError as e:
-            if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+            if debug_level > 0:
+                print(connection_method + ' : HTTPError %s.' % e.code)
         except IOError as e:
-            if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
+            if debug_level > 0:
+                print(connection_method +
+                      ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
         except urllib2.URLError:
-            if debug_level > 0: print(connection_method + ' : URLError')
+            if debug_level > 0:
+                print(connection_method + ' : URLError')
         except MemoryError:
-            if debug_level > 0: print(connection_method + ' : MemoryError')
+            if debug_level > 0:
+                print(connection_method + ' : MemoryError')
         except requests.exceptions.HTTPError:
-            if debug_level > 0: print(connection_method + ' : HTTPError')
+            if debug_level > 0:
+                print(connection_method + ' : HTTPError')
         except requests.exceptions.SSLError:
-            if debug_level > 0: print(connection_method + ' : SSLError')
+            if debug_level > 0:
+                print(connection_method + ' : SSLError')
         except ssl.CertificateError:
-            if debug_level > 0: print(connection_method + ' : CertificateError')     
+            if debug_level > 0:
+                print(connection_method + ' : CertificateError')
     except IOError as e:
-        if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
+        if debug_level > 0:
+            print(connection_method +
+                  ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
     except urllib2.URLError:
-        if debug_level > 0: print(connection_method + ' : URLError')
+        if debug_level > 0:
+            print(connection_method + ' : URLError')
     except MemoryError:
-        if debug_level > 0: print(connection_method + ' : MemoryError')
+        if debug_level > 0:
+            print(connection_method + ' : MemoryError')
     except requests.exceptions.HTTPError:
-        if debug_level > 0: print(connection_method + ' : HTTPError')
+        if debug_level > 0:
+            print(connection_method + ' : HTTPError')
     except requests.exceptions.SSLError:
-        if debug_level > 0: print(connection_method + ' : SSLError')
+        if debug_level > 0:
+            print(connection_method + ' : SSLError')
     except ssl.CertificateError:
-        if debug_level > 0: print(connection_method + ' : CertificateError')
+        if debug_level > 0:
+            print(connection_method + ' : CertificateError')
 
-    connection_method = 'urlopen'    # fonctionne avec http://voxofilm.free.fr/vox_0/500_jours_ensemble.htm, et http://www.kurosawa-drawings.com/page/27
+    # fonctionne avec http://voxofilm.free.fr/vox_0/500_jours_ensemble.htm, et http://www.kurosawa-drawings.com/page/27
+    connection_method = 'urlopen'
     try:
         res = urllib2.urlopen(url)
         html_source = res.read()
-        if debug_level > 0: print(str(len(html_source)))
-        if html_source != str(''): return str(html_source)
+        if debug_level > 0:
+            print(str(len(html_source)))
+        if html_source != str(''):
+            return str(html_source)
     except UnicodeEncodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeEncodeError')
     except UnicodeDecodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeDecodeError')
     except UnicodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeError')
     except httplib.BadStatusLine:
-        if debug_level > 0: print(connection_method + ' : BadStatusLine')
+        if debug_level > 0:
+            print(connection_method + ' : BadStatusLine')
     except httplib.InvalidURL:
-        if debug_level > 0: print(connection_method + ' : InvalidURL')
+        if debug_level > 0:
+            print(connection_method + ' : InvalidURL')
     except httplib.IncompleteRead:
-        if debug_level > 0: print(connection_method + ' : IncompleteRead')
+        if debug_level > 0:
+            print(connection_method + ' : IncompleteRead')
     except httplib.HTTPException:
-        if debug_level > 0: print(connection_method + ' : HTTPException')
+        if debug_level > 0:
+            print(connection_method + ' : HTTPException')
     except urllib2.HTTPError as e:
-        if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
-        if e.code == 401: return "ok"    # http://www.nature.com/nature/journal/v442/n7104/full/nature04945.html
+        if debug_level > 0:
+            print(connection_method + ' : HTTPError %s.' % e.code)
+        if e.code == 401:
+            return "ok"    # http://www.nature.com/nature/journal/v442/n7104/full/nature04945.html
     except IOError as e:
-        if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
+        if debug_level > 0:
+            print(connection_method +
+                  ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
     except urllib2.URLError:
-        if debug_level > 0: print(connection_method + ' : URLError')
+        if debug_level > 0:
+            print(connection_method + ' : URLError')
     except MemoryError:
-        if debug_level > 0: print(connection_method + ' : MemoryError')
+        if debug_level > 0:
+            print(connection_method + ' : MemoryError')
     except requests.exceptions.HTTPError:
-        if debug_level > 0: print(connection_method + ' : HTTPError')
+        if debug_level > 0:
+            print(connection_method + ' : HTTPError')
     except requests.exceptions.SSLError:
-        if debug_level > 0: print(connection_method + ' : SSLError')
+        if debug_level > 0:
+            print(connection_method + ' : SSLError')
     except ssl.CertificateError:
-        if debug_level > 0: print(connection_method + ' : CertificateError')
+        if debug_level > 0:
+            print(connection_method + ' : CertificateError')
 
     connection_method = 'urllib.urlopen'
     try:
         sock = urllib.urlopen(url)
         html_source = sock.read()
         sock.close()
-        if debug_level > 0: print(str(len(html_source)))
-        if html_source != str(''): return str(html_source)
+        if debug_level > 0:
+            print(str(len(html_source)))
+        if html_source != str(''):
+            return str(html_source)
     except httplib.BadStatusLine:
-        if debug_level > 0: print(connection_method + ' : BadStatusLine')
+        if debug_level > 0:
+            print(connection_method + ' : BadStatusLine')
     except httplib.InvalidURL:
-        if debug_level > 0: print(connection_method + ' : InvalidURL')
+        if debug_level > 0:
+            print(connection_method + ' : InvalidURL')
     except httplib.IncompleteRead:
-        if debug_level > 0: print(connection_method + ' : IncompleteRead')
+        if debug_level > 0:
+            print(connection_method + ' : IncompleteRead')
     except httplib.HTTPException:
-        if debug_level > 0: print(connection_method + ' : HTTPException')
+        if debug_level > 0:
+            print(connection_method + ' : HTTPException')
     except IOError as e:
-        if debug_level > 0: print(connection_method + ' : I/O error')
+        if debug_level > 0:
+            print(connection_method + ' : I/O error')
     except urllib2.URLError as e:
-        if debug_level > 0: print(connection_method + ' : URLError %s.' % e.code)
+        if debug_level > 0:
+            print(connection_method + ' : URLError %s.' % e.code)
     except urllib2.HTTPError as e:
-        if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+        if debug_level > 0:
+            print(connection_method + ' : HTTPError %s.' % e.code)
     except UnicodeEncodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeEncodeError')
     except UnicodeDecodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeDecodeError')
     except MemoryError:
-        if debug_level > 0: print(connection_method + ' : MemoryError')
+        if debug_level > 0:
+            print(connection_method + ' : MemoryError')
     except requests.exceptions.HTTPError:
-        if debug_level > 0: print(connection_method + ' : HTTPError')
+        if debug_level > 0:
+            print(connection_method + ' : HTTPError')
     except requests.exceptions.SSLError:
-        if debug_level > 0: print(connection_method + ' : SSLError')
+        if debug_level > 0:
+            print(connection_method + ' : SSLError')
     except ssl.CertificateError:
-        if debug_level > 0: print(connection_method + ' : CertificateError')
+        if debug_level > 0:
+            print(connection_method + ' : CertificateError')
     except UnicodeError:
-        if debug_level > 0: print(connection_method + ' : UnicodeError')
+        if debug_level > 0:
+            print(connection_method + ' : UnicodeError')
         connection_method = "Méthode url.encode('utf8')"
         try:
             sock = urllib.urlopen(url.encode('utf8'))
             html_source = sock.read()
             sock.close()
-            if debug_level > 0: print(str(len(html_source)))
-            if html_source != str(''): return str(html_source)
+            if debug_level > 0:
+                print(str(len(html_source)))
+            if html_source != str(''):
+                return str(html_source)
         except UnicodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeError')
         except UnicodeEncodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeEncodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeEncodeError')
         except UnicodeDecodeError:
-            if debug_level > 0: print(connection_method + ' : UnicodeDecodeError')
+            if debug_level > 0:
+                print(connection_method + ' : UnicodeDecodeError')
         except httplib.BadStatusLine:
-            if debug_level > 0: print(connection_method + ' : BadStatusLine')
+            if debug_level > 0:
+                print(connection_method + ' : BadStatusLine')
         except httplib.InvalidURL:
-            if debug_level > 0: print(connection_method + ' : InvalidURL')
+            if debug_level > 0:
+                print(connection_method + ' : InvalidURL')
         except httplib.HTTPException:
-            if debug_level > 0: print(connection_method + ' : HTTPException')
+            if debug_level > 0:
+                print(connection_method + ' : HTTPException')
         except urllib2.HTTPError as e:
-            if debug_level > 0: print(connection_method + ' : HTTPError %s.' % e.code)
+            if debug_level > 0:
+                print(connection_method + ' : HTTPError %s.' % e.code)
         except IOError as e:
-            if debug_level > 0: print(connection_method + ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
+            if debug_level > 0:
+                print(connection_method +
+                      ' : I/O error({0}): {1}'.format(e.errno, e.strerror))
         except urllib2.URLError:
-            if debug_level > 0: print(connection_method + ' : URLError')
+            if debug_level > 0:
+                print(connection_method + ' : URLError')
         except MemoryError:
-            if debug_level > 0: print(connection_method + ' : MemoryError')
+            if debug_level > 0:
+                print(connection_method + ' : MemoryError')
         except requests.exceptions.HTTPError:
-            if debug_level > 0: print(connection_method + ' : HTTPError')
+            if debug_level > 0:
+                print(connection_method + ' : HTTPError')
         except requests.exceptions.SSLError:
-            if debug_level > 0: print(connection_method + ' : SSLError')
+            if debug_level > 0:
+                print(connection_method + ' : SSLError')
         except ssl.CertificateError:
-            if debug_level > 0: print(connection_method + ' : CertificateError')
+            if debug_level > 0:
+                print(connection_method + ' : CertificateError')
     if debug_level > 0:
         print(connection_method + ' Fin du test d\'existance du site')
     return ''
@@ -1165,7 +1451,7 @@ def check_url_page(html_source, url, debug_level=0):
                 print(url + " none type")
             return True
         elif html_source == str('ok') or (html_source == str('') and (url.find('à') != -1 or url.find('é') != -1
-            or url.find('è') != -1 or url.find('ê') != -1 or url.find('ù') != -1)):
+                                                                      or url.find('è') != -1 or url.find('ê') != -1 or url.find('ù') != -1)):
             # bug http://fr.wikipedia.org/w/index.php?title=Acad%C3%A9mie_fran%C3%A7aise&diff=prev&oldid=92572792
             return False
         elif html_source == str('ko') or html_source == str(''):

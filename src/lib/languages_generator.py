@@ -8,14 +8,14 @@ import sys
 
 def main(*args) -> int:
     # TODO
-    # 1) get https://fr.wiktionary.org/wiki/Module:langues/data 
+    # 1) get https://fr.wiktionary.org/wiki/Module:langues/data
     # 2) Regex
-    #   r"\n *\t*l\['([^']+)'\] = \{ nom = '([^']+)'[^\n]+" 
+    #   r"\n *\t*l\['([^']+)'\] = \{ nom = '([^']+)'[^\n]+"
     #   r"\n    '$1': '$2',"
     # 4) sorting
 
     # 3) Treat commented redirections
-    file = open('src/lib/languages.py','r+b')
+    file = open('src/lib/languages.py', 'r+b')
     file_list = file.read()
 
     regex = r"\n *\t*l\['([^']+)'\] = l\['([^']+)'\]"
@@ -24,7 +24,8 @@ def main(*args) -> int:
 
     redirect_names = ''
     for redirect in redirects:
-        redirect_names += "\n    '" + redirect[0] + "': '" + languages.languages[redirect[1]] + "',"
+        redirect_names += "\n    '" + \
+            redirect[0] + "': '" + languages.languages[redirect[1]] + "',"
     file.write(redirect_names)
     file.close
     return 0

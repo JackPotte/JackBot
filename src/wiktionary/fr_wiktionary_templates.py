@@ -784,15 +784,16 @@ templates.append('cf')
 # TODO ['calque', 'étcompcat', 'étyl', 'étylp', 'ellipse']
 templates.append('recons')  # language code at second
 etymology_date_templates = ['date', 'siècle']
-etymology_templates_with_language_at_lang = etymology_date_templates + ['composé de']
+etymology_templates_with_language_at_lang = etymology_date_templates + \
+    ['composé de']
 templates += etymology_templates_with_language_at_lang
 
 fr_etymology_templates = ['louchébem', 'reverlanisation', 'verlan']
 etymology_templates_with_language_at_first = ['abréviation', 'acronyme', 'agglutination', 'antonomase', 'aphérèse',
-    'apocope', 'augmentatif', 'contraction', 'déglutination', 'dénominal', 'déverbal', 'déverbal sans suffixe',
-    'diminutif', 'mot-valise', 'parataxe', 'syncope', 'univerbation', 'sigle']
+                                              'apocope', 'augmentatif', 'contraction', 'déglutination', 'dénominal', 'déverbal', 'déverbal sans suffixe',
+                                              'diminutif', 'mot-valise', 'parataxe', 'syncope', 'univerbation', 'sigle']
 etymology_templates = etymology_date_templates + etymology_templates_with_language_at_lang + fr_etymology_templates \
-                      + etymology_templates_with_language_at_first
+    + etymology_templates_with_language_at_first
 
 limit5 = len(templates)
 templates.append('comparatif')
@@ -2087,20 +2088,20 @@ genders.append('nsing')
 
 # https://fr.wiktionary.org/wiki/Module:types_de_mots/data
 natures = ['adjectif', 'adverbe', 'article', 'conjonction', 'copule', 'déterminant', 'nom', 'patronyme',
-    'prénom', 'préposition', 'pronom', 'verbe', 'interjection', 'onomatopée', 'affixe', 'circonfixe', 'infixe',
-    'interfixe', 'particule', 'postposition', 'préfixe', 'radical', 'suffixe', 'pré-verbe', 'pré-nom',
-    'enclitique', 'proclitique', 'locution', 'proverbe', 'quantificateur', 'lettre', 'symbole', 'classificateur',
-    'numéral', 'sinogramme', 'erreur', 'gismu', 'rafsi', 'nom propre']
+           'prénom', 'préposition', 'pronom', 'verbe', 'interjection', 'onomatopée', 'affixe', 'circonfixe', 'infixe',
+           'interfixe', 'particule', 'postposition', 'préfixe', 'radical', 'suffixe', 'pré-verbe', 'pré-nom',
+           'enclitique', 'proclitique', 'locution', 'proverbe', 'quantificateur', 'lettre', 'symbole', 'classificateur',
+           'numéral', 'sinogramme', 'erreur', 'gismu', 'rafsi', 'nom propre']
 
 # https://fr.wiktionary.org/wiki/Catégorie:Modèles_de_définitions
 definition_templates = ['abréviation de', 'comparatif de', 'exclamatif de', 'mutation de', 'superlatif de',
-    'variante de', 'variante ortho de', 'variante orthographique de']
+                        'variante de', 'variante ortho de', 'variante orthographique de']
 templates = templates + definition_templates
 
 definition_sentences = ['abréviation de', 'ancienne orthographe de', 'autre nom de', 'autre orthographe',
-    'comparatif de', 'exclamatif de', 'féminin de', 'graphie erronée', 'mauvaise orthographe de', 'mutation de',
-    'nom scientifique de', 'pluriel de', 'superlatif de', 'synonyme de', 'variante', 'variante ortho de',
-    'variante orthographique de']
+                        'comparatif de', 'exclamatif de', 'féminin de', 'graphie erronée', 'mauvaise orthographe de', 'mutation de',
+                        'nom scientifique de', 'pluriel de', 'superlatif de', 'synonyme de', 'variante', 'variante ortho de',
+                        'variante orthographique de']
 
 # https://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Mod%C3%A8les_d%E2%80%99accord_en_fran%C3%A7ais
 inflexion_templates_fr_with_ms = []

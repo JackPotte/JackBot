@@ -92,7 +92,8 @@ def treat_page(page):
 
         s = re.search(r'\(([^)]+)\)', file_desc)
         if s:
-            language_code = get_language_code_ISO693_1_from_ISO693_3(s.group(1))
+            language_code = get_language_code_ISO693_1_from_ISO693_3(
+                s.group(1))
         else:
             if debug_level > 0:
                 print(' No parenthesis found')
@@ -101,7 +102,8 @@ def treat_page(page):
                 if debug_level > 0:
                     print(' No language code found')
                 return
-            language_code = get_language_code_ISO693_1_from_ISO693_3(s.group(1))
+            language_code = get_language_code_ISO693_1_from_ISO693_3(
+                s.group(1))
 
     else:
         language_code = language_code.lower()
@@ -113,7 +115,8 @@ def treat_page(page):
         word = word.replace('\'', '’')
 
     if debug_level > 0:
-        pywikibot.output("  \03<<green>>Language code: " + language_code + u"\03<<default>>")
+        pywikibot.output("  \03<<green>>Language code: " +
+                         language_code + u"\03<<default>>")
         pywikibot.output("  \03<<green>>Word: " + word + u"\03<<default>>")
 
     region = ''
@@ -132,7 +135,8 @@ def treat_page(page):
     except pywikibot.exceptions.NoPageError as e:
         if debug_level > 0:
             print(str(e))
-        word_without_article, region = remove_article_and_region_from_word(word, language_code)
+        word_without_article, region = remove_article_and_region_from_word(
+            word, language_code)
         if word == word_without_article:
             if debug_level > 0:
                 word_without_suffix = remove_numeric_suffix_from_word(word)
@@ -201,7 +205,8 @@ def treat_page(page):
         # Fix
         regex = r'{{S\|prononciation}} ===\*'
         if re.search(regex, final_page_content):
-            final_page_content = re.sub(regex, r'{{S|prononciation}} ===\n*', final_page_content)
+            final_page_content = re.sub(
+                regex, r'{{S|prononciation}} ===\n*', final_page_content)
         regex = r'\n\n+(\* {{écouter\|)'
         if re.search(regex, final_page_content):
             final_page_content = re.sub(regex, r'\n\1', final_page_content)
@@ -290,16 +295,17 @@ def is_file_in_page(current_page_content, file_name):
         file_name_capitalized_with_underscore_at_end = False
     else:
         suffix = file_name[file_name.rfind('-'):]
-        file_name_with_underscore_at_end = file_name[:file_name.rfind('-')] + suffix.replace(' ', '_')
+        file_name_with_underscore_at_end = file_name[:file_name.rfind(
+            '-')] + suffix.replace(' ', '_')
         file_name_capitalized_with_underscore_at_end = file_name_capitalized[:file_name.rfind('-')] \
-                                                       + suffix.replace(' ', '_')
+            + suffix.replace(' ', '_')
 
     return file_name in current_page_content \
-           or file_name_capitalized in current_page_content \
-           or file_name.replace(' ', '_') in current_page_content \
-           or file_name_capitalized.replace(' ', '_') in current_page_content \
-           or file_name_with_underscore_at_end in current_page_content \
-           or file_name_capitalized_with_underscore_at_end in current_page_content
+        or file_name_capitalized in current_page_content \
+        or file_name.replace(' ', '_') in current_page_content \
+        or file_name_capitalized.replace(' ', '_') in current_page_content \
+        or file_name_with_underscore_at_end in current_page_content \
+        or file_name_capitalized_with_underscore_at_end in current_page_content
 
 
 p = PageProvider(treat_page_by_name, commons_site, debug_level)
@@ -322,7 +328,8 @@ def main(*args) -> int:
                 sound = 'File:LL-Q150 (fra)-Pamputt-suivant.wav'
             treat_page_by_name(sound)
         elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
-            p.pages_by_file('lists/articles_' + site_language + '_' + site_family + '.txt')
+            p.pages_by_file('lists/articles_' + site_language +
+                            '_' + site_family + '.txt')
         elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
             regex = r''
             if len(sys.argv) > 2:
@@ -341,13 +348,15 @@ def main(*args) -> int:
             after_page = 'File:Nl-atoomafval.ogg'
             if len(sys.argv) > 2:
                 after_page = sys.argv[2]
-            p.pages_by_cat('Category:Dutch pronunciation', after_page=after_page, recursive=True, namespaces=[6])
-            p.pages_by_cat('U.S. English pronunciation', after_page=after_page, recursive=True, namespaces=[6])
+            p.pages_by_cat('Category:Dutch pronunciation',
+                           after_page=after_page, recursive=True, namespaces=[6])
+            p.pages_by_cat('U.S. English pronunciation',
+                           after_page=after_page, recursive=True, namespaces=[6])
             # Too long? p.pagesByCat('Lingua Libre pronunciation-fr', after_page=after_page, recursive=True, namespaces=[6])
         elif sys.argv[1] == '-redirects':
             p.pages_by_redirects()
         elif sys.argv[1] == '-all':
-           p.pages_by_all()
+            p.pages_by_all()
         elif sys.argv[1] == '-RC':
             while 1:
                 p.pages_by_rc_last_day()
@@ -358,7 +367,8 @@ def main(*args) -> int:
         else:
             treat_page_by_name(sys.argv[1])
     else:
-        p.pages_by_cat('Category:Pronunciation', recursive=True, not_names=['spoken ', 'Wikipedia', 'Wikinews'])
+        p.pages_by_cat('Category:Pronunciation', recursive=True,
+                       not_names=['spoken ', 'Wikipedia', 'Wikinews'])
     return 0
 
 

@@ -8,7 +8,7 @@ cf http://www.tradino.org/
 from __future__ import absolute_import, unicode_literals
 import re
 import pywikibot
-#from pywikibot import *
+# from pywikibot import *
 from page_functions import *
 
 do_check_url = False
@@ -118,7 +118,8 @@ old_param.append('title')
 new_param.append('titre')
 old_param.append('publisher')
 new_param.append('éditeur')
-old_param.append('work')  # TODO write here those parameters, translated differently between {{lien web}} & {{article}}
+# TODO write here those parameters, translated differently between {{lien web}} & {{article}}
+old_param.append('work')
 new_param.append('périodique')
 old_param.append('newspaper')
 new_param.append('journal')
@@ -187,7 +188,8 @@ new_param.append('traducteur')
 old_param.append('at')
 new_param.append('passage')
 old_param.append('origyear')
-new_param.append('année première édition')  # TODO "année première impression" on sister projects
+# TODO "année première impression" on sister projects
+new_param.append('année première édition')
 old_param.append('année première impression')
 new_param.append('année première édition')
 old_param.append('location')
@@ -329,7 +331,8 @@ new_param.append('journal')
 old_param.append('series')
 new_param.append('collection')
 old_param.append('agency')
-new_param.append('auteur institutionnel')  # TODO write here the alternatives when absent ("périodique")
+# TODO write here the alternatives when absent ("périodique")
+new_param.append('auteur institutionnel')
 old_param.append('magazine')
 new_param.append('périodique')
 
@@ -423,7 +426,8 @@ months_translations[12][2] = 'décembre'
 
 languages_line = 17
 languages_column = 2
-languages_translations = [[0] * (languages_column + 1) for _ in range(languages_line + 1)]
+languages_translations = [[0] * (languages_column + 1)
+                          for _ in range(languages_line + 1)]
 languages_translations[1][1] = 'French'
 languages_translations[1][2] = 'fr'
 languages_translations[2][1] = 'English'
@@ -461,7 +465,8 @@ languages_translations[17][2] = 'ar'
 
 access_line = 4
 access_column = 2
-access_translations = [[0] * (access_column + 1) for _ in range(access_line + 1)]
+access_translations = [[0] * (access_column + 1)
+                       for _ in range(access_line + 1)]
 access_translations[1][1] = 'free'
 access_translations[1][2] = 'libre'
 access_translations[2][1] = 'registration'
@@ -489,25 +494,34 @@ def translate_templates(current_page, summary):
     current_page = current_page.replace('<ref>{{en}}} ', '<ref>{{en}} ')
     current_page = current_page.replace('<ref>{{{en}} ', '<ref>{{en}} ')
     current_page = current_page.replace('<ref>{{{en}}} ', '<ref>{{en}} ')
-    current_page = re.sub(r'[C|c]ita(tion)? *\n* *(\|[^}{]*title *=)', r'ouvrage\2', current_page)
+    current_page = re.sub(
+        r'[C|c]ita(tion)? *\n* *(\|[^}{]*title *=)', r'ouvrage\2', current_page)
     current_page = translate_link_templates(current_page)
     current_page = translate_dates(current_page)
     current_page = translate_languages(current_page)
     current_page = translate_access(current_page)
 
     # Paramètres inutiles
-    current_page = re.sub(r'{{ *Références *\| *colonnes *= *}}', r'{{Références}}', current_page)
+    current_page = re.sub(
+        r'{{ *Références *\| *colonnes *= *}}', r'{{Références}}', current_page)
     # Dans {{article}}, "éditeur" vide bloque "périodique", "journal" ou "revue"
-    current_page = re.sub(r'{{ *(a|A)rticle *((?:\||\n)[^{}]*)\| *éditeur *= *([\||}|\n]+)', r'{{\1rticle\2\3', current_page)
+    current_page = re.sub(
+        r'{{ *(a|A)rticle *((?:\||\n)[^{}]*)\| *éditeur *= *([\||}|\n]+)', r'{{\1rticle\2\3', current_page)
     # https://fr.wikipedia.org/w/index.php?title=Discussion_utilisateur:JackPotte&oldid=prev&diff=165491794#Suggestion_pour_JackBot_:_Signalement_param%C3%A8tre_obligatoire_manquant_+_Lien_web_vs_Article
-    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^{}]*)\| *(?:ref|référence|référence simplifiée) *= *harv *([\|}\n]+)', r'{{\1uvrage\2\3', current_page)
+    current_page = re.sub(
+        r'{{ *(o|O)uvrage *((?:\||\n)[^{}]*)\| *(?:ref|référence|référence simplifiée) *= *harv *([\|}\n]+)', r'{{\1uvrage\2\3', current_page)
     # https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Bot/Requ%C3%AAtes/2020/01#Remplacement_automatique_d%27un_message_d%27erreur_du_mod%C3%A8le_%7B%7BOuvrage%7D%7D
-    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^{}]*)\| *display\-authors *= *etal *([\|}\n]+)', r'{{\1uvrage\2|et al.=oui\3', current_page)
-    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^{}]*)\| *display\-authors *= *[0-9]* *([\|}\n]+)', r'{{\1uvrage\2\3', current_page)
-    current_page = re.sub(r'{{ *(o|O)uvrage *((?:\||\n)[^{}]*)\| *df *= *(?:mdy\-all|dmy\-all)* *([\|}\n]+)', r'{{\1uvrage\2\3', current_page)
+    current_page = re.sub(
+        r'{{ *(o|O)uvrage *((?:\||\n)[^{}]*)\| *display\-authors *= *etal *([\|}\n]+)', r'{{\1uvrage\2|et al.=oui\3', current_page)
+    current_page = re.sub(
+        r'{{ *(o|O)uvrage *((?:\||\n)[^{}]*)\| *display\-authors *= *[0-9]* *([\|}\n]+)', r'{{\1uvrage\2\3', current_page)
+    current_page = re.sub(
+        r'{{ *(o|O)uvrage *((?:\||\n)[^{}]*)\| *df *= *(?:mdy\-all|dmy\-all)* *([\|}\n]+)', r'{{\1uvrage\2\3', current_page)
     # Empty 1=
-    current_page = re.sub(r'{{ *(a|A)rticle *((?:\|)[^{}]*)\|[ \t]*([\|}]+)', r'{{\1rticle\2\3', current_page)
-    current_page = re.sub(r'{{ *(l|L)ien web *((?:\|)[^{}]*)\|[ \t]*([\|}]+)', r'{{\1ien web\2\3', current_page)
+    current_page = re.sub(
+        r'{{ *(a|A)rticle *((?:\|)[^{}]*)\|[ \t]*([\|}]+)', r'{{\1rticle\2\3', current_page)
+    current_page = re.sub(
+        r'{{ *(l|L)ien web *((?:\|)[^{}]*)\|[ \t]*([\|}]+)', r'{{\1ien web\2\3', current_page)
     # 1= exists: current_page = re.sub(r'{{ *(o|O)uvrage *((?:\|)[^}]*)\|[ \t]*([\|}]+)', r'{{\1uvrage\2\3', current_page)
     ''' TODO : à vérifier
     while current_page.find('|deadurl=no|') != -1:
@@ -515,7 +529,8 @@ def translate_templates(current_page, summary):
     '''
 
     # TODO: avoid these fixes when: old_template.append('lien mort')
-    current_page = current_page.replace('{{lien mortarchive', '{{lien mort archive')
+    current_page = current_page.replace(
+        '{{lien mortarchive', '{{lien mort archive')
     current_page = current_page.replace('|langue=None', '')
     current_page = current_page.replace('|langue=en|langue=en', '|langue=en')
     current_page = current_page.replace('deadurl=yes', 'brisé le=oui')
@@ -536,7 +551,8 @@ def translate_template_parameters(current_template):
             print('  "' + old_param[p] + '" found')
         fr_name = new_param[p]
 
-        new_template = remove_parameter_if_empty(current_template, old_param[p])
+        new_template = remove_parameter_if_empty(
+            current_template, old_param[p])
         if new_template != current_template:
             current_template = new_template
             if debug_level > 0:
@@ -602,7 +618,8 @@ def translate_template_parameters(current_template):
 
         if is_already_present:
             # Remove double if value is the same
-            old_param_value = get_parameter_value(current_template, old_param[p])
+            old_param_value = get_parameter_value(
+                current_template, old_param[p])
             new_param_value = get_parameter_value(current_template, fr_name)
             if debug_level > 0:
                 print('  "' + old_param[p] + '" has double, value:')
@@ -616,7 +633,8 @@ def translate_template_parameters(current_template):
             # TODO keep only the last date between "access-date" and "consulté le"
         else:
             regex = r'(\| *)' + old_param[p] + r'( *=)'
-            current_template = re.sub(regex, r'\1' + fr_name + r'\2', current_template)
+            current_template = re.sub(
+                regex, r'\1' + fr_name + r'\2', current_template)
 
     current_template = current_template.replace('|=', u'|')
     current_template = current_template.replace('| =', u'|')
@@ -633,8 +651,10 @@ def translate_template_parameters(current_template):
 def translate_link_templates(current_page):
     for m in range(0, templates_limit):
         if m <= translated_templates_limit:
-            current_page = format_old_link_template(current_page, old_templates[m])
-        current_page = translate_link_template(current_page, old_templates[m], new_templates[m])
+            current_page = format_old_link_template(
+                current_page, old_templates[m])
+        current_page = translate_link_template(
+            current_page, old_templates[m], new_templates[m])
 
     return current_page
 
@@ -644,8 +664,10 @@ def format_old_link_template(current_page, old_template):
         print(' translate_old_link_template: ' + old_template)
 
     if 'cite' != old_template:
-        current_page = current_page.replace('{{' + old_template.replace(' ', '_') + ' ', '{{' + old_template + '')
-        current_page = current_page.replace('{{' + old_template + ' ', '{{' + old_template + '')
+        current_page = current_page.replace(
+            '{{' + old_template.replace(' ', '_') + ' ', '{{' + old_template + '')
+        current_page = current_page.replace(
+            '{{' + old_template + ' ', '{{' + old_template + '')
 
     current_page = re.sub((r'(Modèle:)?[' + old_template[:1] + r'|' + old_template[:1].upper() + r']' +
                            old_template[1:]).replace(' ', '_') + r' *\|', old_template + r'|', current_page)
@@ -656,12 +678,14 @@ def format_old_link_template(current_page, old_template):
 
     final_page = ''
     while re.search(r'{{[\n ]*' + old_template + r' *[|\n]+', current_page):
-        template_end = re.search(r'{{[\n ]*' + old_template + r' *[|\n]', current_page).end() - 1
+        template_end = re.search(
+            r'{{[\n ]*' + old_template + r' *[|\n]', current_page).end() - 1
         if debug_level > 1:
             print(current_page[template_end:][:100])
 
         final_page = final_page + current_page[:template_end]
-        final_page, language_code = get_template_language_from_template_page(final_page)
+        final_page, language_code = get_template_language_from_template_page(
+            final_page)
         current_page = current_page[template_end:]
 
         regex = r'[^}]*lang(ue|uage)* *=[^}]*}}'
@@ -685,17 +709,21 @@ def translate_link_template(current_page, old_template, new_template):
             + new_template[1:] + r' *}}'
     while re.search(regex, current_page):
         current_page = current_page[:re.search(regex, current_page).start()] \
-                       + current_page[re.search(regex, current_page).end():]
+            + current_page[re.search(regex, current_page).end():]
 
     # Translate parameters
     regex = r'{{ *[' + new_template[:1].lower() + new_template[:1].upper() + r']' + new_template[1:] \
             + r' *[\|\n{}]'
     final_page = ''
     while re.search(regex, current_page):
-        final_page = final_page + current_page[:re.search(regex, current_page).start() + 2]
-        current_page = current_page[re.search(regex, current_page).start() + 2:]
-        current_template, template_end_position = get_current_link_template(current_page)
-        current_page = translate_template_parameters(current_template) + current_page[template_end_position:]
+        final_page = final_page + \
+            current_page[:re.search(regex, current_page).start() + 2]
+        current_page = current_page[re.search(
+            regex, current_page).start() + 2:]
+        current_template, template_end_position = get_current_link_template(
+            current_page)
+        current_page = translate_template_parameters(
+            current_template) + current_page[template_end_position:]
         # TODO stop looping several times on the same template (template_end_position stays the same)
     current_page = final_page + current_page
 
@@ -706,14 +734,17 @@ def get_template_language_from_template_page(final_page):
     # Ex: {{de}} {{cite news|...
     language_code = ''
     if '{{' in final_page:
-        page_start_without_current_template = final_page[:final_page.rfind('{{')]
+        page_start_without_current_template = final_page[:final_page.rfind(
+            '{{')]
         regex_get_last_template = r'{{([a-z]{2})}} *$'
-        s = re.search(regex_get_last_template, page_start_without_current_template, re.IGNORECASE)
+        s = re.search(regex_get_last_template,
+                      page_start_without_current_template, re.IGNORECASE)
         if s:
-            language_code = page_start_without_current_template[s.start():s.end()]
+            language_code = page_start_without_current_template[s.start(
+            ):s.end()]
             language_code = language_code.replace('{{', '').replace('}}', '')
             final_page = re.sub(regex_get_last_template, '', page_start_without_current_template) \
-                         + final_page[final_page.rfind('{{'):]
+                + final_page[final_page.rfind('{{'):]
             # TODO language_code = get_valid_language_code(language_code)
 
     if language_code == '':
@@ -747,17 +778,21 @@ def get_valid_language_code(language_code):
 def translate_dates(current_page):
     if debug_level > 1:
         print('\ntranslate_dates()')
-    date_parameters = ['date', 'mois', 'consulté le', 'en ligne le', 'dts', 'Dts', 'date triable', 'Date triable']
+    date_parameters = ['date', 'mois', 'consulté le',
+                       'en ligne le', 'dts', 'Dts', 'date triable', 'Date triable']
     for m in range(1, month_line + 1):
         if debug_level > 1:
             print('Mois ' + str(m))
             print(months_translations[m][1])
         for p in range(1, len(date_parameters)):
             if debug_level > 1:
-                print('Recherche de ') + date_parameters[p] + ' *=[ ,0-9]*' + months_translations[m][1]
+                print('Recherche de ') + \
+                    date_parameters[p] + ' *=[ ,0-9]*' + \
+                    months_translations[m][1]
             if p > 4:
                 current_page = re.sub(
-                    r'({{ *' + date_parameters[p] + r'[^}]+)' + months_translations[m][1] + r'([^}]+}})',
+                    r'({{ *' + date_parameters[p] + r'[^}]+)' +
+                    months_translations[m][1] + r'([^}]+}})',
                     r'\1' + months_translations[m][2] + r'\2', current_page)
                 current_page = re.sub(
                     r'({{ *' + date_parameters[p] + r'[^}]+)(\|[ 0-9][ 0-9][ 0-9][ 0-9])\|' + months_translations[m][
@@ -767,16 +802,19 @@ def translate_dates(current_page):
                     1] + r'([ ,0-9]*\.? *[<|\||\n\t|}])', r'\1' + months_translations[m][2] + r'\2', current_page)
                 current_page = re.sub(
                     r'(\| *' + date_parameters[p] + r' *=[ ,0-9]*)' + months_translations[m][1][:1].lower() +
-                    months_translations[m][1][1:] + r'([ ,0-9]*\.? *[<|\||\n\t|}])',
+                    months_translations[m][1][1:] +
+                    r'([ ,0-9]*\.? *[<|\||\n\t|}])',
                     r'\1' + months_translations[m][2] + r'\2', current_page)
 
                 # Ordre des dates : jj mois aaaa
-                if debug_level > 1: print('Recherche de ') + date_parameters[p] + ' *= *' + months_translations[m][
-                    2] + ' *([0-9]+), '
+                if debug_level > 1:
+                    print('Recherche de ') + date_parameters[p] + ' *= *' + months_translations[m][
+                        2] + ' *([0-9]+), '
                 current_page = re.sub(r'(\| *' + date_parameters[p] + ' *= *)' + months_translations[m][
                     2] + r' *([0-9]+), *([0-9]+)\.? *([<|\||\n\t|}])',
-                                      r'\1' + r'\2' + r' ' + months_translations[m][2] + r' ' + r'\3' + r'\4',
-                                      current_page)  # trim('\3') ne fonctionne pas
+                    r'\1' + r'\2' + r' ' +
+                    months_translations[m][2] + r' ' + r'\3' + r'\4',
+                    current_page)  # trim('\3') ne fonctionne pas
 
     return current_page
 
@@ -834,7 +872,8 @@ def get_current_link_template(current_page):
     current_page2 = current_page
     template_end_position = 0
     while current_page2.find('{{') != -1 and current_page2.find('{{') < current_page2.find('}}'):
-        template_end_position = template_end_position + current_page.find('}}')+2
+        template_end_position = template_end_position + \
+            current_page.find('}}')+2
         current_page2 = current_page2[current_page2.find('}}')+2:]
     template_end_position = template_end_position + current_page2.find('}}')+2
     current_template = current_page[:template_end_position]

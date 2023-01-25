@@ -67,7 +67,8 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
     inactivity_duration = (now - latest_rev).days
     if wait_after_humans and inactivity_duration < waiting_time_before_archiving:
         if debug_level > 0:
-            print(' The page has been modified in the last days: ' + str(inactivity_duration))
+            print(' The page has been modified in the last days: ' +
+                  str(inactivity_duration))
         return
 
     if not page.exists():
@@ -87,7 +88,8 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
     except pywikibot.exceptions.IsRedirectPageError as e:
         print(str(e))
         page_content = page.get(get_redirect=True)
-        page2 = Page(site, page_content[page_content.find('[[')+2:page_content.find(']]')])
+        page2 = Page(site, page_content[page_content.find(
+            '[[')+2:page_content.find(']]')])
         try:
             final_page_content2 = page2.get()
         except pywikibot.exceptions.NoPageError as e:
@@ -100,7 +102,8 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
             print(str(e))
             return
         if final_page_content2.find('{{NavigBOT') == -1:
-            final_page_content2 = '{{NavigBOT|' + page2.title()[len(page2.title())-4:len(page2.title())] + '}}\n' + final_page_content2
+            final_page_content2 = '{{NavigBOT|' + page2.title()[len(
+                page2.title())-4:len(page2.title())] + '}}\n' + final_page_content2
             save_page(page2, final_page_content2, summary)
         return
     except pywikibot.exceptions.LockedPageError as e:
@@ -116,7 +119,8 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
     while re.compile(regex).search(page_content):
         debut_paragraphe = re.search(regex, page_content).end()
         if re.search(r'\n==[^=]', page_content[debut_paragraphe:]):
-            fin_paragraphe = re.search(r'\n==[^=]', page_content[debut_paragraphe:]).start()
+            fin_paragraphe = re.search(
+                r'\n==[^=]', page_content[debut_paragraphe:]).start()
         else:
             fin_paragraphe = len(page_content[debut_paragraphe:])
         if debug_level > 0:
@@ -125,15 +129,16 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
         if page_content[debut_paragraphe:].find('\n==') == -1:
             # Dernier paragraphe
             final_page_content += page_content[:debut_paragraphe][
-                                  page_content[:debut_paragraphe].rfind('\n=='):] + page_content[debut_paragraphe:]
-            page_content = page_content[:debut_paragraphe][:page_content[:debut_paragraphe].rfind('\n==')]
+                page_content[:debut_paragraphe].rfind('\n=='):] + page_content[debut_paragraphe:]
+            page_content = page_content[:debut_paragraphe][:page_content[:debut_paragraphe].rfind(
+                '\n==')]
         else:
             final_page_content += page_content[:debut_paragraphe][
-                                  page_content[:debut_paragraphe].rfind('\n=='):] + page_content[debut_paragraphe:][
-                                                                                    :fin_paragraphe]
+                page_content[:debut_paragraphe].rfind('\n=='):] + page_content[debut_paragraphe:][
+                :fin_paragraphe]
             page_content = page_content[:debut_paragraphe][
-                           :page_content[:debut_paragraphe].rfind('\n==')] + page_content[debut_paragraphe:][
-                                                                             fin_paragraphe:]
+                :page_content[:debut_paragraphe].rfind('\n==')] + page_content[debut_paragraphe:][
+                fin_paragraphe:]
 
     if page_content != page.get():
         page2 = Page(site, page_name + '/Archives/' + current_year)
@@ -151,7 +156,8 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
                 print(str(e))
                 return
         if final_page_content2.find('{{NavigBOT') == -1:
-            final_page_content2 = '{{NavigBOT|' + page2.title()[len(page2.title())-4:len(page2.title())] + '}}\n' + final_page_content2
+            final_page_content2 = '{{NavigBOT|' + page2.title()[len(
+                page2.title())-4:len(page2.title())] + '}}\n' + final_page_content2
         save_page(page2, final_page_content2 + final_page_content, summary)
         save_page(page, page_content, summary)
 

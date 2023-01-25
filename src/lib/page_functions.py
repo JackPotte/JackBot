@@ -36,7 +36,8 @@ def get_global_variables(args):
         page_name = 'User:' + user_name + page_name
     debug_level = int(debug_level)
     if debug_level > 0:
-        print('get_global_variables() =', site_language, site_family, user_name, page_name)
+        print('get_global_variables() =', site_language,
+              site_family, user_name, page_name)
 
     return site, user_name, debug_level, page_name
 
@@ -58,7 +59,8 @@ def global_operations(page_content):
 
     # Retire les espaces dans {{FORMATNUM:}} qui empêche de les trier dans les tableaux
     try:
-        page_content = re.sub(r'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', r'{{\1:\2\3}}', page_content)
+        page_content = re.sub(
+            r'{{ *(formatnum|Formatnum|FORMATNUM)\:([0-9]*) *([0-9]*)}}', r'{{\1:\2\3}}', page_content)
     except TypeError as e:
         print(str(e))
     return page_content
@@ -89,7 +91,8 @@ def date_plus_month(months):
     elif new_month == -5:
         new_month = 7
         year = year - 1
-    if new_month == 2 and day > 28: day = 28
+    if new_month == 2 and day > 28:
+        day = 28
     return datetime.date(year, new_month, day)
 
 
@@ -102,9 +105,11 @@ def time_after_last_edition(page):
         return 0
     if debug_level > 1:
         print(last_edit_time)  # Zulu format, ex: 2017-07-29T21:57:34Z
-    match_time = re.match(r'(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})', str(last_edit_time))
+    match_time = re.match(
+        r'(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})', str(last_edit_time))
     date_last_edit_time = datetime.datetime(int(match_time.group(1)), int(match_time.group(2)),
-                                            int(match_time.group(3)), int(match_time.group(4)),
+                                            int(match_time.group(3)), int(
+                                                match_time.group(4)),
                                             int(match_time.group(5)), int(match_time.group(6)))
     datetime_now = datetime.datetime.utcnow()
     diff_last_edit_time = datetime_now - date_last_edit_time
@@ -114,12 +119,15 @@ def time_after_last_edition(page):
 def has_more_than_time(page, time_after_last_edition=60):  # minutes
     if page.exists():
         date_now = datetime.datetime.utcnow()
-        max_date = date_now - datetime.timedelta(minutes=time_after_last_edition)
-        has_more_than_time = str(page.latest_revision.timestamp) < max_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+        max_date = date_now - \
+            datetime.timedelta(minutes=time_after_last_edition)
+        has_more_than_time = str(
+            page.latest_revision.timestamp) < max_date.strftime('%Y-%m-%dT%H:%M:%SZ')
         if debug_level > 1:
-            print(str(max_date.strftime('%Y-%m-%dT%H:%M:%SZ')), str(page.latest_revision.timestamp), str(has_more_than_time))
+            print(str(max_date.strftime('%Y-%m-%dT%H:%M:%SZ')),
+                  str(page.latest_revision.timestamp), str(has_more_than_time))
         if has_more_than_time or username in page.title() or \
-            list(page.contributors(total=1).keys())[0] in ['JackBot', 'JackPotte']:
+                list(page.contributors(total=1).keys())[0] in ['JackBot', 'JackPotte']:
             # TODO config.usernames[site_family][site_language] for human user
             return True
         if debug_level > 0:
@@ -133,23 +141,27 @@ def is_trusted_version(site, page):
     last_editor = list(page.contributors(total=1).keys())[0]
     if first_editor == last_editor:
         if debug_level > 0:
-            pywikibot.output(' \03<<green>> the page belongs to its last edition user: \03<<default>>' + last_editor)
+            pywikibot.output(
+                ' \03<<green>> the page belongs to its last edition user: \03<<default>>' + last_editor)
         return True
     user_page_name = ' user: ' + last_editor
     user_page = Page(site, user_page_name)
     user = User(user_page)
     if 'autoconfirmed' in user.groups():
         if debug_level > 0:
-            pywikibot.output(' \03<<green>> the last edition user can be trusted: \03<<default>>' + last_editor)
+            pywikibot.output(
+                ' \03<<green>> the last edition user can be trusted: \03<<default>>' + last_editor)
         return True
     if user.isAnonymous():
         if debug_level > 0:
-            pywikibot.output(' \03<<red>>the last edition user cannot be trusted: \03<<default>>' + last_editor)
+            pywikibot.output(
+                ' \03<<red>>the last edition user cannot be trusted: \03<<default>>' + last_editor)
         pywikibot.output(' \03<<red>>The page needs to be categorized manually\03<<default>>: ' +
-             'https://' + page.site.hostname() + '/wiki/' + page.title().replace(' ', '_'))
+                         'https://' + page.site.hostname() + '/wiki/' + page.title().replace(' ', '_'))
         return False
     if debug_level > 0:
-        pywikibot.output(' \03<<green>> the last edition user could be trusted: \03<<default>>' + last_editor)
+        pywikibot.output(
+            ' \03<<green>> the last edition user could be trusted: \03<<default>>' + last_editor)
     return True
 
 
@@ -163,7 +175,8 @@ def get_content_from_page(page, allowed_namespaces=None):
     if debug_level > 0:
         print('\nget_content_from_page()')
     if debug_level > 1:
-        pywikibot.output(' \03<<blue>>get_content_from_page : \03<<default>>' + page.title())
+        pywikibot.output(
+            ' \03<<blue>>get_content_from_page : \03<<default>>' + page.title())
 
     current_page_content = ''
     try:
@@ -189,7 +202,8 @@ def get_content_from_page(page, allowed_namespaces=None):
     else:
         if debug_level > 1:
             print(' content namespaces')
-        condition = page.namespace() in [0, 12, 14, 100] or username in page.title()
+        condition = page.namespace() in [
+            0, 12, 14, 100] or username in page.title()
 
     if not condition:
         if debug_level > 0:
@@ -263,14 +277,16 @@ def get_wiki(language, family):
 
 
 def get_first_template_by_name(page_content, template):
-    regex = r'{{[' + template[:1].lower() + template[:1].upper() + r']' + template[1:] + r'[^{}]+}}'
+    regex = r'{{[' + template[:1].lower() + template[:1].upper() + \
+        r']' + template[1:] + r'[^{}]+}}'
     if re.search(regex, page_content):
         return page_content[re.search(regex, page_content).start():re.search(regex, page_content).end()]
     return ''
 
 
 def get_all_templates_by_name(page_content, template):
-    regex = r'{{[' + template[:1].lower() + template[:1].upper() + r']' + template[1:] + r'[^{}]+}}'
+    regex = r'{{[' + template[:1].lower() + template[:1].upper() + \
+        r']' + template[1:] + r'[^{}]+}}'
     return re.findall(regex, page_content)
 
 
@@ -291,8 +307,8 @@ def get_parameter(page_content, p):
     parameter = page_content[re.search(regex, page_content).start() + 1:]
     parameter_end = parameter
     while parameter_end.find('[') != -1 and parameter_end.find('[') < parameter_end.find('|') \
-        and parameter_end.find('[') < parameter_end.find('}') and parameter_end.find('|') < parameter_end.find('}'):
-        # The parameter contains a link like "[[ | ]]" 
+            and parameter_end.find('[') < parameter_end.find('}') and parameter_end.find('|') < parameter_end.find('}'):
+        # The parameter contains a link like "[[ | ]]"
         parameter_end = parameter_end[parameter_end.find(']') + 1:]
 
     return parameter[:len(parameter) - len(parameter_end) + re.search(r'[\|{}]', parameter_end).start()]
@@ -317,7 +333,8 @@ def add_parameter(page_content, parameter, content=None):
 
 def replace_parameter_value(page_content, template, parameter_key, old_value, new_value):
     regex = r'({{ *(' + template[:1].lower() + r'|' + template[:1].upper() + r')' + \
-            template[1:] + r' *\n* *\|[^}]*' + parameter_key + r' *= *)' + old_value
+            template[1:] + r' *\n* *\|[^}]*' + \
+        parameter_key + r' *= *)' + old_value
     if debug_level > 0:
         print(regex)
     page_content = re.sub(regex, r'\1' + new_value, page_content)
@@ -377,17 +394,21 @@ def replace_deprecated_tags(page_content):
     font_color.append('#808080')
 
     page_content = page_content.replace('</br>', '<br/>')
-    page_content = page_content.replace('<source lang="html4strict">', '<source lang="html">')
+    page_content = page_content.replace(
+        '<source lang="html4strict">', '<source lang="html">')
 
     # TODO: {{citation}} https://fr.wikiversity.org/w/index.php?title=Matrice%2FD%C3%A9terminant&action=historysubmit&type=revision&diff=669911&oldid=664849
     # TODO: multiparamètre
-    page_content = page_content.replace('<font size="+1" color="red">', r'<span style="font-size:0.63em; color:red;>')
+    page_content = page_content.replace(
+        '<font size="+1" color="red">', r'<span style="font-size:0.63em; color:red;>')
     regex = r'<font color="?([^>"]*)"?>'
     pattern = re.compile(regex, re.UNICODE)
     for match in pattern.finditer(page_content):
         if debug_level > 1:
-            print('Remplacement de ' + match.group(0) + ' par <span style="color:' + match.group(1) + '">')
-        page_content = page_content.replace(match.group(0), '<span style="color:' + match.group(1) + '">')
+            print('Remplacement de ' + match.group(0) +
+                  ' par <span style="color:' + match.group(1) + '">')
+        page_content = page_content.replace(match.group(
+            0), '<span style="color:' + match.group(1) + '">')
         page_content = page_content.replace('</font>', '</span>')
 
     for old_tag, new_tag in deprecated_tags.items():
@@ -423,10 +444,12 @@ def replace_deprecated_tags(page_content):
                         opening_tag = new_tag + size + '"'
                 else:
                     opening_tag = new_tag + match.group(1)
-                page_content = page_content.replace(match.group(0), r'<' + opening_tag + r'>')
+                page_content = page_content.replace(
+                    match.group(0), r'<' + opening_tag + r'>')
 
         regex = r'</ *' + closing_old_tag + ' *>'
-        page_content = re.sub(regex, r'</' + closing_new_tag + '>', page_content)
+        page_content = re.sub(
+            regex, r'</' + closing_new_tag + '>', page_content)
     page_content = page_content.replace('<strong">', r'<strong>')
     page_content = page_content.replace('<s">', r'<s>')
     page_content = page_content.replace('<code">', r'<code>')
@@ -437,7 +460,8 @@ def replace_deprecated_tags(page_content):
     pattern = re.compile(regex, re.UNICODE)
     for match in pattern.finditer(page_content):
         # summary = summary + ', correction de color'
-        page_content = page_content.replace(match.group(0), '<span style="color:' + match.group(1) + '">')
+        page_content = page_content.replace(match.group(
+            0), '<span style="color:' + match.group(1) + '">')
     page_content = page_content.replace('</font>', '</span>')
     page_content = page_content.replace('</font>'.upper(), '</span>')
 
@@ -445,7 +469,8 @@ def replace_deprecated_tags(page_content):
     s = re.search(regex, page_content)
     if s:
         # summary = summary + ', correction de color'
-        page_content = re.sub(regex, r'<span style="color:' + s.group(1) + r'">', page_content)
+        page_content = re.sub(regex, r'<span style="color:' +
+                              s.group(1) + r'">', page_content)
 
     regex = r'<span style="text\-size:([0-9]+)"?>'
     s = re.search(regex, page_content)
@@ -461,21 +486,30 @@ def replace_deprecated_tags(page_content):
 
     page_content = page_content.replace('<strong><strong><strong><strong><strong><strong>',
                                         '<span style="font-size:75px;">')
-    page_content = page_content.replace('<strong><strong><strong><strong><strong>', '<span style="font-size:50px;">')
-    page_content = page_content.replace('<strong><strong><strong><strong>', '<span style="font-size:40px;">')
-    page_content = page_content.replace('<strong><strong><strong>', '<span style="font-size:25px;">')
-    page_content = page_content.replace('<strong><strong>', '<span style="font-size:20px;">')
-    page_content = re.sub(r'</strong></strong></strong></strong></strong></strong>', r'</span>', page_content)
-    page_content = re.sub(r'</strong></strong></strong></strong></strong>', r'</span>', page_content)
-    page_content = re.sub(r'</strong></strong></strong></strong>', r'</span>', page_content)
-    page_content = re.sub(r'</strong></strong></strong>', r'</span>', page_content)
+    page_content = page_content.replace(
+        '<strong><strong><strong><strong><strong>', '<span style="font-size:50px;">')
+    page_content = page_content.replace(
+        '<strong><strong><strong><strong>', '<span style="font-size:40px;">')
+    page_content = page_content.replace(
+        '<strong><strong><strong>', '<span style="font-size:25px;">')
+    page_content = page_content.replace(
+        '<strong><strong>', '<span style="font-size:20px;">')
+    page_content = re.sub(
+        r'</strong></strong></strong></strong></strong></strong>', r'</span>', page_content)
+    page_content = re.sub(
+        r'</strong></strong></strong></strong></strong>', r'</span>', page_content)
+    page_content = re.sub(
+        r'</strong></strong></strong></strong>', r'</span>', page_content)
+    page_content = re.sub(r'</strong></strong></strong>',
+                          r'</span>', page_content)
     page_content = re.sub(r'</strong></strong>', r'</span>', page_content)
     regex = r'<strong>([^<]*)</span>'
     if re.search(regex, page_content):
         page_content = re.sub(regex, r'<strong>\1</strong>', page_content)
     regex = r'<strong><span ([^<]*)</span></span>'
     if re.search(regex, page_content):
-        page_content = re.sub(regex, r'<strong><span \1</span></strong>', page_content)
+        page_content = re.sub(
+            regex, r'<strong><span \1</span></strong>', page_content)
     # page_content = re.sub(r'</span></span>', r'</span>', page_content)
     return page_content
 
@@ -486,7 +520,8 @@ def replace_files_errors(page_content):
     bad_file_parameters.append('')
     # bad_file_parameters.append('cadre')
     for badFileParameter in bad_file_parameters:
-        regex = r'(\[\[(Image|Fichier|File) *: *[^\]{]+)\| *' + badFileParameter + r' *(\||\])'
+        regex = r'(\[\[(Image|Fichier|File) *: *[^\]{]+)\| *' + \
+            badFileParameter + r' *(\||\])'
         try:
             page_content = re.sub(regex, r'\1\3', page_content)
         except TypeError:
@@ -519,14 +554,18 @@ def replaceISBN(page_content):
     # TODO: out of <source> <nowiki> <pre>
     page_content = page_content.replace('ISBN&#160;', 'ISBN ')
     regex = r'\(*ISBN +([0-9Xx\- ]+)\)*( [^0-9Xx\- ])'
-    if debug_level > 1: print(regex)
+    if debug_level > 1:
+        print(regex)
     if re.search(regex, page_content):
-        if debug_level > 0: 'ISBN'
+        if debug_level > 0:
+            'ISBN'
         page_content = re.sub(regex, r'{{ISBN|\1}}\2', page_content)
     regex = r'\(*ISBN +([0-9Xx\- ]+)\)*'
-    if debug_level > 1: print(regex)
+    if debug_level > 1:
+        print(regex)
     if re.search(regex, page_content):
-        if debug_level > 0: 'ISBN'
+        if debug_level > 0:
+            'ISBN'
         page_content = re.sub(regex, r'{{ISBN|\1}}', page_content)
 
     # TODO: remove fix
@@ -541,7 +580,8 @@ def replaceISBN(page_content):
     if re.search(regex, page_content):
         page_content = re.sub(regex, r'\1}}-->', page_content)
 
-    if debug_level > 1: input(page_content)
+    if debug_level > 1:
+        input(page_content)
     return page_content
 
 
@@ -573,7 +613,8 @@ def stop_required(username, site):
     if page_content is None:
         return
     if page_content != u"{{/Stop}}":
-        pywikibot.output("\n*** \03<<yellow>>Arrêt d'urgence demandé\03<<default>> ***")
+        pywikibot.output(
+            "\n*** \03<<yellow>>Arrêt d'urgence demandé\03<<default>> ***")
         exit(0)
 
 
@@ -581,7 +622,8 @@ def save_page(current_page, page_content, summary, is_minor=True):
     result = "ok"
     if debug_level > 0:
         pywikibot.output("\n\03<<blue>>" + summary + u"\03<<default>>")
-        pywikibot.output("\n\03<<red>>---------------------------------------------------\03<<default>>")
+        pywikibot.output(
+            "\n\03<<red>>---------------------------------------------------\03<<default>>")
         if len(page_content) < 6000:
             try:
                 print(page_content)
@@ -595,10 +637,13 @@ def save_page(current_page, page_content, summary, is_minor=True):
                 print(page_content[len(page_content) - page_size:])
             except UnicodeEncodeError as e:
                 print(str(e))
-                print(page_content[:page_size].encode(config.console_encoding, 'replace'))
+                print(page_content[:page_size].encode(
+                    config.console_encoding, 'replace'))
                 print('\n[...]\n')
-                print(page_content[len(page_content) - page_size:].encode(config.console_encoding, 'replace'))
-        result = input('\nSauvegarder [[' + current_page.title() + ']] ? (o/n) ')
+                print(page_content[len(
+                    page_content) - page_size:].encode(config.console_encoding, 'replace'))
+        result = input(
+            '\nSauvegarder [[' + current_page.title() + ']] ? (o/n) ')
     if str(result) not in ['n', 'no', 'non']:
         if current_page.title().find(username + '/') == -1:
             stop_required(username, site)
@@ -638,7 +683,8 @@ def save_page(current_page, page_content, summary, is_minor=True):
 def is_patrolled(version):
     # TODO: extensions Patrolled Edits & Flagged Revisions
     if debug_level > 1:
-        print(version)  # eg: [{'timestamp': '2017-07-25T02:26:15Z', 'user': '27.34.18.159'}]
+        # eg: [{'timestamp': '2017-07-25T02:26:15Z', 'user': '27.34.18.159'}]
+        print(version)
     if debug_level > 0:
         print(' user: ') + version[0]['user']
     return False
@@ -671,7 +717,8 @@ def cancel_edition(page, cancel_user, summary=''):
                 if debug_level > 1:
                     print(i)
             if i > 0:
-                old_page_content = get_old_page_content(page, page.getVersionHistory()[i][0])
+                old_page_content = get_old_page_content(
+                    page, page.getVersionHistory()[i][0])
         if debug_level > 2:
             input(old_page_content)
     elif page.userName() == user_name:
@@ -746,7 +793,8 @@ def get_section_by_title(page_content, section_title_regex, section_level=2):
     page_content = page_content[s.start():]
     if page_content.find('\n') == -1:
         if debug_level > 0:
-            print(' Without next section. start: ' + str(start_position) + ', end: ' + str(end_position))
+            print(' Without next section. start: ' +
+                  str(start_position) + ', end: ' + str(end_position))
         return page_content, start_position, end_position
 
     next_section_regex = r'\n='
@@ -756,23 +804,27 @@ def get_section_by_title(page_content, section_title_regex, section_level=2):
 
     # TODO jump nested tag and template content
     delta = page_content.find('\n') + 1
-    page_content2 = page_content[delta:]  # Commence normalement par [1:section_title_regex]
+    # Commence normalement par [1:section_title_regex]
+    page_content2 = page_content[delta:]
     s = re.search(next_section_regex, page_content2, re.DOTALL)
     if not s:
         if debug_level > 0:
-            print(' Without next section2. start: ' + str(start_position) + ', end: ' + str(end_position))
+            print(' Without next section2. start: ' +
+                  str(start_position) + ', end: ' + str(end_position))
         return page_content, start_position, end_position
 
     end_position = delta + s.start()
     page_content = page_content[:end_position]
     if debug_level > 0:
-        print(' With next section. start: ' + str(start_position) + ', end: ' + str(end_position))
+        print(' With next section. start: ' +
+              str(start_position) + ', end: ' + str(end_position))
 
     return page_content, start_position, end_position
 
 
 def is_template_name(string, template_name):
-    regex = r'^(' + template_name[:1].upper() + r'|' + template_name[:1].lower() + r')' + template_name[1:]
+    regex = r'^(' + template_name[:1].upper() + r'|' + \
+        template_name[:1].lower() + r')' + template_name[1:]
     return re.search(regex, string)
 
 

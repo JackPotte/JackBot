@@ -28,7 +28,8 @@ class PageProvider:
         self.treat_page = treat_page
         self.site = site
         self.debug_level = debug_level
-        ouput_file_path = 'lists/articles_' + str(site.lang) + '_' + str(site.family) + '.txt'
+        ouput_file_path = 'lists/articles_' + \
+            str(site.lang) + '_' + str(site.family) + '.txt'
         if (os.path.isfile(ouput_file_path)):
             self.outputFile = open(ouput_file_path, 'a')
 
@@ -81,14 +82,17 @@ class PageProvider:
         for entry in parser:
             if list_false_translations:
                 for lang in ['frm', 'fro']:
-                    section_position = entry.text.find('{{langue|' + lang + '}}')
+                    section_position = entry.text.find(
+                        '{{langue|' + lang + '}}')
                     if section_position != -1 and section_position < entry.text.find('{{S|traductions}}'):
                         self.outputFile.write((entry.title + '\n'))
 
             if not namespaces and entry.title.find(':') == -1:
                 page_content = entry.text
-                i = title_include is None or re.search(title_include, entry.title)
-                e = title_exclude is None or not re.search(title_exclude, entry.title)
+                i = title_include is None or re.search(
+                    title_include, entry.title)
+                e = title_exclude is None or not re.search(
+                    title_exclude, entry.title)
                 if self.debug_level > 0:
                     print(i)
                     print(e)
@@ -126,11 +130,13 @@ class PageProvider:
             if self.debug_level > 0:
                 print('  NamespaceFilterPageGenerator')
             # TODO OK with 0, 2, 12, but with 10, 100, 114: Namespace identifier(s) not recognised
-            gen = pagegenerators.NamespaceFilterPageGenerator(pages, namespaces)
+            gen = pagegenerators.NamespaceFilterPageGenerator(
+                pages, namespaces)
         else:
             if self.debug_level > 0:
                 print('  CategorizedPageGenerator')
-            gen = pagegenerators.CategorizedPageGenerator(cat, recurse=recursive, namespaces=namespaces)
+            gen = pagegenerators.CategorizedPageGenerator(
+                cat, recurse=recursive, namespaces=namespaces)
         modify = False
         for page in pagegenerators.PreloadingGenerator(gen, page_ids):
             if self.debug_level > 2:
@@ -169,7 +175,8 @@ class PageProvider:
                     pages = subcategory.articles(False)
                     for page in pagegenerators.PreloadingGenerator(pages, page_ids):
                         if namespaces is None or page.namespace() in namespaces:
-                            self.treat_page_if_name(page.title(), names, not_names)
+                            self.treat_page_if_name(
+                                page.title(), names, not_names)
 
     def treat_page_if_name(self, page_name, names=None, not_names=None):
         page = Page(self.site, page_name)
@@ -198,7 +205,7 @@ class PageProvider:
 
     # [[Special:WhatLinksHere]] with link
     def pages_by_untranscluded_link(self, page_name, after_page=None, site=None, namespaces=[0, 10], is_linked=False,
-                      only_template_inclusion=True):
+                                    only_template_inclusion=True):
         if site is None:
             site = self.site
         is_after_page = False
@@ -209,7 +216,8 @@ class PageProvider:
                 print(' Linked page: ' + linked_page.title())
             if not after_page or after_page == '' or is_after_page:
                 if is_linked:
-                    linked_linked_pages = linked_page.linkedPages(namespaces=namespaces)
+                    linked_linked_pages = linked_page.linkedPages(
+                        namespaces=namespaces)
                     for linked_linked_page in linked_linked_pages:
                         self.treat_page(linked_linked_page)
                 else:
@@ -230,7 +238,8 @@ class PageProvider:
                 print(' Linked page: ' + linked_page.title())
             if not after_page or after_page == '' or is_after_page:
                 if is_linked:
-                    linked_linked_pages = linked_page.embeddedin(namespaces=namespaces)
+                    linked_linked_pages = linked_page.embeddedin(
+                        namespaces=namespaces)
                     for linked_linked_page in linked_linked_pages:
                         self.treat_page(linked_linked_page)
                 else:
@@ -244,7 +253,8 @@ class PageProvider:
             site = self.site
         modify = False
         # search_string = search_string[:300] TODO: API error cirrussearch-backend-error
-        gen = pagegenerators.SearchPageGenerator(search_string, site=site, namespaces=namespaces)
+        gen = pagegenerators.SearchPageGenerator(
+            search_string, site=site, namespaces=namespaces)
         for page in pagegenerators.PreloadingGenerator(gen, 100):
             if not after_page or after_page == '' or modify:
                 self.treat_page(page)
@@ -260,7 +270,8 @@ class PageProvider:
         gen = pagegenerators.RecentChangesPageGenerator(site=site)
         for page in pagegenerators.PreloadingGenerator(gen, 50):
             if self.debug_level > 1:
-                print(str(time_after_last_edition(Page) + ' =? ' + str(minimum_time)))
+                print(str(time_after_last_edition(
+                    Page) + ' =? ' + str(minimum_time)))
             if time_after_last_edition(Page) > minimum_time:
                 self.treat_page(page)
 
@@ -273,7 +284,8 @@ class PageProvider:
 
         date_now = datetime.datetime.utcnow()
         # Date de la plus récente self.treat_page à récupérer
-        date_start = date_now - datetime.timedelta(minutes=time_after_last_edition)
+        date_start = date_now - \
+            datetime.timedelta(minutes=time_after_last_edition)
         # Date d'un jour plus tôt
         date_end = date_start - datetime.timedelta(1)
 
@@ -293,7 +305,8 @@ class PageProvider:
             site = self.site
         modify = False
         number_of_pages_treated = 0
-        gen = pagegenerators.UserContributionsGenerator(username, namespaces=namespaces, site=site)
+        gen = pagegenerators.UserContributionsGenerator(
+            username, namespaces=namespaces, site=site)
         for page in pagegenerators.PreloadingGenerator(gen, 100):
             if not after_page or after_page == '' or modify:
                 found = False
@@ -322,7 +335,8 @@ class PageProvider:
     def pages_by_all(self, start='', ns=0, site=None):
         if site is None:
             site = self.site
-        gen = pagegenerators.AllpagesPageGenerator(start, namespace=ns, includeredirects=False, site=site)
+        gen = pagegenerators.AllpagesPageGenerator(
+            start, namespace=ns, includeredirects=False, site=site)
         for page in pagegenerators.PreloadingGenerator(gen, 100):
             self.treat_page(page)
 

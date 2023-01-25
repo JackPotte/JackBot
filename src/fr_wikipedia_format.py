@@ -112,27 +112,37 @@ def treat_page(page):
     if fix_article:
         final_page = ''
         while current_page.find('{{article') != -1:
-            final_page = final_page + current_page[:current_page.find('{{article')+len('{{article')]
-            current_page = current_page[current_page.find('{{article')+len('{{article'):]
+            final_page = final_page + \
+                current_page[:current_page.find('{{article')+len('{{article')]
+            current_page = current_page[current_page.find(
+                '{{article')+len('{{article'):]
             if current_page.find('éditeur=') != -1 and current_page.find('éditeur=') < current_page.find('}}') \
-                and (current_page.find('périodique=') == -1
-                or current_page.find('périodique=') > current_page.find('}}')) \
-                and (current_page.find('revue=') == -1 or current_page.find('revue=') > current_page.find('}}')) \
-                and (current_page.find('journal=') == -1 or current_page.find('journal=') > current_page.find('}}')):
-                final_page = final_page + current_page[:current_page.find('éditeur=')] + 'périodique='
-                current_page = current_page[current_page.find('éditeur=')+len('éditeur='):]
+                    and (current_page.find('périodique=') == -1
+                         or current_page.find('périodique=') > current_page.find('}}')) \
+                    and (current_page.find('revue=') == -1 or current_page.find('revue=') > current_page.find('}}')) \
+                    and (current_page.find('journal=') == -1 or current_page.find('journal=') > current_page.find('}}')):
+                final_page = final_page + \
+                    current_page[:current_page.find(
+                        'éditeur=')] + 'périodique='
+                current_page = current_page[current_page.find(
+                    'éditeur=')+len('éditeur='):]
         current_page = final_page + current_page
         final_page = ''
         while current_page.find('{{Article') != -1:
-            final_page = final_page + current_page[:current_page.find('{{Article')+len('{{Article')]
-            current_page = current_page[current_page.find('{{Article')+len('{{Article'):]
+            final_page = final_page + \
+                current_page[:current_page.find('{{Article')+len('{{Article')]
+            current_page = current_page[current_page.find(
+                '{{Article')+len('{{Article'):]
             if current_page.find('éditeur=') != -1 and current_page.find('éditeur=') < current_page.find('}}') \
-                and (current_page.find('périodique=') == -1
-                 or current_page.find('périodique=') > current_page.find('}}')) \
-                and (current_page.find('revue=') == -1 or current_page.find('revue=') > current_page.find('}}')) \
-                and (current_page.find('journal=') == -1 or current_page.find('journal=') > current_page.find('}}')):
-                final_page = final_page + current_page[:current_page.find('éditeur=')] + 'périodique='
-                current_page = current_page[current_page.find('éditeur=')+len('éditeur='):]        
+                    and (current_page.find('périodique=') == -1
+                         or current_page.find('périodique=') > current_page.find('}}')) \
+                    and (current_page.find('revue=') == -1 or current_page.find('revue=') > current_page.find('}}')) \
+                    and (current_page.find('journal=') == -1 or current_page.find('journal=') > current_page.find('}}')):
+                final_page = final_page + \
+                    current_page[:current_page.find(
+                        'éditeur=')] + 'périodique='
+                current_page = current_page[current_page.find(
+                    'éditeur=')+len('éditeur='):]
         current_page = final_page + current_page
 
     if fix_missing_titles:
@@ -141,14 +151,17 @@ def treat_page(page):
         regex = r'{{[l|L]ien web *\|'
         if re.search(regex, current_page):
             final_page = current_page[:re.search(regex, current_page).start()]
-            current_page = current_page[re.search(regex, current_page).start():]
+            current_page = current_page[re.search(
+                regex, current_page).start():]
             current_page = add_parameter(current_page, 'titre')
         current_page = final_page + current_page
 
     # *** Traitement des Catégories ***
     if page_name.find('Template:Cite pmid/') != -1:
-        current_page = current_page.replace('Catégorie:Modèle de source‎', 'Catégorie:Modèle pmid')
-        current_page = current_page.replace('[[Catégorie:Modèle pmid]]', '[[Catégorie:Modèle pmid‎|{{SUBPAGENAME}}]]')
+        current_page = current_page.replace(
+            'Catégorie:Modèle de source‎', 'Catégorie:Modèle pmid')
+        current_page = current_page.replace(
+            '[[Catégorie:Modèle pmid]]', '[[Catégorie:Modèle pmid‎|{{SUBPAGENAME}}]]')
 
     # Analyse des crochets et accolades (TODO : hors LaTex)
     if current_page.count('{') - current_page.count('}') != 0:
@@ -175,7 +188,8 @@ def treat_page(page):
         print('--------------------------------------------------------------------------------------------')
     if final_page != current_page_content and final_page != current_page_content.replace('{{chapitre |', '{{chapitre|')\
             and final_page != current_page_content.replace('{{Chapitre |', '{{Chapitre|'):
-        summary = summary + ', [[Wikipédia:Bot/Requêtes/2012/12#Remplacer_les_.7B.7BCite_web.7D.7D_par_.7B.7BLien_web.7D.7D|traduction des modèles de liens]]'
+        summary = summary + \
+            ', [[Wikipédia:Bot/Requêtes/2012/12#Remplacer_les_.7B.7BCite_web.7D.7D_par_.7B.7BLien_web.7D.7D|traduction des modèles de liens]]'
         final_page = final_page.replace(r'</ref><ref>', r'</ref>{{,}}<ref>')
         save_page(page, final_page, summary)
     elif debug_level > 0:
@@ -200,7 +214,8 @@ def main(*args) -> int:
             treat_all_namespaces = True
             treat_page_by_name('SIMP J013656.5+093347')
         elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
-            p.pages_by_file('lists/articles_' + site_language + '_' + site_family + '.txt')
+            p.pages_by_file('lists/articles_' + site_language +
+                            '_' + site_family + '.txt')
         elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
             regex = r'\| *French *\|'
             if len(sys.argv) > 2:
@@ -219,21 +234,23 @@ def main(*args) -> int:
             after_page = ''
             if len(sys.argv) > 2:
                 after_page = sys.argv[2]
-            p.pages_by_cat('Page du modèle Article comportant une erreur', namespaces=None, after_page=after_page)
+            p.pages_by_cat('Page du modèle Article comportant une erreur',
+                           namespaces=None, after_page=after_page)
             # treat_all_namespaces = True
             # p.pagesByCat('Catégorie:Pages utilisant des liens magiques ISBN', namespaces = None, after_page = after_page)
             # p.pagesByCat('Catégorie:Pages avec ISBN invalide', namespaces = None, after_page = after_page)
         elif sys.argv[1] == '-redirects':
             p.pages_by_redirects()
         elif sys.argv[1] == '-all':
-           p.pages_by_all()
+            p.pages_by_all()
         elif sys.argv[1] == '-RC':
             while 1:
                 p.pages_by_rc_last_day()
         elif sys.argv[1] == '-nocat':
             p.pages_by_special_not_categorized()
         elif sys.argv[1] == '-lint':
-            p.pages_by_special_lint(lint_categories='missing-end-tag', namespaces=[0])
+            p.pages_by_special_lint(
+                lint_categories='missing-end-tag', namespaces=[0])
         elif sys.argv[1] == '-extlinks':
             p. pages_by_special_link_search('www.dmoz.org')
         else:
@@ -242,7 +259,8 @@ def main(*args) -> int:
             treat_page_by_name(update_html_to_unicode(sys.argv[1]))
     else:
         # Daily:
-        p.pages_by_cat('Catégorie:Modèle de source', namespaces=[10], names=['pmid'])
+        p.pages_by_cat('Catégorie:Modèle de source',
+                       namespaces=[10], names=['pmid'])
         p.pages_by_link('Template:Cite web')
         p.pages_by_link('Template:Cite journal')
         p.pages_by_link('Template:Cite news')
@@ -285,8 +303,10 @@ def log_in_file(page_name, current_page_content, error_title):
 
     file_object = codecs.open(output_file, 'a', 'utf-8')
     file_object.write(error_title + ' dans ' + page_name + '\n')
-    file_object.write(current_page_content + '\n\n----------------------------------------------------------------\n\n')
+    file_object.write(current_page_content +
+                      '\n\n----------------------------------------------------------------\n\n')
     file_object.close()
+
 
 if __name__ == "__main__":
     main(sys.argv)

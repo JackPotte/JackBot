@@ -63,13 +63,15 @@ class TalkArchiver:
     }
 
     def __init__(self, args):
-        self.site, self.user_name, self.debug_level, self.page_name = get_global_variables(args)
+        self.site, self.user_name, self.debug_level, self.page_name = get_global_variables(
+            args)
 
     def treat_page_by_name(self):
         if self.page_name is None:
             self.page_name = self.default_talk_pages[str(self.site.family)]
         if self.debug_level > 0:
-            pywikibot.output("\n\03<<red>>" + self.page_name + u"\03<<default>>")
+            pywikibot.output("\n\03<<red>>" +
+                             self.page_name + u"\03<<default>>")
 
         page = Page(self.site, self.page_name)
         latest_rev = page.editTime()
@@ -77,7 +79,8 @@ class TalkArchiver:
         inactivity_duration = (now - latest_rev).days
         if inactivity_duration < self.days_before_archiving:
             if self.debug_level > 0:
-                print(' The page has been modified in the last days: ' + str(inactivity_duration))
+                print(' The page has been modified in the last days: ' +
+                      str(inactivity_duration))
             return
 
         page_content = get_content_from_page(page, [self.namespace])
@@ -85,13 +88,17 @@ class TalkArchiver:
         summary = 'Autoarchivage de [[' + self.page_name + ']]'
         l = r'=='
         status_regex = r'|'.join(self.closed_status[str(self.site.family)])
-        section_title_regex = r'\n' + l + r'[ \t]*{{[ \t]*[rR]equête (?:' + status_regex + r')[ \t]*}}[^\n=]*' + l + r'[ \t]*\n'
-        sections_titles = get_sections_titles(page_content, section_title_regex)
+        section_title_regex = r'\n' + l + \
+            r'[ \t]*{{[ \t]*[rR]equête (?:' + status_regex + \
+            r')[ \t]*}}[^\n=]*' + l + r'[ \t]*\n'
+        sections_titles = get_sections_titles(
+            page_content, section_title_regex)
         if self.debug_level > 1:
             print(sections_titles)
 
         for section_title in sections_titles:
-            section, s_start, s_end = get_section_by_title(page_content, re.escape(section_title), len(l))
+            section, s_start, s_end = get_section_by_title(
+                page_content, re.escape(section_title), len(l))
             if section is None:
                 if self.debug_level > 0:
                     print(' section not found: ' + section_title)
@@ -104,13 +111,18 @@ class TalkArchiver:
 
         # TODO Wikipedia archives per month
         current_year = time.strftime('%Y')
-        archive_page = Page(self.site, self.page_name + '/Archives/' + current_year)
-        final_page_content2 = get_content_from_page(archive_page, [self.namespace])
+        archive_page = Page(self.site, self.page_name +
+                            '/Archives/' + current_year)
+        final_page_content2 = get_content_from_page(
+            archive_page, [self.namespace])
         if final_page_content2 is None:
             final_page_content2 = ''
-        if '{{' + self.headers_templates[str(self.site.family)] not in final_page_content2:
-            final_page_content2 = self.headers[str(self.site.family)] + '\n' + final_page_content2
-        save_page(archive_page, final_page_content2 + '\n' + final_page_content, summary)
+        if '{{' + \
+                self.headers_templates[str(self.site.family)] not in final_page_content2:
+            final_page_content2 = self.headers[str(
+                self.site.family)] + '\n' + final_page_content2
+        save_page(archive_page, final_page_content2 +
+                  '\n' + final_page_content, summary)
         save_page(page, page_content, summary)
 
 

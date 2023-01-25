@@ -109,24 +109,27 @@ def treat_page(page):
                            + page_content[len(r'{{Programming/Navigation}}'):]
 
         for cat_tpl in book_categorizing_templates:
-            regex = r'{{[ \n]*(' + cat_tpl[:1].upper() + '|' + cat_tpl[:1] + ')' + cat_tpl[1:] + '[ \n]*[|}]'
+            regex = r'{{[ \n]*(' + cat_tpl[:1].upper() + '|' + \
+                cat_tpl[:1] + ')' + cat_tpl[1:] + '[ \n]*[|}]'
             if re.search(regex, page_content):
                 if debug_level > 0:
                     print('  categorizing template: ' + cat_tpl)
                 return
         for book_cat_template in book_cat_templates:
-            page_content = page_content.replace(book_cat_template, '{{BookCat}}')
             page_content = page_content.replace(
-                book_cat_template[:2] + book_cat_template[2:3].lower() + book_cat_template[3:],
+                book_cat_template, '{{BookCat}}')
+            page_content = page_content.replace(
+                book_cat_template[:2] + book_cat_template[2:3].lower() +
+                book_cat_template[3:],
                 '{{BookCat}}'
             )
         if do_add_category and has_more_than_time(page) and ('/' in page.title() or is_trusted_version(site, page)):
             # The untrusted can have blanked a relevant content including {{BookCat}} or {{BookCat|filing=deep}}
             if trim(page_content) != '' and '{{BookCat' not in page_content \
-              and '[[Category:' not in page_content and '[[category:' not in page_content \
-              and '{{Printable' not in page_content and '{{printable' not in page_content \
-              and '{{Subjects' not in page_content and '{{subjects' not in page_content \
-              and '{{Shelves' not in page_content and '{{shelves' not in page_content:
+                    and '[[Category:' not in page_content and '[[category:' not in page_content \
+                    and '{{Printable' not in page_content and '{{printable' not in page_content \
+                    and '{{Subjects' not in page_content and '{{subjects' not in page_content \
+                    and '{{Shelves' not in page_content and '{{shelves' not in page_content:
                 if '/' not in page_name:
                     if debug_level > 0:
                         print('  {{shelves}} addition')
@@ -159,7 +162,8 @@ def main(*args) -> int:
             do_add_category = True
             treat_page_by_name('Python')
         elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
-            p.pages_by_file('lists/articles_' + site_language + '_' + site_family + '.txt')
+            p.pages_by_file('lists/articles_' + site_language +
+                            '_' + site_family + '.txt')
         elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
             regex = r''
             if len(sys.argv) > 2:
@@ -181,13 +185,14 @@ def main(*args) -> int:
             after_page = ''
             if len(sys.argv) > 2:
                 after_page = sys.argv[2]
-            p.pages_by_cat('Pages using RFC magic links', after_page=after_page)
+            p.pages_by_cat('Pages using RFC magic links',
+                           after_page=after_page)
             # p.pagesByCat('Category:Pages using ISBN magic links', after_page = after_page)
             # p.pagesByCat('Category:Pages with ISBN errors', after_page = after_page)
         elif sys.argv[1] == '-redirects':
             p.pages_by_redirects()
         elif sys.argv[1] == '-all':
-           p.pages_by_all()
+            p.pages_by_all()
         elif sys.argv[1] == '-RC':
             while 1:
                 p.pages_by_rc_last_day()

@@ -29,7 +29,7 @@ class TestFrWiktionary(unittest.TestCase):
 
     def test_add_templates(self):
         test_input = '* {{T|en}} : {{trad|en|test}}\n* Solrésol : [[res\'ol]]'
-        test_output = '* {{T|en}} : {{trad|en|test}}\n* {{T|solrésol}} : {{trad--|solrésol|res\'ol}}'
+        test_output = '* {{T|en}} : {{trad|en|test}}\n* {{T|solrésol}} : {{trad|solrésol|res\'ol}}'
         output, summary = add_templates(test_input, '')
         self.assertEqual(test_output, output)
 

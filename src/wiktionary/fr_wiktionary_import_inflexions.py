@@ -89,13 +89,16 @@ def treat_page(source_page, is_lemma=True):
     if page_content == '':
         return
 
-    summary = 'Importation depuis [[' + foreign_language + ':' + source_page.title() + ']]'
+    summary = 'Importation depuis [[' + \
+        foreign_language + ':' + source_page.title() + ']]'
     # Nature grammaticale
     page_content2 = page_content[:page_content.find(templateSource)]
     # Code langue
-    page_content = page_content[page_content.find(templateSource)+len(templateSource)+1:]
+    page_content = page_content[page_content.find(
+        templateSource)+len(templateSource)+1:]
     if page_content.find("lang=") != -1 and page_content.find("lang=") < page_content.find('}}'):
-        page_content2 = page_content[page_content.find("lang=")+5:len(page_content)]
+        page_content2 = page_content[page_content.find(
+            "lang=")+5:len(page_content)]
         if page_content2.find('|') != -1 and page_content2.find('|') < page_content2.find('}}'):
             language_code = page_content2[:page_content2.find("|")]
             page_content = page_content[:page_content.find("lang=")] + page_content[page_content.find("lang=") + 5
@@ -115,7 +118,8 @@ def treat_page(source_page, is_lemma=True):
     while page_content[:1] == ' ' or page_content[:1] == '|':
         page_content = page_content[1:]
     # Lemme
-    if page_content.find(']]') != -1 and page_content.find(']]') < page_content.find('}}'):  # Si on est dans un lien
+    # Si on est dans un lien
+    if page_content.find(']]') != -1 and page_content.find(']]') < page_content.find('}}'):
         lemma_page_name = page_content[:page_content.find(']]')+2]
     elif page_content.find('|') != -1 and page_content.find('|') < page_content.find('}}'):
         lemma_page_name = page_content[:page_content.find('|')]
@@ -127,7 +131,7 @@ def treat_page(source_page, is_lemma=True):
 
     lemma_page_name = lemma_page_name[2:-2]
     if '{' in lemma_page_name or '}' in lemma_page_name or '[' in lemma_page_name or ']' in lemma_page_name \
-        or '=' in lemma_page_name:
+            or '=' in lemma_page_name:
         if debug_level > 0:
             print(' Unsupported source page format')
         return
@@ -146,7 +150,8 @@ def treat_page(source_page, is_lemma=True):
     else:
         # Prononciation
         pron = ''
-        lemma_page_content = lemma_page_content[lemma_page_content.find('{{langue|' + language_code + '}}'):]
+        lemma_page_content = lemma_page_content[lemma_page_content.find(
+            '{{langue|' + language_code + '}}'):]
         if debug_level > 1:
             input(lemma_page_content)
 
@@ -163,7 +168,8 @@ def treat_page(source_page, is_lemma=True):
         elif lemma_page_content.find('{{en-conj-rég') != -1:
             if debug_level > 0:
                 print(' à partir de {{en-conj-rég')
-            pron = lemma_page_content[lemma_page_content.find('{{en-conj-rég')+len('{{en-conj-rég'):]
+            pron = lemma_page_content[lemma_page_content.find(
+                '{{en-conj-rég')+len('{{en-conj-rég'):]
             if pron.find('|inf.pron=') != -1 and pron.find('|inf.pron=') < pron.find('}}'):
                 pron = pron[pron.find('|inf.pron=')+len('|inf.pron='):]
                 if pron.find('}}') < pron.find('|') or pron.find('|') == -1:
@@ -208,8 +214,10 @@ def treat_page(source_page, is_lemma=True):
         print(' nature : ' + nature)
 
     target_page_content = '== {{langue|' + language_code + '}} ==\n=== {{' + nature + '|' + language_code \
-            + '|flexion}} ===\n\'\'\'' + page_name + '\'\'\' {{pron|'+pron+'|' + language_code \
-            + '}}\n# \'\'Prétérit de\'\' {{l|' + lemma_page_name + '|en}}.\n# \'\'Participe passé de\'\' {{l|' + lemma_page_name + '|en}}.\n'
+        + '|flexion}} ===\n\'\'\'' + page_name + '\'\'\' {{pron|'+pron+'|' + language_code \
+        + '}}\n# \'\'Prétérit de\'\' {{l|' + lemma_page_name + \
+        '|en}}.\n# \'\'Participe passé de\'\' {{l|' + \
+        lemma_page_name + '|en}}.\n'
     save_page(target_page, target_page_content, summary)
 
 
@@ -229,10 +237,12 @@ def main(*args) -> int:
         elif sys.argv[1] == '-page' or sys.argv[1] == '-p':
             treat_page_by_name('saisie de schéma')
         elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
-            p.pages_by_file('lists/articles_' + site_language + '_' + site_family + '.txt')
+            p.pages_by_file('lists/articles_' + site_language +
+                            '_' + site_family + '.txt')
         elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
             regex = r''
-            if len(sys.argv) > 2: regex = sys.argv[2]
+            if len(sys.argv) > 2:
+                regex = sys.argv[2]
             p.page_by_xml(site_language + site_family + '\-.*xml', regex)
         elif sys.argv[1] == '-u':
             p.pages_by_user('User:' + username)
@@ -251,7 +261,7 @@ def main(*args) -> int:
         elif sys.argv[1] == '-redirects':
             p.pages_by_redirects()
         elif sys.argv[1] == '-all':
-           p.pages_by_all()
+            p.pages_by_all()
         elif sys.argv[1] == '-RC':
             while 1:
                 p.pages_by_rc_last_day()
@@ -263,8 +273,9 @@ def main(*args) -> int:
             # large_media: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
             treat_page_by_name(update_html_to_unicode(sys.argv[1]))
     else:
-        #p.pages_by_cat('Catégorie:Pluriels manquants en français', False, '')
-        p.pages_by_cat('Catégorie:Prétérits et participes passés manquants en anglais', False, '')
+        # p.pages_by_cat('Catégorie:Pluriels manquants en français', False, '')
+        p.pages_by_cat(
+            'Catégorie:Prétérits et participes passés manquants en anglais', False, '')
         # TODO: python3 core/pwb.py touch -lang:fr -family:wiktionary -cat:"Prétérits et participes passés manquants en anglais"
     return 0
 

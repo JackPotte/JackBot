@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# coding: utf-8	
+# coding: utf-8
 """
 This script counts the number of quotes.
 
@@ -102,7 +102,7 @@ def replace_lang(piece):
 
 
 def replace_template(piece):
-    # Return title if no arg. 
+    # Return title if no arg.
     if len(piece['parts']) == 0:
         return piece['title']
 
@@ -163,7 +163,7 @@ def parse_templates(text):
 
     i = 0
     # End when the first found template ends, i.e. when stack is empty and
-    # we're not at the beginning 
+    # we're not at the beginning
     while (stack != [] or i == 0) and i < len(text):
         if lastOpeningBrace == -1:
             search = r'({{)'
@@ -227,13 +227,15 @@ def parse_templates(text):
 
             if title in globalvar.known_templates:
                 debug("calling replace_citation on quote")
-                piece = globalvar.known_templates[title](stack[lastOpeningBrace])
+                piece = globalvar.known_templates[title](
+                    stack[lastOpeningBrace])
             else:
                 # Default callback.
                 debug("calling replace_template on other template")
                 piece = replace_template(stack[lastOpeningBrace])
 
-                debug("template %s replaced by %s" % (stack[lastOpeningBrace]['title'], piece))
+                debug("template %s replaced by %s" %
+                      (stack[lastOpeningBrace]['title'], piece))
 
             if piece is None:
                 error("Found a null piece: probably unterminated %s template!" % title)
@@ -263,7 +265,7 @@ def prepare_text(text):
         add = ""
         m = wikilinksR.match(l)
         if m:
-            # [[0|1]]2 
+            # [[0|1]]2
             if m.group(2):
                 add += m.group(2)
             else:
@@ -327,7 +329,8 @@ def workon(page):
         try:
             [endtext, qlen] = parse_quote(text[start:])
         except TypeError:
-            debug('Unclosed template: "%s" in "%s"' % (text[start:100], page.title()))
+            debug('Unclosed template: "%s" in "%s"' %
+                  (text[start:100], page.title()))
             return
 
         offset += (len(text[start:]) - len(endtext))
@@ -346,7 +349,8 @@ def workon(page):
             globalvar.quotes[h] = [squote, [[quote, page]]]
         else:
             if globalvar.quotes[h][0] != squote:
-                error('hash collision! %s and %s have the same hash (%d).' % (globalvar.quotes[h][0], squote, h))
+                error('hash collision! %s and %s have the same hash (%d).' %
+                      (globalvar.quotes[h][0], squote, h))
                 sys.exit(-1)
 
             globalvar.quotes[h][1].append([quote, page])
@@ -368,7 +372,8 @@ def generate_output(quotes):
     outputq('quotes : %d' % len(quotes))
     for h in quotes:
         unique_quotes = {}
-        [operator.setitem(unique_quotes, i[0], []) for i in quotes[h][1] if not i[0] in unique_quotes]
+        [operator.setitem(unique_quotes, i[0], [])
+         for i in quotes[h][1] if not i[0] in unique_quotes]
         # outputq('uquotes : %s' % uquotes)
 
         # Get associated pages.
@@ -414,7 +419,8 @@ def generate_output(quotes):
     output += '\n\n'
 
     # Sort dictionary by values (number of quotes) and return list of tuples (not dict)
-    article_count = sorted(article_count.items(), key=lambda x: x[1], reverse=True)
+    article_count = sorted(article_count.items(),
+                           key=lambda x: x[1], reverse=True)
 
     output += msg[globalvar.lang][2]
     output += msg[globalvar.lang][3]
@@ -453,7 +459,7 @@ class Main(object):
     # Options
     __start = None
     __number = None
-    ## Which page generator to use
+    # Which page generator to use
     __workonnew = False
     __catname = None
     __catrecurse = False
@@ -473,66 +479,78 @@ class Main(object):
         for arg in pywikibot.handle_args():
             if arg.startswith('-ref'):
                 if len(arg) == 4:
-                    self.__refpagetitle = pywikibot.input('Links to which page should be processed?')
+                    self.__refpagetitle = pywikibot.input(
+                        'Links to which page should be processed?')
                 else:
                     self.__refpagetitle = arg[5:]
             elif arg.startswith('-cat'):
                 if len(arg) == 4:
-                    self.__catname = pywikibot.input('Please enter the category name:')
+                    self.__catname = pywikibot.input(
+                        'Please enter the category name:')
                 else:
                     self.__catname = arg[5:]
             elif arg.startswith('-subcat'):
                 self.__catrecurse = True
             elif arg.startswith('-links'):
                 if len(arg) == 6:
-                    self.__linkpagetitle = pywikibot.input('Links from which page should be processed?')
+                    self.__linkpagetitle = pywikibot.input(
+                        'Links from which page should be processed?')
                 else:
                     self.__linkpagetitle = arg[7:]
             elif arg.startswith('-file:'):
                 if len(arg) == 5:
-                    self.__textfile = pywikibot.input('File to read pages from?')
+                    self.__textfile = pywikibot.input(
+                        'File to read pages from?')
                 else:
                     self.__textfile = arg[6:]
             elif arg == '-new':
                 self.__workonnew = True
             elif arg.startswith('-start:'):
                 if len(arg) == 6:
-                    self.__start = pywikibot.input('Which page to start from: ')
+                    self.__start = pywikibot.input(
+                        'Which page to start from: ')
                 else:
                     self.__start = arg[7:]
             elif arg.startswith('-number:'):
                 if len(arg) == 7:
-                    self.__number = int(pywikibot.input('Number of pages to parse: '))
+                    self.__number = int(pywikibot.input(
+                        'Number of pages to parse: '))
                 else:
                     self.__number = int(arg[8:])
             elif arg.startswith('-output:'):
                 if len(arg) == 7:
-                    self.__output = pywikibot.input('Which page to save report to: ')
+                    self.__output = pywikibot.input(
+                        'Which page to save report to: ')
                 else:
                     self.__output = arg[8:]
             elif arg.startswith('-outputprefix:'):
                 if len(arg) == 12:
-                    self.__outputprefix = pywikibot.input('Which page to save templates to: ')
+                    self.__outputprefix = pywikibot.input(
+                        'Which page to save templates to: ')
                 else:
                     self.__outputprefix = arg[13:]
             elif arg.startswith('-outputquotes:'):
                 if len(arg) == 12:
-                    self.__outputquotes = pywikibot.input('Which page to save number of quotes to: ')
+                    self.__outputquotes = pywikibot.input(
+                        'Which page to save number of quotes to: ')
                 else:
                     self.__outputquotes = arg[13:]
             elif arg.startswith('-outputarticles:'):
                 if len(arg) == 14:
-                    self.__outputarticles = pywikibot.input('Which page to save number of quotes to: ')
+                    self.__outputarticles = pywikibot.input(
+                        'Which page to save number of quotes to: ')
                 else:
                     self.__outputarticles = arg[15:]
             elif arg.startswith('-template:'):
                 if len(arg) == 9:
-                    globalvar.quote_template = pywikibot.input('Which template is used for quotes?')
+                    globalvar.quote_template = pywikibot.input(
+                        'Which template is used for quotes?')
                 else:
                     globalvar.quote_template = arg[10:]
             elif arg.startswith('-arg:'):
                 if len(arg) == 4:
-                    globalvar.quote_arg = pywikibot.input('Which template arg is used for quotes?')
+                    globalvar.quote_arg = pywikibot.input(
+                        'Which template arg is used for quotes?')
                 else:
                     globalvar.quote_arg = arg[5:]
             elif arg == '-quiet':
@@ -550,7 +568,8 @@ class Main(object):
         if self.__workonnew:
             if not self.__number:
                 self.__number = 500
-            pagegen = pagegenerators.NewpagesPageGenerator(number=self.__number)
+            pagegen = pagegenerators.NewpagesPageGenerator(
+                number=self.__number)
 
         elif self.__refpagetitle:
             refpage = pywikibot.Page(site, self.__refpagetitle)
@@ -564,9 +583,11 @@ class Main(object):
             cat = pywikibot.Category(site, 'Category:%s' % self.__catname)
 
             if self.__start:
-                pagegen = pagegenerators.CategorizedPageGenerator(cat, recurse=self.__catrecurse, start=self.__start)
+                pagegen = pagegenerators.CategorizedPageGenerator(
+                    cat, recurse=self.__catrecurse, start=self.__start)
             else:
-                pagegen = pagegenerators.CategorizedPageGenerator(cat, recurse=self.__catrecurse)
+                pagegen = pagegenerators.CategorizedPageGenerator(
+                    cat, recurse=self.__catrecurse)
 
         elif self.__textfile:
             pagegen = pagegenerators.TextfilePageGenerator(self.__textfile)
@@ -576,7 +597,8 @@ class Main(object):
                 self.__start = '!'
             namespace = pywikibot.Page(site, self.__start).namespace()
             start = pywikibot.Page(site, self.__start).title(with_ns=False)
-            pagegen = pagegenerators.AllpagesPageGenerator(start, namespace, includeredirects=False, site=site)
+            pagegen = pagegenerators.AllpagesPageGenerator(
+                start, namespace, includeredirects=False, site=site)
         return pagegen
 
     def main(self):
@@ -584,7 +606,8 @@ class Main(object):
         self.parse()
 
         # ensure that we don't try to change main page
-        globalvar.mainpage_name = pywikibot.Page(pywikibot.Link("Main page_content", site)).title(with_ns=False)
+        globalvar.mainpage_name = pywikibot.Page(pywikibot.Link(
+            "Main page_content", site)).title(with_ns=False)
 
         if site.lang in msg:
             globalvar.lang = site.lang
@@ -622,7 +645,8 @@ class Main(object):
                     output = output % time.strftime('%d/%m/%y / %H:00')
                     outputpage.put(output, summary=msg[globalvar.lang][9])
             except:
-                error('Getting/Modifying page %s failed, generated output was:\n%s' % (outputpage, output))
+                error('Getting/Modifying page %s failed, generated output was:\n%s' %
+                      (outputpage, output))
         else:
             pywikibot.output(output)
 
@@ -633,18 +657,21 @@ class Main(object):
                 pname = self.__outputquotes
             else:
                 pname = "NUMBEROFQUOTES"
-            nquotespage = pywikibot.Page(site, '%s%s' % (self.__outputprefix, pname))
+            nquotespage = pywikibot.Page(
+                site, '%s%s' % (self.__outputprefix, pname))
 
             if self.__outputarticles:
                 pname = self.__outputarticles
             else:
                 pname = "Utilisateur:JackBot/NUMBEROFARTICLES"
-            narticlespage = pywikibot.Page(site, '%s%s' % (self.__outputprefix, pname))
+            narticlespage = pywikibot.Page(
+                site, '%s%s' % (self.__outputprefix, pname))
         else:
             if self.__outputquotes:
                 nquotespage = pywikibot.Page(site, '%s' % self.__outputquotes)
             if self.__outputarticles:
-                narticlespage = pywikibot.Page(site, '%s' % self.__outputarticles)
+                narticlespage = pywikibot.Page(
+                    site, '%s' % self.__outputarticles)
 
         if nquotespage:
             # April fool (replace %d by %s too)
