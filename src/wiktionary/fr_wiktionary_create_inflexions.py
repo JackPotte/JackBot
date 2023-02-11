@@ -53,10 +53,13 @@ def treat_page(page):
             print(' untreated namespace')
             return
     else:
-        print(' missing page content')
+        print(' missing page')
         return
 
     singular_page = get_content_from_page(page, 'All')
+    if singular_page is None:
+        print(' missing page content')
+        return
     if singular_page.find('{{formater') != -1 \
             or singular_page.find('{{SI|') != -1 \
             or singular_page.find('{{SI}}') != -1 \
