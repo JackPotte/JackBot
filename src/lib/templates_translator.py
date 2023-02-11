@@ -8,7 +8,6 @@ cf http://www.tradino.org/
 from __future__ import absolute_import, unicode_literals
 import re
 import pywikibot
-# from pywikibot import *
 from page_functions import *
 
 do_check_url = False

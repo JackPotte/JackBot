@@ -281,7 +281,7 @@ def getWordPlural(page_content, page_name, current_template):
                 plural = page_name + 's'
 
             if (plural[-2:] == 'ss' or plural.find('{') != -1) and suffix == '':
-                print(' Pluriel en -ss' + plural)
+                print(' Pluriel en -ss : ' + plural)
                 log('*[[' + page_name + ']]')
                 return
             if debug_level > 1:
