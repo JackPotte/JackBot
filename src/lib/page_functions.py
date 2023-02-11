@@ -836,3 +836,25 @@ def has_parameter(string, param):
 def remove_parameter_if_empty(template, parameter_name):
     regex = r'(\| *)' + parameter_name + r'( *=\n*)([\|}])'
     return re.sub(regex, r'\3', template)
+
+
+# TODO: ignores LaTex
+def has_broken_tags(opening_tag, closing_tag, current_page, current_page_content=None):
+    global debug_level
+    opening_count = current_page.count(opening_tag)
+    closing_count = current_page.count(closing_tag)
+
+    if opening_count - closing_count == 0:
+        return False
+
+    if debug_level > 0:
+        print('Broken tag: ' + opening_tag + '=' + str(opening_count) + ', ' + closing_tag + '=' + str(closing_count))
+    return True
+
+
+def has_broken_braces(current_page):
+    return has_broken_tags('{', '}', current_page)
+
+
+def has_broken_brackets(current_page):
+    return has_broken_tags('[', ']', current_page)

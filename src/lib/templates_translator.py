@@ -627,7 +627,7 @@ def translate_template_parameters(current_template):
                 print('   ' + new_param_value)
             # Nested templates engenders a false empty value for now
             if old_param_value == new_param_value and old_param_value != '':
-                regex = r'(\| *)' + old_param[p] + r'( *=[^\|}]*)([\|}])'
+                regex = r'(\| *)' + old_param[p] + r'( *=[^\|}\[]*)([\|}])'
                 current_template = re.sub(regex, r'\3', current_template)
             # TODO keep only the last date between "access-date" and "consulté le"
         else:

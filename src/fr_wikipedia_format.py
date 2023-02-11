@@ -146,7 +146,7 @@ def treat_page(page):
         current_page = final_page + current_page
 
     if fix_missing_titles:
-        # Titres manquants (TODO: en test)
+        # TODO: auto test
         final_page = ''
         regex = r'{{[l|L]ien web *\|'
         if re.search(regex, current_page):
@@ -156,30 +156,20 @@ def treat_page(page):
             current_page = add_parameter(current_page, 'titre')
         current_page = final_page + current_page
 
-    # *** Traitement des Catégories ***
-    if page_name.find('Template:Cite pmid/') != -1:
-        current_page = current_page.replace(
-            'Catégorie:Modèle de source‎', 'Catégorie:Modèle pmid')
-        current_page = current_page.replace(
-            '[[Catégorie:Modèle pmid]]', '[[Catégorie:Modèle pmid‎|{{SUBPAGENAME}}]]')
+    if 'User:' + username not in page_name:
+        if has_broken_braces(current_page):
+            log('*[[' + page_name + ']] : broken braces')
+        if has_broken_brackets(current_page):
+            log('*[[' + page_name + ']] : broken brackets')
 
-    # Analyse des crochets et accolades (TODO : hors LaTex)
-    if current_page.count('{') - current_page.count('}') != 0:
-        if page_name.find('User:JackBot/') == -1:
-            log('*[[' + page_name + ']] : accolade cassée')
-        # if debug_level > 1: raise Exception('Accolade cassée')
-    if current_page.count('[') - current_page.count(']') != 0:
-        if page_name.find('User:JackBot/') == -1:
-            log('*[[' + page_name + ']] : crochet cassé')
-        # if debug_level > 1: raise Exception('Crochet cassé')
-    if current_page_content.count('[[') - current_page_content.count(']]') != current_page.count('[[') \
-            - current_page.count(']]'):
-        log_in_file(page_name, current_page_content, 'Crochets cassés')
+    if current_page_content.count('[[') - current_page_content.count(']]') != \
+            current_page.count('[[') - current_page.count(']]'):
+        log_in_file(page_name, current_page, 'broken braces pairs')
         if safe_mode:
             return
-    if current_page_content.count('{{') - current_page_content.count('}}') != current_page.count('{{') \
-            - current_page.count('}}'):
-        log_in_file(page_name, current_page_content, 'Accolades cassées')
+    if current_page_content.count('{{') - current_page_content.count('}}') != \
+            current_page.count('{{') - current_page.count('}}'):
+        log_in_file(page_name, current_page, 'broken brackets pairs')
         if safe_mode:
             return
 
@@ -189,7 +179,7 @@ def treat_page(page):
     if final_page != current_page_content and final_page != current_page_content.replace('{{chapitre |', '{{chapitre|')\
             and final_page != current_page_content.replace('{{Chapitre |', '{{Chapitre|'):
         summary = summary + \
-            ', [[Wikipédia:Bot/Requêtes/2012/12#Remplacer_les_.7B.7BCite_web.7D.7D_par_.7B.7BLien_web.7D.7D|traduction des modèles de liens]]'
+            ', [[Wikipédia:Bot/Requêtes/2012/12#Remplacer_les_{{Cite_web}}_par_{{Lien_web}}|traduction des modèles de liens]]'
         final_page = final_page.replace(r'</ref><ref>', r'</ref>{{,}}<ref>')
         save_page(page, final_page, summary)
     elif debug_level > 0:
