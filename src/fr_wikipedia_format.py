@@ -156,7 +156,7 @@ def treat_page(page):
             current_page = add_parameter(current_page, 'titre')
         current_page = final_page + current_page
 
-    if 'User:' + username not in page_name:
+    if not is_test_page(page_name):
         if has_broken_braces(current_page):
             log('*[[' + page_name + ']] : broken braces')
         if has_broken_brackets(current_page):

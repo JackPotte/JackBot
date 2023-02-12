@@ -3794,7 +3794,7 @@ def add_anagrams(page_content, summary, page_name, language_code):
                 print(' ' + anagram)
             anagram_page = Page(site, anagram)
             if anagram_page.exists():
-                if anagram_page.namespace() != 0 and anagram != 'User:JackBot/test':
+                if anagram_page.namespace() != 0 and not is_test_page(anagram):
                     break
                 else:
                     anagram_page_content = get_content_from_page(anagram_page)

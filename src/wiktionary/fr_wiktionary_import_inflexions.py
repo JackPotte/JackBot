@@ -71,22 +71,14 @@ def treat_page(source_page, is_lemma=True):
         page_name = source_page.title()
     pywikibot.output("\n\03<<blue>>" + page_name + "\03<<default>>")
 
-    if not source_page.exists():
-        if debug_level > 0:
-            print(' missing page content')
-        return
-    if source_page.namespace() != 0 and source_page.title() != 'User:JackBot/test':
-        if debug_level > 0:
-            print(' untreated namespace')
-        return
-
     target_page = Page(site, page_name)
     if target_page.exists():
         # TODO search for foreign_language
         return
 
     page_content = get_content_from_page(source_page, 'All')
-    if page_content == '':
+    if page_content is None or page_content == '':
+        print(' missing page content: ' + page_name)
         return
 
     summary = 'Importation depuis [[' + \

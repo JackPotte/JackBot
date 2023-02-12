@@ -241,7 +241,7 @@ def treat_page(page):
                 if lecon != '' and lecon.find('.') == -1:
                     page2 = Page(site, lecon)
                     if page2.exists():
-                        if page2.namespace() != 0 and page2.title() != 'User:JackBot/test':
+                        if page2.namespace() != 0 and not is_test_page(page2.title()):
                             return
                         else:
                             try:

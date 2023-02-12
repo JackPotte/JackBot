@@ -48,18 +48,12 @@ def treat_page(page):
 
     if not has_more_than_time(page, 1440):
         return
-    if page.exists():
-        if page.namespace() != 0 and 'Utilisateur:' + username not in page.title():
-            print(' untreated namespace')
-            return
-    else:
-        print(' missing page')
+
+    singular_page = get_content_from_page(page, [''])
+    if singular_page is None or singular_page == '':
+        print(' missing page content: ' + page_name)
         return
 
-    singular_page = get_content_from_page(page, 'All')
-    if singular_page is None:
-        print(' missing page content')
-        return
     if singular_page.find('{{formater') != -1 \
             or singular_page.find('{{SI|') != -1 \
             or singular_page.find('{{SI}}') != -1 \

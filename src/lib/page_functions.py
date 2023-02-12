@@ -194,7 +194,7 @@ def get_content_from_page(page, allowed_namespaces=None):
     if isinstance(allowed_namespaces, list):
         if debug_level > 1:
             print(' namespace : ' + str(page.namespace()))
-        condition = page.namespace() in allowed_namespaces
+        condition = page.namespace() in allowed_namespaces or is_test_page(page.title())
     elif allowed_namespaces == 'All':
         if debug_level > 1:
             print(' all namespaces')
@@ -202,8 +202,7 @@ def get_content_from_page(page, allowed_namespaces=None):
     else:
         if debug_level > 1:
             print(' content namespaces')
-        condition = page.namespace() in [
-            0, 12, 14, 100] or username in page.title()
+        condition = page.namespace() in [0, 12, 14, 100] or is_test_page(page.title())
 
     if not condition:
         if debug_level > 0:
@@ -858,3 +857,7 @@ def has_broken_braces(current_page):
 
 def has_broken_brackets(current_page):
     return has_broken_tags('[', ']', current_page)
+
+
+def is_test_page(page_name):
+    return 'User:' + username in page_name or 'Utilisateur:' + username in page_name
