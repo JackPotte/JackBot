@@ -223,6 +223,7 @@ def treat_page(page):
                     print(' {{S| : retrait de code langue')
                 page_content = re.sub(regex, r'\1}}', page_content)
 
+        page_content, summary = format_titles(page_content, summary)
         page_content, summary = format_templates(page_content, summary)
         page_content, summary = format_wikicode(
             page_content, summary, page_name)
@@ -1237,13 +1238,10 @@ def main(*args) -> int:
         p.pages_by_cat(
             'Catégorie:Wiktionnaire:Sections avec paramètres superflus')
         p.pages_by_cat('Catégorie:Wiktionnaire:Sections utilisant un alias')
-        # p.pages_by_cat('Catégorie:Wiktionnaire:Sections avec titre inconnu')
+
         p.pages_by_search('insource:/\}==== \{\{S\|/', namespaces=[0])
         p.pages_by_search('insource:/\}=== \{\{S\|/', namespaces=[0])
-        p.pages_by_search(
-            'insource:/[^=]=== \{\{S\|(variantes|synonymes|antonymes|déclinaison|dérivés|apparentés|hyperonymes|hyponymes|méronymes|holonymes|vocabulaire|traductions)/',
-            namespaces=[0])
-        # p.pages_by_cat('Catégorie:Wiktionnaire:Ébauches à compléter')
+
     return 0
 
 

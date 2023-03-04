@@ -2235,6 +2235,17 @@ def remove_double_category_when_template(page_content, summary):
     return page_content, summary
 
 
+def format_titles(page_content, summary):
+    page_content = page_content.replace('{{S|etymologie}}', '{{S|étymologie}}')
+    page_content = page_content.replace('{{S|variante orthographiques}}', '{{S|variantes orthographiques}}')
+
+    for section in sections:
+        if section[-1:] == 's':
+            page_content = page_content.replace('{{S|' + section[:-1] + '}}', '{{S|' + section + '}}')
+
+    return page_content, summary
+
+
 def format_templates(page_content, summary):
     page_content = page_content.replace('}} \n', '}}\n')
     page_content = page_content.replace('\n {{', '\n{{')
