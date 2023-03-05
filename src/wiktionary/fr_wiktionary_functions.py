@@ -1837,6 +1837,9 @@ def format_translations(page_content, summary):
     regex = r'({{trad\-fin}})\n*{{trad\-fin}}'
     page_content = re.sub(regex, r'\1', page_content)
 
+    regex = r'{{trad-\|hr\|(\([0-9]\))\|dif=([^}\|]+)}}'
+    page_content = re.sub(regex, r'{{trad-|hr|\2}} \1', page_content)
+
     return page_content, summary
 
 

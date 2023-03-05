@@ -42,7 +42,7 @@ class PageProvider:
         if source:
             pages_list = open(source, 'r')
             while 1:
-                page_name = pages_list.readline().decode(config.console_encoding, 'replace')
+                page_name = pages_list.readline()
                 fin = page_name.find("\t")
                 page_name = page_name[:fin]
                 if page_name == '':
