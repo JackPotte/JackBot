@@ -61,7 +61,7 @@ def treat_page(page):
     if debug_level > 0:
         print('------------------------------------')
     page_name = page.title()
-    pywikibot.output("\n\03<<blue>>" + page_name + u"\03<<default>>")
+    pywikibot.output(f"\n\03<<blue>>{page_name}\03<<default>>")
 
     summary = 'Formatage'
     if not page.exists():
@@ -72,7 +72,7 @@ def treat_page(page):
         return
     if not treat_all_namespaces and page.namespace() != 0 and page_name.find(username) == -1 \
             and page_name.find('Template:Cite pmid/') == -1:
-        print(' not Cite pmid: ' + str(page.namespace()))
+        print(f' not Cite pmid: {str(page.namespace())}')
         return
     current_page_content = get_content_from_page(page, 'All')
     if current_page_content is None:
@@ -158,9 +158,9 @@ def treat_page(page):
 
     if not is_test_page(page_name):
         if has_broken_braces(current_page):
-            log('*[[' + page_name + ']] : broken braces')
+            log(f'*[[{page_name}]] : broken braces')
         if has_broken_brackets(current_page):
-            log('*[[' + page_name + ']] : broken brackets')
+            log(f'*[[{page_name}]] : broken brackets')
 
     if current_page_content.count('[[') - current_page_content.count(']]') != \
             current_page.count('[[') - current_page.count(']]'):
@@ -176,8 +176,11 @@ def treat_page(page):
     final_page = current_page
     if debug_level > 1:
         print('--------------------------------------------------------------------------------------------')
-    if final_page != current_page_content and final_page != current_page_content.replace('{{chapitre |', '{{chapitre|')\
-            and final_page != current_page_content.replace('{{Chapitre |', '{{Chapitre|'):
+    if final_page not in [
+        current_page_content,
+        current_page_content.replace('{{chapitre |', '{{chapitre|'),
+        current_page_content.replace('{{Chapitre |', '{{Chapitre|'),
+    ]:
         summary = summary + \
             ', [[Wikipédia:Bot/Requêtes/2012/12#Remplacer_les_{{Cite_web}}_par_{{Lien_web}}|traduction des modèles de liens]]'
         final_page = final_page.replace(r'</ref><ref>', r'</ref>{{,}}<ref>')
@@ -197,38 +200,29 @@ def main(*args) -> int:
         if debug_level > 1:
             print(sys.argv)
         if sys.argv[1] == '-test':
-            treat_page_by_name('User:' + username + '/test')
-        elif sys.argv[1] == '-test2' or sys.argv[1] == '-tu':
-            treat_page_by_name('User:' + username + '/test unitaire')
-        elif sys.argv[1] == '-page' or sys.argv[1] == '-p':
+            treat_page_by_name(f'User:{username}/test')
+        elif sys.argv[1] in ['-test2', '-tu']:
+            treat_page_by_name(f'User:{username}/test unitaire')
+        elif sys.argv[1] in ['-page', '-p']:
             treat_all_namespaces = True
             treat_page_by_name('SIMP J013656.5+093347')
-        elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
-            p.pages_by_file('lists/articles_' + site_language +
-                            '_' + site_family + '.txt')
-        elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
-            regex = r'\| *French *\|'
-            if len(sys.argv) > 2:
-                regex = sys.argv[2]
+        elif sys.argv[1] in ['-file', '-txt']:
+            p.pages_by_file(f'lists/articles_{site_language}_{site_family}.txt')
+        elif sys.argv[1] in ['-dump', '-xml']:
+            regex = sys.argv[2] if len(sys.argv) > 2 else r'\| *French *\|'
             p.page_by_xml(site_language + site_family + '\-.*xml', regex)
         elif sys.argv[1] == '-u':
-            p.pages_by_user('User:' + username)
-        elif sys.argv[1] == '-search' or sys.argv[1] == '-s' or sys.argv[1] == '-r':
+            p.pages_by_user(f'User:{username}')
+        elif sys.argv[1] in ['-search', '-s', '-r']:
             if len(sys.argv) > 2:
                 p.pages_by_search(sys.argv[2], namespaces=[0])
             else:
                 p.pages_by_search('insource:/\| *display-authors *= *etal */')
-        elif sys.argv[1] == '-link' or sys.argv[1] == '-l' or sys.argv[1] == '-template' or sys.argv[1] == '-m':
+        elif sys.argv[1] in ['-link', '-l', '-template', '-m']:
             p.pages_by_link('Modèle:Dead link')
-        elif sys.argv[1] == '-category' or sys.argv[1] == '-cat':
-            after_page = ''
-            if len(sys.argv) > 2:
-                after_page = sys.argv[2]
-            p.pages_by_cat('Page du modèle Article comportant une erreur',
-                           namespaces=None, after_page=after_page)
-            # treat_all_namespaces = True
-            # p.pagesByCat('Catégorie:Pages utilisant des liens magiques ISBN', namespaces = None, after_page = after_page)
-            # p.pagesByCat('Catégorie:Pages avec ISBN invalide', namespaces = None, after_page = after_page)
+        elif sys.argv[1] in ['-category', '-cat']:
+            after_page = sys.argv[2] if len(sys.argv) > 2 else ''
+            p.pages_by_cat('Page du modèle Article comportant une erreur', namespaces=None, after_page=after_page)
         elif sys.argv[1] == '-redirects':
             p.pages_by_redirects()
         elif sys.argv[1] == '-all':
@@ -292,7 +286,7 @@ def log_in_file(page_name, current_page_content, error_title):
         os.mkdir(parent_folder)
 
     file_object = codecs.open(output_file, 'a', 'utf-8')
-    file_object.write(error_title + ' dans ' + page_name + '\n')
+    file_object.write(f'{error_title} dans {page_name}' + '\n')
     file_object.write(current_page_content +
                       '\n\n----------------------------------------------------------------\n\n')
     file_object.close()

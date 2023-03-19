@@ -82,21 +82,21 @@ TODO '<!--' '-->'?
 broken_domains = []
 # broken_domains.append('marianne2.fr')  # Site remplacé par marianne.net en mai 2017
 
-blocked_domains = []  # à cause des popovers ou Node.js ?
-blocked_domains.append('bbc.co.uk')
-blocked_domains.append('biodiversitylibrary.org')
-blocked_domains.append('charts.fi')
-blocked_domains.append('cia.gov')
-blocked_domains.append('finnishcharts.com')
-blocked_domains.append('history.navy.mil')  # IP Free bloquée en lecture
-blocked_domains.append('itunes.apple.com')
-blocked_domains.append('nytimes.com')
-blocked_domains.append('psaworldtour.com')
-blocked_domains.append('rottentomatoes.com')
-blocked_domains.append('soundcloud.com')
-blocked_domains.append('twitter.com')
-blocked_domains.append('w-siberia.ru')
-
+blocked_domains = [
+    'bbc.co.uk',
+    'biodiversitylibrary.org',
+    'charts.fi',
+    'cia.gov',
+    'finnishcharts.com',
+    'history.navy.mil',
+    'itunes.apple.com',
+    'nytimes.com',
+    'psaworldtour.com',
+    'rottentomatoes.com',
+    'soundcloud.com',
+    'twitter.com',
+    'w-siberia.ru',
+]
 url_to_replace = ['athena.unige.ch/athena', 'un2sg4.unige.ch/athena']
 url_to_replace_limit = len(url_to_replace)
 
@@ -127,9 +127,7 @@ sites_errors = ["403 Forbidden", "404 – File not found", "404 error", "404 Not
                 "Il n'y a pour l'instant aucun texte sur cette page."]
 errors_limit = len(sites_errors)
 
-authorized_files = []
-authorized_files.append('.pdf')
-
+authorized_files = ['.pdf']
 # Too large media to ignore
 large_media = ['RIFF', 'WAV', 'BWF', 'Ogg', 'AIFF', 'CAF', 'PCM', 'RAW', 'CDA', 'FLAC', 'ALAC', 'AC3', 'MP3', 'mp3PRO',
                'Ogg Vorbis', 'VQF', 'TwinVQ', 'WMA', 'AU', 'ASF', 'AA', 'AAC', 'MPEG-2 AAC', 'ATRAC', 'iKlax', 'U-MYX',
@@ -214,13 +212,17 @@ def treat_broken_links(current_page, summary):
                     and PageDebut.rfind('titre=') > PageDebut.rfind('}}'):
                 current_page3 = PageDebut[PageDebut.rfind(
                     'titre=')+len('titre='):]
-                if current_page3.find('|') != -1 and (current_page3.find('|') < current_page3.find('}}')
-                                                      or current_page3.rfind('}}') == -1):
-                    titre = current_page3[:current_page3.find('|')]
-                else:
-                    titre = current_page3
+                titre = (
+                    current_page3[: current_page3.find('|')]
+                    if current_page3.find('|') != -1
+                    and (
+                        current_page3.find('|') < current_page3.find('}}')
+                        or current_page3.rfind('}}') == -1
+                    )
+                    else current_page3
+                )
                 if debug_level > 0:
-                    print('Titre= avant URL : ' + titre)
+                    print(f'Titre= avant URL : {titre}')
             elif PageDebut.rfind('titre =') != -1 and PageDebut.rfind('titre =') > PageDebut.rfind('{{') \
                     and PageDebut.rfind('titre =') > PageDebut.rfind('}}'):
                 current_page3 = PageDebut[PageDebut.rfind(
@@ -264,7 +266,7 @@ def treat_broken_links(current_page, summary):
                                                                  and url_page_end.find(url_ends[l]) < url_page_end.find(url_end_char)):
                         url_end_char = url_ends[l]
                 if debug_level > 0:
-                    print('*Caractère de fin URL : ' + url_end_char)
+                    print(f'*Caractère de fin URL : {url_end_char}')
 
                 if url_start == 1:
                     url = 'http:' + \
@@ -283,21 +285,24 @@ def treat_broken_links(current_page, summary):
                     is_broken_link = False
                 else:
                     for u in range(1, url_limit2):
-                        while url[len(url)-1:] == url_ends2[u]:
-                            url = url[:len(url)-1]
+                        while url[-1:] == url_ends2[u]:
+                            url = url[:-1]
                             if debug_level > 0:
                                 print('Réduction de l\'URL de ' + url_ends2[u])
 
                     is_large_media = False
                     for f in range(1, large_media_limit):
-                        if url[len(url) - len(large_media[f]) - 1:].lower() == '.' + large_media[f].lower():
+                        if (
+                            url[len(url) - len(large_media[f]) - 1 :].lower()
+                            == f'.{large_media[f].lower()}'
+                        ):
                             if debug_level > 0:
                                 print(url)
                                 print('Média détecté (memory error potentielle)')
                             is_large_media = True
                     if not is_large_media:
                         if debug_level > 0:
-                            print('Recherche de la page distante : ' + url)
+                            print(f'Recherche de la page distante : {url}')
                         html_source = check_url(url, debug_level)
                         if debug_level > 0:
                             print('Recherche dans son contenu')
@@ -312,23 +317,20 @@ def treat_broken_links(current_page, summary):
                 # Confirmation manuelle
                 if is_semi_auto:
                     webbrowser.open_new_tab(url)
-                    if is_broken_link:
-                        result = input("Lien brisé ? (o/n) ")
-                    else:
-                        result = input("Lien fonctionnel ? (o/n) ")
-                    if result != "n" and result != "no" and result != "non":
-                        is_broken_link = True
-                    else:
-                        is_broken_link = False
-
+                    result = (
+                        input("Lien brisé ? (o/n) ")
+                        if is_broken_link
+                        else input("Lien fonctionnel ? (o/n) ")
+                    )
+                    is_broken_link = result not in ["n", "no", "non"]
                 if debug_level > 0:
                     # Compte-rendu des URL détectées
                     try:
-                        print('*URL : ' + url)
-                        print('*Titre : ' + titre)
-                        print('*HS : ' + str(is_broken_link))
+                        print(f'*URL : {url}')
+                        print(f'*Titre : {titre}')
+                        print(f'*HS : {str(is_broken_link)}')
                     except UnicodeDecodeError:
-                        print('*HS : ' + str(is_broken_link))
+                        print(f'*HS : {str(is_broken_link)}')
                         print("UnicodeDecodeError l 466")
                 if debug_level > 1:
                     input(html_source[:7000])
@@ -355,8 +357,7 @@ def treat_broken_links(current_page, summary):
                     (page_start.rfind('url=') != -1 and page_start.rfind('url=') > page_start.rfind('}}')) or \
                         (page_start.rfind('url =') != -1 and page_start.rfind('url =') > page_start.rfind('}}')):
                     template_start = page_start.rfind('{{')
-                    page_start = page_start[page_start.rfind(
-                        '{{'):len(page_start)]
+                    page_start = page_start[page_start.rfind('{{') :]
                     replaced_template = ''
                     # Lien dans un modèle connu (consensus en cours pour les autres, atention aux infobox)
                     '''for m in range(1,templates_limit):
@@ -365,15 +366,15 @@ def treat_broken_links(current_page, summary):
                     if re.search(r'{{ *[L|l]ien web *[\||\n]', page_start):
                         replaced_template = 'lien web'
                         if debug_level > 0:
-                            print('Détection de ' + replaced_template)
+                            print(f'Détection de {replaced_template}')
                     elif re.search(r'{{ *[L|l]ire en ligne *[\||\n]', page_start):
                         replaced_template = 'lire en ligne'
                         if debug_level > 0:
-                            print('Détection de ' + replaced_template)
+                            print(f'Détection de {replaced_template}')
                     elif do_retest_broken_links and re.search(r'{{ *[L|l]ien brisé *[\||\n]', page_start):
                         replaced_template = 'lien brisé'
                         if debug_level > 0:
-                            print('Détection de ' + replaced_template)
+                            print(f'Détection de {replaced_template}')
 
                     # if page_start[0:2] == '{{': replaced_template = trim(page_start[2:page_start.find('|')])
 
@@ -401,14 +402,13 @@ def treat_broken_links(current_page, summary):
                                     + current_page[re.search(r'{{ *[' + replaced_template[:1] + '|'
                                                              + replaced_template[:1].upper() + ']'
                                                              + replaced_template[1:] + ' *[\||\n]', current_page).end()-1:]
-                            except AttributeError:
-                                raise Exception("Regex introuvable ligne 811")
+                            except AttributeError as e:
+                                raise Exception("Regex introuvable ligne 811") from e
 
                         elif replaced_template == 'lien brisé':
                             if debug_level > 0:
                                 print('Rétablissement d\'un ancien lien brisé')
-                            current_page = current_page[:current_page.find(replaced_template)] + 'lien web' \
-                                + current_page[current_page.find(replaced_template)+len(replaced_template):]
+                            current_page = f'{current_page[:current_page.find(replaced_template)]}lien web{current_page[current_page.find(replaced_template) + len(replaced_template):]}'
                     else:
                         if debug_level > 0:
                             print(url + " dans modèle non géré")
@@ -422,15 +422,32 @@ def treat_broken_links(current_page, summary):
                             if debug_level > 0:
                                 print(
                                     'Ajout de lien brisé entre crochets sans protocole')
-                            if titre != '':
-                                current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
-                                    + time.strftime('%Y-%m-%d') + '|url=' + url + '|titre=' + titre + '}}' \
-                                    + current_page[current_page.find('//')+url_page_end.find(url_end_char):]
-                            else:
-                                current_page = current_page[:url_start] + '{{lien brisé|consulté le=' \
-                                    + time.strftime('%Y-%m-%d') + '|url=' + url + '}}' \
-                                    + current_page[current_page.find('//')+url_page_end.find(url_end_char):]
-                            # if debug_level > 0: input(current_page)
+                            current_page = (
+                                current_page[:url_start]
+                                + '{{lien brisé|consulté le='
+                                + time.strftime('%Y-%m-%d')
+                                + '|url='
+                                + url
+                                + '|titre='
+                                + titre
+                                + '}}'
+                                + current_page[
+                                    current_page.find('//')
+                                    + url_page_end.find(url_end_char) :
+                                ]
+                                if titre != ''
+                                else current_page[:url_start]
+                                + '{{lien brisé|consulté le='
+                                + time.strftime('%Y-%m-%d')
+                                + '|url='
+                                + url
+                                + '}}'
+                                + current_page[
+                                    current_page.find('//')
+                                    + url_page_end.find(url_end_char) :
+                                ]
+                            )
+                                                    # if debug_level > 0: input(current_page)
                         else:
                             if debug_level > 0:
                                 print('Ajout de lien brisé 2')
@@ -501,15 +518,12 @@ def treat_broken_links(current_page, summary):
                                         + time.strftime('%Y-%m-%d') + '|url=' + url + '}} ' \
                                         + current_page[current_page.find('//')+url_page_end.find(url_end_char):]
 
-                    else:
-                        if debug_level > 0:
-                            print('Aucun changement sur l\'URL http')
-            else:
-                if debug_level > 0:
-                    print('Aucun changement sur l\'URL non http')
-        else:
-            if debug_level > 1:
-                print('URL entre balises sautée')
+                    elif debug_level > 0:
+                        print('Aucun changement sur l\'URL http')
+            elif debug_level > 0:
+                print('Aucun changement sur l\'URL non http')
+        elif debug_level > 1:
+            print('URL entre balises sautée')
 
         # Lien suivant, en sautant les URL incluses dans l'actuelle, et celles avec d'autres protocoles que http(s)
         if template_end_position == 0 and not is_broken_link:
@@ -541,16 +555,15 @@ def treat_broken_links(current_page, summary):
         print("Fin des tests URL")
 
     # TODO: return the site language
-    if current_page.find('|langue=None') != -1:
-        if not is_broken_link:
-            url_language = get_url_site_language(html_source)
-            if url_language != 'None':
-                try:
-                    current_page = current_page.replace(
-                        '|langue=None', '|langue=' + url_language)
-                except UnicodeDecodeError as e:
-                    if debug_level > 0:
-                        print(str(e))
+    if current_page.find('|langue=None') != -1 and not is_broken_link:
+        url_language = get_url_site_language(html_source)
+        if url_language != 'None':
+            try:
+                current_page = current_page.replace(
+                    '|langue=None', '|langue=' + url_language)
+            except UnicodeDecodeError as e:
+                if debug_level > 0:
+                    print(e)
 
     # Recherche de chaque hyperlien de modèles -----------------------------------------------------------------------
     if current_page.find('{{langue') != -1:  # du Wiktionnaire
@@ -585,7 +598,7 @@ def treat_broken_links(current_page, summary):
         print(' Fin des tests modèle')
         print('------------------------------------')
 
-    final_page = final_page + current_page
+    final_page += current_page
     return final_page, summary
 
 
@@ -643,7 +656,7 @@ def check_url(url, debug_level=0, opener=None):
         # UnicodeWarning: Unicode unequal comparison failed to convert both arguments to Unicode
         html_source = res.read()
         if debug_level > 0:
-            print(str(len(html_source)))
+            print(len(html_source))
         if html_source != str(''):
             return str(html_source)
     except UnicodeEncodeError:
@@ -680,7 +693,7 @@ def check_url(url, debug_level=0, opener=None):
             response = opener.open(url)
             html_source = response.read()
             if debug_level > 0:
-                print(str(len(html_source)))
+                print(len(html_source))
             if html_source != str(''):
                 return str(html_source)
         except UnicodeEncodeError:
@@ -723,7 +736,7 @@ def check_url(url, debug_level=0, opener=None):
         except ssl.CertificateError:
             if debug_level > 0:
                 print(connection_method + ' : CertificateError')
-        # pb avec http://losangeles.broadwayworld.com/article/El_Capitan_Theatre_Presents_Disneys_Mars_Needs_Moms_311421_20110304 qui renvoie 301 car son suffixe est facultatif
+            # pb avec http://losangeles.broadwayworld.com/article/El_Capitan_Theatre_Presents_Disneys_Mars_Needs_Moms_311421_20110304 qui renvoie 301 car son suffixe est facultatif
     except IOError as e:
         if debug_level > 0:
             print(connection_method +
@@ -746,7 +759,7 @@ def check_url(url, debug_level=0, opener=None):
             response = opener.open(url)
             html_source = response.read()
             if debug_level > 0:
-                print(str(len(html_source)))
+                print(len(html_source))
             if html_source != str(''):
                 return str(html_source)
         except UnicodeEncodeError:
@@ -794,7 +807,7 @@ def check_url(url, debug_level=0, opener=None):
     try:
         html_source = urllib2.urlopen(url.encode('utf8')).read()
         if debug_level > 0:
-            print(str(len(html_source)))
+            print(len(html_source))
         if html_source != str(''):
             return str(html_source)
     except UnicodeEncodeError:
@@ -829,7 +842,7 @@ def check_url(url, debug_level=0, opener=None):
             response = opener.open(url)
             html_source = response.read()
             if debug_level > 0:
-                print(str(len(html_source)))
+                print(len(html_source))
             if html_source != str(''):
                 return str(html_source)
         except UnicodeEncodeError:
@@ -933,7 +946,7 @@ def check_url(url, debug_level=0, opener=None):
             res = urllib2.urlopen(req)
             html_source = res.read()
             if debug_level > 0:
-                print(str(len(html_source)))
+                print(len(html_source))
             if html_source != str(''):
                 return str(html_source)
         except UnicodeEncodeError:
@@ -1044,7 +1057,7 @@ def check_url(url, debug_level=0, opener=None):
                 res = urllib2.urlopen(req)
                 html_source = res.read()
                 if debug_level > 0:
-                    print(str(len(html_source)))
+                    print(len(html_source))
                 if html_source != str(''):
                     return str(html_source)
             except UnicodeEncodeError:
@@ -1062,18 +1075,12 @@ def check_url(url, debug_level=0, opener=None):
                     html_source = sock.read()
                     sock.close()
                     if debug_level > 0:
-                        print(str(len(html_source)))
+                        print(len(html_source))
                     if html_source != str(''):
                         return str(html_source)
                 except UnicodeError:
                     if debug_level > 0:
                         print(connection_method + ' : UnicodeError')
-                except UnicodeEncodeError:
-                    if debug_level > 0:
-                        print(connection_method + ' : UnicodeEncodeError')
-                except UnicodeDecodeError:
-                    if debug_level > 0:
-                        print(connection_method + ' : UnicodeDecodeError')
                 except httplib.BadStatusLine:
                     if debug_level > 0:
                         print(connection_method + ' : BadStatusLine')
@@ -1169,22 +1176,19 @@ def check_url(url, debug_level=0, opener=None):
     agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
     try:
         if url.find('_r=') == -1:
-            if url.find('?') != -1:
-                url = url + "&_r=4&"
-            else:
-                url = url + "?_r=4&"
+            url = url + "&_r=4&" if url.find('?') != -1 else url + "?_r=4&"
         else:
             if url.find('?') != -1:
-                url = url[0:url.find('_r=')-1] + "&_r=4&"
+                url = url[:url.find('_r=')-1] + "&_r=4&"
             else:
-                url = url[0:url.find('_r=')-1] + "?_r=4&"
+                url = url[:url.find('_r=')-1] + "?_r=4&"
         headers = {'User-Agent': agent}
         req = urllib2.Request(url, "", headers)
         req.add_header('Accept', 'text/html')
         res = urllib2.urlopen(req)
         html_source = res.read()
         if debug_level > 0:
-            print(str(len(html_source)))
+            print(len(html_source))
         if html_source != str(''):
             return str(html_source)
     except UnicodeEncodeError:
@@ -1219,7 +1223,7 @@ def check_url(url, debug_level=0, opener=None):
             res = urllib2.urlopen(req)
             html_source = res.read()
             if debug_level > 0:
-                print(str(len(html_source)))
+                print(len(html_source))
             if html_source != str(''):
                 return str(html_source)
         except UnicodeEncodeError:
@@ -1288,7 +1292,7 @@ def check_url(url, debug_level=0, opener=None):
         res = urllib2.urlopen(url)
         html_source = res.read()
         if debug_level > 0:
-            print(str(len(html_source)))
+            print(len(html_source))
         if html_source != str(''):
             return str(html_source)
     except UnicodeEncodeError:
@@ -1343,7 +1347,7 @@ def check_url(url, debug_level=0, opener=None):
         html_source = sock.read()
         sock.close()
         if debug_level > 0:
-            print(str(len(html_source)))
+            print(len(html_source))
         if html_source != str(''):
             return str(html_source)
     except httplib.BadStatusLine:
@@ -1394,18 +1398,12 @@ def check_url(url, debug_level=0, opener=None):
             html_source = sock.read()
             sock.close()
             if debug_level > 0:
-                print(str(len(html_source)))
+                print(len(html_source))
             if html_source != str(''):
                 return str(html_source)
         except UnicodeError:
             if debug_level > 0:
                 print(connection_method + ' : UnicodeError')
-        except UnicodeEncodeError:
-            if debug_level > 0:
-                print(connection_method + ' : UnicodeEncodeError')
-        except UnicodeDecodeError:
-            if debug_level > 0:
-                print(connection_method + ' : UnicodeDecodeError')
         except httplib.BadStatusLine:
             if debug_level > 0:
                 print(connection_method + ' : BadStatusLine')
@@ -1448,21 +1446,30 @@ def check_url_page(html_source, url, debug_level=0):
         # if debug_level > 1 and html_source != str('') and html_source is not None: input(html_source[0:1000])
         if html_source is None:
             if debug_level > 0:
-                print(url + " none type")
+                print(f"{url} none type")
             return True
-        elif html_source == str('ok') or (html_source == str('') and (url.find('à') != -1 or url.find('é') != -1
-                                                                      or url.find('è') != -1 or url.find('ê') != -1 or url.find('ù') != -1)):
+        elif (
+            html_source == 'ok'
+            or html_source == ''
+            and (
+                url.find('à') != -1
+                or url.find('é') != -1
+                or url.find('è') != -1
+                or url.find('ê') != -1
+                or url.find('ù') != -1
+            )
+        ):
             # bug http://fr.wikipedia.org/w/index.php?title=Acad%C3%A9mie_fran%C3%A7aise&diff=prev&oldid=92572792
             return False
-        elif html_source == str('ko') or html_source == str(''):
+        elif html_source in ['ko', '']:
             if debug_level > 0:
-                print(url + " page vide")
+                print(f"{url} page vide")
             return True
         else:
             if debug_level > 0:
                 print(' page_content non vide')
             # Recherche des erreurs
-            for e in range(0, errors_limit):
+            for e in range(errors_limit):
                 if debug_level > 1:
                     print(sites_errors[e])
                 if html_source.find(sites_errors[e]) != -1 and not re.search(r"\n[^\n]*if[^\n]*" + sites_errors[e],
@@ -1474,92 +1481,66 @@ def check_url_page(html_source, url, debug_level=0):
                         # Exception avec popup formulaire en erreur
                         is_broken_link = True
                         if debug_level > 0:
-                            print(url + " : " + sites_errors[e])
+                            print(f"{url} : {sites_errors[e]}")
                         break
+                    is_broken_link = True
                     # Wikis : page vide à créer
                     if sites_errors[e] == "Soit vous avez mal &#233;crit le titre" and url.find("wiki") != -1:
-                        is_broken_link = True
                         if debug_level > 0:
-                            print(url + " : " + sites_errors[e])
-                        break
+                            print(f"{url} : {sites_errors[e]}")
                     elif sites_errors[e] == "Il n'y a pour l'instant aucun texte sur cette page." != -1 \
                             and html_source.find("wiki") != -1:
-                        is_broken_link = True
                         if debug_level > 0:
-                            print(url + " : " + sites_errors[e])
-                        break
+                            print(f"{url} : {sites_errors[e]}")
                     elif sites_errors[e] == "There is currently no text in this page." != -1 \
                             and html_source.find("wiki") != -1:
-                        is_broken_link = True
                         if debug_level > 0:
-                            print(url + " : " + sites_errors[e])
-                        break
-                    # Sites particuliers
+                            print(f"{url} : {sites_errors[e]}")
                     elif sites_errors[e] == "The page you requested cannot be found" \
                             and url.find("restaurantnewsresource.com") == -1:
-                        # bug avec http://www.restaurantnewsresource.com/article35143 (Landry_s_Restaurants_Opens_T_REX_Cafe_at_Downtown_Disney.html)
-                        is_broken_link = True
                         if debug_level > 0:
-                            print(url + " : " + sites_errors[e])
-                        break
+                            print(f"{url} : {sites_errors[e]}")
                     elif sites_errors[e] == "Terme introuvable" != -1 and html_source.find("Site de l'ATILF") != -1:
-                        is_broken_link = True
                         if debug_level > 0:
-                            print(url + " : " + sites_errors[e])
-                        break
+                            print(f"{url} : {sites_errors[e]}")
                     elif sites_errors[e] == "Cette forme est introuvable !" != -1 \
                             and html_source.find("Site de l'ATILF") != -1:
-                        is_broken_link = True
                         if debug_level > 0:
-                            print(url + " : " + sites_errors[e])
-                        break
+                            print(f"{url} : {sites_errors[e]}")
                     elif sites_errors[e] == "Sorry, no matching records for query" != -1 \
                             and html_source.find("ATILF - CNRS") != -1:
-                        is_broken_link = True
                         if debug_level > 0:
-                            print(url + " : " + sites_errors[e])
-                        break
-                    else:
-                        is_broken_link = True
-                        if debug_level > 0:
-                            print(url + " : " + sites_errors[e])
-                        break
-
+                            print(f"{url} : {sites_errors[e]}")
+                    elif debug_level > 0:
+                        print(f"{url} : {sites_errors[e]}")
+                    break
     except UnicodeError as e:
         if debug_level > 0:
-            print(str(e))
-        is_broken_link = False
-    except UnicodeEncodeError:
-        if debug_level > 0:
-            print(str(e))
-        is_broken_link = False
-    except UnicodeDecodeError:
-        if debug_level > 0:
-            print(str(e))
+            print(e)
         is_broken_link = False
     except httplib.BadStatusLine:
         if debug_level > 0:
-            print(str(e))
+            print(e)
     except httplib.InvalidURL:
         if debug_level > 0:
-            print(str(e))
+            print(e)
         is_broken_link = False
     except httplib.HTTPException:
         if debug_level > 0:
-            print(str(e))
+            print(e)
         is_broken_link = False
     except urllib2.HTTPError as e:
         if debug_level > 0:
-            print(str(e))
+            print(e)
         is_broken_link = False
     except IOError as e:
         if debug_level > 0:
-            print(str(e))
-            # print('I/O error({0}): {1}'.format(e.errno, e.strerror) + ' lors de la lecture')
+            print(e)
+                    # print('I/O error({0}): {1}'.format(e.errno, e.strerror) + ' lors de la lecture')
         is_broken_link = False
     except urllib2.URLError as e:
         if debug_level > 0:
-            print(str(e))
+            print(e)
         is_broken_link = False
     else:
         if debug_level > 1:

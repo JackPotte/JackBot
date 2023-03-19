@@ -3,6 +3,7 @@
 """
 Ce script formate les articles de Wikilivres
 """
+
 from __future__ import absolute_import, unicode_literals
 import os
 import sys
@@ -36,10 +37,7 @@ fix_files = True
 do_add_category = False
 treat_old_templates = False
 
-old_templates = []
-old_templates.append('lienDePage')
-old_templates.append('NavTitre')
-old_templates.append('NavChapitre')
+old_templates = ['lienDePage', 'NavTitre', 'NavChapitre']
 
 
 def treat_page_by_name(page_name):
@@ -51,7 +49,7 @@ def treat_page(page):
     if debug_level > 0:
         print('------------------------------------')
     page_name = page.title()
-    pywikibot.output("\n\03<<blue>>" + page_name + u"\03<<default>>")
+    pywikibot.output(f"\n\03<<blue>>{page_name}\03<<default>>")
 
     summary = 'Formatage'
     current_page_content = get_content_from_page(page, 'All')
@@ -102,16 +100,23 @@ def treat_page(page):
         page_content = page_content.replace(
             '[[Catégorie:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]', '{{AutoCat}}')
         page_content = page_content.replace('{{BookCat}}', '{{AutoCat}}')
-        if do_add_category:
-            if trim(page_content) != '' and page_content.find('[[Catégorie:') == -1 \
-                    and page_content.find('{{AutoCat}}') == -1 and page_content.find('{{imprimable') == -1:
-                page_content = page_content + '\n\n{{AutoCat}}'
-                summary = summary + ', [[Spécial:Pages non catégorisées]]'
+        if (
+            do_add_category
+            and trim(page_content) != ''
+            and page_content.find('[[Catégorie:') == -1
+            and page_content.find('{{AutoCat}}') == -1
+            and page_content.find('{{imprimable') == -1
+        ):
+            page_content = page_content + '\n\n{{AutoCat}}'
+            summary = f'{summary}, [[Spécial:Pages non catégorisées]]'
 
         # Clés de tri pour les noms propres
         if page_content.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') != -1:
-            final_page_content = final_page_content + page_content[:page_content.find(
-                '[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]')]
+            final_page_content += page_content[
+                : page_content.find(
+                    '[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'
+                )
+            ]
             page_content = page_content[page_content.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]'):
                                         page_content.find('[[Catégorie:Personnalités de la photographie|{{SUBPAGENAME}}]]') +
                                         len('[[Catégorie:Personnalités de la photographie')] + \
@@ -144,32 +149,29 @@ def main(*args) -> int:
         if debug_level > 1:
             print(sys.argv)
         if sys.argv[1] == '-test':
-            treat_page_by_name('User:' + username + '/test')
+            treat_page_by_name(f'User:{username}/test')
         elif sys.argv[1] == '-test2':
-            treat_page_by_name('User:' + username + '/test2')
-        elif sys.argv[1] == '-page' or sys.argv[1] == '-p':
+            treat_page_by_name(f'User:{username}/test2')
+        elif sys.argv[1] in ['-page', '-p']:
             treat_page_by_name('Catégorie:Python')
-        elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
-            p.pages_by_file('lists/articles_' + site_language +
-                            '_' + site_family + '.txt')
-        elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
+        elif sys.argv[1] in ['-file', '-txt']:
+            p.pages_by_file(f'lists/articles_{site_language}_{site_family}.txt')
+        elif sys.argv[1] in ['-dump', '-xml']:
             regex = r'{{[Mm]éta-étiquette *\|[^}]*text-align: center'
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             p.page_by_xml(site_language + site_family + '\-.*xml', regex)
         elif sys.argv[1] == '-u':
-            p.pages_by_user('User:' + username)
-        elif sys.argv[1] == '-search' or sys.argv[1] == '-s' or sys.argv[1] == '-r':
+            p.pages_by_user(f'User:{username}')
+        elif sys.argv[1] in ['-search', '-s', '-r']:
             if len(sys.argv) > 2:
                 p.pages_by_search(sys.argv[2])
             else:
                 p.pages_by_search('chinois')
-        elif sys.argv[1] == '-link' or sys.argv[1] == '-l' or sys.argv[1] == '-template' or sys.argv[1] == '-m':
+        elif sys.argv[1] in ['-link', '-l', '-template', '-m']:
             p.pages_by_link('Template:autres projets')
-        elif sys.argv[1] == '-category' or sys.argv[1] == '-cat':
-            after_page = ''
-            if len(sys.argv) > 2:
-                after_page = sys.argv[2]
+        elif sys.argv[1] in ['-category', '-cat']:
+            after_page = sys.argv[2] if len(sys.argv) > 2 else ''
             p.pages_by_cat('Programmation Java (livre)')
             p.pages_by_cat('Programmation PHP (livre)')
             p.pages_by_cat('Programmation Python (livre)')

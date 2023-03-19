@@ -62,8 +62,7 @@ def getNewsOld(page):
 
 def parseNews(text):
     # doc = minidom_parseString('<html><body>' + text.encode('utf-8') + '</body></html>')
-    doc = minidom_parseString(
-        ('<html><body>' + text + '</body></html>').encode('utf-8'))
+    doc = minidom_parseString(f'<html><body>{text}</body></html>'.encode('utf-8'))
     ul = doc.getElementsByTagName('ul')
     if ul:
         for li in ul[0].getElementsByTagName('li'):
@@ -98,7 +97,7 @@ def doOnePage(tpl, page, site_src):
         'indent': ('*', False),
     }
 
-    raw_config = rx.group(1).split('|')[1:]
+    raw_config = rx[1].split('|')[1:]
     for x in raw_config:
         if debug_level > 0:
             print(x)
@@ -136,8 +135,7 @@ def doOnePage(tpl, page, site_src):
     old_text = rx.sub(r'\1', old_text).strip()
 
     if text != old_text:
-        raw_config = '|'.join('%s = %s' % (v, k[0])
-                              for v, k in config.items() if k[1])
+        raw_config = '|'.join(f'{v} = {k[0]}' for v, k in config.items() if k[1])
         text = '%(text)s<noinclude>\n{{%(tpl)s|%(config)s}}\nRetrieved by ~~~ from [[wikinews:%(lang)s:%(page)s|]] on ~~~~~\n</noinclude>' % {
             'text': text,
             'tpl': tpl.title(),
@@ -150,9 +148,11 @@ def doOnePage(tpl, page, site_src):
         if debug_level > 0:
             print(text)
             result = input("Sauvegarder ? (o/n) ")
-        if result != "n" and result != "no" and result != "non":
-            page.put(text, summary='Updating from [[n:%s|%s]]' % (
-                news_page.title(), news_page.title(),))
+        if result not in ["n", "no", "non"]:
+            page.put(
+                text,
+                summary=f'Updating from [[n:{news_page.title()}|{news_page.title()}]]',
+            )
 
     WPsite = pywikibot.Site(code=lang, fam='wikipedia')
     return {
@@ -177,7 +177,7 @@ def main(lang):
                 pages_maintained[step['ns']].append(step)
             except KeyboardInterrupt:
                 break
-            except:
+            except Exception:
                 traceback.print_exc()
 
     audit_txt = ''
@@ -188,7 +188,7 @@ def main(lang):
                                item for item in items)
     audit_txt = audit_txt.strip()
 
-    audit_page = Page(site_dest, 'User:' + username + '/List')
+    audit_page = Page(site_dest, f'User:{username}/List')
     oldtext = audit_page.get()
     rx = re.compile('^.*?(?=\n== )', re.DOTALL)
     oldtext = rx.sub('', oldtext).strip()
@@ -198,7 +198,7 @@ def main(lang):
         if debug_level > 0:
             print(audit_page)
             result = input("Sauvegarder ? (o/n) ")
-        if result != "n" and result != "no" and result != "non":
+        if result not in ["n", "no", "non"]:
             audit_page.put(
                 'List of pages maintained by {{user|' + username +
                 '}} by namespace. Last updated: ~~~~~\n\n' + audit_txt,
@@ -209,10 +209,7 @@ def main(lang):
 
 if __name__ == '__main__':
     try:
-        if len(sys.argv) == 1:
-            lang = 'fr'
-        else:
-            lang = sys.argv[1]
+        lang = 'fr' if len(sys.argv) == 1 else sys.argv[1]
         main(lang)
     finally:
         pywikibot.stopme()

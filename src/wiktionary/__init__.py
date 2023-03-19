@@ -6,4 +6,4 @@ try:
     from fr_wiktionary_functions import *
     from fr_wiktionary_templates import *
 except ImportError as e:
-    print(str(e))
+    print(e)

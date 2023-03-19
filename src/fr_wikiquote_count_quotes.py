@@ -103,11 +103,7 @@ def replace_lang(piece):
 
 def replace_template(piece):
     # Return title if no arg.
-    if len(piece['parts']) == 0:
-        return piece['title']
-
-    # Else : return first arg.
-    return piece['parts'][0][1]
+    return piece['title'] if len(piece['parts']) == 0 else piece['parts'][0][1]
 
 
 class Global(object):
@@ -129,18 +125,18 @@ class Global(object):
 
 def outputq(s, newline=True):
     if not globalvar.quiet:
-        pywikibot.output('%s' % s, newline=newline)
+        pywikibot.output(f'{s}', newline=newline)
 
 
 def debug(s):
     if globalvar.debug:
-        pywikibot.output('%s' % s)
+        pywikibot.output(f'{s}')
 
 
 def error(s):
     # Output errors to ... stdout, because pywikipedia uses stderr for "normal"
     # output. *sigh*
-    pywikibot.output('ERROR: %s' % s)
+    pywikibot.output(f'ERROR: {s}')
 
 
 def parse_templates(text):
@@ -165,24 +161,20 @@ def parse_templates(text):
     # End when the first found template ends, i.e. when stack is empty and
     # we're not at the beginning
     while (stack != [] or i == 0) and i < len(text):
-        if lastOpeningBrace == -1:
-            search = r'({{)'
-        else:
-            search = r'({{|}}|\|)'
-
-        debug("searching for %s" % search)
+        search = r'({{)' if lastOpeningBrace == -1 else r'({{|}}|\|)'
+        debug(f"searching for {search}")
 
         s = re.compile(search)
         m = s.search(text[i:])
         if not m:
-            error('ERROR: pattern not found: %s' % search)
+            error(f'ERROR: pattern not found: {search}')
             return
 
         i += m.start()
         span = m.end() - m.start()
 
         debug('%s (%d, %d)' % (m.group(), m.start(), m.end()))
-        debug('%s' % text[i:])
+        debug(f'{text[i:]}')
 
         if m.group() == "{{":
             debug("new template starting from %d" % i)
@@ -191,8 +183,6 @@ def parse_templates(text):
             lastOpeningBrace += 1
 
             stack[lastOpeningBrace]['start'] = i
-            i += span
-            stack[lastOpeningBrace]['lastPartStart'] = i
         else:
             # End of part.
             debug("part ending at %d" % i)
@@ -200,7 +190,7 @@ def parse_templates(text):
             part = text[stack[lastOpeningBrace]['lastPartStart']:i]
 
             # First part : template title.
-            if not 'parts' in stack[lastOpeningBrace]:
+            if 'parts' not in stack[lastOpeningBrace]:
                 stack[lastOpeningBrace]['title'] = trim(part)
                 stack[lastOpeningBrace]['parts'] = []
             else:
@@ -213,17 +203,16 @@ def parse_templates(text):
                     argname = ''
                     arg = part
 
-                debug("part : (%s, %s)" % (argname, arg))
+                debug(f"part : ({argname}, {arg})")
 
                 stack[lastOpeningBrace]['parts'].append([argname, arg])
-            i += span
-            stack[lastOpeningBrace]['lastPartStart'] = i
-
+        i += span
+        stack[lastOpeningBrace]['lastPartStart'] = i
         if m.group() == "}}":
             # Replace template.
             title = stack[lastOpeningBrace]['title'].lower()
 
-            debug("template: %s" % title)
+            debug(f"template: {title}")
 
             if title in globalvar.known_templates:
                 debug("calling replace_citation on quote")
@@ -234,11 +223,10 @@ def parse_templates(text):
                 debug("calling replace_template on other template")
                 piece = replace_template(stack[lastOpeningBrace])
 
-                debug("template %s replaced by %s" %
-                      (stack[lastOpeningBrace]['title'], piece))
+                debug(f"template {stack[lastOpeningBrace]['title']} replaced by {piece}")
 
             if piece is None:
-                error("Found a null piece: probably unterminated %s template!" % title)
+                error(f"Found a null piece: probably unterminated {title} template!")
 
             start = stack[lastOpeningBrace]['start']
             text = text[:start] + piece + text[i:]
@@ -251,7 +239,7 @@ def parse_templates(text):
         error('quote template not finished at end of text!')
         return
 
-    debug('Quote : %s' % text[:i])
+    debug(f'Quote : {text[:i]}')
     return [text, i]
 
 
@@ -266,14 +254,11 @@ def prepare_text(text):
         m = wikilinksR.match(l)
         if m:
             # [[0|1]]2
-            if m.group(2):
-                add += m.group(2)
-            else:
-                add += m.group(1)
-            if m.group(3):
-                add += m.group(3)
+            add += m[2] or m[1]
+            if m[3]:
+                add += m[3]
         else:
-            add += '[[' + l
+            add += f'[[{l}'
         text += add
     #        debug("Add: %s" % add)
     #    debug('After :')
@@ -294,21 +279,20 @@ def workon(page):
     if page.title() == globalvar.mainpage_name:
         return
 
-    outputq('handling : %s' % page.title())
+    outputq(f'handling : {page.title()}')
 
     try:
         text = page.get()
-    except:
+    except Exception:
         return
 
     text = prepare_text(text)
 
-    if not site.siteinfo['case'] == 'case-sensitive':
-        pattern = '[' + re.escape(globalvar.quote_template[0].upper()) + re.escape(
-            globalvar.quote_template[0].lower()) + ']' + re.escape(globalvar.quote_template[1:])
-    else:
-        pattern = re.escape(globalvar.quote_template)
-
+    pattern = (
+        re.escape(globalvar.quote_template)
+        if site.siteinfo['case'] == 'case-sensitive'
+        else f'[{re.escape(globalvar.quote_template[0].upper())}{re.escape(globalvar.quote_template[0].lower())}]{re.escape(globalvar.quote_template[1:])}'
+    )
     r = re.compile(r'{{ *(?:[Tt]emplate:|[mM][sS][gG]:)?' + pattern)
 
     alnum = re.compile('\W')
@@ -318,7 +302,7 @@ def workon(page):
     n_quotes = 0
 
     for m in matches:
-        debug('match (200) : %s' % text[m.start():m.start() + 200])
+        debug(f'match (200) : {text[m.start():m.start() + 200]}')
         debug('offset: %d' % offset)
         # Real start of the match.
         n_quotes += 1
@@ -329,8 +313,7 @@ def workon(page):
         try:
             [endtext, qlen] = parse_quote(text[start:])
         except TypeError:
-            debug('Unclosed template: "%s" in "%s"' %
-                  (text[start:100], page.title()))
+            debug(f'Unclosed template: "{text[start:100]}" in "{page.title()}"')
             return
 
         offset += (len(text[start:]) - len(endtext))
@@ -338,8 +321,8 @@ def workon(page):
         quote = endtext[:qlen]
         text = text[:start] + endtext
 
-        debug('Quote 2: %s' % quote)
-        debug('Text: %s' % text)
+        debug(f'Quote 2: {quote}')
+        debug(f'Text: {text}')
 
         # Strip all non-alphanumeric chars.
         squote = alnum.sub('', quote)
@@ -356,7 +339,7 @@ def workon(page):
             globalvar.quotes[h][1].append([quote, page])
 
     if n_quotes == 0:
-        outputq("no quotes in %s" % page.title())
+        outputq(f"no quotes in {page.title()}")
         globalvar.noquotes.append(page)
 
 
@@ -398,7 +381,7 @@ def generate_output(quotes):
                 outputq('\t%s (on:' % q, newline=False)
             for a in unique_quotes[q]:
                 if pr:
-                    outputq(' %s' % trim(a.title()), newline=False)
+                    outputq(f' {trim(a.title())}', newline=False)
                 if a in article_count:
                     article_count[a] += 1
                 else:
@@ -568,38 +551,39 @@ class Main(object):
         if self.__workonnew:
             if not self.__number:
                 self.__number = 500
-            pagegen = pagegenerators.NewpagesPageGenerator(
-                number=self.__number)
+            return pagegenerators.NewpagesPageGenerator(number=self.__number)
 
         elif self.__refpagetitle:
             refpage = pywikibot.Page(site, self.__refpagetitle)
-            pagegen = pagegenerators.LinkedPageGenerator(refpage)
+            return pagegenerators.LinkedPageGenerator(refpage)
 
         elif self.__linkpagetitle:
             linkpage = pywikibot.Page(site, self.__linkpagetitle)
-            pagegen = pagegenerators.LinkedPageGenerator(linkpage)
+            return pagegenerators.LinkedPageGenerator(linkpage)
 
         elif self.__catname:
-            cat = pywikibot.Category(site, 'Category:%s' % self.__catname)
+            cat = pywikibot.Category(site, f'Category:{self.__catname}')
 
-            if self.__start:
-                pagegen = pagegenerators.CategorizedPageGenerator(
-                    cat, recurse=self.__catrecurse, start=self.__start)
-            else:
-                pagegen = pagegenerators.CategorizedPageGenerator(
-                    cat, recurse=self.__catrecurse)
-
+            return (
+                pagegenerators.CategorizedPageGenerator(
+                    cat, recurse=self.__catrecurse, start=self.__start
+                )
+                if self.__start
+                else pagegenerators.CategorizedPageGenerator(
+                    cat, recurse=self.__catrecurse
+                )
+            )
         elif self.__textfile:
-            pagegen = pagegenerators.TextfilePageGenerator(self.__textfile)
+            return pagegenerators.TextfilePageGenerator(self.__textfile)
 
         else:
             if not self.__start:
                 self.__start = '!'
             namespace = pywikibot.Page(site, self.__start).namespace()
             start = pywikibot.Page(site, self.__start).title(with_ns=False)
-            pagegen = pagegenerators.AllpagesPageGenerator(
-                start, namespace, includeredirects=False, site=site)
-        return pagegen
+            return pagegenerators.AllpagesPageGenerator(
+                start, namespace, includeredirects=False, site=site
+            )
 
     def main(self):
         # Parse command line options
@@ -609,11 +593,7 @@ class Main(object):
         globalvar.mainpage_name = pywikibot.Page(pywikibot.Link(
             "Main page_content", site)).title(with_ns=False)
 
-        if site.lang in msg:
-            globalvar.lang = site.lang
-        else:
-            globalvar.lang = 'en'
-
+        globalvar.lang = site.lang if site.lang in msg else 'en'
         pagegen = self.generator()
 
         generator = None
@@ -636,15 +616,11 @@ class Main(object):
         if self.__output:
             try:
                 outputpage = pywikibot.Page(site, self.__output)
-                if outputpage.exists():
-                    oldtext = outputpage.get()
-                else:
-                    oldtext = ''
-
+                oldtext = outputpage.get() if outputpage.exists() else ''
                 if oldtext != output:
                     output = output % time.strftime('%d/%m/%y / %H:00')
                     outputpage.put(output, summary=msg[globalvar.lang][9])
-            except:
+            except Exception:
                 error('Getting/Modifying page %s failed, generated output was:\n%s' %
                       (outputpage, output))
         else:
@@ -653,25 +629,16 @@ class Main(object):
         nquotespage = None
         narticlespage = None
         if self.__outputprefix:
-            if self.__outputquotes:
-                pname = self.__outputquotes
-            else:
-                pname = "NUMBEROFQUOTES"
-            nquotespage = pywikibot.Page(
-                site, '%s%s' % (self.__outputprefix, pname))
+            pname = self.__outputquotes or "NUMBEROFQUOTES"
+            nquotespage = pywikibot.Page(site, f'{self.__outputprefix}{pname}')
 
-            if self.__outputarticles:
-                pname = self.__outputarticles
-            else:
-                pname = "Utilisateur:JackBot/NUMBEROFARTICLES"
-            narticlespage = pywikibot.Page(
-                site, '%s%s' % (self.__outputprefix, pname))
+            pname = self.__outputarticles or "Utilisateur:JackBot/NUMBEROFARTICLES"
+            narticlespage = pywikibot.Page(site, f'{self.__outputprefix}{pname}')
         else:
             if self.__outputquotes:
-                nquotespage = pywikibot.Page(site, '%s' % self.__outputquotes)
+                nquotespage = pywikibot.Page(site, f'{self.__outputquotes}')
             if self.__outputarticles:
-                narticlespage = pywikibot.Page(
-                    site, '%s' % self.__outputarticles)
+                narticlespage = pywikibot.Page(site, f'{self.__outputarticles}')
 
         if nquotespage:
             # April fool (replace %d by %s too)

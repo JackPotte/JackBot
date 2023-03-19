@@ -35,23 +35,23 @@ fix_tags = False
 fix_files = True
 do_add_category = False
 
-book_cat_templates = []
-book_cat_templates.append('{{Auto category}}')
-book_cat_templates.append('{{Book category}}')
-book_cat_templates.append('{{AutoCat}}')
-book_cat_templates.append('{{Bookcat}}')
-book_cat_templates.append('{{bookcat}}')
-book_cat_templates.append('{{bookCat}}')
-book_cat_templates.append('{{BOOKCAT}}')
-book_cat_templates.append('[[Category:{{PAGENAME}}|{{SUBPAGENAME}}]]')
-book_cat_templates.append('[[Category:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]')
-book_cat_templates.append('[[Category:{{FULLBOOKNAME}}|{{FULLCHAPTERNAME}}]]')
-book_cat_templates.append('[[Category:{{PAGENAME}}]]')
-book_cat_templates.append('[[Category:{{BASEPAGENAME}}]]')
-book_cat_templates.append('[[Category:{{FULLBOOKNAME}}]]')
+book_cat_templates = [
+    '{{Auto category}}',
+    '{{Book category}}',
+    '{{AutoCat}}',
+    '{{Bookcat}}',
+    '{{bookcat}}',
+    '{{bookCat}}',
+    '{{BOOKCAT}}',
+    '[[Category:{{PAGENAME}}|{{SUBPAGENAME}}]]',
+    '[[Category:{{BASEPAGENAME}}|{{SUBPAGENAME}}]]',
+    '[[Category:{{FULLBOOKNAME}}|{{FULLCHAPTERNAME}}]]',
+    '[[Category:{{PAGENAME}}]]',
+    '[[Category:{{BASEPAGENAME}}]]', '[[Category:{{FULLBOOKNAME}}]]'
+]
 
-book_categorizing_templates = []
-book_categorizing_templates.append('header')
+book_categorizing_templates = ['header']
+
 # TODO fill by templates category?
 
 
@@ -64,7 +64,7 @@ def treat_page(page):
     if debug_level > 0:
         print('------------------------------------')
     page_name = page.title()
-    pywikibot.output("\n\03<<blue>>" + page_name + u"\03<<default>>")
+    pywikibot.output(f"\n\03<<blue>>{page_name}\03<<default>>")
 
     current_page_content = get_content_from_page(page, 'All')
     if username not in page_name and (
@@ -113,7 +113,7 @@ def treat_page(page):
                 cat_tpl[:1] + ')' + cat_tpl[1:] + '[ \n]*[|}]'
             if re.search(regex, page_content):
                 if debug_level > 0:
-                    print('  categorizing template: ' + cat_tpl)
+                    print(f'  categorizing template: {cat_tpl}')
                 return
         for book_cat_template in book_cat_templates:
             page_content = page_content.replace(
@@ -123,24 +123,34 @@ def treat_page(page):
                 book_cat_template[3:],
                 '{{BookCat}}'
             )
-        if do_add_category and has_more_than_time(page) and ('/' in page.title() or is_trusted_version(site, page)):
-            # The untrusted can have blanked a relevant content including {{BookCat}} or {{BookCat|filing=deep}}
-            if trim(page_content) != '' and '{{BookCat' not in page_content \
-                    and '[[Category:' not in page_content and '[[category:' not in page_content \
-                    and '{{Printable' not in page_content and '{{printable' not in page_content \
-                    and '{{Subjects' not in page_content and '{{subjects' not in page_content \
-                    and '{{Shelves' not in page_content and '{{shelves' not in page_content:
-                if '/' not in page_name:
-                    if debug_level > 0:
-                        print('  {{shelves}} addition')
-                    page_content = page_content + '\n\n{{shelves}}'
-                else:
-                    if debug_level > 0:
-                        print('  {{BookCat}} addition')
-                    page_content = page_content + '\n\n{{BookCat}}'
-                summary = summary + ', [[Special:UncategorizedPages]]'
 
-    final_page_content = final_page_content + page_content
+        # The untrusted user can have blanked a relevant content including {{BookCat}} or {{BookCat|filing=deep}}
+        if (
+            do_add_category
+            and has_more_than_time(page)
+            and ('/' in page.title() or is_trusted_version(site, page))
+            and trim(page_content) != ''
+            and '{{BookCat' not in page_content
+            and '[[Category:' not in page_content
+            and '[[category:' not in page_content
+            and '{{Printable' not in page_content
+            and '{{printable' not in page_content
+            and '{{Subjects' not in page_content
+            and '{{subjects' not in page_content
+            and '{{Shelves' not in page_content
+            and '{{shelves' not in page_content
+        ):
+            if '/' not in page_name:
+                if debug_level > 0:
+                    print('  {{shelves}} addition')
+                page_content = page_content + '\n\n{{shelves}}'
+            else:
+                if debug_level > 0:
+                    print('  {{BookCat}} addition')
+                page_content = page_content + '\n\n{{BookCat}}'
+            summary = f'{summary}, [[Special:UncategorizedPages]]'
+
+    final_page_content += page_content
     if final_page_content != current_page_content:
         save_page(page, final_page_content, summary)
 
@@ -155,40 +165,30 @@ def main(*args) -> int:
         if debug_level > 1:
             print(sys.argv)
         if sys.argv[1] == '-test':
-            treat_page_by_name('User:' + username + '/test')
+            treat_page_by_name(f'User:{username}/test')
         elif sys.argv[1] == '-test2':
-            treat_page_by_name('User:' + username + '/test2')
-        elif sys.argv[1] == '-page' or sys.argv[1] == '-p':
+            treat_page_by_name(f'User:{username}/test2')
+        elif sys.argv[1] in ['-page', '-p']:
             do_add_category = True
             treat_page_by_name('Python')
-        elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
-            p.pages_by_file('lists/articles_' + site_language +
-                            '_' + site_family + '.txt')
-        elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
-            regex = r''
-            if len(sys.argv) > 2:
-                regex = sys.argv[2]
+        elif sys.argv[1] in ['-file', '-txt']:
+            p.pages_by_file(f'lists/articles_{site_language}_{site_family}.txt')
+        elif sys.argv[1] in ['-dump', '-xml']:
+            regex = sys.argv[2] if len(sys.argv) > 2 else r''
             p.page_by_xml(site_language + site_family + '\-.*xml', regex)
         elif sys.argv[1] == '-u':
-            user = username
-            if len(sys.argv) > 2:
-                user = sys.argv[2]
-            p.pages_by_user('User:' + user, number_of_pages_to_treat=10000)
-        elif sys.argv[1] == '-search' or sys.argv[1] == '-s' or sys.argv[1] == '-r':
+            user = sys.argv[2] if len(sys.argv) > 2 else username
+            p.pages_by_user(f'User:{user}', number_of_pages_to_treat=10000)
+        elif sys.argv[1] in ['-search', '-s', '-r']:
             research = 'insource:"Quantum theory of observation/ "'
             if len(sys.argv) > 2:
                 research = sys.argv[2]
             p.pages_by_search(research)
-        elif sys.argv[1] == '-link' or sys.argv[1] == '-l' or sys.argv[1] == '-template' or sys.argv[1] == '-m':
+        elif sys.argv[1] in ['-link', '-l', '-template', '-m']:
             p.pages_by_link('Category:Side Dish recipes', namespaces=None)
-        elif sys.argv[1] == '-category' or sys.argv[1] == '-cat':
-            after_page = ''
-            if len(sys.argv) > 2:
-                after_page = sys.argv[2]
-            p.pages_by_cat('Pages using RFC magic links',
-                           after_page=after_page)
-            # p.pagesByCat('Category:Pages using ISBN magic links', after_page = after_page)
-            # p.pagesByCat('Category:Pages with ISBN errors', after_page = after_page)
+        elif sys.argv[1] in ['-category', '-cat']:
+            after_page = sys.argv[2] if len(sys.argv) > 2 else ''
+            p.pages_by_cat('Pages using RFC magic links', after_page=after_page)
         elif sys.argv[1] == '-redirects':
             p.pages_by_redirects()
         elif sys.argv[1] == '-all':

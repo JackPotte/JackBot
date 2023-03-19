@@ -304,7 +304,6 @@ languages = {
     'aqt': 'angaité',
     'aqz': 'akuntsu',
     'ar': 'arabe',
-    'arb': 'ar',
     'arb': 'arabe standard moderne',
     'arc': 'araméen',
     'ard': 'arabana',
@@ -6155,7 +6154,7 @@ languages = {
     'zyj': 'zhuang de Youjiang',
     'zyn': 'zhuang de Yongnan',
     'zza': 'zazaki',
-    'zzj': 'zhuang de Zuojiang'
+    'zzj': 'zhuang de Zuojiang',
 }
 
 incubator_wiktionaries = ['ba', 'be-tarask']

@@ -20,12 +20,16 @@ def main(*args) -> int:
 
     regex = r"\n *\t*l\['([^']+)'\] = l\['([^']+)'\]"
     redirects = re.findall(regex, str(file_list))
-    print(str(len(redirects)) + ' redirections found')
+    print(f'{len(redirects)} redirections found')
 
-    redirect_names = ''
-    for redirect in redirects:
-        redirect_names += "\n    '" + \
-            redirect[0] + "': '" + languages.languages[redirect[1]] + "',"
+    redirect_names = ''.join(
+        "\n    '"
+        + redirect[0]
+        + "': '"
+        + languages.languages[redirect[1]]
+        + "',"
+        for redirect in redirects
+    )
     file.write(redirect_names)
     file.close
     return 0

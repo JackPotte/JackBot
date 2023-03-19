@@ -16,6 +16,7 @@ Ce script formate les pages du Wiktionnaire, tous les jours après minuit depuis
 etc.
 Tests sur http://fr.wiktionary.org/w/index.php?title=Utilisateur%3AJackBot%2Ftest&diff=14533806&oldid=14533695
 """
+
 from __future__ import absolute_import, unicode_literals
 import os
 import re
@@ -43,14 +44,14 @@ from fr_wiktionary_templates import *
 
 # Global variables
 debug_level = 0
-debug_aliases = [str('-debug'), str('-d')]
+debug_aliases = ['-debug', '-d']
 for debug_alias in debug_aliases:
     if debug_alias in sys.argv:
         debug_level = 1
         sys.argv.remove(debug_alias)
 
 days_before_archiving = True
-force_aliases = [str('-force'), str('-f')]
+force_aliases = ['-force', '-f']
 for force_alias in force_aliases:
     if force_alias in sys.argv:
         days_before_archiving = False
@@ -91,7 +92,7 @@ def treat_page(page):
     if debug_level > 0:
         print('------------------------------------')
     page_name = page.title()
-    pywikibot.output("\n\03<<blue>>" + page_name + "\03<<default>>")
+    pywikibot.output(f"\n\03<<blue>>{page_name}\03<<default>>")
 
     summary = '[[Wiktionnaire:Structure des articles|Autoformatage]]'
     if page_name[-3:] == '.js' or page_name[-4:] == '.css':
@@ -117,7 +118,7 @@ def treat_page(page):
         page_content, summary = cancel_edition(page, cancel_user)
         # a page reset is needed to edit the last version
         page = Page(site, page_name)
-        if page_content != '' and page_content != current_page_content:
+        if page_content not in ['', current_page_content]:
             save_page(page, page_content, summary)
         return
 
@@ -290,13 +291,12 @@ def treat_page(page):
                 end_position = page_content.find("|")
             current_template = page_content[:end_position]
 
-            if not go_backward:
-                if debug_level > 1:
+            if debug_level > 1:
+                if not go_backward:
                     message = ' Remplacement de \x1b[6;31;40m{{' + page_content[
                         :page_content.find('}}') + 2] + '\x1b[0m'
                     print(message)
-            else:
-                if debug_level > 1:
+                else:
                     print(' Retour en arrière')
                     pywikibot.output(
                         "\n\03<<red>>---------------------------------------------------\03<<default>>")
@@ -387,7 +387,6 @@ def treat_page(page):
                     final_page_content, page_content = next_template(
                         final_page_content, page_content)
 
-                # Sections
                 elif current_template == 'S':
                     section = trim(
                         page_content[end_position + 1:page_content.find('}}')])
@@ -404,12 +403,12 @@ def treat_page(page):
                         pywikibot.output(
                             "  with known section \03<<yellow>>" + section + "\03<<default>>")
 
+                    has_translation_section = False
+
                     if sections.index(section) < limit1:
                         if debug_level > 1:
                             print(' Definition paragraph')
                         add_language_code = True  # Paragraphe avec code langue dans les modèles lexicaux
-                        has_translation_section = False
-
                         if language_code is None:
                             # TODO: gérer les {{S|étymologie}} en milieu d'article
                             language_code = page_content[
@@ -457,8 +456,6 @@ def treat_page(page):
                     else:
                         # Paragraphe sans code langue dans les modèles lexicaux et les titres
                         add_language_code = False
-                        has_translation_section = False
-
                         if section == 'homophones':
                             if debug_level > 0:
                                 print(' Homophons categorization')
@@ -783,29 +780,28 @@ def treat_page(page):
                     input(page_content)
                     pywikibot.output(
                         "\n\03<<red>>---------------------------------------------\03<<default>>")
-            else:
-                if fix_old_templates:
+            elif fix_old_templates:
+                if debug_level > 0:
+                    print(' Recherche des modèles de langue désuets')
+                template_page = get_content_from_page_name('Template:' + current_template, site,
+                                                           allowed_namespaces=['Template:'])
+                if template_page is not None and template_page.find('{{modèle désuet de code langue}}') != -1:
                     if debug_level > 0:
-                        print(' Recherche des modèles de langue désuets')
-                    template_page = get_content_from_page_name('Template:' + current_template, site,
-                                                               allowed_namespaces=['Template:'])
-                    if template_page is not None and template_page.find('{{modèle désuet de code langue}}') != -1:
-                        if debug_level > 0:
-                            print(' Remplacements de l\'ancien modèle de langue')
-                        page_content = 'subst:nom langue|' + current_template + \
-                            page_content[page_content.find('}}'):]
-                        page_content = page_content.replace('{{' + current_template + '}}',
-                                                            '{{subst:nom langue|' + current_template + '}}')
-                        final_page_content = final_page_content.replace('{{' + current_template + '}}',
-                                                                        '{{subst:nom langue|' + current_template + '}}')
-                        final_page_content, page_content = next_template(
-                            final_page_content, page_content)
-                else:
-                    if debug_level > 0:
-                        pywikibot.output(
-                            "\03<<yellow>> " + current_template + "\03<<default>>: untreated template")
+                        print(' Remplacements de l\'ancien modèle de langue')
+                    page_content = 'subst:nom langue|' + current_template + \
+                        page_content[page_content.find('}}'):]
+                    page_content = page_content.replace('{{' + current_template + '}}',
+                                                        '{{subst:nom langue|' + current_template + '}}')
+                    final_page_content = final_page_content.replace('{{' + current_template + '}}',
+                                                                    '{{subst:nom langue|' + current_template + '}}')
                     final_page_content, page_content = next_template(
                         final_page_content, page_content)
+            else:
+                if debug_level > 0:
+                    pywikibot.output(
+                        "\03<<yellow>> " + current_template + "\03<<default>>: untreated template")
+                final_page_content, page_content = next_template(
+                    final_page_content, page_content)
 
             if not go_backward:
                 if debug_level > 1:
@@ -948,8 +944,7 @@ def treat_page(page):
                     final_page_content, 'nom')
                 if section_content is not None:
                     new_section_content = section_content
-                    i = 0
-                    while i < len(new_suffix):
+                    for i in range(len(new_suffix)):
                         if page_name[-len(new_suffix[i] + 's'):] == new_suffix[i] + 's':
                             regex = r"({{fr\-rég\|s=[^\|}]+)" + \
                                 old_suffix[i] + "([\|}])"
@@ -978,7 +973,6 @@ def treat_page(page):
                             if re.search(regex, new_section_content):
                                 new_section_content = re.sub(
                                     regex, r'\1' + new_suffix[i] + r'\2', new_section_content)
-                        i = i + 1
                     regex = r"({{fr\-rég\|s=[^\|}]+[^e\]}])([\|}])"
                     if re.search(regex, new_section_content):
                         new_section_content = re.sub(
@@ -1068,8 +1062,12 @@ def format_fr_section(page_content, summary, page_name, regex_page_name):
         print(' Missing translations')
     # Si la définition du mot (dit "satellite") ne renvoie pas vers un autre, les centralisant
     # TODO: # Variante,
-    regex = r'(' + language_code + r'\|flexion|' + '|'.join(definition_sentences) + '|'.join(
-        map(lambda x: x.capitalize(), definition_sentences)) + r')'
+    regex = (
+        f'({language_code}'
+        + r'\|flexion|'
+        + '|'.join(definition_sentences)
+        + '|'.join(map(lambda x: x.capitalize(), definition_sentences))
+    ) + r')'
     regex2 = r'{{(formater|SI|supp|supprimer|PàS|S\|erreur|S\|faute|S\|traductions|' + \
              '|'.join(etymology_templates) + r')[\|}]'
     fr_section, language_start, language_end = get_language_section(
@@ -1104,40 +1102,37 @@ def main(*args) -> int:
         if len(sys.argv) > 2:
             after_page = sys.argv[2]
 
-        if sys.argv[1] == str('-test'):
+        if sys.argv[1] == '-test':
             treat_page_by_name('User:' + username + '/test')
-        elif sys.argv[1] == str('-test2'):
+        elif sys.argv[1] == '-test2':
             treat_page_by_name('User:' + username + '/test2')
-        elif sys.argv[1] == str('-tu') or sys.argv[1] == str('-t'):
+        elif sys.argv[1] in ['-tu', '-t']:
             treat_page_by_name('User:' + username + '/test unitaire')
-        elif sys.argv[1] == str('-ti'):
+        elif sys.argv[1] == '-ti':
             test_import = True
             treat_page_by_name('User:' + username + '/test unitaire')
-        elif sys.argv[1] == str('-page') or sys.argv[1] == str('-p'):
+        elif sys.argv[1] in ['-page', '-p']:
             wait_after_humans = False
             treat_page_by_name('Annexe:Rimes_en_français_en_/sɑ̃/')
-        elif sys.argv[1] == str('-start'):
+        elif sys.argv[1] == '-start':
             if len(sys.argv) > 2:
                 p.pages_by_prefix(sys.argv[2])
             else:
                 p.pages_by_prefix(
                     'Annexe:Rimes en français en ', namespace=100)
-        elif sys.argv[1] == str('-file') or sys.argv[1] == str('-txt'):
+        elif sys.argv[1] in ['-file', '-txt']:
             wait_after_humans = False
             file_name = 'lists/articles_' + site_language + '_' + site_family + '.txt'
             if debug_level > 0:
                 print(file_name)
             p.pages_by_file(file_name)
-        elif sys.argv[1] == str('-dump') or sys.argv[1] == str('-xml') or sys.argv[1] == str('-regex'):
+        elif sys.argv[1] in ['-dump', '-xml', '-regex']:
             dump_file = site_language + site_family + '\-.*xml'
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
                 regex = r"/\{\{S\|prononciation\}\}(?!\{\{langue).*\{\{S\|prononciation\}\}/"
-            if len(sys.argv) > 3:
-                test_page = sys.argv[3]
-            else:
-                test_page = None
+            test_page = sys.argv[3] if len(sys.argv) > 3 else None
             if test_page is not None:
                 page_content = get_content_from_page_name(test_page, site)
                 if page_content is not None and re.search(regex, page_content, re.DOTALL):
@@ -1146,30 +1141,23 @@ def main(*args) -> int:
                     print('Pas de traitement.')
             else:
                 p.page_by_xml(dump_file, regex=regex, namespaces=0)
-        elif sys.argv[1] == str('-u'):
-            if len(sys.argv) > 2:
-                targeted_user = sys.argv[2]
-            else:
-                targeted_user = username
+        elif sys.argv[1] == '-u':
+            targeted_user = sys.argv[2] if len(sys.argv) > 2 else username
             if len(sys.argv) > 3:
                 cancel_user['user'] = targeted_user
                 cancel_user['action'] = sys.argv[3]
-            if len(sys.argv) > 4:
-                number = sys.argv[4]
-            else:
-                number = 1000
+            number = sys.argv[4] if len(sys.argv) > 4 else 1000
             p.pages_by_user('User:' + targeted_user,
                             number_of_pages_to_treat=number, namespaces=[0])
-        elif sys.argv[1] == str('-search') or sys.argv[1] == str('-s') or sys.argv[1] == str('-r'):
+        elif sys.argv[1] in ['-search', '-s', '-r']:
             if len(sys.argv) > 2:
                 p.pages_by_search(sys.argv[2])
             else:
                 p.pages_by_search('insource:/trad--\|lmo/', namespaces=[0])
 
-        elif sys.argv[1] == str('-link') or sys.argv[1] == str('-l') or sys.argv[1] == str('-template') or \
-                sys.argv[1] == str('-m'):
+        elif sys.argv[1] in ['-link', '-l', '-template', '-m']:
             p.pages_by_link('Template:ucf', namespaces=[0])
-        elif sys.argv[1] == str('-category') or sys.argv[1] == str('-cat') or sys.argv[1] == str('-c'):
+        elif sys.argv[1] in ['-category', '-cat', str('-c')]:
             if len(sys.argv) > 2:
                 if sys.argv[2] == str('listFalseTranslations'):
                     list_false_translations = True

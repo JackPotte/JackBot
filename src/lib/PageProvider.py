@@ -27,9 +27,8 @@ class PageProvider:
     def __init__(self, treat_page, site, debug_level):
         self.treat_page = treat_page
         self.site = site
+        ouput_file_path = f'lists/articles_{str(site.lang)}_{str(site.family)}.txt'
         self.debug_level = debug_level
-        ouput_file_path = 'lists/articles_' + \
-            str(site.lang) + '_' + str(site.family) + '.txt'
         if (os.path.isfile(ouput_file_path)):
             self.outputFile = open(ouput_file_path, 'a')
 
@@ -40,21 +39,20 @@ class PageProvider:
         if site is None:
             site = self.site
         if source:
-            pages_list = open(source, 'r')
-            while 1:
-                page_name = pages_list.readline()
-                fin = page_name.find("\t")
-                page_name = page_name[:fin]
-                if page_name == '':
-                    break
-                if page_name.find('[[') != -1:
-                    page_name = page_name[page_name.find('[[') + 2:]
-                if page_name.find(']]') != -1:
-                    page_name = page_name[:page_name.find(']]')]
-                # Conversion ASCII => Unicode (pour les .txt)
-                page = Page(site, update_html_to_unicode(page_name))
-                self.treat_page(page)
-            pages_list.close()
+            with open(source, 'r') as pages_list:
+                while 1:
+                    page_name = pages_list.readline()
+                    fin = page_name.find("\t")
+                    page_name = page_name[:fin]
+                    if page_name == '':
+                        break
+                    if page_name.find('[[') != -1:
+                        page_name = page_name[page_name.find('[[') + 2:]
+                    if page_name.find(']]') != -1:
+                        page_name = page_name[:page_name.find(']]')]
+                    # Conversion ASCII => Unicode (pour les .txt)
+                    page = Page(site, update_html_to_unicode(page_name))
+                    self.treat_page(page)
 
     def page_by_xml(self, source, regex=None, site=None, folder='dumps', include=None, exclude=None,
                     title_include=None, title_exclude=None, namespaces=None, list_false_translations=False,
@@ -71,13 +69,13 @@ class PageProvider:
         if source.find('*') != -1:
             file_name = [f for f in os.listdir(folder) if re.match(source, f)]
         if len(file_name) == 0:
-            print(' Dump introubable : ' + source)
+            print(f' Dump introubable : {source}')
             return
         file_name = file_name[0]
         if self.debug_level > 0:
-            print(' Dump trouvé : ' + file_name)
+            print(f' Dump trouvé : {file_name}')
         from pywikibot import xmlreader
-        dump = xmlreader.XmlDump(folder + '/' + file_name)
+        dump = xmlreader.XmlDump(f'{folder}/{file_name}')
         parser = dump.parse()
         for entry in parser:
             if list_false_translations:
@@ -107,7 +105,12 @@ class PageProvider:
                         elif re.search(re.escape(regex.replace('PAGENAME', entry.title[:page_name_subst])),
                                        page_content, re.DOTALL):
                             self.outputFile.write((entry.title + '\n'))
-                    elif include and exclude and include in page_content and not exclude in page_content:
+                    elif (
+                        include
+                        and exclude
+                        and include in page_content
+                        and exclude not in page_content
+                    ):
                         self.outputFile.write((entry.title + '\n'))
                     elif include and include in page_content and not exclude:
                         self.outputFile.write((entry.title + '\n'))
@@ -117,8 +120,9 @@ class PageProvider:
                         self.outputFile.write((entry.title + '\n'))
         self.outputFile.close()
 
-    def pages_by_cat(self, category, recursive=False, after_page=None, namespaces=[0], names=None, not_names=None,
-                     exclude=None, site=None, pages_list=False, linked=False):
+    def pages_by_cat(self, category, recursive=False, after_page=None, namespaces=None, names=None, not_names=None, exclude=None, site=None, pages_list=False, linked=False):
+        if namespaces is None:
+            namespaces = [0]
         page_ids = 50
         if site is None:
             site = self.site
@@ -140,7 +144,7 @@ class PageProvider:
         modify = False
         for page in pagegenerators.PreloadingGenerator(gen, page_ids):
             if self.debug_level > 2:
-                print('  ' + page.title())
+                print(f'  {page.title()}')
             if page.title() == after_page:
                 modify = True
             elif after_page is None or after_page == '' or modify:
@@ -159,7 +163,7 @@ class PageProvider:
         subcat = cat.subcategories(recurse=recursive != False)
         for subcategory in subcat:
             if self.debug_level > 0:
-                print(' ' + subcategory.title())
+                print(f' {subcategory.title()}')
             if namespaces is not None and 14 in namespaces:
                 self.treat_page_if_name(subcategory.title(), names, not_names)
             if recursive:
@@ -169,7 +173,7 @@ class PageProvider:
                     for notCatName in exclude:
                         if subcategory.title().find(notCatName) != -1:
                             if self.debug_level > 0:
-                                print(' ' + notCatName + ' ignoré')
+                                print(f' {notCatName} ignoré')
                             modify = False
                 if modify:
                     pages = subcategory.articles(False)
@@ -185,27 +189,22 @@ class PageProvider:
         elif names is not None:
             for name in names:
                 if self.debug_level > 1:
-                    print(' ' + name + ' trouvé')
+                    print(f' {name} trouvé')
                 if page_name.find(name) != -1:
                     self.treat_page(page)
                     return
-        elif not_names is not None:
+        else:
             for notName in not_names:
                 if self.debug_level > 1:
-                    print(' ' + notName + ' ignoré')
+                    print(f' {notName} ignoré')
                 if page_name.find(notName) == -1:
                     self.treat_page(page)
                     return
-        else:
-            for name in names:
-                for notName in not_names:
-                    if page_name.find(name) != -1 and page_name.find(notName) == -1:
-                        self.treat_page(page)
-                        return
 
     # [[Special:WhatLinksHere]] with link
-    def pages_by_untranscluded_link(self, page_name, after_page=None, site=None, namespaces=[0, 10], is_linked=False,
-                                    only_template_inclusion=True):
+    def pages_by_untranscluded_link(self, page_name, after_page=None, site=None, namespaces=None, is_linked=False, only_template_inclusion=True):
+        if namespaces is None:
+            namespaces = [0, 10]
         if site is None:
             site = self.site
         is_after_page = False
@@ -213,7 +212,7 @@ class PageProvider:
         linked_pages = page.linkedPages(namespaces=namespaces)
         for linked_page in linked_pages:
             if self.debug_level > 0:
-                print(' Linked page: ' + linked_page.title())
+                print(f' Linked page: {linked_page.title()}')
             if not after_page or after_page == '' or is_after_page:
                 if is_linked:
                     linked_linked_pages = linked_page.linkedPages(
@@ -226,8 +225,9 @@ class PageProvider:
                 is_after_page = True
 
     # [[Special:WhatLinksHere]] with transclude
-    def pages_by_link(self, page_name, after_page=None, site=None, namespaces=[0, 10], is_linked=False,
-                      only_template_inclusion=True):
+    def pages_by_link(self, page_name, after_page=None, site=None, namespaces=None, is_linked=False, only_template_inclusion=True):
+        if namespaces is None:
+            namespaces = [0, 10]
         if site is None:
             site = self.site
         is_after_page = False
@@ -235,7 +235,7 @@ class PageProvider:
         linked_pages = page.embeddedin(namespaces=namespaces)
         for linked_page in linked_pages:
             if self.debug_level > 0:
-                print(' Linked page: ' + linked_page.title())
+                print(f' Linked page: {linked_page.title()}')
             if not after_page or after_page == '' or is_after_page:
                 if is_linked:
                     linked_linked_pages = linked_page.embeddedin(
@@ -270,8 +270,7 @@ class PageProvider:
         gen = pagegenerators.RecentChangesPageGenerator(site=site)
         for page in pagegenerators.PreloadingGenerator(gen, 50):
             if self.debug_level > 1:
-                print(str(time_after_last_edition(
-                    Page) + ' =? ' + str(minimum_time)))
+                print(f'{time_after_last_edition(Page)} =? {minimum_time}')
             if time_after_last_edition(Page) > minimum_time:
                 self.treat_page(page)
 
@@ -282,10 +281,10 @@ class PageProvider:
         # Génère les self.treatPages récentes de la dernière journée
         time_after_last_edition = 30  # minutes
 
-        date_now = datetime.datetime.utcnow()
+        date_now = datetime.datetime.now(datetime.timezone.utc)
         # Date de la plus récente self.treat_page à récupérer
         date_start = date_now - \
-            datetime.timedelta(minutes=time_after_last_edition)
+                datetime.timedelta(minutes=time_after_last_edition)
         # Date d'un jour plus tôt
         date_end = date_start - datetime.timedelta(1)
 
@@ -316,7 +315,7 @@ class PageProvider:
                 elif regex is None and not_regex is not None:
                     if not re.search(not_regex, page.title()):
                         found = True
-                elif regex is not None and not_regex is not None:
+                elif regex is not None:
                     if re.search(regex, page.title()) or not re.search(not_regex, page.title()):
                         found = True
                 else:
@@ -378,7 +377,9 @@ class PageProvider:
             self.treat_page(page)
 
     # [[Special:LinkSearch]]
-    def pages_by_special_link_search(self, url, namespaces=[0], site=None):
+    def pages_by_special_link_search(self, url, namespaces=None, site=None):
+        if namespaces is None:
+            namespaces = [0]
         if site is None:
             site = self.site
         for page in site.exturlusage(url=url, namespaces=namespaces):

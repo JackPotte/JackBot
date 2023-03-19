@@ -30,7 +30,7 @@ def get_first_lemma_from_locution(page_name):
     lemma_page_name = ''
     if page_name.find(' ') != -1:
         if debug_level > 0:
-            print(' lemme de locution trouvé : ' + lemma_page_name)
+            print(f' lemme de locution trouvé : {lemma_page_name}')
         lemma_page_name = page_name[:page_name.find(' ')]
     return lemma_page_name
 
@@ -42,9 +42,9 @@ def get_gender_from_page_name(page_name, language_code='fr', nature=None):
     page_content = get_content_from_page_name(page_name, site)
     if page_content is None:
         return gender
-    if page_content.find('|' + language_code + '}} {{m}}') != -1:
+    if page_content.find(f'|{language_code}' + '}} {{m}}') != -1:
         gender = '{{m}}'
-    elif page_content.find('|' + language_code + '}} {{f}}') != -1:
+    elif page_content.find(f'|{language_code}' + '}} {{f}}') != -1:
         gender = '{{f}}'
     elif page_content.find("''' {{m}}") != -1:
         gender = '{{m}}'
@@ -65,7 +65,9 @@ def get_lemma_from_content(page_content, language_code='fr'):
     return lemma_page_name
 
 
-def get_lemma_from_plural(page_content, language_code='fr', natures=['nom', 'adjectif', 'suffixe']):
+def get_lemma_from_plural(page_content, language_code='fr', natures=None):
+    if natures is None:
+        natures = ['nom', 'adjectif', 'suffixe']
     if debug_level > 1:
         print('\nget_lemma_from_plural')
     lemma_page_name = ''
@@ -75,9 +77,9 @@ def get_lemma_from_plural(page_content, language_code='fr', natures=['nom', 'adj
     if s:
         if debug_level > 1:
             # 2 = adjectif, 3 = fr-rég, 4 = Féminin, 5 = {{lien|, 6 = lemme
-            print(s.group(1))
-            input(s.group(6))
-        lemma_page_name = s.group(6)
+            print(s[1])
+            input(s[6])
+        lemma_page_name = s[6]
     if debug_level > 0:
         pywikibot.output(" lemma_page_name found: \03<<red>>" +
                          lemma_page_name + "\03<<default>>")
@@ -87,7 +89,9 @@ def get_lemma_from_plural(page_content, language_code='fr', natures=['nom', 'adj
     return lemma_page_name
 
 
-def get_lemma_from_feminine(page_content, language_code='fr', natures=['nom', 'adjectif']):
+def get_lemma_from_feminine(page_content, language_code='fr', natures=None):
+    if natures is None:
+        natures = ['nom', 'adjectif']
     if debug_level > 1:
         print('\nget_lemma_from_feminine()')
     lemma_page_name = ''
@@ -97,9 +101,9 @@ def get_lemma_from_feminine(page_content, language_code='fr', natures=['nom', 'a
     if s:
         if debug_level > 1:
             # 2 = adjectif, 3 = fr-rég, 4 = Féminin, 5 = {{lien|, 6 = lemme
-            print(s.group(1))
-            input(s.group(6))
-        lemma_page_name = s.group(6)
+            print(s[1])
+            input(s[6])
+        lemma_page_name = s[6]
     if debug_level > 0:
         pywikibot.output(" lemma_page_name found: \03<<red>>" +
                          lemma_page_name + "\03<<default>>")
@@ -117,9 +121,9 @@ def get_lemma_from_conjugation(page_content, language_code='fr'):
     s = re.search(regex, page_content)
     if s:
         if debug_level > 1:
-            print(s.group(1))  # 2 fr-verbe-flexion, 3 = {{lien|, 4 = lemme
-            input(s.group(4))
-        lemma_page_name = s.group(4)
+            print(s[1])
+            input(s[4])
+        lemma_page_name = s[4]
     if debug_level > 0:
         pywikibot.output(" lemma_page_name found: \03<<red>>" +
                          lemma_page_name + "\03<<default>>")
@@ -142,15 +146,15 @@ def get_inflexion_template(page_name, language, nature=None):
     s = re.search(regex, page_content)
     if s:
         if debug_level > 1:
-            if not s.group(1) is None:
-                print(' ' + s.group(1))  # Nature
-            if not s.group(2) is None:
-                print(' ' + s.group(2))  # Flexion
-            if not s.group(3) is None:
-                print(' ' + s.group(3))  # Number
-            if not s.group(4) is None:
-                print(' ' + s.group(4))  # Template
-        inflexion_template = s.group(4)
+            if s[1] is not None:
+                print(f' {s[1]}')
+            if s[2] is not None:
+                print(f' {s[2]}')
+            if s[3] is not None:
+                print(f' {s[3]}')
+            if s[4] is not None:
+                print(f' {s[4]}')
+        inflexion_template = s[4]
     if debug_level > 0:
         pywikibot.output(" inflexion_template found: \03<<green>>" +
                          inflexion_template + "\03<<default>>")
@@ -175,17 +179,17 @@ def get_inflexion_template_from_lemma(page_name, language, nature):
     regex = r"=== {{S\|" + nature + r"\|" + language + \
         r"(\|num=[0-9])?}} ===\n{{(" + language + r"\-[^}]+)}}"
     if debug_level > d:
-        print(' ' + regex)
+        print(f' {regex}')
     s = re.search(regex, page_content)
     if s:
         if debug_level > d:
-            if not s.group(1) is None:
-                print(' ' + s.group(1))
-            if not s.group(2) is None:
-                print(' ' + s.group(2))
-        inflexion_template = s.group(2)
+            if s[1] is not None:
+                print(f' {s[1]}')
+            if s[2] is not None:
+                print(f' {s[2]}')
+        inflexion_template = s[2]
     if debug_level > d:
-        print(' inflexion_template found: ' + inflexion_template)
+        print(f' inflexion_template found: {inflexion_template}')
     # TODO
     if inflexion_template.find('{{') != -1:
         inflexion_template = ''
@@ -260,8 +264,8 @@ def get_definitions(page_content):
             print('No definition')
         return None
     if debug_level > 1:
-        print(s.group(1))
-    return s.group(1)
+        print(s[1])
+    return s[1]
 
 
 def count_definitions(page_content):
@@ -271,11 +275,10 @@ def count_definitions(page_content):
     if definitions is None:
         return 0
     definitions = definitions.split('\n')
-    total = 0
-    for definition in definitions:
-        if definition[:1] == '#' and definition[:2] not in [u'#:', '#*']:
-            total += 1
-    return total
+    return sum(
+        definition[:1] == '#' and definition[:2] not in [u'#:', '#*']
+        for definition in definitions
+    )
 
 
 def count_first_definition_size(page_content):
@@ -305,7 +308,7 @@ def count_first_definition_size(page_content):
         input(definition)
     words = definition.split(' ')
     if debug_level > 0:
-        print(' count_first_definition_size(): ' + str(len(words)))
+        print(f' count_first_definition_size(): {len(words)}')
     return len(words)
 
 
@@ -316,30 +319,29 @@ def get_pronunciation_from_content(page_content, language_code, nature=None):
     s = re.search(regex, page_content, re.MULTILINE | re.DOTALL)
     if not s:
         return
-    page_name = s.group(1)
+    page_name = s[1]
 
     # Template {{pron}}
     regex = r"{{pron\|([^}]+)\|" + language_code + "}}"
     s = re.search(regex, page_content)
     pronunciation = ''
     if s:
-        pronunciation = s.group(1)
+        pronunciation = s[1]
         pronunciation = pronunciation[:pronunciation.find('=')]
         pronunciation = pronunciation[:pronunciation.rfind('|')]
         if debug_level > 0:
-            input(' prononciation en ' + language_code + ' : ' + pronunciation)
+            input(f' prononciation en {language_code} : {pronunciation}')
         page_content = re.sub(r'{{pron\|\|' + language_code + '}}',
                               r'{{pron|' + pronunciation + r'|' + language_code + '}}', page_content)
         return pronunciation
 
-    # Templates {{fr-xxx}}
-    if language_code == 'fr':
-        templates = '|'.join(flexion_templates_fr_with_s) + \
-            '|' + '|'.join(flexion_templates_fr_with_ms)
-        templates2 = '|'.join(flexion_templates_fr)
-    else:
+    if language_code != 'fr':
         return
 
+    # Templates {{fr-xxx}}
+    templates = '|'.join(flexion_templates_fr_with_s) + \
+        '|' + '|'.join(flexion_templates_fr_with_ms)
+    templates2 = '|'.join(flexion_templates_fr)
     # TODO: templateContent = getTemplateContent(page_content, template) ?
     regex = r'{{(' + re.escape(templates) + r")\|([^{}\|=]+)([^{}]*}}\n\'\'\'" \
         + re.escape(page_name).replace('User:', '') + \
@@ -367,9 +369,9 @@ def get_pronunciation_from_content(page_content, language_code, nature=None):
         template = s.group(1)
         parameters = s.group(2)
         if debug_level > 0:
-            print(' template trouvé : ' + template)
+            print(f' template trouvé : {template}')
         if debug_level > 0:
-            print(' paramètres : ' + parameters)
+            print(f' paramètres : {parameters}')
 
         if template == 'fr-accord-comp':
             # pronunciation = get_parameter(template, 3)
@@ -380,18 +382,18 @@ def get_pronunciation_from_content(page_content, language_code, nature=None):
         elif template == 'fr-accord-eur':
             # TODO pronunciation = get_parameter(template, 2)
             pronunciation = parameters[parameters.rfind('|')+1:]
-            pronunciation = pronunciation + 'œʁ'
+            pronunciation = f'{pronunciation}œʁ'
         elif template == 'fr-accord-eux':
             # pronunciation = get_parameter(template, 2)
-            pronunciation = pronunciation + 'ø'
+            pronunciation = f'{pronunciation}ø'
         elif template == 'fr-accord-f':
             # pronunciation = get_parameter(template, 2)
-            pronunciation = pronunciation + 'f'
+            pronunciation = f'{pronunciation}f'
         elif template == 'fr-accord-ind':
             pronunciation = get_parameter(template, 'pm')
-            pass
         elif template == 'fr-accord-mf':
             pronunciation = get_parameter(template, 'pron')
+        # TODO
         elif template == 'fr-accord-mf-ail':
             # pronunciation = get_parameter(template, 2)
             pass
@@ -412,10 +414,8 @@ def get_pronunciation_from_content(page_content, language_code, nature=None):
             # pronunciation = get_parameter(template, 1)
             pass
 
-        if pronunciation.find('.') != -1:
-            if debug_level > 0:
-                print(
-                    ' prononciation trouvée dans une boite de flexion : ' + pronunciation)
+        if '.' in pronunciation and debug_level > 0:
+            print(f' prononciation trouvée dans une boite de flexion : {pronunciation}')
     if debug_level > 1:
         input('Fin du test des flexions féminines')
     return pronunciation
@@ -435,7 +435,7 @@ def get_pronunciation(page_content, language_code, nature=None):
             pronunciation = getPronunciationFromLemma(page_content, language_code, nature)
     '''
     if debug_level > 0:
-        print(' Pronunciation found: ' + pronunciation)
+        print(f' Pronunciation found: {pronunciation}')
     return pronunciation
 
 
@@ -455,7 +455,7 @@ def add_category(page_content, language_code, line_content):
     if debug_level > 1:
         print('\ndo_add_category')
     if line_content.find('[[Catégorie:') == -1:
-        line_content = '[[Catégorie:' + line_content + ']]'
+        line_content = f'[[Catégorie:{line_content}]]'
 
     return add_line(page_content, language_code, 'catégorie', line_content)
 
@@ -466,7 +466,7 @@ def remove_category(page_content, category, summary):
     regex_category = r'(\n\[\[Catégorie:' + category + r'(\||\])[^\]]*\]\]?)'
     new_page_content = re.sub(regex_category, r'', page_content)
     if new_page_content != page_content:
-        summary = summary + ', retrait de [[Catégorie:' + category + ']]'
+        summary = f'{summary}, retrait de [[Catégorie:{category}]]'
 
     return new_page_content, summary
 
@@ -524,38 +524,46 @@ def add_line(page_content, language_code, section_name, line_content):
         pywikibot.output(
             "\n\03<<red>>---------------------------------------------\03<<default>>")
         print('\nadd_line(' + language_code + ', ' + section_name + ')')
-    if page_content != '' and language_code != '' and section_name != '' and line_content != '':
-        if page_content.find(line_content) == -1 and page_content.find('{{langue|' + language_code + '}}') != -1:
-            if section_name == 'catégorie' and line_content.find('[[Catégorie:') == -1:
-                line_content = '[[Catégorie:' + line_content + ']]'
-            if section_name == 'clé de tri' and line_content.find('{{clé de tri|') == -1:
-                line_content = '{{clé de tri|' + line_content + '}}'
+    if (
+        page_content != ''
+        and language_code != ''
+        and section_name != ''
+        and line_content != ''
+        and page_content.find(line_content) == -1
+        and page_content.find('{{langue|' + language_code + '}}') != -1
+    ):
+        if section_name == 'catégorie' and line_content.find('[[Catégorie:') == -1:
+            line_content = f'[[Catégorie:{line_content}]]'
+        if section_name == 'clé de tri' and line_content.find('{{clé de tri|') == -1:
+            line_content = '{{clé de tri|' + line_content + '}}'
 
-            section_to_add_order = get_order_by_section_name(section_name)
-            if section_to_add_order == len(sections):
-                if debug_level > d:
-                    print(' ajout de la sous-section : ' + section_name + ' dans une section inconnue (car '
-                          + str(len(sections)) + ' = ' + str(section_to_add_order) + ')\n')
-                return page_content
+        section_to_add_order = get_order_by_section_name(section_name)
+        if section_to_add_order == len(sections):
+            if debug_level > d:
+                print(
+                    f' ajout de la sous-section : {section_name} dans une section inconnue (car {len(sections)} = {str(section_to_add_order)}'
+                    + ')\n'
+                )
+            return page_content
 
-            # Recherche de l'ordre réel de la section à ajouter
-            language_section, start_position, end_position = get_language_section(
-                page_content, language_code)
-            if language_section is None:
-                # TODO add section language too in option
-                return page_content
+        # Recherche de l'ordre réel de la section à ajouter
+        language_section, start_position, end_position = get_language_section(
+            page_content, language_code)
+        if language_section is None:
+            # TODO add section language too in option
+            return page_content
 
-            sections_in_page = re.findall(
-                r"\n=+ *{{S\|?([^}/|]+)([^}]*)}}", language_section)
-            if debug_level > d + 1:
-                # ex : [('nom', '|fr|num=1'), ('synonymes', '')]
-                input(str(sections_in_page))
+        sections_in_page = re.findall(
+            r"\n=+ *{{S\|?([^}/|]+)([^}]*)}}", language_section)
+        if debug_level > d + 1:
+            # ex : [('nom', '|fr|num=1'), ('synonymes', '')]
+            input(str(sections_in_page))
 
-            regex = r'\n=* *{{S\|' + section_name + r'[}\|]'
-            if not re.search(regex, language_section):
-                page_content, language_section, start_position, end_position = add_section(page_content,
-                                                                                           sections_in_page, section_name, section_to_add_order, language_section, start_position,
-                                                                                           end_position, line_content, language_code)
+        regex = r'\n=* *{{S\|' + section_name + r'[}\|]'
+        if not re.search(regex, language_section):
+            page_content, language_section, start_position, end_position = add_section(page_content,
+                                                                                       sections_in_page, section_name, section_to_add_order, language_section, start_position,
+                                                                                       end_position, line_content, language_code)
 
             s = re.search(regex, language_section)
             if s:
@@ -572,45 +580,45 @@ def add_line(page_content, language_code, section_name, line_content):
                     final_section = None
                     print(' bug de section')
 
-            # TODO page_content = add_line_content_into_section(page_content, line_content, final_section)
-            line_content = trim(line_content)
-            regex = r'\n?\n==* *{{S\|'
-            s = re.search(regex, final_section)
-            if s:
+        # TODO page_content = add_line_content_into_section(page_content, line_content, final_section)
+        line_content = trim(line_content)
+        regex = r'\n?\n==* *{{S\|'
+        s = re.search(regex, final_section)
+        if s:
+            if debug_level > d:
+                print(' ajout avant la sous-section suivante')
+            page_content = page_content[:start_position] + language_section[:-len(final_section)] \
+                + final_section[:s.start()] \
+                + '\n' + line_content + \
+                final_section[s.start():] + \
+                page_content[start_position + end_position:]
+        else:
+            categories = language_section.find('\n[[Catégorie:')
+            default_sort = language_section.find('\n{{clé de tri|')
+            if categories != -1 and (categories < default_sort or default_sort == -1):
                 if debug_level > d:
-                    print(' ajout avant la sous-section suivante')
-                page_content = page_content[:start_position] + language_section[:-len(final_section)] \
-                    + final_section[:s.start()] \
-                    + '\n' + line_content + \
-                    final_section[s.start():] + \
-                    page_content[start_position + end_position:]
+                    print(' ajout avant les catégories')
+                page_content = page_content[:start_position] \
+                    + language_section[:language_section.find('\n[[Catégorie:')] \
+                    + line_content + '\n' + language_section[language_section.find('\n[[Catégorie:'):] \
+                    + page_content[start_position + end_position:]
+            elif default_sort != -1:
+                if debug_level > d:
+                    print(' ajout avant la clé de tri')
+                page_content = page_content[:start_position] \
+                    + language_section[:language_section.find('\n{{clé de tri|')] \
+                    + line_content + '\n' + language_section[language_section.find('\n{{clé de tri|'):] \
+                    + page_content[start_position + end_position:]
             else:
-                categories = language_section.find('\n[[Catégorie:')
-                default_sort = language_section.find('\n{{clé de tri|')
-                if categories != -1 and (categories < default_sort or default_sort == -1):
-                    if debug_level > d:
-                        print(' ajout avant les catégories')
-                    page_content = page_content[:start_position] \
-                        + language_section[:language_section.find('\n[[Catégorie:')] \
-                        + line_content + '\n' + language_section[language_section.find('\n[[Catégorie:'):] \
-                        + page_content[start_position + end_position:]
-                elif default_sort != -1:
-                    if debug_level > d:
-                        print(' ajout avant la clé de tri')
-                    page_content = page_content[:start_position] \
-                        + language_section[:language_section.find('\n{{clé de tri|')] \
-                        + line_content + '\n' + language_section[language_section.find('\n{{clé de tri|'):] \
-                        + page_content[start_position + end_position:]
-                else:
-                    if debug_level > d:
-                        print(' ajout en fin de section langue (donc saut de ligne)')
-                    if language_section[-1:] != '\n':
-                        line_content = '\n\n' + line_content
-                    elif language_section[-2:] != '\n\n':
-                        line_content = '\n' + line_content
+                if debug_level > d:
+                    print(' ajout en fin de section langue (donc saut de ligne)')
+                if language_section[-1:] != '\n':
+                    line_content = '\n\n' + line_content
+                elif language_section[-2:] != '\n\n':
+                    line_content = '\n' + line_content
 
-                    page_content = page_content[:start_position] + language_section + line_content + '\n' \
-                        + page_content[start_position + end_position:]
+                page_content = page_content[:start_position] + language_section + line_content + '\n' \
+                    + page_content[start_position + end_position:]
 
     # TODO remove fix
     page_content = page_content.replace('\n\n* {{écouter|', '\n* {{écouter|')
@@ -626,16 +634,16 @@ def add_section(page_content, sections_in_page, section_name, section_to_add_ord
     o = 0
     while o < len(sections_in_page) and get_order_by_section_name(sections_in_page[o][0]) <= section_to_add_order:
         if debug_level > d:
-            print(' ' + sections_in_page[o][0] + ' ' +
-                  str(get_order_by_section_name(sections_in_page[o][0])))
-        o = o + 1
+            print(
+                f' {sections_in_page[o][0]} {str(get_order_by_section_name(sections_in_page[o][0]))}'
+            )
+        o += 1
     if o > 0:
-        o = o - 1
+        o -= 1
     if debug_level > d:
-        print(' while ' + str(get_order_by_section_name(sections_in_page[o][0])) + ' <= '
-              + str(section_to_add_order)
-              + ' and ' + str(o) + ' < ' + str(len(sections_in_page)) + ' and '
-              + sections_in_page[o][0] + ' != langue')
+        print(
+            f' while {str(get_order_by_section_name(sections_in_page[o][0]))} <= {str(section_to_add_order)} and {o} < {len(sections_in_page)} and {sections_in_page[o][0]} != langue'
+        )
 
     # section_limit = str(sections_in_page[o][0])
     section_limit = sections_in_page[o][0]
@@ -650,23 +658,27 @@ def add_section(page_content, sections_in_page, section_name, section_to_add_ord
     section_level = get_level_by_section_name(section_name)
     if section_limit == section_name:
         if debug_level > d:
-            print(' ajout dans la sous-section existante "' + section_name + '" (car '
-                  + str(get_order_by_section_name(section_limit)) +
-                  ' = ' + str(section_to_add_order)
-                  + ')\n')
+            print(
+                (
+                    f' ajout dans la sous-section existante "{section_name}" (car {str(get_order_by_section_name(section_limit))} = {str(section_to_add_order)}'
+                    + ')\n'
+                )
+            )
     elif section_name not in ['catégorie', 'clé de tri']:
         section_to_add = '\n\n' + section_level + \
             ' {{S|' + section_name + '}} ' + section_level + '\n'
         if section_to_add_order >= get_order_by_section_name(section_limit):
             if debug_level > d:
-                print(' ajout de la sous-section "' + section_name + '" après "' + section_limit + '" (car '
-                      + str(section_to_add_order) + ' > ' + str(get_order_by_section_name(section_limit)) + ')')
+                print(
+                    f' ajout de la sous-section "{section_name}" après "{section_limit}" (car {str(section_to_add_order)} > {str(get_order_by_section_name(section_limit))})'
+                )
             regex = r'{{S\|' + section_limit + r'[\|}]'
             s = re.search(regex, language_section)
             if section_limit == sections_in_page[-1][0]:
                 if debug_level > d:
                     print(
-                        ' ajout de la sous-section après la dernière de la section langue : ' + section_limit)
+                        f' ajout de la sous-section après la dernière de la section langue : {section_limit}'
+                    )
                 categories = language_section.find('\n[[Catégorie:')
                 default_sort = language_section.find('\n{{clé de tri|')
                 if categories != -1 and (categories < default_sort or default_sort == -1):
@@ -698,17 +710,17 @@ def add_section(page_content, sections_in_page, section_name, section_to_add_ord
                 while o + 2 < len(sections_in_page) and len(section_level) < len(last_section_level):
                     o += 1
                     if debug_level > d:
-                        print(' saut de ' + sections_in_page[o + 1][0])
+                        print(f' saut de {sections_in_page[o + 1][0]}')
 
                 if debug_level > d:
-                    print(' ajout de la sous-section "' + section_name +
-                          '" avant "' + sections_in_page[o + 1][0] + '"')
+                    print(
+                        f' ajout de la sous-section "{section_name}" avant "{sections_in_page[o + 1][0]}"'
+                    )
                 regex = r'\n=* *{{S\|' + sections_in_page[o + 1][0]
                 s = re.search(regex, language_section)
                 if s:
                     if section_name in natures:
-                        section_to_add = section_to_add.replace(
-                            '}}', '|' + language_code + '}}')
+                        section_to_add = section_to_add.replace('}}', f'|{language_code}' + '}}')
                         if line_content[:1] == '#' or line_content[:2] == '\n#':
                             section_to_add += "'''{{subst:PAGENAME}}''' {{genre ?|" + language_code + \
                                 "}} {{pluriel ?|" + language_code + "}}\n"
@@ -737,7 +749,7 @@ def add_section(page_content, sections_in_page, section_name, section_to_add_ord
                 if language_section is None:
                     return page_content
             else:
-                print(' Error, cannot add section: ' + section_name)
+                print(f' Error, cannot add section: {section_name}')
     return page_content, language_section, start_position, end_position
 
 
@@ -768,7 +780,7 @@ def add_pronunciation(page_content, language_code, section, line_content):
     # TODO generic preformator
     page_content = page_content.replace('{{S|Références}}', '{{S|références}}')
     if section == 'catégorie' and line_content.find('[[Catégorie:') == -1:
-        line_content = '[[Catégorie:' + line_content + ']]'
+        line_content = f'[[Catégorie:{line_content}]]'
     if section == 'clé de tri' and line_content.find('{{clé de tri|') == -1:
         line_content = '{{clé de tri|' + line_content + '}}'
 
@@ -776,9 +788,8 @@ def add_pronunciation(page_content, language_code, section, line_content):
     section_number = get_order_by_section_name(section)
     if section_number == len(sections):
         if debug_level > 0:
-            print(' ajout de ' + section + ' dans une section inconnue')
-            print('  (car ' + str(len(sections)) +
-                  ' = ' + str(section_number) + ')')
+            print(f' ajout de {section} dans une section inconnue')
+            print(f'  (car {len(sections)} = {str(section_number)})')
         return page_content
 
     # Recherche de l'ordre réel de la section à ajouter
@@ -796,32 +807,35 @@ def add_pronunciation(page_content, language_code, section, line_content):
     while o < len(sections_in_page) and sections_in_page[o][0] != 'langue' \
             and get_order_by_section_name(sections_in_page[o][0]) <= section_number:
         if debug_level > 0:
-            print(' ' + sections_in_page[o][0] + ' ' +
-                  str(get_order_by_section_name(sections_in_page[o][0])))
-        o = o + 1
+            print(
+                f' {sections_in_page[o][0]} {str(get_order_by_section_name(sections_in_page[o][0]))}'
+            )
+        o += 1
     if debug_level > 0:
-        print(' ' + str(len(sections_in_page)) + ' >? ' + str(o))
+        print(f' {len(sections_in_page)} >? {o}')
     if o == len(sections_in_page):
         if debug_level > 0:
             print(' section à ajouter dans le dernier paragraphe')
         # TODO if section == sections_in_page[-1][0]?
-        if section not in ['catégorie', 'clé de tri']:
-            if language_section.find('[[Catégorie:') != -1:
-                if debug_level > 0:
-                    print('  avant les catégories')
-                language_section = language_section[:language_section.find('[[Catégorie:')] + \
-                    line_content + '\n' + \
-                    language_section[language_section.find('[[Catégorie:'):]
-            elif language_section.find('{{clé de tri') != -1:
-                if debug_level > 0:
-                    print('  avant la clé de tri')
-                language_section = language_section[:language_section.find('{{clé de tri')] + \
-                    line_content + '\n' + \
-                    language_section[language_section.find('{{clé de tri'):]
-            else:
-                if debug_level > 0:
-                    print(' section à ajouter en fin de section langue')
-                language_section = language_section + '\n' + line_content + '\n'
+        if (
+            section not in ['catégorie', 'clé de tri']
+            and language_section.find('[[Catégorie:') != -1
+        ):
+            if debug_level > 0:
+                print('  avant les catégories')
+            language_section = language_section[:language_section.find('[[Catégorie:')] + \
+                line_content + '\n' + \
+                language_section[language_section.find('[[Catégorie:'):]
+        elif (
+            section not in ['catégorie', 'clé de tri']
+            and language_section.find('[[Catégorie:') == -1
+            and language_section.find('{{clé de tri') != -1
+        ):
+            if debug_level > 0:
+                print('  avant la clé de tri')
+            language_section = language_section[:language_section.find('{{clé de tri')] + \
+                line_content + '\n' + \
+                language_section[language_section.find('{{clé de tri'):]
         else:
             if debug_level > 0:
                 print(' section à ajouter en fin de section langue')
@@ -833,14 +847,14 @@ def add_pronunciation(page_content, language_code, section, line_content):
             print('UnicodeEncodeError (relancer en Python3)',
                   o, sections_in_page[o][0])
             return page_content
-        o = o - 1
+        o -= 1
         if debug_level > 1:
-            print(' position O : ' + o)
+            print(f' position O : {o}')
         if debug_level > 0:
-            print(' ajout de "' + section +
-                  '" avant "' + repr(sectionLimit) + '"')
-            print('  (car ' + str(get_order_by_section_name(sectionLimit)
-                                  ) + ' > ' + str(section_number) + ')')
+            print(f' ajout de "{section}" avant "{repr(sectionLimit)}"')
+            print(
+                f'  (car {str(get_order_by_section_name(sectionLimit))} > {str(section_number)})'
+            )
 
         # Ajout après la section trouvée
         if language_section.find('{{S|' + sections_in_page[o][0]) == -1:
@@ -851,15 +865,16 @@ def add_pronunciation(page_content, language_code, section, line_content):
             '{{S|' + sections_in_page[o][0]):]
         if debug_level > 1:
             input(end_of_language_section)
-        if sections_in_page[o][0] != section and not section in ['catégorie', 'clé de tri']:
+        if sections_in_page[o][0] != section and section not in [
+            'catégorie',
+            'clé de tri',
+        ]:
             if debug_level > 0:
-                print(' ajout de la section "' + section +
-                      '" après "' + sections_in_page[o][0] + '"')
+                print(f' ajout de la section "{section}" après "{sections_in_page[o][0]}"')
             line_content = '\n' + sections_level[section_number] + ' {{S|' + section + '}} ' + \
                            sections_level[section_number] + '\n' + line_content
-        else:
-            if debug_level > 0:
-                print(' ajout dans la section existante')
+        elif debug_level > 0:
+            print(' ajout dans la section existante')
         if debug_level > 1:
             input(line_content)
 
@@ -878,7 +893,7 @@ def add_pronunciation(page_content, language_code, section, line_content):
                         language_section = language_section[:interwikis] + '\n' + line_content + '\n' \
                             + language_section[interwikis:]
                     except BaseException as e:
-                        print(str(e))
+                        print(e)
                         print(' pb regex interwiki')
                 elif categories != -1 and (categories < default_sort or default_sort == -1):
                     if debug_level > 0:
@@ -887,17 +902,13 @@ def add_pronunciation(page_content, language_code, section, line_content):
                         + line_content + \
                         language_section[language_section.find(
                             '\n[[Catégorie:'):]
-                elif default_sort != -1:
+                else:
                     if debug_level > 0:
                         print('  ajout avant la clé de tri')
                     language_section = language_section[:language_section.find('\n{{clé de tri|')] \
                         + line_content + \
                         language_section[language_section.find(
                             '\n{{clé de tri|'):]
-                else:
-                    if debug_level > 0:
-                        print('  ajout en fin de section langue')
-                    language_section = language_section + line_content + '\n'
             else:
                 if debug_level > 0:
                     print('  ajout en fin de section langue')
@@ -924,12 +935,18 @@ def add_line_into_section(page_content, language_code, section, line_content):
         pywikibot.output(
             "\n\03<<red>>---------------------------------------------\03<<default>>")
         print('\naddLineIntoSection "' + section + '"')
-    if page_content != '' and language_code != '' and section != '' and line_content != '':
-        if page_content.find(line_content) == -1 and page_content.find('{{langue|' + language_code + '}}') != -1:
-            if section == 'catégorie' and line_content.find('[[Catégorie:') == -1:
-                line_content = '[[Catégorie:' + line_content + ']]'
-            if section == 'clé de tri' and line_content.find('{{clé de tri|') == -1:
-                line_content = '{{clé de tri|' + line_content + '}}'
+    if (
+        page_content != ''
+        and language_code != ''
+        and section != ''
+        and line_content != ''
+        and page_content.find(line_content) == -1
+        and page_content.find('{{langue|' + language_code + '}}') != -1
+    ):
+        if section == 'catégorie' and line_content.find('[[Catégorie:') == -1:
+            line_content = f'[[Catégorie:{line_content}]]'
+        if section == 'clé de tri' and line_content.find('{{clé de tri|') == -1:
+            line_content = '{{clé de tri|' + line_content + '}}'
     sections = re.findall(r"\n=+ *{{S?\|?([^}/|]+)([^}]*)}}", page_content)
     # TODO: complete parsing
     # input(str(sections))
@@ -944,10 +961,10 @@ def get_order_by_section_name(section):
         s = sections.index(section)
         section_order = sections_order[s]
     except BaseException as e:
-        print(str(e))
+        print(e)
         section_order = 2  # Grammatical natures (ex: nom)
     if debug_level > 0:
-        print('  ' + section + ' (' + str(s) + 'e) = ordre ' + str(section_order))
+        print(f'  {section} ({str(s)}e) = ordre {section_order}')
     return section_order
 
 
@@ -959,10 +976,10 @@ def get_level_by_section_name(section):
         s = sections.index(section)
         section_level = sections_level[s]
     except BaseException as e:
-        print(str(e))
+        print(e)
         section_level = '==='  # Grammatical natures (ex: === {{S|nom)
     if debug_level > 0:
-        print('  ' + section + ' (' + str(s) + 'e) = ordre ' + str(section_level))
+        print(f'  {section} ({str(s)}e) = ordre {section_level}')
     return section_level
 
 
@@ -975,8 +992,7 @@ def add_language_code_with_named_parameter_to_template(
     end_position=0
 ):
     if debug_level > 0:
-        pywikibot.output("  Template with lang=: \03<<green>>" +
-                         current_template + "\03<<default>>")
+        pywikibot.output(f"  Template with lang=: \03<<green>>{current_template}\03<<default>>")
     page_content2 = page_content[end_position + 1:]
 
     has_subtemplate_included = False
@@ -1043,8 +1059,8 @@ def check_false_homophons(final_page_content, summary, page_name, infinitive, si
         # TODO: {{S}} forced locutions parameter
 
         flexion_page_name = ''
-        lemma_template_suffix = '|' + language + '}}'
-        flexion_template_suffix = '|' + language + '|flexion}}'
+        lemma_template_suffix = f'|{language}' + '}}'
+        flexion_template_suffix = f'|{language}' + '|flexion}}'
         if flexion_template_suffix in final_page_content and lemma_template_suffix not in final_page_content:
             # Recherche d'éventuelles flexions dans la page du lemme
             inflexion_template = get_inflexion_template(page_name, language)
@@ -1054,7 +1070,7 @@ def check_false_homophons(final_page_content, summary, page_name, infinitive, si
                 flexion_page_name = get_parameter_value(
                     inflexion_template, 'p')
                 if flexion_page_name == '':
-                    flexion_page_name = page_name + 's'
+                    flexion_page_name = f'{page_name}s'
 
             if infinitive is not None and infinitive != '':
                 final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
@@ -1080,28 +1096,28 @@ def remove_false_homophons(page_content, language_code, page_name, related_page_
     if debug_level > 1:
         print('\nremove_false_homophons(' + related_page_name + ')')
 
-    for i in range(0, 2):
+    for _ in range(2):
         regex = r"==== *{{S\|homophones\|" + language_code + r"}} *====\n\* *'''" + re.escape(page_name) + \
             r"''' *{{cf\|[^\|]*\|?" + \
                 re.escape(related_page_name) + r"[\|}][^\n]*\n"
         if re.search(regex, page_content):
             page_content = re.sub(
                 regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
-            summary = summary + ', homophone erroné'
+            summary = f'{summary}, homophone erroné'
 
         regex = r"==== *{{S\|homophones\|" + language_code + r"}} *====\n\* *\[\[[^}\n]+{{cf\|[^\|]*\|?" \
                 + re.escape(related_page_name) + r"[\|}][^\n]*\n?"
         if re.search(regex, page_content):
             page_content = re.sub(
                 regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
-            summary = summary + ', homophone erroné'
+            summary = f'{summary}, homophone erroné'
 
         regex = r"==== *{{S\|homophones\|" + language_code + r"}} *====\n\* *\[\[" + re.escape(related_page_name) \
                 + r"\]\](\n|$)"
         if re.search(regex, page_content):
             page_content = re.sub(
                 regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
-            summary = summary + ', homophone erroné'
+            summary = f'{summary}, homophone erroné'
 
         regex = r"=== {{S\|prononciation}} ===\n==== *{{S\|homophones\|[^}]*}} *====\n*(=|$|{{clé de tri|\[\[Catégorie:)"
         if re.search(regex, page_content):
@@ -1162,13 +1178,14 @@ def sort_translations(page_content, summary):
         if debug_level > 2:
             print(' Ajout des T')
         page_content2 = page_content[page_content.find('\n'):]
-        if re.search(regex, page_content2):
-            if re.search(regex, page_content2).start() < page_content2.find('{{'):
-                if debug_level > 0:
-                    print('Ajout d\'un modèle T')
-                page_content = page_content[:page_content.find('\n') + page_content2.find('{{')+2] + 'T|' + \
-                    page_content[page_content.find(
-                        '\n') + page_content2.find('{{')+2:]
+        if re.search(regex, page_content2) and re.search(
+            regex, page_content2
+        ).start() < page_content2.find('{{'):
+            if debug_level > 0:
+                print('Ajout d\'un modèle T')
+            page_content = page_content[:page_content.find('\n') + page_content2.find('{{')+2] + 'T|' + \
+                page_content[page_content.find(
+                    '\n') + page_content2.find('{{')+2:]
 
         language = get_next_translation(page_content)
         if language != '' and (final_page_content.find('<!--') == -1 or final_page_content.find('-->') != -1):
@@ -1184,7 +1201,7 @@ def sort_translations(page_content, summary):
 
             d = 0
             if debug_level > d:
-                print(' 1 ' + language2 + ' > ' + language + ' ?')
+                print(f' 1 {language2} > {language} ?')
             while compare(language2, language) \
                     and final_page_content.rfind('{{') != final_page_content.rfind('{{S|') \
                     and final_page_content.rfind('{{') != final_page_content.rfind('{{trad-début') \
@@ -1192,28 +1209,27 @@ def sort_translations(page_content, summary):
                     and final_page_content.rfind('{{') != final_page_content.rfind('{{(') \
                     and final_page_content.rfind('{{T') != final_page_content.rfind('{{T|conv'):
                 if debug_level > d:
-                    print(' 1 ' + language2 + ' > ' + language)
+                    print(f' 1 {language2} > {language}')
 
                 language2 = get_next_language_translation(final_page_content)
                 if debug_level > d:
-                    print(' 2 ' + language2 + ' > ' + language + ' ?')
-                if language2 != '' and compare(language2, language):
-                    if debug_level > d:
-                        print(' 2 ' + language2 + ' > ' + language)
-                    if final_page_content.rfind('\n') > final_page_content.rfind('trad-début'):
-                        next_translations = final_page_content[final_page_content.rfind(
-                            '\n'):] + next_translations
-                        final_page_content = final_page_content[:final_page_content.rfind(
-                            '\n')]
-                        summary2 += ', ' + language2 + ' > ' + language
-                    elif final_page_content.rfind('\n') != -1:
-                        # Cas de la première de la liste
-                        current_translation = final_page_content[final_page_content.rfind(
-                            '\n'):] + current_translation
-                        final_page_content = final_page_content[:final_page_content.rfind(
-                            '\n')]
-                else:
+                    print(f' 2 {language2} > {language} ?')
+                if language2 == '' or not compare(language2, language):
                     break
+                if debug_level > d:
+                    print(f' 2 {language2} > {language}')
+                if final_page_content.rfind('\n') > final_page_content.rfind('trad-début'):
+                    next_translations = final_page_content[final_page_content.rfind(
+                        '\n'):] + next_translations
+                    final_page_content = final_page_content[:final_page_content.rfind(
+                        '\n')]
+                    summary2 += f', {language2} > {language}'
+                elif final_page_content.rfind('\n') != -1:
+                    # Cas de la première de la liste
+                    current_translation = final_page_content[final_page_content.rfind(
+                        '\n'):] + current_translation
+                    final_page_content = final_page_content[:final_page_content.rfind(
+                        '\n')]
             final_page_content = final_page_content + \
                 current_translation + next_translations
         elif page_content.find('\n') != -1:
@@ -1241,7 +1257,7 @@ def sort_translations(page_content, summary):
     if debug_level > 1:
         input(' fin du tri des traductions')
     if summary2 != '':
-        summary += ', traductions :' + summary2[1:]
+        summary += f', traductions :{summary2[1:]}'
     return page_content, summary
 
 
@@ -1265,7 +1281,7 @@ def get_langage_name_by_code(language_code):
     if language_code != '':
         if len(language_code) > 3 and language_code.find('-') == -1:
             if debug_level > 0:
-                print(' No ISO code for ' + language_code)  # (ex: gallo)
+                print(f' No ISO code for {language_code}')
             language_name = language_code
         else:
             try:
@@ -1276,7 +1292,7 @@ def get_langage_name_by_code(language_code):
                 language_name = sort_by_encoding(
                     languages[language_code], 'UTF-8')
                 if debug_level > 1:
-                    print(' Language name: ' + language_name)
+                    print(f' Language name: {language_name}')
             except KeyError:
                 if debug_level > 0:
                     print('KeyError l 2556')
@@ -1375,42 +1391,37 @@ def add_banner_see(page_name, page_content, summary):
         # Liste de toutes les pages potentiellement "à voir"
         pages_keys = page_name
         if pages_keys.find(page_name.lower()) == -1:
-            pages_keys = pages_keys + '|' + page_name.lower()
+            pages_keys = f'{pages_keys}|{page_name.lower()}'
         if pages_keys.find(page_name.upper()) == -1:
-            pages_keys = pages_keys + '|' + page_name.upper()
+            pages_keys = f'{pages_keys}|{page_name.upper()}'
         if pages_keys.find(page_name[:1].lower() + page_name[1:]) == -1:
-            pages_keys = pages_keys + '|' + \
-                page_name[:1].lower() + page_name[1:]
+            pages_keys = f'{pages_keys}|{page_name[:1].lower()}{page_name[1:]}'
         if pages_keys.find(page_name[:1].upper() + page_name[1:]) == -1:
-            pages_keys = pages_keys + '|' + \
-                page_name[:1].upper() + page_name[1:]
-        if pages_keys.find('-' + page_name[:1].lower() + page_name[1:]) == -1:
-            pages_keys = pages_keys + '|-' + \
-                page_name[:1].lower() + page_name[1:]
+            pages_keys = f'{pages_keys}|{page_name[:1].upper()}{page_name[1:]}'
+        if pages_keys.find(f'-{page_name[:1].lower()}{page_name[1:]}') == -1:
+            pages_keys = f'{pages_keys}|-{page_name[:1].lower()}{page_name[1:]}'
         if pages_keys.find(page_name[:1].lower() + page_name[1:] + '-') == -1:
-            pages_keys = pages_keys + '|' + \
-                page_name[:1].lower() + page_name[1:] + '-'
+            pages_keys = f'{pages_keys}|{page_name[:1].lower()}{page_name[1:]}-'
         if pages_keys.find('-') != -1:
-            pages_keys = pages_keys + '|' + pages_keys.replace('-', '')
+            pages_keys = f'{pages_keys}|' + pages_keys.replace('-', '')
         diacritics = [['a', u'á', u'à', u'ä', u'â', u'ã'], ['c', u'ç'], ['e', u'é', u'è', u'ë', u'ê'],
                       ['i', u'í', u'ì', u'ï', u'î'], ['n', u'ñ'], [
                           'o', u'ó', u'ò', u'ö', u'ô', u'õ'],
                       ['u', u'ú', u'ù', u'ü', u'û']]
-        for l in range(0, len(diacritics)):
-            for d in range(0, len(diacritics[l])):
-                if page_name.find(diacritics[l][d]) != -1:
+        for diacritic in diacritics:
+            for d in range(len(diacritic)):
+                if page_name.find(diacritic[d]) != -1:
                     if debug_level > 1:
-                        print('Titre contenant : ' + diacritics[l][d])
-                    letter = diacritics[l][d]
-                    for diac in range(0, len(diacritics[l])):
-                        pages_keys = pages_keys + '|' + \
-                            page_name.replace(letter, diacritics[l][diac])
+                        print(f'Titre contenant : {diacritic[d]}')
+                    letter = diacritic[d]
+                    for diac in range(len(diacritic)):
+                        pages_keys = f'{pages_keys}|{page_name.replace(letter, diacritic[diac])}'
         if pages_keys.find(default_sort) == -1:
             # exception ? and page_content.find('{{langue|eo}}') == -1
-            pages_keys = pages_keys + '|' + default_sort
+            pages_keys = f'{pages_keys}|{default_sort}'
 
         # Filtre des pages de la liste "à voir"
-        remaining_pages_keys = pages_keys + '|'
+        remaining_pages_keys = f'{pages_keys}|'
         pages_keys = ''
         PagesVoir = ''
         if debug_level > 0:
@@ -1430,13 +1441,15 @@ def add_banner_see(page_name, page_content, summary):
             if key_page_content is not None:
                 if debug_level > 1:
                     print(pages_keys)
-                if pages_keys.find('|' + current_page) == -1:
-                    pages_keys = pages_keys + '|' + current_page
+                if pages_keys.find(f'|{current_page}') == -1:
+                    pages_keys = f'{pages_keys}|{current_page}'
                 if key_page_content.find('{{voir|') != -1:
                     page_content_key2 = key_page_content[key_page_content.find(
                         '{{voir|')+len('{{voir|'):]
-                    PagesVoir = PagesVoir + '|' + \
-                        page_content_key2[:page_content_key2.find('}}')]
+                    PagesVoir = (
+                        f'{PagesVoir}|'
+                        + page_content_key2[: page_content_key2.find('}}')]
+                    )
                 elif key_page_content.find('{{voir/') != -1:
                     page_content_key2 = key_page_content[key_page_content.find(
                         '{{voir/')+len('{{voir/'):]
@@ -1451,18 +1464,23 @@ def add_banner_see(page_name, page_content, summary):
                     page_contentMod = page_contentModBegin
                     if page_contentMod.find('!') == -1:
                         if page_contentMod.find(page_name) == -1:
-                            page_contentMod = page_contentMod[:page_contentMod.find('}}')] + '|' + page_name + \
-                                page_contentMod[page_contentMod.find(
-                                    '}}'):len(page_contentMod)]
+                            page_contentMod = (
+                                page_contentMod[: page_contentMod.find('}}')]
+                                + '|'
+                                + page_name
+                                + page_contentMod[page_contentMod.find('}}') :]
+                            )
                         if page_contentMod.find(PageVoir) == -1:
-                            page_contentMod = page_contentMod[:page_contentMod.find('}}')] + '|' + PageVoir + \
-                                page_contentMod[page_contentMod.find(
-                                    '}}'):len(page_contentMod)]
+                            page_contentMod = (
+                                page_contentMod[: page_contentMod.find('}}')]
+                                + '|'
+                                + PageVoir
+                                + page_contentMod[page_contentMod.find('}}') :]
+                            )
                     if debug_level > 0:
                         print('remaining_pages_keys vide')
-                    else:
-                        if page_contentMod != page_contentModBegin:
-                            save_page(pageMod, page_contentMod, summary)
+                    elif page_contentMod != page_contentModBegin:
+                        save_page(pageMod, page_contentMod, summary)
                     remaining_pages_keys = ''
                     break
 
@@ -1470,15 +1488,14 @@ def add_banner_see(page_name, page_content, summary):
             if debug_level > 0:
                 print(' Filtre des doublons...')
             if debug_level > 1:
-                print('  avant : ' + PagesVoir)
-            PagesVoir = PagesVoir + '|'
+                print(f'  avant : {PagesVoir}')
+            PagesVoir = f'{PagesVoir}|'
             while PagesVoir.find('|') != -1:
                 if pages_keys.find(PagesVoir[:PagesVoir.find('|')]) == -1:
-                    pages_keys = pages_keys + '|' + \
-                        PagesVoir[:PagesVoir.find('|')]
+                    pages_keys = (f'{pages_keys}|' + PagesVoir[:PagesVoir.find('|')])
                 PagesVoir = PagesVoir[PagesVoir.find('|')+1:]
             if debug_level > 1:
-                print('  après : ' + pages_keys)
+                print(f'  après : {pages_keys}')
         if debug_level > 2:
             input(pages_keys)
 
@@ -1490,7 +1507,7 @@ def add_banner_see(page_name, page_content, summary):
         if pages_keys != page_name:
             if debug_level > 0:
                 print('  Différent de la page courante')
-            remaining_pages_keys = pages_keys + '|'
+            remaining_pages_keys = f'{pages_keys}|'
             key_page = None
             while remaining_pages_keys.find('|') != -1:
                 current_page = remaining_pages_keys[:remaining_pages_keys.find(
@@ -1516,7 +1533,7 @@ def add_banner_see(page_name, page_content, summary):
                     elif key_page_content.find('{{voir|') != -1:
                         if debug_level > 0:
                             print(' {{voir| trouvé')
-                        if pages_keys.find('|' + current_page) != -1:
+                        if pages_keys.find(f'|{current_page}') != -1:
                             page_content_key2 = key_page_content[key_page_content.find(
                                 '{{voir|')+len('{{voir|'):]
                             key_page_content = key_page_content[:key_page_content.find('{{voir|')+len('{{voir|')] \
@@ -1547,8 +1564,12 @@ def add_banner_see(page_name, page_content, summary):
                                 + pages_keys[pages_keys.find('|' + current_page)+len('|' + current_page):] + '}}\n' \
                                 + key_page_content
                         else:    # Cas du premier
-                            key_page_content = '{{voir' + pages_keys[len(current_page):len(pages_keys)] + '}}\n' \
+                            key_page_content = (
+                                '{{voir'
+                                + pages_keys[len(current_page) :]
+                                + '}}\n'
                                 + key_page_content
+                            )
                         if current_page == page_name:
                             page_content = key_page_content
                         else:
@@ -1565,12 +1586,12 @@ def add_banner_see(page_name, page_content, summary):
                 < page_content2.find('}}'):
             page_content = page_content[:page_content.find('{{voir|') + page_content2.find('|' + page_name + '|')] \
                 + page_content[page_content.find('{{voir|') + page_content2.find('|' + page_name + '|')+len('|'
-                                                                                                            + page_name):]
+                                                                                                        + page_name):]
         if page_content2.find('|' + page_name + '}') != -1 and page_content2.find('|' + page_name + '}') \
                 < page_content2.find('}}'):
             page_content = page_content[:page_content.find('{{voir|') + page_content2.find('|' + page_name + '}')] \
                 + page_content[page_content.find('{{voir|') + page_content2.find('|' + page_name + '}')+len('|'
-                                                                                                            + page_name):]
+                                                                                                        + page_name):]
 
     if debug_level > 0:
         print(' Nettoyage des {{voir}}...')
@@ -1717,12 +1738,11 @@ def format_sections(page_content, summary):
     regex = r'({{trad\-fin}}[^={]+)(\n==== {{S\|homophones)'
     s = re.search(regex, page_content)
     if s:
-        page_content = page_content.replace(s.group(1) + s.group(2), s.group(1) + '\n=== {{S|prononciation}} ==='
-                                            + s.group(2))
+        page_content = page_content.replace(s[1] + s[2], s[1] + '\n=== {{S|prononciation}} ===' + s[2])
 
     regex = r"(==== {{S\|dérivés autres langues}} ====" + \
         r"(:?\n\* *{{L\|[^\n]+)?"*10 + r"\n\* *{{)T\|"
-    for i in range(10):
+    for _ in range(10):
         page_content = re.sub(regex, r'\1L|', page_content)
 
     regex = r"\n=* *({{langue\|[^}]+}}) *=*\n"
@@ -1810,21 +1830,29 @@ def format_translations(page_content, summary):
         else:
             if debug_level > 0:
                 print(page_content2)
-            if page_content2[:len(page_content2)].find('trier') != -1:
+            if page_content2[:].find('trier') != -1:
                 break
-            page_content = page_content[:page_content.find('{{trad-fin}}\n* {{T|'):] + \
-                page_content2[:len(page_content2)] + '{{trad-fin}}\n' + \
-                page_content[page_content.find(
-                    '{{trad-fin}}\n* {{T|')+delta+len(page_content2):]
+            page_content = (
+                (
+                    page_content[: page_content.find('{{trad-fin}}\n* {{T|') :]
+                    + page_content2[:]
+                )
+                + '{{trad-fin}}\n'
+            ) + page_content[
+                page_content.find('{{trad-fin}}\n* {{T|')
+                + delta
+                + len(page_content2) :
+            ]
     regex = r'}}{{trad\-fin}}'
     if re.search(regex, page_content):
         page_content = re.sub(regex, '}}\n{{trad-fin}}', page_content)
 
     while re.compile('{{T\|.*\n\n\*[ ]*{{T\|').search(page_content):
         i1 = re.search(r'{{T\|.*\n\n\*[ ]*{{T\|', page_content).end()
-        page_content = page_content[:i1][:page_content[:i1].rfind('\n')-1] \
-            + page_content[:i1][page_content[:i1].rfind(
-                '\n'):len(page_content[:i1])] + page_content[i1:]
+        page_content = (
+            page_content[:i1][: page_content[:i1].rfind('\n') - 1]
+            + page_content[:i1][page_content[:i1].rfind('\n') :]
+        ) + page_content[i1:]
 
     if debug_level > 1:
         print('  Modèles à déplacer')
@@ -1917,17 +1945,19 @@ def replace_templates(page_content, summary):
         word = page_end[:page_end.find('}}')]
         if '|' in word:
             break
-        page_content = page_content[:page_content.find(t)] + '[[' + word + '|' + word[:1].upper() + word[1:] + ']]' + \
-            page_end[page_end.find('}}') + 2:]
+        page_content = (
+            f'{page_content[:page_content.find(t)]}[[{word}|{word[:1].upper()}{word[1:]}]]'
+            + page_end[page_end.find('}}') + 2 :]
+        )
 
     regex = r'\* ?{{sound}} ?: \[\[Media:([^\|\]]*)\|[^\|\]]*\]\]'
     if re.search(regex, page_content):
         page_content = re.sub(regex, r'{{écouter|audio=\1}}', page_content)
-        summary = summary + ', conversion de modèle de son'
+        summary = f'{summary}, conversion de modèle de son'
     regex = r'\{{audio\|([^\|}]*)\|[^\|}]*}}'
     if re.search(regex, page_content):
         page_content = re.sub(regex, r'{{écouter|audio=\1}}', page_content)
-        summary = summary + ', conversion de modèle de son'
+        summary = f'{summary}, conversion de modèle de son'
 
     # TODO: replace {{fr-rég|ɔs vɛʁ.tɛ.bʁal|s=os vertébral|p=os vertébraux|pp=ɔs vɛʁ.tɛ.bʁo}} by {{fr-accord-mf-al|
 
@@ -1962,32 +1992,12 @@ def replace_etymology_templates(page_content, summary):
 
     regex = r'[Ll]ocution {{composé de[^{}]+}}'
     templates = re.findall(regex, page_content)
+    regex2 = r'\| *f *= *(1|oui)[\|}]'
     for template in templates:
-        regex2 = r'\| *f *= *(1|oui)[\|}]'
         if not re.search(regex2, template):
             new_template = template.replace('composé de', 'composé de|f=1')
             page_content = page_content.replace(template, new_template)
 
-    return page_content, summary
-    # TODO fix https://fr.wiktionary.org/w/index.php?title=nos&type=revision&diff=27795087&oldid=27614294
-    # Fix https://fr.wiktionary.org/w/index.php?title=mac&diff=27795089&oldid=27788198
-    # Replacing with: |m=1 and .
-    for template in etymology_templates:
-        # regex = r"({{)" + template + r"([^}]*)}}"              # {{abréviation|fr|m=1|m=1}}.
-        # regex = r"({{)" + template + r"((?!\|m=1).)*}}"        # {{abréviationr|m=1}}
-        # regex = r"({{)" + template + r"((?!\|m=1)[^}]*)*}}"    # {{abréviation|m=1}}.
-        # regex = r"({{)" + template + r"(((?!\|m=1)[^}]*)*)}}"  # {{abréviation|fr|m=1|m=1}}.
-        regex = r"({{)" + template + r"([^}]*)}}"
-        if re.search(regex, page_content):
-            page_content = re.sub(
-                regex, r"\1" + template + r"\2|m=1}}.", page_content)
-    # Fix doubles. TODO prevent them just above
-    regex = r"({{[^}]+)\|m=1([^}]*\|m=1[\|}])"
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, r"\1\2", page_content)
-
-    if initial_page_content != page_content and decision not in summary:
-        summary += decision
     return page_content, summary
 
 
@@ -2098,7 +2108,7 @@ def replace_banner_templates(page_content, summary):
                 break
 
         elif page_content2.rfind('{{') != -1 and page_content2.rfind('{{') == page_content2.rfind('{{('):
-            # modèles impriqués ailleurs
+            # modèles imbriqués ailleurs
             if debug_level > 0:
                 pywikibot.output('\nTemplate: \03<<blue>>(\03<<default>>')
             page_content2 = page_content[page_content.find(
@@ -2127,8 +2137,10 @@ def replace_banner_templates(page_content, summary):
                     print('pb {{colonnes}} 2')
                 break
 
-        elif page_content2.rfind('{{') != -1 and (page_content2.rfind('{{') == page_content2.rfind('{{trad-fin') or
-                                                  page_content2.rfind('{{') == page_content2.rfind('{{S|trad')):
+        elif page_content2.rfind('{{') != -1 and page_content2.rfind('{{') in [
+            page_content2.rfind('{{trad-fin'),
+            page_content2.rfind('{{S|trad'),
+        ]:
             # modèle à utiliser dans {{S|trad
             page_content2 = page_content[page_content.find(
                 '\n{{colonnes|') + len('\n{{colonnes|'):]
@@ -2485,23 +2497,29 @@ def format_languages_templates(page_content, summary, page_name):
         if page_content.find('{{S|verbe|fr}}') != -1 and page_name[:3] != 'se' and page_name[:2] != 's’':
             page_content2 = page_content[page_content.find('{{S|verbe|fr}}'):]
             regex = r'(\n|\')s(e |’)\'\'\''
-            if re.search(regex, page_content2) is not None:
-                if re.search(regex, page_content2).start() < page_content2.find('{{S|') or \
-                        page_content2.find('{{S|') == -1:
-                    regex = r'^[aeiouyàéèêôù]'
+            if re.search(regex, page_content2) is not None and (
+                re.search(regex, page_content2).start()
+                < page_content2.find('{{S|')
+                or page_content2.find('{{S|') == -1
+            ):
+                regex = r'^[aeiouyàéèêôù]'
                     # not [:1] car = & si encodage ASCII du paramètre DOS / Unix
-                    if re.search(regex, page_name):
-                        page_name2 = 's’' + page_name
-                    else:
-                        page_name2 = 'se ' + page_name
-                    page2 = Page(site, page_name2)
-                    if not page2.exists():
-                        if debug_level > 0:
-                            print('Création de ') + \
-                                sort_by_encoding(page_name2)
-                        summary2 = 'Création d\'une redirection provisoire catégorisante du pronominal'
-                        save_page(
-                            page2, '#REDIRECT[[' + page_name + ']]\n<!-- Redirection temporaire avant de créer le verbe pronominal -->\n[[Catégorie:Wiktionnaire:Verbes pronominaux à créer en français]]', summary2)
+                if re.search(regex, page_name):
+                    page_name2 = f's’{page_name}'
+                else:
+                    page_name2 = f'se {page_name}'
+                page2 = Page(site, page_name2)
+                if not page2.exists():
+                    if debug_level > 0:
+                        print('Création de ') + \
+                            sort_by_encoding(page_name2)
+                    summary2 = 'Création d\'une redirection provisoire catégorisante du pronominal'
+                    save_page(
+                        page2,
+                        f'#REDIRECT[[{page_name}'
+                        + ']]\n<!-- Redirection temporaire avant de créer le verbe pronominal -->\n[[Catégorie:Wiktionnaire:Verbes pronominaux à créer en français]]',
+                        summary2,
+                    )
 
         # Ajout de modèles pour les gentités et leurs adjectifs
         if debug_level > 0:
@@ -2547,7 +2565,7 @@ def format_languages_templates(page_content, summary, page_name):
             if re.search(regex, page_content):
                 page_content = re.sub(
                     regex, '{{' + demonym_templates[l][1] + '|pron=}}', page_content)
-                summary = summary + ', conversion des liens flexions en modèle boite'
+                summary = f'{summary}, conversion des liens flexions en modèle boite'
             # Depuis un féminin
             if demonym_templates[l][1] == r'fr-accord-s' and regex_page_name[-1:] == 'e' and regex_page_name[-2:-1] == 's':
                 regex = r'\({{p}} : [\[\']*' + regex_page_name + \
@@ -2556,14 +2574,14 @@ def format_languages_templates(page_content, summary, page_name):
                 if re.search(regex, page_content):
                     page_content = re.sub(
                         regex, '{{' + demonym_templates[l][1] + '|ms=' + regex_page_name[:-1].replace('\\', '') + '}}', page_content)
-                    summary = summary + ', conversion des liens flexions en modèle boite'
+                    summary = f'{summary}, conversion des liens flexions en modèle boite'
             regex = r'\({{f}} : [\[\']*' + regex_page_name + demonym_templates[l][3] + r'[\]\']*, {{mplur}} : [\[\']*' + regex_page_name + \
                 demonym_templates[l][2] + r'[\]\']*, {{fplur}} : [\[\']*' + \
                     regex_page_name + demonym_templates[l][4] + r'[\]\']*\)'
             if re.search(regex, page_content):
                 page_content = re.sub(
                     regex, '{{' + demonym_templates[l][1] + '|pron=}}', page_content)
-                summary = summary + ', conversion des liens flexions en modèle boite'
+                summary = f'{summary}, conversion des liens flexions en modèle boite'
             if debug_level > 1:
                 print(' avec son')
             regex = r'(\n\'\'\'' + regex_page_name + \
@@ -2586,7 +2604,7 @@ def format_languages_templates(page_content, summary, page_name):
                 page_content = re.sub(regex_space, r'\1\3\n\2', page_content)
                 deplacement_modele_inflexion = True
             if deplacement_modele_inflexion:
-                summary = summary + ', déplacement des modèles de flexions'
+                summary = f'{summary}, déplacement des modèles de flexions'
 
         regex = r'({{fr\-accord\-comp\-mf[^}]*\| *trait *=) *([\|}])'
         if re.search(regex, page_content):
@@ -2632,7 +2650,7 @@ def format_languages_templates(page_content, summary, page_name):
             if re.search(regex, page_content):
                 page_content = re.sub(
                     regex, '{{' + demonym_templates[l][1] + '|' + re_page_radical_name + r'}}', page_content)
-                summary = summary + ', conversion des liens flexions en modèle boite'
+                summary = f'{summary}, conversion des liens flexions en modèle boite'
             regex = r'\({{f}} : [\[\']*' + re_page_radical_name + demonym_templates[l][3] + r'[\]\']*, {{mplur}} : [\[\']*' \
                 + re_page_radical_name + demonym_templates[l][2] + r'[\]\']*, {{fplur}} : [\[\']*' + re_page_radical_name \
                 + demonym_templates[l][4] + r'[\]\']*\)'
@@ -2641,7 +2659,7 @@ def format_languages_templates(page_content, summary, page_name):
             if re.search(regex, page_content):
                 page_content = re.sub(
                     regex, '{{' + demonym_templates[l][1] + '|' + re_page_radical_name + r'}}', page_content)
-                summary = summary + ', conversion des liens flexions en modèle boite'
+                summary = f'{summary}, conversion des liens flexions en modèle boite'
             # Son
             if debug_level > 0:
                 print(' son')
@@ -2681,7 +2699,7 @@ def move_etymology_templates(page_content, summary):
 
 def move_etymology_template(page_content, summary, language_code, etym_template):
     if debug_level > 1:
-        print(' move_etymology_template(' + etym_template + ')')
+        print(f' move_etymology_template({etym_template})')
     language_section, l_start, l_end = get_language_section(
         page_content, language_code)
     if language_section is not None and len(get_natures_sections(language_section)) == 1 \
@@ -2713,9 +2731,13 @@ def move_template_to_etymology(language_section, etym_template, summary, languag
                 regex_etymology, r'\1 {{' + etym_template + r'}} ', etymology)
             new_language_section = new_language_section.replace(
                 etymology, etymology2)
-            summary = summary + ', [[Wiktionnaire:Prise de décision/Déplacer les modèles de contexte' \
-                + ' étymologiques dans la section « Étymologie »|ajout de {{' \
-                + etym_template + r"}} dans l'étymologie]]"
+            summary = (
+                (
+                    f'{summary}, [[Wiktionnaire:Prise de décision/Déplacer les modèles de contexte'
+                    + ' étymologiques dans la section « Étymologie »|ajout de {{'
+                )
+                + etym_template
+            ) + r"}} dans l'étymologie]]"
 
     l = etym_template[:1]
     regex = r'{{' + etym_template + r'(?:\|' + language_code + r')?(?:\|m=1)?}} *(?:\[\[' + etym_template \
@@ -2733,7 +2755,8 @@ def format_wikicode(page_content, summary, page_name):
     # page_content = re.sub(r'[  \t]*»', r' »', page_content)
     page_content = page_content.replace('{|\n|}', '')
     page_content = page_content.replace(
-        '[[' + page_name + ']]', '\'\'\'' + page_name + '\'\'\'')
+        f'[[{page_name}]]', '\'\'\'' + page_name + '\'\'\''
+    )
 
     if debug_level > 1:
         print(' #* or #:')
@@ -2762,12 +2785,6 @@ def format_wikicode(page_content, summary, page_name):
 def add_appendix_links(page_content, summary, page_name):
     if debug_level > 0:
         print('\nadd_appendix_links()')
-    language_suffixes = [('es', 'ar', 'arsi', 'er', 'ersi', 'ir', 'irsi'),
-                         ('pt', 'ar', 'ar-se', 'er', 'er-se', 'ir', 'ir-se'),
-                         ('it', 'are', 'arsi', 'ere', 'ersi', 'ire', 'irsi'),
-                         ('fr', 'er', 'er', 'ir', 'ir', 're', 'ar'),
-                         ('ru', '', '', '', '', '', '')
-                         ]
     if (' ' not in page_name or 'JackBot' in page_name) and page_content.find('{{voir-conj') == -1 \
             and page_content.find('{{invar') == -1 and page_content.find('{{verbe non standard') == -1 \
             and '[[Image:' not in page_content and '[[image:' not in page_content \
@@ -2777,6 +2794,12 @@ def add_appendix_links(page_content, summary, page_name):
         # TODO add if images
         if debug_level > 0:
             print(' {{conj}}')
+        language_suffixes = [('es', 'ar', 'arsi', 'er', 'ersi', 'ir', 'irsi'),
+                             ('pt', 'ar', 'ar-se', 'er', 'er-se', 'ir', 'ir-se'),
+                             ('it', 'are', 'arsi', 'ere', 'ersi', 'ire', 'irsi'),
+                             ('fr', 'er', 'er', 'ir', 'ir', 're', 'ar'),
+                             ('ru', '', '', '', '', '', '')
+                             ]
         for l in language_suffixes:
             # Pas de conjugaison pour les verbes français avec infinitif en -ave
             # TODO use l[>0] instead
@@ -2799,9 +2822,8 @@ def add_appendix_links(page_content, summary, page_name):
                     page_content = page_content[:i1] + \
                         ' {{conjugaison|' + l[0] + '}}' + page_content[i1:]
 
-                else:
-                    if debug_level > 0:
-                        print(' No pronunciation to add {{conj}} after')
+                elif debug_level > 0:
+                    print(' No pronunciation to add {{conj}} after')
 
     return page_content, summary
 
@@ -2827,16 +2849,20 @@ def treat_conjugation(page_content, final_page_content, summary, current_templat
     if language_code == 'es':
         if page_name[len(page_name) - 2:] == 'ar' or page_name[len(page_name) - 4:] == 'arsi':
             if page_content.find('grp=') != -1 and page_content.find('grp=') < page_content.find('}}'):
-                if page_content.find('|grp=') == page_content.find('|grp=}') or page_content.find(
-                        '|grp=') == page_content.find('|grp=|'):
+                if page_content.find('|grp=') in [
+                    page_content.find('|grp=}'),
+                    page_content.find('|grp=|'),
+                ]:
                     page_content = page_content[:page_content.find('|grp=') + len('|grp=')] + '1' + page_content[
                         page_content.find('|grp=') + len('|grp='):]
                 else:
                     page_content = page_content[:page_content.find('|grp=') + len('|grp=')] + '1' + page_content[
                         page_content.find('|grp=') + len('|grp=') + 1:]
             elif page_content.find('groupe=') != -1 and page_content.find('groupe=') < page_content.find('}}'):
-                if page_content.find('|groupe=') == page_content.find('|groupe=}') or page_content.find(
-                        '|groupe=') == page_content.find('|groupe=|'):
+                if page_content.find('|groupe=') in [
+                    page_content.find('|groupe=}'),
+                    page_content.find('|groupe=|'),
+                ]:
                     page_content = page_content[:page_content.find('|groupe=') + len('|groupe=')] + '1' + page_content[
                         page_content.find('|groupe=') + len('|groupe='):]
                 else:
@@ -2846,16 +2872,20 @@ def treat_conjugation(page_content, final_page_content, summary, current_templat
                 page_content = '|groupe=1' + page_content
         elif page_name[len(page_name) - 2:] == 'er' or page_name[len(page_name) - 4:] == 'ersi':
             if page_content.find('grp=') != -1 and page_content.find('grp=') < page_content.find('}}'):
-                if page_content.find('|grp=') == page_content.find('|grp=}') or page_content.find(
-                        '|grp=') == page_content.find('|grp=|'):
+                if page_content.find('|grp=') in [
+                    page_content.find('|grp=}'),
+                    page_content.find('|grp=|'),
+                ]:
                     page_content = page_content[:page_content.find('|grp=') + len('|grp=')] + '2' + page_content[
                         page_content.find('|grp=') + len('|grp='):]
                 else:
                     page_content = page_content[:page_content.find('|grp=') + len('|grp=')] + '2' + page_content[
                         page_content.find('|grp=') + len('|grp=') + 1:]
             elif page_content.find('groupe=') != -1 and page_content.find('groupe=') < page_content.find('}}'):
-                if page_content.find('|groupe=') == page_content.find('|groupe=}') or page_content.find(
-                        '|groupe=') == page_content.find('|groupe=|'):
+                if page_content.find('|groupe=') in [
+                    page_content.find('|groupe=}'),
+                    page_content.find('|groupe=|'),
+                ]:
                     page_content = page_content[:page_content.find('|groupe=') + len('|groupe=')] + '2' + page_content[
                         page_content.find('|groupe=') + len('|groupe='):]
                 else:
@@ -2865,16 +2895,20 @@ def treat_conjugation(page_content, final_page_content, summary, current_templat
                 page_content = '|groupe=2' + page_content
         elif page_name[len(page_name) - 2:] == 'ir' or page_name[len(page_name) - 4:] == 'irsi':
             if page_content.find('grp=') != -1 and page_content.find('grp=') < page_content.find('}}'):
-                if page_content.find('|grp=') == page_content.find('|grp=}') or page_content.find(
-                        '|grp=') == page_content.find('|grp=|'):
+                if page_content.find('|grp=') in [
+                    page_content.find('|grp=}'),
+                    page_content.find('|grp=|'),
+                ]:
                     page_content = page_content[:page_content.find('|grp=') + len('|grp=')] + '3' + page_content[
                         page_content.find('|grp=') + len('|grp='):]
                 else:
                     page_content = page_content[:page_content.find('|grp=') + len('|grp=')] + '3' + page_content[
                         page_content.find('|grp=') + len('|grp=') + 1:]
             elif page_content.find('groupe=') != -1 and page_content.find('groupe=') < page_content.find('}}'):
-                if page_content.find('|groupe=') == page_content.find('|groupe=}') or page_content.find(
-                        '|groupe=') == page_content.find('|groupe=|'):
+                if page_content.find('|groupe=') in [
+                    page_content.find('|groupe=}'),
+                    page_content.find('|groupe=|'),
+                ]:
                     page_content = page_content[:page_content.find('|groupe=') + len('|groupe=')] + '3' + page_content[
                         page_content.find('|groupe=') + len('|groupe='):]
                 else:
@@ -2886,16 +2920,20 @@ def treat_conjugation(page_content, final_page_content, summary, current_templat
     elif language_code == 'pt':
         if page_name[len(page_name) - 2:] == 'ar' or page_name[len(page_name) - 4:] == 'ar-se':
             if page_content.find('grp=') != -1 and page_content.find('grp=') < page_content.find('}}'):
-                if page_content.find('|grp=') == page_content.find('|grp=}') or page_content.find(
-                        '|grp=') == page_content.find('|grp=|'):
+                if page_content.find('|grp=') in [
+                    page_content.find('|grp=}'),
+                    page_content.find('|grp=|'),
+                ]:
                     page_content = page_content[:page_content.find('|grp=') + len('|grp=')] + '1' \
                         + page_content[page_content.find('|grp=') + len('|grp='):]
                 else:
                     page_content = page_content[:page_content.find('|grp=') + len('|grp=')] + '1' \
                         + page_content[page_content.find('|grp=') + len('|grp=') + 1:]
             elif page_content.find('groupe=') != -1 and page_content.find('groupe=') < page_content.find('}}'):
-                if page_content.find('|groupe=') == page_content.find('|groupe=}') or page_content.find(
-                        '|groupe=') == page_content.find('|groupe=|'):
+                if page_content.find('|groupe=') in [
+                    page_content.find('|groupe=}'),
+                    page_content.find('|groupe=|'),
+                ]:
                     page_content = page_content[:page_content.find('|groupe=') + len('|groupe=')] + '1' \
                         + page_content[page_content.find('|groupe=') + len('|groupe='):]
                 else:
@@ -2905,8 +2943,10 @@ def treat_conjugation(page_content, final_page_content, summary, current_templat
                 page_content = '|groupe=1' + page_content
         elif page_name[len(page_name) - 2:] == 'er' or page_name[len(page_name) - 4:] == 'er-se':
             if page_content.find('grp=') != -1 and page_content.find('grp=') < page_content.find('}}'):
-                if page_content.find('|grp=') == page_content.find('|grp=}') or page_content.find(
-                        '|grp=') == page_content.find('|grp=|'):
+                if page_content.find('|grp=') in [
+                    page_content.find('|grp=}'),
+                    page_content.find('|grp=|'),
+                ]:
                     page_content = page_content[:page_content.find('|grp=') + len('|grp=')] + '2' \
                         + page_content[page_content.find('|grp=') + len('|grp='):]
                 else:
@@ -3413,13 +3453,13 @@ def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natu
             nature + r"\|" + language_code + r")\|num=2"
         if re.search(regex, page_content):
             page_content = re.sub(regex, r'\1', page_content)
-            summary = summary + ', retrait de |num='
+            summary = f'{summary}, retrait de |num='
 
         regex = r"(=== {{S\|" + nature + r"\|" + language_code + r")(\}} ===\n[^\n]*\n*'''" + regex_page_name \
                 + r"'''[^\n]*\n# *'*'*(Masculin)*(Féminin)* *[P|p]luriel de *'*'* *\[\[)"
         if re.search(regex, page_content):
             page_content = re.sub(regex, r'\1|flexion\2', page_content)
-            summary = summary + ', ajout de |flexion'
+            summary = f'{summary}, ajout de |flexion'
 
         if page_name[-2:] == 'ss':
             if debug_level > 0:
@@ -3439,12 +3479,12 @@ def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natu
                                 print('  inflexion_templates_fr_with_ms')
                             regex = r"\|ms=[^\|}]*"
                             if not re.search(regex, lemma_inflexion_template):
-                                lemma_inflexion_template = lemma_inflexion_template + r'|ms=' + singular_page_name
+                                lemma_inflexion_template = f'{lemma_inflexion_template}|ms={singular_page_name}'
                     for inflexion_template_fr_with_s in inflexion_templates_fr_with_s:
                         if lemma_inflexion_template.find(inflexion_template_fr_with_s) != -1:
                             regex = r"\|s=[^\|}]*"
                             if not re.search(regex, lemma_inflexion_template):
-                                lemma_inflexion_template = lemma_inflexion_template + r'|s=' + singular_page_name
+                                lemma_inflexion_template = f'{lemma_inflexion_template}|s={singular_page_name}'
 
                     ''' Remplacement des {{fr-rég}} par plus précis (lancé pour patcher des pages)
                     if lemma_inflexion_template.find(language_code + r'-rég') != -1: lemma_inflexion_template = ''
@@ -3519,25 +3559,24 @@ def update_if_page_exists_on_other_wiktionaries(
         return final_page_content, page_content
 
     d = 0
-    do_treat_new_missing = True
     is_page_found = True
     try:
         external_page = Page(external_site, external_page_name)
     except pywikibot.exceptions.InconsistentTitleError as e:
         if debug_level > d:
-            print(str(e))
+            print(e)
         final_page_content, page_content = next_translation_template(
             final_page_content, page_content, '-')
         is_page_found = False
     except pywikibot.exceptions.InvalidTitleError as e:
         if debug_level > d:
-            print(str(e))
+            print(e)
         final_page_content, page_content = next_translation_template(
             final_page_content, page_content, '-')
         is_page_found = False
     except pywikibot.exceptions.NoPageError as e:
         if debug_level > d:
-            print(str(e))
+            print(e)
         if external_page_name.find('\'') != -1:
             external_page_name = external_page_name.replace('\'', '’')
         elif external_page_name.find('’') != -1:
@@ -3552,10 +3591,10 @@ def update_if_page_exists_on_other_wiktionaries(
                 external_page = None
     except BaseException as e:
         if debug_level > d:
-            print(str(e))
+            print(e)
         is_page_found = False
     if debug_level > d:
-        print('  is_page_found: ' + str(is_page_found))
+        print(f'  is_page_found: {is_page_found}')
 
     is_external_page_exist = False
     if is_page_found:
@@ -3568,7 +3607,7 @@ def update_if_page_exists_on_other_wiktionaries(
                 final_page_content, page_content, '--')
         except pywikibot.exceptions.InvalidPageError:
             if debug_level > d:
-                print('  InvalidPageError: ' + external_page_name)
+                print(f'  InvalidPageError: {external_page_name}')
             final_page_content, page_content = next_translation_template(
                 final_page_content, page_content, '--')
         except pywikibot.exceptions.InconsistentTitleError:
@@ -3578,10 +3617,11 @@ def update_if_page_exists_on_other_wiktionaries(
                 final_page_content, page_content, '-')
         except pywikibot.exceptions.InvalidTitleError:
             if debug_level > d:
-                print('  InvalidTitleError: ' + external_page_name)
+                print(f'  InvalidTitleError: {external_page_name}')
             final_page_content, page_content = next_translation_template(
                 final_page_content, page_content, '')
 
+        do_treat_new_missing = True
         if is_external_page_exist:
             if debug_level > d:
                 print('  exists (+)')
@@ -3602,8 +3642,10 @@ def update_if_page_exists_on_other_wiktionaries(
 
 def treat_translations(page_content, final_page_content, summary, end_position, site_family):
     # Empty or stub
-    has_not_to_call_interwiki_link = end_position == page_content.find('}}') \
-        or end_position == page_content.find('|}}') - 1
+    has_not_to_call_interwiki_link = end_position in [
+        page_content.find('}}'),
+        page_content.find('|}}') - 1,
+    ]
 
     if has_not_to_call_interwiki_link:
         final_page_content = final_page_content + \
@@ -3614,7 +3656,7 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
         # Lettres spéciales à remplacer dans les traductions vers certaines langues
         page_content2 = page_content[end_position + 1:]
         current_language = page_content2[:page_content2.find('|')]
-        if current_language == 'ro' or current_language == 'mo':
+        if current_language in ['ro', 'mo']:
             while page_content.find('ş') != -1 and page_content.find('ş') < page_content.find('\n'):
                 page_content = page_content[:page_content.find(
                     'ş')] + 'ș' + page_content[page_content.find('ş') + 1:]
@@ -3627,8 +3669,7 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
             while page_content.find('Ţ') != -1 and page_content.find('Ţ') < page_content.find('\n'):
                 page_content = page_content[:page_content.find(
                     'Ţ')] + 'Ț' + page_content[page_content.find('Ţ') + 1:]
-        elif current_language == 'az' or current_language == 'ku' or current_language == 'sq' or \
-                current_language == 'tk' or current_language == 'tr' or current_language == 'tt':
+        elif current_language in ['az', 'ku', 'sq', 'tk', 'tr', 'tt']:
             while page_content.find('ș') != -1 and page_content.find('ș') < page_content.find('\n'):
                 page_content = page_content[:page_content.find(
                     'ș')] + 'ş' + page_content[page_content.find('ș') + 1:]
@@ -3645,7 +3686,6 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
             while page_content.find('ε') != -1 and page_content.find('ε') < page_content.find('\n'):
                 page_content = page_content[:page_content.find(
                     'ε')] + 'ɛ' + page_content[page_content.find('ε') + 1:]
-        # http://fr.wiktionary.org/wiki/Mod%C3%A8le:code_interwiki
         elif current_language == 'cmn':
             page_content = page_content[:page_content.find('cmn')] + 'zh' + page_content[
                 page_content.find('cmn') + len('cmn'):]
@@ -3691,7 +3731,7 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
             d = 0
             page_content3 = page_content2[page_content2.find('|') + 1:]
             if debug_level > d:
-                print(' remote wiki language: ' + current_language)
+                print(f' remote wiki language: {current_language}')
             if page_content3.find('}}') == '' or not page_content3.find('}}'):
                 if debug_level > d:
                     print('  aucun mot distant')
@@ -3726,7 +3766,7 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                 external_page_name = external_page_name[:external_page_name.find(
                     '<')]
             if debug_level > d:
-                msg = ' remote wiki page: ' + external_page_name
+                msg = f' remote wiki page: {external_page_name}'
                 try:
                     print(msg)
                 except UnicodeEncodeError as e:
@@ -3808,15 +3848,14 @@ def add_anagrams(page_content, summary, page_name, language_code):
     for anagram in anagrams:
         if anagram != page_name:
             if debug_level > 0:
-                print(' ' + anagram)
+                print(f' {anagram}')
             anagram_page = Page(site, anagram)
             if anagram_page.exists():
                 if anagram_page.namespace() != 0 and not is_test_page(anagram):
                     break
-                else:
-                    anagram_page_content = get_content_from_page(anagram_page)
-                    if anagram_page_content is None:
-                        break
+                anagram_page_content = get_content_from_page(anagram_page)
+                if anagram_page_content is None:
+                    break
                 if anagram_page_content.find('{{langue|' + language_code + '}}') != -1:
                     anagrams_list = anagrams_list + \
                         '* {{lien|' + anagram + '|' + language_code + '}}\n'

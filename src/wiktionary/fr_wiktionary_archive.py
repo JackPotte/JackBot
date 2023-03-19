@@ -4,6 +4,7 @@
 Ce script archive des pages de discussion
 TODO merge into TalkArchiver when debugged
 """
+
 from __future__ import absolute_import, unicode_literals
 import datetime
 import os
@@ -31,7 +32,7 @@ from fr_wiktionary_templates import *
 
 # Global variables
 debug_level = 0
-debug_aliases = [str('-debug'), str('-d')]
+debug_aliases = ['-debug', '-d']
 for debug_alias in debug_aliases:
     if debug_alias in sys.argv:
         debug_level = 1
@@ -67,8 +68,7 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
     inactivity_duration = (now - latest_rev).days
     if wait_after_humans and inactivity_duration < waiting_time_before_archiving:
         if debug_level > 0:
-            print(' The page has been modified in the last days: ' +
-                  str(inactivity_duration))
+            print(f' The page has been modified in the last days: {str(inactivity_duration)}')
         return
 
     if not page.exists():
@@ -83,39 +83,43 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
     try:
         page_content = page.get()
     except pywikibot.exceptions.NoPageError as e:
-        print(str(e))
+        print(e)
         return
     except pywikibot.exceptions.IsRedirectPageError as e:
-        print(str(e))
+        print(e)
         page_content = page.get(get_redirect=True)
         page2 = Page(site, page_content[page_content.find(
             '[[')+2:page_content.find(']]')])
         try:
             final_page_content2 = page2.get()
         except pywikibot.exceptions.NoPageError as e:
-            print(str(e))
+            print(e)
             return
         except pywikibot.exceptions.IsRedirectPageError as e:
-            print(str(e))
+            print(e)
             return
         except pywikibot.exceptions.LockedPageError as e:
-            print(str(e))
+            print(e)
             return
         if final_page_content2.find('{{NavigBOT') == -1:
-            final_page_content2 = '{{NavigBOT|' + page2.title()[len(
-                page2.title())-4:len(page2.title())] + '}}\n' + final_page_content2
+            final_page_content2 = (
+                '{{NavigBOT|'
+                + page2.title()[len(page2.title()) - 4 :]
+                + '}}\n'
+                + final_page_content2
+            )
             save_page(page2, final_page_content2, summary)
         return
     except pywikibot.exceptions.LockedPageError as e:
-        print(str(e))
+        print(e)
         return
 
-    final_page_content = ''
     current_year = time.strftime('%Y')
 
     # TODO utiliser get_section() pour éviter les balises imbriquées : (ou juste pre, nowiki, et source qui peuvent contenir "==").
     # ex : https://fr.wiktionary.org/w/index.php?title=Wiktionnaire:Bots/Requ%C3%AAtes&diff=prev&oldid=29274173
     regex = r'\n==[ ]*{{[rR]equête [fait|refus|refusée|sans suite]+}}.*==[ \t]*\n'
+    final_page_content = ''
     while re.compile(regex).search(page_content):
         debut_paragraphe = re.search(regex, page_content).end()
         if re.search(r'\n==[^=]', page_content[debut_paragraphe:]):
@@ -141,33 +145,37 @@ def treat_page_by_name(page_name, waiting_time_before_archiving=3):
                 fin_paragraphe:]
 
     if page_content != page.get():
-        page2 = Page(site, page_name + '/Archives/' + current_year)
+        page2 = Page(site, f'{page_name}/Archives/{current_year}')
         final_page_content2 = ''
         if page2.exists():
             try:
                 final_page_content2 = page2.get()
             except pywikibot.exceptions.NoPageError as e:
-                print(str(e))
+                print(e)
                 return
             except pywikibot.exceptions.IsRedirectPageError as e:
-                print(str(e))
+                print(e)
                 return
             except pywikibot.exceptions.LockedPageError as e:
-                print(str(e))
+                print(e)
                 return
         if final_page_content2.find('{{NavigBOT') == -1:
-            final_page_content2 = '{{NavigBOT|' + page2.title()[len(
-                page2.title())-4:len(page2.title())] + '}}\n' + final_page_content2
+            final_page_content2 = (
+                '{{NavigBOT|'
+                + page2.title()[len(page2.title()) - 4 :]
+                + '}}\n'
+                + final_page_content2
+            )
         save_page(page2, final_page_content2 + final_page_content, summary)
         save_page(page, page_content, summary)
 
 
 def main(*args) -> int:
     if len(sys.argv) > 1:
-        if sys.argv[1] == str('-tu') or sys.argv[1] == str('-t'):
+        if sys.argv[1] in ['-tu', '-t']:
             global wait_after_humans
             wait_after_humans = False
-            treat_page_by_name('User:' + username + '/test unitaire')
+            treat_page_by_name(f'User:{username}/test unitaire')
     else:
         treat_page_by_name('Wiktionnaire:Bots/Requêtes')
     return 0

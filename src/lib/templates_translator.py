@@ -5,6 +5,7 @@ Ce script traduit les noms et paramètres de ces modèles en français (ex : {{c
 cf http://www.tradino.org/
 """
 
+
 from __future__ import absolute_import, unicode_literals
 import re
 import pywikibot
@@ -12,52 +13,52 @@ from page_functions import *
 
 do_check_url = False
 
-# Modèles qui incluent des URL dans leurs paramètres
-old_templates = []
-new_templates = []
-old_templates.append('cite web')
-new_templates.append('lien web')
-old_templates.append('citeweb')
-new_templates.append('lien web')
-old_templates.append('cite news')
-new_templates.append('article')
-old_templates.append('citenews')
-new_templates.append('article')
-old_templates.append('cite journal')
-new_templates.append('article')
-old_templates.append('cite magazine')
-new_templates.append('article')
-old_templates.append('cite newspaper')
-new_templates.append('article')
-old_templates.append('lien news')
-new_templates.append('article')
-old_templates.append('cite video')
-new_templates.append('lien vidéo')
-old_templates.append('cite episode')
-new_templates.append('citation épisode')
-old_templates.append('cite arXiv')
-new_templates.append('lien arXiv')
-old_templates.append('cite press release')
-new_templates.append('lien web')
-old_templates.append('cite pr')
-new_templates.append('lien web')
-old_templates.append('web site')
-new_templates.append('lien web')
-old_templates.append('cite conference')
-new_templates.append('lien conférence')
-old_templates.append('docu')
-new_templates.append('lien vidéo')
-old_templates.append('cite book')
-new_templates.append('ouvrage')
-old_templates.append('cite Book')
-new_templates.append('ouvrage')
-old_templates.append('cite')
-new_templates.append('ouvrage')
-old_templates.append('cite encyclopedia')
-new_templates.append('article encyclopédique')
-# es
-old_templates.append('cita noticia')
-new_templates.append('article')
+old_templates = [
+    'cite web',
+    'citeweb',
+    'cite news',
+    'citenews',
+    'cite journal',
+    'cite magazine',
+    'cite newspaper',
+    'lien news',
+    'cite video',
+    'cite episode',
+    'cite arXiv',
+    'cite press release',
+    'cite pr',
+    'web site',
+    'cite conference',
+    'docu',
+    'cite book',
+    'cite Book',
+    'cite',
+    'cite encyclopedia',
+    'cita noticia',
+]
+new_templates = [
+    'lien web',
+    'lien web',
+    'article',
+    'article',
+    'article',
+    'article',
+    'article',
+    'article',
+    'lien vidéo',
+    'citation épisode',
+    'lien arXiv',
+    'lien web',
+    'lien web',
+    'lien web',
+    'lien conférence',
+    'lien vidéo',
+    'ouvrage',
+    'ouvrage',
+    'ouvrage',
+    'article encyclopédique',
+    'article',
+]
 old_templates.append('cita web')
 new_templates.append('lien web')
 # it
@@ -147,16 +148,16 @@ new_param.append('nom')
 old_param.append('last')
 new_param.append('nom')
 for p in range(1, 100):
-    old_param.append('first' + str(p))
-    new_param.append('prénom' + str(p))
-    old_param.append('given' + str(p))
-    new_param.append('prénom' + str(p))
-    old_param.append('last' + str(p))
-    new_param.append('nom' + str(p))
-    old_param.append('surname' + str(p))
-    new_param.append('nom' + str(p))
-    old_param.append('author' + str(p))
-    new_param.append('auteur' + str(p))
+    old_param.append(f'first{str(p)}')
+    new_param.append(f'prénom{str(p)}')
+    old_param.append(f'given{str(p)}')
+    new_param.append(f'prénom{str(p)}')
+    old_param.append(f'last{str(p)}')
+    new_param.append(f'nom{str(p)}')
+    old_param.append(f'surname{str(p)}')
+    new_param.append(f'nom{str(p)}')
+    old_param.append(f'author{str(p)}')
+    new_param.append(f'auteur{str(p)}')
 old_param.append('issue')
 new_param.append('numéro')
 old_param.append('authorlink')
@@ -164,10 +165,10 @@ new_param.append('lien auteur')
 old_param.append('author-link')
 new_param.append('lien auteur')
 for p in range(1, 100):
-    old_param.append('authorlink' + str(p))
-    new_param.append('lien auteur' + str(p))
-    old_param.append('author' + str(p) + 'link')
-    new_param.append('lien auteur' + str(p))
+    old_param.append(f'authorlink{str(p)}')
+    new_param.append(f'lien auteur{str(p)}')
+    old_param.append(f'author{str(p)}link')
+    new_param.append(f'lien auteur{str(p)}')
 old_param.append('coauthorlink')
 new_param.append('lien coauteur')
 old_param.append('coauthor-link')
@@ -542,12 +543,12 @@ def translate_templates(current_page, summary):
 def translate_template_parameters(current_template):
     if debug_level > 1:
         print('\ntranslate_template_parameters()')
-    for p in range(0, param_limit):
+    for p in range(param_limit):
         if not has_parameter(current_template, old_param[p]):
             continue
 
         if debug_level > 0:
-            print('  "' + old_param[p] + '" found')
+            print(f'  "{old_param[p]}" found')
         fr_name = new_param[p]
 
         new_template = remove_parameter_if_empty(
@@ -555,7 +556,7 @@ def translate_template_parameters(current_template):
         if new_template != current_template:
             current_template = new_template
             if debug_level > 0:
-                print('  empty parameter in double removed"' + old_param[p])
+                print(f'  empty parameter in double removed"{old_param[p]}')
             continue
 
         if old_param[p] == 'agency':
@@ -598,7 +599,9 @@ def translate_template_parameters(current_template):
                 fr_name = 'type'
 
         elif old_param[p] == 'website':
-            if not (is_template_name(current_template, 'article') and not has_parameter(current_template, 'périodique')):
+            if not is_template_name(
+                current_template, 'article'
+            ) or has_parameter(current_template, 'périodique'):
                 fr_name = old_param[p]
 
         elif old_param[p] == 'work':
@@ -621,15 +624,15 @@ def translate_template_parameters(current_template):
                 current_template, old_param[p])
             new_param_value = get_parameter_value(current_template, fr_name)
             if debug_level > 0:
-                print('  "' + old_param[p] + '" has double, value:')
-                print('   ' + old_param_value)
-                print('  "' + fr_name + '" value:')
-                print('   ' + new_param_value)
+                print(f'  "{old_param[p]}" has double, value:')
+                print(f'   {old_param_value}')
+                print(f'  "{fr_name}" value:')
+                print(f'   {new_param_value}')
             # Nested templates engenders a false empty value for now
             if old_param_value == new_param_value and old_param_value != '':
                 regex = r'(\| *)' + old_param[p] + r'( *=[^\|}\[]*)([\|}])'
                 current_template = re.sub(regex, r'\3', current_template)
-            # TODO keep only the last date between "access-date" and "consulté le"
+                    # TODO keep only the last date between "access-date" and "consulté le"
         else:
             regex = r'(\| *)' + old_param[p] + r'( *=)'
             current_template = re.sub(
@@ -648,7 +651,7 @@ def translate_template_parameters(current_template):
 
 
 def translate_link_templates(current_page):
-    for m in range(0, templates_limit):
+    for m in range(templates_limit):
         if m <= translated_templates_limit:
             current_page = format_old_link_template(
                 current_page, old_templates[m])
@@ -660,9 +663,9 @@ def translate_link_templates(current_page):
 
 def format_old_link_template(current_page, old_template):
     if debug_level > 1:
-        print(' translate_old_link_template: ' + old_template)
+        print(f' translate_old_link_template: {old_template}')
 
-    if 'cite' != old_template:
+    if old_template != 'cite':
         current_page = current_page.replace(
             '{{' + old_template.replace(' ', '_') + ' ', '{{' + old_template + '')
         current_page = current_page.replace(
@@ -676,6 +679,7 @@ def format_old_link_template(current_page, old_template):
                            old_template[1:]) + r' *\|', old_template + r'|', current_page)
 
     final_page = ''
+    regex = r'[^}]*lang(ue|uage)* *=[^}]*}}'
     while re.search(r'{{[\n ]*' + old_template + r' *[|\n]+', current_page):
         template_end = re.search(
             r'{{[\n ]*' + old_template + r' *[|\n]', current_page).end() - 1
@@ -687,9 +691,8 @@ def format_old_link_template(current_page, old_template):
             final_page)
         current_page = current_page[template_end:]
 
-        regex = r'[^}]*lang(ue|uage)* *=[^}]*}}'
         if not re.search(regex, current_page) or re.search(regex, current_page).end() > current_page.find('}}') + 2:
-            current_page = '|langue=' + language_code + current_page
+            current_page = f'|langue={language_code}{current_page}'
 
     current_page = final_page + current_page
 
@@ -698,7 +701,7 @@ def format_old_link_template(current_page, old_template):
 
 def translate_link_template(current_page, old_template, new_template):
     if debug_level > 1:
-        print(' translate_link_template: ' + old_template)
+        print(f' translate_link_template: {old_template}')
 
     current_page = re.sub(r'({{[\n ]*)[' + old_template[:1] + r'|' + old_template[:1].upper() + r']'
                           + old_template[1:] + r'( *[|\n\t}])', r'\1' + new_template + r'\2', current_page)
@@ -744,12 +747,10 @@ def get_template_language_from_template_page(final_page):
             language_code = language_code.replace('{{', '').replace('}}', '')
             final_page = re.sub(regex_get_last_template, '', page_start_without_current_template) \
                 + final_page[final_page.rfind('{{'):]
-            # TODO language_code = get_valid_language_code(language_code)
-
     if language_code == '':
         language_code = 'None'
     if debug_level > 0:
-        print(' language to add to template: ' + language_code)
+        print(f' language to add to template: {language_code}')
     return final_page, language_code
 
 
@@ -758,15 +759,15 @@ def get_valid_language_code(language_code):
         if language_code.find('}}') != -1:
             language_code = language_code[:language_code.find('}}')]
         if debug_level > 1:
-            print(' Template:' + language_code)
-        template_page = Page(site, 'Template:' + language_code)
+            print(f' Template:{language_code}')
+        template_page = Page(site, f'Template:{language_code}')
         template_page_content = ''
         try:
             template_page_content = template_page.get()
         except pywikibot.exceptions.NoPageError as e:
-            print(str(e))
+            print(e)
         except pywikibot.exceptions.LockedPageError as e:
-            print(str(e))
+            print(e)
         except pywikibot.exceptions.IsRedirectPageError as e:
             template_page_content = template_page.get(get_redirect=True)
         if debug_level > 1:
@@ -781,7 +782,7 @@ def translate_dates(current_page):
                        'en ligne le', 'dts', 'Dts', 'date triable', 'Date triable']
     for m in range(1, month_line + 1):
         if debug_level > 1:
-            print('Mois ' + str(m))
+            print(f'Mois {str(m)}')
             print(months_translations[m][1])
         for p in range(1, len(date_parameters)):
             if debug_level > 1:
@@ -823,7 +824,7 @@ def translate_languages(current_page):
         print('\ntranslate_languages()')
     for l in range(1, languages_line + 1):
         if debug_level > 1:
-            print('Langue ' + str(l))
+            print(f'Langue {str(l)}')
             print(languages_translations[l][1])
         current_page = re.sub(r'(\| *langue *= *)' + languages_translations[l][1] + r'( *[<|\||\n\t|}])',
                               r'\1' + languages_translations[l][2] + r'\2', current_page)
@@ -847,7 +848,7 @@ def translate_access(current_page):
         print('\ntranslate_access()')
     for l in range(1, access_line + 1):
         if debug_level > 1:
-            print('Access ' + str(l))
+            print(f'Access {str(l)}')
             print(access_translations[l][1])
         current_page = re.sub(r'(\| *accès (?:url|doi|hdl) *= *)' + access_translations[l][1] + r'( *[<|\||\n\t|}])',
                               r'\1' + access_translations[l][2] + r'\2', current_page)

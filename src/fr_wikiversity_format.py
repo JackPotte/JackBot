@@ -9,6 +9,7 @@ TODO:
 4) Remplir les {{Département}} à remplir à partir des {{Leçon}}.
 5) Compléter les {{Bas de page}} existants.
 """
+
 from __future__ import absolute_import, unicode_literals
 import os
 import sys
@@ -42,46 +43,38 @@ fix_files = True
 fix_templates = False
 do_add_category = False
 
-oldParameters = []
-newParameters = []
-oldParameters.append('numero')
-newParameters.append('numéro')
-
+oldParameters = ['numero']
+newParameters = ['numéro']
 # https://fr.wikiversity.org/wiki/Catégorie:Modèles_de_l'université
-categorizing_templates = []
-categorizing_templates.append('Faculté')
-categorizing_templates.append('Département')
-categorizing_templates.append('Cours')
-categorizing_templates.append('Leçon')
-categorizing_templates.append('Chapitre')
-categorizing_templates.append('Annexe')
-categorizing_templates.append('Quiz')
-
-sub_pages = []
-# {{leçon}}
-sub_pages.append('Présentation de la leçon')
-sub_pages.append('Objectifs')
-sub_pages.append('Prérequis conseillés')
-sub_pages.append('Référents')
-sub_pages.append('Post-notions')
-# {{cours}}
-sub_pages.append('Présentation du cours')
-sub_pages.append('Leçons')
-sub_pages.append('Fiche')
-sub_pages.append('Feuille d\'exercices')
-sub_pages.append('Annexe')
-sub_pages.append('Voir aussi')
-# {{département}}
-sub_pages.append('Présentation du département')
-sub_pages.append('Leçons par thèmes')
-sub_pages.append('Leçons par niveaux')
-sub_pages.append('Contributeurs')
-
-# {{faculté}}
-sub_pages.append('Présentation de la faculté')
-sub_pages.append('Départements')
-sub_pages.append('Transverse')
-
+categorizing_templates = [
+    'Faculté',
+    'Département',
+    'Cours',
+    'Leçon',
+    'Chapitre',
+    'Annexe',
+    'Quiz',
+]
+sub_pages = [
+    'Présentation de la leçon',
+    'Objectifs',
+    'Prérequis conseillés',
+    'Référents',
+    'Post-notions',
+    'Présentation du cours',
+    'Leçons',
+    'Fiche',
+    "Feuille d\'exercices",
+    'Annexe',
+    'Voir aussi',
+    'Présentation du département',
+    'Leçons par thèmes',
+    'Leçons par niveaux',
+    'Contributeurs',
+    'Présentation de la faculté',
+    'Départements',
+    'Transverse',
+]
 # {{Chapitre}} parameters
 '''
 param = []
@@ -107,7 +100,7 @@ def treat_page(page):
     if debug_level > 0:
         print('------------------------------------')
     page_name = page.title()
-    pywikibot.output("\n\03<<blue>>" + page_name + u"\03<<default>>")
+    pywikibot.output(f"\n\03<<blue>>{page_name}\03<<default>>")
 
     summary = 'Formatage'
     current_page_content = get_content_from_page(page, 'All')
@@ -166,8 +159,10 @@ def treat_page(page):
         # Fix parameters
         for p in range(1, len(oldParameters)-1):
             if page_content.find('{{' + temp[p] + '|') != -1 or page_content.find('{{' + oldParameters[p] + '}}') != -1:
-                page_content = page_content[0:page_content.find(
-                    temp[p])] + newParameters[p] + page_content[page_content.find(temp[p])+len(temp[p]):]
+                page_content = (
+                    page_content[: page_content.find(temp[p])]
+                    + newParameters[p]
+                ) + page_content[page_content.find(temp[p]) + len(temp[p]) :]
 
         # https://fr.wikiversity.org/wiki/Catégorie:Chapitres_sans_pied_de_page
         if re.search(r'{{[cC]hapitre[ \n|]', page_content) and not re.search(r'{{[bB]as de page[ \n|]', page_content):
@@ -190,14 +185,14 @@ def treat_page(page):
                                 i1 = re.search(r'{{Chapitre[.\n]*(\n.*align.*=.*\n)',page_content).end()
                                 i2 = re.search(r'(\n.*align.*=.*\n)',page_content[:i1]).start()
                                 page_content = page_content[:i2] + '\n' + page_content[i1:]
-                        final_page_content = page_content[0:page_content.find('{{Chapitre')+len('{{Chapitre')]
+                        final_page_content = page_content[:page_content.find('{{Chapitre')+len('{{Chapitre')]
                         page_content = page_content[page_content.find('{{Chapitre')+len('{{Chapitre'):]
                 elif re.compile('{chapitre').search(page_content):
                         if re.compile('{chapitre[.\n]*(\n.*align.*=.*\n)').search(page_content):
                                 i1 = re.search(r'{{chapitre[.\n]*(\n.*align.*=.*\n)',page_content).end()
                                 i2 = re.search(r'(\n.*align.*=.*\n)',page_content[:i1]).start()
                                 page_content = page_content[:i2] + '\n' + page_content[i1:]
-                        final_page_content = page_content[0:page_content.find('{{chapitre')+len('{{chapitre')]
+                        final_page_content = page_content[:page_content.find('{{chapitre')+len('{{chapitre')]
                         page_content = page_content[page_content.find('{{chapitre')+len('{{chapitre'):]
 
                         if re.compile('{{Chapitre[\n.]*(\n.*leçon.*=.*\n)').search(page_content):
@@ -230,13 +225,13 @@ def treat_page(page):
                     lecon = get_value('leçon', page_content)
 
                 if lecon.find('|') != -1:
-                    lecon = lecon[0:lecon.find('|')]
-                while lecon[0:1] == '[':
-                    lecon = lecon[1:len(lecon)]
-                while lecon[len(lecon)-1:len(lecon)] == ']':
-                    lecon = lecon[0:len(lecon)-1]
-                if (lecon == '../' or lecon == '') and page_name.find('/') != -1:
-                    lecon = page_name[0:page_name.rfind('/')]
+                    lecon = lecon[:lecon.find('|')]
+                while lecon[:1] == '[':
+                    lecon = lecon[1:]
+                while lecon[-1:] == ']':
+                    lecon = lecon[:-1]
+                if lecon in ['../', ''] and page_name.find('/') != -1:
+                    lecon = page_name[:page_name.rfind('/')]
 
                 if lecon != '' and lecon.find('.') == -1:
                     page2 = Page(site, lecon)
@@ -247,12 +242,12 @@ def treat_page(page):
                             try:
                                 page_lecon = page2.get()
                             except pywikibot.exceptions.NoPageError as e:
-                                print(str(e))
+                                print(e)
                                 return
                             except pywikibot.exceptions.IsRedirectPageError:
                                 page_lecon = page2.getRedirectTarget().get()
                             except pywikibot.exceptions.LockedPageError as e:
-                                print(str(e))
+                                print(e)
                                 return
 
                         # Majuscule
@@ -264,7 +259,7 @@ def treat_page(page):
                                             'Leçon')+len('Leçon'):]
                                         page_content2 = page_content2[:page_content2.find(
                                             '\n')]
-                                        while page_content2[-1:] == ' ' or page_content2[-1:] == '\t':
+                                        while page_content2[-1:] in [' ', '\t']:
                                             page_content2 = page_content2[:-1]
                                         if page_content2[-1:] == '=':
                                             final_page_content = final_page_content + page_content[:
@@ -279,7 +274,7 @@ def treat_page(page):
                                             print(page_content2[-1:])
                                 else:
                                     final_page_content = final_page_content + '\n|Leçon=' + page2.title()
-                            final_page_content = final_page_content + page_content
+                            final_page_content += page_content
                             if page_lecon.find('niveau') != -1:
                                 page_content = page_lecon[page_lecon.find(
                                     'niveau'):]
@@ -287,12 +282,12 @@ def treat_page(page):
                                     if get_value('niveau', page_lecon) != -1:
                                         page_content = final_page_content
                                         if page_content.find('{{Chapitre') != -1:
-                                            final_page_content = page_content[0:page_content.find(
+                                            final_page_content = page_content[:page_content.find(
                                                 '{{Chapitre')+len('{{Chapitre')]
                                             page_content = page_content[page_content.find(
                                                 '{{Chapitre')+len('{{Chapitre'):]
                                         elif page_content.find('{{chapitre') != -1:
-                                            final_page_content = page_content[0:page_content.find(
+                                            final_page_content = page_content[:page_content.find(
                                                 '{{chapitre')+len('{{chapitre')]
                                             page_content = page_content[page_content.find(
                                                 '{{chapitre')+len('{{chapitre'):]
@@ -305,17 +300,17 @@ def treat_page(page):
                                                 page_content2 = page_content2[1:len(
                                                     page_content2)]
                                             if page_content2[:page_content2.find('\n')] == '':
-                                                final_page_content = final_page_content + page_content[0:page_content.find(
+                                                final_page_content = final_page_content + page_content[:page_content.find(
                                                     'niveau')+len('niveau')] + "=" + get_value('niveau', page_lecon)
                                                 page_content = page_content2
-                                            elif get_value('niveau', page_lecon) != page_content2[0:page_content2.find('\n')]:
+                                            elif get_value('niveau', page_lecon) != page_content2[:page_content2.find('\n')]:
                                                 if debug_level > 0:
                                                     print(
                                                         'Différence de niveau dans ') + page_name + ' : '
                                                     print(
                                                         get_value('niveau', page_lecon))
                                                     print(
-                                                        page_content2[0:page_content2.find('\n')])
+                                                        page_content2[:page_content2.find('\n')])
                                         else:
                                             final_page_content = final_page_content + \
                                                 '\n  | niveau      = ' + \
@@ -329,20 +324,18 @@ def treat_page(page):
                                     if get_value('leçon', page_content) == '':
                                         page_content2 = page_content[page_content.find(
                                             'leçon')+len('leçon'):]
-                                        page_content2 = page_content2[0:page_content2.find(
+                                        page_content2 = page_content2[:page_content2.find(
                                             '\n')]
                                         while page_content2[len(page_content2)-1:len(page_content2)] == ' ' or page_content2[len(page_content2)-1:len(page_content2)] == '\t':
-                                            page_content2 = page_content2[0:len(
-                                                page_content2)-1]
+                                            page_content2 = page_content2[:-1]
                                         if page_content2[len(page_content2)-1:len(page_content2)] == '=':
-                                            final_page_content = final_page_content + page_content[0:page_content.find(
+                                            final_page_content = final_page_content + page_content[:page_content.find(
                                                 'leçon')+len('leçon')+page_content2.find('=')+1] + page2.title()
                                             page_content = page_content[page_content.find(
                                                 'leçon')+len('leçon')+page_content2.find('=')+1:]
                                         else:
                                             print('Signe égal manquant dans :')
-                                            print(
-                                                page_content2[len(page_content2)-1:len(page_content2)])
+                                            print(page_content2[-1:])
                                 else:
                                     final_page_content = final_page_content + '\n|leçon=' + page2.title()
                             final_page_content = final_page_content + page_content
@@ -356,12 +349,12 @@ def treat_page(page):
                                     if niveauLecon != -1:
                                         page_content = final_page_content
                                         if page_content.find('{{Chapitre') != -1:
-                                            final_page_content = page_content[0:page_content.find(
+                                            final_page_content = page_content[:page_content.find(
                                                 '{{Chapitre')+len('{{Chapitre')]
                                             page_content = page_content[page_content.find(
                                                 '{{Chapitre')+len('{{Chapitre'):]
                                         elif page_content.find('{{chapitre') != -1:
-                                            final_page_content = page_content[0:page_content.find(
+                                            final_page_content = page_content[:page_content.find(
                                                 '{{chapitre')+len('{{chapitre')]
                                             page_content = page_content[page_content.find(
                                                 '{{chapitre')+len('{{chapitre'):]
@@ -370,13 +363,13 @@ def treat_page(page):
                                         if page_content.find('niveau') < page_content.find('}}') and page_content.find('niveau') != -1:
                                             page_content2 = page_content[page_content.find(
                                                 'niveau')+len('niveau'):]
-                                            while page_content2[0:1] == " " or page_content2[0:1] == "=":
+                                            while page_content2[:1] == " " or page_content2[:1] == "=":
                                                 page_content2 = page_content2[1:]
                                             niveauChapitre = page_content2[:page_content2.find(
                                                 '\n')]
                                             if niveauChapitre == '':
                                                 final_page_content = final_page_content + \
-                                                    page_content[0:page_content.find(
+                                                    page_content[:page_content.find(
                                                         'niveau')+len('niveau')] + "=" + niveauLecon
                                                 page_content = page_content2
                                             elif niveauChapitre != niveauLecon:
@@ -403,22 +396,24 @@ def treat_page(page):
                                 or get_value('précédent', final_page_content) == ''\
                                 or get_value('suivant', final_page_content) == '':
                             if page_lecon.find(page_name) != -1:
-                                page_content2 = page_lecon[0:page_lecon.find(
+                                page_content2 = page_lecon[:page_lecon.find(
                                     page_name)]
-                                # Nécessite que le département ait un nom déifférent et que les leçons soient bien nommées différemment
+                                # Nécessite que le département ait un nom différent et que les leçons soient bien nommées différemment
                             elif page_lecon.find(page_name[page_name.rfind('/')+1:len(page_name)]) != -1:
                                 page_content2 = page_lecon[:page_lecon.find(
                                     page_name[page_name.rfind('/')+1:])]
                             if page_content2 != '':
-                                while page_content2[len(page_content2)-1:len(page_content2)] == " " \
-                                        or page_content2[len(page_content2)-1:len(page_content2)] == "=" \
-                                        or page_content2[len(page_content2)-1:len(page_content2)] == "[" \
-                                        or page_content2[len(page_content2)-1:len(page_content2)] == "{" \
-                                        or page_content2[len(page_content2)-1:len(page_content2)] == "|" \
-                                        or page_content2[len(page_content2)-2:len(page_content2)] == "{C" \
-                                        or page_content2[len(page_content2)-2:len(page_content2)] == "{c" \
-                                        or page_content2[len(page_content2)-2:len(page_content2)] == "{L"\
-                                        or page_content2[len(page_content2)-2:len(page_content2)] == "{l":
+                                while (
+                                    page_content2[-1:] == " "
+                                    or page_content2[-1:] == "="
+                                    or page_content2[-1:] == "["
+                                    or page_content2[-1:] == "{"
+                                    or page_content2[-1:] == "|"
+                                    or page_content2[len(page_content2) - 2:] == "{C"
+                                    or page_content2[len(page_content2) - 2:] == "{c"
+                                    or page_content2[len(page_content2) - 2:] == "{L"
+                                    or page_content2[len(page_content2) - 2:] == "{l"
+                                ):
                                     page_content2 = page_content2[:-1]
                                 if page_content2.rfind(' ') > page_content2.rfind('|'):
                                     NumLecon = page_content2[page_content2.rfind(
@@ -427,19 +422,19 @@ def treat_page(page):
                                     NumLecon = page_content2[page_content2.rfind(
                                         '|')+1:]
                                 # print(page_content2)
-                                if NumLecon != '' and NumLecon != 'département':
+                                if NumLecon not in ['', 'département']:
                                     # Le numéro de la leçon permet de remplir les champs : |numéro=, |précédent=, |suivant=
                                     if get_value('numéro', final_page_content) == '':
                                         if final_page_content.find('numéro') == -1:
                                             page_content = final_page_content
-                                            final_page_content = page_content[0:page_content.find(
+                                            final_page_content = page_content[:page_content.find(
                                                 '{{Chapitre')+len('{{Chapitre')]
                                             page_content = page_content[page_content.find(
                                                 '{{Chapitre')+len('{{Chapitre'):]
                                             if page_content.find('numéro') < page_content.find('}}') and page_content.find('numéro') != -1:
                                                 page_content2 = page_content[page_content.find(
                                                     'numéro')+len('numéro'):]
-                                                while page_content2[0:1] == " " or page_content2[0:1] == "=":
+                                                while page_content2[:1] == " " or page_content2[:1] == "=":
                                                     page_content2 = page_content2[1:]
                                                 final_page_content = final_page_content + \
                                                     page_content[:page_content.find(
@@ -451,18 +446,18 @@ def treat_page(page):
                                             page_content = ''
                                     if get_value('précédent', final_page_content) == '' and NumLecon == 1:
                                         page_content = final_page_content
-                                        final_page_content = page_content[0:page_content.find(
+                                        final_page_content = page_content[:page_content.find(
                                             '{{Chapitre')+len('{{Chapitre')]
                                         page_content = page_content[page_content.find(
                                             '{{Chapitre')+len('{{Chapitre'):]
                                         if page_content.find('précédent') < page_content.find('}}') and page_content.find('précédent') != -1:
                                             page_content2 = page_content[page_content.find(
                                                 'précédent')+len('précédent'):]
-                                            while page_content2[0:1] == " " or page_content2[0:1] == "=":
+                                            while page_content2[:1] == " " or page_content2[:1] == "=":
                                                 page_content2 = page_content2[1:len(
                                                     page_content2)]
                                             final_page_content = final_page_content + \
-                                                page_content[0:page_content.find(
+                                                page_content[:page_content.find(
                                                     'précédent')+len('précédent')] + "=" + NumLecon
                                             page_content = page_content2
                                         else:
@@ -471,14 +466,14 @@ def treat_page(page):
                                         page_content = ''
                                     elif get_value('précédent', final_page_content) == '' and get_value(str(int(NumLecon) - 1), page_lecon) != '':
                                         page_content = final_page_content
-                                        final_page_content = page_content[0:page_content.find(
+                                        final_page_content = page_content[:page_content.find(
                                             '{{Chapitre')+len('{{Chapitre')]
                                         page_content = page_content[page_content.find(
                                             '{{Chapitre')+len('{{Chapitre'):]
                                         if page_content.find('précédent') < page_content.find('}}') and page_content.find('précédent') != -1:
                                             page_content2 = page_content[page_content.find(
                                                 'précédent')+len('précédent'):]
-                                            while page_content2[0:1] == " " or page_content2[0:1] == "=":
+                                            while page_content2[:1] == " " or page_content2[:1] == "=":
                                                 page_content2 = page_content2[1:len(
                                                     page_content2)]
                                             final_page_content = final_page_content + page_content[:page_content.find(
@@ -492,27 +487,24 @@ def treat_page(page):
                                         page_content = ''
                                     if get_value('suivant', final_page_content) == '' and get_value(str(int(NumLecon) + 1), page_lecon) != '':
                                         page_content = final_page_content
-                                        final_page_content = page_content[0:page_content.find(
-                                            '{{Chapitre')+len('{{Chapitre')]
+                                        final_page_content = page_content[:page_content.find('{{Chapitre')+len('{{Chapitre')]
                                         page_content = page_content[page_content.find(
                                             '{{Chapitre')+len('{{Chapitre'):]
                                         if page_content.find('suivant') < page_content.find('}}') and page_content.find('suivant') != -1:
                                             page_content2 = page_content[page_content.find(
                                                 'suivant')+len('suivant'):]
-                                            while page_content2[0:1] == " " or page_content2[0:1] == "=":
+                                            while page_content2[:1] == " " or page_content2[:1] == "=":
                                                 page_content2 = page_content2[1:len(
                                                     page_content2)]
-                                            final_page_content = final_page_content + page_content[0:page_content.find(
+                                            final_page_content = final_page_content + page_content[:page_content.find(
                                                 'suivant')+len('suivant')] + "=" + get_value(str(int(NumLecon) + 1), page_lecon)
                                             page_content = page_content2
                                         else:
                                             if page_content.find('précédent') != -1:
-                                                page_content2 = page_content[page_content.find(
-                                                    'précédent'):]
-                                                final_page_content = final_page_content + page_content[0:page_content.find(
+                                                page_content2 = page_content[page_content.find('précédent'):]
+                                                final_page_content = final_page_content + page_content[:page_content.find(
                                                     'précédent')+page_content2.find('\n')] + '\n|suivant=' + get_value(str(int(NumLecon) + 1), page_lecon)
-                                                page_content = page_content[page_content.find(
-                                                    'précédent')+page_content2.find('\n'):]
+                                                page_content = page_content[page_content.find('précédent')+page_content2.find('\n'):]
                                             else:
                                                 final_page_content = final_page_content + '\n|suivant=' + \
                                                     get_value(
@@ -534,13 +526,13 @@ def treat_page(page):
                     try:
                         talk_page = page2.get()
                     except pywikibot.exceptions.NoPageError as e:
-                        print(str(e))
+                        print(e)
                         return
                     except pywikibot.exceptions.IsRedirectPageError as e:
-                        print(str(e))
+                        print(e)
                         return
                     except pywikibot.exceptions.LockedPageError as e:
-                        print(str(e))
+                        print(e)
                         return
                 else:
                     talk_page = ''
@@ -563,16 +555,14 @@ def treat_page(page):
                 if final_page_content.find('idfaculté') != -1:
                     page_content = final_page_content[final_page_content.find(
                         'idfaculté'):]
-                    idfaculte = page_content[0:page_content.find('\n')]
+                    idfaculte = page_content[:page_content.find('\n')]
                     # pb si tout sur la même ligne, faire max(0, min(page_content.find('\n'),?))
                     if final_page_content.find('précédent') != -1:
-                        page_content = final_page_content[final_page_content.find(
-                            'précédent'):]
-                        precedent = page_content[0:page_content.find('\n')]
+                        page_content = final_page_content[final_page_content.find('précédent'):]
+                        precedent = page_content[:page_content.find('\n')]
                     if final_page_content.find('suivant') != -1:
-                        page_content = final_page_content[final_page_content.find(
-                            'suivant'):]
-                        suivant = page_content[0:page_content.find('\n')]
+                        page_content = final_page_content[final_page_content.find('suivant'):]
+                        suivant = page_content[:page_content.find('\n')]
                     final_page_content = final_page_content + '\n\n{{Bas de page|' + idfaculte + '\n|' + precedent \
                         + '\n|' + suivant + '}}'
 
@@ -600,30 +590,6 @@ def treat_page(page):
 def get_value(word, page_content):
     # TODO Bug http://fr.wikiversity.org/w/index.php?title=Initiation_%C3%A0_l%27arithm%C3%A9tique/PGCD&diff=prev&oldid=386685'
     return ''
-    if re.search(r'\n *' + word + ' *=', page_content):
-        value = re.sub(r'\n *' + word + ' *=()[\n|||}|{]', r'$1', page_content)
-        if debug_level > 0:
-            input(value)
-        return value
-    '''
-    if page_content.find(' ' + word) != page_content.find(word)-1 and page_content.find('|' + word) != page_content.find(word)-1: # Pb du titre_leçon
-        page_content2 = page_content[page_content.find(word)+len(word):len(page_content)]
-    else:
-        page_content2 = page_content
-    if page_content2.find(word) == -1:
-        return ''
-    else:
-        page_content2 = page_content2[page_content2.find(word)+len(word):len(page_content2)]
-        page_content2 = page_content2[0:page_content2.find('\n')]
-        if page_content2.find ('{{C|') != -1:        
-            page_content2 = page_content2[page_content2.find ('{{C|')+4:len(page_content2)]
-            page_content2 = '[[../' + page_content2[0:page_content2.find ('|')] + '/]]'
-        while page_content2[0:1] == ' ' or page_content2[0:1] == '\t' or page_content2[0:1] == '=':
-            page_content2 = page_content2[1:len(page_content2)]
-        if page_content2[0:3] == '[[/':        
-            page_content2 = '[[..' + page_content2[2:len(page_content2)]
-        return page_content2
-    '''
 
 
 p = PageProvider(treat_page, site, debug_level)
@@ -635,38 +601,30 @@ def main(*args) -> int:
         if debug_level > 1:
             print(sys.argv)
         if sys.argv[1] == '-test':
-            treat_page_by_name('User:' + username + '/test')
+            treat_page_by_name(f'User:{username}/test')
         elif sys.argv[1] == '-test2':
-            treat_page_by_name('User:' + username + '/test2')
-        elif sys.argv[1] == '-page' or sys.argv[1] == '-p':
+            treat_page_by_name(f'User:{username}/test2')
+        elif sys.argv[1] in ['-page', '-p']:
             treat_page_by_name("Fonctions_d'une_variable_réelle/Continuité")
-        elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
-            p.pages_by_file('lists/articles_' + site_language +
-                            '_' + site_family + '.txt')
-        elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
-            # regex = r'{{[Ee]ncadre *\|[^}]*text-align: center'
-            regex = r'text-align'
-            if len(sys.argv) > 2:
-                regex = sys.argv[2]
+        elif sys.argv[1] in ['-file', '-txt']:
+            p.pages_by_file(f'lists/articles_{site_language}_{site_family}.txt')
+        elif sys.argv[1] in ['-dump', '-xml']:
+            regex = sys.argv[2] if len(sys.argv) > 2 else r'text-align'
             p.page_by_xml(site_language + site_family + '\-.*xml', regex)
         elif sys.argv[1] == '-u':
-            p.pages_by_user('User:' + username)
-        elif sys.argv[1] == '-search' or sys.argv[1] == '-s' or sys.argv[1] == '-r':
+            p.pages_by_user(f'User:{username}')
+        elif sys.argv[1] in ['-search', '-s', '-r']:
             if len(sys.argv) > 2:
                 p.pages_by_search(sys.argv[2])
             else:
                 p.pages_by_search(
                     'insource:text-align: center', namespaces=[0])
-        elif sys.argv[1] == '-link' or sys.argv[1] == '-l' or sys.argv[1] == '-template' or sys.argv[1] == '-m':
+        elif sys.argv[1] in ['-link', '-l', '-template', '-m']:
             p.pages_by_link('Modèle:Encadre')
-        elif sys.argv[1] == '-category' or sys.argv[1] == '-cat':
-            after_page = ''
-            if len(sys.argv) > 2:
-                after_page = sys.argv[2]
-            p.pages_by_cat('Catégorie:Pages utilisant des liens magiques ISBN',
-                           namespaces=None, after_page=after_page)
-            p.pages_by_cat('Catégorie:Pages avec ISBN invalide',
-                           namespaces=None, after_page=after_page)
+        elif sys.argv[1] in ['-category', '-cat']:
+            after_page = sys.argv[2] if len(sys.argv) > 2 else ''
+            p.pages_by_cat('Catégorie:Pages utilisant des liens magiques ISBN', namespaces=None, after_page=after_page)
+            p.pages_by_cat('Catégorie:Pages avec ISBN invalide', namespaces=None, after_page=after_page)
         elif sys.argv[1] == '-redirects':
             p.pages_by_redirects()
         elif sys.argv[1] == '-all':

@@ -44,14 +44,14 @@ def treat_page(page):
     if debug_level > 0:
         print('------------------------------------')
     page_name = page.title()
-    pywikibot.output("\n\03<<blue>>" + page_name + u"\03<<default>>")
+    pywikibot.output(f"\n\03<<blue>>{page_name}\03<<default>>")
 
     if not has_more_than_time(page, 1440):
         return
 
     singular_page = get_content_from_page(page, [''])
     if singular_page is None or singular_page == '':
-        print(' missing page content: ' + page_name)
+        print(f' missing page content: {page_name}')
         return
 
     if singular_page.find('{{formater') != -1 \
@@ -68,12 +68,8 @@ def treat_page(page):
             print('page_content en travaux : non traitée')
         return
 
-    template = []  # Liste des modèles du site à traiter
-    param = []  # paramètre du lemme associé
-    template.append('fr-rég-x')
-    param.append('s')
-    template.append('fr-rég')
-    param.append('s')
+    template = ['fr-rég-x', 'fr-rég']
+    param = ['s', 's']
     # template.append('fr-accord-cons')
     # TODO https://fr.wiktionary.org/w/index.php?title=arnaudes&type=revision&diff=26192327&oldid=26191304
     # param.append('ms')
@@ -83,20 +79,20 @@ def treat_page(page):
     # template.append('fr-accord-eur')
     # param.append('1')
 
-    for m in range(0, len(template)):
+    for m in range(len(template)):
         if debug_level > 1:
-            print(' début du for ' + str(m) +
-                  ', recherche du modèle : ' + template[m])
+            print(f' début du for {str(m)}, recherche du modèle : {template[m]}')
 
-        if singular_page.find(template[m] + '|') == -1 and singular_page.find(template[m] + '}') == -1:
+        if (
+            singular_page.find(f'{template[m]}|') == -1
+            and singular_page.find(template[m] + '}') == -1
+        ):
             if debug_level > 1:
-                pywikibot.output(' Modèle : \03<<blue>>' +
-                                 template[m] + '\03<<default>> absent')
+                pywikibot.output(f" Template: \03<<blue>> {template[m]} \03<<default>> missing")
             continue
         else:
             if debug_level > 0:
-                pywikibot.output(' Modèle : \03<<blue>>' +
-                                 template[m] + '\03<<default>> trouvé')
+                pywikibot.output(f" Template: \03<<blue>>' {template[m]} \03<<default>> found")
             page_content = singular_page
 
         language_code = template[m][:2]
@@ -132,12 +128,12 @@ def treat_page(page):
             nature = nature[:nature.find('|')]
             if debug_level > 0:
                 try:
-                    print('  Nature : ' + nature)
+                    print(f'  Nature : {nature}')
                 except UnicodeDecodeError:
                     print('  Nature à décoder')
                 except UnicodeEncodeError:
                     print('  Nature à encoder')
-            if nature == 'erreur' or nature == 'faute':
+            if nature in ['erreur', 'faute']:
                 print('  section erreur')
                 return
 
@@ -147,7 +143,7 @@ def treat_page(page):
             if plural is None:
                 return
             if debug_level > 0:
-                print('  Pluriel : ' + plural)
+                print(f'  Pluriel : {plural}')
             pronunciation = getWordPronunciation(page_content)
 
             # h aspiré
@@ -160,26 +156,19 @@ def treat_page(page):
                 H = '|préfpron={{h aspiré}}'
 
             gender = ''
-            page_content2 = page_content[page_content.find(
-                '\n')+1:len(page_content)]
+            page_content2 = page_content[page_content.find('\n') + 1 :]
             while page_content2[:1] == '[' or page_content2[:1] == '\n' and len(page_content2) > 1:
-                page_content2 = page_content2[page_content2.find(
-                    '\n')+1:len(page_content2)]
+                page_content2 = page_content2[page_content2.find('\n') + 1 :]
             if page_content2.find('{{m}}') != -1 and page_content2.find('{{m}}') < page_content2.find('\n'):
                 gender = ' {{m}}'
             if page_content2.find('{{f}}') != -1 and page_content2.find('{{f}}') < page_content2.find('\n'):
-                if '' == gender:
-                    gender = ' {{f}}'
-                else:
-                    gender = ' {{mf}}'
-
+                gender = ' {{mf}}' if gender else ' {{f}}'
             MF = ''
             if page_content2.find('{{mf}}') != -1 and page_content2.find('{{mf}}') < page_content2.find('\n'):
                 gender = ' {{mf}}'
                 MF = '|mf=oui'
                 if singular_page.find('|mf=') == -1:
-                    singular_page = singular_page[:singular_page.find(template[m])+len(template[m])] + '|mf=oui' \
-                        + singular_page[singular_page.find(template[m])+len(template[m]):]
+                    singular_page = f'{singular_page[:singular_page.find(template[m]) + len(template[m])]}|mf=oui{singular_page[singular_page.find(template[m]) + len(template[m]):]}'
                     save_page(page, singular_page, '|mf=oui')
             if page_content.find('|mf=') != -1 and page_content.find('|mf=') < page_content.find('}}'):
                 MF = '|mf=oui'
@@ -189,7 +178,7 @@ def treat_page(page):
                 plural_page = get_content_from_page(page2, 'All')
                 if plural_page.find('{{langue|' + language_code + '}}') != -1:
                     if debug_level > 0:
-                        print('  Pluriel existant l 216 : ' + plural)
+                        print(f'  Pluriel existant l 216 : {plural}')
                     break
             else:
                 if debug_level > 0:
@@ -200,11 +189,11 @@ def treat_page(page):
             if debug_level > 1:
                 print('  Pluriel n°1')
             if plural[-2:] == 'xs':
-                print(' Pluriel en xs : ' + plural)
-                log('*[[' + page_name + ']]')
+                print(f' Pluriel en xs : {plural}')
+                log(f'*[[{page_name}]]')
                 return
             elif plural[-2:] == 'ss' and page_name[-2:] != 'ss':
-                lemma_param = '|' + param[m] + '=' + plural[:-2]
+                lemma_param = f'|{param[m]}={plural[:-2]}'
                 singular_page = singular_page[:singular_page.find(template[m])+len(template[m])] + lemma_param + \
                     singular_page[singular_page.find(
                         template[m])+len(template[m]):]
@@ -213,11 +202,11 @@ def treat_page(page):
             elif param[m] == '1':
                 lemma_param = ''
             else:
-                lemma_param = '|' + param[m] + '=' + page_name
+                lemma_param = f'|{param[m]}={page_name}'
 
             flexion_template = '{{' + template[m] + \
                 pronunciation + H + MF + lemma_param
-            if plural != page_name + 's' and plural != page_name + 'x':
+            if plural not in [f'{page_name}s', f'{page_name}x']:
                 flexion_template += '|p={{subst:PAGENAME}}'
             flexion_template += '}}'
 
@@ -233,21 +222,24 @@ def treat_page(page):
             final_page_content = final_page_content + '\n' + plural_page
 
             default_sort = sort_by_encoding(plural)
-            if add_default_sort:
-                if final_page_content.find('{{clé de tri') == -1 and default_sort != '' \
-                        and default_sort.lower() != plural.lower():
-                    final_page_content = final_page_content + \
-                        '\n{{clé de tri|' + default_sort + '}}\n'
+            if (
+                add_default_sort
+                and final_page_content.find('{{clé de tri') == -1
+                and default_sort != ''
+                and default_sort.lower() != plural.lower()
+            ):
+                final_page_content = final_page_content + \
+                    '\n{{clé de tri|' + default_sort + '}}\n'
             final_page_content = update_html_to_unicode(final_page_content)
 
-            summary = 'Création du pluriel de [[' + page_name + ']]'
+            summary = f'Création du pluriel de [[{page_name}]]'
             save_page(page2, final_page_content, summary)
 
             # TODO: pluriel n°2
             if debug_level > 1:
                 print('  Fin du while')
         if debug_level > 1:
-            print(' Fin du for ' + str(m))
+            print(f' Fin du for {str(m)}')
 
 
 def getWordPlural(page_content, page_name, current_template):
@@ -255,7 +247,7 @@ def getWordPlural(page_content, page_name, current_template):
     plural = get_parameter_value(page_content, 'p')
     suffix = get_parameter_value(page_content, 'inv')
     if plural != '' and suffix != '':
-        plural = plural + ' ' + suffix
+        plural = f'{plural} {suffix}'
 
     if plural == '':
         singular = get_parameter_value(page_content, 's')
@@ -264,22 +256,18 @@ def getWordPlural(page_content, page_name, current_template):
                 if debug_level > 0:
                     print('  inv= sans s=')
                 return None
-            plural = singular + 's ' + suffix
-            singular = singular + ' ' + suffix
-        elif singular != '' and singular != page_name:
+            plural = f'{singular}s {suffix}'
+            singular = f'{singular} {suffix}'
+        elif singular not in ['', page_name]:
             if debug_level > 0:
                 print('  s= ne correspond pas')
                 print(singular)
             return None
         else:
-            if current_template[-1:] == 'x':
-                plural = page_name + 'x'
-            else:
-                plural = page_name + 's'
-
+            plural = f'{page_name}x' if current_template[-1:] == 'x' else f'{page_name}s'
             if (plural[-2:] == 'ss' or plural.find('{') != -1) and suffix == '':
-                print(' Pluriel en -ss : ' + plural)
-                log('*[[' + page_name + ']]')
+                print(f' Pluriel en -ss : {plural}')
+                log(f'*[[{page_name}]]')
                 return
             if debug_level > 1:
                 print('  paramètre du modèle du lemme : ' +
@@ -305,7 +293,7 @@ def getWordPronunciation(page_content):
             print('  prononciation identique au singulier')
         pron = page_content[:page_content.find('}}')]
         if debug_level > 1:
-            print('  pron avant while : ' + pron)
+            print(f'  pron avant while : {pron}')
         if pron.find('|pron=') != -1:
             pron = '|' + pron[pron.find('|pron=')+len('|pron='):]
 
@@ -316,10 +304,7 @@ def getWordPronunciation(page_content):
             if debug_level > 1:
                 print(pron_array[n].find('='))
             n += 1
-        if n == len(pron_array):
-            pron = '|'
-        else:
-            pron = '|' + pron_array[n]
+        pron = '|' if n == len(pron_array) else f'|{pron_array[n]}'
         '''
         while pron.find('=') != -1:
             pron2 = pron[:pron.find('=')]
@@ -339,7 +324,7 @@ def getWordPronunciation(page_content):
                 if debug_level > 0: print('  pron dans while2 : ') + pron
         '''
         if debug_level > 1:
-            print('  pron après while : ' + pron)
+            print(f'  pron après while : {pron}')
     pron = trim(pron)
     if pron.rfind('|') > 0:
         pronM = pron[:pron.rfind('|')]
@@ -348,10 +333,10 @@ def getWordPronunciation(page_content):
     else:
         pronM = pron
     if pronM[:1] != '|':
-        pronM = '|' + pronM
+        pronM = f'|{pronM}'
     if debug_level > 0:
         try:
-            print('  Prononciation : ' + pronM)
+            print(f'  Prononciation : {pronM}')
         except UnicodeDecodeError:
             print('  Prononciation à décoder')
         except UnicodeEncodeError:
@@ -370,34 +355,29 @@ def main(*args) -> int:
         if debug_level > 1:
             print(sys.argv)
         if sys.argv[1] == '-test':
-            treat_page_by_name('User:' + username + '/test')
+            treat_page_by_name(f'User:{username}/test')
         elif sys.argv[1] == '-test2':
-            treat_page_by_name('User:' + username + '/test2')
-        elif sys.argv[1] == str('-tu') or sys.argv[1] == str('-t'):
-            treat_page_by_name('User:' + username + '/test unitaire')
-        elif sys.argv[1] == '-page' or sys.argv[1] == '-p':
+            treat_page_by_name(f'User:{username}/test2')
+        elif sys.argv[1] in ['-tu', '-t']:
+            treat_page_by_name(f'User:{username}/test unitaire')
+        elif sys.argv[1] in ['-page', '-p']:
             treat_page_by_name('saisie de schéma')
-        elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
-            p.pages_by_file('lists/articles_' + site_language +
-                            '_' + site_family + '.txt')
-        elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
-            regex = r''
-            if len(sys.argv) > 2:
-                regex = sys.argv[2]
+        elif sys.argv[1] in ['-file', '-txt']:
+            p.pages_by_file(f'lists/articles_{site_language}_{site_family}.txt')
+        elif sys.argv[1] in ['-dump', '-xml']:
+            regex = sys.argv[2] if len(sys.argv) > 2 else r''
             p.page_by_xml(site_language + site_family + '\-.*xml', regex)
         elif sys.argv[1] == '-u':
-            p.pages_by_user('User:' + username)
-        elif sys.argv[1] == '-search' or sys.argv[1] == '-s' or sys.argv[1] == '-r':
+            p.pages_by_user(f'User:{username}')
+        elif sys.argv[1] in ['-search', '-s', '-r']:
             if len(sys.argv) > 2:
                 p.pages_by_search(sys.argv[2])
             else:
                 p.pages_by_search('chinois')
-        elif sys.argv[1] == '-link' or sys.argv[1] == '-l' or sys.argv[1] == '-template' or sys.argv[1] == '-m':
+        elif sys.argv[1] in ['-link', '-l', '-template', '-m']:
             p.pages_by_link('Template:autres projets')
-        elif sys.argv[1] == '-category' or sys.argv[1] == '-cat':
-            after_page = ''
-            if len(sys.argv) > 2:
-                after_page = sys.argv[2]
+        elif sys.argv[1] in ['-category', '-cat']:
+            after_page = sys.argv[2] if len(sys.argv) > 2 else ''
             p.pages_by_cat('Catégorie:Python', after_page=after_page)
         elif sys.argv[1] == '-redirects':
             p.pages_by_redirects()

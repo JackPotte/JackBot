@@ -58,18 +58,18 @@ def treat_page(source_page, is_lemma=True):
         last_letter = lemma_page_name[-1:]
         # TODO check each inflexion (plural, present participle...)
         if last_letter == 'e':
-            page_name = lemma_page_name + 'd'
+            page_name = f'{lemma_page_name}d'
         elif last_letter == 'y':
-            page_name = lemma_page_name[:-1] + 'ied'
+            page_name = f'{lemma_page_name[:-1]}ied'
         else:
-            page_name = lemma_page_name + 'ed'
+            page_name = f'{lemma_page_name}ed'
         source_page = Page(source_site, page_name)
         if not source_page.exists():
             page_name = lemma_page_name + last_letter + 'ed'
             source_page = Page(source_site, page_name)
     else:
         page_name = source_page.title()
-    pywikibot.output("\n\03<<blue>>" + page_name + "\03<<default>>")
+    pywikibot.output(f"\n\03<<blue>>{page_name}\03<<default>>")
 
     target_page = Page(site, page_name)
     if target_page.exists():
@@ -78,19 +78,17 @@ def treat_page(source_page, is_lemma=True):
 
     page_content = get_content_from_page(source_page, 'All')
     if page_content is None or page_content == '':
-        print(' missing page content: ' + page_name)
+        print(f' missing page content: {page_name}')
         return
 
-    summary = 'Importation depuis [[' + \
-        foreign_language + ':' + source_page.title() + ']]'
+    summary = (f'Importation depuis [[{foreign_language}:{source_page.title()}' + ']]')
     # Nature grammaticale
     page_content2 = page_content[:page_content.find(templateSource)]
     # Code langue
     page_content = page_content[page_content.find(
         templateSource)+len(templateSource)+1:]
     if page_content.find("lang=") != -1 and page_content.find("lang=") < page_content.find('}}'):
-        page_content2 = page_content[page_content.find(
-            "lang=")+5:len(page_content)]
+        page_content2 = page_content[page_content.find("lang=") + 5:]
         if page_content2.find('|') != -1 and page_content2.find('|') < page_content2.find('}}'):
             language_code = page_content2[:page_content2.find("|")]
             page_content = page_content[:page_content.find("lang=")] + page_content[page_content.find("lang=") + 5
@@ -107,7 +105,7 @@ def treat_page(source_page, is_lemma=True):
     else:
         language_code = foreign_language
 
-    while page_content[:1] == ' ' or page_content[:1] == '|':
+    while page_content[:1] in [' ', '|']:
         page_content = page_content[1:]
     # Lemme
     # Si on est dans un lien
@@ -119,7 +117,7 @@ def treat_page(source_page, is_lemma=True):
     else:
         lemma_page_name = page_content[:page_content.find('}}')]
     if lemma_page_name[:2] != '[[':
-        lemma_page_name = '[[' + lemma_page_name + ']]'
+        lemma_page_name = f'[[{lemma_page_name}]]'
 
     lemma_page_name = lemma_page_name[2:-2]
     if '{' in lemma_page_name or '}' in lemma_page_name or '[' in lemma_page_name or ']' in lemma_page_name \
@@ -175,21 +173,20 @@ def treat_page(source_page, is_lemma=True):
             # Suffixe du -ed
             letter = pron[-1:]
             if letter in ('f', 'k', 'p', 'θ', 's', 'ʃ'):
-                pron = pron + 't'
+                pron = f'{pron}t'
             elif letter in ('t', 'd'):
-                pron = pron + 'ɪd'
+                pron = f'{pron}ɪd'
             else:
-                pron = pron + 'd'
+                pron = f'{pron}d'
         if debug_level > 0:
-            print(' prononciation : ' + pron)
+            print(f' prononciation : {pron}')
 
     if page_content2.rfind('===') == -1:
         return
-    else:
-        page_content3 = page_content2[:page_content2.rfind('===')]
-        nature = page_content3[page_content3.rfind('===')+3:]
-        if debug_level > 1:
-            input(nature)
+    page_content3 = page_content2[:page_content2.rfind('===')]
+    nature = page_content3[page_content3.rfind('===')+3:]
+    if debug_level > 1:
+        input(nature)
     if nature == 'Noun':
         nature = 'S|nom'
     elif nature == 'Adjective':
@@ -203,7 +200,7 @@ def treat_page(source_page, is_lemma=True):
             print(' Nature inconnue')
         return
     if debug_level > 0:
-        print(' nature : ' + nature)
+        print(f' nature : {nature}')
 
     target_page_content = '== {{langue|' + language_code + '}} ==\n=== {{' + nature + '|' + language_code \
         + '|flexion}} ===\n\'\'\'' + page_name + '\'\'\' {{pron|'+pron+'|' + language_code \
@@ -223,32 +220,27 @@ def main(*args) -> int:
         if debug_level > 1:
             print(sys.argv)
         if sys.argv[1] == '-test':
-            treat_page_by_name('User:' + username + '/test')
+            treat_page_by_name(f'User:{username}/test')
         elif sys.argv[1] == '-test2':
-            treat_page_by_name('User:' + username + '/test2')
-        elif sys.argv[1] == '-page' or sys.argv[1] == '-p':
+            treat_page_by_name(f'User:{username}/test2')
+        elif sys.argv[1] in ['-page', '-p']:
             treat_page_by_name('saisie de schéma')
-        elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
-            p.pages_by_file('lists/articles_' + site_language +
-                            '_' + site_family + '.txt')
-        elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
-            regex = r''
-            if len(sys.argv) > 2:
-                regex = sys.argv[2]
+        elif sys.argv[1] in ['-file', '-txt']:
+            p.pages_by_file(f'lists/articles_{site_language}_{site_family}.txt')
+        elif sys.argv[1] in ['-dump', '-xml']:
+            regex = sys.argv[2] if len(sys.argv) > 2 else r''
             p.page_by_xml(site_language + site_family + '\-.*xml', regex)
         elif sys.argv[1] == '-u':
-            p.pages_by_user('User:' + username)
-        elif sys.argv[1] == '-search' or sys.argv[1] == '-s' or sys.argv[1] == '-r':
+            p.pages_by_user(f'User:{username}')
+        elif sys.argv[1] in ['-search', '-s', '-r']:
             if len(sys.argv) > 2:
                 p.pages_by_search(sys.argv[2])
             else:
                 p.pages_by_search('chinois')
-        elif sys.argv[1] == '-link' or sys.argv[1] == '-l' or sys.argv[1] == '-template' or sys.argv[1] == '-m':
+        elif sys.argv[1] in ['-link', '-l', '-template', '-m']:
             p.pages_by_link('Template:autres projets')
-        elif sys.argv[1] == '-category' or sys.argv[1] == '-cat':
-            after_page = ''
-            if len(sys.argv) > 2:
-                after_page = sys.argv[2]
+        elif sys.argv[1] in ['-category', '-cat']:
+            after_page = sys.argv[2] if len(sys.argv) > 2 else ''
             p.pages_by_cat('Catégorie:Python', after_page=after_page)
         elif sys.argv[1] == '-redirects':
             p.pages_by_redirects()

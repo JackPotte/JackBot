@@ -30,175 +30,481 @@ def sort_by_encoding(page_name, encoding='uca-default'):
             add_key = True
         elif encoding != 'uca-default':
             # Latin
-            if letter == 'à' or letter == 'Á' or letter == 'á' or letter == 'â' or letter == 'ä' or \
-                    letter == 'ā' or letter == 'ă' or letter == 'ą' or letter == 'ǎ' or letter == 'ǻ' or \
-                    letter == 'ȁ' or letter == 'ȃ' or letter == 'ȧ' or letter == 'ɑ' or letter == 'ạ' or \
-                    letter == 'ả' or letter == 'ấ' or letter == 'Ấ' or letter == 'ⱥ' or letter == 'À' or \
-                    letter == 'Â' or letter == 'Ä' or letter == 'Å' or letter == 'Ā' or letter == 'Ă' or \
-                    letter == 'Ą' or letter == 'Ǎ' or letter == 'Ǻ' or letter == 'Ȁ' or letter == 'Ȃ' or \
-                    letter == 'Ȧ' or letter == 'Ⱥ' or letter == 'Ɑ' or letter == 'Ǟ' or letter == 'Ǡ' or \
-                    letter == 'ắ' or letter == 'Ắ' or letter == 'å' or letter == 'Å' or letter == 'ã' or \
-                    letter == 'Ã':
+            if letter in [
+                'à',
+                'Á',
+                'á',
+                'â',
+                'ä',
+                'ā',
+                'ă',
+                'ą',
+                'ǎ',
+                'ǻ',
+                'ȁ',
+                'ȃ',
+                'ȧ',
+                'ɑ',
+                'ạ',
+                'ả',
+                'ấ',
+                'Ấ',
+                'ⱥ',
+                'À',
+                'Â',
+                'Ä',
+                'Å',
+                'Ā',
+                'Ă',
+                'Ą',
+                'Ǎ',
+                'Ǻ',
+                'Ȁ',
+                'Ȃ',
+                'Ȧ',
+                'Ⱥ',
+                'Ɑ',
+                'Ǟ',
+                'Ǡ',
+                'ắ',
+                'Ắ',
+                'å',
+                'ã',
+                'Ã',
+            ]:
                 word_key += "a"
                 add_key = True
-            elif letter == 'æ' or letter == 'ǣ' or letter == 'ǽ' or letter == 'Æ' or letter == 'Ǣ' or letter == 'Ǽ':
+            elif letter in ['æ', 'ǣ', 'ǽ', 'Æ', 'Ǣ', 'Ǽ']:
                 word_key += "ae"
                 add_key = True
-            elif letter == 'ƀ' or letter == 'ƃ' or letter == 'Ɓ' or letter == 'Ƃ' or letter == 'Ƀ':
+            elif letter in ['ƀ', 'ƃ', 'Ɓ', 'Ƃ', 'Ƀ']:
                 word_key += "b"
                 add_key = True
-            elif letter == 'ç' or letter == 'ć' or letter == 'ċ' or letter == 'č' or letter == 'ƈ' or \
-                    letter == 'ȼ' or letter == 'Ç' or letter == 'Ć' or letter == 'Ĉ' or letter == 'Ċ' or \
-                    letter == 'Č' or letter == 'Ƈ' or letter == 'Ȼ':
+            elif letter in [
+                'ç',
+                'ć',
+                'ċ',
+                'č',
+                'ƈ',
+                'ȼ',
+                'Ç',
+                'Ć',
+                'Ĉ',
+                'Ċ',
+                'Č',
+                'Ƈ',
+                'Ȼ',
+            ]:
                 word_key += "c"
                 add_key = True
             elif letter == 'ĉ':
                 word_key += "cx"
                 add_key = True
-            elif letter == 'ď' or letter == 'đ' or letter == 'ƌ' or letter == 'ȡ' or letter == 'Ď' or \
-                    letter == 'Đ' or letter == 'Ɖ' or letter == 'Ɗ' or letter == 'Ƌ' or letter == 'ȸ' or \
-                    letter == 'ǆ' or letter == 'ǳ' or letter == 'Ǆ' or letter == 'ǅ' or letter == 'Ǳ' or \
-                    letter == 'ǲ':
+            elif letter in [
+                'ď',
+                'đ',
+                'ƌ',
+                'ȡ',
+                'Ď',
+                'Đ',
+                'Ɖ',
+                'Ɗ',
+                'Ƌ',
+                'ȸ',
+                'ǆ',
+                'ǳ',
+                'Ǆ',
+                'ǅ',
+                'Ǳ',
+                'ǲ',
+            ]:
                 word_key += "d"
                 add_key = True
-            elif letter == 'è' or letter == 'È' or letter == 'é' or letter == 'É' or letter == 'ê' or \
-                    letter == 'Ê' or letter == 'ë' or letter == 'Ë' or letter == 'ē' or letter == 'ĕ' or \
-                    letter == 'ė' or letter == 'ę' or letter == 'ě' or letter == 'ǝ' or letter == 'ɛ' or \
-                    letter == 'ȅ' or letter == 'ȇ' or letter == 'ȩ' or letter == 'ɇ' or letter == 'ế' or \
-                    letter == 'Ế' or letter == 'Ē' or letter == 'Ĕ' or letter == 'Ė' or letter == 'Ę' or \
-                    letter == 'Ě' or letter == 'Ǝ' or letter == 'Ɛ' or letter == 'Ȅ' or letter == 'Ȇ' or \
-                    letter == 'Ȩ' or letter == 'Ɇ' or letter == 'ệ' or letter == 'Ệ':
+            elif letter in [
+                'è',
+                'È',
+                'é',
+                'É',
+                'ê',
+                'Ê',
+                'ë',
+                'Ë',
+                'ē',
+                'ĕ',
+                'ė',
+                'ę',
+                'ě',
+                'ǝ',
+                'ɛ',
+                'ȅ',
+                'ȇ',
+                'ȩ',
+                'ɇ',
+                'ế',
+                'Ế',
+                'Ē',
+                'Ĕ',
+                'Ė',
+                'Ę',
+                'Ě',
+                'Ǝ',
+                'Ɛ',
+                'Ȅ',
+                'Ȇ',
+                'Ȩ',
+                'Ɇ',
+                'ệ',
+                'Ệ',
+            ]:
                 word_key += "e"
                 add_key = True
-            elif letter == 'ƒ' or letter == 'Ƒ':
+            elif letter in ['ƒ', 'Ƒ']:
                 word_key += "f"
                 add_key = True
             elif letter == 'ĝ':
                 word_key += "gx"
                 add_key = True
-            elif letter == 'ğ' or letter == 'ġ' or letter == 'ģ' or letter == 'ǥ' or letter == 'ǧ' or \
-                    letter == 'ǵ' or letter == 'Ĝ' or letter == 'Ğ' or letter == 'Ġ' or letter == 'Ģ' or \
-                    letter == 'Ɠ' or letter == 'Ǥ' or letter == 'Ǧ' or letter == 'Ǵ':
+            elif letter in [
+                'ğ',
+                'ġ',
+                'ģ',
+                'ǥ',
+                'ǧ',
+                'ǵ',
+                'Ĝ',
+                'Ğ',
+                'Ġ',
+                'Ģ',
+                'Ɠ',
+                'Ǥ',
+                'Ǧ',
+                'Ǵ',
+            ]:
                 word_key += "g"
                 add_key = True
             elif letter == 'ĥ':
                 word_key += "hx"
                 add_key = True
-            elif letter == 'ħ' or letter == 'ȟ' or letter == 'Ĥ' or letter == 'Ħ' or letter == 'Ȟ':
+            elif letter in ['ħ', 'ȟ', 'Ĥ', 'Ħ', 'Ȟ']:
                 word_key += "h"
                 add_key = True
-            elif letter == 'ı' or letter == 'î' or letter == 'ĩ' or letter == 'ī' or letter == 'ĭ' or \
-                    letter == 'į' or letter == 'ǐ' or letter == 'ȉ' or letter == 'ȋ' or letter == 'Î' or \
-                    letter == 'Ĩ' or letter == 'Ī' or letter == 'Ĭ' or letter == 'Į' or letter == 'İ' or \
-                    letter == 'Ɨ' or letter == 'Ǐ' or letter == 'Ȉ' or letter == 'Ȋ' or letter == 'ĳ' or \
-                    letter == 'Ĳ' or letter == 'ì' or letter == 'Ì' or letter == 'ï' or letter == 'Ï' or \
-                    letter == 'ǈ' or letter == 'ị' or letter == 'Ị' or letter == 'í' or letter == 'Í':
+            elif letter in [
+                'ı',
+                'î',
+                'ĩ',
+                'ī',
+                'ĭ',
+                'į',
+                'ǐ',
+                'ȉ',
+                'ȋ',
+                'Î',
+                'Ĩ',
+                'Ī',
+                'Ĭ',
+                'Į',
+                'İ',
+                'Ɨ',
+                'Ǐ',
+                'Ȉ',
+                'Ȋ',
+                'ĳ',
+                'Ĳ',
+                'ì',
+                'Ì',
+                'ï',
+                'Ï',
+                'ǈ',
+                'ị',
+                'Ị',
+                'í',
+                'Í',
+            ]:
                 word_key += "i"
                 add_key = True
             elif letter == 'ĵ':
                 word_key += "jx"
                 add_key = True
-            elif letter == 'ǰ' or letter == 'ȷ' or letter == 'ɉ' or letter == 'Ĵ' or letter == 'Ɉ':
+            elif letter in ['ǰ', 'ȷ', 'ɉ', 'Ĵ', 'Ɉ']:
                 word_key += "j"
                 add_key = True
-            elif letter == 'ķ' or letter == 'ƙ' or letter == 'ǩ' or letter == 'Ķ' or letter == 'Ƙ' or letter == 'Ǩ':
+            elif letter in ['ķ', 'ƙ', 'ǩ', 'Ķ', 'Ƙ', 'Ǩ']:
                 word_key += "k"
                 add_key = True
-            elif letter == 'ĺ' or letter == 'ļ' or letter == 'ľ' or letter == 'ŀ' or letter == 'ł' or \
-                    letter == 'ƚ' or letter == 'ȴ' or letter == 'ɫ' or letter == 'Ɫ' or letter == 'Ĺ' or \
-                    letter == 'Ļ' or letter == 'Ľ' or letter == 'Ŀ' or letter == 'Ł' or letter == 'Ƚ' or \
-                    letter == 'ǉ' or letter == 'Ǉ':
+            elif letter in [
+                'ĺ',
+                'ļ',
+                'ľ',
+                'ŀ',
+                'ł',
+                'ƚ',
+                'ȴ',
+                'ɫ',
+                'Ɫ',
+                'Ĺ',
+                'Ļ',
+                'Ľ',
+                'Ŀ',
+                'Ł',
+                'Ƚ',
+                'ǉ',
+                'Ǉ',
+            ]:
                 word_key += "l"
                 add_key = True
             elif letter == 'Ɯ':
                 word_key += "m"
                 add_key = True
-            elif letter == 'ń' or letter == 'ņ' or letter == 'ň' or letter == 'ŋ' or letter == 'ǹ' or \
-                    letter == 'ƞ' or letter == 'ȵ' or letter == 'Ń' or letter == 'Ņ' or letter == 'Ň' or \
-                    letter == 'Ŋ' or letter == 'Ɲ' or letter == 'Ǹ' or letter == 'Ƞ' or letter == 'ǌ' or \
-                    letter == 'Ǌ' or letter == 'ǋ' or letter == 'ɲ' or letter == 'ṉ' or letter == 'Ṉ' or \
-                    letter == 'ñ' or letter == 'Ñ':
+            elif letter in [
+                'ń',
+                'ņ',
+                'ň',
+                'ŋ',
+                'ǹ',
+                'ƞ',
+                'ȵ',
+                'Ń',
+                'Ņ',
+                'Ň',
+                'Ŋ',
+                'Ɲ',
+                'Ǹ',
+                'Ƞ',
+                'ǌ',
+                'Ǌ',
+                'ǋ',
+                'ɲ',
+                'ṉ',
+                'Ṉ',
+                'ñ',
+                'Ñ',
+            ]:
                 word_key += "n"
                 add_key = True
-            elif letter == 'ô' or letter == 'Ô' or letter == 'ø' or letter == 'ō' or letter == 'ŏ' or \
-                    letter == 'ő' or letter == 'ơ' or letter == 'ǒ' or letter == 'ǫ' or letter == 'ǭ' or \
-                    letter == 'ǿ' or letter == 'ȍ' or letter == 'ȏ' or letter == 'ȫ' or letter == 'ȭ' or \
-                    letter == 'ȯ' or letter == 'ȱ' or letter == 'Ø' or letter == 'Ō' or letter == 'Ŏ' or \
-                    letter == 'Ő' or letter == 'Ɔ' or letter == 'Ɵ' or letter == 'ɵ' or letter == 'Ơ' or \
-                    letter == 'Ǒ' or letter == 'Ǫ' or letter == 'Ǭ' or letter == 'Ǿ' or letter == 'Ȍ' or \
-                    letter == 'Ȏ' or letter == 'Ȫ' or letter == 'Ȭ' or letter == 'Ȯ' or letter == 'Ȱ' or \
-                    letter == 'ɔ' or letter == 'ở' or letter == 'Ở' or letter == 'ợ' or letter == 'Ợ' or \
-                    letter == 'ò' or letter == 'ó' or letter == 'ö' or letter == 'Ö' or letter == 'õ' or \
-                    letter == 'Õ':
+            elif letter in [
+                'ô',
+                'Ô',
+                'ø',
+                'ō',
+                'ŏ',
+                'ő',
+                'ơ',
+                'ǒ',
+                'ǫ',
+                'ǭ',
+                'ǿ',
+                'ȍ',
+                'ȏ',
+                'ȫ',
+                'ȭ',
+                'ȯ',
+                'ȱ',
+                'Ø',
+                'Ō',
+                'Ŏ',
+                'Ő',
+                'Ɔ',
+                'Ɵ',
+                'ɵ',
+                'Ơ',
+                'Ǒ',
+                'Ǫ',
+                'Ǭ',
+                'Ǿ',
+                'Ȍ',
+                'Ȏ',
+                'Ȫ',
+                'Ȭ',
+                'Ȯ',
+                'Ȱ',
+                'ɔ',
+                'ở',
+                'Ở',
+                'ợ',
+                'Ợ',
+                'ò',
+                'ó',
+                'ö',
+                'Ö',
+                'õ',
+                'Õ',
+            ]:
                 word_key += "o"
                 add_key = True
-            elif letter == 'œ' or letter == 'Œ':
+            elif letter in ['œ', 'Œ']:
                 word_key += "oe"
                 add_key = True
-            elif letter == 'ƥ' or letter == 'Ƥ':
+            elif letter in ['ƥ', 'Ƥ']:
                 word_key += "p"
                 add_key = True
-            elif letter == 'ɋ' or letter == 'Ɋ' or letter == 'ȹ':
+            elif letter in ['ɋ', 'Ɋ', 'ȹ']:
                 word_key += "q"
                 add_key = True
-            elif letter == 'ŕ' or letter == 'ŗ' or letter == 'ř' or letter == 'ȑ' or letter == 'ȓ' or \
-                    letter == 'ɍ' or letter == 'Ŕ' or letter == 'Ŗ' or letter == 'Ř' or letter == 'Ȑ' or \
-                    letter == 'Ȓ' or letter == 'Ɍ':
+            elif letter in [
+                'ŕ',
+                'ŗ',
+                'ř',
+                'ȑ',
+                'ȓ',
+                'ɍ',
+                'Ŕ',
+                'Ŗ',
+                'Ř',
+                'Ȑ',
+                'Ȓ',
+                'Ɍ',
+            ]:
                 word_key += "r"
                 add_key = True
             elif letter == 'ŝ':
                 word_key += "sx"
                 add_key = True
-            elif letter == 'ſ' or letter == 'ś' or letter == 'ş' or letter == 'š' or letter == 'ƪ' or \
-                    letter == 'ș' or letter == 'ȿ' or letter == 'Ś' or letter == 'Ŝ' or letter == 'Ş' or \
-                    letter == 'Š' or letter == 'Ʃ' or letter == 'Ș':
+            elif letter in [
+                'ſ',
+                'ś',
+                'ş',
+                'š',
+                'ƪ',
+                'ș',
+                'ȿ',
+                'Ś',
+                'Ŝ',
+                'Ş',
+                'Š',
+                'Ʃ',
+                'Ș',
+            ]:
                 word_key += "s"
                 add_key = True
             elif letter in ['ß', 'ß']:
                 word_key += "ss"
                 add_key = True
-            elif letter == 'ţ' or letter == 'ť' or letter == 'ŧ' or letter == 'ƫ' or letter == 'ƭ' or \
-                    letter == 'ț' or letter == 'ȶ' or letter == 'Ţ' or letter == 'Ť' or letter == 'Ŧ' or \
-                    letter == 'Ƭ' or letter == 'Ʈ' or letter == 'Ț' or letter == 'Ⱦ' or letter == 'ⱦ':
+            elif letter in [
+                'ţ',
+                'ť',
+                'ŧ',
+                'ƫ',
+                'ƭ',
+                'ț',
+                'ȶ',
+                'Ţ',
+                'Ť',
+                'Ŧ',
+                'Ƭ',
+                'Ʈ',
+                'Ț',
+                'Ⱦ',
+                'ⱦ',
+            ]:
                 word_key += "t"
                 add_key = True
             elif letter == 'ŭ':
                 word_key += "ux"
                 add_key = True
-            elif letter == 'û' or letter == 'ũ' or letter == 'ū' or letter == 'ů' or letter == 'ű' or \
-                    letter == 'ų' or letter == 'ư' or letter == 'ǔ' or letter == 'ǖ' or letter == 'ǘ' or \
-                    letter == 'ǚ' or letter == 'ǜ' or letter == 'ǟ' or letter == 'ǡ' or letter == 'ȕ' or \
-                    letter == 'ȗ' or letter == 'ʉ' or letter == 'Û' or letter == 'Ũ' or letter == 'Ū' or \
-                    letter == 'Ŭ' or letter == 'Ů' or letter == 'Ű' or letter == 'Ų' or letter == 'Ư' or \
-                    letter == 'Ǔ' or letter == 'Ǖ' or letter == 'Ǘ' or letter == 'Ǚ' or letter == 'Ǜ' or \
-                    letter == 'Ȕ' or letter == 'Ȗ' or letter == 'Ʉ' or letter == 'ủ' or letter == 'Ủ' or \
-                    letter == 'ú' or letter == 'Ú' or letter == 'ù' or letter == 'Ù' or letter == 'ü' or \
-                    letter == 'Ü':
+            elif letter in [
+                'û',
+                'ũ',
+                'ū',
+                'ů',
+                'ű',
+                'ų',
+                'ư',
+                'ǔ',
+                'ǖ',
+                'ǘ',
+                'ǚ',
+                'ǜ',
+                'ǟ',
+                'ǡ',
+                'ȕ',
+                'ȗ',
+                'ʉ',
+                'Û',
+                'Ũ',
+                'Ū',
+                'Ŭ',
+                'Ů',
+                'Ű',
+                'Ų',
+                'Ư',
+                'Ǔ',
+                'Ǖ',
+                'Ǘ',
+                'Ǚ',
+                'Ǜ',
+                'Ȕ',
+                'Ȗ',
+                'Ʉ',
+                'ủ',
+                'Ủ',
+                'ú',
+                'Ú',
+                'ù',
+                'Ù',
+                'ü',
+                'Ü',
+            ]:
                 word_key += "u"
                 add_key = True
-            elif letter == 'ʋ' or letter == 'Ʋ' or letter == 'Ʌ' or letter == 'ʌ':
+            elif letter in ['ʋ', 'Ʋ', 'Ʌ', 'ʌ']:
                 word_key += "v"
                 add_key = True
-            elif letter == 'ŵ' or letter == 'Ŵ':
+            elif letter in ['ŵ', 'Ŵ']:
                 word_key += "w"
                 add_key = True
-            elif letter == 'ŷ' or letter == 'ƴ' or letter == 'ȳ' or letter == 'ɏ' or letter == 'Ŷ' or \
-                    letter == 'Ÿ' or letter == 'Ƴ' or letter == 'Ȳ' or letter == 'Ɏ':
+            elif letter in ['ŷ', 'ƴ', 'ȳ', 'ɏ', 'Ŷ', 'Ÿ', 'Ƴ', 'Ȳ', 'Ɏ']:
                 word_key += "y"
                 add_key = True
-            elif letter == 'ź' or letter == 'ż' or letter == 'ž' or letter == 'ƶ' or letter == 'ƹ' or \
-                    letter == 'ƺ' or letter == 'ǯ' or letter == 'ȥ' or letter == 'ɀ' or letter == 'Ź' or \
-                    letter == 'Ż' or letter == 'Ž' or letter == 'Ƶ' or letter == 'Ʒ' or letter == 'Ƹ' or \
-                    letter == 'Ǯ' or letter == 'Ȥ':
+            elif letter in [
+                'ź',
+                'ż',
+                'ž',
+                'ƶ',
+                'ƹ',
+                'ƺ',
+                'ǯ',
+                'ȥ',
+                'ɀ',
+                'Ź',
+                'Ż',
+                'Ž',
+                'Ƶ',
+                'Ʒ',
+                'Ƹ',
+                'Ǯ',
+                'Ȥ',
+            ]:
                 word_key += "z"
                 add_key = True
 
-            elif letter == 'A' or letter == 'B' or letter == 'C' or letter == 'D' or letter == 'E' or \
-                    letter == 'F' or letter == 'G' or letter == 'H' or letter == 'I' or letter == 'J' or \
-                    letter == 'K' or letter == 'L' or letter == 'M' or letter == 'N' or letter == 'O' or \
-                    letter == 'P' or letter == 'Q' or letter == 'R' or letter == 'S' or letter == 'T' or \
-                    letter == 'U' or letter == 'V' or letter == 'W' or letter == 'X' or letter == 'Y' or \
-                    letter == 'Z':
+            elif letter in [
+                'A',
+                'B',
+                'C',
+                'D',
+                'E',
+                'F',
+                'G',
+                'H',
+                'I',
+                'J',
+                'K',
+                'L',
+                'M',
+                'N',
+                'O',
+                'P',
+                'Q',
+                'R',
+                'S',
+                'T',
+                'U',
+                'V',
+                'W',
+                'X',
+                'Y',
+                'Z',
+            ]:
                 word_key += letter.lower()
             else:
                 letter_to_treat = True
@@ -224,11 +530,7 @@ def add_default_sort(page_name, page_content, empty=False):
         page_content = page_content[:page_content.find(
             '\n{clé de tri')+1] + '{' + page_content[page_content.find('\n{clé de tri'):]
 
-    if empty:
-        default_sort_key = ''
-    else:
-        default_sort_key = sort_by_encoding(page_name)
-
+    default_sort_key = '' if empty else sort_by_encoding(page_name)
     if page_content.find('{{clé de tri') == -1 and default_sort_key != '' \
             and default_sort_key.lower() != page_name.lower():
         # summary = summary + ', {{clé de tri}} ajoutée'
@@ -256,7 +558,7 @@ def add_default_sort(page_name, page_content, empty=False):
             print(' vérification de clé existante pour alphabets connus')
         page_content2 = page_content[page_content.find(
             '{{clé de tri|')+len('{{clé de tri|'):]
-        default_sort_key = page_content2[0:page_content2.find('}}')]
+        default_sort_key = page_content2[:page_content2.find('}}')]
         '''if CleTri.lower() != default_sort_key.lower():
             summary = summary + ', {{clé de tri}} corrigée'
             page_content = page_content[:page_content.find('{{clé de tri|')+len('{{clé de tri|')] + CleTri + page_content[page_content.find('{{clé de tri|')+len('{{clé de tri|')+page_content2.find('}}'):]'''

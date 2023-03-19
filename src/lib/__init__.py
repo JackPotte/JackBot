@@ -10,4 +10,4 @@ try:
     from page_functions import *
     from PageProvider import *
 except ImportError as e:
-    print(str(e))
+    print(e)

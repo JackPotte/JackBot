@@ -22,6 +22,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+#      - name: Quality
+#        run: |
+#              pylint $(git ls-files '*.py')
+#              find . -name '*.py' -exec autopep8 --in-place '{}' \;:
+#              sourcery review src/wiktionary/fr_wiktionary_functions.py
       - name: Test
         run: |
               python tests/fr_wiktionary_functions_test.py
