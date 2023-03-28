@@ -85,26 +85,21 @@ def treat_page(page):
             if debug_level > 0:
                 print(' Compound word')
             word = file_desc
-            for i in range(3):
+            for _ in range(3):
                 word = word[word.find('-')+1:]
         else:
             word = file_desc[file_desc.rfind('-')+1:]
 
         s = re.search(r'\(([^)]+)\)', file_desc)
-        if s:
-            language_code = get_language_code_ISO693_1_from_ISO693_3(
-                s.group(1))
-        else:
+        if not s:
             if debug_level > 0:
                 print(' No parenthesis found')
             s = re.search(r'-([^\-]+)-[^\-]+$', file_desc)
-            if not s:
-                if debug_level > 0:
-                    print(' No language code found')
-                return
-            language_code = get_language_code_ISO693_1_from_ISO693_3(
-                s.group(1))
-
+        if not s:
+            if debug_level > 0:
+                print(' No language code found')
+            return
+        language_code = get_language_code_ISO693_1_from_ISO693_3(s[1])
     else:
         language_code = language_code.lower()
         if language_code == 'qc':
@@ -121,19 +116,16 @@ def treat_page(page):
     region = ''
     word_without_suffix = None
     current_page_content = None
-    if username in page_name:
-        page1 = Page(site, page_name)
-    else:
-        page1 = Page(site, word)
+    page1 = Page(site, page_name) if username in page_name else Page(site, word)
     try:
         current_page_content = page1.get()
     except pywikibot.exceptions.IsRedirectPageError as e:
         if debug_level > 0:
-            print(str(e))
+            print(e)
         current_page_content = page1.get(get_redirect=True)
     except pywikibot.exceptions.NoPageError as e:
         if debug_level > 0:
-            print(str(e))
+            print(e)
         word_without_article, region = remove_article_and_region_from_word(
             word, language_code)
         if word == word_without_article:
@@ -141,34 +133,34 @@ def treat_page(page):
                 word_without_suffix = remove_numeric_suffix_from_word(word)
         else:
             if debug_level > 0:
-                print(' retrying with: ' + word_without_article)
+                print(f' retrying with: {word_without_article}')
             word = word_without_article
             page1 = Page(site, word)
             try:
                 current_page_content = page1.get()
             except pywikibot.exceptions.IsRedirectPageError as e:
                 if debug_level > 0:
-                    print(str(e))
+                    print(e)
                 current_page_content = page1.get(get_redirect=True)
             except pywikibot.exceptions.NoPageError as e:
                 if debug_level > 0:
-                    print(str(e))
+                    print(e)
                 word_without_suffix, remove_numeric_suffix_from_word(word)
 
     if word_without_suffix is not None and word != word_without_suffix:
         if debug_level > 0:
-            print(' retrying with: ' + word_without_suffix)
+            print(f' retrying with: {word_without_suffix}')
         word = word_without_suffix
         page1 = Page(site, word)
         try:
             current_page_content = page1.get()
         except pywikibot.exceptions.IsRedirectPageError as e:
             if debug_level > 0:
-                print(str(e))
+                print(e)
             current_page_content = page1.get(get_redirect=True)
         except pywikibot.exceptions.NoPageError as e:
             if debug_level > 0:
-                print(str(e))
+                print(e)
                 print(' no page found to link this file!')
             return
     if current_page_content is None:
@@ -184,7 +176,7 @@ def treat_page(page):
     '''
     pronunciation = ''
     if debug_level > 1:
-        print(' word du Wiktionnaire : ' + word)
+        print(f' word du Wiktionnaire : {word}')
     if current_page_content.find('{{langue|' + language_code) == -1:
         if debug_level > 0:
             print(' Language section absent')
@@ -217,7 +209,7 @@ def treat_page(page):
 def remove_article_and_region_from_word(word, language_code):
     region = ''
     if language_code == 'de':
-        if word[:4] == 'der ' or word[:4] == 'die ' or word[:4] == 'das ' or word[:4] == 'den ':
+        if word[:4] in ['der ', 'die ', 'das ', 'den ']:
             word = word[word.find(' ') + 1:]
         if word[:3] == 'at ':
             region = '{{' + word[:2].upper() + '|nocat=1}}'
@@ -226,7 +218,7 @@ def remove_article_and_region_from_word(word, language_code):
     elif language_code == 'en':
         if word[:4] == 'the ' or word[:2] == 'a ':
             word = word[word.find(' ') + 1:]
-        if word[:3] == 'au ' or word[:3] == 'gb ' or word[:3] == 'ca ' or word[:3] == 'uk ' or word[:3] == 'us ':
+        if word[:3] in ['au ', 'gb ', 'ca ', 'uk ', 'us ']:
             region = '{{' + word[:2].upper() + '|nocat=1}}'
             word = word[word.find(' ') + 1:]
 
@@ -234,7 +226,7 @@ def remove_article_and_region_from_word(word, language_code):
         if word[:3] == 'el ' or word[:3] == 'lo ' or word[:3] == 'la ' or word[:3] == 'un ' or word[:4] == 'uno ' \
                 or word[:4] == 'una ' or word[:5] == 'unos ' or word[:5] == 'unas ' or word[:4] == 'los ':
             word = word[word.find(' ') + 1:]
-        if word[:3] == 'mx ' or word[:3] == 'ar ':
+        if word[:3] in ['mx ', 'ar ']:
             region = '{{' + word[:2].upper() + '|nocat=1}}'
             word = word[word.find(' ') + 1:]
         if word[:7] == 'am lat ':
@@ -246,7 +238,7 @@ def remove_article_and_region_from_word(word, language_code):
         if word[:3] == 'le ' or word[:3] == 'la ' or word[:4] == 'les ' or word[:3] == 'un ' or word[:3] == 'une ' \
                 or word[:4] == 'des ':
             word = word[word.find(' ') + 1:]
-        if word[:3] == 'ca ' or word[:3] == 'be ':
+        if word[:3] in ['ca ', 'be ']:
             region = '{{' + word[:2].upper() + '|nocat=1}}'
             word = word[word.find(' ') + 1:]
         if word[:6] == 'Paris ':
@@ -265,7 +257,7 @@ def remove_article_and_region_from_word(word, language_code):
     elif language_code == 'pt':
         if word[:2] == 'a ' or word[:2] == 'o ' or word[:3] == 'as ' or word[:3] == 'os ':
             word = word[word.find(' ') + 1:]
-        if word[:3] == 'br ' or word[:3] == 'pt ':
+        if word[:3] in ['br ', 'pt ']:
             region = '{{' + word[:2].upper() + '|nocat=1}}'
 
     elif language_code == 'sv':
@@ -316,42 +308,37 @@ def main(*args) -> int:
     if len(sys.argv) > 1:
         if debug_level > 1:
             print(sys.argv)
-        if sys.argv[1] == '-test' or sys.argv[1] == '-t':
-            treat_page_by_name('User:' + username + '/test')
-        elif sys.argv[1] == '-test2' or sys.argv[1] == '-tu':
-            treat_page_by_name('User:' + username + '/test unitaire')
-        elif sys.argv[1] == '-page' or sys.argv[1] == '-p':
+        if sys.argv[1] in ['-test', '-t']:
+            treat_page_by_name(f'User:{username}/test')
+        elif sys.argv[1] in ['-test2', '-tu']:
+            treat_page_by_name(f'User:{username}/test unitaire')
+        elif sys.argv[1] in ['-page', '-p']:
             if len(sys.argv) > 2:
                 sound = sys.argv[2]
             else:
                 sound = 'File:LL-Q150 (fra)-Pamputt-suivant.wav'
             treat_page_by_name(sound)
-        elif sys.argv[1] == '-file' or sys.argv[1] == '-txt':
-            p.pages_by_file('lists/articles_' + site_language +
-                            '_' + site_family + '.txt')
-        elif sys.argv[1] == '-dump' or sys.argv[1] == '-xml':
-            regex = r''
-            if len(sys.argv) > 2:
-                regex = sys.argv[2]
+        elif sys.argv[1] in ['-file', '-txt']:
+            p.pages_by_file(f'lists/articles_{site_language}_{site_family}.txt')
+        elif sys.argv[1] in ['-dump', '-xml']:
+            regex = sys.argv[2] if len(sys.argv) > 2 else r''
             p.page_by_xml(site_language + site_family + '\-.*xml', regex)
         elif sys.argv[1] == '-u':
-            p.pages_by_user('User:' + username)
-        elif sys.argv[1] == '-search' or sys.argv[1] == '-s' or sys.argv[1] == '-r':
+            p.pages_by_user(f'User:{username}')
+        elif sys.argv[1] in ['-search', '-s', '-r']:
             if len(sys.argv) > 2:
                 p.pages_by_search(sys.argv[2])
             else:
                 p.pages_by_search('chinois')
-        elif sys.argv[1] == '-link' or sys.argv[1] == '-l' or sys.argv[1] == '-template' or sys.argv[1] == '-m':
+        elif sys.argv[1] in ['-link', '-l', '-template', '-m']:
             p.pages_by_link('Template:autres projets')
-        elif sys.argv[1] == '-category' or sys.argv[1] == '-cat' or sys.argv[1] == '-c':
-            after_page = 'File:Nl-atoomafval.ogg'
-            if len(sys.argv) > 2:
-                after_page = sys.argv[2]
+        elif sys.argv[1] in ['-category', '-cat', '-c']:
+            after_page = sys.argv[2] if len(sys.argv) > 2 else 'File:Nl-atoomafval.ogg'
             p.pages_by_cat('Category:Dutch pronunciation',
                            after_page=after_page, recursive=True, namespaces=[6])
             p.pages_by_cat('U.S. English pronunciation',
                            after_page=after_page, recursive=True, namespaces=[6])
-            # Too long? p.pagesByCat('Lingua Libre pronunciation-fr', after_page=after_page, recursive=True, namespaces=[6])
+                    # Too long? p.pagesByCat('Lingua Libre pronunciation-fr', after_page=after_page, recursive=True, namespaces=[6])
         elif sys.argv[1] == '-redirects':
             p.pages_by_redirects()
         elif sys.argv[1] == '-all':

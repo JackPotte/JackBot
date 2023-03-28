@@ -3,6 +3,7 @@
 """
 Ce script importe les définitions dans le Wiktionnaire depuis un fichier
 """
+
 from __future__ import absolute_import, unicode_literals
 import os
 import sys
@@ -44,44 +45,38 @@ else:
     reference = '<ref>{{Import:CFC|relu=non}}</ref>'
 summary = 'Importation de définition CFC'
 separator = ','
-i = {}
-i['Terme'] = 0
-i['Terme ancien'] = 1           # O / N
-i['Sigle'] = 2                  # O / N
-i['Terme commercial'] = 3       # O / N
-i['Catégorie grammaticale'] = 4  # adj. / n.m. / n.f.
-
-i['Définition 1'] = 5
-i['Domaine 1'] = 6              # toujours vide
-i['Section 1'] = 7
-i['Synonymes 1'] = 8
-i['Exemples 1'] = 9
-i['Termes associés 1'] = 10
-i['Illustration 1'] = 11        # toujours vide
-i['Commentaires 1'] = 12        # maintenance
-
-i['Définition 2'] = 13
-i['Domaine 2'] = 14         # toujours vide
-i['Section 2'] = 15
-i['Synonymes 2'] = 16
-i['Exemples 2'] = 17        # toujours vide
-i['Termes associés 2'] = 18  # brouillon
-i['Illustration 2'] = 19    # toujours vide
-i['Commentaires 2'] = 20    # toujours vide
-
-i['Définition 3'] = 21
-i['Domaine 3'] = 22         # toujours vide
-i['Section 3'] = 23         # toujours vide
-i['Synonymes 3'] = 24       # toujours vide
-i['Exemples 3'] = 25        # toujours vide
-i['Termes associés 3'] = 26  # toujours vide
-i['Illustration 3'] = 27    # toujours vide
-i['Commentaires 3'] = 28    # toujours vide
-
-natures = {}
-natures['adj.'] = 'adjectif'
-natures['n.m.'] = 'nom'
-natures['n.f.'] = 'nom'
+i = {
+    'Terme': 0,
+    'Terme ancien': 1,
+    'Sigle': 2,
+    'Terme commercial': 3,
+    'Catégorie grammaticale': 4,
+    'Définition 1': 5,
+    'Domaine 1': 6,
+    'Section 1': 7,
+    'Synonymes 1': 8,
+    'Exemples 1': 9,
+    'Termes associés 1': 10,
+    'Illustration 1': 11,
+    'Commentaires 1': 12,
+    'Définition 2': 13,
+    'Domaine 2': 14,
+    'Section 2': 15,
+    'Synonymes 2': 16,
+    'Exemples 2': 17,
+    'Termes associés 2': 18,
+    'Illustration 2': 19,
+    'Commentaires 2': 20,
+    'Définition 3': 21,
+    'Domaine 3': 22,
+    'Section 3': 23,
+    'Synonymes 3': 24,
+    'Exemples 3': 25,
+    'Termes associés 3': 26,
+    'Illustration 3': 27,
+    'Commentaires 3': 28,
+}
+natures = {'adj.': 'adjectif', 'n.m.': 'nom', 'n.f.': 'nom'}
 
 
 def treatPage(line):
@@ -115,11 +110,10 @@ def treatPage(line):
         if not page.exists() and page.namespace() == 0:
             if debug_level > 0:
                 print('Création d\'une redirection apostrophe')
-            save_page(
-                page, '#REDIRECT[[' + page_name + ']]', 'Redirection pour apostrophe')
+            save_page(page, f'#REDIRECT[[{page_name}]]', 'Redirection pour apostrophe')
     page = Page(site, page_name)
 
-    definition = '# ' + domain
+    definition = f'# {domain}'
     if l[i['Terme ancien']] == 'O':
         definition += '{{vieilli|fr}} '
     if l[i['Section 1']] != '':
@@ -134,7 +128,7 @@ def treatPage(line):
         definition += u"#* ''" + l[i['Exemples 1']] + u"''\n"
 
     if l[i['Définition 2']] != '':
-        definition += '# ' + domain
+        definition += f'# {domain}'
         if l[i['Terme ancien']] == 'O':
             definition += '{{vieilli|fr}} '
         if l[i['Section 2']] != '':
@@ -149,7 +143,7 @@ def treatPage(line):
             definition += u"#* ''" + l[i['Exemples 2']] + u"''\n"
 
         if l[i['Définition 3']] != '':
-            definition += '# ' + domain
+            definition += f'# {domain}'
             if l[i['Terme ancien']] == 'O':
                 definition += '{{vieilli|fr}} '
             if l[i['Section 3']] != '':
@@ -171,13 +165,12 @@ def treatPage(line):
     if current_page_content is None:
         if debug_level > 0:
             print(' page_content vide : création')
-        page_content = '== {{langue|fr}} ==\n'
-        page_content += '=== {{S|étymologie}} ===\n'
+        page_content = '== {{langue|fr}} ==\n' + '=== {{S|étymologie}} ===\n'
         page_content += '{{ébauche-étym|fr}}\n'
         if l[i['Sigle']] == 'O':
             page_content += etymology + '\n'
         page_content += '\n'
-        page_content += '=== ' + natureTemplate + '}} ===\n'
+        page_content += f'=== {natureTemplate}' + '}} ===\n'
         page_content += u"'''{{subst:PAGENAME}}'''"
         if l[i['Catégorie grammaticale']][-2:] == 'm.':
             page_content += ' {{m}}'
@@ -188,23 +181,26 @@ def treatPage(line):
             page_content += '\n==== {{S|synonymes}} ====\n'
             synonyms = l[i['Synonymes 1']].split(';')
             for s in synonyms:
-                page_content += '* [[' + trim(s) + ']]\n'
+                page_content += f'* [[{trim(s)}' + ']]\n'
             if l[i['Synonymes 2']] != '':
                 synonyms = l[i['Synonymes 2']].split(';')
                 for s in synonyms:
-                    page_content += '* [[' + trim(s) + ']] (2)\n'
+                    page_content += f'* [[{trim(s)}' + ']] (2)\n'
         elif l[i['Synonymes 2']] != '':
-            if l[i['Synonymes 2']] != '':
-                synonyms = l[i['Synonymes 2']].split(';')
-                for s in synonyms:
-                    page_content += '* [[' + trim(s) + ']] (2)\n'
+            synonyms = l[i['Synonymes 2']].split(';')
+            for s in synonyms:
+                page_content += f'* [[{trim(s)}' + ']] (2)\n'
         if l[i['Termes associés 1']] != '':
             page_content += '\n==== {{S|vocabulaire}} ====\n'
             terms = l[i['Termes associés 1']].split(';')
             for t in terms:
                 print(t)
                 page_content = add_line(
-                    page_content, language_code, 'vocabulaire', '* [[' + trim(t) + ']]')
+                    page_content,
+                    language_code,
+                    'vocabulaire',
+                    f'* [[{trim(t)}]]',
+                )
         page_content += '\n==== {{S|traductions}} ====\n'
         page_content += '{{trad-début}}\n'
         page_content += '{{ébauche-trad}}\n'
@@ -228,18 +224,30 @@ def treatPage(line):
     if l[i['Synonymes 1']] != '':
         synonyms = l[i['Synonymes 1']].split(';')
         for s in synonyms:
-            page_content = add_line(page_content, language_code, 'synonymes', '* [[' + trim(s)
-                                    + ']] {{cartographie|nocat=1}} (1)')
+            page_content = add_line(
+                page_content,
+                language_code,
+                'synonymes',
+                (f'* [[{trim(s)}' + ']] {{cartographie|nocat=1}} (1)'),
+            )
     if l[i['Synonymes 2']] != '':
         synonyms = l[i['Synonymes 2']].split(';')
         for s in synonyms:
-            page_content = add_line(page_content, language_code, 'synonymes', '* [[' + trim(s)
-                                    + ']] {{cartographie|nocat=1}} (2)')
+            page_content = add_line(
+                page_content,
+                language_code,
+                'synonymes',
+                (f'* [[{trim(s)}' + ']] {{cartographie|nocat=1}} (2)'),
+            )
     if l[i['Termes associés 1']] != '':
         terms = l[i['Termes associés 1']].split(';')
         for t in terms:
-            page_content = add_line(page_content, language_code, 'vocabulaire', '* [[' + trim(t)
-                                    + ']] {{cartographie|nocat=1}}')
+            page_content = add_line(
+                page_content,
+                language_code,
+                'vocabulaire',
+                (f'* [[{trim(t)}' + ']] {{cartographie|nocat=1}}'),
+            )
     page_content = add_line(page_content, language_code,
                             'références', '{{Références}}')
 
@@ -254,17 +262,15 @@ set_fr_wiktionary_functions_globals(debug_level, site, username)
 
 def main(*args) -> int:
     from lib import html2unicode
-    pagesList = open('lists/articles_' + site_language +
-                     '_' + site_family + '_CFC.csv', 'r')
-    while 1:
-        line = pagesList.readline().decode(config.console_encoding, 'replace')
-        fin = line.find("\t")
-        line = line[:fin]
-        if line == '':
-            break
-        # Conversion ASCII => Unicode (pour les .txt)
-        treatPage(update_html_to_unicode(line))
-    pagesList.close()
+    with open(f'lists/articles_{site_language}_{site_family}_CFC.csv', 'r') as pagesList:
+        while 1:
+            line = pagesList.readline().decode(config.console_encoding, 'replace')
+            fin = line.find("\t")
+            line = line[:fin]
+            if line == '':
+                break
+            # Conversion ASCII => Unicode (pour les .txt)
+            treatPage(update_html_to_unicode(line))
     return 0
 
 

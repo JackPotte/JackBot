@@ -203,9 +203,7 @@ def get_page_languages(page_content):
         print('\nget_page_languages()')
     regex = r'{{langue\|([^}]+)}}'
     s = re.findall(regex, page_content, re.DOTALL)
-    if s:
-        return s
-    return []
+    return s or []
 
 
 def get_language_section(page_content, language_code='fr'):
@@ -348,7 +346,7 @@ def get_pronunciation_from_content(page_content, language_code, nature=None):
         r"'\'\')( *{*f?m?n?}* *)\n"
     s = re.search(regex, page_content)
     if s:
-        pronunciation = s.group(1)
+        pronunciation = s[1]
         if debug_level > 0:
             print(
                 ' prononciation trouvée en {{{1}}} dans une boite de flexion : ' + pronunciation)
@@ -359,15 +357,15 @@ def get_pronunciation_from_content(page_content, language_code, nature=None):
     regex = r'{{(' + templates.replace('-', '\-') + r")\|([^{}]+)}}"
     s = re.search(regex, page_content)
     if s:
-        template = s.group(1)
+        template = s[1]
         if debug_level > 0:
             print(template)
 
     regex = r'{{(' + templates2 + r")\|([^{}]+)}}"
     s = re.search(regex, page_content)
     if s:
-        template = s.group(1)
-        parameters = s.group(2)
+        template = s[1]
+        parameters = s[2]
         if debug_level > 0:
             print(f' template trouvé : {template}')
         if debug_level > 0:
@@ -736,8 +734,9 @@ def add_section(page_content, sections_in_page, section_name, section_to_add_ord
                 return page_content
         else:
             if debug_level > d:
-                print(' ajout de "' + section_name + '" avant "' + section_limit + '" (car '
-                      + str(section_to_add_order) + ' < ' + str(get_order_by_section_name(section_limit)) + ')')
+                print(
+                    f' ajout de "{section_name}" avant "{section_limit}" (car {str(section_to_add_order)} < {str(get_order_by_section_name(section_limit))})'
+                )
             regex = r'\n=* *{{S\|' + section_limit
             s = re.search(regex, language_section)
             if s:
@@ -2953,8 +2952,10 @@ def treat_conjugation(page_content, final_page_content, summary, current_templat
                     page_content = page_content[:page_content.find('|grp=') + len('|grp=')] + '2' \
                         + page_content[page_content.find('|grp=') + len('|grp=') + 1:]
             elif page_content.find('groupe=') != -1 and page_content.find('groupe=') < page_content.find('}}'):
-                if page_content.find('|groupe=') == page_content.find('|groupe=}') or page_content.find(
-                        '|groupe=') == page_content.find('|groupe=|'):
+                if page_content.find('|groupe=') in [
+                    page_content.find('|groupe=}'),
+                    page_content.find('|groupe=|'),
+                ]:
                     page_content = page_content[:page_content.find('|groupe=') + len('|groupe=')] + '2' \
                         + page_content[page_content.find('|groupe=') + len('|groupe='):]
                 else:
@@ -2964,16 +2965,20 @@ def treat_conjugation(page_content, final_page_content, summary, current_templat
                 page_content = '|groupe=2' + page_content
         elif page_name[len(page_name) - 2:] == 'ir' or page_name[len(page_name) - 4:] == 'ir-se':
             if page_content.find('grp=') != -1 and page_content.find('grp=') < page_content.find('}}'):
-                if page_content.find('|grp=') == page_content.find('|grp=}') or page_content.find(
-                        '|grp=') == page_content.find('|grp=|'):
+                if page_content.find('|grp=') in [
+                    page_content.find('|grp=}'),
+                    page_content.find('|grp=|'),
+                ]:
                     page_content = page_content[:page_content.find('|grp=') + len('|grp=')] + '3' \
                         + page_content[page_content.find('|grp=') + len('|grp='):]
                 else:
                     page_content = page_content[:page_content.find('|grp=') + len('|grp=')] + '3' \
                         + page_content[page_content.find('|grp=') + len('|grp=') + 1:]
             elif page_content.find('groupe=') != -1 and page_content.find('groupe=') < page_content.find('}}'):
-                if page_content.find('|groupe=') == page_content.find('|groupe=}') or page_content.find(
-                        '|groupe=') == page_content.find('|groupe=|'):
+                if page_content.find('|groupe=') in [
+                    page_content.find('|groupe=}'),
+                    page_content.find('|groupe=|'),
+                ]:
                     page_content = page_content[:page_content.find('|groupe=') + len('|groupe=')] + '3' \
                         + page_content[page_content.find('|groupe=') + len('|groupe='):]
                 else:
@@ -2985,8 +2990,10 @@ def treat_conjugation(page_content, final_page_content, summary, current_templat
     elif language_code == 'it':
         if page_name[len(page_name) - 3:] == 'are' or page_name[len(page_name) - 4:] == 'arsi':
             if page_content.find('grp=') != -1 and page_content.find('grp=') < page_content.find('}}'):
-                if page_content.find('|grp=') == page_content.find('|grp=}') or page_content.find(
-                        '|grp=') == page_content.find('|grp=|'):
+                if page_content.find('|grp=') in [
+                    page_content.find('|grp=}'),
+                    page_content.find('|grp=|'),
+                ]:
                     page_content = page_content[:page_content.find('|grp=') + len('|grp=')] + '1' \
                         + page_content[page_content.find('|grp=') + len('|grp='):]
                 else:

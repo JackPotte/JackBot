@@ -81,7 +81,7 @@ def treat_page(source_page, is_lemma=True):
         print(f' missing page content: {page_name}')
         return
 
-    summary = (f'Importation depuis [[{foreign_language}:{source_page.title()}' + ']]')
+    summary = f'Importation depuis [[{foreign_language}:{source_page.title()}]]'
     # Nature grammaticale
     page_content2 = page_content[:page_content.find(templateSource)]
     # Code langue

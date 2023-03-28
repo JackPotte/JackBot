@@ -754,15 +754,29 @@ def treat_page(page):
                     if final_page_content.rfind('{{') != -1:
                         final_page_content2 = final_page_content[:final_page_content.rfind(
                             '{{')]
-                        if add_language_code and (
-                                (final_page_content2.rfind('{{') != final_page_content2.rfind('{{pron|')
-                                    and final_page_content2.rfind('{{') != final_page_content2.rfind('{{US|')
-                                    and final_page_content2.rfind('{{') != final_page_content2.rfind('{{UK|'))
-                            or final_page_content.rfind('{{pron|') < final_page_content.rfind('\n')
-                            or final_page_content2.rfind('{{pron|') == -1) \
-                            and ((page_content.find('{{') != page_content.find('{{pron|')
-                                  or page_content.find('{{pron|') > page_content.find('\n'))
-                                 or page_content.find('{{pron|') == -1):
+                        if (
+                            add_language_code
+                            and (
+                                final_page_content2.rfind('{{')
+                                not in [
+                                    final_page_content2.rfind('{{pron|'),
+                                    final_page_content2.rfind('{{US|'),
+                                    final_page_content2.rfind('{{UK|'),
+                                ]
+                                or final_page_content.rfind('{{pron|')
+                                < final_page_content.rfind('\n')
+                                or final_page_content2.rfind('{{pron|') == -1
+                            )
+                            and (
+                                (
+                                    page_content.find('{{')
+                                    != page_content.find('{{pron|')
+                                    or page_content.find('{{pron|')
+                                    > page_content.find('\n')
+                                )
+                                or page_content.find('{{pron|') == -1
+                            )
+                        ):
                             final_page_content, page_content = next_template(final_page_content, page_content,
                                                                              current_template, language_code)
                         else:
@@ -1098,19 +1112,16 @@ def main(*args) -> int:
     if len(sys.argv) > 1:
         if debug_level > 1:
             print(sys.argv)
-        after_page = ''
-        if len(sys.argv) > 2:
-            after_page = sys.argv[2]
-
+        after_page = sys.argv[2] if len(sys.argv) > 2 else ''
         if sys.argv[1] == '-test':
-            treat_page_by_name('User:' + username + '/test')
+            treat_page_by_name(f'User:{username}/test')
         elif sys.argv[1] == '-test2':
-            treat_page_by_name('User:' + username + '/test2')
+            treat_page_by_name(f'User:{username}/test2')
         elif sys.argv[1] in ['-tu', '-t']:
-            treat_page_by_name('User:' + username + '/test unitaire')
+            treat_page_by_name(f'User:{username}/test unitaire')
         elif sys.argv[1] == '-ti':
             test_import = True
-            treat_page_by_name('User:' + username + '/test unitaire')
+            treat_page_by_name(f'User:{username}/test unitaire')
         elif sys.argv[1] in ['-page', '-p']:
             wait_after_humans = False
             treat_page_by_name('Annexe:Rimes_en_français_en_/sɑ̃/')
@@ -1122,7 +1133,7 @@ def main(*args) -> int:
                     'Annexe:Rimes en français en ', namespace=100)
         elif sys.argv[1] in ['-file', '-txt']:
             wait_after_humans = False
-            file_name = 'lists/articles_' + site_language + '_' + site_family + '.txt'
+            file_name = f'lists/articles_{site_language}_{site_family}.txt'
             if debug_level > 0:
                 print(file_name)
             p.pages_by_file(file_name)
@@ -1147,8 +1158,11 @@ def main(*args) -> int:
                 cancel_user['user'] = targeted_user
                 cancel_user['action'] = sys.argv[3]
             number = sys.argv[4] if len(sys.argv) > 4 else 1000
-            p.pages_by_user('User:' + targeted_user,
-                            number_of_pages_to_treat=number, namespaces=[0])
+            p.pages_by_user(
+                f'User:{targeted_user}',
+                number_of_pages_to_treat=number,
+                namespaces=[0],
+            )
         elif sys.argv[1] in ['-search', '-s', '-r']:
             if len(sys.argv) > 2:
                 p.pages_by_search(sys.argv[2])
@@ -1157,13 +1171,13 @@ def main(*args) -> int:
 
         elif sys.argv[1] in ['-link', '-l', '-template', '-m']:
             p.pages_by_link('Template:ucf', namespaces=[0])
-        elif sys.argv[1] in ['-category', '-cat', str('-c')]:
+        elif sys.argv[1] in ['-category', '-cat', '-c']:
             if len(sys.argv) > 2:
-                if sys.argv[2] == str('listFalseTranslations'):
+                if sys.argv[2] == 'listFalseTranslations':
                     list_false_translations = True
                     p.pages_by_cat(
                         'Catégorie:Pages "info" si réforme 1895 de l’espéranto')
-                elif sys.argv[2] == str('fixOldTemplates'):
+                elif sys.argv[2] == 'fixOldTemplates':
                     fix_old_templates = True
                     p.pages_by_cat('Appels de modèles incorrects:abréviation', after_page=after_page, recursive=False,
                                    namespaces=[14])
@@ -1173,20 +1187,20 @@ def main(*args) -> int:
                 p.pages_by_cat(
                     'Étymologies sans langue précisée incluant une reconstruction', namespaces=None, recursive=False)
 
-        elif sys.argv[1] == str('-redirects'):
+        elif sys.argv[1] == '-redirects':
             p.pages_by_redirects()
-        elif sys.argv[1] == str('-all'):
+        elif sys.argv[1] == '-all':
             p.pages_by_all()
-        elif sys.argv[1] in [str('-rc'), str('-RC')]:
+        elif sys.argv[1] in ['-rc', '-RC']:
             while 1:
                 # p.pages_by_rc() TODO error with self in context
                 p.pages_by_rc_last_day()
-        elif sys.argv[1] == str('-nocat'):
+        elif sys.argv[1] == '-nocat':
             p.pages_by_special_not_categorized()
-        elif sys.argv[1] == str('-lint'):
+        elif sys.argv[1] == '-lint':
             fix_tags = True
             p.pages_by_special_lint()
-        elif sys.argv[1] == str('-extlinks'):
+        elif sys.argv[1] == '-extlinks':
             p.pages_by_special_link_search('www.dmoz.org')
         else:
             # large_media: http://tools.wmflabs.org/jackbot/xtools/public_html/unicode-HTML.php
@@ -1212,7 +1226,7 @@ def main(*args) -> int:
         p.pages_by_cat('Catégorie:Appels de modèles incorrects:deet')
 
         for old_template in old_templates:
-            p.pages_by_link('Template:' + old_template, namespaces=[0])
+            p.pages_by_link(f'Template:{old_template}', namespaces=[0])
         p.pages_by_link('Template:ucf')
         p.pages_by_link('Template:1ergroupe')
         p.pages_by_link('Template:2egroupe')
