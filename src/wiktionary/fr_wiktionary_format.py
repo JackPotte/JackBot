@@ -1167,7 +1167,10 @@ def main(*args) -> int:
             if len(sys.argv) > 2:
                 p.pages_by_search(sys.argv[2])
             else:
-                p.pages_by_search('insource:/trad--\|lmo/', namespaces=[0])
+                p.pages_by_search('insource:/Du \{\{étyl\|en\|/', namespaces=[0])
+                p.pages_by_search('insource:/Du \{\{étyl\|de\|/', namespaces=[0])
+                p.pages_by_search('insource:/Du \{\{étyl\|es\|/', namespaces=[0])
+                p.pages_by_search('insource:/Du \{\{étyl\|ar\|/', namespaces=[0])
 
         elif sys.argv[1] in ['-link', '-l', '-template', '-m']:
             p.pages_by_link('Template:ucf', namespaces=[0])

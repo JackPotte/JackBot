@@ -1981,8 +1981,9 @@ def replace_etymology_templates(page_content, summary):
     if re.search(regex, page_content):
         page_content = re.sub(regex, r"\1calque|", page_content)
 
-    decision = ', [[Wiktionnaire:Prise de décision/Nettoyer les modèles de la section étymologie]]'
-    initial_page_content = page_content
+    # TODO
+    # decision = ', [[Wiktionnaire:Prise de décision/Nettoyer les modèles de la section étymologie]]'
+    # initial_page_content = page_content
 
     # Alias replacing with: |m=1
     regex = r"({{)deet([|}])"
@@ -1996,6 +1997,16 @@ def replace_etymology_templates(page_content, summary):
         if not re.search(regex2, template):
             new_template = template.replace('composé de', 'composé de|f=1')
             page_content = page_content.replace(template, new_template)
+
+    page_content = page_content.replace('Du {{étyl|en|', 'De l’{{étyl|en|')
+    page_content = page_content.replace('Du {{étyl|es|', 'De l’{{étyl|es|')
+    page_content = page_content.replace('Du {{étyl|de|', 'De l’{{étyl|de|')
+    page_content = page_content.replace('Du {{étyl|ar|', 'De l’{{étyl|ar|')
+
+    page_content = page_content.replace('du {{étyl|en|', 'de l’{{étyl|en|')
+    page_content = page_content.replace('du {{étyl|es|', 'de l’{{étyl|es|')
+    page_content = page_content.replace('du {{étyl|de|', 'de l’{{étyl|de|')
+    page_content = page_content.replace('du {{étyl|ar|', 'de l’{{étyl|ar|')
 
     return page_content, summary
 
