@@ -3860,6 +3860,7 @@ def treat_pronunciation(page_content, final_page_content, summary, end_position,
     return page_content, final_page_content, summary
 
 
+# TODO use {{voir anagrammes|fr}}
 def add_anagrams(page_content, summary, page_name, language_code):
     anagrams = get_anagram(page_name)
     anagrams_list = ''

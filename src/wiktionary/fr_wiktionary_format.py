@@ -350,42 +350,38 @@ def treat_page(page):
                         return
                     add_language_code = True
 
-                    # Ajout des anagrammes pour cette nouvelle langue détectée
-                    if language_code == 'conv':
-                        regex = r'[= ]*{{S\|anagrammes}}[^}]+\|conv}}\n'
-                        if re.compile(regex).search(page_content):
-                            if debug_level > 0:
-                                print(' No anagram for {{conv}}')
-                            final_page_content2 = page_content[:re.compile(
-                                regex).search(page_content).start()]
-                            page_content2 = page_content[re.compile(
-                                regex).search(page_content).end():]
-                            delta = re.compile(regex).search(
-                                page_content).end()
-                            regex = r'[^}]+\|conv}}\n'
-                            while re.compile(regex).search(page_content2):
-                                if debug_level > 0:
-                                    print(' No anagram for {{conv}}')
-                                delta = delta + \
-                                    re.compile(regex).search(
-                                        page_content2).end()
-                                page_content2 = page_content2[re.compile(
-                                    regex).search(page_content2).end():]
-                            page_content = final_page_content2 + \
-                                page_content[delta:]
+                    # TODO use {{voir anagrammes|fr}}
+                    # if language_code == 'conv':
+                    #     regex = r'[= ]*{{S\|anagrammes}}[^}]+\|conv}}\n'
+                    #     if re.compile(regex).search(page_content):
+                    #         if debug_level > 0:
+                    #             print(' No anagram for {{conv}}')
+                    #         final_page_content2 = page_content[:re.compile(
+                    #             regex).search(page_content).start()]
+                    #         page_content2 = page_content[re.compile(
+                    #             regex).search(page_content).end():]
+                    #         delta = re.compile(regex).search(
+                    #             page_content).end()
+                    #         regex = r'[^}]+\|conv}}\n'
+                    #         while re.compile(regex).search(page_content2):
+                    #             if debug_level > 0:
+                    #                 print(' No anagram for {{conv}}')
+                    #             delta = delta + \
+                    #                 re.compile(regex).search(page_content2).end()
+                    #             page_content2 = page_content2[re.compile(regex).search(page_content2).end():]
+                    #         page_content = final_page_content2 + page_content[delta:]
+                    # elif debug_level == 0 \
+                    #     and ('S|erreur|' + language_code) not in page_content \
+                    #     and ('S|faute|' + language_code) not in page_content \
+                    #     and language_code != 'conv' \
+                    #     and page_name[:1] != '-' and page_name[-1:] != '-' and ':' not in page_name:
+                        # if debug_level > 0:
+                        #     print(' Anagrams for ' + language_code)
+                        # if '{{S|anagr' not in page_content and page_name.find(' ') == -1 \
+                        #         and len(page_name) <= anagrams_max_length:
+                        #     page_content, summary = add_anagrams(page_content, summary, page_name, language_code)
 
-                    elif debug_level == 0 and page_content.find('S|erreur|' + language_code) == -1 and \
-                            page_content.find('S|faute|' + language_code) == -1 and language_code != 'conv' and \
-                            page_name[:1] != '-' and page_name[-1:] != '-' and ':' not in page_name:
-
-                        if debug_level > 0:
-                            print(' Anagrams for ' + language_code)
-                        if page_content.find('{{S|anagr') == -1 and page_name.find(' ') == -1 and len(
-                                page_name) <= anagrams_max_length:
-                            page_content, summary = add_anagrams(
-                                page_content, summary, page_name, language_code)
-                    final_page_content, page_content = next_template(
-                        final_page_content, page_content)
+                    final_page_content, page_content = next_template(final_page_content, page_content)
 
                 elif current_template == 'S':
                     section = trim(
