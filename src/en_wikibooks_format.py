@@ -35,7 +35,7 @@ fix_tags = False
 fix_files = True
 do_add_category = False
 
-book_cat_templates = [
+BOOK_CAT_TEMPLATES = [
     '{{Auto category}}',
     '{{Book category}}',
     '{{AutoCat}}',
@@ -50,7 +50,7 @@ book_cat_templates = [
     '[[Category:{{BASEPAGENAME}}]]', '[[Category:{{FULLBOOKNAME}}]]'
 ]
 
-book_categorizing_templates = ['header']
+BOOK_CATEGORIZING_TEMPLATES = ['header']
 
 # TODO fill by templates category?
 
@@ -108,19 +108,17 @@ def treat_page(page):
             page_content = '<noinclude>' + page_content[:len(r'{{Programming/Navigation}}')] + '</noinclude>' \
                            + page_content[len(r'{{Programming/Navigation}}'):]
 
-        for cat_tpl in book_categorizing_templates:
+        for cat_tpl in BOOK_CATEGORIZING_TEMPLATES:
             regex = r'{{[ \n]*(' + cat_tpl[:1].upper() + '|' + \
                 cat_tpl[:1] + ')' + cat_tpl[1:] + '[ \n]*[|}]'
             if re.search(regex, page_content):
                 if debug_level > 0:
                     print(f'  categorizing template: {cat_tpl}')
                 return
-        for book_cat_template in book_cat_templates:
+        for BOOK_CAT_TEMPLATE in BOOK_CAT_TEMPLATES:
+            page_content = page_content.replace(BOOK_CAT_TEMPLATE, '{{BookCat}}')
             page_content = page_content.replace(
-                book_cat_template, '{{BookCat}}')
-            page_content = page_content.replace(
-                book_cat_template[:2] + book_cat_template[2:3].lower() +
-                book_cat_template[3:],
+                BOOK_CAT_TEMPLATE[:2] + BOOK_CAT_TEMPLATE[2:3].lower() + BOOK_CAT_TEMPLATE[3:],
                 '{{BookCat}}'
             )
 

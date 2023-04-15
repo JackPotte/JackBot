@@ -87,5 +87,6 @@ python core/pwb.py src/wiktionary/fr_wiktionary_format
 python core/pwb.py src/wiktionary/fr_wiktionary_import_from_commons
 python core/pwb.py src/TalkArchiver.py --family:wiktionary
 python core/pwb.py src/TalkArchiver.py --family:wikisource
+python core/pwb.py src/en_wikibooks_add_authors_and_contributors.py
 
 #TODO updateDumps_sh (by cron)
