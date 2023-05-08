@@ -313,21 +313,24 @@ def treat_page(page):
                     final_page_content, page_content = next_template(final_page_content, page_content)
 
                 elif current_template == 'langue':
+                    if '==' not in page_content[end_position + 1:page_content.find('\n')]:
+                        if debug_level > 0:
+                            print('  language template out of section')
+                        continue
+
                     language_code = page_content[end_position + 1:page_content.find('}}')]
                     if language_code == '':
                         if debug_level > 0:
                             print('  empty language code')
                         return
-                    if '==' not in page_content[end_position + 1:page_content.find('\n')]:
-                        print('  ERROR: language template out of section')
-                        return
+
                     if debug_level > 1:
                         print('  language found: ' + language_code)
                     regex = r'[a-zA-Z\-]+'
                     if not re.search(regex, language_code):
-                        final_page_content = '{{formater|Code langue incorrect : ' + language_code + '}}\n' \
-                                             + final_page_content + page_content
-                        summary = 'page_content à formater manuellement'
+                        banner = '{{formater|Code langue incorrect : ' + language_code + '}}\n'
+                        summary = 'Page à formater manuellement : code langue incorrect'
+                        final_page_content = banner + final_page_content + page_content
                         save_page(page, final_page_content, summary)
                         if debug_level > 0:
                             print(' page_content to format manually')
