@@ -37,7 +37,7 @@ def get_first_lemma_from_locution(page_name):
 
 def get_gender_from_page_name(page_name, language_code='fr', nature=None):
     if debug_level > 1:
-        print('\ngetGenderFromPage_name')
+        print('\nget_gender_from_page_name')
     gender = None
     page_content = get_content_from_page_name(page_name, site)
     if page_content is None:
@@ -350,11 +350,10 @@ def get_pronunciation_from_content(page_content, language_code, nature=None):
         if debug_level > 0:
             print(
                 ' prononciation trouvée en {{{1}}} dans une boite de flexion : ' + pronunciation)
-        page_content = re.sub(
-            regex, r'{{\1|\2\3 {{pron|\2|' + language_code + '}}\4\n', page_content)
+        #page_content = re.sub(regex, r'{{\1|\2\3 {{pron|\2|' + language_code + '}}\4\n', page_content)
         return pronunciation
 
-    regex = r'{{(' + templates.replace('-', '\-') + r")\|([^{}]+)}}"
+    regex = r'{{(' + re.escape(templates) + r")\|([^{}]+)}}"
     s = re.search(regex, page_content)
     if s:
         template = s[1]
@@ -500,8 +499,7 @@ def remove_template(page_content, template, summary, language=None, in_section=N
                 old_sub_section, s_start, s_end = get_section_by_name(
                     old_section, section)
                 if old_sub_section is not None:
-                    new_sub_section = re.sub(
-                        regex_template, r'', old_sub_section)
+                    new_sub_section = re.sub(regex_template, r'', old_sub_section)
                     if old_sub_section != new_sub_section:
                         page_content = page_content.replace(
                             old_sub_section, new_sub_section)
@@ -557,11 +555,20 @@ def add_line(page_content, language_code, section_name, line_content):
             # ex : [('nom', '|fr|num=1'), ('synonymes', '')]
             input(str(sections_in_page))
 
+        final_section = None
         regex = r'\n=* *{{S\|' + section_name + r'[}\|]'
         if not re.search(regex, language_section):
-            page_content, language_section, start_position, end_position = add_section(page_content,
-                                                                                       sections_in_page, section_name, section_to_add_order, language_section, start_position,
-                                                                                       end_position, line_content, language_code)
+            page_content, language_section, start_position, end_position = add_section(
+                page_content,
+                sections_in_page,
+                section_name,
+                section_to_add_order,
+                language_section,
+                start_position,
+                end_position,
+                line_content,
+                language_code
+            )
 
             s = re.search(regex, language_section)
             if s:
@@ -626,24 +633,31 @@ def add_line(page_content, language_code, section_name, line_content):
     return page_content
 
 
-def add_section(page_content, sections_in_page, section_name, section_to_add_order, language_section,
-                start_position, end_position, line_content, language_code):
+def add_section(
+        page_content,
+        sections_in_page,
+        section_name,
+        section_to_add_order,
+        language_section,
+        start_position,
+        end_position,
+        line_content,
+        language_code
+    ):
     d = 0
     o = 0
-    while o < len(sections_in_page) and get_order_by_section_name(sections_in_page[o][0]) <= section_to_add_order:
+    section_order = get_order_by_section_name(sections_in_page[o][0])
+    while o < len(sections_in_page) and section_order <= section_to_add_order:
         if debug_level > d:
-            print(
-                f' {sections_in_page[o][0]} {str(get_order_by_section_name(sections_in_page[o][0]))}'
-            )
+            print(f' {sections_in_page[o][0]} {str(section_order)}')
         o += 1
     if o > 0:
         o -= 1
     if debug_level > d:
         print(
-            f' while {str(get_order_by_section_name(sections_in_page[o][0]))} <= {str(section_to_add_order)} and {o} < {len(sections_in_page)} and {sections_in_page[o][0]} != langue'
+            f' while {str(section_order)} <= {str(section_to_add_order)} and {o} < {len(sections_in_page)} and {sections_in_page[o][0]} != langue'
         )
 
-    # section_limit = str(sections_in_page[o][0])
     section_limit = sections_in_page[o][0]
     # TODO pb encodage : "étymologie" non fusionnée + "catégorie" = 1 au lieu de 20
     if language_section.find('{{S|' + section_limit) == -1 and section_limit != 'langue':
@@ -654,29 +668,25 @@ def add_section(page_content, sections_in_page, section_name, section_to_add_ord
         return page_content, language_section
 
     section_level = get_level_by_section_name(section_name)
+    section_order = get_order_by_section_name(section_limit)
     if section_limit == section_name:
         if debug_level > d:
             print(
-                (
-                    f' ajout dans la sous-section existante "{section_name}" (car {str(get_order_by_section_name(section_limit))} = {str(section_to_add_order)}'
-                    + ')\n'
-                )
+                f' ajout dans la sous-section existante "{section_name}" (car {str(section_order)} = {str(section_to_add_order)})\n'
             )
     elif section_name not in ['catégorie', 'clé de tri']:
         section_to_add = '\n\n' + section_level + \
             ' {{S|' + section_name + '}} ' + section_level + '\n'
-        if section_to_add_order >= get_order_by_section_name(section_limit):
+        if section_to_add_order >= section_order:
             if debug_level > d:
                 print(
-                    f' ajout de la sous-section "{section_name}" après "{section_limit}" (car {str(section_to_add_order)} > {str(get_order_by_section_name(section_limit))})'
+                    f' ajout de la sous-section "{section_name}" après "{section_limit}" (car {str(section_to_add_order)} > {str(section_order)})'
                 )
             regex = r'{{S\|' + section_limit + r'[\|}]'
             s = re.search(regex, language_section)
             if section_limit == sections_in_page[-1][0]:
                 if debug_level > d:
-                    print(
-                        f' ajout de la sous-section après la dernière de la section langue : {section_limit}'
-                    )
+                    print(f' ajout de la sous-section après la dernière de la section langue : {section_limit}')
                 categories = language_section.find('\n[[Catégorie:')
                 default_sort = language_section.find('\n{{clé de tri|')
                 if categories != -1 and (categories < default_sort or default_sort == -1):
@@ -700,20 +710,16 @@ def add_section(page_content, sections_in_page, section_name, section_to_add_ord
                 if debug_level > d + 1:
                     input(page_content)
             else:
-                last_section_level = get_level_by_section_name(
-                    sections_in_page[o + 1][0])
+                last_section_level = get_level_by_section_name(sections_in_page[o + 1][0])
                 if debug_level > d:
-                    print(
-                        '   Saut des sections incluses dans la précédente (de niveau titre inférieur)')
+                    print('   Saut des sections incluses dans la précédente (de niveau titre inférieur)')
                 while o + 2 < len(sections_in_page) and len(section_level) < len(last_section_level):
                     o += 1
                     if debug_level > d:
                         print(f' saut de {sections_in_page[o + 1][0]}')
 
                 if debug_level > d:
-                    print(
-                        f' ajout de la sous-section "{section_name}" avant "{sections_in_page[o + 1][0]}"'
-                    )
+                    print(f' ajout de la sous-section "{section_name}" avant "{sections_in_page[o + 1][0]}"')
                 regex = r'\n=* *{{S\|' + sections_in_page[o + 1][0]
                 s = re.search(regex, language_section)
                 if s:
@@ -735,7 +741,7 @@ def add_section(page_content, sections_in_page, section_name, section_to_add_ord
         else:
             if debug_level > d:
                 print(
-                    f' ajout de "{section_name}" avant "{section_limit}" (car {str(section_to_add_order)} < {str(get_order_by_section_name(section_limit))})'
+                    f' ajout de "{section_name}" avant "{section_limit}" (car {str(section_to_add_order)} < {str(section_order)})'
                 )
             regex = r'\n=* *{{S\|' + section_limit
             s = re.search(regex, language_section)
@@ -776,7 +782,7 @@ def add_pronunciation(page_content, language_code, section, line_content):
             or line_content in page_content or '{{langue|' + language_code + '}}' not in page_content:
         return page_content
 
-    # TODO generic preformator
+    # TODO generic preformatter
     page_content = page_content.replace('{{S|Références}}', '{{S|références}}')
     if section == 'catégorie' and line_content.find('[[Catégorie:') == -1:
         line_content = f'[[Catégorie:{line_content}]]'
@@ -841,7 +847,7 @@ def add_pronunciation(page_content, language_code, section, line_content):
             language_section = language_section + '\n' + line_content + '\n'
     else:
         try:
-            sectionLimit = str(sections_in_page[o][0])
+            section_limit = str(sections_in_page[o][0])
         except UnicodeEncodeError:
             print('UnicodeEncodeError (relancer en Python3)',
                   o, sections_in_page[o][0])
@@ -850,10 +856,8 @@ def add_pronunciation(page_content, language_code, section, line_content):
         if debug_level > 1:
             print(f' position O : {o}')
         if debug_level > 0:
-            print(f' ajout de "{section}" avant "{repr(sectionLimit)}"')
-            print(
-                f'  (car {str(get_order_by_section_name(sectionLimit))} > {str(section_number)})'
-            )
+            print(f' ajout de "{section}" avant "{repr(section_limit)}"')
+            print(f'  (car {str(get_order_by_section_name(section_limit))} > {str(section_number)})')
 
         # Ajout après la section trouvée
         if language_section.find('{{S|' + sections_in_page[o][0]) == -1:
@@ -946,8 +950,8 @@ def add_line_into_section(page_content, language_code, section, line_content):
             line_content = f'[[Catégorie:{line_content}]]'
         if section == 'clé de tri' and line_content.find('{{clé de tri|') == -1:
             line_content = '{{clé de tri|' + line_content + '}}'
-    sections = re.findall(r"\n=+ *{{S?\|?([^}/|]+)([^}]*)}}", page_content)
     # TODO: complete parsing
+    #sections = re.findall(r"\n=+ *{{S?\|?([^}/|]+)([^}]*)}}", page_content)
     # input(str(sections))
     return page_content
 
@@ -1008,9 +1012,11 @@ def add_language_code_with_named_parameter_to_template(
             print('   "lang=" addition ignored')
         return next_template(final_page_content, page_content)
 
-    is_not_category_name = current_template != 'cf' or (page_content2.find('}}') > end_position + 1
-                                                        and (page_content2.find(':') == -1 or page_content2.find(':') > page_content2.find('}}'))
-                                                        and page_content2[:1] != '#')
+    is_not_category_name = current_template != 'cf' or (
+            page_content2.find('}}') > end_position + 1
+            and (page_content2.find(':') == -1 or page_content2.find(':') > page_content2.find('}}'))
+            and page_content2[:1] != '#'
+    )
 
     regex_has_lang = r'^[^{}]+\| *lang(gue|1)? *='
     if is_not_category_name and not re.search(regex_has_lang, page_content):
@@ -1100,22 +1106,19 @@ def remove_false_homophons(page_content, language_code, page_name, related_page_
             r"''' *{{cf\|[^\|]*\|?" + \
                 re.escape(related_page_name) + r"[\|}][^\n]*\n"
         if re.search(regex, page_content):
-            page_content = re.sub(
-                regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
+            page_content = re.sub(regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
             summary = f'{summary}, homophone erroné'
 
         regex = r"==== *{{S\|homophones\|" + language_code + r"}} *====\n\* *\[\[[^}\n]+{{cf\|[^\|]*\|?" \
                 + re.escape(related_page_name) + r"[\|}][^\n]*\n?"
         if re.search(regex, page_content):
-            page_content = re.sub(
-                regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
+            page_content = re.sub(regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
             summary = f'{summary}, homophone erroné'
 
         regex = r"==== *{{S\|homophones\|" + language_code + r"}} *====\n\* *\[\[" + re.escape(related_page_name) \
                 + r"\]\](\n|$)"
         if re.search(regex, page_content):
-            page_content = re.sub(
-                regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
+            page_content = re.sub(regex, "==== {{S|homophones|" + language_code + r"}} ====\n", page_content)
             summary = f'{summary}, homophone erroné'
 
         regex = r"=== {{S\|prononciation}} ===\n==== *{{S\|homophones\|[^}]*}} *====\n*(=|$|{{clé de tri|\[\[Catégorie:)"
@@ -1403,10 +1406,15 @@ def add_banner_see(page_name, page_content, summary):
             pages_keys = f'{pages_keys}|{page_name[:1].lower()}{page_name[1:]}-'
         if pages_keys.find('-') != -1:
             pages_keys = f'{pages_keys}|' + pages_keys.replace('-', '')
-        diacritics = [['a', u'á', u'à', u'ä', u'â', u'ã'], ['c', u'ç'], ['e', u'é', u'è', u'ë', u'ê'],
-                      ['i', u'í', u'ì', u'ï', u'î'], ['n', u'ñ'], [
-                          'o', u'ó', u'ò', u'ö', u'ô', u'õ'],
-                      ['u', u'ú', u'ù', u'ü', u'û']]
+        diacritics = [
+            ['a', 'á', 'à', 'ä', 'â', 'ã'],
+            ['c', 'ç'],
+            ['e', 'é', 'è', 'ë', 'ê'],
+            ['i', 'í', 'ì', 'ï', 'î'],
+            ['n', 'ñ'],
+            ['o', 'ó', 'ò', 'ö', 'ô', 'õ'],
+            ['', 'ú', 'ù', 'ü', 'û']
+        ]
         for diacritic in diacritics:
             for d in range(len(diacritic)):
                 if page_name.find(diacritic[d]) != -1:
@@ -1614,140 +1622,92 @@ def add_banner_see(page_name, page_content, summary):
 def format_sections(page_content, summary):
     if debug_level > 0:
         print('\nformat_sections()')
+
+    # Format old language section
     regex = r'{{=([a-z\-]+)=}}'
     if re.search(regex, page_content):
         page_content = re.sub(regex, r'{{langue|\1}}', page_content)
 
-    # Titres en minuscules
-    # page_content = re.sub(r'{{S\|([^}]+)}}', r'{{S|' + r'\1'.lower() + r'}}', page_content)
-    for f in re.findall("{{S\|([^}]+)}}", page_content):
+    # Normalize sections title casing
+    for f in re.findall(r'{{S\|([^}]+)}}', page_content):
         page_content = page_content.replace(f, f.lower())
 
-    # Alias peu intuitifs des sections avec langue
+    # Replace deprecated aliases with language parameter
     page_content = page_content.replace('{{S|adj|', '{{S|adjectif|')
     page_content = page_content.replace('{{S|adjectifs|', '{{S|adjectif|')
-    page_content = page_content.replace(
-        '{{S|adj-num|', '{{S|adjectif numéral|')
+    page_content = page_content.replace('{{S|adj-num|', '{{S|adjectif numéral|')
     page_content = page_content.replace('{{S|adv|', '{{S|adverbe|')
     page_content = page_content.replace('{{S|class|', '{{S|classificateur|')
     page_content = page_content.replace('{{S|drv}}', '{{S|dérivés}}')
     page_content = page_content.replace('{{S|homo|', '{{S|homophones|')
     page_content = page_content.replace('{{S|homo}}', '{{S|homophones}}')
     page_content = page_content.replace('{{S|interj|', '{{S|interjection|')
-    page_content = page_content.replace(
-        '{{S|locution adverbiale', '{{S|adverbe')
-    page_content = page_content.replace(
-        '{{S|locution phrase|', '{{S|locution-phrase|')
+    page_content = page_content.replace('{{S|locution adverbiale', '{{S|adverbe')
+    page_content = page_content.replace('{{S|locution phrase|', '{{S|locution-phrase|')
     page_content = page_content.replace('{{S|nom commun|', '{{S|nom|')
     page_content = page_content.replace('{{S|nom-fam|', '{{S|nom de famille|')
     page_content = page_content.replace('{{S|nom-pr|', '{{S|nom propre|')
     page_content = page_content.replace('{{S|pron}}', '{{S|prononciation}}')
     page_content = page_content.replace('{{S|symb|', '{{S|symbole|')
     page_content = page_content.replace('{{S|verb|', '{{S|verbe|')
-    page_content = page_content.replace(
-        '{{S|apparentés étymologiques', '{{S|apparentés')
-    page_content = page_content.replace(
-        '{{S|modphon}', '{{S|modification phonétique}')
-    page_content = page_content.replace(
-        '{{S|mutation}', '{{S|modification phonétique}')
-    # Alias peu intuitifs des sections sans langue
-    page_content = re.sub(
-        r'{{S\| ?abr[éèe]v(iations)?\|?[a-z\- ]*}}', '{{S|abréviations}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?anagr(ammes)?\|?[a-z\- ]*}}', '{{S|anagrammes}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?anciennes orthographes?\|?[a-z\- ]*}}', '{{S|anciennes orthographes}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?ant(onymes)?\|?[a-z\- ]*}}', '{{S|antonymes}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?app(arentés)?\|?[a-zé]*}}', '{{S|apparentés}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?apr\|?[a-zé]*}}', '{{S|apparentés}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?compos(és)?\|?[a-zé]*}}', '{{S|composés}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?dial\|?[a-z\- ]*}}', '{{S|variantes dialectales}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?dimin(inutifs)?\|?[a-z\- ]*}}', '{{S|diminutifs}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?d[éèe]riv[éèe]s?(\|[a-z\- ]*}}|}})', '{{S|dérivés}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?drv\|?[a-z\- ]*}}', '{{S|dérivés}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?dérivés int\|?[a-z\- ]*}}', '{{S|dérivés autres langues}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?drv-int\|?[a-z\- ]*}}', '{{S|dérivés autres langues}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?[éèe]tym(ologie)?\|?[a-z\- ]*}}', '{{S|étymologie}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?exp(ressions)?\|?[a-z\- ]*}}', '{{S|expressions}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?gent(ilés)?\|?[a-zé]*}}', '{{S|gentilés}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?faux-amis?\|?[a-zé]*}}', '{{S|faux-amis}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?holo(nymes)?\|?[a-z\- ]*}}', '{{S|holonymes}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?hyper(onymes)?\|?[a-z\- ]*}}', '{{S|hyperonymes}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?hypo(nymes)?\|?[a-z\- ]*}}', '{{S|hyponymes}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?m[éèe]ro(nymes)?\|?[a-z\- ]*}}', '{{S|méronymes}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?notes?(\|?[a-z ]*)?}}', '{{S|notes}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?paro(nymes)?\|?[a-z\- ]*}}', '{{S|paronymes}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?phrases?\|?[a-z\- ]*}}', '{{S|phrases}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?pron(onciation)?\|?[a-z\- ]*}}', '{{S|prononciation}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?q-syn\|?[a-z\- ]*}}', '{{S|quasi-synonymes}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?quasi[- ]syn(onymes)?\|?[a-z\- ]*}}', '{{S|quasi-synonymes}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?r[éèe]f[a-zé]*\|?[a-z\- ]*}}', '{{S|références}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?syn(onymes)?\|?[a-z\- ]*}}', '{{S|synonymes}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?taux de reconnaissance\|?[a-z\- ]*}}', '{{S|taux de reconnaissance}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?trad(uctions)?\|?[a-z]*}}', '{{S|traductions}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?trad-trier\|?[a-z\- ]*}}', '{{S|traductions à trier}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?traductions à trier\|?[a-z\- ]*}}', '{{S|traductions à trier}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?variantes dial\|?[a-z\- ]*}}', '{{S|variantes dialectales}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?variantes dialectales\|?[a-z\- ]*}}', '{{S|variantes dialectales}}', page_content)
-    page_content = re.sub(r'{{S\| ?var[a-z]*[- ]ortho(graphiques)?\|?[a-z\- ]*}}',
-                          '{{S|variantes orthographiques}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?var(iantes)?\|?[a-z\-]*}}', '{{S|variantes}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?voc(abulaire)?\|?[a-z\- ]*}}', '{{S|vocabulaire}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?vocabulaire apparenté\|?[a-z\- ]*}}', '{{S|vocabulaire}}', page_content)
-    page_content = re.sub(
-        r'{{S\| ?voir( aussi)?\|?[a-z\- ]*}}', '{{S|voir aussi}}', page_content)
-    page_content = page_content.replace(
-        '{{S|descendants}}', '{{S|dérivés autres langues}}')
+    page_content = page_content.replace('{{S|apparentés étymologiques', '{{S|apparentés')
+    page_content = page_content.replace('{{S|modphon}', '{{S|modification phonétique}')
+    page_content = page_content.replace('{{S|mutation}', '{{S|modification phonétique}')
+
+    # Replace deprecated aliases without language parameter
+    page_content = re.sub(r'{{S\| ?abr[éèe]v(iations)?\|?[a-z\- ]*}}', '{{S|abréviations}}', page_content)
+    page_content = re.sub(r'{{S\| ?anagr(ammes)?\|?[a-z\- ]*}}', '{{S|anagrammes}}', page_content)
+    page_content = re.sub(r'{{S\| ?anciennes orthographes?\|?[a-z\- ]*}}', '{{S|anciennes orthographes}}', page_content)
+    page_content = re.sub(r'{{S\| ?ant(onymes)?\|?[a-z\- ]*}}', '{{S|antonymes}}', page_content)
+    page_content = re.sub(r'{{S\| ?app(arentés)?\|?[a-zé]*}}', '{{S|apparentés}}', page_content)
+    page_content = re.sub(r'{{S\| ?ap(p|r)\|?[a-zé]*}}', '{{S|apparentés}}', page_content)
+    page_content = re.sub(r'{{S\| ?compos(és)?\|?[a-zé]*}}', '{{S|composés}}', page_content)
+    page_content = re.sub(r'{{S\| ?dial\|?[a-z\- ]*}}', '{{S|variantes dialectales}}', page_content)
+    page_content = re.sub(r'{{S\| ?dimin(inutifs)?\|?[a-z\- ]*}}', '{{S|diminutifs}}', page_content)
+    page_content = re.sub(r'{{S\| ?d[éèe]riv[éèe]s?(\|[a-z\- ]*}}|}})', '{{S|dérivés}}', page_content)
+    page_content = re.sub(r'{{S\| ?drv\|?[a-z\- ]*}}', '{{S|dérivés}}', page_content)
+    page_content = re.sub(r'{{S\| ?dérivés int\|?[a-z\- ]*}}', '{{S|dérivés autres langues}}', page_content)
+    page_content = re.sub(r'{{S\| ?drv-int\|?[a-z\- ]*}}', '{{S|dérivés autres langues}}', page_content)
+    page_content = re.sub(r'{{S\| ?[éèe]tym(ologie)?\|?[a-z\- ]*}}', '{{S|étymologie}}', page_content)
+    page_content = re.sub(r'{{S\| ?exp(ressions)?\|?[a-z\- ]*}}', '{{S|expressions}}', page_content)
+    page_content = re.sub(r'{{S\| ?gent(ilés)?\|?[a-zé]*}}', '{{S|gentilés}}', page_content)
+    page_content = re.sub(r'{{S\| ?faux-amis?\|?[a-zé]*}}', '{{S|faux-amis}}', page_content)
+    page_content = re.sub(r'{{S\| ?holo(nymes)?\|?[a-z\- ]*}}', '{{S|holonymes}}', page_content)
+    page_content = re.sub(r'{{S\| ?hyper(onymes)?\|?[a-z\- ]*}}', '{{S|hyperonymes}}', page_content)
+    page_content = re.sub(r'{{S\| ?hypo(nymes)?\|?[a-z\- ]*}}', '{{S|hyponymes}}', page_content)
+    page_content = re.sub(r'{{S\| ?m[éèe]ro(nymes)?\|?[a-z\- ]*}}', '{{S|méronymes}}', page_content)
+    page_content = re.sub(r'{{S\| ?notes?(\|?[a-z ]*)?}}', '{{S|notes}}', page_content)
+    page_content = re.sub(r'{{S\| ?paro(nymes)?\|?[a-z\- ]*}}', '{{S|paronymes}}', page_content)
+    page_content = re.sub(r'{{S\| ?phrases?\|?[a-z\- ]*}}', '{{S|phrases}}', page_content)
+    page_content = re.sub(r'{{S\| ?pron(onciation)?\|?[a-z\- ]*}}', '{{S|prononciation}}', page_content)
+    page_content = re.sub(r'{{S\| ?q-syn\|?[a-z\- ]*}}', '{{S|quasi-synonymes}}', page_content)
+    page_content = re.sub(r'{{S\| ?quasi[- ]syn(onymes)?\|?[a-z\- ]*}}', '{{S|quasi-synonymes}}', page_content)
+    page_content = re.sub(r'{{S\| ?r[éèe]f[a-zé]*\|?[a-z\- ]*}}', '{{S|références}}', page_content)
+    page_content = re.sub(r'{{S\| ?syn(onymes)?\|?[a-z\- ]*}}', '{{S|synonymes}}', page_content)
+    page_content = re.sub(r'{{S\| ?taux de reconnaissance\|?[a-z\- ]*}}', '{{S|taux de reconnaissance}}', page_content)
+    page_content = re.sub(r'{{S\| ?trad(uctions)?\|?[a-z]*}}', '{{S|traductions}}', page_content)
+    page_content = re.sub(r'{{S\| ?trad-trier\|?[a-z\- ]*}}', '{{S|traductions à trier}}', page_content)
+    page_content = re.sub(r'{{S\| ?traductions à trier\|?[a-z\- ]*}}', '{{S|traductions à trier}}', page_content)
+    page_content = re.sub(r'{{S\| ?variantes dial\|?[a-z\- ]*}}', '{{S|variantes dialectales}}', page_content)
+    page_content = re.sub(r'{{S\| ?variantes dialectales\|?[a-z\- ]*}}', '{{S|variantes dialectales}}', page_content)
+    page_content = re.sub(r'{{S\| ?var[a-z]*[- ]ortho(graphiques)?\|?[a-z\- ]*}}', '{{S|variantes orthographiques}}', page_content)
+    page_content = re.sub(r'{{S\| ?var(iantes)?\|?[a-z\-]*}}', '{{S|variantes}}', page_content)
+    page_content = re.sub(r'{{S\| ?voc(abulaire)?\|?[a-z\- ]*}}', '{{S|vocabulaire}}', page_content)
+    page_content = re.sub(r'{{S\| ?vocabulaire apparenté\|?[a-z\- ]*}}', '{{S|vocabulaire}}', page_content)
+    page_content = re.sub(r'{{S\| ?voir( aussi)?\|?[a-z\- ]*}}', '{{S|voir aussi}}', page_content)
+    page_content = page_content.replace('{{S|descendants}}', '{{S|dérivés autres langues}}')
     page_content = page_content.replace('num=1|num=', 'num=1')
+
     regex = r'({{trad\-fin}}[^={]+)(\n==== {{S\|homophones)'
     s = re.search(regex, page_content)
     if s:
         page_content = page_content.replace(s[1] + s[2], s[1] + '\n=== {{S|prononciation}} ===' + s[2])
 
-    regex = r"(==== {{S\|dérivés autres langues}} ====" + \
-        r"(:?\n\* *{{L\|[^\n]+)?"*10 + r"\n\* *{{)T\|"
-    for _ in range(10):
-        page_content = re.sub(regex, r'\1L|', page_content)
-
     regex = r"\n=* *({{langue\|[^}]+}}) *=*\n"
     if re.search(regex, page_content):
         page_content = re.sub(regex, r"\n== \1 ==\n", page_content)
 
+    # Replace old sort key
     regex = r'({{S\|[^}]+)€'
     while re.search(regex, page_content):
         page_content = re.sub(regex, r'\1⿕', page_content)
@@ -1788,8 +1748,7 @@ def format_translations(page_content, summary):
         r'{{ébauche-trad}}\n{{trad-début}}', '{{trad-début}}\n{{ébauche-trad}}')
     regex = r'{{ébauche\-trad}}\n{{trad\-début}}'
     if re.search(regex, page_content):
-        page_content = re.sub(
-            regex, '{{trad-début}}\n{{ébauche-trad}}', page_content)
+        page_content = re.sub(regex, '{{trad-début}}\n{{ébauche-trad}}', page_content)
 
     page_content = page_content.replace(r'==== {{S|traductions}} ====\n{{ébauche-trad}}\n',
                                         '==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n')
@@ -1867,6 +1826,11 @@ def format_translations(page_content, summary):
     regex = r'{{trad-\|hr\|(\([0-9]\))\|dif=([^}\|]+)}}'
     page_content = re.sub(regex, r'{{trad-|hr|\2}} \1', page_content)
 
+    regex = r"(==== {{S\|dérivés autres langues}} ====" + \
+        r"(:?\n\* *{{L\|[^\n]+)?"*10 + r"\n\* *{{)T\|"
+    for _ in range(10):
+        page_content = re.sub(regex, r'\1L|', page_content)
+
     return page_content, summary
 
 
@@ -1902,14 +1866,12 @@ def add_templates(page_content, summary):
     regex = r"(\|en}}\n# *'*(?:Participe présent|Participe passé|Prétérit|Troisième personne du singulier du présent) de *'* *)to "
     page_content = re.sub(regex, r'\1', page_content, re.IGNORECASE)
     regex = r"(\|([a-z]+)}}\n# *'*(?:Participe présent|Participe passé|Prétérit|Troisième personne du singulier du présent) de *'* *)([a-zçæéë \-’']+)\."
-    page_content = re.sub(
-        regex, r'\1{{l|\3|\2}}.', page_content, re.IGNORECASE)
+    page_content = re.sub(regex, r'\1{{l|\3|\2}}.', page_content, re.IGNORECASE)
 
     if debug_level > 1:
         print('  add translation templates')
     regex = r'\n\* *[Ss]olr[eé]sol *: *:* *\[\[«?([^\]\n«»]+)»?\]\]'
-    page_content = re.sub(
-        regex, r'\n* {{T|solrésol}} : {{trad|solrésol|\1}}', page_content)
+    page_content = re.sub(regex, r'\n* {{T|solrésol}} : {{trad|solrésol|\1}}', page_content)
     regex = r'(\n\* {{T\|tsolyáni}} *: *)\[\[([^\]\n]+)\]\]'
     page_content = re.sub(regex, r'\1{{trad|tsolyáni|\2}}', page_content)
 
@@ -1919,8 +1881,7 @@ def add_templates(page_content, summary):
 def replace_template(page_content, old_template, new_template):
     regex = r"({{) *" + old_template + r" *([|}])"
     if re.search(regex, page_content):
-        page_content = re.sub(
-            regex, r"\1" + new_template + r"\2", page_content)
+        page_content = re.sub(regex, r"\1" + new_template + r"\2", page_content)
 
     return page_content
 
@@ -1991,9 +1952,9 @@ def replace_etymology_templates(page_content, summary):
         page_content = re.sub(regex, r"\1composé de|m=1\2", page_content)
 
     regex = r'[Ll]ocution {{composé de[^{}]+}}'
-    templates = re.findall(regex, page_content)
+    page_templates = re.findall(regex, page_content)
     regex2 = r'\| *f *= *(1|oui)[\|}]'
-    for template in templates:
+    for template in page_templates:
         if not re.search(regex2, template):
             new_template = template.replace('composé de', 'composé de|f=1')
             page_content = page_content.replace(template, new_template)
@@ -2023,12 +1984,10 @@ def replace_languages_templates(page_content, summary):
         # TODO select templates https://fr.wiktionary.org/w/index.php?title=van&diff=prev&oldid=24107783&diffmode=source
         # regex = r'((?!:voir).*[\|{=])' + old_template[p] + r'([\|}])'
         regex = r'({{T\|)' + re.escape(old_language_template) + r'}}'
-        page_content = re.sub(
-            regex, r'\1' + old_language_templates[old_language_template] + r'}}', page_content)
+        page_content = re.sub(regex, r'\1' + old_language_templates[old_language_template] + r'}}', page_content)
         regex = r'({{trad[\-\+]\-?\|)' + \
             re.escape(old_language_template) + r'\|'
-        page_content = re.sub(
-            regex, r'\1' + old_language_templates[old_language_template] + r'|', page_content)
+        page_content = re.sub(regex, r'\1' + old_language_templates[old_language_template] + r'|', page_content)
 
     return page_content, summary
 
@@ -2245,17 +2204,13 @@ def remove_double_category_when_template(page_content, summary):
 
     if page_content.find('[[Catégorie:Villes') != -1 and page_content.find('{{localités|') != -1:
         summary = summary + ', {{villes}} -> {{localités}}'
-        page_content = re.sub(
-            r'\n\[\[Catégorie:Villes[^\]]*\]\]', r'', page_content)
+        page_content = re.sub(r'\n\[\[Catégorie:Villes[^\]]*\]\]', r'', page_content)
 
-    # TODO: retraiter toutes les paires catégorie / templates, dynamiquement, pour tous les codes langues
+    # TODO foreach language: foreach useless category because categorizing template
     if '{{argot|fr}}' in page_content:
-        page_content = re.sub(
-            r'\n\[\[Catégorie:Argot en français\]\]', r'', page_content)
-
-    if page_content.find('\n[[Catégorie:Gentilés en français]]') != -1 and page_content.find('{{note-gentilé|fr}}') != -1:
-        page_content = page_content.replace(
-            '\n[[Catégorie:Gentilés en français]]', '')
+        page_content = re.sub(r'\n\[\[Catégorie:Argot en français\]\]', r'', page_content)
+    if '\n[[Catégorie:Gentilés en français]]' in page_content and '{{note-gentilé|fr}}' in page_content:
+        page_content = page_content.replace('\n[[Catégorie:Gentilés en français]]', '')
 
     return page_content, summary
 
@@ -2341,10 +2296,8 @@ def format_templates(page_content, summary):
     page_content = page_content.replace(
         '{{prononciation|}}', '{{prononciation}}')
     page_content = re.sub(r'({{pron\|[^|}]*)\|(}})', r"\1\2", page_content)
-    page_content = re.sub(
-        r'({{pron\|[^|}]*\|)\|([a-z\-]+}})', r"\1\2", page_content)
-    page_content = re.sub(
-        r'({{pron\|[^|}]*\|)\|nocat(?:=1)?(}})', r"\1\2", page_content)
+    page_content = re.sub(r'({{pron\|[^|}]*\|)\|([a-z\-]+}})', r"\1\2", page_content)
+    page_content = re.sub(r'({{pron\|[^|}]*\|)\|nocat(?:=1)?(}})', r"\1\2", page_content)
     page_content = re.sub(r'}}\* *{{écouter\|',
                           r"}}\n* {{écouter|", page_content)
 
@@ -2357,8 +2310,7 @@ def format_templates(page_content, summary):
         page_content = re.sub(regex, r'\n* {{écouter|', page_content)
     regex = r'{{S\|prononciation}} ===\*'
     if re.search(regex, page_content):
-        page_content = re.sub(
-            regex, r'{{S|prononciation}} ===\n*', page_content)
+        page_content = re.sub(regex, r'{{S|prononciation}} ===\n*', page_content)
 
     for m in range(1, len(region_short_templates)):
         while page_content.find('{{écouter|' + region_short_templates[m] + '|') != -1:
@@ -2573,8 +2525,7 @@ def format_languages_templates(page_content, summary, page_name):
                 demonym_templates[l][3] + r'[\]\']*, {{fplur}} : [\[\']*' + \
                     regex_page_name + demonym_templates[l][4] + r'[\]\']*\)'
             if re.search(regex, page_content):
-                page_content = re.sub(
-                    regex, '{{' + demonym_templates[l][1] + '|pron=}}', page_content)
+                page_content = re.sub(regex, '{{' + demonym_templates[l][1] + '|pron=}}', page_content)
                 summary = f'{summary}, conversion des liens flexions en modèle boite'
             # Depuis un féminin
             if demonym_templates[l][1] == r'fr-accord-s' and regex_page_name[-1:] == 'e' and regex_page_name[-2:-1] == 's':
@@ -2582,15 +2533,13 @@ def format_languages_templates(page_content, summary, page_name):
                     r's[\]\']*, {{m}} : [\[\']*' + \
                         regex_page_name[:-1] + r'[\]\']*\)'
                 if re.search(regex, page_content):
-                    page_content = re.sub(
-                        regex, '{{' + demonym_templates[l][1] + '|ms=' + regex_page_name[:-1].replace('\\', '') + '}}', page_content)
+                    page_content = re.sub(regex, '{{' + demonym_templates[l][1] + '|ms=' + regex_page_name[:-1].replace('\\', '') + '}}', page_content)
                     summary = f'{summary}, conversion des liens flexions en modèle boite'
             regex = r'\({{f}} : [\[\']*' + regex_page_name + demonym_templates[l][3] + r'[\]\']*, {{mplur}} : [\[\']*' + regex_page_name + \
                 demonym_templates[l][2] + r'[\]\']*, {{fplur}} : [\[\']*' + \
                     regex_page_name + demonym_templates[l][4] + r'[\]\']*\)'
             if re.search(regex, page_content):
-                page_content = re.sub(
-                    regex, '{{' + demonym_templates[l][1] + '|pron=}}', page_content)
+                page_content = re.sub(regex, '{{' + demonym_templates[l][1] + '|pron=}}', page_content)
                 summary = f'{summary}, conversion des liens flexions en modèle boite'
             if debug_level > 1:
                 print(' avec son')
@@ -2658,8 +2607,7 @@ def format_languages_templates(page_content, summary, page_name):
                 + re_page_radical_name + demonym_templates[l][3] + r'[\]\']*, {{fplur}} : [\[\']*' + re_page_radical_name \
                     + demonym_templates[l][4] + r'[\]\']*\)'
             if re.search(regex, page_content):
-                page_content = re.sub(
-                    regex, '{{' + demonym_templates[l][1] + '|' + re_page_radical_name + r'}}', page_content)
+                page_content = re.sub(regex, '{{' + demonym_templates[l][1] + '|' + re_page_radical_name + r'}}', page_content)
                 summary = f'{summary}, conversion des liens flexions en modèle boite'
             regex = r'\({{f}} : [\[\']*' + re_page_radical_name + demonym_templates[l][3] + r'[\]\']*, {{mplur}} : [\[\']*' \
                 + re_page_radical_name + demonym_templates[l][2] + r'[\]\']*, {{fplur}} : [\[\']*' + re_page_radical_name \
@@ -2667,8 +2615,7 @@ def format_languages_templates(page_content, summary, page_name):
             if debug_level > 1:
                 print(regex)
             if re.search(regex, page_content):
-                page_content = re.sub(
-                    regex, '{{' + demonym_templates[l][1] + '|' + re_page_radical_name + r'}}', page_content)
+                page_content = re.sub(regex, '{{' + demonym_templates[l][1] + '|' + re_page_radical_name + r'}}', page_content)
                 summary = f'{summary}, conversion des liens flexions en modèle boite'
             # Son
             if debug_level > 0:
@@ -2737,8 +2684,7 @@ def move_template_to_etymology(language_section, etym_template, summary, languag
     if etymology is not None and etymology.find('{{' + etym_template) == -1:
         regex_etymology = r'(=\n:* *(\'*\([^\)]*\)\'*)?) *'
         if re.search(regex_etymology, language_section):
-            etymology2 = re.sub(
-                regex_etymology, r'\1 {{' + etym_template + r'}} ', etymology)
+            etymology2 = re.sub(regex_etymology, r'\1 {{' + etym_template + r'}} ', etymology)
             new_language_section = new_language_section.replace(
                 etymology, etymology2)
             summary = (
@@ -2753,8 +2699,7 @@ def move_template_to_etymology(language_section, etym_template, summary, languag
     regex = r'{{' + etym_template + r'(?:\|' + language_code + r')?(?:\|m=1)?}} *(?:\[\[' + etym_template \
             + r'\|)?[' + l + l.upper() + r']' + \
         etym_template[1:] + r'(?:\]\])? de '
-    new_language_section = re.sub(
-        regex, '{{' + etym_template + '|' + language_code + '|m=1}} de ', new_language_section)
+    new_language_section = re.sub(regex, '{{' + etym_template + '|' + language_code + '|m=1}} de ', new_language_section)
     return new_language_section, summary
 
 
@@ -3518,8 +3463,7 @@ def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natu
                     regex = r"(=== {{S\|" + nature + r"\|" + language_code + r"\|flexion}} ===\n)('''" + page_name \
                             + r"''')"
                     if re.search(regex, page_content):
-                        page_content = re.sub(
-                            regex, r'\1{{' + lemma_inflexion_template + r'}}\n\2', page_content)
+                        page_content = re.sub(regex, r'\1{{' + lemma_inflexion_template + r'}}\n\2', page_content)
                         summary = summary + \
                             ', ajout de {{' + lemma_inflexion_template + \
                             r'}} depuis le lemme'
@@ -3553,15 +3497,13 @@ def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natu
         regex = r"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + page_name \
                 + r"''' {{pron\|)([^\|}]*)([s|z]\|en}}\n# *'*'*Pluriel de *'*'* *\[\[)([^#\|\]]+)"
         if re.search(regex, page_content):
-            page_content = re.sub(
-                regex, r'\1{{en-nom-rég|sing=\5|\3}}\n\2\3\4\5', page_content)
+            page_content = re.sub(regex, r'\1{{en-nom-rég|sing=\5|\3}}\n\2\3\4\5', page_content)
             summary = summary + ', ajout de {{en-nom-rég}}'
 
         regex = r"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + page_name \
                 + r"'''\n# *'*'*Pluriel de *'*'* *\[\[)([^#\|\]]+)"
         if re.search(regex, page_content):
-            page_content = re.sub(
-                regex, r'\1{{en-nom-rég|sing=\3|}}\n\2\3', page_content)
+            page_content = re.sub(regex, r'\1{{en-nom-rég|sing=\3|}}\n\2\3', page_content)
             summary = summary + ', ajout de {{en-nom-rég}}'
     return page_content, summary
 
