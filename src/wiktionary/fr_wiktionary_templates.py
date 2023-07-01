@@ -784,14 +784,15 @@ templates.append('cf')
 # TODO ['calque', 'étcompcat', 'étyl', 'étylp', 'ellipse']
 templates.append('recons')  # language code at second
 etymology_date_templates = ['date', 'siècle']
-etymology_templates_with_language_at_lang = etymology_date_templates + \
-    ['composé de']
+etymology_templates_with_language_at_lang = etymology_date_templates + ['composé de']
 templates += etymology_templates_with_language_at_lang
 
 fr_etymology_templates = ['louchébem', 'reverlanisation', 'verlan']
-etymology_templates_with_language_at_first = ['abréviation', 'acronyme', 'agglutination', 'antonomase', 'aphérèse',
-                                              'apocope', 'augmentatif', 'contraction', 'déglutination', 'dénominal', 'déverbal', 'déverbal sans suffixe',
-                                              'diminutif', 'mot-valise', 'parataxe', 'syncope', 'univerbation', 'sigle']
+etymology_templates_with_language_at_first = [
+    'abréviation', 'acronyme', 'agglutination', 'antonomase', 'aphérèse', 'apocope', 'augmentatif', 'contraction',
+    'déglutination', 'dénominal', 'déverbal', 'déverbal sans suffixe', 'diminutif', 'mot-valise', 'parataxe',
+    'syncope', 'univerbation', 'sigle'
+]
 etymology_templates = etymology_date_templates + etymology_templates_with_language_at_lang + fr_etymology_templates \
     + etymology_templates_with_language_at_first
 
@@ -2048,104 +2049,53 @@ limit10 = len(templates)  # Somme des modèles traités
         templates.append('T')...
 '''
 
-numbers = []
-numbers.append('au singulier')
-numbers.append('d')
-numbers.append('fplur')
-numbers.append('fsing')
-numbers.append('indén')
-numbers.append('indénombrable')
-numbers.append('invar')
-numbers.append('invariable')
-numbers.append('mplur')
-numbers.append('msing')
-numbers.append('nombre')
-numbers.append('nplur')
-numbers.append('nsing')
-numbers.append('p')
-numbers.append('plurale tantum')
-numbers.append('pluriel')
-numbers.append('pluriel ?')
-numbers.append('s')
-numbers.append('singulier')
-numbers.append('singulare tantum')
-numbers.append('sp')
+numbers = [
+    'au singulier', 'd', 'fplur', 'fsing', 'indén', 'indénombrable', 'invar', 'invariable', 'mplur', 'msing',
+    'nombre', 'nplur', 'nsing', 'p', 'plurale tantum', 'pluriel', 'pluriel ?', 's', 'singulier',
+    'singulare tantum', 'sp'
+]
 
-genders = []
-genders.append('c')
-genders.append('f')
-genders.append('fplur')
-genders.append('fsing')
-genders.append('genre')
-genders.append('m')
-genders.append('mf')
-genders.append('mf?')
-genders.append('mf ?')
-genders.append('fm?')
-genders.append('fm ?')
-genders.append('mplur')
-genders.append('msing')
-genders.append('n')
-genders.append('nplur')
-genders.append('nsing')
+genders = [
+    'c', 'f', 'fplur', 'fsing', 'genre', 'm', 'mf', 'mf?', 'mf ?', 'fm?', 'fm ?', 'mplur', 'msing', 'n', 'nplur',
+    'nsing'
+]
 
 # https://fr.wiktionary.org/wiki/Module:types_de_mots/data
-natures = ['adjectif', 'adverbe', 'article', 'conjonction', 'copule', 'déterminant', 'nom', 'patronyme',
-           'prénom', 'préposition', 'pronom', 'verbe', 'interjection', 'onomatopée', 'affixe', 'circonfixe', 'infixe',
-           'interfixe', 'particule', 'postposition', 'préfixe', 'radical', 'suffixe', 'pré-verbe', 'pré-nom',
-           'enclitique', 'proclitique', 'locution', 'proverbe', 'quantificateur', 'lettre', 'symbole', 'classificateur',
-           'numéral', 'sinogramme', 'erreur', 'gismu', 'rafsi', 'nom propre']
+natures = [
+    'adjectif', 'adverbe', 'article', 'conjonction', 'copule', 'déterminant', 'nom', 'patronyme',
+    'prénom', 'préposition', 'pronom', 'verbe', 'interjection', 'onomatopée', 'affixe', 'circonfixe', 'infixe',
+    'interfixe', 'particule', 'postposition', 'préfixe', 'radical', 'suffixe', 'pré-verbe', 'pré-nom',
+    'enclitique', 'proclitique', 'locution', 'proverbe', 'quantificateur', 'lettre', 'symbole', 'classificateur',
+    'numéral', 'sinogramme', 'erreur', 'gismu', 'rafsi', 'nom propre'
+]
 
 # https://fr.wiktionary.org/wiki/Catégorie:Modèles_de_définitions
-definition_templates = ['abréviation de', 'comparatif de', 'exclamatif de', 'mutation de', 'superlatif de',
-                        'variante de', 'variante ortho de', 'variante orthographique de']
+definition_templates = [
+    'abréviation de', 'comparatif de', 'exclamatif de', 'mutation de', 'superlatif de',
+    'variante de', 'variante ortho de', 'variante orthographique de'
+]
 templates = templates + definition_templates
 
-definition_sentences = ['abréviation de', 'ancienne orthographe de', 'autre nom de', 'autre orthographe',
-                        'comparatif de', 'exclamatif de', 'féminin de', 'graphie erronée', 'mauvaise orthographe de', 'mutation de',
-                        'nom scientifique de', 'pluriel de', 'superlatif de', 'synonyme de', 'variante', 'variante ortho de',
-                        'variante orthographique de']
+definition_sentences = [
+    'abréviation de', 'ancienne orthographe de', 'autre nom de', 'autre orthographe', 'comparatif de', 'exclamatif de',
+    'féminin de', 'graphie erronée', 'mauvaise orthographe de', 'mutation de', 'nom scientifique de', 'pluriel de',
+    'superlatif de', 'synonyme de', 'variante', 'variante ortho de', 'variante orthographique de'
+]
 
-# https://fr.wiktionary.org/wiki/Cat%C3%A9gorie:Mod%C3%A8les_d%E2%80%99accord_en_fran%C3%A7ais
-inflexion_templates_fr_with_ms = []
-inflexion_templates_fr_with_ms.append('fr-accord-ain')
-inflexion_templates_fr_with_ms.append('fr-accord-al')
-inflexion_templates_fr_with_ms.append('fr-accord-an')
-inflexion_templates_fr_with_ms.append('fr-accord-cons')
-inflexion_templates_fr_with_ms.append('fr-accord-eau')
-inflexion_templates_fr_with_ms.append('fr-accord-el')
-inflexion_templates_fr_with_ms.append('fr-accord-en')
-inflexion_templates_fr_with_ms.append('fr-accord-er')
-inflexion_templates_fr_with_ms.append('fr-accord-et')
-inflexion_templates_fr_with_ms.append('fr-accord-in')
-inflexion_templates_fr_with_ms.append('fr-accord-mixte')
-inflexion_templates_fr_with_ms.append('fr-accord-on')
-inflexion_templates_fr_with_ms.append('fr-accord-ot')
-inflexion_templates_fr_with_ms.append('fr-accord-rég')
-inflexion_templates_fr_with_ms.append('fr-accord-s')
-inflexion_templates_fr_with_ms.append('fr-accord-un')
+# https://fr.wiktionary.org/wiki/Catégorie:Modèles_d’accord_en_français
+inflexion_templates_fr_with_ms = [
+    'fr-accord-ain', 'fr-accord-al', 'fr-accord-an', 'fr-accord-cons', 'fr-accord-eau',
+    'fr-accord-el', 'fr-accord-en', 'fr-accord-er', 'fr-accord-et', 'fr-accord-in',
+    'fr-accord-mixte', 'fr-accord-on', 'fr-accord-ot', 'fr-accord-rég', 'fr-accord-s',
+    'fr-accord-un'
+]
 
-inflexion_templates_fr_with_s = []
-inflexion_templates_fr_with_s.append('fr-rég')
-inflexion_templates_fr_with_s.append('fr-rég-x')
+inflexion_templates_fr_with_s = ['fr-rég', 'fr-rég-x']
 
-inflexion_templates_fr = []
-inflexion_templates_fr.append('fr-accord-comp')
-inflexion_templates_fr.append('fr-accord-comp-mf')
-inflexion_templates_fr.append('fr-accord-eur')
-inflexion_templates_fr.append('fr-accord-eux')
-inflexion_templates_fr.append('fr-accord-f')
-inflexion_templates_fr.append('fr-accord-ind')
-inflexion_templates_fr.append('fr-accord-mf')
-inflexion_templates_fr.append('fr-accord-mf-ail')
-inflexion_templates_fr.append('fr-accord-mf-al')
-inflexion_templates_fr.append('fr-accord-oux')
-inflexion_templates_fr.append('fr-accord-personne')
-inflexion_templates_fr.append('fr-accord-t-avant1835')
-inflexion_templates_fr.append('fr-inv')
+inflexion_templates_fr = [
+    'fr-accord-comp', 'fr-accord-comp-mf', 'fr-accord-eur', 'fr-accord-eux', 'fr-accord-f',
+    'fr-accord-ind', 'fr-accord-mf', 'fr-accord-mf-ail', 'fr-accord-mf-al', 'fr-accord-oux',
+    'fr-accord-personne', 'fr-accord-t-avant1835', 'fr-inv'
+]
 
-adverbs = []
-adverbs.append('lieu')
-adverbs.append('manière')
-adverbs.append('quantité')
-adverbs.append('temps')
+adverbs = ['lieu', 'manière', 'quantité', 'temps']
