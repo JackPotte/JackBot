@@ -1124,7 +1124,7 @@ def main(*args) -> int:
                     p.pages_by_cat(sys.argv[2])
             else:
                 p.pages_by_cat(
-                    'Étymologies sans langue précisée incluant une reconstruction',
+                    'Expressions en sicilien',
                     namespaces=None,
                     recursive=False
                 )

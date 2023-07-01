@@ -686,7 +686,21 @@ def default_sort_by_language(page_name, language_code):
         if page_name.find('ӕ'.upper()) != -1:
             page_name = page_name.replace('ӕ'.upper(), 'а⿕')
 
-    if language_code == 'sl':
+    elif language_code == 'scn':
+        if 'ḍḍr' in page_name:
+            page_name = page_name.replace('ḍḍr', 'd⿕⿕⿕⿕⿕⿕')
+        if 'ddr' in page_name:
+            page_name = page_name.replace('ddr', 'd⿕⿕⿕⿕⿕')
+        if 'ddh' in page_name:
+            page_name = page_name.replace('ddh', 'd⿕⿕⿕⿕')
+        if 'đđ' in page_name:
+            page_name = page_name.replace('đđ', 'd⿕⿕⿕')
+        if 'dd' in page_name:
+            page_name = page_name.replace('dd', 'd⿕⿕')
+        if 'ḍḍ' in page_name:
+            page_name = page_name.replace('ḍḍ', 'd⿕')
+
+    elif language_code == 'sl':
         if page_name.find('č') != -1:
             page_name = page_name.replace('č', 'c⿕')
         if page_name.find('č'.upper()) != -1:
