@@ -1698,6 +1698,11 @@ def format_sections(page_content, summary):
     page_content = page_content.replace('{{S|descendants}}', '{{S|dérivés autres langues}}')
     page_content = page_content.replace('num=1|num=', 'num=1')
 
+    page_content = page_content.replace('{{msing}}', '{{m}} {{s}}')
+    page_content = page_content.replace('{{fsing}}', '{{f}} {{s}}')
+    page_content = page_content.replace('{{mplur}}', '{{m}} {{p}}')
+    page_content = page_content.replace('{{fplur}}', '{{f}} {{p}}')
+
     regex = r'({{trad\-fin}}[^={]+)(\n==== {{S\|homophones)'
     s = re.search(regex, page_content)
     if s:
@@ -1995,12 +2000,6 @@ def replace_languages_templates(page_content, summary):
 def replace_doubles_templates(page_content, summary):
     if debug_level > 1:
         print(' replace_doubles_templates()')
-
-    page_content = page_content.replace('{{f}} {{fsing}}', '{{f}}')
-    page_content = page_content.replace('{{m}} {{msing}}', '{{m}}')
-    page_content = page_content.replace('{{f}} {{p}}', '{{fplur}}')
-    page_content = page_content.replace('{{m}} {{p}}', '{{mplur}}')
-    page_content = page_content.replace('{{Valence|ca}}', '{{valencien}}')
 
     regex = r"(\{\{figuré\|[^}]*\}\}) ?\{\{métaphore\|[^}]*\}\}"
     pattern = re.compile(regex)
