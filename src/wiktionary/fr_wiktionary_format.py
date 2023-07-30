@@ -557,7 +557,7 @@ def treat_page(page):
                     else:
                         final_page_content, page_content = next_template(final_page_content, page_content)
 
-                # Wrong genders
+                # Check genders in languages which have not
                 elif current_template in ('m', 'f', 'mf', 'n', 'c'):
                     if has_translation_section or language_code not in languagesWithoutGender:
                         final_page_content = final_page_content + \
@@ -586,13 +586,14 @@ def treat_page(page):
 
                 # Templates with two parameters
                 elif current_template in ('conjugaison', 'conj', '1ergroupe', '2egroupe', '3egroupe'):
-                    page_content, final_page_content, summary = treat_conjugation(page_content, final_page_content,
-                                                                                  summary, current_template,
-                                                                                  language_code, page_name)
+                    page_content, final_page_content, summary = treat_conjugation(
+                        page_content, final_page_content, summary, current_template, language_code, page_name
+                    )
 
                 elif do_fix_translations and current_template in ('trad', 'trad+', 'trad-', 'trad--'):
-                    page_content, final_page_content, summary = treat_translations(page_content, final_page_content,
-                                                                                   summary, end_position, site_family)
+                    page_content, final_page_content, summary = treat_translations(
+                        page_content, final_page_content, summary, end_position, site_family
+                    )
 
                 elif current_template == '(':
                     if has_translation_section:
@@ -620,8 +621,16 @@ def treat_page(page):
                     page_content = page_content[len(current_template):]
 
                 elif current_template == 'fr-verbe-flexion':
-                    page_content, final_page_content, summary = treat_verb_inflexion(page_content, final_page_content,
-                                                                                     summary, current_page_content)
+                    page_content, final_page_content, summary = treat_verb_inflexion(
+                        page_content, final_page_content, summary, current_page_content
+                    )
+
+                elif current_template == 'Suisse':
+                    # Because it has a parameter precision=
+                    page_content, final_page_content, summary = treat_verb_inflexion(
+                        page_content, final_page_content, summary, current_page_content
+                    )
+
                 elif current_template == 'recons' and language_code is not None:
                     template_params = page_content[:page_content.find('}}')]
                     if 'lang-mot-vedette' not in template_params:
@@ -1169,9 +1178,16 @@ def main(*args) -> int:
         for old_template in old_templates:
             p.pages_by_link(f'Template:{old_template}', namespaces=[0])
         p.pages_by_link('Template:ucf')
+
+        p.pages_by_link('Template:msing')
+        p.pages_by_link('Template:fsing')
+        p.pages_by_link('Template:mplur')
+        p.pages_by_link('Template:fplur')
+
         p.pages_by_link('Template:1ergroupe')
         p.pages_by_link('Template:2egroupe')
         p.pages_by_link('Template:3egroupe')
+
         p.pages_by_link('Template:=langue=')
 
         p.pages_by_cat('Catégorie:Traduction en français demandée d’exemple(s) écrits en français')
