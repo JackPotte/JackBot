@@ -537,20 +537,18 @@ def add_line(page_content, language_code, section_name, line_content):
         if section_to_add_order == len(sections):
             if debug_level > d:
                 print(
-                    f' ajout de la sous-section : {section_name} dans une section inconnue (car {len(sections)} = {str(section_to_add_order)}'
-                    + ')\n'
+                    f' ajout de la sous-section : {section_name} dans une section inconnue'
+                    + f' (car {len(sections)} = {str(section_to_add_order)})\n'
                 )
             return page_content
 
         # Recherche de l'ordre réel de la section à ajouter
-        language_section, start_position, end_position = get_language_section(
-            page_content, language_code)
+        language_section, start_position, end_position = get_language_section(page_content, language_code)
         if language_section is None:
             # TODO add section language too in option
             return page_content
 
-        sections_in_page = re.findall(
-            r"\n=+ *{{S\|?([^}/|]+)([^}]*)}}", language_section)
+        sections_in_page = re.findall(r"\n=+ *{{S\|?([^}/|]+)([^}]*)}}", language_section)
         if debug_level > d + 1:
             # ex : [('nom', '|fr|num=1'), ('synonymes', '')]
             input(str(sections_in_page))
@@ -648,9 +646,8 @@ def add_section(
     o = 0
     section_order = get_order_by_section_name(sections_in_page[o][0])
     while o < len(sections_in_page) and section_order <= section_to_add_order:
-        if debug_level > d:
-            print(f' {sections_in_page[o][0]} {str(section_order)}')
         o += 1
+        section_order = get_order_by_section_name(sections_in_page[o][0])
     if o > 0:
         o -= 1
     if debug_level > d:
@@ -812,9 +809,7 @@ def add_pronunciation(page_content, language_code, section, line_content):
     while o < len(sections_in_page) and sections_in_page[o][0] != 'langue' \
             and get_order_by_section_name(sections_in_page[o][0]) <= section_number:
         if debug_level > 0:
-            print(
-                f' {sections_in_page[o][0]} {str(get_order_by_section_name(sections_in_page[o][0]))}'
-            )
+            print(f' {sections_in_page[o][0]} {str(get_order_by_section_name(sections_in_page[o][0]))}')
         o += 1
     if debug_level > 0:
         print(f' {len(sections_in_page)} >? {o}')
@@ -967,7 +962,7 @@ def get_order_by_section_name(section):
         print(e)
         section_order = 2  # Grammatical natures (ex: nom)
     if debug_level > 0:
-        print(f'  {section} ({str(s)}e) = ordre {section_order}')
+        print(f'  {section} ({str(s)}e) : ordre {section_order}')
     return section_order
 
 
@@ -982,7 +977,7 @@ def get_level_by_section_name(section):
         print(e)
         section_level = '==='  # Grammatical natures (ex: === {{S|nom)
     if debug_level > 0:
-        print(f'  {section} ({str(s)}e) = ordre {section_level}')
+        print(f'  {section} ({str(s)}e) : ordre {section_level}')
     return section_level
 
 
