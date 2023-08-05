@@ -1056,15 +1056,11 @@ def main(*args) -> int:
         if debug_level > 1:
             print(sys.argv)
         after_page = sys.argv[2] if len(sys.argv) > 2 else ''
-        if sys.argv[1] == '-test':
+        if sys.argv[1] in ['-test', '-t']:
             treat_page_by_name(f'User:{username}/test')
-        elif sys.argv[1] == '-test2':
-            treat_page_by_name(f'User:{username}/test2')
-        elif sys.argv[1] in ['-tu', '-t']:
-            treat_page_by_name(f'User:{username}/test unitaire')
-        elif sys.argv[1] == '-ti':
+        elif sys.argv[1] == ['-test-import', '-ti']:
             test_import = True
-            treat_page_by_name(f'User:{username}/test unitaire')
+            treat_page_by_name(f'User:{username}/test')
         elif sys.argv[1] in ['-page', '-p']:
             wait_after_humans = False
             treat_page_by_name('Annexe:Rimes_en_français_en_/sɑ̃/')
