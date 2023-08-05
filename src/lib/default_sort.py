@@ -675,6 +675,25 @@ def default_sort_by_language(page_name, language_code):
         page_name = page_name.replace('ö', 'z⿕⿕⿕')
         page_name = page_name.replace('ö'.upper(), 'z⿕⿕⿕')
 
+    elif language_code == 'shi':
+        page_name = page_name.replace('g', 'b龠')
+        page_name = page_name.replace('ḍ', 'd龠')
+        page_name = page_name.replace('k', 'f龠')
+        page_name = page_name.replace('ḥ', 'h龠')
+        page_name = page_name.replace('ɛ', 'h龠龠')
+        page_name = page_name.replace('x', 'h龠龠龠')
+        page_name = page_name.replace('q', 'h龠龠龠龠')
+        page_name = page_name.replace('u', 'n龠')
+        page_name = page_name.replace('ṛ', 'r龠')
+        page_name = page_name.replace('ɣ', 'r龠龠')
+        page_name = page_name.replace('ṣ', 's龠')
+        page_name = page_name.replace('c', 's龠龠')
+        page_name = page_name.replace('ṭ', 't龠')
+        page_name = page_name.replace('w', 't龠龠')
+        page_name = page_name.replace('ẓ', 'z龠')
+        page_name = page_name.replace('ʷ', 'z龠龠')
+        page_name = page_name.replace('°', 'z龠龠龠')
+
     elif language_code == 'vi':
         page_name = page_name.replace('ả', 'a⿕')
         page_name = page_name.replace('ả'.upper(), 'a')
