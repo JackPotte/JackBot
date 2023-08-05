@@ -1700,8 +1700,10 @@ def format_sections(page_content, summary):
 
     page_content = page_content.replace('{{msing}}', '{{m}} {{s}}')
     page_content = page_content.replace('{{fsing}}', '{{f}} {{s}}')
+    page_content = page_content.replace('{{nsing}}', '{{n}} {{s}}')
     page_content = page_content.replace('{{mplur}}', '{{m}} {{p}}')
     page_content = page_content.replace('{{fplur}}', '{{f}} {{p}}')
+    page_content = page_content.replace('{{nplur}}', '{{n}} {{p}}')
 
     regex = r'({{trad\-fin}}[^={]+)(\n==== {{S\|homophones)'
     s = re.search(regex, page_content)

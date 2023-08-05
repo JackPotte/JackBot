@@ -1181,8 +1181,10 @@ def main(*args) -> int:
 
         p.pages_by_link('Template:msing')
         p.pages_by_link('Template:fsing')
+        p.pages_by_link('Template:nsing')
         p.pages_by_link('Template:mplur')
         p.pages_by_link('Template:fplur')
+        p.pages_by_link('Template:nplur')
 
         p.pages_by_link('Template:1ergroupe')
         p.pages_by_link('Template:2egroupe')
