@@ -646,8 +646,16 @@ def add_section(
     o = 0
     section_order = get_order_by_section_name(sections_in_page[o][0])
     while o < len(sections_in_page) and section_order <= section_to_add_order:
+        try:
+            current_section_name = sections_in_page[o][0]
+        except IndexError:
+            print('IndexError:')
+            print(sections_in_page)
+            print(o)
+            return page_content, language_section
+        section_order = get_order_by_section_name(current_section_name)
         o += 1
-        section_order = get_order_by_section_name(sections_in_page[o][0])
+
     if o > 0:
         o -= 1
     if debug_level > d:
