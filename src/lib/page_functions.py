@@ -614,7 +614,7 @@ def save_page(current_page, page_content, summary, is_minor=True):
             except UnicodeEncodeError:
                 print(page_content.encode(config.console_encoding, 'replace'))
         else:
-            page_size = 3000
+            page_size = 5000
             try:
                 print(page_content[:page_size])
                 print('\n[...]\n')

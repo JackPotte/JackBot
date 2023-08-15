@@ -1052,10 +1052,8 @@ def next_template(final_page_content, current_page_content, current_template=Non
 
 
 def next_translation_template(final_page_content, current_page_content, result='-'):
-    final_page_content = final_page_content + \
-        current_page_content[:len('trad')] + result
-    current_page_content = current_page_content[current_page_content.find(
-        '|'):]
+    final_page_content = final_page_content + current_page_content[:len('trad')] + result
+    current_page_content = current_page_content[current_page_content.find('|'):]
     return final_page_content, current_page_content
 
 
@@ -3529,14 +3527,12 @@ def update_if_page_exists_on_other_wiktionaries(
     except pywikibot.exceptions.InconsistentTitleError as e:
         if debug_level > d:
             print(e)
-        final_page_content, page_content = next_translation_template(
-            final_page_content, page_content, '-')
+        final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
         is_page_found = False
     except pywikibot.exceptions.InvalidTitleError as e:
         if debug_level > d:
             print(e)
-        final_page_content, page_content = next_translation_template(
-            final_page_content, page_content, '-')
+        final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
         is_page_found = False
     except pywikibot.exceptions.NoPageError as e:
         if debug_level > d:
@@ -3550,7 +3546,10 @@ def update_if_page_exists_on_other_wiktionaries(
                 external_page = Page(external_site, external_page_name)
             except pywikibot.exceptions.NoPageError:
                 final_page_content, page_content = next_translation_template(
-                    final_page_content, page_content, '-')
+                    final_page_content,
+                    page_content,
+                    '-'
+                )
                 is_page_found = False
                 external_page = None
     except BaseException as e:
@@ -3567,36 +3566,30 @@ def update_if_page_exists_on_other_wiktionaries(
         except AttributeError:
             if debug_level > d:
                 print('  removed site (--)')
-            final_page_content, page_content = next_translation_template(
-                final_page_content, page_content, '--')
+            final_page_content, page_content = next_translation_template(final_page_content, page_content, '--')
         except pywikibot.exceptions.InvalidPageError:
             if debug_level > d:
                 print(f'  InvalidPageError: {external_page_name}')
-            final_page_content, page_content = next_translation_template(
-                final_page_content, page_content, '--')
+            final_page_content, page_content = next_translation_template(final_page_content, page_content, '--')
         except pywikibot.exceptions.InconsistentTitleError:
             if debug_level > d:
-                print('  InconsistentTitleError (-)')
-            final_page_content, page_content = next_translation_template(
-                final_page_content, page_content, '-')
+                print(f'  InconsistentTitleError: {external_page_name}')
+            final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
         except pywikibot.exceptions.InvalidTitleError:
             if debug_level > d:
                 print(f'  InvalidTitleError: {external_page_name}')
-            final_page_content, page_content = next_translation_template(
-                final_page_content, page_content, '')
+            final_page_content, page_content = next_translation_template(final_page_content, page_content, '')
 
         do_treat_new_missing = True
         if is_external_page_exist:
             if debug_level > d:
                 print('  exists (+)')
-            final_page_content, page_content = next_translation_template(
-                final_page_content, page_content, '+')
+            final_page_content, page_content = next_translation_template(final_page_content, page_content, '+')
         elif do_treat_new_missing and external_site.lang != 'zh':
             # TODO handle simplified/traditional https://fr.wiktionary.org/w/index.php?title=poussin&diff=31244062&oldid=31244057
             if debug_level > d:
                 print('  not exists (-)')
-            final_page_content, page_content = next_translation_template(
-                final_page_content, page_content, '-')
+            final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
 
     if debug_level > d:
         print('')
@@ -3612,10 +3605,8 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
     ]
 
     if has_not_to_call_interwiki_link:
-        final_page_content = final_page_content + \
-            page_content[:page_content.find('}}') + 2]
-        final_page_content, page_content = next_template(
-            final_page_content, page_content)
+        final_page_content = final_page_content + page_content[:page_content.find('}}') + 2]
+        final_page_content, page_content = next_template(final_page_content, page_content)
     else:
         # Lettres spéciales à remplacer dans les traductions vers certaines langues
         page_content2 = page_content[end_position + 1:]
@@ -3667,23 +3658,19 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                 'zh-classical') + len('zh-classical'):]
         elif current_language == 'ko-Hani':
             page_content = page_content[:page_content.find('ko-Hani')] + 'ko' + page_content[
-                page_content.find('ko-Hani') + len(
-                    'ko-Hani'):]
+                page_content.find('ko-Hani') + len('ko-Hani'):]
         elif current_language == 'ko-hanja':
             page_content = page_content[:page_content.find('ko-hanja')] + 'ko' + page_content[
-                page_content.find('ko-hanja') + len(
-                    'ko-hanja'):]
+                page_content.find('ko-hanja') + len('ko-hanja'):]
         elif current_language == 'zh-min-nan':
             page_content = page_content[:page_content.find('zh-min-nan')] + 'nan' + page_content[page_content.find(
                 'zh-min-nan') + len('zh-min-nan'):]
         elif current_language == 'roa-rup':
             page_content = page_content[:page_content.find('roa-rup')] + 'rup' + page_content[
-                page_content.find('roa-rup') + len(
-                    'roa-rup'):]
+                page_content.find('roa-rup') + len('roa-rup'):]
         elif current_language == 'zh-yue':
             page_content = page_content[:page_content.find('zh-yue')] + 'yue' + page_content[
-                page_content.find('zh-yue') + len(
-                    'zh-yue'):]
+                page_content.find('zh-yue') + len('zh-yue'):]
         page_content2 = page_content[end_position + 1:]
         current_language = page_content2[:page_content2.find('|')]
 
@@ -3716,19 +3703,15 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
             if external_site is None:
                 if debug_level > d:
                     print('  no site (--)')
-                final_page_content, page_content = next_translation_template(
-                    final_page_content, page_content, '')
+                final_page_content, page_content = next_translation_template(final_page_content, page_content, '')
                 external_site = ''
             elif external_site != '':
                 if page_content3.find('|') != -1 and page_content3.find('|') < page_content3.find('}}'):
-                    external_page_name = page_content3[:page_content3.find(
-                        '|')]
+                    external_page_name = page_content3[:page_content3.find('|')]
                 else:
-                    external_page_name = page_content3[:page_content3.find(
-                        '}}')]
+                    external_page_name = page_content3[:page_content3.find('}}')]
             if external_page_name != '' and external_page_name.find('<') != -1:
-                external_page_name = external_page_name[:external_page_name.find(
-                    '<')]
+                external_page_name = external_page_name[:external_page_name.find('<')]
             if debug_level > d:
                 msg = f' remote wiki page: {external_page_name}'
                 try:

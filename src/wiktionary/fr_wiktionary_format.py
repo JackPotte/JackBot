@@ -472,8 +472,7 @@ def treat_page(page):
                             has_translation_section = True
 
                     if debug_level > 0:
-                        print('  add_language_code = ' +
-                              str(add_language_code))
+                        print('  add_language_code = ' + str(add_language_code))
                     final_page_content, page_content = next_template(final_page_content, page_content)
 
                 elif current_template in ['term', 'région', 'régional']:
@@ -717,8 +716,7 @@ def treat_page(page):
                     if debug_level > 0:
                         print(' Modèle régional : non catégorisé dans la prononciation')
                     if final_page_content.rfind('{{') != -1:
-                        final_page_content2 = final_page_content[:final_page_content.rfind(
-                            '{{')]
+                        final_page_content2 = final_page_content[:final_page_content.rfind('{{')]
                         if (
                             add_language_code
                             and (
