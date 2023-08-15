@@ -3561,26 +3561,30 @@ def update_if_page_exists_on_other_wiktionaries(
 
     is_external_page_exist = False
     if is_page_found:
+        do_treat_new_missing = True
         try:
             is_external_page_exist = external_page.exists()
         except AttributeError:
             if debug_level > d:
                 print('  removed site (--)')
             final_page_content, page_content = next_translation_template(final_page_content, page_content, '--')
+            do_treat_new_missing = False
         except pywikibot.exceptions.InvalidPageError:
             if debug_level > d:
                 print(f'  InvalidPageError: {external_page_name}')
             final_page_content, page_content = next_translation_template(final_page_content, page_content, '--')
+            do_treat_new_missing = False
         except pywikibot.exceptions.InconsistentTitleError:
             if debug_level > d:
                 print(f'  InconsistentTitleError: {external_page_name}')
             final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
+            do_treat_new_missing = False
         except pywikibot.exceptions.InvalidTitleError:
             if debug_level > d:
                 print(f'  InvalidTitleError: {external_page_name}')
             final_page_content, page_content = next_translation_template(final_page_content, page_content, '')
+            do_treat_new_missing = False
 
-        do_treat_new_missing = True
         if is_external_page_exist:
             if debug_level > d:
                 print('  exists (+)')
