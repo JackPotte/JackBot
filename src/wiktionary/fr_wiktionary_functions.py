@@ -2385,13 +2385,11 @@ def format_languages_templates(page_content, summary, page_name):
         if debug_level > 0:
             print(' Pronunciation categories')
         if page_name[-2:] == 'um' and page_content.find('ɔm|fr}}') != -1:
-            page_content = add_category(
-                page_content, 'fr', 'um prononcés /ɔm/ en français')
+            page_content = add_category(page_content, 'fr', 'um prononcés /ɔm/ en français')
         if page_name[:2] == 'qu':
             regex = r'{{pron\|kw[^}\|]+\|fr}}'
             if re.search(regex, page_content):
-                page_content = add_category(
-                    page_content, 'fr', 'qu prononcés /kw/ en français')
+                page_content = add_category(page_content, 'fr', 'qu prononcés /kw/ en français')
         if page_name[:2] == 'qu' and page_name[:4] != 'quoi':
             regex = r'{{fr\-rég\|kw[^}\|]+}}'
             if re.search(regex, page_content):
@@ -2400,43 +2398,35 @@ def format_languages_templates(page_content, summary, page_name):
         if page_name[:2] == 'ch':
             regex = r'{{pron\|k[^}\|]+\|fr}}'
             if re.search(regex, page_content):
-                page_content = add_category(
-                    page_content, 'fr', 'ch prononcés /k/ en français')
+                page_content = add_category(page_content, 'fr', 'ch prononcés /k/ en français')
         if page_name[:2] == 'ch':
             regex = r'{{fr\-rég\|k[^}\|]+}}'
             if re.search(regex, page_content):
-                page_content = add_category(
-                    page_content, 'fr', 'ch prononcés /k/ en français')
+                page_content = add_category(page_content, 'fr', 'ch prononcés /k/ en français')
         if page_name[:2] == 'Ch':
             regex = r'{{pron\|k[^}\|]+\|fr}}'
             if re.search(regex, page_content):
-                page_content = add_category(
-                    page_content, 'fr', 'ch prononcés /k/ en français')
+                page_content = add_category(page_content, 'fr', 'ch prononcés /k/ en français')
         if page_name[:2] == 'Ch':
             regex = r'{{fr\-rég\|k[^}\|]+}}'
             if re.search(regex, page_content):
-                page_content = add_category(
-                    page_content, 'fr', 'ch prononcés /k/ en français')
+                page_content = add_category(page_content, 'fr', 'ch prononcés /k/ en français')
         if page_name[-2:] == 'ch':
             regex = r'{{pron\|[^}\|]+k\|fr}}'
             if re.search(regex, page_content):
-                page_content = add_category(
-                    page_content, 'fr', 'ch prononcés /k/ en français')
+                page_content = add_category(page_content, 'fr', 'ch prononcés /k/ en français')
         if page_name[-2:] == 'ch':
             regex = r'{{fr\-rég\|[^}\|]+k}}'
             if re.search(regex, page_content):
-                page_content = add_category(
-                    page_content, 'fr', 'ch prononcés /k/ en français')
+                page_content = add_category(page_content, 'fr', 'ch prononcés /k/ en français')
         if page_name[-3:] == 'chs':
             regex = r'{{pron\|[^}\|]+k}}'
             if re.search(regex, page_content):
-                page_content = add_category(
-                    page_content, 'fr', 'ch prononcés /k/ en français')
+                page_content = add_category(page_content, 'fr', 'ch prononcés /k/ en français')
         if page_name[-3:] == 'chs':
             regex = r'{{fr\-rég\|[^}\|]+k}}'
             if re.search(regex, page_content):
-                page_content = add_category(
-                    page_content, 'fr', 'ch prononcés /k/ en français')
+                page_content = add_category(page_content, 'fr', 'ch prononcés /k/ en français')
 
         regex = r'({{fr\-[^}]*\|[\'’]+=[^}]*)\|[\'’]+=[oui|1]'
         if re.search(regex, page_content):
@@ -2485,91 +2475,7 @@ def format_languages_templates(page_content, summary, page_name):
                         summary2,
                     )
 
-        # Ajout de modèles pour les gentités et leurs adjectifs
-        if debug_level > 0:
-            print(' Demonyms')
-        regex = r'({{fr\-[^}]+)\\'
-        while re.search(regex, page_content):
-            page_content = re.sub(regex, r'\1', page_content)
-
-        line = 6
-        column = 4
-        # TODO : fusionner avec le tableau des modèles de flexion
-        demonym_templates = [[0] * (column+1) for _ in range(line+1)]
-        demonym_templates[1][1] = r'fr-accord-mixte'
-        demonym_templates[1][2] = r's'
-        demonym_templates[1][3] = r'e'
-        demonym_templates[1][4] = r'es'
-        demonym_templates[2][1] = r'fr-accord-s'
-        demonym_templates[2][2] = r''
-        demonym_templates[2][3] = r'e'
-        demonym_templates[2][4] = r'es'
-        demonym_templates[3][1] = r'fr-accord-el'
-        demonym_templates[3][2] = r's'
-        demonym_templates[3][3] = r'le'
-        demonym_templates[3][4] = r'les'
-        demonym_templates[4][1] = r'fr-accord-en'
-        demonym_templates[4][2] = r's'
-        demonym_templates[4][3] = r'ne'
-        demonym_templates[4][4] = r'nes'
-        demonym_templates[5][1] = r'fr-accord-et'
-        demonym_templates[5][2] = r's'
-        demonym_templates[5][3] = r'te'
-        demonym_templates[5][4] = r'tes'
-        demonym_templates[6][1] = r'fr-rég'
-        demonym_templates[6][2] = r's'
-        demonym_templates[6][3] = r''
-        demonym_templates[6][4] = r's'
-
-        for l in range(1, line + 1):
-            # Depuis un masculin
-            regex = r'\({{p}} : [\[\']*' + regex_page_name + demonym_templates[l][2] + r'[\]\']*, {{f}} : [\[\']*' + regex_page_name + \
-                demonym_templates[l][3] + r'[\]\']*, {{fplur}} : [\[\']*' + \
-                    regex_page_name + demonym_templates[l][4] + r'[\]\']*\)'
-            if re.search(regex, page_content):
-                page_content = re.sub(regex, '{{' + demonym_templates[l][1] + '|pron=}}', page_content)
-                summary = f'{summary}, conversion des liens flexions en modèle boite'
-            # Depuis un féminin
-            if demonym_templates[l][1] == r'fr-accord-s' and regex_page_name[-1:] == 'e' and regex_page_name[-2:-1] == 's':
-                regex = r'\({{p}} : [\[\']*' + regex_page_name + \
-                    r's[\]\']*, {{m}} : [\[\']*' + \
-                        regex_page_name[:-1] + r'[\]\']*\)'
-                if re.search(regex, page_content):
-                    page_content = re.sub(regex, '{{' + demonym_templates[l][1] + '|ms=' + regex_page_name[:-1].replace('\\', '') + '}}', page_content)
-                    summary = f'{summary}, conversion des liens flexions en modèle boite'
-            regex = r'\({{f}} : [\[\']*' + regex_page_name + demonym_templates[l][3] + r'[\]\']*, {{mplur}} : [\[\']*' + regex_page_name + \
-                demonym_templates[l][2] + r'[\]\']*, {{fplur}} : [\[\']*' + \
-                    regex_page_name + demonym_templates[l][4] + r'[\]\']*\)'
-            if re.search(regex, page_content):
-                page_content = re.sub(regex, '{{' + demonym_templates[l][1] + '|pron=}}', page_content)
-                summary = f'{summary}, conversion des liens flexions en modèle boite'
-            if debug_level > 1:
-                print(' avec son')
-            regex = r'(\n\'\'\'' + regex_page_name + \
-                '\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + \
-                demonym_templates[l][1] + r'\|[pron\=]*)}}'
-            if re.search(regex, page_content):
-                page_content = re.sub(regex, r'\n\4\2}}\1\2\3', page_content)
-
-            deplacement_modele_inflexion = False
-            # On différencie les cas pas d'espace avant le modèle / espace avant le modèle
-            regex = r'( ===\n)(\'\'\'[^\n]+[^ ])({{' + \
-                demonym_templates[l][1] + r'\|[^}]*}})'
-            if re.search(regex, page_content):
-                page_content = re.sub(regex, r'\1\3\n\2', page_content)
-                deplacement_modele_inflexion = True
-            # Espace avant le modèle
-            regex_space = r'( ===\n)(\'\'\'[^\n]+) ({{' + \
-                demonym_templates[l][1] + r'\|[^}]*}})'
-            if re.search(regex_space, page_content):
-                page_content = re.sub(regex_space, r'\1\3\n\2', page_content)
-                deplacement_modele_inflexion = True
-            if deplacement_modele_inflexion:
-                summary = f'{summary}, déplacement des modèles de flexions'
-
-        regex = r'({{fr\-accord\-comp\-mf[^}]*\| *trait *=) *([\|}])'
-        if re.search(regex, page_content):
-            page_content = re.sub(regex, r'\1&nbsp;\2', page_content)
+        page_content, summary = add_fr_demonyms_templates(page_content, summary)
 
     elif '{{langue|en}}' in page_content:
         regex = r'(\|en}} ===\n{{)fr\-rég'
@@ -3873,6 +3779,95 @@ def add_anagrams(page_content, summary, page_name, language_code):
                     '\n\n=== {{S|anagrammes}} ===\n' + anagrams_list
     return page_content, summary
 
+
+def add_fr_demonyms_templates(page_content, summary):
+    # TODO fix https://fr.wiktionary.org/w/index.php?title=Utilisateur:JackBot/test&action=rollback&from=JackBot&token=2de622be0b7aaabdcffd784e9ed0dad66500d3f9%2B%5C
+    return page_content, summary
+
+    if debug_level > 0:
+        print(' add_demonyms_templates()')
+    regex = r'({{fr\-[^}]+)\\'
+    while re.search(regex, page_content):
+        page_content = re.sub(regex, r'\1', page_content)
+
+    line = 6
+    column = 4
+    # TODO use inflexion_templates_fr_with_s
+    demonym_templates = [[0] * (column+1) for _ in range(line+1)]
+    demonym_templates[1][1] = r'fr-accord-mixte'
+    demonym_templates[1][2] = r's'
+    demonym_templates[1][3] = r'e'
+    demonym_templates[1][4] = r'es'
+    demonym_templates[2][1] = r'fr-accord-s'
+    demonym_templates[2][2] = r''
+    demonym_templates[2][3] = r'e'
+    demonym_templates[2][4] = r'es'
+    demonym_templates[3][1] = r'fr-accord-el'
+    demonym_templates[3][2] = r's'
+    demonym_templates[3][3] = r'le'
+    demonym_templates[3][4] = r'les'
+    demonym_templates[4][1] = r'fr-accord-en'
+    demonym_templates[4][2] = r's'
+    demonym_templates[4][3] = r'ne'
+    demonym_templates[4][4] = r'nes'
+    demonym_templates[5][1] = r'fr-accord-et'
+    demonym_templates[5][2] = r's'
+    demonym_templates[5][3] = r'te'
+    demonym_templates[5][4] = r'tes'
+    demonym_templates[6][1] = r'fr-rég'
+    demonym_templates[6][2] = r's'
+    demonym_templates[6][3] = r''
+    demonym_templates[6][4] = r's'
+
+    for l in range(1, line + 1):
+        # Depuis un masculin
+        regex = r'\({{p}} : [\[\']*' + regex_page_name + demonym_templates[l][2] + r'[\]\']*, {{f}} : [\[\']*' + regex_page_name + \
+            demonym_templates[l][3] + r'[\]\']*, {{fplur}} : [\[\']*' + \
+                regex_page_name + demonym_templates[l][4] + r'[\]\']*\)'
+        if re.search(regex, page_content):
+            page_content = re.sub(regex, '{{' + demonym_templates[l][1] + '|pron=}}', page_content)
+            summary = f'{summary}, conversion des liens flexions en modèle boite'
+        # Depuis un féminin
+        if demonym_templates[l][1] == r'fr-accord-s' and regex_page_name[-1:] == 'e' and regex_page_name[-2:-1] == 's':
+            regex = r'\({{p}} : [\[\']*' + regex_page_name + \
+                r's[\]\']*, {{m}} : [\[\']*' + \
+                    regex_page_name[:-1] + r'[\]\']*\)'
+            if re.search(regex, page_content):
+                page_content = re.sub(regex, '{{' + demonym_templates[l][1] + '|ms=' + regex_page_name[:-1].replace('\\', '') + '}}', page_content)
+                summary = f'{summary}, conversion des liens flexions en modèle boite'
+        regex = r'\({{f}} : [\[\']*' + regex_page_name + demonym_templates[l][3] + r'[\]\']*, {{mplur}} : [\[\']*' + regex_page_name + \
+            demonym_templates[l][2] + r'[\]\']*, {{fplur}} : [\[\']*' + \
+                regex_page_name + demonym_templates[l][4] + r'[\]\']*\)'
+        if re.search(regex, page_content):
+            page_content = re.sub(regex, '{{' + demonym_templates[l][1] + '|pron=}}', page_content)
+            summary = f'{summary}, conversion des liens flexions en modèle boite'
+        if debug_level > 1:
+            print(' avec son')
+        regex = r'(\n\'\'\'' + regex_page_name + '\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + \
+            demonym_templates[l][1] + r'\|[pron\=]*)}}'
+        if re.search(regex, page_content):
+            page_content = re.sub(regex, r'\n\4\2}}\1\2\3', page_content)
+
+        deplacement_modele_inflexion = False
+        # On différencie les cas pas d'espace avant le modèle / espace avant le modèle
+        regex = r'( ===\n)(\'\'\'[^\n]+[^ ])({{' + demonym_templates[l][1] + r'\|[^}]*}})'
+        if re.search(regex, page_content):
+            page_content = re.sub(regex, r'\1\3\n\2', page_content)
+            deplacement_modele_inflexion = True
+        # Espace avant le modèle
+        regex_space = r'( ===\n)(\'\'\'[^\n]+) ({{' + \
+            demonym_templates[l][1] + r'\|[^}]*}})'
+        if re.search(regex_space, page_content):
+            page_content = re.sub(regex_space, r'\1\3\n\2', page_content)
+            deplacement_modele_inflexion = True
+        if deplacement_modele_inflexion:
+            summary = f'{summary}, déplacement des modèles de flexions'
+
+    regex = r'({{fr\-accord\-comp\-mf[^}]*\| *trait *=) *([\|}])'
+    if re.search(regex, page_content):
+        page_content = re.sub(regex, r'\1&nbsp;\2', page_content)
+
+    return page_content, summary
 
 '''
 TODO:

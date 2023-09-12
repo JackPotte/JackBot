@@ -68,6 +68,7 @@ def treat_page(page):
             print('page_content en travaux : non traitée')
         return
 
+    # TODO use inflexion_templates_fr_with_s
     template = ['fr-rég-x', 'fr-rég']
     param = ['s', 's']
     # template.append('fr-accord-cons')
