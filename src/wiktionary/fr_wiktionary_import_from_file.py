@@ -203,7 +203,6 @@ def treatPage(line):
                 )
         page_content += '\n==== {{S|traductions}} ====\n'
         page_content += '{{trad-début}}\n'
-        page_content += '{{ébauche-trad}}\n'
         page_content += '{{trad-fin}}\n'
         page_content += '\n=== {{S|références}} ===\n'
         page_content += '{{Références}}\n'

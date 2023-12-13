@@ -1738,36 +1738,12 @@ def format_translations(page_content, summary):
 
     # Formatage général des traductions
     page_content = page_content.replace('{{trad|', '{{trad-|')
-    page_content = page_content.replace('{{(}}\n{{ébauche-trad}}\n{{)}}', '')
     page_content = page_content.replace(
         '{{trad-début|{{trad-trier}}}}', '{{trad-trier}}\n{{trad-début}}')
     page_content = page_content.replace(
         '{{trad-début|{{trad-trier|fr}}}}', '{{trad-trier}}\n{{trad-début}}')
 
-    # 1) Suppression de {{ébauche-trad|fr}} (WT:PPS)
-    page_content = page_content.replace(
-        r'{{ébauche-trad|fr}}', '{{ébauche-trad}}')
-    regex = r'{{ébauche\-trad\|fr}}'
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, '{{ébauche-trad}}', page_content)
-
-        # 2) Aucun modèle d'ébauche en dehors d'une boite déroulante
-    page_content = page_content.replace(
-        r'{{ébauche-trad}}\n{{trad-début}}', '{{trad-début}}\n{{ébauche-trad}}')
-    regex = r'{{ébauche\-trad}}\n{{trad\-début}}'
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, '{{trad-début}}\n{{ébauche-trad}}', page_content)
-
-    page_content = page_content.replace(r'==== {{S|traductions}} ====\n{{ébauche-trad}}\n',
-                                        '==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}\n')
-    regex = r'==== {{S\|traductions}} ====\n{{ébauche\-trad}}(\n<![^>]+>)*(\n|$)'
-    if re.search(regex, page_content):
-        if debug_level > 0:
-            print(' ébauche sans boite')
-        page_content = re.sub(regex, '==== {{S|traductions}} ====\n{{trad-début}}\n{{ébauche-trad|en}}\n{{trad-fin}}\n',
-                              page_content)
-
-        # 3) Anciens commentaires d'aide à l'édition (tolérés avant l'éditeur visuel et editor.js)
+        # Anciens commentaires d'aide à l'édition (tolérés avant l'éditeur visuel et editor.js)
     page_content = page_content.replace(
         r'<!--* {{T|en}} : {{trad|en|}}-->', '')     # bug ?
     regex = r'<!\-\-[^{>]*{{T\|[^>]+>\n?'
@@ -1775,9 +1751,6 @@ def format_translations(page_content, summary):
         if debug_level > 0:
             print(' Commentaire trouvé l 1517')
         page_content = re.sub(regex, '', page_content)
-    regex = r'{{ébauche\-trad}}{{'
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, '{{ébauche-trad}}\n{{', page_content)
 
     while page_content.find('{{trad-fin}}\n* {{T|') != -1:
         page_content2 = page_content[page_content.find(

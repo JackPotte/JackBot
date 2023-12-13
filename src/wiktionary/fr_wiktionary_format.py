@@ -1031,7 +1031,7 @@ def format_fr_section(page_content, summary, page_name, regex_page_name):
     if fr_section is not None and re.search(regex, fr_section) is None and re.search(regex2, fr_section) is None and \
             count_first_definition_size(fr_section) > 3:
         summary = summary + ', ajout de {{S|traductions}}'
-        page_content = add_line(page_content, 'fr', 'traductions', '{{trad-début}}\n{{ébauche-trad}}\n{{trad-fin}}')
+        page_content = add_line(page_content, 'fr', 'traductions', '{{trad-début}}\n{{trad-fin}}')
     # Cosmetic fix
     regex = r'(==== {{S\|traductions}} ====\n)\n* *\n*({{trad\-début)'
     if re.search(regex, page_content):
