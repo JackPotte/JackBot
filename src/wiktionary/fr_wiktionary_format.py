@@ -558,7 +558,7 @@ def treat_page(page):
                     else:
                         line_end = page_content2[:page_content2.find('\n')]
                         new_line_end = replace_parameter_if_double(line_end, 'lang', language_code)
-                        if line_end != new_line_end:
+                        if new_line_end != '' and line_end != new_line_end:
                             # Fix doubles
                             new_page_content2 = page_content2.replace(line_end, new_line_end)
                             page_content = page_content.replace(page_content2, new_page_content2)

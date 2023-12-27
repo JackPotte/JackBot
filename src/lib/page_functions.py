@@ -333,7 +333,7 @@ def replace_parameter_if_double(page_content, p, v):
         print('\nreplace_parameter_if_double()')
 
     regex = r'\| *' + p + r' *='
-    if '}}' not in page_content or not re.search(regex, page_content):
+    if '}}' not in page_content or re.search(regex, page_content) is None:
         return ''
 
     if re.search(regex, page_content).start() > page_content.find('}}'):
