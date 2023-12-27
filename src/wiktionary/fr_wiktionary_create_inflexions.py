@@ -97,7 +97,7 @@ def treat_page(page):
             page_content = singular_page
 
         language_code = template[m][:2]
-        # TODO pronunciation = getParameterValue(template, 2) / class Flexion extends Word
+        # TODO pronunciation = get_parameter_value(template, 2) / class Flexion extends Word
         if debug_level > 1:
             pron = getPronunciationFromContent(page_content, language_code)
 

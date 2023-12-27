@@ -278,18 +278,21 @@ def get_all_templates_by_name(page_content, template):
 def get_parameter(page_content, p):
     if debug_level > 0:
         print('\nget_parameter()')
+
     regex = r'\| *' + p + r' *='
-    if '}}' not in page_content or not re.search(regex, page_content) \
-            or re.search(regex, page_content).start() > page_content.find('}}'):
-        if debug_level > 0:
-            print(' no template end after parameter')
-        if debug_level > 1:
-            # TODO ignore nested templates
-            print(re.search(regex, page_content).start())
-            print(page_content.find('}}'))
+    if '}}' not in page_content or not re.search(regex, page_content):
         return ''
 
-    parameter = page_content[re.search(regex, page_content).start() + 1:]
+    if re.search(regex, page_content).start() > page_content.find('}}'):
+        # Remove nested template
+        regex = r'({{(.*?)}}|.)*[^}]*'
+        nested_template = re.sub(regex, r'\2', page_content)
+        parameter = page_content.replace('{{' + nested_template + '}}', '')
+    else:
+        parameter = page_content[re.search(regex, page_content).start():]
+        if parameter[:1] == '|':
+            parameter = parameter[1:]
+
     parameter_end = parameter
     while parameter_end.find('[') != -1 and parameter_end.find('[') < parameter_end.find('|') \
             and parameter_end.find('[') < parameter_end.find('}') and parameter_end.find('|') < parameter_end.find('}'):
@@ -325,6 +328,28 @@ def replace_parameter_value(page_content, template, parameter_key, old_value, ne
     page_content = re.sub(regex, r'\1' + new_value, page_content)
     return page_content
 
+def replace_parameter_if_double(page_content, p):
+    if debug_level > 0:
+        print('\nreplace_parameter_if_double()')
+
+    regex = r'\| *' + p + r' *='
+    if '}}' not in page_content or not re.search(regex, page_content):
+        return ''
+
+    if re.search(regex, page_content).start() > page_content.find('}}'):
+        # Remove nested template
+        regex = r'({{(.*?)}}|.)*[^}]*'
+        nested_template = re.sub(regex, r'\2', page_content)
+        parameters = page_content.replace('{{' + nested_template + '}}', '')
+    else:
+        parameters = page_content[re.search(regex, page_content).start():]
+        if parameters[:1] == '|':
+            parameters = parameters[1:]
+
+    if parameters.count('lang=fr') > 1 and page_content[:len('lang=fr')+1] == 'lang=fr|':
+        page_content = page_content[len('lang=fr')+1:]
+
+    return page_content
 
 def replace_template(page_content, old_template, new_template=''):
     if debug_level > 0:

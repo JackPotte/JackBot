@@ -548,12 +548,20 @@ def treat_page(page):
 
                 elif current_template in ('référence nécessaire', 'réf?', 'réf ?', 'refnec', 'réfnéc', 'source?'):
                     page_content2 = page_content[end_position + 1:]
-                    # TODO regex = r'lang *= *'
-                    if page_content2.find('lang=') == -1 or page_content2.find('lang=') > page_content2.find('}}'):
+                    # TODO with regex = r'lang *= *'
+                    if 'lang=' not in page_content2 or \
+                            (page_content2.find('lang=') > page_content2.find('}}') and \
+                             page_content2.find('lang=') > page_content2.find('\n')):
                         final_page_content = final_page_content + current_template + '|lang=' + language_code + \
                             page_content[end_position:page_content.find('}}') + 2]
                         page_content = page_content[page_content.find('}}') + 2:]
                     else:
+                        line_end = page_content2[:page_content2.find('\n')]
+                        new_line_end = replace_parameter_if_double(line_end, 'lang')
+                        if line_end != new_line_end:
+                            # Fix doubles
+                            new_page_content2 = page_content2.replace(line_end, new_line_end)
+                            page_content = page_content.replace(page_content2, new_page_content2)
                         final_page_content, page_content = next_template(final_page_content, page_content)
 
                 # Check genders in languages which have not
