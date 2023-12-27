@@ -328,7 +328,7 @@ def replace_parameter_value(page_content, template, parameter_key, old_value, ne
     page_content = re.sub(regex, r'\1' + new_value, page_content)
     return page_content
 
-def replace_parameter_if_double(page_content, p, language_code):
+def replace_parameter_if_double(page_content, p, v):
     if debug_level > 0:
         print('\nreplace_parameter_if_double()')
 
@@ -346,8 +346,8 @@ def replace_parameter_if_double(page_content, p, language_code):
         if parameters[:1] == '|':
             parameters = parameters[1:]
 
-    if parameters.count(p + '=' + language_code) > 1 and page_content[:len(p + '=' + language_code)+1] == p + '=' + language_code + '|':
-        page_content = page_content[len(p + '=' + language_code)+1:]
+    if parameters.count(p + '=' + v) > 1 and page_content[:len(p + '=' + v)+1] == p + '=' + v + '|':
+        page_content = page_content[len(p + '=' + v)+1:]
 
     return page_content
 
