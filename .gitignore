@@ -3,6 +3,7 @@
 /data*
 *.bak
 *.log
+*.lwp
 *.pyc
 *.pyo
 *.py~
