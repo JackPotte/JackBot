@@ -637,6 +637,11 @@ def default_sort_by_language(page_name, language_code):
         page_name = page_name.replace('ö', 'z⿕⿕⿕')
         page_name = page_name.replace('ö'.upper(), 'z⿕⿕⿕')
 
+    elif language_code == 'lac':
+        page_name = page_name.replace('ꞌ', '')
+        page_name = page_name.replace('ʌ', 'a⿕')
+        page_name = page_name.replace('ʌ'.upper(), 'a⿕')
+
     elif language_code == 'os':
         page_name = page_name.replace('ё', 'е⿕')
         page_name = page_name.replace('ё'.upper(), 'е⿕')
