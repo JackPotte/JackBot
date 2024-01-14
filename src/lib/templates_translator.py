@@ -116,6 +116,8 @@ old_param.append('authorlink1')
 new_param.append('lien auteur1')
 old_param.append('title')
 new_param.append('titre')
+old_param.append('script-title')
+new_param.append('titre')
 old_param.append('publisher')
 new_param.append('éditeur')
 # TODO write here those parameters, translated differently between {{lien web}} & {{article}}
@@ -590,6 +592,22 @@ def translate_template_parameters(current_template):
             else:
                 fr_name = 'éditeur'
 
+        elif old_param[p] == 'script-title':
+            if has_parameter(current_template, 'titre'):
+                continue
+            old_param_value = get_parameter_value(current_template, old_param[p])
+            if old_param_value == '':
+                continue
+            param_values = old_param_value.split(':')
+            if len(param_values) != 2:
+                continue
+            language_parameter = ''
+            if not has_parameter(current_template, 'langue') or get_parameter_value(current_template, 'langue') == 'None':
+                language_code = param_values[0]
+                language_parameter = '|langue=' + language_code
+            title = param_values[1]
+            current_template = current_template.replace(old_param_value, title + language_parameter)
+
         elif old_param[p] == 'type':
             if is_template_name(current_template, 'article'):
                 fr_name = 'nature article'
@@ -620,8 +638,7 @@ def translate_template_parameters(current_template):
 
         if is_already_present:
             # Remove double if value is the same
-            old_param_value = get_parameter_value(
-                current_template, old_param[p])
+            old_param_value = get_parameter_value(current_template, old_param[p])
             new_param_value = get_parameter_value(current_template, fr_name)
             if debug_level > 0:
                 print(f'  "{old_param[p]}" has double, value:')
