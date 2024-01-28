@@ -642,6 +642,15 @@ def default_sort_by_language(page_name, language_code):
         page_name = page_name.replace('ʌ', 'a⿕')
         page_name = page_name.replace('ʌ'.upper(), 'a⿕')
 
+    elif language_code == 'mt':
+        # source : Document MSA (2009) p. 7
+        page_name = page_name.replace('ċ', 'b⿕') # pour éviter après le « c » dans les emprunts
+        page_name = page_name.replace('ġ', 'f⿕')
+        page_name = page_name.replace('għ', 'g⿕')
+        page_name = page_name.replace('ħ', 'h⿕')
+        page_name = page_name.replace('ie', 'i⿕')
+        page_name = page_name.replace('ż', 'y⿕')
+
     elif language_code == 'os':
         page_name = page_name.replace('ё', 'е⿕')
         page_name = page_name.replace('ё'.upper(), 'е⿕')
