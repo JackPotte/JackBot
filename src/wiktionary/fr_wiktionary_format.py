@@ -549,6 +549,7 @@ def treat_page(page):
                 elif current_template in ('référence nécessaire', 'réf?', 'réf ?', 'refnec', 'réfnéc', 'source?'):
                     page_content2 = page_content[end_position + 1:]
                     # TODO with regex = r'lang *= *'
+                    # TODO replace langue= by lang=
                     if 'lang=' not in page_content2 or \
                             (page_content2.find('lang=') > page_content2.find('}}') and \
                              page_content2.find('lang=') > page_content2.find('\n')):
