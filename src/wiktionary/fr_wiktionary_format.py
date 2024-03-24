@@ -1180,8 +1180,9 @@ def main(*args) -> int:
 
         for old_template in old_templates:
             p.pages_by_link(f'Template:{old_template}', namespaces=[0])
-        p.pages_by_link('Template:ucf')
 
+        p.pages_by_link('Template:liaison')
+        p.pages_by_link('Template:ucf')
         p.pages_by_link('Template:msing')
         p.pages_by_link('Template:fsing')
         p.pages_by_link('Template:nsing')

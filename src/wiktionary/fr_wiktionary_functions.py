@@ -1872,8 +1872,7 @@ def replace_templates(page_content, summary):
         print('  replace_templates()')
 
     for old_template in old_templates:
-        page_content = replace_template(
-            page_content, old_template, old_templates[old_template])
+        page_content = replace_template(page_content, old_template, old_templates[old_template])
 
     page_content, summary = replace_etymology_templates(page_content, summary)
     page_content, summary = replace_languages_templates(page_content, summary)
@@ -1888,8 +1887,10 @@ def replace_templates(page_content, summary):
             break
         page_content = (
             f'{page_content[:page_content.find(t)]}[[{word}|{word[:1].upper()}{word[1:]}]]'
-            + page_end[page_end.find('}}') + 2 :]
+            + page_end[page_end.find('}}') + 2:]
         )
+
+    page_content = page_content.replace('{{liaison}}', '‿')
 
     regex = r'\* ?{{sound}} ?: \[\[Media:([^\|\]]*)\|[^\|\]]*\]\]'
     if re.search(regex, page_content):
