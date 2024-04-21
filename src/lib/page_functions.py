@@ -829,7 +829,7 @@ def get_section_by_title(page_content, section_title_regex, section_level=2):
     return page_content, start_position, end_position
 
 
-def is_template_name(string, template_name):
+def is_template_name_start(string, template_name):
     regex = f'^({template_name[:1].upper()}|{template_name[:1].lower()}){template_name[1:]}'
     return re.search(regex, string)
 

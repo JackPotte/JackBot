@@ -562,7 +562,7 @@ def translate_template_parameters(current_template):
             continue
 
         if old_param[p] == 'agency':
-            if is_template_name(current_template, 'article') and not has_parameter(current_template, 'périodique') \
+            if is_template_name_start(current_template, 'article') and not has_parameter(current_template, 'périodique') \
                     and not has_parameter(current_template, 'work'):
                 fr_name = 'périodique'
             else:
@@ -586,8 +586,11 @@ def translate_template_parameters(current_template):
             fr_name = 'date'
 
         elif old_param[p] == 'publisher':
-            if is_template_name(current_template, 'article') and not has_parameter(current_template, 'périodique') \
-                    and not has_parameter(current_template, 'work'):
+            input(is_template_name_start(current_template, 'article'))
+            if (is_template_name_start(current_template, 'article')
+                    and not is_template_name_start(current_template, 'article encyclopédique')
+                    and not has_parameter(current_template, 'périodique')
+                    and not has_parameter(current_template, 'work')):
                 fr_name = 'périodique'
             else:
                 fr_name = 'éditeur'
@@ -609,23 +612,23 @@ def translate_template_parameters(current_template):
             current_template = current_template.replace(old_param_value, title + language_parameter)
 
         elif old_param[p] == 'type':
-            if is_template_name(current_template, 'article'):
+            if is_template_name_start(current_template, 'article'):
                 fr_name = 'nature article'
-            elif is_template_name(current_template, 'ouvrage'):
+            elif is_template_name_start(current_template, 'ouvrage'):
                 fr_name = 'nature ouvrage'
             else:
                 fr_name = 'type'
 
         elif old_param[p] == 'website':
-            if not is_template_name(
+            if not is_template_name_start(
                 current_template, 'article'
             ) or has_parameter(current_template, 'périodique'):
                 fr_name = old_param[p]
 
         elif old_param[p] == 'work':
-            if is_template_name(current_template, 'article') and not has_parameter(current_template, 'périodique'):
+            if is_template_name_start(current_template, 'article') and not has_parameter(current_template, 'périodique'):
                 fr_name = 'périodique'
-            elif is_template_name(current_template, 'lien web') and not has_parameter(current_template, 'site') \
+            elif is_template_name_start(current_template, 'lien web') and not has_parameter(current_template, 'site') \
                     and not has_parameter(current_template, 'website'):
                 fr_name = 'site'
             else:
