@@ -1031,34 +1031,37 @@ def add_language_code_with_named_parameter_to_template(
         page_content = page_content[page_content.find('}}')+2:]
         return final_page_content, page_content
 
-    else:
-        if debug_level > 0:
-            print('   "lang=" already present')
+    if debug_level > 0:
+        print('   "lang=" already present')
 
-        regex_lang = r'^[^{}]+\| *lang(?:gue|1)? *= *([a-zA-Z\-]*)'
-        p = re.compile(regex_lang)
-        m = p.match(page_content)
-        if m is None:
-            if debug_level > 0:
-                print('  weird case')
-            return next_template(final_page_content, page_content)
-
-        start = end = 0
-        old_language_code = ''
-        if m.span(1) is not None:
-            [start, end] = m.span(1)
-            old_language_code = page_content[start:end]
-        if debug_level > 0:
-            print('   "lang=" ' + old_language_code)
-
-        if language_code == old_language_code:
-            return next_template(final_page_content, page_content)
-
-        if debug_level > 0:
-            print('   "lang=" correction to ' + language_code)
-        page_content = page_content[:start] + language_code + page_content[end:]
-
+    if current_template == 'cf':
         return next_template(final_page_content, page_content)
+
+    # Correct language code with the paragraph's one
+    regex_lang = r'^[^{}]+\| *lang(?:gue|1)? *= *([a-zA-Z\-]*)'
+    p = re.compile(regex_lang)
+    m = p.match(page_content)
+    if m is None:
+        if debug_level > 0:
+            print('  weird case')
+        return next_template(final_page_content, page_content)
+
+    start = end = 0
+    old_language_code = ''
+    if m.span(1) is not None:
+        [start, end] = m.span(1)
+        old_language_code = page_content[start:end]
+    if debug_level > 0:
+        print('   "lang=" ' + old_language_code)
+
+    if language_code == old_language_code:
+        return next_template(final_page_content, page_content)
+
+    if debug_level > 0:
+        print('   "lang=" correction to ' + language_code)
+    page_content = page_content[:start] + language_code + page_content[end:]
+
+    return next_template(final_page_content, page_content)
 
 
 def next_template(final_page_content, current_page_content, current_template=None, language_code=None):
