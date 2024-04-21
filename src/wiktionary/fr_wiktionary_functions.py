@@ -1004,9 +1004,7 @@ def add_language_code_with_named_parameter_to_template(
     has_subtemplate_included = False
     if page_content.find('}}') > page_content.find('{{') != -1:
         # TODO Infinite loop in [[tomme]] with ^date\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang=
-        regex_has_subtemplate = r'^' + \
-            re.escape(current_template) + \
-            r'\|[^{}]*({{(.*?)}}|.)+[^{}]*\| *lang *='
+        regex_has_subtemplate = r'^' + re.escape(current_template) +  r'\|[^{}]*({{(.*?)}}|.)+[^{}]*\| *lang *='
         if re.search(regex_has_subtemplate, page_content):
             has_subtemplate_included = True
 
@@ -1036,6 +1034,30 @@ def add_language_code_with_named_parameter_to_template(
     else:
         if debug_level > 0:
             print('   "lang=" already present')
+
+        regex_lang = r'^[^{}]+\| *lang(?:gue|1)? *= *([a-zA-Z\-]*)'
+        p = re.compile(regex_lang)
+        m = p.match(page_content)
+        if m is None:
+            if debug_level > 0:
+                print('  weird case')
+            return next_template(final_page_content, page_content)
+
+        start = end = 0
+        old_language_code = ''
+        if m.span(1) is not None:
+            [start, end] = m.span(1)
+            old_language_code = page_content[start:end]
+        if debug_level > 0:
+            print('   "lang=" ' + old_language_code)
+
+        if language_code == old_language_code:
+            return next_template(final_page_content, page_content)
+
+        if debug_level > 0:
+            print('   "lang=" correction to ' + language_code)
+        page_content = page_content[:start] + language_code + page_content[end:]
+
         return next_template(final_page_content, page_content)
 
 
