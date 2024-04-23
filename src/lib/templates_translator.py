@@ -586,7 +586,6 @@ def translate_template_parameters(current_template):
             fr_name = 'date'
 
         elif old_param[p] == 'publisher':
-            input(is_template_name_start(current_template, 'article'))
             if (is_template_name_start(current_template, 'article')
                     and not is_template_name_start(current_template, 'article encyclopédique')
                     and not has_parameter(current_template, 'périodique')
