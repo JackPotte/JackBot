@@ -324,8 +324,9 @@ def treat_page(page):
                             print('  empty language code')
                         return
 
-                    if debug_level > 1:
+                    if debug_level > 0:
                         print('  language found: ' + language_code)
+
                     regex = r'[a-zA-Z\-]+'
                     if not re.search(regex, language_code):
                         banner = '{{formater|Code langue incorrect : ' + language_code + '}}\n'

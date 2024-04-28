@@ -1038,7 +1038,7 @@ def add_language_code_with_named_parameter_to_template(
         return next_template(final_page_content, page_content)
 
     # Correct language code with the paragraph's one
-    regex_lang = r'^[^{}]+\| *lang(?:gue|1)? *= *([a-zA-Z\- ]*)'
+    regex_lang = r'^[^{}]+\| *lang(?:gue|1)? *= *([\w\- ]*)'
     p = re.compile(regex_lang)
     m = p.match(page_content)
     if m is None:
