@@ -1385,8 +1385,7 @@ def get_language_code_ISO693_1_from_ISO693_3(code):
 def add_banner_see(page_name, page_content, summary):
     if debug_level > 0:
         print(' {{voir}}')
-    if debug_level == 1:
-        return page_content, summary
+
     default_sort = sort_by_encoding(page_name)
 
     if page_content.find('{{voir|{{lc:{{PAGENAME}}}}}}') != -1:
@@ -1413,7 +1412,8 @@ def add_banner_see(page_name, page_content, summary):
             page_content[page_content.find(
                 '{{voir|{{UCFIRST:{{PAGENAME}}}}}}')+len('{{voir|{{UCFIRST:{{PAGENAME}}}}'):]
         summary = summary + ', subst de {{UCFIRST:{{PAGENAME}}}}'
-    if page_content.find('{{voir|') == -1 and page_content.find('{{voir/') == -1:
+
+    if '{{voir|' not in page_content and '{{voir/' not in page_content:
         # TODO: always empty
         PageVoir = ''
         # Liste de toutes les pages potentiellement "à voir"
@@ -1432,25 +1432,32 @@ def add_banner_see(page_name, page_content, summary):
             pages_keys = f'{pages_keys}|{page_name[:1].lower()}{page_name[1:]}-'
         if pages_keys.find('-') != -1:
             pages_keys = f'{pages_keys}|' + pages_keys.replace('-', '')
-        diacritics = [
-            ['a', 'á', 'à', 'ä', 'â', 'ã'],
-            ['c', 'ç'],
-            ['e', 'é', 'è', 'ë', 'ê'],
-            ['i', 'í', 'ì', 'ï', 'î'],
-            ['n', 'ñ'],
-            ['o', 'ó', 'ò', 'ö', 'ô', 'õ'],
-            ['', 'ú', 'ù', 'ü', 'û']
-        ]
-        for diacritic in diacritics:
-            for d in range(len(diacritic)):
-                if page_name.find(diacritic[d]) != -1:
-                    if debug_level > 1:
-                        print(f'Titre contenant : {diacritic[d]}')
-                    letter = diacritic[d]
-                    for diac in range(len(diacritic)):
-                        pages_keys = f'{pages_keys}|{page_name.replace(letter, diacritic[diac])}'
+
+        if debug_level > 0:
+            print('  page keys: ' + pages_keys)
+
+        # TODO fix https://fr.wiktionary.org/w/index.php?title=n%C3%BC%C3%BCd&diff=prev&oldid=34336497
+        # where remaining_pages_keys contains several keys looking like memory leaks
+        # diacritics = [
+        #     ['a', 'á', 'à', 'ä', 'â', 'ã'],
+        #     ['c', 'ç'],
+        #     ['e', 'é', 'è', 'ë', 'ê'],
+        #     ['i', 'í', 'ì', 'ï', 'î'],
+        #     ['n', 'ñ'],
+        #     ['o', 'ó', 'ò', 'ö', 'ô', 'õ'],
+        #     ['', 'ú', 'ù', 'ü', 'û']
+        # ]
+        #
+        # for diacritic in diacritics:
+        #     for d in range(len(diacritic)):
+        #         if page_name.find(diacritic[d]) != -1:
+        #             if debug_level > 1:
+        #                 print(f'Title containing: {diacritic[d]}')
+        #             letter = diacritic[d]
+        #             for diac in range(len(diacritic)):
+        #                 pages_keys = f'{pages_keys}|{page_name.replace(letter, diacritic[diac])}'
+
         if pages_keys.find(default_sort) == -1:
-            # exception ? and page_content.find('{{langue|eo}}') == -1
             pages_keys = f'{pages_keys}|{default_sort}'
 
         # Filtre des pages de la liste "à voir"
@@ -1458,42 +1465,40 @@ def add_banner_see(page_name, page_content, summary):
         pages_keys = ''
         PagesVoir = ''
         if debug_level > 0:
-            print(' Recherche des clés...')
+            print('  search existing pages...')
+
         while remaining_pages_keys != '':
-            if debug_level > 1:
-                print(remaining_pages_keys)
-            current_page = remaining_pages_keys[:remaining_pages_keys.find(
-                '|')]
-            remaining_pages_keys = remaining_pages_keys[remaining_pages_keys.find(
-                '|')+1:]
+            if debug_level > 0:
+                print('  remaining keys: ' + remaining_pages_keys)
+
+            current_page = remaining_pages_keys[:remaining_pages_keys.find('|')]
+            remaining_pages_keys = remaining_pages_keys[remaining_pages_keys.find('|')+1:]
             # TODO escape ":"
             if current_page == '' or ':' in current_page:
                 continue
+
             key_page = Page(site, current_page)
             key_page_content = get_content_from_page(key_page)
             if key_page_content is not None:
                 if debug_level > 1:
                     print(pages_keys)
+
                 if pages_keys.find(f'|{current_page}') == -1:
                     pages_keys = f'{pages_keys}|{current_page}'
                 if key_page_content.find('{{voir|') != -1:
-                    page_content_key2 = key_page_content[key_page_content.find(
-                        '{{voir|')+len('{{voir|'):]
+                    page_content_key2 = key_page_content[key_page_content.find('{{voir|')+len('{{voir|'):]
                     PagesVoir = (
                         f'{PagesVoir}|'
                         + page_content_key2[: page_content_key2.find('}}')]
                     )
                 elif key_page_content.find('{{voir/') != -1:
-                    page_content_key2 = key_page_content[key_page_content.find(
-                        '{{voir/')+len('{{voir/'):]
-                    page_content = '{{voir/' + \
-                        page_content_key2[:page_content_key2.find(
-                            '}}')+3] + page_content
-                    pageMod = Page(
-                        site, 'Template:voir/' + page_content_key2[:page_content_key2.find('}}')])
+                    page_content_key2 = key_page_content[key_page_content.find('{{voir/')+len('{{voir/'):]
+                    page_content = '{{voir/' + page_content_key2[:page_content_key2.find('}}')+3] + page_content
+                    pageMod = Page(site, 'Template:voir/' + page_content_key2[:page_content_key2.find('}}')])
                     page_contentModBegin = get_content_from_page(pageMod)
                     if page_contentModBegin is None:
                         break
+
                     page_contentMod = page_contentModBegin
                     if page_contentMod.find('!') == -1:
                         if page_contentMod.find(page_name) == -1:
@@ -1529,6 +1534,7 @@ def add_banner_see(page_name, page_content, summary):
                 PagesVoir = PagesVoir[PagesVoir.find('|')+1:]
             if debug_level > 1:
                 print(f'  après : {pages_keys}')
+
         if debug_level > 2:
             input(pages_keys)
 
@@ -1537,25 +1543,26 @@ def add_banner_see(page_name, page_content, summary):
         if pages_keys != '':
             while pages_keys[:1] == '|':
                 pages_keys = pages_keys[1:]
+
         if pages_keys != page_name:
             if debug_level > 0:
-                print('  Différent de la page courante')
+                print('  ' + pages_keys + ' is different from ' + page_name)
             remaining_pages_keys = f'{pages_keys}|'
             key_page = None
             while remaining_pages_keys.find('|') != -1:
-                current_page = remaining_pages_keys[:remaining_pages_keys.find(
-                    '|')]
+                current_page = remaining_pages_keys[:remaining_pages_keys.find('|')]
                 if current_page == '':
                     if debug_level > 0:
                         print('current_page vide')
                     break
-                remaining_pages_keys = remaining_pages_keys[remaining_pages_keys.find(
-                    '|')+1:]
+
+                remaining_pages_keys = remaining_pages_keys[remaining_pages_keys.find('|')+1:]
                 if current_page != page_name and current_page.find('*') == -1:
                     key_page = Page(site, current_page)
                     page_content_key_start = get_content_from_page(key_page)
                 else:
                     page_content_key_start = page_content
+
                 if page_content_key_start is not None and key_page is not None and ':' not in key_page.title() \
                         and '{' not in key_page.title():
                     key_page_content = page_content_key_start
@@ -1611,7 +1618,7 @@ def add_banner_see(page_name, page_content, summary):
                             else:
                                 save_page(key_page, key_page_content, summary)
 
-    elif page_content.find('{{voir|') != -1:
+    elif '{{voir|' in page_content:
         if debug_level > 0:
             print('  Identique à la page courante')
         page_content2 = page_content[page_content.find('{{voir|'):]

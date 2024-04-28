@@ -179,7 +179,7 @@ def get_content_from_page_name(page_name, site, allowed_namespaces=None):
 def get_content_from_page(page, allowed_namespaces=None):
     global debug_level
     if debug_level > 0:
-        print('\nget_content_from_page()')
+        print('\nget_content_from_page(' + page.title() + ')')
     if debug_level > 1:
         pywikibot.output(
             ' \03<<blue>>get_content_from_page : \03<<default>>' + page.title())
