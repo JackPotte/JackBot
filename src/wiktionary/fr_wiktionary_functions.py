@@ -3647,60 +3647,52 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
 
 
 def treat_pronunciation(page_content, final_page_content, summary, end_position, current_template, language_code):
-    # Tri des lettres de l'API
     if current_template == 'pron':
+        page_content2 = page_content[end_position+1:page_content.find('}}')]
+        # TODO generic regex
+        if '|lang=' in page_content2:
+            page_content = page_content[:page_content.find('|lang=')+1] + page_content[page_content.find('|lang=')+6:]
+
+        # Replace IPA letters
         page_content2 = page_content[end_position+1:page_content.find('}}')]
         while page_content2.find('\'') != -1 and page_content2.find('\'') < page_content2.find('}}') \
                 and (page_content2.find('\'') < page_content2.find('|') or page_content2.find('|') == -1):
-            page_content = page_content[:page_content.find(
-                '\'')] + 'ˈ' + page_content[page_content.find('\'')+1:]
+            page_content = page_content[:page_content.find('\'')] + 'ˈ' + page_content[page_content.find('\'')+1:]
         while page_content2.find('ˈˈˈ') != -1 and page_content2.find('ˈˈˈ') < page_content2.find('}}') \
                 and (page_content2.find('ˈˈˈ') < page_content2.find('|') or page_content2.find('|') == -1):
-            page_content = page_content[:page_content.find(
-                'ˈˈˈ')] + '\'\'\'' + page_content[page_content.find('ˈˈˈ')+3:]
+            page_content = page_content[:page_content.find('ˈˈˈ')] + '\'\'\'' + page_content[page_content.find('ˈˈˈ')+3:]
         while page_content2.find('ε') != -1 and page_content2.find('ε') < page_content2.find('}}') \
                 and (page_content2.find('ε') < page_content2.find('|') or page_content2.find('|') == -1):
-            page_content = page_content[:page_content.find(
-                'ε')] + 'ɛ' + page_content[page_content.find('ε')+1:]
+            page_content = page_content[:page_content.find('ε')] + 'ɛ' + page_content[page_content.find('ε')+1:]
         while page_content2.find('ε̃') != -1 and page_content2.find('ε̃') < page_content2.find('}}') \
                 and (page_content2.find('ε̃') < page_content2.find('|') or page_content2.find('|') == -1):
-            page_content = page_content[:page_content.find(
-                'ε̃')] + 'ɛ̃' + page_content[page_content.find('ε̃')+1:]
+            page_content = page_content[:page_content.find('ε̃')] + 'ɛ̃' + page_content[page_content.find('ε̃')+1:]
         while page_content2.find(':') != -1 and page_content2.find(':') < page_content2.find('}}') \
                 and (page_content2.find(':') < page_content2.find('|') or page_content2.find('|') == -1):
-            page_content = page_content[:page_content.find(
-                ':')] + 'ː' + page_content[page_content.find(':')+1:]
+            page_content = page_content[:page_content.find(':')] + 'ː' + page_content[page_content.find(':')+1:]
         while page_content2.find('g') != -1 and page_content2.find('g') < page_content2.find('}}') \
                 and (page_content2.find('g') < page_content2.find('|') or page_content2.find('|') == -1) \
                 and page_content2.find('g') != page_content2.find('lang=')+3:
-            page_content = page_content[:page_content.find(
-                'g')] + 'ɡ' + page_content[page_content.find('g')+1:]
+            page_content = page_content[:page_content.find('g')] + 'ɡ' + page_content[page_content.find('g')+1:]
+        # TODO if language_code == 'es': β/, /ð/ et /ɣ/ instead of /b/, /d/ et /ɡ/
 
-        # if language_code == 'es': β/, /ð/ et /ɣ/ au lieu de de /b/, /d/ et /ɡ/
     if page_content[:8] == 'pron||}}':
-        final_page_content = final_page_content + \
-            page_content[:page_content.find('}}')] + language_code + '}}'
+        final_page_content = final_page_content + page_content[:page_content.find('}}')] + language_code + '}}'
     elif page_content[end_position:end_position+3] == '|}}' or page_content[end_position:end_position+4] == '| }}':
-        final_page_content = final_page_content + \
-            current_template + "||" + language_code + '}}'
-    elif (page_content.find("lang=") != -1 and page_content.find("lang=") < page_content.find('}}')):
-        final_page_content = final_page_content + \
-            page_content[:page_content.find('}}')+2]
+        final_page_content = final_page_content + current_template + "||" + language_code + '}}'
+    elif page_content.find("lang=") != -1 and page_content.find("lang=") < page_content.find('}}'):
+        final_page_content = final_page_content + page_content[:page_content.find('}}')+2]
     elif end_position == page_content.find('|'):
         page_content2 = page_content[end_position+1:page_content.find('}}')]
         if page_content2.find('|') == -1:
-            final_page_content = final_page_content + \
-                page_content[:page_content.find(
-                    '}}')] + "|" + language_code + '}}'
+            final_page_content = final_page_content + page_content[:page_content.find('}}')] + "|" + language_code + '}}'
         else:
-            final_page_content = final_page_content + \
-                page_content[:page_content.find('}}')+2]
+            final_page_content = final_page_content + page_content[:page_content.find('}}')+2]
     elif end_position == page_content.find('}}'):
-        final_page_content = final_page_content + \
-            current_template + "||" + language_code + '}}'
+        final_page_content = final_page_content + current_template + "||" + language_code + '}}'
     else:
-        final_page_content = final_page_content + \
-            page_content[:page_content.find('}}')] + "|" + language_code + '}}'
+        final_page_content = final_page_content + page_content[:page_content.find('}}')] + "|" + language_code + '}}'
+
     page_content = page_content[page_content.find('}}')+2:]
     return page_content, final_page_content, summary
 
