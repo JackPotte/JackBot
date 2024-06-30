@@ -288,6 +288,9 @@ def workon(page):
 
     text = prepare_text(text)
 
+    if 'omonymie}}' in text or 'atégorie:Liste' in text:
+        return
+
     pattern = (
         re.escape(globalvar.quote_template)
         if site.siteinfo['case'] == 'case-sensitive'
