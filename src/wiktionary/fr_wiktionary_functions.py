@@ -3524,124 +3524,66 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
         final_page_content = final_page_content + page_content[:page_content.find('}}') + 2]
         final_page_content, page_content = next_template(final_page_content, page_content)
     else:
-        # Lettres spéciales à remplacer dans les traductions vers certaines langues
-        page_content2 = page_content[end_position + 1:]
-        current_language = page_content2[:page_content2.find('|')]
-        if current_language in ['ro', 'mo']:
-            while page_content.find('ş') != -1 and page_content.find('ş') < page_content.find('\n'):
-                page_content = page_content[:page_content.find(
-                    'ş')] + 'ș' + page_content[page_content.find('ş') + 1:]
-            while page_content.find('Ş') != -1 and page_content.find('Ş') < page_content.find('\n'):
-                page_content = page_content[:page_content.find(
-                    'Ş')] + 'Ș' + page_content[page_content.find('Ş') + 1:]
-            while page_content.find('ţ') != -1 and page_content.find('ţ') < page_content.find('\n'):
-                page_content = page_content[:page_content.find(
-                    'ţ')] + 'ț' + page_content[page_content.find('ţ') + 1:]
-            while page_content.find('Ţ') != -1 and page_content.find('Ţ') < page_content.find('\n'):
-                page_content = page_content[:page_content.find(
-                    'Ţ')] + 'Ț' + page_content[page_content.find('Ţ') + 1:]
-        elif current_language in ['az', 'ku', 'sq', 'tk', 'tr', 'tt']:
-            while page_content.find('ș') != -1 and page_content.find('ș') < page_content.find('\n'):
-                page_content = page_content[:page_content.find(
-                    'ș')] + 'ş' + page_content[page_content.find('ș') + 1:]
-            while page_content.find('Ș') != -1 and page_content.find('Ș') < page_content.find('\n'):
-                page_content = page_content[:page_content.find(
-                    'Ș')] + 'Ş' + page_content[page_content.find('Ș') + 1:]
-            while page_content.find('ț') != -1 and page_content.find('ț') < page_content.find('\n'):
-                page_content = page_content[:page_content.find(
-                    'ț')] + 'ţ' + page_content[page_content.find('ț') + 1:]
-            while page_content.find('Ț') != -1 and page_content.find('Ț') < page_content.find('\n'):
-                page_content = page_content[:page_content.find(
-                    'Ț')] + 'Ţ' + page_content[page_content.find('Ț') + 1:]
-        elif current_language == 'fon':
-            while page_content.find('ε') != -1 and page_content.find('ε') < page_content.find('\n'):
-                page_content = page_content[:page_content.find(
-                    'ε')] + 'ɛ' + page_content[page_content.find('ε') + 1:]
-        elif current_language == 'cmn':
-            page_content = page_content[:page_content.find('cmn')] + 'zh' + page_content[
-                page_content.find('cmn') + len('cmn'):]
-        elif current_language == 'nn':
-            page_content = page_content[:page_content.find('nn')] + 'no' + page_content[
-                page_content.find('nn') + len('nn'):]
-        elif current_language == 'per':
-            page_content = page_content[:page_content.find('per')] + 'fa' + page_content[
-                page_content.find('per') + len('per'):]
-        elif current_language == 'wel':
-            page_content = page_content[:page_content.find('wel')] + 'cy' + page_content[
-                page_content.find('wel') + len('wel'):]
-        elif current_language == 'zh-classical':
-            page_content = page_content[:page_content.find('zh-classical')] + 'lzh' + page_content[page_content.find(
-                'zh-classical') + len('zh-classical'):]
-        elif current_language == 'ko-Hani':
-            page_content = page_content[:page_content.find('ko-Hani')] + 'ko' + page_content[
-                page_content.find('ko-Hani') + len('ko-Hani'):]
-        elif current_language == 'ko-hanja':
-            page_content = page_content[:page_content.find('ko-hanja')] + 'ko' + page_content[
-                page_content.find('ko-hanja') + len('ko-hanja'):]
-        elif current_language == 'zh-min-nan':
-            page_content = page_content[:page_content.find('zh-min-nan')] + 'nan' + page_content[page_content.find(
-                'zh-min-nan') + len('zh-min-nan'):]
-        elif current_language == 'roa-rup':
-            page_content = page_content[:page_content.find('roa-rup')] + 'rup' + page_content[
-                page_content.find('roa-rup') + len('roa-rup'):]
-        elif current_language == 'zh-yue':
-            page_content = page_content[:page_content.find('zh-yue')] + 'yue' + page_content[
-                page_content.find('zh-yue') + len('zh-yue'):]
         page_content2 = page_content[end_position + 1:]
         current_language = page_content2[:page_content2.find('|')]
 
-        if current_language != '':
-            # TODO: reproduire bug site fermé https://fr.wiktionary.org/w/index.php?title=chat&diff=prev&oldid=9366302
-            # Identification des Wiktionnaires hébergeant les traductions
+        if current_language == '':
+            return page_content, final_page_content, summary
+
+        page_content = replace_letters_by_language(page_content, current_language)
+        page_content2 = page_content[end_position + 1:]
+
+        # TODO: reproduce the closed site bug https://fr.wiktionary.org/w/index.php?title=chat&diff=prev&oldid=9366302
+        # Get the other wiktionary page
+        external_site = ''
+        external_page_name = ''
+        d = 0
+        page_content3 = page_content2[page_content2.find('|') + 1:]
+        if debug_level > d:
+            print(f' remote wiki language: {current_language}')
+        if page_content3.find('}}') == '' or not page_content3.find('}}'):
+            if debug_level > d:
+                print('  aucun mot distant')
+            if final_page_content.rfind('<!--') == -1 or final_page_content.rfind(
+                    '<!--') < final_page_content.rfind('-->'):
+                # On retire le modèle pour que la page ne soit plus en catégorie de maintenance
+                if debug_level > d:
+                    print(' Retrait de commentaire de traduction l 4362')
+                final_page_content = final_page_content[:-2]
+                backward = True
+        elif current_language == 'conv':
+            external_site = get_wiki('species', 'species')
+        elif current_language in incubator_wiktionaries:
+            # Otherwise: Non-JSON response received from server wiktionary:ba; the server may be down.
+            external_site = None
+        else:
+            external_site = get_wiki(current_language, site_family)
+        if external_site is None:
+            if debug_level > d:
+                print('  no site (--)')
+            final_page_content, page_content = next_translation_template(final_page_content, page_content, '')
             external_site = ''
-            external_page_name = ''
-            d = 0
-            page_content3 = page_content2[page_content2.find('|') + 1:]
-            if debug_level > d:
-                print(f' remote wiki language: {current_language}')
-            if page_content3.find('}}') == '' or not page_content3.find('}}'):
-                if debug_level > d:
-                    print('  aucun mot distant')
-                if final_page_content.rfind('<!--') == -1 or final_page_content.rfind(
-                        '<!--') < final_page_content.rfind('-->'):
-                    # On retire le modèle pour que la page ne soit plus en catégorie de maintenance
-                    if debug_level > d:
-                        print(' Retrait de commentaire de traduction l 4362')
-                    final_page_content = final_page_content[:-2]
-                    backward = True
-            elif current_language == 'conv':
-                external_site = get_wiki('species', 'species')
-            elif current_language in incubator_wiktionaries:
-                # Otherwise: Non-JSON response received from server wiktionary:ba; the server may be down.
-                external_site = None
+        elif external_site != '':
+            if page_content3.find('|') != -1 and page_content3.find('|') < page_content3.find('}}'):
+                external_page_name = page_content3[:page_content3.find('|')]
             else:
-                external_site = get_wiki(current_language, site_family)
-            if external_site is None:
-                if debug_level > d:
-                    print('  no site (--)')
-                final_page_content, page_content = next_translation_template(final_page_content, page_content, '')
-                external_site = ''
-            elif external_site != '':
-                if page_content3.find('|') != -1 and page_content3.find('|') < page_content3.find('}}'):
-                    external_page_name = page_content3[:page_content3.find('|')]
-                else:
-                    external_page_name = page_content3[:page_content3.find('}}')]
-            if external_page_name != '' and external_page_name.find('<') != -1:
-                external_page_name = external_page_name[:external_page_name.find('<')]
-            if debug_level > d:
-                msg = f' remote wiki page: {external_page_name}'
-                try:
-                    print(msg)
-                except UnicodeEncodeError as e:
-                    # Python 2 only
-                    print(msg.encode(config.console_encoding, 'replace'))
+                external_page_name = page_content3[:page_content3.find('}}')]
+        if external_page_name != '' and external_page_name.find('<') != -1:
+            external_page_name = external_page_name[:external_page_name.find('<')]
+        if debug_level > d:
+            msg = f' remote wiki page: {external_page_name}'
+            try:
+                print(msg)
+            except UnicodeEncodeError as e:
+                # Python 2 only
+                print(msg.encode(config.console_encoding, 'replace'))
 
-            final_page_content, page_content = update_if_page_exists_on_other_wiktionaries(
-                final_page_content,
-                page_content,
-                external_site,
-                external_page_name
-            )
+        final_page_content, page_content = update_if_page_exists_on_other_wiktionaries(
+            final_page_content,
+            page_content,
+            external_site,
+            external_page_name
+        )
 
     return page_content, final_page_content, summary
 
@@ -3866,6 +3808,61 @@ def add_fr_demonyms_templates(page_content, summary):
         page_content = re.sub(regex, r'\1&nbsp;\2', page_content)
 
     return page_content, summary
+
+
+def replace_letters_by_language(page_content, current_language):
+    if current_language == 'en':
+        while page_content.find('’') != -1 and page_content.find('’') < page_content.find('\n'):
+            page_content = page_content[:page_content.find('’')] + '\'' + page_content[page_content.find('’') + 1:]
+    elif current_language in ['ro', 'mo']:
+        while page_content.find('ş') != -1 and page_content.find('ş') < page_content.find('\n'):
+            page_content = page_content[:page_content.find('ş')] + 'ș' + page_content[page_content.find('ş') + 1:]
+        while page_content.find('Ş') != -1 and page_content.find('Ş') < page_content.find('\n'):
+            page_content = page_content[:page_content.find('Ş')] + 'Ș' + page_content[page_content.find('Ş') + 1:]
+        while page_content.find('ţ') != -1 and page_content.find('ţ') < page_content.find('\n'):
+            page_content = page_content[:page_content.find('ţ')] + 'ț' + page_content[page_content.find('ţ') + 1:]
+        while page_content.find('Ţ') != -1 and page_content.find('Ţ') < page_content.find('\n'):
+            page_content = page_content[:page_content.find('Ţ')] + 'Ț' + page_content[page_content.find('Ţ') + 1:]
+    elif current_language in ['az', 'ku', 'sq', 'tk', 'tr', 'tt']:
+        while page_content.find('ș') != -1 and page_content.find('ș') < page_content.find('\n'):
+            page_content = page_content[:page_content.find('ș')] + 'ş' + page_content[page_content.find('ș') + 1:]
+        while page_content.find('Ș') != -1 and page_content.find('Ș') < page_content.find('\n'):
+            page_content = page_content[:page_content.find('Ș')] + 'Ş' + page_content[page_content.find('Ș') + 1:]
+        while page_content.find('ț') != -1 and page_content.find('ț') < page_content.find('\n'):
+            page_content = page_content[:page_content.find('ț')] + 'ţ' + page_content[page_content.find('ț') + 1:]
+        while page_content.find('Ț') != -1 and page_content.find('Ț') < page_content.find('\n'):
+            page_content = page_content[:page_content.find('Ț')] + 'Ţ' + page_content[page_content.find('Ț') + 1:]
+    elif current_language == 'fon':
+        while page_content.find('ε') != -1 and page_content.find('ε') < page_content.find('\n'):
+            page_content = page_content[:page_content.find('ε')] + 'ɛ' + page_content[page_content.find('ε') + 1:]
+    elif current_language == 'cmn':
+        page_content = page_content[:page_content.find('cmn')] + 'zh' + page_content[page_content.find('cmn') + 3:]
+    elif current_language == 'nn':
+        page_content = page_content[:page_content.find('nn')] + 'no' + page_content[page_content.find('nn') + 2:]
+    elif current_language == 'per':
+        page_content = page_content[:page_content.find('per')] + 'fa' + page_content[page_content.find('per') + 3:]
+    elif current_language == 'wel':
+        page_content = page_content[:page_content.find('wel')] + 'cy' + page_content[page_content.find('wel') + 3:]
+    elif current_language == 'zh-classical':
+        page_content = (page_content[:page_content.find('zh-classical')] + 'lzh'
+                        + page_content[page_content.find('zh-classical') + len('zh-classical'):])
+    elif current_language == 'ko-Hani':
+        page_content = (page_content[:page_content.find('ko-Hani')] + 'ko'
+                        + page_content[page_content.find('ko-Hani') + len('ko-Hani'):])
+    elif current_language == 'ko-hanja':
+        page_content = (page_content[:page_content.find('ko-hanja')] + 'ko'
+                        + page_content[page_content.find('ko-hanja') + len('ko-hanja'):])
+    elif current_language == 'zh-min-nan':
+        page_content = (page_content[:page_content.find('zh-min-nan')] + 'nan'
+                        + page_content[page_content.find('zh-min-nan') + len('zh-min-nan'):])
+    elif current_language == 'roa-rup':
+        page_content = (page_content[:page_content.find('roa-rup')] + 'rup'
+                        + page_content[page_content.find('roa-rup') + len('roa-rup'):])
+    elif current_language == 'zh-yue':
+        page_content = (page_content[:page_content.find('zh-yue')] + 'yue'
+                        + page_content[page_content.find('zh-yue') + len('zh-yue'):])
+
+    return page_content
 
 '''
 TODO:
