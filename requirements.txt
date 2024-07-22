@@ -20,7 +20,7 @@ beautifulsoup4
 beautifulsoup4==4.8.2
 blinker==1.4
 cached-property==1.5.1
-certifi==2023.7.22
+certifi==2024.7.4
 chardet==3.0.4
 charset-normalizer==2.0.12
 colorama==0.4.3
