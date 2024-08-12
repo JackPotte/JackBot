@@ -124,8 +124,7 @@ def treat_page(page):
                 break
 
             # Parcours de la page pour chaque occurence du modèle
-            nature = page_content_till_template[page_content_till_template.rfind(
-                '{{S|')+len('{{S|'):]
+            nature = page_content_till_template[page_content_till_template.rfind('{{S|')+len('{{S|'):]
             nature = nature[:nature.find('|')]
             if debug_level > 0:
                 try:
@@ -143,9 +142,12 @@ def treat_page(page):
             plural = getWordPlural(page_content, page_name, template[m])
             if plural is None:
                 return
+
             if debug_level > 0:
                 print(f'  Pluriel : {plural}')
-            pronunciation = getWordPronunciation(page_content)
+            pronunciation = get_plural_pronunciation(page_content, current_language)
+            if pronunciation[:1] != '|':
+                pronunciation = f'|{pronunciation}'
 
             # h aspiré
             H = ''
@@ -275,76 +277,6 @@ def getWordPlural(page_content, page_name, current_template):
                       page_content[:page_content.find('}}')])
 
     return trim(plural)
-
-
-def getWordPronunciation(page_content):
-    if page_content.find('|pp=') != -1 and page_content.find('|pp=') < page_content.find('}}'):
-        if debug_level > 0:
-            print(' pp=')
-        page_content2 = page_content[page_content.find(
-            '|pp=')+4:page_content.find('}}')]
-        if page_content2.find('|') != -1:
-            pron = page_content[page_content.find(
-                '|pp=')+4:page_content.find('|pp=')+4+page_content2.find('|')]
-        else:
-            pron = page_content[page_content.find(
-                '|pp=')+4:page_content.find('}}')]
-    else:
-        if debug_level > 1:
-            print('  prononciation identique au singulier')
-        pron = page_content[:page_content.find('}}')]
-        if debug_level > 1:
-            print(f'  pron avant while : {pron}')
-        if pron.find('|pron=') != -1:
-            pron = '|' + pron[pron.find('|pron=')+len('|pron='):]
-
-        pron_array = pron.split('|')
-        # {{fr-rég|a.kʁɔ.sɑ̃.tʁik|mf=oui}}
-        n = 0
-        while n < len(pron_array) and (pron_array[n] == '' or pron_array[n].find('=') != -1):
-            if debug_level > 1:
-                print(pron_array[n].find('='))
-            n += 1
-        pron = '|' if n == len(pron_array) else f'|{pron_array[n]}'
-        '''
-        while pron.find('=') != -1:
-            pron2 = pron[:pron.find('=')]
-            pron3 = pron[pron.find('='):]
-            if debug_level > 0: print('  pron2 : ') + pron2
-            if pron2.find('|') == -1:
-                pron = pron[pron.find('|')+1:]
-                if debug_level > 1: print('  pron dans while1 : ') + pron
-            else:
-                if debug_level > 0: print('  pron3 : ') + pron3
-                if pron3.rfind('|') == -1:
-                    limitPron = len(pron3)
-                else:
-                    limitPron = pron3.rfind('|')
-                if debug_level > 0: print('  limitPron : ') + str(limitPron)
-                pron = pron[pron.find('=')+limitPron:]
-                if debug_level > 0: print('  pron dans while2 : ') + pron
-        '''
-        if debug_level > 1:
-            print(f'  pron après while : {pron}')
-    pron = trim(pron)
-    if pron.rfind('|') > 0:
-        pronM = pron[:pron.rfind('|')]
-        while pronM.rfind('|') > 0:
-            pronM = pronM[:pronM.rfind('|')]
-    else:
-        pronM = pron
-    if pronM[:1] != '|':
-        pronM = f'|{pronM}'
-    if debug_level > 0:
-        try:
-            print(f'  Prononciation : {pronM}')
-        except UnicodeDecodeError:
-            print('  Prononciation à décoder')
-        except UnicodeEncodeError:
-            print('  Prononciation à encoder')
-
-    return trim(pronM)
-
 
 p = PageProvider(treat_page, site, debug_level)
 set_functions_globals(debug_level, site, username)

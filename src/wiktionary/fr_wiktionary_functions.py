@@ -310,47 +310,51 @@ def count_first_definition_size(page_content):
     return len(words)
 
 
-def get_pronunciation_from_content(page_content, language_code, nature=None):
+def get_pronunciation(page_content, language_code):
     if debug_level > 1:
-        print('\nget_pronunciation_from_content')
+        print('\nget_pronunciation')
+
+    pronunciation = get_pronunciation_from_pron(page_content, language_code)
+    if pronunciation is not None:
+        return pronunciation
+
+    pronunciation = get_pronunciation_from_fr(page_content, language_code)
+    if pronunciation is not None:
+        return pronunciation
+
+    return ''
+
+def get_pronunciation_from_pron(page_content, language_code):
+    regex = r"{{pron\|([^}]+)\|" + language_code + "}}"
+    s = re.search(regex, page_content)
+    pronunciation = None
+    if s:
+        pronunciation = s[1]
+        pronunciation = pronunciation[:pronunciation.find('=')]
+        pronunciation = pronunciation[:pronunciation.rfind('|')]
+    return pronunciation
+
+def get_pronunciation_from_fr(page_content, language_code):
+    if language_code != 'fr':
+        return None
+
     regex = r".*'''([^']+)'''.*"
     s = re.search(regex, page_content, re.MULTILINE | re.DOTALL)
     if not s:
         return
     page_name = s[1]
 
-    # Template {{pron}}
-    regex = r"{{pron\|([^}]+)\|" + language_code + "}}"
-    s = re.search(regex, page_content)
-    pronunciation = ''
-    if s:
-        pronunciation = s[1]
-        pronunciation = pronunciation[:pronunciation.find('=')]
-        pronunciation = pronunciation[:pronunciation.rfind('|')]
-        if debug_level > 0:
-            input(f' prononciation en {language_code} : {pronunciation}')
-        page_content = re.sub(r'{{pron\|\|' + language_code + '}}',
-                              r'{{pron|' + pronunciation + r'|' + language_code + '}}', page_content)
-        return pronunciation
-
-    if language_code != 'fr':
-        return
-
-    # Templates {{fr-xxx}}
-    templates = '|'.join(flexion_templates_fr_with_s) + \
-        '|' + '|'.join(flexion_templates_fr_with_ms)
+    templates = '|'.join(flexion_templates_fr_with_s) + '|' + '|'.join(flexion_templates_fr_with_ms)
     templates2 = '|'.join(flexion_templates_fr)
-    # TODO: templateContent = getTemplateContent(page_content, template) ?
+
+    pronunciation = ''
     regex = r'{{(' + re.escape(templates) + r")\|([^{}\|=]+)([^{}]*}}\n\'\'\'" \
-        + re.escape(page_name).replace('User:', '') + \
-        r"'\'\')( *{*f?m?n?}* *)\n"
+        + re.escape(page_name).replace('User:', '') + r"'\'\')( *{*f?m?n?}* *)\n"
     s = re.search(regex, page_content)
     if s:
         pronunciation = s[1]
         if debug_level > 0:
-            print(
-                ' prononciation trouvée en {{{1}}} dans une boite de flexion : ' + pronunciation)
-        #page_content = re.sub(regex, r'{{\1|\2\3 {{pron|\2|' + language_code + '}}\4\n', page_content)
+            print(' prononciation trouvée en {{{1}}} dans une boite de flexion : ' + pronunciation)
         return pronunciation
 
     regex = r'{{(' + re.escape(templates) + r")\|([^{}]+)}}"
@@ -418,33 +422,65 @@ def get_pronunciation_from_content(page_content, language_code, nature=None):
     return pronunciation
 
 
-def get_pronunciation(page_content, language_code, nature=None):
-    if debug_level > 1:
-        print('\nget_pronunciation')
-    pronunciation = get_pronunciation_from_content(
-        page_content, language_code, nature)
-    # TODO: from other pages or wikis
-    '''
-    if pronunciation == '':
-        if page_content.find('|' + language_code + '|flexion}}') != -1:
-            pronunciation = getPronunciationFromFlexion(page_content, language_code, nature)
+def get_plural_pronunciation(page_content, language_code):
+    if language_code != 'fr':
+        return None
+
+    if page_content.find('|pp=') != -1 and page_content.find('|pp=') < page_content.find('}}'):
+        if debug_level > 0:
+            print(' pp=')
+        page_content2 = page_content[page_content.find('|pp=')+4:page_content.find('}}')]
+        if page_content2.find('|') != -1:
+            pron = page_content[page_content.find('|pp=')+4:page_content.find('|pp=')+4+page_content2.find('|')]
         else:
-            pronunciation = getPronunciationFromLemma(page_content, language_code, nature)
-    '''
+            pron = page_content[page_content.find('|pp=')+4:page_content.find('}}')]
+    else:
+        if debug_level > 1:
+            print('  pronunciation identical between singular and plural')
+        pron = page_content[:page_content.find('}}')]
+        if debug_level > 1:
+            print(f'  pron before while: {pron}')
+        if pron.find('|pron=') != -1:
+            pron = '|' + pron[pron.find('|pron=')+len('|pron='):]
+
+        pron_array = pron.split('|')
+        # Ex: {{fr-rég|a.kʁɔ.sɑ̃.tʁik|mf=oui}}
+        n = 0
+        while n < len(pron_array) and (pron_array[n] == '' or pron_array[n].find('=') != -1):
+            if debug_level > 1:
+                print(pron_array[n].find('='))
+            n += 1
+        pron = '|' if n == len(pron_array) else f'|{pron_array[n]}'
+        if debug_level > 1:
+            print(f'  pron after while: {pron}')
+    pron = trim(pron)
+
+    if '|' in pron:
+        pron = trim(pron[:pron.find('|')])
+    if '/' in pron:
+        pron = trim(pron[:pron.find('/')])
+
     if debug_level > 0:
-        print(f' Pronunciation found: {pronunciation}')
-    return pronunciation
+        try:
+            print(f'  Pronunciation found: {pron}')
+        except UnicodeDecodeError:
+            print('  Pronunciation to decode')
+        except UnicodeEncodeError:
+            print('  Pronunciation to encode')
+
+    return pron
 
 
-def add_pronunciation_from_content(page_content, language_code, nature=None):
+def add_pronunciation_from_content(page_content, language_code):
     if debug_level > 1:
         print('\nadd_pronunciationFromContent')
     if page_content.find('{{pron||' + language_code + '}}') != -1:
-        pronunciation = get_pronunciation(
-            page_content, language_code, nature=None)
+        pronunciation = get_pronunciation(page_content, language_code)
         if pronunciation != '':
-            page_content = page_content.replace('{{pron||' + language_code + '}}', '{{pron|' + pronunciation + '|'
-                                                + language_code + '}}')
+            page_content = page_content.replace(
+                '{{pron||' + language_code + '}}',
+                '{{pron|' + pronunciation + '|' + language_code + '}}'
+            )
     return page_content
 
 
