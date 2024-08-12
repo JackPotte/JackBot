@@ -69,7 +69,7 @@ def treat_page(page):
         return
 
     # TODO use inflexion_templates_fr_with_s
-    template = ['fr-rég-x', 'fr-rég']
+    templates = ['fr-rég-x', 'fr-rég']
     param = ['s', 's']
     # template.append('fr-accord-cons')
     # TODO https://fr.wiktionary.org/w/index.php?title=arnaudes&type=revision&diff=26192327&oldid=26191304
@@ -80,39 +80,37 @@ def treat_page(page):
     # template.append('fr-accord-eur')
     # param.append('1')
 
-    for m in range(len(template)):
+    for m in range(len(templates)):
         if debug_level > 1:
-            print(f' début du for {str(m)}, recherche du modèle : {template[m]}')
+            print(f' début du for {str(m)}, recherche du modèle : {templates[m]}')
 
         if (
-            singular_page.find(f'{template[m]}|') == -1
-            and singular_page.find(template[m] + '}') == -1
+            singular_page.find(f'{templates[m]}|') == -1
+            and singular_page.find(templates[m] + '}') == -1
         ):
             if debug_level > 1:
-                pywikibot.output(f" Template: \03<<blue>> {template[m]} \03<<default>> missing")
+                pywikibot.output(f" Template: \03<<blue>> {templates[m]} \03<<default>> missing")
             continue
         else:
             if debug_level > 0:
-                pywikibot.output(f" Template: \03<<blue>>' {template[m]} \03<<default>> found")
+                pywikibot.output(f" Template: \03<<blue>>' {templates[m]} \03<<default>> found")
             page_content = singular_page
 
-        language_code = template[m][:2]
+        language_code = templates[m][:2]
         # TODO pronunciation = get_parameter_value(template, 2) / class Flexion extends Word
-        if debug_level > 1:
-            pron = getPronunciationFromContent(page_content, language_code)
 
-        while page_content.find(template[m]) != -1:
-            if len(template[m]) < 3:
+        while page_content.find(templates[m]) != -1:
+            if len(templates[m]) < 3:
                 if debug_level > 0:
                     print(' bug')
                 break
             if debug_level > 1:
-                print(template[m])
-                print(page_content.find(template[m]))
+                print(templates[m])
+                print(page_content.find(templates[m]))
 
             # Vérification que la langue en cours est bien la langue du modèle
             page_content_till_template = page_content[:page_content.find(
-                template[m])]
+                templates[m])]
             current_language = None
             matches = re.findall(
                 r'{{langue\|([^}]+)}}', page_content_till_template)
@@ -137,9 +135,8 @@ def treat_page(page):
                 print('  section erreur')
                 return
 
-            page_content = page_content[page_content.find(
-                template[m])+len(template[m]):]
-            plural = getWordPlural(page_content, page_name, template[m])
+            page_content = page_content[page_content.find(templates[m])+len(templates[m]):]
+            plural = getWordPlural(page_content, page_name, templates[m])
             if plural is None:
                 return
 
@@ -171,7 +168,8 @@ def treat_page(page):
                 gender = ' {{mf}}'
                 MF = '|mf=oui'
                 if singular_page.find('|mf=') == -1:
-                    singular_page = f'{singular_page[:singular_page.find(template[m]) + len(template[m])]}|mf=oui{singular_page[singular_page.find(template[m]) + len(template[m]):]}'
+                    singular_page = f'{singular_page[:singular_page.find(templates[m]) + len(templates[m])]}' + \
+                        f'|mf=oui{singular_page[singular_page.find(templates[m]) + len(templates[m]):]}'
                     save_page(page, singular_page, '|mf=oui')
             if page_content.find('|mf=') != -1 and page_content.find('|mf=') < page_content.find('}}'):
                 MF = '|mf=oui'
@@ -197,31 +195,27 @@ def treat_page(page):
                 return
             elif plural[-2:] == 'ss' and page_name[-2:] != 'ss':
                 lemma_param = f'|{param[m]}={plural[:-2]}'
-                singular_page = singular_page[:singular_page.find(template[m])+len(template[m])] + lemma_param + \
-                    singular_page[singular_page.find(
-                        template[m])+len(template[m]):]
-                save_page(page, singular_page, '{{' + template[m] + '|s=...}}')
+                singular_page = singular_page[:singular_page.find(templates[m])+len(templates[m])] + lemma_param + \
+                    singular_page[singular_page.find(templates[m])+len(templates[m]):]
+                save_page(page, singular_page, '{{' + templates[m] + '|s=...}}')
                 break
             elif param[m] == '1':
                 lemma_param = ''
             else:
                 lemma_param = f'|{param[m]}={page_name}'
 
-            flexion_template = '{{' + template[m] + \
-                pronunciation + H + MF + lemma_param
+            # TODO handle singular pron (ps=) in https://fr.wiktionary.org/w/index.php?title=m%C3%A9daill%C3%A9s_olympiques&diff=35845264&oldid=35845258
+            flexion_template = '{{' + templates[m] + pronunciation + H + MF + lemma_param
             if plural not in [f'{page_name}s', f'{page_name}x']:
                 flexion_template += '|p={{subst:PAGENAME}}'
             flexion_template += '}}'
 
             final_page_content = '== {{langue|' + language_code + '}} ==\n=== {{S|' + nature + '|' + \
                 language_code + '|flexion}} ===\n' + flexion_template + '\n\'\'\'' + plural + '\'\'\' {{pron' + \
-                pronunciation + '|' + language_code + '}}' + gender + \
-                '\n# \'\'Pluriel de\'\' [[' + page_name + ']].\n'
+                pronunciation + '|' + language_code + '}}' + gender + '\n# \'\'Pluriel de\'\' [[' + page_name + ']].\n'
             while final_page_content.find('{{pron|' + language_code + '}}') != -1:
                 final_page_content = final_page_content[:final_page_content.find('{{pron|' + language_code + '}}')+7] \
-                    + '|' + \
-                    final_page_content[final_page_content.find(
-                        '{{pron|' + language_code + '}}')+7:]
+                    + '|' + final_page_content[final_page_content.find('{{pron|' + language_code + '}}')+7:]
             final_page_content = final_page_content + '\n' + plural_page
 
             default_sort = sort_by_encoding(plural)
