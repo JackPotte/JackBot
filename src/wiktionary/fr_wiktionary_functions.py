@@ -423,6 +423,9 @@ def get_pronunciation_from_fr(page_content, language_code):
 
 
 def get_plural_pronunciation(page_content, language_code):
+    global debug_level
+    if debug_level > 0:
+        print('\nget_plural_pronunciation')
     if language_code != 'fr':
         return None
 
@@ -440,21 +443,21 @@ def get_plural_pronunciation(page_content, language_code):
         pron = page_content[:page_content.find('}}')]
         if debug_level > 1:
             print(f'  pron before while: {pron}')
-        if pron.find('|pron=') != -1:
+        if '|pron=' in pron:
             pron = '|' + pron[pron.find('|pron=')+len('|pron='):]
 
         pron_array = pron.split('|')
         # Ex: {{fr-rég|a.kʁɔ.sɑ̃.tʁik|mf=oui}}
         n = 0
         while n < len(pron_array) and (pron_array[n] == '' or pron_array[n].find('=') != -1):
-            if debug_level > 1:
-                print(pron_array[n].find('='))
             n += 1
         pron = '|' if n == len(pron_array) else f'|{pron_array[n]}'
         if debug_level > 1:
             print(f'  pron after while: {pron}')
     pron = trim(pron)
 
+    if pron[:1] == '|':
+        pron = pron[1:]
     if '|' in pron:
         pron = trim(pron[:pron.find('|')])
     if '/' in pron:

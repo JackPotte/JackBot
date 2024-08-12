@@ -139,9 +139,9 @@ def treat_page(page):
             plural = getWordPlural(page_content, page_name, templates[m])
             if plural is None:
                 return
-
             if debug_level > 0:
-                print(f'  Pluriel : {plural}')
+                print(f'  Plural: {plural}')
+
             pronunciation = get_plural_pronunciation(page_content, current_language)
             if pronunciation[:1] != '|':
                 pronunciation = f'|{pronunciation}'
@@ -179,11 +179,11 @@ def treat_page(page):
                 plural_page = get_content_from_page(page2, 'All')
                 if plural_page.find('{{langue|' + language_code + '}}') != -1:
                     if debug_level > 0:
-                        print(f'  Pluriel existant l 216 : {plural}')
+                        print(f'  Pluriel existant : {plural}')
                     break
             else:
                 if debug_level > 0:
-                    print('  Pluriel introuvable l 219')
+                    print('  Pluriel introuvable')
                 plural_page = ''
 
             # **************** Pluriel 1 ****************
