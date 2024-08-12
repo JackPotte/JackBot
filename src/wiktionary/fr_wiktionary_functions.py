@@ -1040,7 +1040,8 @@ def add_language_code_with_named_parameter_to_template(
     has_subtemplate_included = False
     if page_content.find('}}') > page_content.find('{{') != -1:
         # TODO Infinite loop in [[tomme]] with ^date\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang=
-        regex_has_subtemplate = r'^' + re.escape(current_template) +  r'\|[^{}]*({{(.*?)}}|.)+[^{}]*\| *lang *='
+        regex_has_subtemplate = r'^' + re.escape(current_template) +  r'\|[^{}]*({{(.*?)}}|.)+[^{}]*\| *lang(?:ue|1)? *='
+        input(regex_has_subtemplate)
         if re.search(regex_has_subtemplate, page_content):
             has_subtemplate_included = True
 
@@ -1055,7 +1056,7 @@ def add_language_code_with_named_parameter_to_template(
             and page_content2[:1] != '#'
     )
 
-    regex_has_lang = r'^[^{}]+\| *lang(gue|1)? *='
+    regex_has_lang = r'^[^{}]+\| *lang(?:ue|1)? *='
     if is_not_category_name and not re.search(regex_has_lang, page_content):
         if debug_level > 0:
             print('   "lang=" addition')
@@ -1074,7 +1075,7 @@ def add_language_code_with_named_parameter_to_template(
         return next_template(final_page_content, page_content)
 
     # Correct language code with the paragraph's one
-    regex_lang = r'^[^{}]+\| *lang(?:gue|1)? *= *([\w\- \'’]*)'
+    regex_lang = r'^[^{}]+\| *lang(?:ue|1)? *= *([\w\- \'’]*)'
     p = re.compile(regex_lang)
     m = p.match(page_content)
     if m is None:
