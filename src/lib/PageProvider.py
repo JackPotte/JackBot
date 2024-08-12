@@ -176,7 +176,7 @@ class PageProvider:
                                 print(f' {notCatName} ignoré')
                             modify = False
                 if modify:
-                    pages = subcategory.articles(False)
+                    pages = subcategory.articles()
                     for page in pagegenerators.PreloadingGenerator(pages, page_ids):
                         if namespaces is None or page.namespace() in namespaces:
                             self.treat_page_if_name(
