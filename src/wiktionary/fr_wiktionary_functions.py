@@ -1044,7 +1044,6 @@ def add_language_code_with_named_parameter_to_template(
     if page_content.find('}}') > page_content.find('{{') != -1:
         # TODO Infinite loop in [[tomme]] with ^date\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang=
         regex_has_subtemplate = r'^' + re.escape(current_template) +  r'\|[^{}]*({{(.*?)}}|.)+[^{}]*\| *lang(?:ue|1)? *='
-        input(regex_has_subtemplate)
         if re.search(regex_has_subtemplate, page_content):
             has_subtemplate_included = True
 
