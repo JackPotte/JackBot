@@ -249,6 +249,7 @@ def treat_page(page):
         language_code = None
         if debug_level > 1:
             print('  language_code = None')
+
         start_position = 1
         singular_page_name = ''
         infinitive = ''
@@ -256,6 +257,9 @@ def treat_page(page):
         # Loop to find each page template, filling final_page_content by emptying page_content
         while start_position > -1:
             if debug_level > 1:
+                print('start_position:\n')
+                print(start_position)
+                print('\n')
                 pywikibot.output("\n\03<<red>>---------------------------------------------------\03<<default>>")
                 print(final_page_content[:1000])
                 input(page_content[:1000])
@@ -634,12 +638,6 @@ def treat_page(page):
                         page_content, final_page_content, summary, current_page_content
                     )
 
-                elif current_template == 'Suisse':
-                    # Because it has a parameter precision=
-                    page_content, final_page_content, summary = treat_verb_inflexion(
-                        page_content, final_page_content, summary, current_page_content
-                    )
-
                 elif current_template == 'recons' and language_code is not None:
                     template_params = page_content[:page_content.find('}}')]
                     if 'lang-mot-vedette' not in template_params:
@@ -647,9 +645,6 @@ def treat_page(page):
                         final_page_content = final_page_content + page_content[:end_position] \
                             + '|lang-mot-vedette=' + language_code
                         page_content = page_content[end_position:]
-                    # Fix 2020
-                    regex = r'(?:\|lang-mot-vedette=[^\|}]+)+\|lang-mot-vedette=([^\|}]+[\|}])'
-                    page_content = re.sub(regex, r'|lang-mot-vedette=\1', page_content)
 
                 elif p < limit5:
                     add_language_code = False

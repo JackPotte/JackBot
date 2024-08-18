@@ -81,10 +81,10 @@ def get_lemma_from_plural(page_content, language_code='fr', natures=None):
             input(s[6])
         lemma_page_name = s[6]
     if debug_level > 0:
-        pywikibot.output(" lemma_page_name found: \03<<red>>" +
-                         lemma_page_name + "\03<<default>>")
+        pywikibot.output(" lemma_page_name found: \03<<red>>" + lemma_page_name + "\03<<default>>\n")
     if debug_level > 1:
         input(page_content)
+        print('\n\n')
 
     return lemma_page_name
 
@@ -115,18 +115,17 @@ def get_lemma_from_feminine(page_content, language_code='fr', natures=None):
 
 def get_lemma_from_conjugation(page_content, language_code='fr'):
     if debug_level > 1:
-        print('\ngetLemmaFromConjugation')
+        print('\nget_lemma_from_conjugation()')
     lemma_page_name = ''
     regex = r"(=== {{S\|verbe\|fr\|flexion}} ===\n({{fr\-[^}]*}}\n)*'''[^\n]+\n#[^\n\[{]+(\[\[|{{li?e?n?\|))([^#\|\]}]+)}*\]*'*\."
     s = re.search(regex, page_content)
     if s:
-        if debug_level > 1:
-            print(s[1])
-            input(s[4])
         lemma_page_name = s[4]
-    if debug_level > 0:
-        pywikibot.output(" lemma_page_name found: \03<<red>>" +
-                         lemma_page_name + "\03<<default>>")
+        if debug_level > 0:
+            pywikibot.output(" lemma_page_name found: \03<<red>>" + lemma_page_name + "\03<<default>>")
+        if debug_level > 1:
+            print(' lemma page:')
+            input(s[1])
 
     return lemma_page_name
 
@@ -1322,7 +1321,7 @@ def sort_translations(page_content, summary):
     page_content = final_page_content + page_content
 
     if debug_level > 1:
-        input(' fin du tri des traductions')
+        print(' fin du tri des traductions\n')
     if summary2 != '':
         summary += f', traductions :{summary2[1:]}'
     return page_content, summary
@@ -3360,10 +3359,12 @@ def treat_verb_inflexion(page_content, final_page_content, summary, current_page
     return page_content, final_page_content, summary
 
 
-def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natures_with_plural, language_code,
-                         singular_page_name):
+def treat_noun_inflexion(
+        page_content, summary, page_name, regex_page_name, natures_with_plural, language_code, singular_page_name
+    ):
     if debug_level > 0:
         print('\ntreat_noun_inflexion()')
+
     for nature in natures_with_plural:
         regex = r"(== {{langue|" + language_code + r"}} ==\n=== {{S\|" + \
             nature + r"\|" + language_code + r")\|num=2"
@@ -3441,10 +3442,10 @@ def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natu
                 summary = summary + ', ajout de {{' + language_code + r'-rég}}'
 
     if debug_level > 1:
+        print(' New inflection page after fr:\n')
         input(page_content)
+        print('\n\n')
 
-    if debug_level > 1:
-        print('  en')
     if page_name[-2:] != 'ss' and page_name[-3:] != 'hes' and page_name[-3:] != 'ies' \
             and page_name[-3:] != 'ses' and page_name[-3:] != 'ves':
         regex = r"(=== {{S\|nom\|en\|flexion}} ===\n)('''" + page_name \
@@ -3458,6 +3459,12 @@ def treat_noun_inflexion(page_content, summary, page_name, regex_page_name, natu
         if re.search(regex, page_content):
             page_content = re.sub(regex, r'\1{{en-nom-rég|sing=\3|}}\n\2\3', page_content)
             summary = summary + ', ajout de {{en-nom-rég}}'
+
+    if debug_level > 1:
+        print(' New inflection page after en:\n')
+        input(page_content)
+        print('\n\n')
+
     return page_content, summary
 
 
@@ -3547,7 +3554,7 @@ def update_if_page_exists_on_other_wiktionaries(
             final_page_content, page_content = next_translation_template(final_page_content, page_content, '-')
 
     if debug_level > d:
-        print('')
+        print('\n')
 
     return final_page_content, page_content
 
