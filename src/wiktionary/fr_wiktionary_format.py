@@ -720,7 +720,8 @@ def treat_page(page):
                 else:
                     if debug_level > 0:
                         print(' Modèle régional : non catégorisé dans la prononciation')
-                    if final_page_content.rfind('{{') != -1:
+                    if '{{' in final_page_content and final_page_content.find('=') == -1 or \
+                            final_page_content.find('=') > final_page_content.find('}}'):
                         final_page_content2 = final_page_content[:final_page_content.rfind('{{')]
                         if (
                             add_language_code
