@@ -105,8 +105,7 @@ def get_lemma_from_feminine(page_content, language_code='fr', natures=None):
             input(s[6])
         lemma_page_name = s[6]
     if debug_level > 0:
-        pywikibot.output(" lemma_page_name found: \03<<red>>" +
-                         lemma_page_name + "\03<<default>>")
+        pywikibot.output(" lemma_page_name found: \03<<red>>" + lemma_page_name + "\03<<default>>")
     if debug_level > 1:
         input(page_content)
 
@@ -555,8 +554,7 @@ def remove_template(page_content, template, summary, language=None, in_section=N
 def add_line(page_content, language_code, section_name, line_content):
     d = 0
     if debug_level > d:
-        pywikibot.output(
-            "\n\03<<red>>---------------------------------------------\03<<default>>")
+        pywikibot.output("\n\03<<red>>---------------------------------------------\03<<default>>")
         print('\nadd_line(' + language_code + ', ' + section_name + ')')
     if (
         page_content != ''
@@ -664,8 +662,7 @@ def add_line(page_content, language_code, section_name, line_content):
     # TODO remove fix
     page_content = page_content.replace('\n\n* {{écouter|', '\n* {{écouter|')
     if debug_level > d:
-        pywikibot.output(
-            "\n\03<<red>>---------------------------------------------\03<<default>>")
+        pywikibot.output("\n\03<<red>>---------------------------------------------\03<<default>>")
     return page_content
 
 
@@ -976,8 +973,7 @@ def add_pronunciation(page_content, language_code, section, line_content):
 def add_line_into_section(page_content, language_code, section, line_content):
     d = 1
     if debug_level > d:
-        pywikibot.output(
-            "\n\03<<red>>---------------------------------------------\03<<default>>")
+        pywikibot.output("\n\03<<red>>---------------------------------------------\03<<default>>")
         print('\naddLineIntoSection "' + section + '"')
     if (
         page_content != ''
@@ -1214,59 +1210,51 @@ def get_anagram(word):
 
 
 def sort_translations(page_content, summary):
+    pywikibot.output("\n\03<<red>>---------------------------------------------\03<<default>>")
+    global debug_level
     if debug_level > 0:
         print(' sort_translations()')
-    if debug_level > 1:
-        print(' First translation detection')
+    summary2 = ''
 
     regex = r'\* ?{{[a-z][a-z][a-z]?-?[a-z]?[a-z]?[a-z]?}} :'
     final_page_content = ''
-    while page_content.find('{{trad-début') != -1:
-        final_page_content = final_page_content + \
-            page_content[:page_content.find('{{trad-début')]
+    while '{{trad-début' in page_content:
+        final_page_content = final_page_content + page_content[:page_content.find('{{trad-début')]
         page_content = page_content[page_content.find('{{trad-début'):]
-        final_page_content = final_page_content + \
-            page_content[:page_content.find('\n')+1]
+        final_page_content = final_page_content + page_content[:page_content.find('\n')+1]
         page_content = page_content[page_content.find('\n')+1:]
         if re.search(regex, page_content) and re.search(regex, page_content).start() < page_content.find('{{'):
-            if debug_level > 0:
-                print(' {{T}} addition')
-            page_content = page_content[:page_content.find(
-                '{{')+2] + 'T|' + page_content[page_content.find('{{')+2:]
+            if debug_level > 1:
+                print(' {{T}} addition 1')
+            page_content = page_content[:page_content.find('{{')+2] + 'T|' + page_content[page_content.find('{{')+2:]
     page_content = final_page_content + page_content
     final_page_content = ''
 
-    summary2 = ''
-    while page_content.find('{{T|') != -1:
-        final_page_content = final_page_content + \
-            page_content[:page_content.find('{{T|')]
+    while '{{T|' in page_content:
+        final_page_content = final_page_content + page_content[:page_content.find('{{T|')]
         page_content = page_content[page_content.find('{{T|'):]
-        if debug_level > 2:
-            print(' Ajout des T')
+        if debug_level > 1:
+            print(' {{T}} addition 2')
         page_content2 = page_content[page_content.find('\n'):]
-        if re.search(regex, page_content2) and re.search(
-            regex, page_content2
-        ).start() < page_content2.find('{{'):
+        if re.search(regex, page_content2) and re.search(regex, page_content2).start() < page_content2.find('{{'):
             if debug_level > 0:
-                print('Ajout d\'un modèle T')
+                print(' {{T}} addition 2')
             page_content = page_content[:page_content.find('\n') + page_content2.find('{{')+2] + 'T|' + \
-                page_content[page_content.find(
-                    '\n') + page_content2.find('{{')+2:]
+                page_content[page_content.find('\n') + page_content2.find('{{')+2:]
 
-        language = get_next_translation(page_content)
-        if language != '' and (final_page_content.find('<!--') == -1 or final_page_content.find('-->') != -1):
-            language2 = 'zzz'
-            if final_page_content.rfind('\n') == -1 or page_content.find('\n') == -1:
+        language = get_next_translation_language_name(page_content)
+        if language != '' and ('<!--' not in final_page_content or '-->' in final_page_content):
+            if '\n' not in final_page_content or '\n' not in page_content:
                 break
+
+            language2 = 'zzz'
             current_translation = final_page_content[final_page_content.rfind('\n'):] \
                 + page_content[:page_content.find('\n')]
             next_translations = ''
-            final_page_content = final_page_content[:final_page_content.rfind(
-                '\n')]
+            final_page_content = final_page_content[:final_page_content.rfind('\n')]
             page_content = page_content[page_content.find('\n'):]
 
-            d = 0
-            if debug_level > d:
+            if debug_level > 2:
                 print(f' 1 {language2} > {language} ?')
             while compare(language2, language) \
                     and final_page_content.rfind('{{') != final_page_content.rfind('{{S|') \
@@ -1274,34 +1262,29 @@ def sort_translations(page_content, summary):
                     and final_page_content.rfind('{{') != final_page_content.rfind('{{trad-fin') \
                     and final_page_content.rfind('{{') != final_page_content.rfind('{{(') \
                     and final_page_content.rfind('{{T') != final_page_content.rfind('{{T|conv'):
-                if debug_level > d:
+                if debug_level > 2:
                     print(f' 1 {language2} > {language}')
 
                 language2 = get_next_language_translation(final_page_content)
-                if debug_level > d:
+                if debug_level > 2:
                     print(f' 2 {language2} > {language} ?')
                 if language2 == '' or not compare(language2, language):
                     break
-                if debug_level > d:
+                if debug_level > 2:
                     print(f' 2 {language2} > {language}')
                 if final_page_content.rfind('\n') > final_page_content.rfind('trad-début'):
-                    next_translations = final_page_content[final_page_content.rfind(
-                        '\n'):] + next_translations
-                    final_page_content = final_page_content[:final_page_content.rfind(
-                        '\n')]
+                    next_translations = final_page_content[final_page_content.rfind('\n'):] + next_translations
+                    final_page_content = final_page_content[:final_page_content.rfind('\n')]
                     summary2 += f', {language2} > {language}'
                 elif final_page_content.rfind('\n') != -1:
-                    # Cas de la première de la liste
-                    current_translation = final_page_content[final_page_content.rfind(
-                        '\n'):] + current_translation
-                    final_page_content = final_page_content[:final_page_content.rfind(
-                        '\n')]
+                    # First of the list
+                    current_translation = final_page_content[final_page_content.rfind('\n'):] + current_translation
+                    final_page_content = final_page_content[:final_page_content.rfind('\n')]
             final_page_content = final_page_content + \
                 current_translation + next_translations
         elif page_content.find('\n') != -1:
             if debug_level > 0:
-                print(' Retrait de commentaire de traduction : ' +
-                      page_content[:page_content.find('\n')+1])
+                print(' Translation comment removal: ' + page_content[:page_content.find('\n')+1])
             final_page_content = final_page_content + \
                 page_content[:page_content.find('\n')]
             page_content = page_content[page_content.find('\n'):]
@@ -1315,56 +1298,55 @@ def sort_translations(page_content, summary):
         if debug_level > 2:
             print(final_page_content)
         if debug_level > 2:
-            print(page_content)
+            input(page_content)
         if debug_level > 1:
             print('')
     page_content = final_page_content + page_content
 
-    if debug_level > 1:
-        print(' fin du tri des traductions\n')
     if summary2 != '':
         summary += f', traductions :{summary2[1:]}'
+
+    if debug_level > 1:
+        print(' End of sort_translations()\n')
+    pywikibot.output("\n\03<<red>>---------------------------------------------\03<<default>>")
+
     return page_content, summary
 
 
-def get_next_translation(page_content):
+def get_next_translation_language_name(page_content):
     language = page_content[page_content.find('{{T|')+4:page_content.find('}')]
-
     return get_langage_name_by_code(language)
 
 
 def get_next_language_translation(final_page_content):
-    language = final_page_content[final_page_content.rfind(
-        '{{T|')+len('{{T|'):]
+    language = final_page_content[final_page_content.rfind('{{T|')+len('{{T|'):]
     language = language[:language.find('}}')]
     return get_langage_name_by_code(language)
 
 
 def get_langage_name_by_code(language_code):
-    language_name = ''
-    if language_code.find('|') != -1:
+    while '|' in language_code:
         language_code = language_code[:language_code.find('|')]
-    if language_code != '':
-        if len(language_code) > 3 and language_code.find('-') == -1:
-            if debug_level > 0:
-                print(f' No ISO code for {language_code}')
-            language_name = language_code
-        else:
-            try:
-                # Works in Python 2 without future:
-                # language_name = sort_by_encoding(languages[language_code].decode('utf8'), 'UTF-8')
-                # "éa" > "ez":
-                # language_name = sort_by_encoding(languages[language_code])
-                language_name = sort_by_encoding(
-                    languages[language_code], 'UTF-8')
-                if debug_level > 1:
-                    print(f' Language name: {language_name}')
-            except KeyError:
-                if debug_level > 0:
-                    print('KeyError l 2556')
-            except UnboundLocalError:
-                if debug_level > 0:
-                    print('UnboundLocalError l 2559')
+    if language_code == '':
+        return ''
+
+    if len(language_code) > 3 and '-' not in language_code:
+        if debug_level > 0:
+            print(f' No ISO code for {language_code}')
+        return language_code
+
+    language_name = ''
+    try:
+        language_name = sort_by_encoding(languages[language_code], 'UTF-8')
+        if debug_level > 1:
+            print(f' Language name: {language_name}')
+    except KeyError:
+        if debug_level > 0:
+            print('KeyError l 2556')
+    except UnboundLocalError:
+        if debug_level > 0:
+            print('UnboundLocalError l 2559')
+
     return language_name
 
 
