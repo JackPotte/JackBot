@@ -1100,13 +1100,11 @@ def add_language_code_with_named_parameter_to_template(
 
 def next_template(final_page_content, current_page_content, current_template=None, language_code=None):
     if language_code is None:
-        final_page_content = final_page_content + \
-            current_page_content[:current_page_content.find('}}')+2]
+        final_page_content = final_page_content + current_page_content[:current_page_content.find('}}')+2]
     else:
-        final_page_content = final_page_content + \
-            current_template + '|' + language_code + '}}'
-    current_page_content = current_page_content[current_page_content.find(
-        '}}')+2:]
+        final_page_content = final_page_content + current_template + '|' + language_code + '}}'
+
+    current_page_content = current_page_content[current_page_content.find('}}')+2:]
     return final_page_content, current_page_content
 
 
@@ -1683,7 +1681,9 @@ def format_sections(page_content, summary):
 
     # Normalize sections title casing
     for f in re.findall(r'{{S\|([^}]+)}}', page_content):
-        page_content = page_content.replace(f, f.lower())
+        # Do not touch false ISO codes like "gallo-italique de Sicile"
+        if ' ' not in f:
+            page_content = page_content.replace(f, f.lower())
 
     # Replace deprecated aliases with language parameter
     page_content = page_content.replace('{{S|adj|', '{{S|adjectif|')
@@ -2938,15 +2938,13 @@ def treat_conjugation(page_content, final_page_content, summary, current_templat
             else:
                 page_content = '|groupe=3' + page_content
 
-    if (page_content.find(language_code) != -1 and page_content.find(language_code) < page_content.find(
-            '}}')) or language_code == 'fr':
-        final_page_content, page_content = next_template(
-            final_page_content, page_content)
+    if (page_content.find(language_code) != -1 and page_content.find(language_code) < page_content.find('}}')) \
+            or language_code == 'fr':
+        final_page_content, page_content = next_template(final_page_content, page_content)
     else:
         if page_content.find('|nocat=1') != -1:
             page_content = page_content[:page_content.find('|nocat=1')] + page_content[
-                page_content.find('|nocat=1') + len(
-                    '|nocat=1'):]
+                page_content.find('|nocat=1') + len('|nocat=1'):]
         final_page_content = final_page_content + '|' + language_code + '}}'
         page_content = page_content[page_content.find('}}') + 2:]
     return page_content, final_page_content, summary

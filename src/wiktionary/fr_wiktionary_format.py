@@ -393,10 +393,16 @@ def treat_page(page):
                         if debug_level > 1:
                             print(' Definition paragraph')
                         add_language_code = True  # Paragraphe avec code langue dans les modèles lexicaux
+
                         if language_code is None:
+                            if debug_level > 0:
+                                pywikibot.output("  find language_code...")
                             # TODO: gérer les {{S|étymologie}} en milieu d'article
                             language_code = page_content[
                                 end_position + 1 + len(section) + 1:page_content.find('}}')].replace('|flexion', '')
+                            if debug_level > 0:
+                                pywikibot.output("  language_code found: " + language_code)
+
                             # TODO: num=, genre=...
                             summary = summary + ' ajout du {{langue|' + language_code + '}} manquant'
                             page_content = '== {{langue|' + language_code + '}} ==\n' + final_page_content[
@@ -677,8 +683,7 @@ def treat_page(page):
                             final_page_content, page_content = next_template(final_page_content, page_content,
                                                                              current_template, 'nocat=1')
                     else:
-                        final_page_content, page_content = next_template(
-                            final_page_content, page_content)
+                        final_page_content, page_content = next_template(final_page_content, page_content)
 
                 elif p < limit8:
                     if debug_level > 0:
@@ -794,8 +799,7 @@ def treat_page(page):
                     page_content.find('}}') < page_content.find('{{') or page_content.find('{{') == -1):
                 if debug_level > 1:
                     print('    possible duplicated "lang=" in ' + current_template)
-                final_page_content, page_content = next_template(
-                    final_page_content, page_content)
+                final_page_content, page_content = next_template(final_page_content, page_content)
                 # TODO bug with nested templates:
                 # https://fr.wiktionary.org/w/index.php?title=Utilisateur:JackBot/test_unitaire&diff=prev&oldid=25811164
                 # regex = r'({{' + re.escape(current_template) + r')\|lang=' + language_code + '(\|[^{}]*({{(.*?)}}|.)*[^{}]*\|lang=' + language_code + ')'
