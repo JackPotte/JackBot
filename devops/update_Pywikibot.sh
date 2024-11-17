@@ -16,3 +16,4 @@ cd ../../..
 if [ ! -e 'user-config.py' ]
   then cp user-config.py.dist user-config.py
 fi
+touch user-password.py
