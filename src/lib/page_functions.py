@@ -834,9 +834,18 @@ def is_template_name_start(string, template_name):
     return re.search(regex, string)
 
 
-def has_parameter(string, param):
+def has_parameter(template, param):
     regex = r'\| *' + param + r' *='
-    return re.search(regex, string)
+    return re.search(regex, template)
+
+
+# TODO add a check if not empty
+def has_parameter_index(template_content, param):
+    return count_parameters(template_content) >= param
+
+
+def count_parameters(template_content):
+    return template_content.count('|')
 
 
 def remove_parameter_if_empty(template, parameter_name):

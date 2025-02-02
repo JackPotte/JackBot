@@ -1027,27 +1027,34 @@ def get_level_by_section_name(section):
 def add_language_code_with_named_parameter_to_template(
     final_page_content,
     page_content,
-    current_template=None,
+    template_name=None,
     language_code=None,
     end_position=0
 ):
     if debug_level > 0:
-        pywikibot.output(f"  Template with lang=: \03<<green>>{current_template}\03<<default>>")
-    page_content2 = page_content[end_position + 1:]
+        pywikibot.output(f"  Template with lang=: \03<<green>>{template_name}\03<<default>>")
 
-    has_subtemplate_included = False
-    if page_content.find('}}') > page_content.find('{{') != -1:
-        # TODO Infinite loop in [[tomme]] with ^date\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang=
-        regex_has_subtemplate = r'^' + re.escape(current_template) +  r'\|[^{}]*({{(.*?)}}|.)+[^{}]*\| *lang(?:ue|1)? *='
-        if re.search(regex_has_subtemplate, page_content):
-            has_subtemplate_included = True
-
-    if has_subtemplate_included or language_code is None:
+    if language_code is None:
         if debug_level > 0:
-            print('   "lang=" addition ignored')
+            print('   "lang=" addition ignored because no language is defined')
         return next_template(final_page_content, page_content)
 
-    is_not_category_name = current_template != 'cf' or (
+    if page_content.find('}}') > page_content.find('{{') != -1:
+        # TODO Infinite loop in [[tomme]] with ^date\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang=
+        regex_has_subtemplate = r'^' + re.escape(template_name) + r'\|[^{}]*({{(.*?)}}|.)+[^{}]*\| *lang(?:ue|1)? *='
+        if re.search(regex_has_subtemplate, page_content):
+            if debug_level > 0:
+                print('   "lang=" addition ignored because of a subtemplate')
+            return next_template(final_page_content, page_content)
+
+    template_content = page_content[:page_content.find('}}')]
+    if has_parameter_index(template_content, 2):
+        if debug_level > 0:
+            print('   "lang=" addition ignored because probably already present as parameter 2')
+        return next_template(final_page_content, page_content)
+
+    page_content2 = page_content[end_position + 1:]
+    is_not_category_name = template_name != 'cf' or (
             page_content2.find('}}') > end_position + 1
             and (page_content2.find(':') == -1 or page_content2.find(':') > page_content2.find('}}'))
             and page_content2[:1] != '#'
@@ -1060,15 +1067,15 @@ def add_language_code_with_named_parameter_to_template(
         while page_content2.find('{{') < page_content2.find('}}') and page_content2.find('{{') != -1:
             page_content2 = page_content2[page_content2.find('}}')+2:]
 
-        final_page_content = final_page_content + current_template + '|lang=' + language_code \
-            + page_content[end_position:page_content.find('}}') + 2]
+        final_page_content = final_page_content + template_name + '|lang=' + language_code \
+                             + page_content[end_position:page_content.find('}}') + 2]
         page_content = page_content[page_content.find('}}')+2:]
         return final_page_content, page_content
 
     if debug_level > 0:
         print('   "lang=" already present')
 
-    if current_template == 'cf':
+    if template_name == 'cf':
         return next_template(final_page_content, page_content)
 
     # Correct language code with the paragraph's one
