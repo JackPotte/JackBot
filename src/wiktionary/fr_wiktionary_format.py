@@ -241,9 +241,9 @@ def treat_page(page):
 
         if debug_level > 0:
             print(' Languages in templates checking')
-        add_language_code = False  # Some sections can contain uncategorizing domain templates
+        add_language_code_in_paragraph = False  # Some sections can contain uncategorizing domain templates
         if debug_level > 1:
-            print('  add_language_code = ' + str(add_language_code))
+            print('  A language code in this paragraph: ' + str(add_language_code_in_paragraph))
         has_translation_section = False
         go_backward = False  # Some templates need to be moved and retreated
         language_code = None
@@ -311,9 +311,9 @@ def treat_page(page):
 
                 elif current_template == 'caractère':
                     language_code = 'conv'
-                    add_language_code = False
+                    add_language_code_in_paragraph = False
                     if debug_level > 0:
-                        print(' add_language_code = ' + str(add_language_code))
+                        print(' add_language_code = ' + str(add_language_code_in_paragraph))
                     final_page_content, page_content = next_template(final_page_content, page_content)
 
                 elif current_template == 'langue':
@@ -340,7 +340,7 @@ def treat_page(page):
                         if debug_level > 0:
                             print(' page_content to format manually')
                         return
-                    add_language_code = True
+                    add_language_code_in_paragraph = True
 
                     # TODO use {{voir anagrammes|fr}}
                     # if language_code == 'conv':
@@ -392,7 +392,7 @@ def treat_page(page):
                     if sections.index(section) < limit1:
                         if debug_level > 1:
                             print(' Definition paragraph')
-                        add_language_code = True  # Paragraphe avec code langue dans les modèles lexicaux
+                        add_language_code_in_paragraph = True
 
                         if language_code is None:
                             if debug_level > 0:
@@ -438,7 +438,7 @@ def treat_page(page):
 
                     else:
                         # Paragraphe sans code langue dans les modèles lexicaux et les titres
-                        add_language_code = False
+                        add_language_code_in_paragraph = False
                         if section == 'homophones':
                             if debug_level > 0:
                                 print(' Homophons categorization')
@@ -483,7 +483,7 @@ def treat_page(page):
                             has_translation_section = True
 
                     if debug_level > 0:
-                        print('  add_language_code = ' + str(add_language_code))
+                        print('  add_language_code = ' + str(add_language_code_in_paragraph))
                     final_page_content, page_content = next_template(final_page_content, page_content)
 
                 elif current_template in ['term', 'région', 'régional']:
@@ -593,7 +593,7 @@ def treat_page(page):
                 # Templates with language code at first
                 elif current_template in ('perfectif', 'perf', 'imperfectif', 'imperf', 'déterminé', 'dét',
                                           'indéterminé', 'indét'):
-                    if (not add_language_code) or final_page_content.rfind('(') > final_page_content.rfind(')'):
+                    if (not add_language_code_in_paragraph) or final_page_content.rfind('(') > final_page_content.rfind(')'):
                         # Si on est dans des parenthèses
                         final_page_content, page_content = next_template(final_page_content, page_content,
                                                                          current_template, 'nocat=1')
@@ -651,10 +651,10 @@ def treat_page(page):
                         page_content = page_content[end_position:]
 
                 elif p < limit5:
-                    add_language_code = False
+                    add_language_code_in_paragraph = False
                     if debug_level > 1:
                         print(' limit5 : paragraphe sans code langue contenant un texte. add_language_code=' +
-                              str(add_language_code))
+                              str(add_language_code_in_paragraph))
                     # trad = False
                     if page_content.find('}}') > page_content.find('{{') != -1:
                         page_content2 = page_content[page_content.find('}}') + 2:]
@@ -674,7 +674,7 @@ def treat_page(page):
                     if debug_level > 0:
                         print(' limit7 : paragraphe potentiellement avec code langue, voire |spéc=')
                     if current_template == page_content[:page_content.find('}}')]:
-                        if add_language_code:
+                        if add_language_code_in_paragraph:
                             final_page_content, page_content = next_template(final_page_content, page_content,
                                                                              current_template, language_code)
                         else:
@@ -711,7 +711,7 @@ def treat_page(page):
                     if debug_level > 0:
                         print(' limit9 : modèle catégorisé dans les étymologies')
                     if current_template == page_content[:page_content.find('}}')]:
-                        if add_language_code or section == 'étymologie':
+                        if add_language_code_in_paragraph or section == 'étymologie':
                             final_page_content, page_content = next_template(final_page_content, page_content,
                                                                              current_template, language_code)
                         else:
@@ -727,7 +727,7 @@ def treat_page(page):
                             final_page_content.find('=') > final_page_content.find('}}'):
                         final_page_content2 = final_page_content[:final_page_content.rfind('{{')]
                         if (
-                            add_language_code
+                            add_language_code_in_paragraph
                             and (
                                 final_page_content2.rfind('{{')
                                 not in [
