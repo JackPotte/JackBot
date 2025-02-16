@@ -120,22 +120,32 @@ class PageProvider:
                         self.outputFile.write((entry.title + '\n'))
         self.outputFile.close()
 
-    def pages_by_cat(self, category, recursive=False, after_page=None, namespaces=None, names=None, not_names=None, exclude=None, site=None, pages_list=False, linked=False):
+    def pages_by_cat(
+        self,
+        category,
+        recursive=False,
+        after_page=None,
+        namespaces=None,
+        names=None,
+        not_names=None,
+        exclude=None,
+        site=None,
+        pages_list=False,
+        linked=False
+    ):
         if namespaces is None:
             namespaces = [0]
         page_ids = 50
         if site is None:
             site = self.site
-        if self.debug_level > 0:
-            print(category)
+        print(category)
         cat = pywikibot.Category(site, category)
         pages = list(cat.articles(recurse=False))
         if namespaces == [0]:
             if self.debug_level > 0:
                 print('  NamespaceFilterPageGenerator')
             # TODO OK with 0, 2, 12, but with 10, 100, 114: Namespace identifier(s) not recognised
-            gen = pagegenerators.NamespaceFilterPageGenerator(
-                pages, namespaces)
+            gen = pagegenerators.NamespaceFilterPageGenerator(pages, namespaces)
         else:
             if self.debug_level > 0:
                 print('  CategorizedPageGenerator')
@@ -230,6 +240,7 @@ class PageProvider:
             namespaces = [0, 10]
         if site is None:
             site = self.site
+        print('Pages linked to: ' + page_name)
         is_after_page = False
         page = pywikibot.Page(site, page_name)
         linked_pages = page.embeddedin(namespaces=namespaces)
