@@ -642,6 +642,19 @@ def default_sort_by_language(page_name, language_code):
         page_name = page_name.replace('ʌ', 'a⿕')
         page_name = page_name.replace('ʌ'.upper(), 'a⿕')
 
+    elif language_code == 'lv':
+        page_name = page_name.replace('ā', 'a⿕')
+        page_name = page_name.replace('č', 'c⿕')
+        page_name = page_name.replace('ē', 'e⿕')
+        page_name = page_name.replace('ģ', 'g⿕')
+        page_name = page_name.replace('ī', 'i⿕')
+        page_name = page_name.replace('ķ', 'k⿕')
+        page_name = page_name.replace('ļ', 'l⿕')
+        page_name = page_name.replace('ņ', 'n⿕')
+        page_name = page_name.replace('š', 's⿕')
+        page_name = page_name.replace('ū', 'u⿕')
+        page_name = page_name.replace('ž', 'z⿕')
+
     elif language_code == 'mt':
         # source : Document MSA (2009) p. 7
         page_name = page_name.replace('ċ', 'b⿕') # pour éviter après le « c » dans les emprunts
