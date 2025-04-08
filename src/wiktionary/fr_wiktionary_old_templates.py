@@ -17,7 +17,6 @@ old_templates = {
     'analogie': 'par analogie',
     'angl': 'anglicisme',
     'appl': 'applicatif',
-    'arbre': 'arbres',
     'arch': 'archaïsme',
     'archaïque': 'archaïsme',
     'b-m-cour': 'beaucoup moins courant',
