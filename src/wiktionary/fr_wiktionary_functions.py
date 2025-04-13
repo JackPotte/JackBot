@@ -1053,6 +1053,11 @@ def add_language_code_with_named_parameter_to_template(
             print('   "lang=" addition ignored because probably already present as parameter 2')
         return next_template(final_page_content, page_content)
 
+    if '{{!' in template_content:
+        if debug_level > 0:
+            print('   "lang=" addition ignored because of embedded parameters with {{!}}')
+        return next_template(final_page_content, page_content)
+
     page_content2 = page_content[end_position + 1:]
     is_not_category_name = template_name != 'cf' or (
             page_content2.find('}}') > end_position + 1
