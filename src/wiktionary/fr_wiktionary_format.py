@@ -802,7 +802,7 @@ def treat_page(page):
                 # https://fr.wiktionary.org/w/index.php?title=Utilisateur:JackBot/test_unitaire&diff=prev&oldid=25811164
                 # regex = r'({{' + re.escape(current_template) + r')\|lang=' + language_code + '(\|[^{}]*({{(.*?)}}|.)*[^{}]*\|lang=' + language_code + ')'
                 regex = r'({{' + re.escape(
-                    current_template) + r')\|lang=' + language_code + '(\|[^{}]*\|lang=' + language_code + ')'
+                    current_template) + r')\|lang=' + language_code + r'(\|[^{}]*\|lang=' + language_code + ')'
                 if re.search(regex, final_page_content):
                     if debug_level > 1:
                         print('    remove duplicated "lang="')
@@ -909,13 +909,13 @@ def treat_page(page):
                     for i in range(len(new_suffix)):
                         if page_name[-len(new_suffix[i] + 's'):] == new_suffix[i] + 's':
                             regex = r"({{fr\-rég\|s=[^\|}]+)" + \
-                                old_suffix[i] + "([\|}])"
+                                old_suffix[i] + r"([\|}])"
                             if re.search(regex, new_section_content):
                                 new_section_content = re.sub(
                                     regex, r'\1' + new_suffix[i] + r'\2', new_section_content)
 
                             regex = r"({{f}}\n# *''(?:[fF]éminin )?[pP]luriel de'' \[\[[^\|\]#]+)" + old_suffix[
-                                i] + "([\|#][^\]]+)" + old_suffix[i] + "(\])"
+                                i] + r"([\|#][^\]]+)" + old_suffix[i] + r"(\])"
                             if re.search(regex, new_section_content):
                                 new_section_content = re.sub(regex,
                                                              r'\1' +
@@ -925,13 +925,13 @@ def treat_page(page):
                                                              new_section_content)
 
                             regex = r"({{f}}\n# *''(?:[fF]éminin )?[pP]luriel de'' \[\[[^\|\]#]+)" + old_suffix[
-                                i] + "([\|#])"
+                                i] + r"([\|#])"
                             if re.search(regex, new_section_content):
                                 new_section_content = re.sub(
                                     regex, r'\1' + new_suffix[i] + r'\2', new_section_content)
 
                             regex = r"({{f}}\n# *''(?:[fF]éminin )?[pP]luriel de'' \[\[[^\|\]#]+)" + old_suffix[
-                                i] + "(\])"
+                                i] + r"(\])"
                             if re.search(regex, new_section_content):
                                 new_section_content = re.sub(regex, r'\1' + new_suffix[i] + r'\2', new_section_content)
                     regex = r"({{fr\-rég\|s=[^\|}]+[^e\]}])([\|}])"
@@ -1082,7 +1082,7 @@ def main(*args) -> int:
                 print(file_name)
             p.pages_by_file(file_name)
         elif sys.argv[1] in ['-dump', '-xml', '-regex']:
-            dump_file = site_language + site_family + '\-.*xml'
+            dump_file = site_language + site_family + r'\-.*xml'
             if len(sys.argv) > 2:
                 regex = sys.argv[2]
             else:
@@ -1111,10 +1111,7 @@ def main(*args) -> int:
             if len(sys.argv) > 2:
                 p.pages_by_search(sys.argv[2])
             else:
-                p.pages_by_search('insource:/Du \{\{étyl\|en\|/', namespaces=[0])
-                p.pages_by_search('insource:/Du \{\{étyl\|de\|/', namespaces=[0])
-                p.pages_by_search('insource:/Du \{\{étyl\|es\|/', namespaces=[0])
-                p.pages_by_search('insource:/Du \{\{étyl\|ar\|/', namespaces=[0])
+                p.pages_by_search(r'insource:/\}==* \{\{S\|/', namespaces=[0])
 
         elif sys.argv[1] in ['-link', '-l', '-template', '-m']:
             p.pages_by_link('Template:ucf', namespaces=[0])
@@ -1204,8 +1201,8 @@ def main(*args) -> int:
         p.pages_by_cat('Catégorie:Wiktionnaire:Sections avec paramètres superflus')
         p.pages_by_cat('Catégorie:Wiktionnaire:Sections utilisant un alias')
 
-        p.pages_by_search('insource:/\}==== \{\{S\|/', namespaces=[0])
-        p.pages_by_search('insource:/\}=== \{\{S\|/', namespaces=[0])
+        p.pages_by_search(r'insource:/\}==== \{\{S\|/', namespaces=[0])
+        p.pages_by_search(r'insource:/\}=== \{\{S\|/', namespaces=[0])
 
     return 0
 
