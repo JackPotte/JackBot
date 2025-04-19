@@ -95,8 +95,8 @@ def get_lemma_from_feminine(page_content, language_code='fr', natures=None):
     if debug_level > 1:
         print('\nget_lemma_from_feminine()')
     lemma_page_name = ''
-    regex = r"(=== {{S\|(" + '|'.join(natures) + ")\|" + language_code + "\|flexion}} ===\n({{" + language_code + \
-        "\-[^}]*}}\n)?'''[^\n]+\n# *'* *[Ff]éminin *'* *'*(singulier|pluriel)? *'* *de'* *'* *(\[\[|{{li?e?n?\|))([^#\|\]}]+)"
+    regex = r"(=== {{S\|(" + '|'.join(natures) + r")\|" + language_code + r"\|flexion}} ===\n({{" + language_code + \
+        r"\-[^}]*}}\n)?'''[^\n]+\n# *'* *[Ff]éminin *'* *'*(singulier|pluriel)? *'* *de'* *'* *(\[\[|{{li?e?n?\|))([^#\|\]}]+)"
     s = re.search(regex, page_content)
     if s:
         if debug_level > 1:
@@ -1048,7 +1048,7 @@ def add_language_code_with_named_parameter_to_template(
             return next_template(final_page_content, page_content)
 
     template_content = page_content[:page_content.find('}}')]
-    if has_parameter_index(template_content, 2):
+    if has_parameter_index(template_content, 2) and template_name not in ('cf', 'composé de'):
         if debug_level > 0:
             print('   "lang=" addition ignored because probably already present as parameter 2')
         return next_template(final_page_content, page_content)
@@ -1850,7 +1850,7 @@ def format_translations(page_content, summary):
     if re.search(regex, page_content):
         page_content = re.sub(regex, '}}\n{{trad-fin}}', page_content)
 
-    while re.compile('{{T\|.*\n\n\*[ ]*{{T\|').search(page_content):
+    while re.compile(r'{{T\|.*\n\n\*[ ]*{{T\|').search(page_content):
         i1 = re.search(r'{{T\|.*\n\n\*[ ]*{{T\|', page_content).end()
         page_content = (
             page_content[:i1][: page_content[:i1].rfind('\n') - 1]
@@ -2566,7 +2566,7 @@ def format_languages_templates(page_content, summary, page_name):
             # Son
             if debug_level > 0:
                 print(' son')
-            regex = r'(\n\'\'\'' + regex_page_name + '\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' \
+            regex = r'(\n\'\'\'' + regex_page_name + r'\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' \
                     + demonym_templates[l][1] + r'\|' + \
                 re_page_radical_name + r')}}'
             if re.search(regex, page_content):
@@ -3821,7 +3821,7 @@ def add_fr_demonyms_templates(page_content, summary):
             summary = f'{summary}, conversion des liens flexions en modèle boite'
         if debug_level > 1:
             print(' avec son')
-        regex = r'(\n\'\'\'' + regex_page_name + '\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + \
+        regex = r'(\n\'\'\'' + regex_page_name + r'\'\'\' *{{pron\|)([^\|]+)(\|fr}}[ {}:mf]*)({{' + \
             demonym_templates[l][1] + r'\|[pron\=]*)}}'
         if re.search(regex, page_content):
             page_content = re.sub(regex, r'\n\4\2}}\1\2\3', page_content)
