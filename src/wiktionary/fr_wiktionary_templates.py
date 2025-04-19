@@ -827,6 +827,8 @@ templates.append('source?')
 templates.append('1ergroupe')
 templates.append('2egroupe')
 templates.append('3egroupe')
+templates.append('voir-conj')
+
 templates.append('ablat')
 templates.append('ablatif')
 templates.append('accord genre ?')

@@ -531,7 +531,7 @@ def treat_page(page):
                                 final_page_content, page_content = next_template(final_page_content, page_content)
 
                 # Templates with language code at second
-                elif current_template in definition_templates + ['pron', 'phon']:
+                elif current_template in definition_templates + ['pron', 'phon', 'voir-conj']:
                     if language_code == 'conv':
                         final_page_content, page_content = next_template(final_page_content, page_content)
                     else:
