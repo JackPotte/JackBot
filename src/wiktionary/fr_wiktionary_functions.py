@@ -1955,6 +1955,7 @@ def replace_templates(page_content, summary):
         )
 
     page_content = page_content.replace('{{liaison}}', '‿')
+    page_content = page_content.replace('{{se conjugue|', '{{voir-conj|')
 
     regex = r'\* ?{{sound}} ?: \[\[Media:([^\|\]]*)\|[^\|\]]*\]\]'
     if re.search(regex, page_content):
