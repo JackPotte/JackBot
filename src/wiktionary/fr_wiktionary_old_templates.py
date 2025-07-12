@@ -102,6 +102,7 @@ old_language_templates = {
     'arg': 'an',
     'be-x-old': 'be-tarask',
     'gaul': 'gaulois',
+    'gkm': 'grc',
     'gsw-FR': 'gsw-fr',
     'ko-hanja': 'ko-Hani',
     'lsf': 'fsl',
