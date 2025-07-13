@@ -43,8 +43,8 @@ class TestFrWiktionary(unittest.TestCase):
 
     def test_replace_etymology_templates(self):
         for end_char in ['}', '|']:
-            test_input = '{{deet' + end_char
-            test_output = '{{composé de|m=1' + end_char
+            test_input = 'Du {{étyl|oc|fr' + end_char
+            test_output = 'De l’{{étyl|oc|fr' + end_char
             output, summary = replace_etymology_templates(test_input, '')
             self.assertEqual(test_output, output)
 

@@ -2001,7 +2001,7 @@ def replace_etymology_templates(page_content, summary):
             new_template = template.replace('composé de', 'composé de|f=1')
             page_content = page_content.replace(template, new_template)
 
-    languages_starting_by_vowel = ['ar', 'de', 'en', 'es', 'it']
+    languages_starting_by_vowel = ['ar', 'de', 'en', 'es', 'it', 'oc']
     for language_starting_by_vowel in languages_starting_by_vowel:
         page_content = page_content.replace('Du {{étyl|' + language_starting_by_vowel + '|',
             'De l’{{étyl|' + language_starting_by_vowel + '|')
