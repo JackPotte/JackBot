@@ -2017,7 +2017,7 @@ def replace_languages_templates(page_content, summary):
     page_content = page_content.replace('|lang=gr}}', '|lang=grc}}')
     page_content = page_content.replace('|lang=gr|', '|lang=grc|')
 
-    treated_templates_with_language_at_first = ['T', 'trad[\-\+]\-?', 'étyl']
+    treated_templates_with_language_at_first = ['T', 'trad[\-\+]\-?', 'étyl', 'étylp']
     for old_language_template in old_language_templates:
         for treated_template in treated_templates_with_language_at_first:
             regex = r'({{' + treated_template + '\|)' + re.escape(old_language_template) + r'(\||}})'
