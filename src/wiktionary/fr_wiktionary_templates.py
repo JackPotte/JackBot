@@ -781,10 +781,10 @@ templates.append('cf')
 
 # https://fr.wiktionary.org/wiki/Catégorie:Modèles_étymologiques
 # https://fr.wiktionary.org/wiki/Projet:Informations_étymologiques
-# TODO ['calque', 'étcompcat', 'étyl', 'étylp', 'ellipse']
+# TODO ['calque', 'étcompcat', 'étyl', 'étylp', 'ellipse', 'composé de'] and allows indirect etymologies
 templates.append('recons')  # language code at second
 etymology_date_templates = ['date', 'siècle']
-etymology_templates_with_language_at_lang = etymology_date_templates + ['composé de']
+etymology_templates_with_language_at_lang = etymology_date_templates
 templates += etymology_templates_with_language_at_lang
 
 fr_etymology_templates = ['louchébem', 'reverlanisation', 'verlan']
