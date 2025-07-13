@@ -1993,11 +1993,6 @@ def replace_etymology_templates(page_content, summary):
     # decision = ', [[Wiktionnaire:Prise de décision/Nettoyer les modèles de la section étymologie]]'
     # initial_page_content = page_content
 
-    # Alias replacing with: |m=1
-    regex = r"({{)deet([|}])"
-    if re.search(regex, page_content):
-        page_content = re.sub(regex, r"\1composé de|m=1\2", page_content)
-
     regex = r'[Ll]ocution {{composé de[^{}]+}}'
     page_templates = re.findall(regex, page_content)
     regex2 = r'\| *f *= *(1|oui)[\|}]'
@@ -2006,15 +2001,10 @@ def replace_etymology_templates(page_content, summary):
             new_template = template.replace('composé de', 'composé de|f=1')
             page_content = page_content.replace(template, new_template)
 
-    page_content = page_content.replace('Du {{étyl|en|', 'De l’{{étyl|en|')
-    page_content = page_content.replace('Du {{étyl|es|', 'De l’{{étyl|es|')
-    page_content = page_content.replace('Du {{étyl|de|', 'De l’{{étyl|de|')
-    page_content = page_content.replace('Du {{étyl|ar|', 'De l’{{étyl|ar|')
-
-    page_content = page_content.replace('du {{étyl|en|', 'de l’{{étyl|en|')
-    page_content = page_content.replace('du {{étyl|es|', 'de l’{{étyl|es|')
-    page_content = page_content.replace('du {{étyl|de|', 'de l’{{étyl|de|')
-    page_content = page_content.replace('du {{étyl|ar|', 'de l’{{étyl|ar|')
+    languages_starting_by_vowel = ['ar', 'de', 'en', 'es', 'it']
+    for language_starting_by_vowel in languages_starting_by_vowel:
+        page_content = page_content.replace('Du {{étyl|' + language_starting_by_vowel + '|',
+            'De l’{{étyl|' + language_starting_by_vowel + '|')
 
     return page_content, summary
 
