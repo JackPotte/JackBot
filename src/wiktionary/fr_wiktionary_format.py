@@ -557,7 +557,7 @@ def treat_page(page):
                         end_position
                     )
 
-                elif current_template in ('référence nécessaire', 'réf?', 'réf ?', 'refnec', 'réfnéc', 'réfnec', 'source?'):
+                elif current_template in reference_templates:
                     page_content2 = page_content[end_position:]
                     # TODO with regex = r'lang *= *'
                     # TODO replace langue= by lang=
@@ -574,8 +574,7 @@ def treat_page(page):
                             page_content = page_content.replace(page_content2, new_page_content2)
                         final_page_content, page_content = next_template(final_page_content, page_content)
 
-                # Check genders in languages which have not
-                elif current_template in ('m', 'f', 'mf', 'n', 'c'):
+                elif current_template in gender_templates_without_language:
                     if has_translation_section or language_code not in languagesWithoutGender:
                         final_page_content = final_page_content + \
                             page_content[:page_content.find('}}') + 2]
@@ -586,28 +585,25 @@ def treat_page(page):
                         go_backward = True
                     page_content = page_content[page_content.find('}}') + 2:]
 
-                elif current_template in ('mf?', 'mf ?', 'fm?', 'fm ?'):
+                elif current_template in gender_templates_with_language_at_first:
                     final_page_content, page_content = next_template(final_page_content, page_content,
                                                                      current_template, language_code)
 
-                # Templates with language code at first
-                elif current_template in ('perfectif', 'perf', 'imperfectif', 'imperf', 'déterminé', 'dét',
-                                          'indéterminé', 'indét'):
-                    if (not add_language_code_in_paragraph) or final_page_content.rfind('(') > final_page_content.rfind(')'):
-                        # Si on est dans des parenthèses
+                elif current_template in grammar_templates_with_language_at_first:
+                    if not add_language_code_in_paragraph \
+                        or final_page_content.rfind('(') > final_page_content.rfind(')'):
                         final_page_content, page_content = next_template(final_page_content, page_content,
                                                                          current_template, 'nocat=1')
                     else:
                         final_page_content, page_content = next_template(final_page_content, page_content,
                                                                          current_template, language_code)
 
-                # Templates with two parameters
-                elif current_template in ('conjugaison', 'conj', '1ergroupe', '2egroupe', '3egroupe'):
+                elif current_template in grammar_templates_with_two_parameters:
                     page_content, final_page_content, summary = treat_conjugation(
                         page_content, final_page_content, summary, current_template, language_code, page_name
                     )
 
-                elif do_fix_translations and current_template in ('trad', 'trad+', 'trad-', 'trad--'):
+                elif do_fix_translations and current_template in translation_templates_with_language_at_first:
                     page_content, final_page_content, summary = treat_translations(
                         page_content, final_page_content, summary, end_position, site_family
                     )

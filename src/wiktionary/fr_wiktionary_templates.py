@@ -2072,6 +2072,8 @@ natures = [
     'numéral', 'sinogramme', 'erreur', 'gismu', 'rafsi', 'nom propre'
 ]
 
+adverbs = ['lieu', 'manière', 'quantité', 'temps']
+
 # https://fr.wiktionary.org/wiki/Catégorie:Modèles_de_définitions
 definition_templates = [
     'abréviation de', 'comparatif de', 'exclamatif de', 'mutation de', 'superlatif de',
@@ -2101,4 +2103,26 @@ inflexion_templates_fr = [
     'fr-accord-personne', 'fr-accord-t-avant1835', 'fr-inv'
 ]
 
-adverbs = ['lieu', 'manière', 'quantité', 'temps']
+reference_templates = [
+    'référence nécessaire', 'réf?', 'réf ?', 'refnec', 'réfnéc', 'réfnec', 'source?'
+]
+
+gender_templates_without_language = [
+    'm', 'f', 'mf', 'n', 'c'
+]
+
+gender_templates_with_language_at_first = [
+    'mf?', 'mf ?', 'fm?', 'fm ?'
+]
+
+translation_templates_with_language_at_first = [
+    'trad', 'trad+', 'trad-', 'trad--'
+]
+
+grammar_templates_with_language_at_first = [
+    'perfectif', 'perf', 'imperfectif', 'imperf', 'déterminé', 'dét', 'indéterminé', 'indét'
+]
+
+grammar_templates_with_two_parameters = [
+    'conjugaison', 'conj', '1ergroupe', '2egroupe', '3egroupe'
+]
