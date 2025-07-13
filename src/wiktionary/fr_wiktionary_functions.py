@@ -2027,14 +2027,11 @@ def replace_languages_templates(page_content, summary):
     page_content = page_content.replace('|lang=gr}}', '|lang=grc}}')
     page_content = page_content.replace('|lang=gr|', '|lang=grc|')
 
+    treated_templates_with_language_at_first = ['T', 'trad[\-\+]\-?', 'étyl']
     for old_language_template in old_language_templates:
-        # TODO select templates https://fr.wiktionary.org/w/index.php?title=van&diff=prev&oldid=24107783&diffmode=source
-        # regex = r'((?!:voir).*[\|{=])' + old_template[p] + r'([\|}])'
-        regex = r'({{T\|)' + re.escape(old_language_template) + r'}}'
-        page_content = re.sub(regex, r'\1' + old_language_templates[old_language_template] + r'}}', page_content)
-        regex = r'({{trad[\-\+]\-?\|)' + \
-            re.escape(old_language_template) + r'\|'
-        page_content = re.sub(regex, r'\1' + old_language_templates[old_language_template] + r'|', page_content)
+        for treated_template in treated_templates_with_language_at_first:
+            regex = r'({{' + treated_template + '\|)' + re.escape(old_language_template) + r'(\||}})'
+            page_content = re.sub(regex, r'\1' + old_language_templates[old_language_template] + r'\2', page_content)
 
     return page_content, summary
 
