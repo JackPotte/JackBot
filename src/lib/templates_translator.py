@@ -2,7 +2,7 @@
 # coding: utf-8
 """
 Ce script traduit les noms et paramètres de ces modèles en français (ex : {{cite web|title=}} par {{lien web|titre=}})
-cf http://www.tradino.org/
+TODO handle more errors from https://wstat.fr/template/info/Article
 """
 
 
@@ -149,6 +149,20 @@ old_param.append('surname')
 new_param.append('nom')
 old_param.append('last')
 new_param.append('nom')
+old_param.append('issue')
+new_param.append('numéro')
+old_param.append('authorlink')
+new_param.append('lien auteur')
+old_param.append('author-link')
+new_param.append('lien auteur')
+old_param.append('coauthorlink')
+new_param.append('lien coauteur')
+old_param.append('coauthor-link')
+new_param.append('lien coauteur')
+old_param.append('editor-first')
+new_param.append('prénom')
+old_param.append('editor-last')
+new_param.append('nom')
 for p in range(1, 100):
     old_param.append(f'first{str(p)}')
     new_param.append(f'prénom{str(p)}')
@@ -160,23 +174,21 @@ for p in range(1, 100):
     new_param.append(f'nom{str(p)}')
     old_param.append(f'author{str(p)}')
     new_param.append(f'auteur{str(p)}')
-old_param.append('issue')
-new_param.append('numéro')
-old_param.append('authorlink')
-new_param.append('lien auteur')
-old_param.append('author-link')
-new_param.append('lien auteur')
-for p in range(1, 100):
+    old_param.append(f'editor{str(p)}')
+    new_param.append(f'auteur{str(p)}')
     old_param.append(f'authorlink{str(p)}')
     new_param.append(f'lien auteur{str(p)}')
     old_param.append(f'author{str(p)}link')
     new_param.append(f'lien auteur{str(p)}')
-old_param.append('coauthorlink')
-new_param.append('lien coauteur')
-old_param.append('coauthor-link')
-new_param.append('lien coauteur')
-old_param.append('surname1')
-new_param.append('nom1')
+    # TODO avoid nom + nom1 in the same template
+    # old_param.append(f'editor{str(p)}-first')
+    # new_param.append(f'prénom{str(p)}')
+    # old_param.append(f'editor{str(p)}-last')
+    # new_param.append(f'nom{str(p)}')
+    # old_param.append(f'editor-first{str(p)}')
+    # new_param.append(f'prénom{str(p)}')
+    # old_param.append(f'editor-last{str(p)}')
+    # new_param.append(f'nom{str(p)}')
 old_param.append('coauthors')
 new_param.append('coauteurs')
 old_param.append('co-auteurs')
@@ -254,6 +266,9 @@ old_param.append('pp')
 new_param.append('passage')
 old_param.append('url-access')
 new_param.append('accès url')
+# TODO add for all templates?
+# old_param.append('site')
+# new_param.append('accès url')
 old_param.append('doi-access')
 new_param.append('accès doi')
 old_param.append('hdl-access')
@@ -270,8 +285,13 @@ old_param.append('auteur-')
 new_param.append('auteur')
 old_param.append('editor')
 new_param.append('éditeur')
-old_param.append('editor2')
-new_param.append('auteur2')
+old_param.append('consulté')
+new_param.append('consulté le')
+old_param.append('Consulté le')
+new_param.append('consulté le')
+old_param.append('consultée le')
+new_param.append('consulté le')
+
 
 # de
 old_param.append('werk')
@@ -496,8 +516,7 @@ def translate_templates(current_page, summary):
     current_page = current_page.replace('<ref>{{en}}} ', '<ref>{{en}} ')
     current_page = current_page.replace('<ref>{{{en}} ', '<ref>{{en}} ')
     current_page = current_page.replace('<ref>{{{en}}} ', '<ref>{{en}} ')
-    current_page = re.sub(
-        r'[C|c]ita(tion)? *\n* *(\|[^}{]*title *=)', r'ouvrage\2', current_page)
+    current_page = re.sub(r'[C|c]ita(tion)? *\n* *(\|[^}{]*title *=)', r'ouvrage\2', current_page)
     current_page = translate_link_templates(current_page)
     current_page = translate_dates(current_page)
     current_page = translate_languages(current_page)
@@ -549,7 +568,7 @@ def translate_template_parameters(current_template):
         if not has_parameter(current_template, old_param[p]):
             continue
 
-        if debug_level > 0:
+        if debug_level > 1:
             print(f'  "{old_param[p]}" found')
         fr_name = new_param[p]
 
@@ -562,7 +581,8 @@ def translate_template_parameters(current_template):
             continue
 
         if old_param[p] == 'agency':
-            if is_template_name_start(current_template, 'article') and not has_parameter(current_template, 'périodique') \
+            if is_template_name_start(current_template, 'article') \
+                    and not has_parameter(current_template, 'périodique') \
                     and not has_parameter(current_template, 'work'):
                 fr_name = 'périodique'
             else:
@@ -606,7 +626,7 @@ def translate_template_parameters(current_template):
             language_parameter = ''
             if not has_parameter(current_template, 'langue') or get_parameter_value(current_template, 'langue') == 'None':
                 language_code = param_values[0]
-                language_parameter = '|langue=' + language_code
+                language_parameter = f'|langue={language_code}'
             title = param_values[1]
             current_template = current_template.replace(old_param_value, title + language_parameter)
 
@@ -619,9 +639,7 @@ def translate_template_parameters(current_template):
                 fr_name = 'type'
 
         elif old_param[p] == 'website':
-            if not is_template_name_start(
-                current_template, 'article'
-            ) or has_parameter(current_template, 'périodique'):
+            if not is_template_name_start(current_template, 'article') or has_parameter(current_template, 'périodique'):
                 fr_name = old_param[p]
 
         elif old_param[p] == 'work':
@@ -649,13 +667,12 @@ def translate_template_parameters(current_template):
                 print(f'   {new_param_value}')
             # Nested templates engenders a false empty value for now
             if old_param_value == new_param_value and old_param_value != '':
-                regex = r'(\| *)' + old_param[p] + r'( *=[^\|}\[]*)([\|}])'
+                regex = r'(\| *)' + re.escape(old_param[p]) + r'( *=[^\|}\[]*)([\|}])'
                 current_template = re.sub(regex, r'\3', current_template)
-                    # TODO keep only the last date between "access-date" and "consulté le"
+                # TODO choose the best double value. Ex: keep only the last date between doubles "access-date" and "consulté le"
         else:
-            regex = r'(\| *)' + old_param[p] + r'( *=)'
-            current_template = re.sub(
-                regex, r'\1' + fr_name + r'\2', current_template)
+            regex = r'(\| *)' + re.escape(old_param[p]) + r'( *=)'
+            current_template = re.sub(regex, r'\1' + fr_name + r'\2', current_template)
 
     current_template = current_template.replace('|=', u'|')
     current_template = current_template.replace('| =', u'|')
