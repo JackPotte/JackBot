@@ -658,8 +658,11 @@ def translate_template_parameters(current_template):
             is_already_present = re.search(regex, current_template)
 
             # Because "nom" = "nom1"
-            if not is_already_present and new_param[p].endswith('1') and not new_param[p].endswith('11'):
-                new_param_alias = new_param[p].replace('1', '')
+            if not is_already_present:
+                if new_param[p].endswith('1') and not new_param[p].endswith('11'):
+                    new_param_alias = new_param[p].replace('1', '')
+                else:
+                    new_param_alias = new_param[p] + '1'
                 regex = r'(\| *)' + new_param_alias + r'( *=)'
                 is_already_present = re.search(regex, current_template)
 
