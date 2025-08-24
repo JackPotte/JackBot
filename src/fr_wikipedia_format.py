@@ -210,14 +210,14 @@ def main(*args) -> int:
             p.pages_by_file(f'lists/articles_{site_language}_{site_family}.txt')
         elif sys.argv[1] in ['-dump', '-xml']:
             regex = sys.argv[2] if len(sys.argv) > 2 else r'\| *French *\|'
-            p.page_by_xml(site_language + site_family + '\-.*xml', regex)
+            p.page_by_xml(site_language + site_family + '-.*xml', regex)
         elif sys.argv[1] == '-u':
             p.pages_by_user(f'User:{username}')
         elif sys.argv[1] in ['-search', '-s', '-r']:
             if len(sys.argv) > 2:
                 p.pages_by_search(sys.argv[2], namespaces=[0])
             else:
-                p.pages_by_search('insource:/\| *display-authors *= *etal */')
+                p.pages_by_search('insource:/| *display-authors *= *etal */')
         elif sys.argv[1] in ['-link', '-l', '-template', '-m']:
             p.pages_by_link('Modèle:Dead link')
         elif sys.argv[1] in ['-category', '-cat']:
