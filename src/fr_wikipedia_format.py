@@ -199,7 +199,7 @@ def main(*args) -> int:
     if len(sys.argv) > 1:
         if debug_level > 1:
             print(sys.argv)
-        if sys.argv[1] == '-test':
+        if sys.argv[1] in ['-test', '-t']:
             treat_page_by_name(f'User:{username}/test')
         elif sys.argv[1] in ['-test2', '-tu']:
             treat_page_by_name(f'User:{username}/test unitaire')

@@ -163,7 +163,7 @@ old_param.append('editor-first')
 new_param.append('prénom')
 old_param.append('editor-last')
 new_param.append('nom')
-for p in range(1, 100):
+for p in range(1, 20):
     old_param.append(f'first{str(p)}')
     new_param.append(f'prénom{str(p)}')
     old_param.append(f'given{str(p)}')
@@ -509,6 +509,9 @@ def set_globals_translator(my_debug_level, my_site, my_username):
 
 
 def translate_templates(current_page, summary):
+    if debug_level > 1:
+        print('\ntranslate_templates()')
+
     current_page = current_page.replace('[//https://', '[https://')
     current_page = current_page.replace('[//http://', '[http://')
     current_page = current_page.replace('http://http://', 'http://')
@@ -655,6 +658,12 @@ def translate_template_parameters(current_template):
         if new_param[p] != 'langue':  # TODO because "|langue=None" in current_template
             regex = r'(\| *)' + new_param[p] + r'( *=)'
             is_already_present = re.search(regex, current_template)
+
+            # Because "nom" = "nom1"
+            if not is_already_present and new_param[p].endswith('1') and not new_param[p].endswith('11'):
+                new_param_alias = new_param[p].replace('1', '')
+                regex = r'(\| *)' + new_param_alias + r'( *=)'
+                is_already_present = re.search(regex, current_template)
 
         if is_already_present:
             # Remove double if value is the same
