@@ -180,7 +180,7 @@ for p in range(1, 20):
     new_param.append(f'lien auteur{str(p)}')
     old_param.append(f'author{str(p)}link')
     new_param.append(f'lien auteur{str(p)}')
-    # TODO avoid nom + nom1 in the same template
+    # TODO Director params
     # old_param.append(f'editor{str(p)}-first')
     # new_param.append(f'prénom{str(p)}')
     # old_param.append(f'editor{str(p)}-last')
@@ -283,8 +283,6 @@ old_param.append('Auteur')
 new_param.append('auteur')
 old_param.append('auteur-')
 new_param.append('auteur')
-old_param.append('editor')
-new_param.append('éditeur')
 old_param.append('consulté')
 new_param.append('consulté le')
 old_param.append('Consulté le')
@@ -680,6 +678,12 @@ def translate_template_parameters(current_template):
                 current_template = re.sub(regex, r'\3', current_template)
                 # TODO choose the best double value. Ex: keep only the last date between doubles "access-date" and "consulté le"
         else:
+            # TODO change "editor1" behavior along with "editor1-last"?
+            # if old_param[p] != 'editor' and old_param[p].startswith('editor'):
+            #     param_number = re.search(r'(\d+)', old_param[p])
+            #     if param_number:
+            #         fr_name = '|directeur' + param_number[0] + '=oui |' + fr_name
+
             regex = r'(\| *)' + re.escape(old_param[p]) + r'( *=)'
             current_template = re.sub(regex, r'\1' + fr_name + r'\2', current_template)
 
