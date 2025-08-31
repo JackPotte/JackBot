@@ -243,14 +243,28 @@ class PageProvider:
         print('Pages linked to: ' + page_name)
         is_after_page = False
         page = pywikibot.Page(site, page_name)
+
+        linked_pages = site.pagebacklinks(page, namespaces=namespaces)
+        for linked_page in linked_pages:
+            if self.debug_level > 0:
+                print(f' Linked page: {linked_page.title()}')
+            if not after_page or after_page == '' or is_after_page:
+                if is_linked:
+                    linked_linked_pages = site.pagebacklinks(linked_page, namespaces=namespaces)
+                    for linked_linked_page in linked_linked_pages:
+                        self.treat_page(linked_linked_page)
+                else:
+                    self.treat_page(linked_page)
+            elif linked_page.title() == after_page:
+                is_after_page = True
+
         linked_pages = page.embeddedin(namespaces=namespaces)
         for linked_page in linked_pages:
             if self.debug_level > 0:
                 print(f' Linked page: {linked_page.title()}')
             if not after_page or after_page == '' or is_after_page:
                 if is_linked:
-                    linked_linked_pages = linked_page.embeddedin(
-                        namespaces=namespaces)
+                    linked_linked_pages = linked_page.embeddedin(namespaces=namespaces)
                     for linked_linked_page in linked_linked_pages:
                         self.treat_page(linked_linked_page)
                 else:

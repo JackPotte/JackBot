@@ -952,6 +952,10 @@ def treat_page(page):
             singular_page_name
         )
 
+        regex = r'\n\* *{{Annexe\|Proverbes en français}} *'
+        if re.search(regex, final_page_content):
+            final_page_content = re.sub(regex, r'', final_page_content)
+
         regex = r'([^\n=])(===?=? *{{S\|)'
         if re.search(regex, final_page_content):
             final_page_content = re.sub(regex, r'\1\n\n\2', final_page_content)
@@ -1110,7 +1114,10 @@ def main(*args) -> int:
                 p.pages_by_search(r'insource:/\}==* \{\{S\|/', namespaces=[0])
 
         elif sys.argv[1] in ['-link', '-l', '-template', '-m']:
-            p.pages_by_link('Template:ucf', namespaces=[0])
+            if len(sys.argv) > 2:
+                p.pages_by_link(sys.argv[2], namespaces=[0])
+            else:
+                p.pages_by_link('Annexe:Proverbes en français', namespaces=[0])
         elif sys.argv[1] in ['-category', '-cat', '-c']:
             if len(sys.argv) > 2:
                 if sys.argv[2] == 'listFalseTranslations':
