@@ -17,3 +17,4 @@ python3 core/pwb.py clean_sandbox.py -q -lang:fr -family:wikisource
 #python3 core/pwb.py src/wiktionary/fr_wiktionary_archive.py -q
 python3 core/pwb.py src/TalkArchiver -family:wiktionary
 python3 core/pwb.py src/TalkArchiver -family:wikisource
+python3 core/pwb.py src/TalkArchiver -family:wiktionary -p:'Projet:Gadget de création d’entrées/Suggestions'

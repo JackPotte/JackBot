@@ -27,7 +27,7 @@ class TalkArchiver:
     user_name = None
     debug_level = None
     days_before_archiving = 3
-    namespace = 4
+    namespaces = [4, 108]
 
     default_talk_pages = {
         'wikipedia': 'Wikipédia:Bot/Requêtes',
@@ -36,15 +36,17 @@ class TalkArchiver:
     }
 
     headers_templates = {
-        'wikipedia': 'Wikipédia:Bot/Navig',
-        'wikisource': 'NavigBOT',
-        'wiktionary': 'NavigBOT',
+        'Wikipédia:Bot/Requêtes': 'Wikipédia:Bot/Navig',
+        'Wikisource:Bots/Requêtes': 'NavigBOT',
+        'Wiktionnaire:Bots/Requêtes': 'NavigBOT',
+        'Projet:Gadget de création d’entrées/Suggestions': 'NavigationGadgetCNE',
     }
 
     headers = {
-        'wikipedia': '<noinclude>{{Wikipédia:Bot/Navig}}</noinclude>',
-        'wikisource': '{{NavigBOT|{{subst:CURRENTYEAR}}}}',
-        'wiktionary': '{{NavigBOT|{{subst:CURRENTYEAR}}}}',
+        'Wikipédia:Bot/Requêtes': '<noinclude>{{Wikipédia:Bot/Navig}}</noinclude>',
+        'Wikisource:Bots/Requêtes': '{{NavigBOT|{{subst:CURRENTYEAR}}}}',
+        'Wiktionnaire:Bots/Requêtes': '{{NavigBOT|{{subst:CURRENTYEAR}}}}',
+        'Projet:Gadget de création d’entrées/Suggestions': '{{NavigationGadgetCNE|{{subst:CURRENTYEAR}}}}',
     }
 
     closed_status = {
@@ -72,15 +74,15 @@ class TalkArchiver:
             pywikibot.output(f"\n\03<<red>>{self.page_name}\03<<default>>")
 
         page = Page(self.site, self.page_name)
-        latest_rev = page.editTime()
         now = datetime.datetime.now()
-        inactivity_duration = (now - latest_rev).days
+        inactivity_duration = (now - page.latest_revision.timestamp).days
+
         if inactivity_duration < self.days_before_archiving:
             if self.debug_level > 0:
-                print(f' The page has been modified in the last days: {str(inactivity_duration)}')
+                print(f' No change: the page has been modified in the last days: {str(inactivity_duration)}')
             return
 
-        page_content = get_content_from_page(page, [self.namespace])
+        page_content = get_content_from_page(page, self.namespaces)
         l = r'=='
         status_regex = r'|'.join(self.closed_status[str(self.site.family)])
         section_title_regex = r'\n' + l + \
@@ -104,22 +106,24 @@ class TalkArchiver:
             page_content = page_content.replace(section, '')
 
         if page_content == page.get():
+            if self.debug_level > 0:
+                print(f' No change after archive')
             return
 
         # TODO Wikipedia archives per month
         current_year = time.strftime('%Y')
         archive_page = Page(self.site, f'{self.page_name}/Archives/{current_year}')
-        final_page_content2 = get_content_from_page(
-            archive_page, [self.namespace])
+        final_page_content2 = get_content_from_page(archive_page, self.namespaces)
         if final_page_content2 is None:
             final_page_content2 = ''
-        if '{{' + \
-                    self.headers_templates[str(self.site.family)] not in final_page_content2:
-            final_page_content2 = self.headers[str(
-                self.site.family)] + '\n' + final_page_content2
-        save_page(archive_page, final_page_content2 +
-                  '\n' + final_page_content, summary)
+        if '{{' + self.headers_templates[str(self.page_name)] not in final_page_content2:
+            final_page_content2 = self.headers[str(self.page_name)] + '\n' + final_page_content2
+        save_page(archive_page, final_page_content2 + '\n' + final_page_content, summary)
         save_page(page, page_content, summary)
+
+        if self.debug_level > 1:
+            print(f' End of page treatment')
+        return
 
 
 if __name__ == "__main__":
