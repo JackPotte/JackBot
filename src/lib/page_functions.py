@@ -27,17 +27,17 @@ def get_global_variables(args):
             site_family = value
         elif option in ['-language', '-lang', '-l']:
             site_language = value
-        elif option in ['-tu', '-t']:
-            page_name = '/test unitaire'
+        elif option in ['-page', '-p']:
+            page_name = value
+        elif option in ['-test', '-t']:
+            page_name = f'User:JackBot/test'
 
     site = pywikibot.Site(site_language, site_family)
     user_name = config.usernames[site_family][site_language]
-    if page_name is not None:
-        page_name = f'User:{user_name}{page_name}'
+
     debug_level = int(debug_level)
     if debug_level > 0:
-        print('get_global_variables() =', site_language,
-              site_family, user_name, page_name)
+        print('get_global_variables() =', site_language, site_family, user_name, page_name)
 
     return site, user_name, debug_level, page_name
 
@@ -372,15 +372,15 @@ def replace_deprecated_tags(page_content):
         'center': 'div style="text-align: center;"',
         'font *color *= *"?': 'span style="color:',
         'font *face *= *"?': 'span style="font-family:',
-        'font *\-?size *= *"?\+?\-?': 'span style="font-size:',
-        'font *style *= *"?\+?\-?': 'span style="',
+        'font *-?size *= *"?+?-?': 'span style="font-size:',
+        'font *style *= *"?+?-?': 'span style="',
         'strike': 's',
         'tt': 'code',
         'BIG': 'strong',
     }
     deprecated_tags['CENTER'] = 'div style="text-align: center;"'
     deprecated_tags['FONT COLOR *= *"?'] = 'span style="color:'
-    deprecated_tags['FONT SIZE *= *"?\+?'] = 'span style="font-size:'
+    deprecated_tags['FONT SIZE *= *"?+?'] = 'span style="font-size:'
     deprecated_tags['STRIKE'] = 's'
     deprecated_tags['TT'] = 'code'
     font_size = {}
@@ -550,7 +550,7 @@ def replace_files_errors(page_content):
 def replaceDMOZ(page_content):
     if page_content.find('dmoz.org/search?') == -1 and page_content.find('dmoz.org/license.html') == -1:
         # http://www.dmoz.org => http://dmoztools.net
-        URLend = ' \\n\[\]}{<>\|\^`\\"\''
+        URLend = ' \\n[]}{<>|^`\\"\''
         if debug_level > 1:
             print(URLend)
         regex = r'\[http://(www\.)?dmoz\.org/([^' + URLend + r']*)([^\]]*)\]'

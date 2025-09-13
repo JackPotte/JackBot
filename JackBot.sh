@@ -4,7 +4,7 @@
 #python core/pwb.py replace       -lang:commons -family:commons -file:articles_commons_txt "[[Category:PDF Wikibooks]]" "[[Category:English Wikibooks PDF]]"
 #python core/pwb.py movepages     -lang:fr -family:wiktionary -pairsfile:"articles_fr_wiktionary.txt" -noredirect
 #python core/pwb.py protect       -lang:fr -family:wiktionary -cat:"Élections de patrouilleurs" -summary:"Vote archivé" -move:sysop -edit:sysop
-#python core/pwb.py delete        -lang:fr -family:wikiversity -file:"scripts/JackBot/articles_fr_wiktionary_txt"
+#python core/pwb.py delete        -lang:fr -family:wikiversity -file:"logs/articles_fr_wiktionary_txt"
 #python core/pwb.py delete        -lang:en -family:wikibooks -cat:"Candidates for speedy deletion"
 #python core/pwb.py delete        -lang:fr -family:wiktionary -cat:"Suppressions immédiates demandées"
 #python core/pwb.py touch         -lang:fr -family:wiktionary -cat:"Pluriels manquants en français" -namespace:0
@@ -85,7 +85,7 @@ python core/pwb.py src/fr_wikipedia_format
 python core/pwb.py src/wiktionary/fr_wiktionary_create_inflexions
 python core/pwb.py src/wiktionary/fr_wiktionary_format
 python core/pwb.py src/wiktionary/fr_wiktionary_import_from_commons
-python core/pwb.py src/TalkArchiver.py --family:wiktionary
+python core/pwb.py src/TalkArchiver.py --family:wiktionary -d:1
 python core/pwb.py src/TalkArchiver.py --family:wikisource
 python core/pwb.py src/en_wikibooks_add_authors_and_contributors.py
 
