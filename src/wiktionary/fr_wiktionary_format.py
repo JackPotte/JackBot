@@ -71,7 +71,7 @@ treat_categories = True
 treat_appendix = True
 fix_genders = True
 fix_false_inflexions = False
-do_list_homophons = False
+do_list_homophones = False
 do_fix_translations = True
 list_false_translations = False
 test_import = False
@@ -182,13 +182,13 @@ def treat_page(page):
                 print('page_content en travaux : non traitée')
             return
 
-        if do_list_homophons:
-            language_section, homophons_start, homophons_end = get_language_section(page_content, 'fr')
+        if do_list_homophones:
+            language_section, homophones_start, homophones_end = get_language_section(page_content, 'fr')
             if language_section is not None:
-                homophons, homophons_start, homophons_end = getSection(language_section, 'homophones')
+                homophones, homophones_start, homophones_end = getSection(language_section, 'homophones')
                 if debug_level > 1:
-                    input(homophons)
-                output_file.write((homophons.replace('==== {{S|homophones|fr}} ====\n', '').replace(
+                    input(homophones)
+                output_file.write((homophones.replace('==== {{S|homophones|fr}} ====\n', '').replace(
                     '=== {{S|homophones|fr}} ===\n', '')))
             return
 
@@ -437,20 +437,18 @@ def treat_page(page):
                                     page_content[page_content.find('}}'):]
 
                     else:
-                        # Paragraphe sans code langue dans les modèles lexicaux et les titres
+                        # Paragraph without language code in lexical and title templates
                         add_language_code_in_paragraph = False
                         if section == 'homophones':
                             if debug_level > 0:
-                                print(' Homophons categorization')
+                                print(' Homophones categorization')
                             section_title = page_content[:page_content.find('}}')]
                             if section_title.rfind('|') > len(section):
                                 page_content = section_title[:section_title.rfind('|')] + '|' + \
-                                    language_code + \
-                                    page_content[page_content.find('}}'):]
+                                    language_code + page_content[page_content.find('}}'):]
                             else:
                                 page_content = page_content[:page_content.find('}}')] + '|' + \
-                                    language_code + \
-                                    page_content[page_content.find('}}'):]
+                                    language_code + page_content[page_content.find('}}'):]
 
                         if section == 'traductions' and language_code == 'fr':
                             has_translation_section = True
@@ -944,7 +942,7 @@ def treat_page(page):
                     summary = summary + ', correction de flexion de nom féminin'
                     final_page_content = final_page_content.replace(section_content, new_section_content)
 
-        final_page_content, summary = check_false_homophons(
+        final_page_content, summary = check_false_homophones(
             final_page_content,
             summary,
             page_name,

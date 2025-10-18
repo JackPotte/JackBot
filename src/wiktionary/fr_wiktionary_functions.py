@@ -1126,11 +1126,11 @@ def next_translation_template(final_page_content, current_page_content, result='
     return final_page_content, current_page_content
 
 
-def check_false_homophons(final_page_content, summary, page_name, infinitive, singular_page_name):
+def check_false_homophones(final_page_content, summary, page_name, infinitive, singular_page_name):
     language = 'fr'  # TODO: intl
     if final_page_content.find('{{langue|' + language + '}}') != -1:
         if debug_level > 0:
-            print(' Fix false homophons (lemma and its inflexion)')
+            print(' Fix false homophones (lemma and its inflexion)')
         # TODO: {{S}} forced locutions parameter
 
         flexion_page_name = ''
@@ -1148,18 +1148,18 @@ def check_false_homophons(final_page_content, summary, page_name, infinitive, si
                     flexion_page_name = f'{page_name}s'
 
             if infinitive is not None and infinitive != '':
-                final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
+                final_page_content, summary = remove_false_homophones(final_page_content, language, page_name,
                                                                      infinitive, summary)
             if singular_page_name is not None and singular_page_name != '':
-                final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
+                final_page_content, summary = remove_false_homophones(final_page_content, language, page_name,
                                                                      singular_page_name, summary)
             if flexion_page_name is not None and flexion_page_name != '':
-                final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
+                final_page_content, summary = remove_false_homophones(final_page_content, language, page_name,
                                                                      flexion_page_name, summary)
             ms_page_name = get_lemma_from_feminine(
                 final_page_content, language, ['adjectif'])
             if ms_page_name is not None and ms_page_name != '':
-                final_page_content, summary = remove_false_homophons(final_page_content, language, page_name,
+                final_page_content, summary = remove_false_homophones(final_page_content, language, page_name,
                                                                      ms_page_name, summary)
         if debug_level > 2:
             input(final_page_content)
@@ -1167,9 +1167,9 @@ def check_false_homophons(final_page_content, summary, page_name, infinitive, si
     return final_page_content, summary
 
 
-def remove_false_homophons(page_content, language_code, page_name, related_page_name, summary):
+def remove_false_homophones(page_content, language_code, page_name, related_page_name, summary):
     if debug_level > 1:
-        print('\nremove_false_homophons(' + related_page_name + ')')
+        print('\nremove_false_homophones(' + related_page_name + ')')
 
     for _ in range(2):
         regex = r"==== *{{S\|homophones\|" + language_code + r"}} *====\n\* *'''" + re.escape(page_name) + \
