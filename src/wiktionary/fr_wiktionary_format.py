@@ -443,10 +443,7 @@ def treat_page(page):
                             if debug_level > 0:
                                 print(' Homophones categorization')
                             section_title = page_content[:page_content.find('}}')]
-                            if section_title.rfind('|') > len(section):
-                                page_content = section_title[:section_title.rfind('|')] + '|' + \
-                                    language_code + page_content[page_content.find('}}'):]
-                            else:
+                            if section_title.rfind('|') < len(section):
                                 page_content = page_content[:page_content.find('}}')] + '|' + \
                                     language_code + page_content[page_content.find('}}'):]
 

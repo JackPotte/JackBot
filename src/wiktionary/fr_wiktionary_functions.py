@@ -1023,7 +1023,6 @@ def get_level_by_section_name(section):
     return section_level
 
 
-# TODO: def addlanguage_codeToTemplate(final_page_content, page_content, current_template = None, language_code = None):
 def add_language_code_with_named_parameter_to_template(
     final_page_content,
     page_content,
