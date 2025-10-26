@@ -243,35 +243,10 @@ def main(*args) -> int:
             treat_page_by_name(update_html_to_unicode(sys.argv[1]))
     else:
         # Daily:
-        p.pages_by_cat('Catégorie:Modèle de source',
-                       namespaces=[10], names=['pmid'])
-        p.pages_by_link('Template:Cite web')
-        p.pages_by_link('Template:Cite journal')
-        p.pages_by_link('Template:Cite news')
-        p.pages_by_link('Template:Cite press release')
-        p.pages_by_link('Template:Cite encyclopedia')
-        p.pages_by_link('Template:Cite episode')
-        p.pages_by_link('Template:Cite video')
-        p.pages_by_link('Template:Cite conference')
-        p.pages_by_link('Template:Cite arXiv')
-        p.pages_by_link('Template:Lien news')
-        p.pages_by_link('Template:deadlink')
-        p.pages_by_link('Template:lien brise')
-        p.pages_by_link('Template:lien cassé')
-        p.pages_by_link('Template:lien mort')
-        p.pages_by_link('Template:lien web brisé')
-        p.pages_by_link('Template:webarchive')
-        p.pages_by_link('Template:Docu')
-        p.pages_by_link('Template:Cita web')
-        p.pages_by_link('Template:Cita noticia')
-        p.pages_by_link('Template:Citeweb')
-        p.pages_by_link('Template:Cite magazine')
-        p.pages_by_link('Template:Cite')
-        p.pages_by_link('Template:Cite book')
-        p.pages_by_link('Template:Cita libro')
-        p.pages_by_link('Template:Webbref')
-        p.pages_by_link('Template:Internetquelle')
-        # p.pagesByLink('Template:Reflist')  # Interblocages quotidiens
+        p.pages_by_cat('Catégorie:Modèle de source', namespaces=[10], names=['pmid'])
+        for i in range(translated_templates_limit):
+            p.pages_by_link('Template:' + old_templates[i])
+
     return 0
 
 
