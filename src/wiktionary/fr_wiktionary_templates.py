@@ -777,7 +777,9 @@ templates.append('trad-')
 templates.append('trad+')
 templates.append('trad')
 templates.append('préciser')
-templates.append('cf')
+
+templates_with_language_at_lang = ['cf', 'composé de']
+templates += templates_with_language_at_lang
 
 # https://fr.wiktionary.org/wiki/Catégorie:Modèles_étymologiques
 # https://fr.wiktionary.org/wiki/Projet:Informations_étymologiques

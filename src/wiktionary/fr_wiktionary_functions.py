@@ -1049,7 +1049,7 @@ def add_language_code_with_named_parameter_to_template(
             return next_template(final_page_content, page_content)
 
     template_content = page_content[:page_content.find('}}')]
-    if has_parameter_index(template_content, 2) and template_name not in ('cf', 'composé de'):
+    if has_parameter_index(template_content, 2) and template_name not in templates_with_language_at_lang:
         if debug_level > 0:
             print('   "lang=" addition ignored because probably already present as parameter 2')
         return next_template(final_page_content, page_content)
@@ -1060,7 +1060,7 @@ def add_language_code_with_named_parameter_to_template(
         return next_template(final_page_content, page_content)
 
     page_content2 = page_content[end_position + 1:]
-    is_not_category_name = template_name != 'cf' or (
+    is_not_category_name = template_name not in templates_with_language_at_lang or (
             page_content2.find('}}') > end_position + 1
             and (page_content2.find(':') == -1 or page_content2.find(':') > page_content2.find('}}'))
             and page_content2[:1] != '#'
@@ -1081,7 +1081,7 @@ def add_language_code_with_named_parameter_to_template(
     if debug_level > 0:
         print('   "lang=" already present')
 
-    if template_name == 'cf':
+    if template_name in templates_with_language_at_lang:
         return next_template(final_page_content, page_content)
 
     # Correct language code with the paragraph's one
@@ -4236,8 +4236,8 @@ def add_languages_codes_to_each_template(
                     )
 
             # Templates with "lang="
-            elif current_template in [u'écouter', 'cf', 'équiv-pour',
-                                      'exemple'] + etymology_templates_with_language_at_lang:
+            elif current_template in templates_with_language_at_lang + etymology_templates_with_language_at_lang \
+                + [u'écouter', 'équiv-pour', 'exemple']:
                 final_page_content, page_content = add_language_code_with_named_parameter_to_template(
                     final_page_content,
                     page_content,
