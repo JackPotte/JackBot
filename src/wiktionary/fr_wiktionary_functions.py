@@ -1737,7 +1737,7 @@ def format_sections(page_content, summary):
     page_content = re.sub(r'{{S\| ?gent(ilés)?\|?[a-zé]*}}', '{{S|gentilés}}', page_content)
     page_content = re.sub(r'{{S\| ?faux-amis?\|?[a-zé]*}}', '{{S|faux-amis}}', page_content)
     page_content = re.sub(r'{{S\| ?holo(nymes)?\|?[a-z\- ]*}}', '{{S|holonymes}}', page_content)
-    page_content = re.sub(r'{{S\| ?hyper(onymes)?\|?[a-z\- ]*}}', '{{S|hyperonymes}}', page_content)
+    page_content = re.sub(r'{{S\| ?hyper(onymes)?\|?[a-z ]*}}', '{{S|hyperonymes}}', page_content)
     page_content = re.sub(r'{{S\| ?hypo(nymes)?\|?[a-z\- ]*}}', '{{S|hyponymes}}', page_content)
     page_content = re.sub(r'{{S\| ?m[éèe]ro(nymes)?\|?[a-z\- ]*}}', '{{S|méronymes}}', page_content)
     page_content = re.sub(r'{{S\| ?notes?(\|?[a-z ]*)?}}', '{{S|notes}}', page_content)
