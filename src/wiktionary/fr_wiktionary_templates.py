@@ -10,7 +10,7 @@ sections = []   # Sections à remplacer, groupées si elles acceptent les modèl
 sections_level = []
 sections_order = []  # dans l'ordre de [[WT:SDA]]
 # Paragraphes autorisant les modèles catégorisants par langue ({{voir| et {{voir/ sont gérés individuellement)
-# http://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
+# https://fr.wiktionary.org/wiki/Catégorie:Modèles_de_type_de_mot_du_Wiktionnaire
 templates.append('-adj-dem-')
 sections.append('adjectif démonstratif')
 sections_level.append('===')
