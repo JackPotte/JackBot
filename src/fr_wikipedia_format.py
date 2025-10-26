@@ -219,7 +219,7 @@ def main(*args) -> int:
             else:
                 p.pages_by_search('insource:/| *display-authors *= *etal */')
         elif sys.argv[1] in ['-link', '-l', '-template', '-m']:
-            p.pages_by_link('Modèle:Dead link')
+            p.pages_by_link('Modèle:citar web')
         elif sys.argv[1] in ['-category', '-cat']:
             after_page = sys.argv[2] if len(sys.argv) > 2 else ''
             p.pages_by_cat('Page du modèle Article comportant une erreur', namespaces=None, after_page=after_page)
