@@ -61,7 +61,7 @@ site_language, site_family, site = get_site_by_file_name(__file__)
 username = config.usernames[site_family][site_language]
 
 do_check_url = False
-fix_tags = False  # TODO passage en arg + résumé d'édition
+fix_tags = False  # TODO set it from an arg & add edition summary
 fix_files = True
 fix_old_templates = False
 add_default_sort_key = False
@@ -74,9 +74,8 @@ do_list_homophones = False
 fix_translations = True
 list_false_translations = False
 test_import = False
-cancel_user = {}
-output_file = ''
-# TODO: from dump otherwise 5 chars > 5 min & 8 chars > 1 h per page)
+output_file = 'dumps/wiktionary-fr.txt'
+cancel_user = {} # TODO move to its own file
 
 
 def treat_page_by_name(page_name):

@@ -13,7 +13,7 @@ from lib import *
 from languages import *
 from fr_wiktionary_templates import *
 from fr_wiktionary_old_templates import *
-anagrams_max_length = 4
+anagrams_max_length = 4 # TODO: from dump otherwise 5 chars > 5 min & 8 chars > 1 h per page)
 languagesWithoutGender = ['en', 'ja', 'ko', 'zh']
 
 
