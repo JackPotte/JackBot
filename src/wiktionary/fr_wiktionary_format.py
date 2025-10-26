@@ -75,10 +75,14 @@ fix_translations = True
 list_false_translations = False
 test_import = False
 output_file = 'dumps/wiktionary-fr.txt'
+blacklisted_pages = ['t’kuni']
 cancel_user = {} # TODO move to its own file
 
 
 def treat_page_by_name(page_name):
+    if page_name in blacklisted_pages:
+        return
+
     page = Page(site, page_name)
     return treat_page(page)
 
