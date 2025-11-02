@@ -4500,7 +4500,14 @@ def add_languages_codes_to_each_template(
     return final_page_content, summary, infinitive
 
 
-def treat_genders_and_numbers(final_page_content, summary, fix_genders, fix_false_inflexions, singular_page_name):
+def treat_genders_and_numbers(
+        final_page_content,
+        summary,
+        fix_genders,
+        fix_false_inflexions,
+        singular_page_name,
+        page_name,
+    ):
     if debug_level > 0:
         ' Recherche du nombre'
     regex = r"{{(pluriel|nombre) *\?*\|fr}}( {{[m|f]}})(\n# *'* *([Mm]asculin |[Ff]éminin )*[Pp]luriel d)"

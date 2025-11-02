@@ -235,6 +235,7 @@ def treat_page(page):
             fix_genders,
             fix_false_inflexions,
             singular_page_name,
+            page_name,
         )
 
         final_page_content, summary = check_false_homophones(
