@@ -425,43 +425,45 @@ def get_valid_language_code(language_code):
 def translate_dates(current_page):
     if debug_level > 1:
         print('\ntranslate_dates()')
-    date_parameters = ['date', 'mois', 'consulté le',
-                       'en ligne le', 'dts', 'Dts', 'date triable', 'Date triable']
+    date_parameters = ['date', 'mois', 'consulté le', 'en ligne le', 'dts', 'Dts', 'date triable', 'Date triable']
     for m in range(1, month_line + 1):
         if debug_level > 1:
-            print(f'Mois {str(m)}')
+            print(f'Month {str(m)}')
             print(months_translations[m][1])
         for p in range(1, len(date_parameters)):
             if debug_level > 1:
-                print('Recherche de ') + \
-                    date_parameters[p] + ' *=[ ,0-9]*' + \
-                    months_translations[m][1]
+                print('Recherche de ' + date_parameters[p] + ' *=[ ,0-9]*)' + months_translations[m][1])
             if p > 4:
                 current_page = re.sub(
-                    r'({{ *' + date_parameters[p] + r'[^}]+)' +
-                    months_translations[m][1] + r'([^}]+}})',
-                    r'\1' + months_translations[m][2] + r'\2', current_page)
+                    r'({{ *' + date_parameters[p] + r'[^}]+)' + months_translations[m][1] + r'([^}]+}})',
+                    r'\1' + months_translations[m][2] + r'\2',
+                    current_page)
                 current_page = re.sub(
-                    r'({{ *' + date_parameters[p] + r'[^}]+)(\|[ 0-9][ 0-9][ 0-9][ 0-9])\|' + months_translations[m][
-                        2] + r'(\|[ 0-9][ 0-9])}}', r'\1\3|' + months_translations[m][2] + r'\2}}', current_page)
+                    r'({{ *' + date_parameters[p] + r'[^}]+)(\|[ 0-9][ 0-9][ 0-9][ 0-9])\|' +
+                    months_translations[m][2] + r'(\|[ 0-9][ 0-9])}}', r'\1\3|' + months_translations[m][2] + r'\2}}',
+                    current_page)
             else:
-                current_page = re.sub(r'(\| *' + date_parameters[p] + r' *=[ ,0-9]*)' + months_translations[m][
-                    1] + r'([ ,0-9]*\.? *[<|\||\n\t|}])', r'\1' + months_translations[m][2] + r'\2', current_page)
+                current_page = re.sub(
+                    r'(\| *' + date_parameters[p] + r' *=[ ,0-9]*)' + months_translations[m][1] +
+                    r'([ ,0-9]*\.? *[<|\||\n\t|}])', r'\1' + months_translations[m][2] + r'\2',
+                    current_page)
                 current_page = re.sub(
                     r'(\| *' + date_parameters[p] + r' *=[ ,0-9]*)' + months_translations[m][1][:1].lower() +
-                    months_translations[m][1][1:] +
-                    r'([ ,0-9]*\.? *[<|\||\n\t|}])',
-                    r'\1' + months_translations[m][2] + r'\2', current_page)
+                    months_translations[m][1][1:] + r'([ ,0-9]*\.? *[<|\||\n\t|}])',
+                    r'\1' + months_translations[m][2] + r'\2',
+                    current_page)
 
-                # Ordre des dates : jj mois aaaa
+                # TODO Date order: jj mm aaaa
                 if debug_level > 1:
-                    print('Recherche de ') + date_parameters[p] + ' *= *' + months_translations[m][
-                        2] + ' *([0-9]+), '
-                current_page = re.sub(r'(\| *' + date_parameters[p] + ' *= *)' + months_translations[m][
-                    2] + r' *([0-9]+), *([0-9]+)\.? *([<|\||\n\t|}])',
-                    r'\1' + r'\2' + r' ' +
-                    months_translations[m][2] + r' ' + r'\3' + r'\4',
-                    current_page)  # trim('\3') ne fonctionne pas
+                    regex = (r'(\| *' + date_parameters[p] + r' *= *)' + months_translations[m][2] +
+                             r' *([0-9]+), *([0-9]+)\.? *([<|\||\n\t|}])')
+                    print('Recherche de ' + regex)
+                    current_page = re.sub(
+                        regex,
+                        r'\1' + r'\2' + r' ' +  months_translations[m][2] + r' ' + r'\3' + r'\4',
+                        current_page)  # trim('\3') does not work
+
+                # TODO print('Recherche de ' + date_parameters[p] + ' *= *' + months_translations[m][1] + '[ ,0-9]*')
 
     return current_page
 
