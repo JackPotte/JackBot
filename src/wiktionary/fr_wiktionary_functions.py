@@ -1627,8 +1627,7 @@ def add_banner_see(page_name, page_content, summary):
                                     print(
                                         ' Première savePage dédiée à {{voir}}')
                                 else:
-                                    save_page(
-                                        key_page, key_page_content, summary)
+                                    save_page(key_page, key_page_content, summary)
                     else:
                         if pages_keys.find('|' + current_page) != -1:
                             key_page_content = '{{voir|' + pages_keys[:pages_keys.find('|' + current_page)] \
@@ -2018,10 +2017,10 @@ def replace_languages_templates(page_content, summary):
     page_content = page_content.replace('|lang=gr}}', '|lang=grc}}')
     page_content = page_content.replace('|lang=gr|', '|lang=grc|')
 
-    treated_templates_with_language_at_first = ['T', 'trad[\-\+]\-?', 'étyl', 'étylp']
+    treated_templates_with_language_at_first = ['T', 'trad[-+]-?', 'étyl', 'étylp']
     for old_language_template in old_language_templates:
         for treated_template in treated_templates_with_language_at_first:
-            regex = r'({{' + treated_template + '\|)' + re.escape(old_language_template) + r'(\||}})'
+            regex = r'({{' + treated_template + '|)' + re.escape(old_language_template) + r'(\||}})'
             page_content = re.sub(regex, r'\1' + old_language_templates[old_language_template] + r'\2', page_content)
 
     return page_content, summary
@@ -3416,7 +3415,7 @@ def treat_noun_inflexion(
                     ''' Remplacement des {{fr-rég}} par plus précis (lancé pour patcher des pages)
                     if lemma_inflexion_template.find(language_code + r'-rég') != -1: lemma_inflexion_template = ''
                     if lemma_inflexion_template != '':
-                        regex = r"(=== {{S\|" + nature + r"\|" + language_code + r"\|flexion}} ===\n){{fr\-rég\|[^}]*}}"
+                        regex = r"(=== {{S|" + nature + r"|" + language_code + r"|flexion}} ===\n){{fr-rég|[^}]*}}"
                         if re.search(regex, page_content):
                             page_content = re.sub(regex, r'\1{{' + lemma_inflexion_template + r'}}', page_content)
                             summary = summary + ', remplacement de {{' + language_code + r'-rég}} par {{' \
@@ -3963,8 +3962,7 @@ def add_languages_codes_to_each_template(
         start_position = page_content.find('{{')
         if start_position < 0:
             break
-        final_page_content = final_page_content + \
-                             page_content[:start_position + 2]
+        final_page_content = final_page_content + page_content[:start_position + 2]
         page_content = page_content[start_position + 2:]
         if page_content.find("|") > page_content.find('}}'):
             end_position = page_content.find('}}')
@@ -3976,8 +3974,7 @@ def add_languages_codes_to_each_template(
 
         if debug_level > 1:
             if not go_backward:
-                message = ' Remplacement de \x1b[6;31;40m{{' + page_content[
-                                                               :page_content.find('}}') + 2] + '\x1b[0m'
+                message = ' Remplacement de \x1b[6;31;40m{{' + page_content[:page_content.find('}}') + 2] + '\x1b[0m'
                 print(message)
             else:
                 print(' Retour en arrière')
@@ -3997,8 +3994,7 @@ def add_languages_codes_to_each_template(
                                      + current_template + ' (au niveau du ' + str(len(final_page_content)) \
                                      + '-ème caractère)}}\n' + final_page_content + page_content
                 summary = 'page_content à formater manuellement'
-                save_page(page, final_page_content, summary)
-                return
+                return final_page_content, summary, infinitive
 
             elif current_template == 'caractère':
                 language_code = 'conv'
@@ -4017,7 +4013,7 @@ def add_languages_codes_to_each_template(
                 if language_code == '':
                     if debug_level > 0:
                         print('  empty language code')
-                    return
+                    return final_page_content, summary, infinitive
 
                 if debug_level > 0:
                     print('  language found: ' + language_code)
@@ -4027,10 +4023,9 @@ def add_languages_codes_to_each_template(
                     banner = '{{formater|Code langue incorrect : ' + language_code + '}}\n'
                     summary = 'Page à formater manuellement : code langue incorrect'
                     final_page_content = banner + final_page_content + page_content
-                    save_page(page, final_page_content, summary)
                     if debug_level > 0:
                         print(' page_content to format manually')
-                    return
+                    return final_page_content, summary, infinitive
                 add_language_code_in_paragraph = True
 
                 # TODO use {{voir anagrammes|fr}}
