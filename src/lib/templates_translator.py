@@ -148,8 +148,7 @@ def translate_templates(current_page, summary):
     '''
 
     # TODO: avoid these fixes when: old_template.append('lien mort')
-    current_page = current_page.replace(
-        '{{lien mortarchive', '{{lien mort archive')
+    current_page = current_page.replace('{{lien mortarchive', '{{lien mort archive')
     current_page = current_page.replace('|langue=None', '')
     current_page = current_page.replace('|langue=en|langue=en', '|langue=en')
     current_page = current_page.replace('deadurl=yes', 'brisé le=oui')

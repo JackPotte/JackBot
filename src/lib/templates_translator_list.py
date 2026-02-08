@@ -93,8 +93,8 @@ translated_templates_limit = len(new_templates)
 # Templates with French aliases
 old_templates.append('lien news')
 new_templates.append('article')
-old_templates.append('webarchive')
-new_templates.append('lien archive')
+# old_templates.append('webarchive') # TODO transform |url=https://web.archive.org/web/20161017215738/ to |horodatage archive=20161017215738|url=
+# new_templates.append('lien archive')
 old_templates.append('deadlink')
 new_templates.append('lien brisé')
 # old_template.append('dead link') TODO: if previous template is {{lien brisé}} then remove else replace
