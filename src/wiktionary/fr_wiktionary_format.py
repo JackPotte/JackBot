@@ -2,13 +2,13 @@
 # coding: utf-8
 """
 Ce script formate les pages du Wiktionnaire, tous les jours après minuit depuis le serveur Toolforge de Wikimedia :
-1) Crée les redirection d'apostrophe dactylographique vers apostrophe typographique.
+1) Crée les redirections d'apostrophe dactylographique vers apostrophe typographique.
 2) Gère des modèles {{voir}} en début de page.
 3) Retire certains doublons de modèles et d'espaces.
 4) Remplace les modèles catégorisés comme désuets.
 5) Ajoute les prononciations sur la ligne de forme, et certains liens vers les conjugaisons.
 6) Met à jour les liens vers les traductions (modèles trad, trad+, trad-, trad-début et trad-fin), et les classe par ordre alphabétique.
-7) Détecte les modèles de contexte à ajouter, et ajoute leurs codes langues  ou "nocat=1"
+7) Détecte les modèles de contexte à ajouter, et ajoute leurs codes langues ou "nocat=1"
 8) Complète la boite de flexions de verbes en français.
 9) Demande les pluriels et genres manquants quand les lemmes les éludent.
 10) Ajoute certaines sections traductions manquantes.
