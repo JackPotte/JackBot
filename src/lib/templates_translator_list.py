@@ -62,6 +62,9 @@ new_templates.append('article encyclopédique')
 old_templates.append('quote')
 new_templates.append('citation bloc')
 
+old_templates.append('cite AV media notes')
+new_templates.append('livret album')
+
 # de
 old_templates.append('internetquelle')
 new_templates.append('lien web')

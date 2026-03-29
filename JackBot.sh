@@ -2,6 +2,7 @@
 
 #== Native scripts ==
 #python core/pwb.py replace       -lang:commons -family:commons -file:articles_commons_txt "[[Category:PDF Wikibooks]]" "[[Category:English Wikibooks PDF]]"
+#python core/pwb.py replace       -lang:fr -family:wikibooks -search " renvoit " " renvoie "
 #python core/pwb.py movepages     -lang:fr -family:wiktionary -pairsfile:"articles_fr_wiktionary.txt" -noredirect
 #python core/pwb.py protect       -lang:fr -family:wiktionary -cat:"Élections de patrouilleurs" -summary:"Vote archivé" -move:sysop -edit:sysop
 #python core/pwb.py delete        -lang:fr -family:wikiversity -file:"logs/articles_fr_wiktionary_txt"
