@@ -317,12 +317,45 @@ def format_old_link_template(current_page, old_template):
         current_page = current_page.replace(
             '{{' + old_template + ' ', '{{' + old_template + '')
 
-    current_page = re.sub((r'(Modèle:)?[' + old_template[:1] + r'|' + old_template[:1].upper() + r']' +
-                           old_template[1:]).replace(' ', '_') + r' *\|', old_template + r'|', current_page)
-    current_page = re.sub((r'(Modèle:)?[' + old_template[:1] + r'|' + old_template[:1].upper() + r']' +
-                           old_template[1:]).replace(' ', '  ') + r' *\|', old_template + r'|', current_page)
-    current_page = re.sub((r'(Modèle:)?[' + old_template[:1] + r'|' + old_template[:1].upper() + r']' +
-                           old_template[1:]) + r' *\|', old_template + r'|', current_page)
+    current_page = re.sub(
+        (
+            r'(Modèle:)?['
+            + old_template[:1]
+            + r'|'
+            + old_template[:1].upper()
+            + r']'
+            + old_template[1:]
+        ).replace(' ', '_')
+        + r' *\|',
+        f'{old_template}|',
+        current_page,
+    )
+    current_page = re.sub(
+        (
+            r'(Modèle:)?['
+            + old_template[:1]
+            + r'|'
+            + old_template[:1].upper()
+            + r']'
+            + old_template[1:]
+        ).replace(' ', '  ')
+        + r' *\|',
+        f'{old_template}|',
+        current_page,
+    )
+    current_page = re.sub(
+        (
+            r'(Modèle:)?['
+            + old_template[:1]
+            + r'|'
+            + old_template[:1].upper()
+            + r']'
+            + old_template[1:]
+        )
+        + r' *\|',
+        f'{old_template}|',
+        current_page,
+    )
 
     final_page = ''
     regex = r'[^}]*lang(ue|uage)* *=[^}]*}}'

@@ -292,6 +292,10 @@ old_param.append('doi-access')
 new_param.append('accès doi')
 old_param.append('hdl-access')
 new_param.append('accès hdl')
+old_param.append('trans-title')
+new_param.append('traduction titre')
+old_param.append('chapter')
+new_param.append('titre chapitre')
 
 # Fix
 old_param.append('en ligne le')
