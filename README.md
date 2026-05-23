@@ -8,15 +8,16 @@ This wiki bot has performed thousands of modifications on several wikis: https:/
 
 # Installation
 
+## Env dev
 ```
 git clone https://github.com/JackPotte/JackBot.git
 cd JackBot
 devops/update_Pywikibot.sh
 ```
 
-## Speed optimization
-To accelerate the treatments:
-* vim core/pywikibot/throttle.py, time.sleep(0).
+## Env prod
+See https://wikitech.wikimedia.org/wiki/Help:Toolforge/Python
+
 
 # Usage
 
