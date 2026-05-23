@@ -3633,12 +3633,13 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
                 # Python 2 only
                 print(msg.encode(config.console_encoding, 'replace'))
 
-        final_page_content, page_content = update_if_page_exists_on_other_wiktionaries(
-            final_page_content,
-            page_content,
-            external_site,
-            external_page_name
-        )
+        # TODO handle quota (429 errors)
+        # final_page_content, page_content = update_if_page_exists_on_other_wiktionaries(
+        #     final_page_content,
+        #     page_content,
+        #     external_site,
+        #     external_page_name
+        # )
 
     return page_content, final_page_content, summary
 
