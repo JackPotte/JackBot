@@ -2,6 +2,11 @@
 
 cd JackBot
 devops/update_JackBot.sh
+if [ $HOME = "/data/project/jackbot" ]
+  then python=../pyvenv/bin/python
+else
+  python=python3
+fi
 
 $python core/pwb.py clean_sandbox.py -q -lang:fr -family:wiktionary
 $python core/pwb.py clean_sandbox.py -q -lang:fr -family:wikibooks

@@ -2,6 +2,11 @@
 
 cd JackBot
 devops/update_JackBot.sh
+if [ $HOME = "/data/project/jackbot" ]
+  then python=../pyvenv/bin/python
+else
+  python=python3
+fi
 
 $python core/pwb.py touch -lang:fr -family:wikibooks -page:Accueil -purge
 $python core/pwb.py touch -lang:en -family:wikibooks -transcludes:"Template:Qr-em" -namespace:0
