@@ -3,5 +3,5 @@
 cd JackBot
 devops/update_JackBot.sh
 
-python3 core/pwb.py src/wiktionary/fr_wiktionary_format -l
+$python core/pwb.py src/wiktionary/fr_wiktionary_format -l
 
