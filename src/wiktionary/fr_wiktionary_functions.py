@@ -3612,7 +3612,12 @@ def treat_translations(page_content, final_page_content, summary, end_position, 
             # Otherwise: Non-JSON response received from server wiktionary:ba; the server may be down.
             external_site = None
         else:
-            external_site = get_wiki(current_language, site_family)
+            try:
+                external_site = get_wiki(current_language, site_family)
+            except KeyError as e:
+                print(e)
+                return page_content, final_page_content, summary
+
         if external_site is None:
             if debug_level > d:
                 print('  no site (--)')
