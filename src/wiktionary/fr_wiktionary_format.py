@@ -499,8 +499,9 @@ def main(*args) -> int:
         p.pages_by_cat('Catégorie:Wiktionnaire:Sections avec paramètres superflus')
         p.pages_by_cat('Catégorie:Wiktionnaire:Sections utilisant un alias')
 
-        p.pages_by_search(r'insource:/\}==== \{\{S\|/', namespaces=[0])
-        p.pages_by_search(r'insource:/\}=== \{\{S\|/', namespaces=[0])
+        # Timeout since June 2026
+        # p.pages_by_search(r'insource:/\}==== \{\{S\|/', namespaces=[0])
+        # p.pages_by_search(r'insource:/\}=== \{\{S\|/', namespaces=[0])
 
     return 0
 
