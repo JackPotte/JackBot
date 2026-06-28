@@ -102,10 +102,9 @@ def treat_page(page):
         if not redir_page.exists() and redir_page.namespace() == 0:
             if debug_level > 0:
                 print('Création d\'une redirection apostrophe')
-            save_page(redir_page, '#REDIRECT[[' + page_name + ']]',
-                      'Redirection pour apostrophe', is_minor=True)
+            save_page(redir_page, '#REDIRECT[[' + page_name + ']]', 'Redirection pour apostrophe', is_minor=True)
 
-    if debug_level == 0 and days_before_archiving and (page_name.find('<') != -1 or not has_more_than_time(page)):
+    if debug_level == 0 and days_before_archiving and ('<' in page_name or not has_more_than_time(page)):
         return
 
     current_page_content = get_content_from_page(page, 'All')
@@ -143,8 +142,7 @@ def treat_page(page):
     elif treat_templates and page.namespace() == 10:
         if debug_level > 0:
             print(' template treatment')
-        templates_to_treat = ['emploi', 'région',
-                              'régional', 'registre', 'term']
+        templates_to_treat = ['emploi', 'région', 'régional', 'registre', 'term']
         for template in templates_to_treat:
             if '{{{clé|' not in page_content and page_content[:len('{{' + template)] == '{{' + template \
                     and '\n}}<noinclude>' in page_content:
@@ -429,11 +427,7 @@ def main(*args) -> int:
                 else:
                     p.pages_by_cat(sys.argv[2])
             else:
-                p.pages_by_cat(
-                    'Expressions en sicilien',
-                    namespaces=None,
-                    recursive=False
-                )
+                p.pages_by_cat('Expressions en sicilien', namespaces=None, recursive=False)
 
         elif sys.argv[1] == '-redirects':
             p.pages_by_redirects()
@@ -499,9 +493,8 @@ def main(*args) -> int:
         p.pages_by_cat('Catégorie:Wiktionnaire:Sections avec paramètres superflus')
         p.pages_by_cat('Catégorie:Wiktionnaire:Sections utilisant un alias')
 
-        # Timeout since June 2026
-        # p.pages_by_search(r'insource:/\}==== \{\{S\|/', namespaces=[0])
-        # p.pages_by_search(r'insource:/\}=== \{\{S\|/', namespaces=[0])
+        p.pages_by_search(r'insource:/\}==== \{\{S\|/', namespaces=[0])
+        p.pages_by_search(r'insource:/\}=== \{\{S\|/', namespaces=[0])
 
     return 0
 
