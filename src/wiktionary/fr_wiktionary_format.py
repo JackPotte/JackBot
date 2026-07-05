@@ -302,7 +302,7 @@ def format_fr_section(page_content, summary, page_name, regex_page_name):
     singular_page_name = ''
     if page_name.find('*') == -1 and page_name[-1:] == 's':
         singular_page_name = get_lemma_from_plural(page_content, language_code, natures_with_plural)
-        if singular_page_name != '':
+        if singular_page_name not in ['', page_name]:
             # TODO cannot move this recursive function in the dedicated used module (circular dependency)?
             # Formatage des boites de flexion à récupérer
             treat_page_by_name(singular_page_name)

@@ -62,8 +62,7 @@ def get_lemma_from_content(page_content, language_code='fr'):
         print('\ngetLemmaFromContent')
     lemma_page_name = get_lemma_from_plural(page_content, language_code)
     if lemma_page_name == '':
-        lemma_page_name = get_lemma_from_conjugation(
-            page_content, language_code)
+        lemma_page_name = get_lemma_from_conjugation(page_content, language_code)
     return lemma_page_name
 
 
@@ -1159,7 +1158,7 @@ def check_false_homophones(final_page_content, summary, page_name, infinitive, s
                                                                      flexion_page_name, summary)
             ms_page_name = get_lemma_from_feminine(
                 final_page_content, language, ['adjectif'])
-            if ms_page_name is not None and ms_page_name != '':
+            if ms_page_name is not None and ms_page_name not in ['', page_name]:
                 final_page_content, summary = remove_false_homophones(final_page_content, language, page_name,
                                                                      ms_page_name, summary)
         if debug_level > 2:
