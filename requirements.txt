@@ -3,7 +3,7 @@ Click==7.0
 Mako==1.3.12
 Markdown==3.8.1
 MarkupSafe==1.1.0
-Pillow == 12.2.0 ; python_version >= '3.6'
+Pillow == 12.3.0 ; python_version >= '3.6'
 Pillow==12.1.1 ; python_version < '3.6'
 PyJWT==2.13.0
 PyMySQL >= 0.7.11, < 1.0.0 ; python_version < '3.6'
