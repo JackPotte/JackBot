@@ -34,7 +34,7 @@ fasteners==0.14.1
 future==0.18.3
 google >= 1.7
 html5lib==1.0.1
-httplib2==0.19.1
+httplib2==0.32.0
 i18n==0.2
 idna==3.15
 importlib-metadata==1.5.0
