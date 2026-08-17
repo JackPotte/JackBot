@@ -3,7 +3,7 @@
 """
 Ce script importe les sons de Commons dans le Wiktionnaire en français
 """
-from __future__ import absolute_import, unicode_literals
+
 import os
 import re
 import sys

@@ -17,7 +17,7 @@ etc.
 Tests sur http://fr.wiktionary.org/w/index.php?title=Utilisateur%3AJackBot%2Ftest&diff=14533806&oldid=14533695
 """
 
-from __future__ import absolute_import, unicode_literals
+
 import os
 import re
 import sys

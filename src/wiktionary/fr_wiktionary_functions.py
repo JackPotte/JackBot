@@ -4,7 +4,7 @@
 TODO: common Wiktionaries interfaces in OOP
 """
 
-from __future__ import absolute_import, unicode_literals
+
 import collections
 import re
 import pywikibot

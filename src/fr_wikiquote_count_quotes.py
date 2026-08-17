@@ -39,7 +39,7 @@ This script understands various command-line arguments:
     -outputquotes: used as -outputquotes:page_name, put the number of quotes on page_name
     -outputarticles: used as -outputarticles:page_name, put the number of articles containing quotes on page_name
 """
-from __future__ import absolute_import, unicode_literals
+
 import locale
 import operator
 import re

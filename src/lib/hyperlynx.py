@@ -5,7 +5,6 @@ Ce script vérifie toutes les URL des articles de la forme http://, https:// et 
 (pas tous étant donné leur complexité, car certains incluent des {{{1}}} et {{{2}}} dans leurs URL)
 """
 
-from __future__ import absolute_import, unicode_literals
 import re
 import ssl
 import urllib
@@ -361,17 +360,17 @@ def treat_broken_links(current_page, summary):
                     replaced_template = ''
                     # Lien dans un modèle connu (consensus en cours pour les autres, atention aux infobox)
                     '''for m in range(1,templates_limit):
-                        regex = r'{{ *[' + new_template[m][0:1] + r'|' + new_template[m][0:1].upper() + r']' + new_template[m][1:len(new_template[m])] + r' *[\||\n]'
+                        regex = r'{{ *[' + new_template[m][0:1] + r'|' + new_template[m][0:1].upper() + r']' + new_template[m][1:len(new_template[m])] + r' *[|\n]'
                     '''
-                    if re.search(r'{{ *[L|l]ien web *[\||\n]', page_start):
+                    if re.search(r'{{ *[L|l]ien web *[|\n]', page_start):
                         replaced_template = 'lien web'
                         if debug_level > 0:
                             print(f'Détection de {replaced_template}')
-                    elif re.search(r'{{ *[L|l]ire en ligne *[\||\n]', page_start):
+                    elif re.search(r'{{ *[L|l]ire en ligne *[|\n]', page_start):
                         replaced_template = 'lire en ligne'
                         if debug_level > 0:
                             print(f'Détection de {replaced_template}')
-                    elif do_retest_broken_links and re.search(r'{{ *[L|l]ien brisé *[\||\n]', page_start):
+                    elif do_retest_broken_links and re.search(r'{{ *[L|l]ien brisé *[|\n]', page_start):
                         replaced_template = 'lien brisé'
                         if debug_level > 0:
                             print(f'Détection de {replaced_template}')
@@ -401,7 +400,7 @@ def treat_broken_links(current_page, summary):
                                 current_page = current_page[:template_start] + '{{lien brisé' \
                                     + current_page[re.search(r'{{ *[' + replaced_template[:1] + '|'
                                                              + replaced_template[:1].upper() + ']'
-                                                             + replaced_template[1:] + ' *[\||\n]', current_page).end()-1:]
+                                                             + replaced_template[1:] + ' *[|\n]', current_page).end()-1:]
                             except AttributeError as e:
                                 raise Exception("Regex introuvable ligne 811") from e
 

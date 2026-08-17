@@ -10,7 +10,7 @@ TODO:
 5) Compléter les {{Bas de page}} existants.
 """
 
-from __future__ import absolute_import, unicode_literals
+
 import os
 import sys
 from pywikibot import config, Page, User

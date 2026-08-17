@@ -3,7 +3,7 @@
 """
 Ce script publie les articles de Wikinews sur Wikipédia
 """
-from __future__ import absolute_import, unicode_literals
+
 import json as simplejson
 import re
 import os

@@ -12,7 +12,7 @@ et remplacement des liens bleu fr.wikipedia.org/wiki par [[ ]], des liens rouges
 http://fr.wikipedia.org/wiki/Wikip%C3%A9dia:AutoWikiBrowser/Typos (semi-auto)
 ou : python cosmetic_changes.py -lang:"fr" -recentchanges
 """
-from __future__ import absolute_import, unicode_literals
+
 import os
 import re
 import sys

@@ -3,7 +3,7 @@
 """
 List of the templates to replace
 """
-from __future__ import absolute_import, unicode_literals
+
 
 old_templates = {
     '-': '',

@@ -3,7 +3,7 @@
 """
 List of the treated templates
 """
-from __future__ import absolute_import, unicode_literals
+
 
 templates = []  # Modèles du site à traiter
 sections = []   # Sections à remplacer, groupées si elles acceptent les modèles de domaine catégorisant

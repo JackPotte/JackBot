@@ -14,18 +14,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python 3.10
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.12"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-test.txt
+# TODO block if pylint < 5/10
 #      - name: Quality
 #        run: |
 #              pylint $(git ls-files '*.py')
-#              find . -name '*.py' -exec autopep8 --in-place '{}' \;:
+#              find . -name '*.py' -exec autopep8 --in-place --max-line-length 120 '{}' \;
 #              sourcery review src/wiktionary/fr_wiktionary_functions.py
       - name: Test
         run: |

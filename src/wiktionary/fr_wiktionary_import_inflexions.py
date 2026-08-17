@@ -3,7 +3,7 @@
 """
 Ce script importe les flexions d'un Wiktionary dans un autre où le lemme se trouve
 """
-from __future__ import absolute_import, unicode_literals
+
 import os
 import sys
 from pywikibot import config, Page
