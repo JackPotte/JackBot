@@ -288,12 +288,15 @@ def main(*args) -> int:
         elif sys.argv[1] in ['-tu', '-t']:
             treat_page_by_name(f'User:{username}/test unitaire')
         elif sys.argv[1] in ['-page', '-p']:
-            treat_page_by_name('saisie de schéma')
+            if len(sys.argv) > 2:
+                treat_page_by_name(sys.argv[2])
+            else:
+                treat_page_by_name('saisie de schéma')
         elif sys.argv[1] in ['-file', '-txt']:
             p.pages_by_file(f'lists/articles_{site_language}_{site_family}.txt')
         elif sys.argv[1] in ['-dump', '-xml']:
             regex = sys.argv[2] if len(sys.argv) > 2 else r''
-            p.page_by_xml(site_language + site_family + '\-.*xml', regex)
+            p.page_by_xml(site_language + site_family + '\\-.*xml', regex)
         elif sys.argv[1] == '-u':
             p.pages_by_user(f'User:{username}')
         elif sys.argv[1] in ['-search', '-s', '-r']:
