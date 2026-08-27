@@ -12,19 +12,28 @@ TODO:
 
 
 import os
+import re
 import sys
-from pywikibot import config, Page, User
+import pywikibot
+from pywikibot import config, Page
 # JackBot
 dir_src = os.path.dirname(__file__)
 sys.path.append(dir_src)
 sys.path.append(os.path.join(dir_src, 'lib'))
-from lib import *
-from html2unicode import *
-from default_sort import *
-from hyperlynx import *
-from languages import *
-from page_functions import *
-from PageProvider import *
+from hyperlynx import treat_broken_links
+from page_functions import (
+    get_content_from_page,
+    get_first_template_by_name,
+    get_parameter,
+    get_site_by_file_name,
+    global_operations,
+    is_test_page,
+    replace_deprecated_tags,
+    replace_files_errors,
+    save_page,
+    set_functions_globals,
+)
+from PageProvider import PageProvider
 
 # Global variables
 debug_level = 0

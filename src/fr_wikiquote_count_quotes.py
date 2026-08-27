@@ -40,13 +40,12 @@ This script understands various command-line arguments:
     -outputarticles: used as -outputarticles:page_name, put the number of articles containing quotes on page_name
 """
 
-import locale
 import operator
 import re
 import sys
 import time
 import pywikibot
-from pywikibot import config, pagegenerators, User
+from pywikibot import pagegenerators
 
 site = pywikibot.Site('fr', 'wikiquote')
 msg = {
@@ -298,7 +297,7 @@ def workon(page):
     )
     r = re.compile(r'{{ *(?:[Tt]emplate:|[mM][sS][gG]:)?' + pattern)
 
-    alnum = re.compile('\W')
+    alnum = re.compile('\\W')
 
     matches = r.finditer(text)
     offset = 0
@@ -548,9 +547,6 @@ class Main(object):
 
     def generator(self):
         # Choose which generator to use according to options.
-
-        pagegen = None
-
         if self.__workonnew:
             if not self.__number:
                 self.__number = 500
@@ -599,7 +595,6 @@ class Main(object):
         globalvar.lang = site.lang if site.lang in msg else 'en'
         pagegen = self.generator()
 
-        generator = None
         if self.__pagetitles:
             pages = []
             for p in self.__pagetitles:
