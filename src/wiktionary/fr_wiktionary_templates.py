@@ -451,7 +451,7 @@ sections_order.append(3)
 
 templates.append('-écrit-')
 sections.append('écriture')
-sections_level.append('===')
+sections_level.append('====')
 sections_order.append(3)
 
 templates.append('-voir-')
