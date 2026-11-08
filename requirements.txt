@@ -59,7 +59,7 @@ oauth==1.0.1
 oauthlib==4.0.0
 olefile==0.46
 packaging==20.3
-paramiko==3.4.0
+paramiko==5.0.0
 pbr==5.6.0
 pexpect==4.6.0
 protobuf==5.29.6
