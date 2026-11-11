@@ -1040,7 +1040,11 @@ def add_language_code_with_named_parameter_to_template(
         return next_template(final_page_content, page_content)
 
     if page_content.find('}}') > page_content.find('{{') != -1:
+        if debug_level > 0:
+            print('   "lang=" addition ignored because of a subtemplate')
+        return next_template(final_page_content, page_content)
         # TODO Infinite loop in [[tomme]] with ^date\|[^{}]*({{(.*?)}}|.)+[^{}]*\|lang=
+        # Or in [[蝸牛]] with the next line (after {{exemple|lang=ja\n...)
         regex_has_subtemplate = r'^' + re.escape(template_name) + r'\|[^{}]*({{(.*?)}}|.)+[^{}]*\| *lang(?:ue|1)? *='
         if re.search(regex_has_subtemplate, page_content):
             if debug_level > 0:
