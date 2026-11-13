@@ -467,7 +467,6 @@ def main(*args) -> int:
         #p.pages_by_cat('Catégorie:Appels de modèles incorrects:fr-verbe-flexion incomplet')
 
         p.pages_by_cat('Catégorie:Wiktionnaire:Flexions à vérifier', recursive=True)
-        p.pages_by_cat('Catégorie:Wiktionnaire:Prononciations manquantes sans langue précisée')
         p.pages_by_cat('Catégorie:Appels de modèles incorrects:deet')
 
         for old_template in old_templates:
